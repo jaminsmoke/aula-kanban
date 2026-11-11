@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, projects, students, tasks } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
-import { isOwner } from "../project";
+import { isAdministrator, isOwner } from "../project";
 
 export const dynamic = "force-dynamic";
 function json(data: unknown, status = 200) {
@@ -14,8 +14,9 @@ export async function GET() {
   const user = await getChatGPTUser();
   if (!user) return json({ message: "Inicia sesión para acceder a los proyectos." }, 401);
   const owner = isOwner(user);
+  const admin = !owner && await isAdministrator(user);
   const all = await getDb().select().from(projects).orderBy(asc(projects.createdAt), asc(projects.id));
-  if (owner) return json({ projects: all.map((project) => ({ ...project, role: "owner", studentSection: null })), isOwner: true });
+  if (owner || admin) return json({ projects: all.map((project) => ({ ...project, role: owner ? "owner" : "admin", studentSection: null })), isOwner: owner, isAdmin: admin });
   const members = await getDb().select().from(projectMembers).where(eq(projectMembers.email, user.email.trim().toLowerCase()));
   return json({ projects: all.flatMap((project) => {
     const member = members.find((item) => item.projectId === project.id);

@@ -43,6 +43,13 @@
       "when": 1794410137361,
       "tag": "0005_protect_project_relations",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1794426633082,
+      "tag": "0006_hot_puff_adder",
+      "breakpoints": true
     }
   ]
 }

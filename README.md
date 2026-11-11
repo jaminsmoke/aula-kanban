@@ -1,4 +1,8 @@
-# vinext-starter
+# Aula Kanban
+
+Cada instancia mantiene sus propios proyectos y datos en D1. Para configurar una copia, añade `OWNER_EMAIL` en la configuración de variables de entorno de Sites con el correo de ChatGPT del propietario y vuelve a publicar para aplicar el cambio. La base de datos y las variables de entorno no se copian durante un remix. Una copia nueva comienza sin proyectos ni alumnos; el propietario puede crear proyectos y gestionar administradores desde Ajustes de la cuenta. El propietario es el único que puede crear o eliminar proyectos y administrar la lista de administradores.
+
+## Desarrollo
 
 A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
 

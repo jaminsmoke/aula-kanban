@@ -21,8 +21,9 @@ const blank: TaskFields = {
   title: "", description: "", assignee: "", dueDate: "", priority: "normal", status: "pending",
 };
 const formatDate = new Intl.DateTimeFormat("es", { day: "numeric", month: "short" });
-type Project = { id: string; name: string; createdAt: number; role: "owner" | "teacher" | "student"; studentSection: string | null };
+type Project = { id: string; name: string; createdAt: number; role: "owner" | "admin" | "teacher" | "student"; studentSection: string | null };
 type Member = { id: string; email: string; role: "teacher" | "student"; studentSection: string | null };
+type Administrator = { id: string; email: string; createdAt: number; active: boolean };
 
 class RequestError extends Error {
   constructor(message: string, readonly status: number) {
@@ -102,7 +103,14 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectsLoaded, setProjectsLoaded] = useState(false);
   const [owner, setOwner] = useState(false);
+  const [admin, setAdmin] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [admins, setAdmins] = useState<Administrator[] | null>(null);
+  const [adminEmail, setAdminEmail] = useState("");
+  const [editingAdmin, setEditingAdmin] = useState<Administrator | null>(null);
+  const [removingAdmin, setRemovingAdmin] = useState<Administrator | null>(null);
+  const [adminError, setAdminError] = useState("");
+  const [adminBusy, setAdminBusy] = useState(false);
   const [projectId, setProjectId] = useState("default");
   const [projectError, setProjectError] = useState("");
   const [newProject, setNewProject] = useState<{ id: string; name: string } | null>(null);
@@ -148,7 +156,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
 
   const refreshProjects = useCallback(async () => {
     try {
-      const next = await request<{ projects: Project[]; isOwner: boolean }>("GET", undefined, "/api/projects");
+      const next = await request<{ projects: Project[]; isOwner: boolean; isAdmin?: boolean }>("GET", undefined, "/api/projects");
       const explicit = new URLSearchParams(window.location.search).get("project");
       const currentId = explicit || "default";
       if (!explicit && next.projects.length && !next.projects.some((item) => item.id === currentId)) {
@@ -157,6 +165,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
       }
       setProjects(next.projects);
       setOwner(next.isOwner);
+      setAdmin(Boolean(next.isAdmin));
       setProjectsLoaded(true);
       setProjectId(currentId);
       setProjectError(next.projects.some((item) => item.id === currentId) || (!next.projects.length && !explicit) ? "" : "No tienes acceso a este proyecto o ya no existe.");
@@ -165,6 +174,31 @@ export default function Board({ user }: { user: { displayName: string; email: st
       setProjectError((error as Error).message);
     }
   }, []);
+
+  async function loadAdmins() {
+    try { setAdmins(await request<Administrator[]>("GET", undefined, "/api/administrators")); setAdminError(""); }
+    catch (error) { setAdminError((error as Error).message); }
+  }
+  async function saveAdmin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (adminBusy) return;
+    setAdminBusy(true); setAdminError("");
+    try {
+      await request(editingAdmin ? "PATCH" : "POST", editingAdmin ? { id: editingAdmin.id, email: adminEmail } : { email: adminEmail }, "/api/administrators");
+      setAdminEmail(""); setEditingAdmin(null); await loadAdmins();
+    } catch (error) { setAdminError((error as Error).message); }
+    finally { setAdminBusy(false); }
+  }
+  async function deleteAdmin() {
+    if (!removingAdmin || adminBusy) return;
+    setAdminBusy(true); setAdminError("");
+    try {
+      await request("DELETE", { id: removingAdmin.id }, "/api/administrators");
+      if (editingAdmin?.id === removingAdmin.id) { setEditingAdmin(null); setAdminEmail(""); }
+      setRemovingAdmin(null); await loadAdmins();
+    } catch (error) { setAdminError((error as Error).message); }
+    finally { setAdminBusy(false); }
+  }
 
   async function createProject(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -416,7 +450,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
 
   const all = tasks ?? [];
   const activeProject = projects.find((item) => item.id === projectId);
-  const canManage = activeProject?.role === "owner" || activeProject?.role === "teacher";
+  const canManage = activeProject?.role === "owner" || activeProject?.role === "admin" || activeProject?.role === "teacher";
   const ownStudent = students?.find((student) => student.section === activeProject?.studentSection);
   const unassigned = (name: string) => !name.trim() || name.trim().toLocaleLowerCase("es") === "por definir";
   const canEditTask = (task: Task) => Boolean(canManage || (ownStudent && (unassigned(task.assignee) || taskBelongsTo(task, ownStudent, students ?? []))));
@@ -462,7 +496,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
             </summary>
             <div className="account-dropdown">
               <strong>Cuenta de ChatGPT</strong><span>{user.email}</span>
-              <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setSettingsOpen(true); }}><Settings size={16} /> Ajustes de la cuenta</button>
+              <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setSettingsOpen(true); if (owner) void loadAdmins(); }}><Settings size={16} /> Ajustes de la cuenta</button>
               <a href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
             </div>
           </details>
@@ -474,11 +508,26 @@ export default function Board({ user }: { user: { displayName: string; email: st
           <p>Tu cuenta en esta instancia de Aula Kanban.</p>
           <dl>
             <div><dt>Cuenta de ChatGPT</dt><dd>{user.displayName}<br /><span>{user.email}</span></dd></div>
-            <div><dt>Permiso en la aplicación</dt><dd>{!projectsLoaded ? "Consultando…" : owner ? "Administrador" : "Sin permisos de administración"}</dd></div>
+            <div><dt>Permiso en la aplicación</dt><dd>{!projectsLoaded ? "Consultando…" : owner ? "Propietario y administrador" : admin ? "Administrador" : "Sin permisos de administración"}</dd></div>
             <div><dt>Proyecto activo</dt><dd>{activeProject?.name ?? "Ninguno"}</dd></div>
-            <div><dt>Rol en el proyecto</dt><dd>{!projectsLoaded ? "Consultando…" : activeProject ? ({ owner: "Administrador", teacher: "Profesor", student: "Alumno" } as const)[activeProject.role] : "Sin acceso a un proyecto activo"}</dd></div>
+            <div><dt>Rol en el proyecto</dt><dd>{!projectsLoaded ? "Consultando…" : activeProject ? ({ owner: "Propietario", admin: "Administrador", teacher: "Profesor", student: "Alumno" } as const)[activeProject.role] : "Sin acceso a un proyecto activo"}</dd></div>
           </dl>
           <p className="account-settings-note">Los permisos de esta aplicación son independientes de la propiedad del Site en Sites.</p>
+          {owner && <section className="admin-management" aria-labelledby="admins-heading">
+            <div><h3 id="admins-heading">Administradores</h3><p>Gestionan el contenido de todos los proyectos. Solo tú puedes crear o eliminar proyectos y gestionar administradores.</p></div>
+            <form onSubmit={saveAdmin} className="admin-form">
+              <label htmlFor="admin-email">{editingAdmin ? "Editar correo" : "Correo de la cuenta de ChatGPT"}</label>
+              <div><input id="admin-email" type="email" required maxLength={254} value={adminEmail} onChange={(event) => setAdminEmail(event.target.value)} placeholder="nombre@ejemplo.com" /><button className="primary" type="submit" disabled={adminBusy}>{editingAdmin ? "Guardar" : "Añadir"}</button></div>
+              {editingAdmin && <><p>Al cambiar el correo se revoca el acceso anterior y la nueva cuenta tendrá que iniciar sesión.</p><button className="text-button" type="button" onClick={() => { setEditingAdmin(null); setAdminEmail(""); }}>Cancelar edición</button></>}
+            </form>
+            {adminError && <p role="alert" className="admin-error">{adminError}</p>}
+            {admins === null ? <p>Cargando administradores…</p> : admins.length === 0 ? <p>Aún no hay administradores adicionales.</p> : <ul className="admin-list">{admins.map((item) => <li key={item.id}>
+              <div><strong>{item.email}</strong><small>{item.active ? "Cuenta vinculada" : "Pendiente de primer acceso"}</small></div>
+              <button type="button" className="icon-button" aria-label={`Editar administrador ${item.email}`} title="Editar" onClick={() => { setEditingAdmin(item); setAdminEmail(item.email); setRemovingAdmin(null); setAdminError(""); }}><Pencil size={17} /></button>
+              <button type="button" className="icon-button admin-remove" aria-label={`Eliminar administrador ${item.email}`} title="Eliminar" onClick={() => { setRemovingAdmin(item); setAdminError(""); }}><Trash2 size={17} /></button>
+            </li>)}</ul>}
+            {removingAdmin && <div className="admin-confirm" role="alert"><p>¿Eliminar a <strong>{removingAdmin.email}</strong> como administrador? Perderá este acceso de inmediato.</p><div><button type="button" className="secondary" onClick={() => setRemovingAdmin(null)} disabled={adminBusy}>Cancelar</button><button type="button" className="danger" onClick={() => void deleteAdmin()} disabled={adminBusy}>Eliminar acceso</button></div></div>}
+          </section>}
           <a className="secondary account-signout" href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
         </div>
       </Modal>}

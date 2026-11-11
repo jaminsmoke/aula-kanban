@@ -6,6 +6,16 @@ export const projects = sqliteTable("projects", {
   createdAt: integer("created_at").notNull(),
 });
 
+export const administrators = sqliteTable("administrators", {
+  id: text("id").primaryKey().notNull(),
+  email: text("email").notNull(),
+  userId: text("user_id"),
+  createdAt: integer("created_at").notNull(),
+}, (table) => [
+  uniqueIndex("administrator_email").on(table.email),
+  uniqueIndex("administrator_user_id").on(table.userId),
+]);
+
 export const tasks = sqliteTable("tasks", {
   id: text("id").primaryKey().notNull(),
   projectId: text("project_id").notNull().default("default"),
