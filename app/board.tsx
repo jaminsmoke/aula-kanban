@@ -2,7 +2,7 @@
 
 import {
   ArrowDown, ArrowRight, CalendarDays, Check, CircleCheck, CircleDashed, ClipboardList,
-  BriefcaseBusiness, ChevronDown, Clock3, Columns3, Flag, FolderKanban, GripVertical, LayoutGrid, Lightbulb, Link2, List, ListFilter, ListTodo, Pencil, Plus, ScanEye, Search, Trash2, Users, X,
+  BriefcaseBusiness, ChevronDown, Clock3, Columns3, Flag, FolderKanban, GripVertical, LayoutGrid, Lightbulb, Link2, List, ListFilter, ListTodo, LogOut, Pencil, Plus, ScanEye, Search, Settings, Trash2, Users, X,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent, PointerEvent, ReactNode } from "react";
@@ -102,6 +102,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectsLoaded, setProjectsLoaded] = useState(false);
   const [owner, setOwner] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [projectId, setProjectId] = useState("default");
   const [projectError, setProjectError] = useState("");
   const [newProject, setNewProject] = useState<{ id: string; name: string } | null>(null);
@@ -459,10 +460,28 @@ export default function Board({ user }: { user: { displayName: string; email: st
               <span className="account-avatar" aria-hidden>{(user.displayName.trim()[0] || user.email[0]).toUpperCase()}</span>
               <span className="account-name">{user.displayName}</span>
             </summary>
-            <div className="account-dropdown"><strong>Cuenta de ChatGPT</strong><span>{user.email}</span></div>
+            <div className="account-dropdown">
+              <strong>Cuenta de ChatGPT</strong><span>{user.email}</span>
+              <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setSettingsOpen(true); }}><Settings size={16} /> Ajustes de la cuenta</button>
+              <a href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
+            </div>
           </details>
         </div>
       </header>
+
+      {settingsOpen && <Modal title="Cuenta y permisos" onClose={() => setSettingsOpen(false)}>
+        <div className="account-settings">
+          <p>Tu cuenta en esta instancia de Aula Kanban.</p>
+          <dl>
+            <div><dt>Cuenta de ChatGPT</dt><dd>{user.displayName}<br /><span>{user.email}</span></dd></div>
+            <div><dt>Permiso en la aplicación</dt><dd>{!projectsLoaded ? "Consultando…" : owner ? "Administrador" : "Sin permisos de administración"}</dd></div>
+            <div><dt>Proyecto activo</dt><dd>{activeProject?.name ?? "Ninguno"}</dd></div>
+            <div><dt>Rol en el proyecto</dt><dd>{!projectsLoaded ? "Consultando…" : activeProject ? ({ owner: "Administrador", teacher: "Profesor", student: "Alumno" } as const)[activeProject.role] : "Sin acceso a un proyecto activo"}</dd></div>
+          </dl>
+          <p className="account-settings-note">Los permisos de esta aplicación son independientes de la propiedad del Site en Sites.</p>
+          <a className="secondary account-signout" href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
+        </div>
+      </Modal>}
 
       <main className="shell">
         {projectError && !newProject && !projectDeleting && <div role="alert" className="alert project-alert">{projectError} <button type="button" className="text-button" onClick={() => void refreshProjects()}>Reintentar</button></div>}
