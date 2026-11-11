@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const projects = sqliteTable("projects", {
   id: text("id").primaryKey().notNull(),
@@ -30,3 +30,14 @@ export const students = sqliteTable("students", {
   deleted: integer("deleted").notNull().default(0),
   revision: integer("revision").notNull().default(1),
 });
+
+export const projectMembers = sqliteTable("project_members", {
+  id: text("id").primaryKey().notNull(),
+  projectId: text("project_id").notNull(),
+  email: text("email").notNull(),
+  role: text("role").notNull(),
+  studentSection: text("student_section"),
+}, (table) => [
+  uniqueIndex("project_member_email").on(table.projectId, table.email),
+  uniqueIndex("project_member_student").on(table.projectId, table.studentSection),
+]);

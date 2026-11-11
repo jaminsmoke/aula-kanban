@@ -9,6 +9,7 @@ import type { FormEvent, PointerEvent, ReactNode } from "react";
 import { priorities, priorityNames, statuses } from "./task";
 import type { Task, TaskFields } from "./task";
 import type { Student } from "./student";
+import { taskBelongsTo } from "./assignments";
 
 const columns = {
   pending: { name: "Por hacer", icon: CircleDashed },
@@ -20,19 +21,8 @@ const blank: TaskFields = {
   title: "", description: "", assignee: "", dueDate: "", priority: "normal", status: "pending",
 };
 const formatDate = new Intl.DateTimeFormat("es", { day: "numeric", month: "short" });
-type Project = { id: string; name: string; createdAt: number };
-const normalizeName = (value: string) => value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-
-function taskBelongsTo(task: Task, student: Student, students: Student[]) {
-  const assignee = normalizeName(task.assignee);
-  if (!assignee) return false;
-  const matches = students.filter((item) => {
-    const first = item.name.split(/\s+/)[0];
-    const uniqueFirst = students.filter((other) => normalizeName(other.name.split(/\s+/)[0]) === normalizeName(first)).length === 1;
-    return assignee === normalizeName(item.name) || assignee === normalizeName(item.displayName) || (uniqueFirst && assignee === normalizeName(first));
-  });
-  return matches.length === 1 && matches[0].section === student.section;
-}
+type Project = { id: string; name: string; createdAt: number; role: "owner" | "teacher" | "student"; studentSection: string | null };
+type Member = { id: string; email: string; role: "teacher" | "student"; studentSection: string | null };
 
 class RequestError extends Error {
   constructor(message: string, readonly status: number) {
@@ -74,9 +64,10 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
 
 type GripEvent = PointerEvent<HTMLSpanElement>;
 
-function TaskCard({ task, dragging, onEdit, onGrab, onMove, onRelease, onCancel }: {
+function TaskCard({ task, dragging, editable, onEdit, onGrab, onMove, onRelease, onCancel }: {
   task: Task;
   dragging: boolean;
+  editable: boolean;
   onEdit: () => void;
   onGrab: (event: GripEvent) => void;
   onMove: (event: GripEvent) => void;
@@ -85,7 +76,7 @@ function TaskCard({ task, dragging, onEdit, onGrab, onMove, onRelease, onCancel 
 }) {
   const initials = task.assignee.trim().split(/\s+/).slice(0, 2).map((part) => Array.from(part)[0]).join("").toUpperCase();
   return (
-    <button type="button" className={dragging ? "card dragging" : "card"} onClick={onEdit}>
+    <button type="button" className={dragging ? "card dragging" : "card"} onClick={onEdit} aria-disabled={!editable} title={editable ? "Abrir tarea" : "Solo lectura"}>
       <span className="card-top">
         <span className={`priority ${task.priority}`}><Flag size={12} /> {priorityNames[task.priority]}</span>
         <span className="grip" aria-hidden
@@ -107,13 +98,23 @@ function TaskCard({ task, dragging, onEdit, onGrab, onMove, onRelease, onCancel 
   );
 }
 
-export default function Board() {
+export default function Board({ user }: { user: { displayName: string; email: string } }) {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [projectsLoaded, setProjectsLoaded] = useState(false);
+  const [owner, setOwner] = useState(false);
   const [projectId, setProjectId] = useState("default");
   const [projectError, setProjectError] = useState("");
   const [newProject, setNewProject] = useState<{ id: string; name: string } | null>(null);
   const [projectSaving, setProjectSaving] = useState(false);
   const projectWriting = useRef(false);
+  const [projectDeleting, setProjectDeleting] = useState(false);
+  const [deleteProjectName, setDeleteProjectName] = useState("");
+  const [membersOpen, setMembersOpen] = useState(false);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [memberForm, setMemberForm] = useState({ email: "", role: "student" as "student" | "teacher", studentSection: "" });
+  const [memberError, setMemberError] = useState("");
+  const [memberBusy, setMemberBusy] = useState(false);
+  const [removeMember, setRemoveMember] = useState<Member | null>(null);
   const [view, setView] = useState<"kanban" | "alumnos">("kanban");
   const [studentName, setStudentName] = useState<string | null>(null);
   const [students, setStudents] = useState<Student[] | null>(null);
@@ -146,12 +147,20 @@ export default function Board() {
 
   const refreshProjects = useCallback(async () => {
     try {
-      const next = await request<Project[]>("GET", undefined, "/api/projects");
-      const currentId = new URLSearchParams(window.location.search).get("project") || "default";
-      setProjects(next);
+      const next = await request<{ projects: Project[]; isOwner: boolean }>("GET", undefined, "/api/projects");
+      const explicit = new URLSearchParams(window.location.search).get("project");
+      const currentId = explicit || "default";
+      if (!explicit && next.projects.length && !next.projects.some((item) => item.id === currentId)) {
+        window.location.replace("/?project=" + encodeURIComponent(next.projects[0].id));
+        return;
+      }
+      setProjects(next.projects);
+      setOwner(next.isOwner);
+      setProjectsLoaded(true);
       setProjectId(currentId);
-      setProjectError(next.some((item) => item.id === currentId) ? "" : "No se encuentra este proyecto.");
+      setProjectError(next.projects.some((item) => item.id === currentId) || (!next.projects.length && !explicit) ? "" : "No tienes acceso a este proyecto o ya no existe.");
     } catch (error) {
+      setProjectsLoaded(true);
       setProjectError((error as Error).message);
     }
   }, []);
@@ -170,6 +179,58 @@ export default function Board() {
       projectWriting.current = false;
       setProjectSaving(false);
     }
+  }
+
+  async function deleteProject() {
+    const selected = projects.find((project) => project.id === projectId);
+    if (!selected || deleteProjectName !== selected.name || projectWriting.current) return;
+    projectWriting.current = true;
+    setProjectSaving(true);
+    setProjectError("");
+    try {
+      try {
+        await request("DELETE", { id: projectId }, "/api/projects");
+      } catch (error) {
+        if (error instanceof RequestError && error.status < 500) throw error;
+        await request("DELETE", { id: projectId }, "/api/projects");
+      }
+      window.location.assign("/");
+    } catch (error) {
+      setProjectError((error as Error).message);
+      projectWriting.current = false;
+      setProjectSaving(false);
+    }
+  }
+
+  async function loadMembers() {
+    setMemberError("");
+    try { setMembers(await request<Member[]>("GET", undefined, "/api/members")); }
+    catch (error) { setMemberError((error as Error).message); }
+  }
+
+  async function saveMember(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (memberBusy) return;
+    setMemberBusy(true);
+    setMemberError("");
+    try {
+      await request("POST", { ...memberForm, studentSection: memberForm.studentSection || null }, "/api/members");
+      setMemberForm({ email: "", role: "student", studentSection: "" });
+      await loadMembers();
+    } catch (error) { setMemberError((error as Error).message); }
+    finally { setMemberBusy(false); }
+  }
+
+  async function deleteMember() {
+    if (!removeMember || memberBusy) return;
+    setMemberBusy(true);
+    setMemberError("");
+    try {
+      await request("DELETE", { id: removeMember.id }, "/api/members");
+      setRemoveMember(null);
+      await loadMembers();
+    } catch (error) { setMemberError((error as Error).message); }
+    finally { setMemberBusy(false); }
   }
 
   const refresh = useCallback(async () => {
@@ -263,6 +324,7 @@ export default function Board() {
 
   function openEditor(status: TaskFields["status"], task?: Task) {
     if (writing.current) return;
+    if (!activeProject || (task && !canEditTask(task))) return;
     setForm(task ?? { ...blank, status });
     setFormError("");
     setDeleting(false);
@@ -319,6 +381,7 @@ export default function Board() {
 
   function grab(event: GripEvent, task: Task) {
     if (!event.isPrimary || event.button !== 0 || writing.current) return;
+    if (!canManage && (!ownStudent || !taskBelongsTo(task, ownStudent, students ?? []))) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     drag.current = { task, x: event.clientX, y: event.clientY, started: false };
   }
@@ -351,6 +414,12 @@ export default function Board() {
   }
 
   const all = tasks ?? [];
+  const activeProject = projects.find((item) => item.id === projectId);
+  const canManage = activeProject?.role === "owner" || activeProject?.role === "teacher";
+  const ownStudent = students?.find((student) => student.section === activeProject?.studentSection);
+  const unassigned = (name: string) => !name.trim() || name.trim().toLocaleLowerCase("es") === "por definir";
+  const canEditTask = (task: Task) => Boolean(canManage || (ownStudent && (unassigned(task.assignee) || taskBelongsTo(task, ownStudent, students ?? []))));
+  const claiming = Boolean(editor?.task && !canManage && unassigned(editor.task.assignee));
   const total = all.length;
   const finished = all.filter((task) => task.status === "done").length;
   const progress = total ? Math.round(finished / total * 100) : 0;
@@ -378,23 +447,32 @@ export default function Board() {
               <p>Proyectos</p>
               {projects.map((project) => <a key={project.id} href={project.id === "default" ? "/" : `/?project=${encodeURIComponent(project.id)}`} aria-current={project.id === projectId ? "page" : undefined}><span>{project.name}</span>{project.id === projectId && <Check size={16} />}</a>)}
               <div className="project-menu-actions">
-                <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={16} /> Nuevo proyecto</button>
-                <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setCopied(false); const url = new URL("/", window.location.origin); url.searchParams.set("project", projectId); setShareUrl(url.href); }}><Link2 size={16} /> Compartir proyecto</button>
+                {owner && <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={16} /> Nuevo proyecto</button>}
+                {activeProject && <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setCopied(false); const url = new URL("/", window.location.origin); url.searchParams.set("project", projectId); setShareUrl(url.href); }}><Link2 size={16} /> Compartir proyecto</button>}
+                {canManage && <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setMembersOpen(true); setRemoveMember(null); void loadMembers(); }}><Users size={16} /> Gestionar miembros</button>}
+                {owner && activeProject && <button type="button" className="project-delete-action" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setDeleteProjectName(""); setProjectError(""); setProjectDeleting(true); }}><Trash2 size={16} /> Eliminar proyecto</button>}
               </div>
             </div>
+          </details>
+          <details className="account-menu">
+            <summary className="account-indicator" aria-label="Ver cuenta de ChatGPT">
+              <span className="account-avatar" aria-hidden>{(user.displayName.trim()[0] || user.email[0]).toUpperCase()}</span>
+              <span className="account-name">{user.displayName}</span>
+            </summary>
+            <div className="account-dropdown"><strong>Cuenta de ChatGPT</strong><span>{user.email}</span></div>
           </details>
         </div>
       </header>
 
       <main className="shell">
-        {projectError && !newProject && <div role="alert" className="alert project-alert">{projectError} <button type="button" className="text-button" onClick={() => void refreshProjects()}>Reintentar</button></div>}
-        {view === "alumnos" ? (
+        {projectError && !newProject && !projectDeleting && <div role="alert" className="alert project-alert">{projectError} <button type="button" className="text-button" onClick={() => void refreshProjects()}>Reintentar</button></div>}
+        {projectsLoaded && !activeProject ? <section className="students-view"><h1>Proyectos</h1><p className="intro">{owner ? "Crea un proyecto para empezar." : "Todavía no tienes acceso a ningún proyecto. Pide al profesorado que autorice tu cuenta."}</p>{owner && <button className="primary" type="button" onClick={() => { setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={18} /> Nuevo proyecto</button>}</section> : !activeProject ? null : view === "alumnos" ? (
           <section className="students-view">
             <p className="eyebrow"><span /> Grupo de clase</p>
             <div className="students-heading">
               <div className="students-title-row">
                 <h1>Alumnos</h1>
-                <button type="button" className="primary add-student" aria-label="Añadir alumno" title="Añadir alumno" onClick={() => { setStudentForm({ section: crypto.randomUUID(), name: "", displayName: "", role: "", activities: "", aiHelp: "", revision: 0 }); setStudentFormError(""); }}><Plus size={20} aria-hidden /></button>
+                {canManage && <button type="button" className="primary add-student" aria-label="Añadir alumno" title="Añadir alumno" onClick={() => { setStudentForm({ section: crypto.randomUUID(), name: "", displayName: "", role: "", activities: "", aiHelp: "", revision: 0 }); setStudentFormError(""); }}><Plus size={20} aria-hidden /></button>}
               </div>
               <p className="intro">Fichas del grupo y tareas asignadas.</p>
             </div>
@@ -409,14 +487,14 @@ export default function Board() {
                 <div className="student-profile-header">
                   <span className="student-profile-avatar" aria-hidden>{student.displayName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span>
                   <div className="student-identity"><span className="student-kicker">Ficha de alumno</span><h2>{student.displayName}</h2><p>{student.role || "Puesto sin especificar"}</p></div>
-                  <div className="profile-edit-wrap">
+                  {(canManage || ownStudent?.section === student.section) && <><div className="profile-edit-wrap">
                     <button type="button" className="profile-edit" aria-label="Editar perfil" aria-describedby="edit-profile-tooltip" onClick={() => { setStudentForm(student); setStudentFormError(""); }}><Pencil size={18} aria-hidden /></button>
                     <span className="profile-tooltip" id="edit-profile-tooltip" role="tooltip">Editar perfil</span>
                   </div>
                   <div className="profile-edit-wrap">
                     <button type="button" className="profile-delete" aria-label="Eliminar perfil" aria-describedby="delete-profile-tooltip" onClick={() => { setStudentDeleting(student); setStudentFormError(""); }}><Trash2 size={18} aria-hidden /></button>
                     <span className="profile-tooltip" id="delete-profile-tooltip" role="tooltip">Eliminar perfil</span>
-                  </div>
+                  </div></>}
                 </div>
                 <div className="student-info">
                   <div className="student-info-card"><span className="info-icon role"><BriefcaseBusiness size={18} aria-hidden /></span><div><h3>Puesto de trabajo</h3><p>{student.role || "Sin especificar"}</p></div></div>
@@ -486,7 +564,7 @@ export default function Board() {
                     <button className="icon-button lane-add" type="button" disabled={saving || tasks === null} aria-label={`Añadir tarea a ${name}`} onClick={() => openEditor(status)}><Plus size={17} /></button>
                   </div>
                   <div className="lane-body">
-                    {cards.map((task) => <TaskCard key={task.id} task={task} dragging={dragged === task.id}
+                    {cards.map((task) => <TaskCard key={task.id} task={task} dragging={dragged === task.id} editable={canEditTask(task)}
                       onEdit={() => openEditor(task.status, task)}
                       onGrab={(event) => grab(event, task)} onMove={move} onRelease={release} onCancel={cancelDrag} />)}
                     {cards.length === 0 && (
@@ -511,24 +589,28 @@ export default function Board() {
       {editor && (
         <Modal title={editor.task ? "Editar tarea" : "Nueva tarea"} onClose={() => { if (!writing.current) setEditor(null); }}>
           <form onSubmit={submit} className="task-form">
-            <label>Título<input autoFocus required maxLength={120} placeholder="¿Qué hay que hacer?" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></label>
-            <label>Descripción <span>(opcional)</span><textarea maxLength={2000} rows={3} placeholder="Detalles, materiales o enlaces" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></label>
+            <label>Título<input autoFocus required disabled={claiming} maxLength={120} placeholder="¿Qué hay que hacer?" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></label>
+            <label>Descripción <span>(opcional)</span><textarea disabled={claiming} maxLength={2000} rows={3} placeholder="Detalles, materiales o enlaces" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></label>
             <div className="form-row">
-              <label>Responsable<input list="student-options" maxLength={80} placeholder="Nombre o equipo" value={form.assignee} onChange={(event) => setForm({ ...form, assignee: event.target.value })} /><datalist id="student-options">{students?.map((student) => <option key={student.section} value={student.name}>{student.displayName}</option>)}</datalist></label>
-              <label>Fecha de entrega<input type="date" value={form.dueDate} onChange={(event) => setForm({ ...form, dueDate: event.target.value })} /></label>
+              <label>Responsable{canManage ? <><input list="student-options" maxLength={80} placeholder="Nombre o equipo" value={form.assignee} onChange={(event) => setForm({ ...form, assignee: event.target.value })} /><datalist id="student-options">{students?.map((student) => <option key={student.section} value={student.name}>{student.displayName}</option>)}</datalist></> : <select value={unassigned(form.assignee) ? "" : ownStudent?.name ?? ""} onChange={(event) => setForm({ ...form, assignee: event.target.value || (claiming ? editor?.task?.assignee ?? "" : "") })}>
+                <option value="">Sin asignar</option>{ownStudent && <option value={ownStudent.name}>{ownStudent.displayName} (tú)</option>}
+              </select>}</label>
+              <label>Fecha de entrega<input disabled={claiming} type="date" value={form.dueDate} onChange={(event) => setForm({ ...form, dueDate: event.target.value })} /></label>
             </div>
             <div className="form-row">
-              <label>Prioridad<select value={form.priority} onChange={(event) => setForm({ ...form, priority: event.target.value as TaskFields["priority"] })}>
+              <label>Prioridad<select disabled={claiming} value={form.priority} onChange={(event) => setForm({ ...form, priority: event.target.value as TaskFields["priority"] })}>
                 {priorities.map((priority) => <option key={priority} value={priority}>{priorityNames[priority]}</option>)}
               </select></label>
-              <label>Estado<select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value as TaskFields["status"] })}>
+              <label>Estado<select disabled={claiming} value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value as TaskFields["status"] })}>
                 {statuses.map((status) => <option key={status} value={status}>{columns[status].name}</option>)}
               </select></label>
             </div>
+            {claiming && <p className="intro">Asígnate esta tarea y guarda para poder editar sus detalles.</p>}
+            {!canManage && !ownStudent && <p className="intro">El profesorado debe vincular tu cuenta a una ficha para que puedas asignarte tareas.</p>}
             {formError && <div role="alert" className="alert">{formError}</div>}
             {deleting && <p className="delete-prompt">¿Eliminar esta tarea del tablero de todo el grupo?</p>}
             <div className="modal-actions">
-              {editor.task && !deleting && <button type="button" className="danger-quiet" disabled={saving} onClick={() => setDeleting(true)}><Trash2 size={16} /> Eliminar</button>}
+              {editor.task && !deleting && !claiming && <button type="button" className="danger-quiet" disabled={saving} onClick={() => setDeleting(true)}><Trash2 size={16} /> Eliminar</button>}
               <span className="spacer" />
               {deleting && editor.task ? (
                 <>
@@ -579,6 +661,41 @@ export default function Board() {
             {projectError && <div role="alert" className="alert">{projectError}</div>}
             <div className="modal-actions"><span className="spacer" /><button type="button" className="secondary" disabled={projectSaving} onClick={() => setNewProject(null)}>Cancelar</button><button type="submit" className="primary" disabled={projectSaving}>{projectSaving ? "Creando…" : "Crear proyecto"}</button></div>
           </form>
+        </Modal>
+      )}
+
+      {projectDeleting && activeProject && (
+        <Modal title="Eliminar proyecto" onClose={() => { if (!projectWriting.current) setProjectDeleting(false); }}>
+          <form className="task-form" onSubmit={(event) => { event.preventDefault(); void deleteProject(); }}>
+            <p className="delete-prompt">Se eliminarán el proyecto «{activeProject.name}», sus tareas, fichas y permisos de acceso.</p>
+            <label>Escribe el nombre del proyecto para confirmar<input required value={deleteProjectName} onChange={(event) => setDeleteProjectName(event.target.value)} autoComplete="off" /></label>
+            {projectError && <div role="alert" className="alert">{projectError}</div>}
+            <div className="modal-actions"><span className="spacer" /><button type="button" className="secondary" disabled={projectSaving} onClick={() => setProjectDeleting(false)}>Cancelar</button><button type="submit" className="danger" disabled={projectSaving || deleteProjectName !== activeProject.name}>{projectSaving ? "Eliminando…" : "Eliminar proyecto"}</button></div>
+          </form>
+        </Modal>
+      )}
+
+      {membersOpen && (
+        <Modal title="Gestionar miembros" onClose={() => { if (!memberBusy) setMembersOpen(false); }}>
+          <div className="member-content">
+            <p>Autoriza una cuenta de ChatGPT para este proyecto. El alumno deberá iniciar sesión con ese mismo correo.</p>
+            <form onSubmit={saveMember} className="task-form member-form">
+              <label>Correo de la cuenta<input required type="email" maxLength={254} value={memberForm.email} onChange={(event) => setMemberForm({ ...memberForm, email: event.target.value })} /></label>
+              <div className="form-row">
+                <label>Rol<select value={memberForm.role} onChange={(event) => setMemberForm({ ...memberForm, role: event.target.value as "teacher" | "student", studentSection: "" })}><option value="student">Alumno</option><option value="teacher">Profesor</option></select></label>
+                <label>Ficha vinculada<select value={memberForm.studentSection} onChange={(event) => setMemberForm({ ...memberForm, studentSection: event.target.value })}><option value="">Sin vincular</option>{students?.map((student) => <option key={student.section} value={student.section}>{student.displayName}</option>)}</select></label>
+              </div>
+              <button className="primary" type="submit" disabled={memberBusy}>{memberBusy ? "Guardando…" : "Guardar acceso"}</button>
+            </form>
+            {memberError && <div role="alert" className="alert">{memberError}</div>}
+            <h3>Personas con acceso</h3>
+            {members.length ? members.map((member) => <div className="member-row" key={member.id}>
+              <div><strong>{member.email}</strong><small>{member.role === "teacher" ? "Profesor" : "Alumno"}{member.studentSection ? ` · ${students?.find((student) => student.section === member.studentSection)?.displayName ?? "Ficha no disponible"}` : " · Sin ficha"}</small></div>
+              <button type="button" className="text-button" disabled={memberBusy} onClick={() => { setMemberForm({ email: member.email, role: member.role, studentSection: member.studentSection ?? "" }); setRemoveMember(null); }}>Editar</button>
+              <button type="button" className="danger-quiet" disabled={memberBusy} onClick={() => setRemoveMember(member)}>Quitar</button>
+            </div>) : <p>Sin miembros añadidos.</p>}
+            {removeMember && <div className="member-confirm"><p>¿Quitar el acceso de {removeMember.email} a este proyecto?</p><button type="button" className="secondary" disabled={memberBusy} onClick={() => setRemoveMember(null)}>Cancelar</button><button type="button" className="danger" disabled={memberBusy} onClick={() => void deleteMember()}>Quitar acceso</button></div>}
+          </div>
         </Modal>
       )}
 

@@ -55,6 +55,7 @@ async function mutate(request: Request) {
   }
   const body = await request.json().catch(() => null);
   if (request.method === "POST") {
+    if (project.access.role === "student") return json({ message: "Solo el profesorado puede crear fichas." }, 403);
     const parsed = profile.extend({ section: z.string().uuid() }).safeParse(body);
     if (!parsed.success) return json({ message: "Revisa los campos del perfil." }, 400);
     const { section, ...values } = parsed.data;
@@ -69,6 +70,9 @@ async function mutate(request: Request) {
   const parsed = (request.method === "DELETE" ? reference : fields).safeParse(body);
   if (!parsed.success) return json({ message: "Revisa los campos del perfil." }, 400);
   const { section, revision, ...changes } = parsed.data;
+  if (project.access.role === "student" && project.access.studentSection !== section) {
+    return json({ message: "Solo puedes editar tu propia ficha." }, 403);
+  }
   const [updated] = await getDb().update(students)
     .set({ ...changes, ...(request.method === "DELETE" ? { deleted: 1, name: "", displayName: "", role: "", activities: "", aiHelp: "" } : {}), revision: sql`${students.revision} + 1` })
     .where(and(eq(students.section, section), eq(students.revision, revision), eq(students.deleted, 0), eq(students.projectId, project.id))).returning();

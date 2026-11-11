@@ -1,10 +1,11 @@
 import { and, asc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
-import { tasks } from "../../../db/schema";
+import { students, tasks } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { priorities, statuses } from "../../task";
 import { validProject } from "../project";
+import { normalizeName, taskBelongsTo } from "../../assignments";
 
 export const dynamic = "force-dynamic";
 
@@ -43,10 +44,21 @@ async function handle(request: Request) {
     return json({ message: "Formato de solicitud no válido." }, 415);
   }
   const body = await request.json().catch(() => null);
+  let ownProfile: typeof students.$inferSelect | undefined;
+  let projectStudents: (typeof students.$inferSelect)[] = [];
+  if (project.access.role === "student") {
+    projectStudents = await getDb().select().from(students).where(and(eq(students.projectId, project.id), eq(students.deleted, 0)));
+    ownProfile = projectStudents.find((student) => student.section === project.access.studentSection);
+  }
+  const unassigned = (name: string) => !name.trim() || normalizeName(name) === "por definir";
+  const isOwn = (name: string) => Boolean(ownProfile && taskBelongsTo({ assignee: name }, ownProfile, projectStudents));
 
   if (request.method === "POST") {
     const parsed = fields.safeParse(body);
     if (!parsed.success) return json({ message: "Revisa los campos de la tarea." }, 400);
+    if (project.access.role === "student" && !unassigned(parsed.data.assignee) && !isOwn(parsed.data.assignee)) {
+      return json({ message: "Solo puedes asignarte la tarea a ti o dejarla sin asignar." }, 403);
+    }
     const [created] = await getDb().insert(tasks).values({
       ...parsed.data,
       projectId: project.id,
@@ -61,12 +73,25 @@ async function handle(request: Request) {
 
   const { id, revision } = parsed.data;
   const matches = and(eq(tasks.id, id), eq(tasks.revision, revision), eq(tasks.projectId, project.id));
+  const [current] = await getDb().select().from(tasks).where(matches);
+  if (!current) return json({ message: "Esta tarea cambió en otra sesión. Abre la versión actual para continuar." }, 409);
   if (request.method === "DELETE") {
+    if (project.access.role === "student" && !isOwn(current.assignee)) return json({ message: "Solo puedes eliminar tus propias tareas." }, 403);
     const [deleted] = await getDb().delete(tasks).where(matches).returning({ id: tasks.id });
     if (deleted) return json(deleted);
   } else {
     const change = z.union([fields, fields.pick({ status: true }).strict()]).safeParse(parsed.data.changes);
     if (!change.success) return json({ message: "Revisa los campos de la tarea." }, 400);
+    if (project.access.role === "student") {
+      const next = { ...current, ...change.data };
+      const ownsTask = isOwn(current.assignee);
+      const claimsTask = unassigned(current.assignee) && isOwn(next.assignee);
+      if (!ownsTask && !claimsTask) return json({ message: "Solo puedes editar tus tareas o asignarte una tarea sin responsable." }, 403);
+      if (!unassigned(next.assignee) && !isOwn(next.assignee)) return json({ message: "Solo puedes asignarte la tarea a ti o dejarla sin asignar." }, 403);
+      if (claimsTask && (next.title !== current.title || next.description !== current.description || next.dueDate !== current.dueDate || next.priority !== current.priority || next.status !== current.status)) {
+        return json({ message: "Primero asígnate la tarea y guarda. Después podrás editar sus datos." }, 403);
+      }
+    }
     const [updated] = await getDb().update(tasks)
       .set({ ...change.data, revision: sql`${tasks.revision} + 1` })
       .where(matches).returning();
