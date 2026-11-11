@@ -64,6 +64,20 @@
       "when": 1794430393169,
       "tag": "0008_living_bushwacker",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1794431284425,
+      "tag": "0009_colossal_madrox",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1794431940886,
+      "tag": "0010_task_creator_cleanup",
+      "breakpoints": true
     }
   ]
 }

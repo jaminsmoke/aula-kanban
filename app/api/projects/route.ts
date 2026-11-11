@@ -1,7 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
-import { projectMembers, projects, students, tasks, teachers } from "../../../db/schema";
+import { projectMembers, projects, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { isAdministrator, isOwner } from "../project";
 
@@ -14,6 +14,7 @@ export async function GET() {
   const user = await getChatGPTUser();
   if (!user) return json({ message: "Inicia sesión para acceder a los proyectos." }, 401);
   const owner = isOwner(user);
+  await getDb().update(userIdentities).set({ displayName: user.displayName }).where(eq(userIdentities.id, user.userId));
   const admin = !owner && await isAdministrator(user);
   const all = await getDb().select().from(projects).orderBy(asc(projects.createdAt), asc(projects.id));
   if (owner || admin) return json({ projects: all.map((project) => ({ ...project, role: owner ? "owner" : "admin", studentSection: null, teacherId: null })), isOwner: owner, isAdmin: admin });
@@ -44,7 +45,8 @@ export async function DELETE(request: Request) {
   const parsed = z.object({ id: z.string().min(1).max(80) }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Proyecto no válido." }, 400);
   const db = getDb();
-  const [, , , , result] = await db.batch([
+  const [, , , , , result] = await db.batch([
+    db.delete(taskAssignees).where(eq(taskAssignees.projectId, parsed.data.id)),
     db.delete(tasks).where(eq(tasks.projectId, parsed.data.id)),
     db.delete(projectMembers).where(eq(projectMembers.projectId, parsed.data.id)),
     db.delete(students).where(eq(students.projectId, parsed.data.id)),

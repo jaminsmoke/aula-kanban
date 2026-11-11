@@ -9,7 +9,7 @@ import type { FormEvent, PointerEvent, ReactNode } from "react";
 import { priorities, priorityNames, statuses } from "./task";
 import type { Task, TaskFields } from "./task";
 import type { Student } from "./student";
-import { normalizeName, taskBelongsTo } from "./assignments";
+import { taskBelongsTo } from "./assignments";
 import TeachersView from "./teachers-view";
 
 const columns = {
@@ -19,7 +19,7 @@ const columns = {
   done: { name: "Hecho", icon: CircleCheck },
 };
 const blank: TaskFields = {
-  title: "", description: "", assignee: "", dueDate: "", priority: "normal", status: "pending",
+  title: "", description: "", assignee: "", assignees: [], dueDate: "", priority: "normal", status: "pending",
 };
 const formatDate = new Intl.DateTimeFormat("es", { day: "numeric", month: "short" });
 type Project = { id: string; name: string; createdAt: number; role: "owner" | "admin" | "teacher" | "student" | "guest"; studentSection: string | null; teacherId: string | null };
@@ -92,6 +92,7 @@ function TaskCard({ task, dragging, editable, onEdit, onGrab, onMove, onRelease,
       </span>
       <strong>{task.title}</strong>
       {task.description && <span className="card-description">{task.description}</span>}
+      {!task.assignees.length && task.assignee.trim() && task.assignee.trim().toLocaleLowerCase("es") !== "por definir" && <span className="legacy-assignee">Responsable sin vincular</span>}
       {(task.assignee || task.dueDate) && (
         <span className="card-meta">
           {task.assignee && <span className="assignee" title={task.assignee}><span className="avatar">{initials}</span><span>{task.assignee}</span></span>}
@@ -443,10 +444,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
       return;
     }
     const task = editor?.task;
-    const matches = (students ?? []).filter((student) =>
-      student.displayName.localeCompare(form.assignee.trim(), "es", { sensitivity: "base" }) === 0,
-    );
-    const fields = matches.length === 1 ? { ...form, assignee: matches[0].name } : form;
+    const fields = form;
     if (task) {
       void mutate("PATCH", { id: task.id, revision: task.revision, changes: fields }, "Cambios guardados.", true);
     } else {
@@ -500,10 +498,10 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const ownStudent = students?.find((student) => student.section === activeProject?.studentSection);
   const allPeople: Student[] = [...(students ?? []).map(student => ({ ...student, displayName: student.name })), ...(teachers ?? []).map((teacher) => ({ section: teacher.id, name: teacher.name, displayName: teacher.name, role: "", activities: "", aiHelp: "", revision: 1 }))];
   const matchingStudent = (student: Student) => ({ ...student, displayName: student.name });
-  const ownsTask = (task: Task) => Boolean(ownStudent && teachers !== null && normalizeName(task.assignee) === normalizeName(ownStudent.name) && allPeople.filter(person => normalizeName(person.name) === normalizeName(task.assignee)).length === 1);
+  const ownsTask = (task: Task) => Boolean(ownStudent && task.assignees?.length === 1 && task.assignees.some(person => person.kind === "student" && person.profileId === ownStudent.section));
   const unassigned = (name: string) => !name.trim() || name.trim().toLocaleLowerCase("es") === "por definir";
-  const canEditTask = (task: Task) => Boolean(!isGuest && (canManage || (ownStudent && teachers !== null && (unassigned(task.assignee) || ownsTask(task)))));
-  const claiming = Boolean(editor?.task && !canManage && unassigned(editor.task.assignee));
+  const canEditTask = (task: Task) => Boolean(!isGuest && (canManage || (ownStudent && (task.assignees.length === 0 && unassigned(task.assignee) || ownsTask(task)))));
+  const claiming = Boolean(editor?.task && !canManage && !editor.task.assignees.length && unassigned(editor.task.assignee));
   const total = all.length;
   const finished = all.filter((task) => task.status === "done").length;
   const progress = total ? Math.round(finished / total * 100) : 0;
@@ -720,12 +718,13 @@ export default function Board({ user }: { user: { displayName: string; email: st
 
       {editor && (
         <Modal title={editor.task && !canEditTask(editor.task) ? "Detalle de la tarea" : editor.task ? "Editar tarea" : "Nueva tarea"} onClose={() => { if (!writing.current) setEditor(null); }}>
-          {editor.task && !canEditTask(editor.task) ? <div className="share-content"><h3>{editor.task.title}</h3><p>{editor.task.description || "Sin descripción"}</p><p>Responsable: {editor.task.assignee || "Sin asignar"} · Estado: {columns[editor.task.status].name}</p><p>Prioridad: {priorityNames[editor.task.priority]}{editor.task.dueDate ? ` · Fecha: ${editor.task.dueDate}` : ""}</p></div> : <form onSubmit={submit} className="task-form">
+          {editor.task && !canEditTask(editor.task) ? <div className="share-content"><h3>{editor.task.title}</h3><p>{editor.task.description || "Sin descripción"}</p><p>Responsable: {editor.task.assignee || "Sin asignar"} · Estado: {columns[editor.task.status].name}</p><p>Prioridad: {priorityNames[editor.task.priority]}{editor.task.dueDate ? ` · Fecha: ${editor.task.dueDate}` : ""}</p><p>Creada por: {editor.task.creator || "No registrado"}</p></div> : <form onSubmit={submit} className="task-form">
+            {editor.task && <p className="intro">Creada por: {editor.task.creator || "No registrado"}</p>}
             <label>Título<input autoFocus required disabled={claiming} maxLength={120} placeholder="¿Qué hay que hacer?" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></label>
             <label>Descripción <span>(opcional)</span><textarea disabled={claiming} maxLength={2000} rows={3} placeholder="Detalles, materiales o enlaces" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></label>
             <div className="form-row">
-              <label>Responsable{canManage ? <><input list="student-options" maxLength={80} placeholder="Nombre o equipo" value={form.assignee} onChange={(event) => setForm({ ...form, assignee: event.target.value })} /><datalist id="student-options">{students?.map((student) => <option key={student.section} value={student.name}>{student.displayName}</option>)}{teachers?.map((teacher) => <option key={teacher.id} value={teacher.name}>Profesor</option>)}</datalist></> : <select value={unassigned(form.assignee) ? "" : ownStudent?.name ?? ""} onChange={(event) => setForm({ ...form, assignee: event.target.value || (claiming ? editor?.task?.assignee ?? "" : "") })}>
-                <option value="">Sin asignar</option>{ownStudent && <option value={ownStudent.name}>{ownStudent.displayName} (tú)</option>}
+              <label>Responsable{canManage ? <><select value={form.assignees[0] ? `${form.assignees[0].kind}:${form.assignees[0].profileId}` : ""} onChange={(event) => { const value = event.target.value; if (!value) { setForm({ ...form, assignees: [] }); return; } const split = value.indexOf(":"); const kind = value.slice(0, split) as "student" | "teacher", id = value.slice(split + 1); const name = kind === "student" ? students?.find(item => item.section === id)?.displayName : teachers?.find(item => item.id === id)?.name; if (name) setForm({ ...form, assignee: name, assignees: [{ kind, profileId: id, name }] }); }}><option value="">Sin ficha vinculada</option><optgroup label="Alumnos">{students?.map(student => <option key={student.section} value={`student:${student.section}`}>{student.displayName}</option>)}</optgroup><optgroup label="Profesores">{teachers?.map(teacher => <option key={teacher.id} value={`teacher:${teacher.id}`}>{teacher.name}</option>)}</optgroup></select>{!form.assignees.length && <input maxLength={80} placeholder="Sin asignar o responsable en texto" value={form.assignee} onChange={(event) => setForm({ ...form, assignee: event.target.value })} />}</> : <select value={ownStudent && form.assignees.some(person => person.kind === "student" && person.profileId === ownStudent.section) ? ownStudent.section : ""} onChange={(event) => { const assigned = Boolean(event.target.value && ownStudent); setForm({ ...form, assignee: assigned ? ownStudent!.name : "", assignees: assigned ? [{ kind: "student", profileId: ownStudent!.section, name: ownStudent!.displayName }] : [] }); }}>
+                <option value="">Sin asignar</option>{ownStudent && <option value={ownStudent.section}>{ownStudent.displayName} (tú)</option>}
               </select>}</label>
               <label>Fecha de entrega<input disabled={claiming} type="date" value={form.dueDate} onChange={(event) => setForm({ ...form, dueDate: event.target.value })} /></label>
             </div>

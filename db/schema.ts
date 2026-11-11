@@ -16,6 +16,11 @@ export const administrators = sqliteTable("administrators", {
   uniqueIndex("administrator_user_id").on(table.userId),
 ]);
 
+export const userIdentities = sqliteTable("user_identities", {
+  id: text("id").primaryKey().notNull(),
+  displayName: text("display_name").notNull(),
+});
+
 export const teachers = sqliteTable("teachers", {
   id: text("id").primaryKey().notNull(),
   projectId: text("project_id").notNull(),
@@ -37,7 +42,19 @@ export const tasks = sqliteTable("tasks", {
   status: text("status").notNull(),
   createdAt: integer("created_at").notNull(),
   revision: integer("revision").notNull().default(1),
+  creatorUserId: text("creator_user_id"),
+  creatorMemberId: text("creator_member_id"),
+  creatorName: text("creator_name"),
+  mutationToken: text("mutation_token"),
 });
+
+export const taskAssignees = sqliteTable("task_assignees", {
+  id: text("id").primaryKey().notNull(),
+  taskId: text("task_id").notNull(),
+  projectId: text("project_id").notNull(),
+  kind: text("kind").notNull(),
+  profileId: text("profile_id").notNull(),
+}, (table) => [uniqueIndex("task_assignee_profile").on(table.taskId, table.kind, table.profileId)]);
 
 export const students = sqliteTable("students", {
   section: text("section").primaryKey().notNull(),

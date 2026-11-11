@@ -94,6 +94,7 @@ svg { flex: none; vertical-align: middle; }
 .account-status { display:inline-flex !important; width:fit-content; margin-top:7px; padding:3px 7px; border-radius:7px; background:#eeecf4; color:#635d70; font-size:11px; font-weight:700; }
 .account-status.pending { background:#fff2db; color:#805500; }
 .account-status.active { background:#ddf3ea; color:#176a50; }
+.legacy-assignee { display:inline-flex; width:fit-content; color:#835a0c; background:#fff3dd; border-radius:5px; padding:3px 6px; font-size:10px; font-weight:700; }
 .invitation-panel { display:grid; gap:12px; margin-top:24px; padding:18px; border:1px solid #d9cffa; border-radius:14px; background:#f4f0ff; }
 .invitation-panel h2 { font-size:17px; }
 .invitation-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:14px; }

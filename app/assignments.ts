@@ -5,7 +5,8 @@ export function normalizeName(value: string) {
   return value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-export function taskBelongsTo(task: Pick<Task, "assignee">, student: Student, students: Student[]) {
+export function taskBelongsTo(task: Pick<Task, "assignee"> & Partial<Pick<Task, "assignees">>, student: Student, students: Student[]) {
+  if (task.assignees) return task.assignees.some(person => person.kind === "student" && person.profileId === student.section);
   const assignee = normalizeName(task.assignee);
   if (!assignee) return false;
   const matches = students.filter((item) => {

@@ -17,6 +17,14 @@ export async function isAdministrator(user: ChatGPTUser) {
   const db = getDb();
   const email = user.email.trim().toLowerCase();
   try {
+    const [linked] = await db.select().from(administrators).where(eq(administrators.userId, user.userId));
+    if (linked) {
+      if (linked.email !== email) {
+        // The stable Site identity wins over a changed contact email. A conflict does not grant the email's other account access.
+        try { await db.update(administrators).set({ email }).where(and(eq(administrators.id, linked.id), eq(administrators.userId, user.userId))); } catch { /* keep the existing contact until the conflict is resolved */ }
+      }
+      return true;
+    }
     await db.update(administrators).set({ userId: user.userId }).where(and(eq(administrators.email, email), isNull(administrators.userId)));
     const [admin] = await db.select().from(administrators).where(and(eq(administrators.email, email), eq(administrators.userId, user.userId)));
     return Boolean(admin);
@@ -34,6 +42,10 @@ export async function projectAccess(projectId: string): Promise<Access | null> {
     eq(projectMembers.projectId, projectId), eq(projectMembers.userId, user.userId), eq(projectMembers.status, "active"),
   ));
   if (!member || (member.role !== "teacher" && member.role !== "student" && member.role !== "guest")) return null;
+  const currentEmail = user.email.trim().toLowerCase();
+  if (member.email !== currentEmail) {
+    try { await getDb().update(projectMembers).set({ email: currentEmail }).where(and(eq(projectMembers.id, member.id), eq(projectMembers.userId, user.userId), eq(projectMembers.status, "active"))); } catch { /* retain the previous contact if another membership uses this email */ }
+  }
   return { user, role: member.role, studentSection: member.studentSection, teacherId: member.teacherId };
 }
 

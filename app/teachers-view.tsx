@@ -61,7 +61,7 @@ export default function TeachersView({ projectId, isAdmin, ownTeacherId, tasks, 
   const teacher = teachers?.find(item => item.id === selected);
   const allPeople: Student[] = [...(students ?? []), ...(teachers ?? []).map(item => ({ section: item.id, name: item.name, displayName: item.name, role: item.role, activities: item.activities, aiHelp: item.aiHelp, revision: item.revision }))];
   const teacherAsStudent = allPeople.find(person => person.section === teacher?.id);
-  const assigned = teacherAsStudent && students !== null ? (tasks ?? []).filter(task => taskBelongsTo(task, teacherAsStudent, allPeople)) : [];
+  const assigned = teacherAsStudent && students !== null ? (tasks ?? []).filter(task => task.assignees?.length ? task.assignees.some(person => person.kind === "teacher" && person.profileId === teacher?.id) : taskBelongsTo(task, teacherAsStudent, allPeople)) : [];
   return <section className="students-view">
     <p className="eyebrow"><span /> Equipo docente</p>
     <div className="students-heading"><div className="students-title-row"><h1>Profesores</h1>{isAdmin && <button className="primary add-student" type="button" title="Añadir profesor" aria-label="Añadir profesor" onClick={() => { setError(""); setForm(blank()); }}><Plus size={20} /></button>}</div><p className="intro">Fichas del profesorado y tareas asignadas.</p></div>
