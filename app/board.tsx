@@ -344,8 +344,11 @@ export default function Board() {
           <section className="students-view">
             <p className="eyebrow"><span /> Grupo de clase</p>
             <div className="students-heading">
-              <div><h1>Alumnos</h1><p className="intro">Fichas del grupo y tareas asignadas.</p></div>
-              <button type="button" className="primary" onClick={() => { setStudentForm({ section: crypto.randomUUID(), name: "", displayName: "", role: "", activities: "", aiHelp: "", revision: 0 }); setStudentFormError(""); }}><Plus size={18} /> Añadir alumno</button>
+              <div className="students-title-row">
+                <h1>Alumnos</h1>
+                <button type="button" className="primary add-student" aria-label="Añadir alumno" title="Añadir alumno" onClick={() => { setStudentForm({ section: crypto.randomUUID(), name: "", displayName: "", role: "", activities: "", aiHelp: "", revision: 0 }); setStudentFormError(""); }}><Plus size={20} aria-hidden /></button>
+              </div>
+              <p className="intro">Fichas del grupo y tareas asignadas.</p>
             </div>
             {loadError && <div role="alert" className="alert">{loadError} <button type="button" className="text-button" onClick={() => void refresh()}>Reintentar</button></div>}
             {studentError && <div role="alert" className="alert">{studentError} <button type="button" className="text-button" onClick={() => void refreshStudents()}>Reintentar</button></div>}
