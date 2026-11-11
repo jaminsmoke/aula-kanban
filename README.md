@@ -1,6 +1,6 @@
 # Aula Kanban
 
-Cada instancia mantiene sus propios proyectos y datos en D1. Para configurar una copia, añade `OWNER_EMAIL` en la configuración de variables de entorno de Sites con el correo de ChatGPT del propietario y vuelve a publicar para aplicar el cambio. La base de datos y las variables de entorno no se copian durante un remix. Una copia nueva comienza sin proyectos ni alumnos; el propietario puede crear proyectos y gestionar administradores desde Ajustes de la cuenta. El propietario es el único que puede crear o eliminar proyectos y administrar la lista de administradores.
+Cada instancia mantiene sus propios proyectos y datos en D1. Para configurar una copia, añade `OWNER_EMAIL` en la configuración de variables de entorno de Sites con el correo de ChatGPT del propietario y vuelve a publicar para aplicar el cambio. La base de datos y las variables de entorno no se copian durante un remix. Una copia nueva comienza sin proyectos ni alumnos. El propietario y los administradores pueden crear o eliminar proyectos y administrar la lista de administradores. La propiedad de alojamiento del Site se gestiona en Sites, no desde la aplicación. Las invitaciones de proyecto se aceptan dentro de la aplicación y vinculan al identificador de ChatGPT de la cuenta invitada.
 
 ## Desarrollo
 

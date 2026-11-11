@@ -5,7 +5,7 @@ import { students, tasks, teachers } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { priorities, statuses } from "../../task";
 import { validProject } from "../project";
-import { normalizeName, taskBelongsTo } from "../../assignments";
+import { normalizeName } from "../../assignments";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +39,8 @@ async function handle(request: Request) {
     return json(list);
   }
 
+  if (project.access.role === "guest") return json({ message: "Las cuentas invitadas solo pueden consultar el proyecto." }, 403);
+
   const mime = request.headers.get("content-type")?.split(";")[0].trim().toLowerCase();
   if (mime !== "application/json") {
     return json({ message: "Formato de solicitud no válido." }, 415);
@@ -53,8 +55,9 @@ async function handle(request: Request) {
     ownProfile = projectStudents.find((student) => student.section === project.access.studentSection);
   }
   const unassigned = (name: string) => !name.trim() || normalizeName(name) === "por definir";
-  const matchingPeople = [...projectStudents, ...teacherNames.map(teacher => ({ section: teacher.id, name: teacher.name, displayName: teacher.name, role: "", activities: "", aiHelp: "", revision: 1 }))];
-  const isOwn = (name: string) => Boolean(ownProfile && taskBelongsTo({ assignee: name }, ownProfile, matchingPeople));
+  // A student may edit displayName; never let that mutable display field confer ownership of someone else's task.
+  const matchingPeople = [...projectStudents.map(student => ({ ...student, displayName: student.name })), ...teacherNames.map(teacher => ({ section: teacher.id, name: teacher.name, displayName: teacher.name, role: "", activities: "", aiHelp: "", revision: 1 }))];
+  const isOwn = (name: string) => Boolean(ownProfile && normalizeName(name) === normalizeName(ownProfile.name) && matchingPeople.filter(person => normalizeName(person.name) === normalizeName(name)).length === 1);
 
   if (request.method === "POST") {
     const parsed = fields.safeParse(body);

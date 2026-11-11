@@ -16,17 +16,17 @@ export async function GET() {
   const owner = isOwner(user);
   const admin = !owner && await isAdministrator(user);
   const all = await getDb().select().from(projects).orderBy(asc(projects.createdAt), asc(projects.id));
-  if (owner || admin) return json({ projects: all.map((project) => ({ ...project, role: owner ? "owner" : "admin", studentSection: null })), isOwner: owner, isAdmin: admin });
-  const members = await getDb().select().from(projectMembers).where(eq(projectMembers.email, user.email.trim().toLowerCase()));
+  if (owner || admin) return json({ projects: all.map((project) => ({ ...project, role: owner ? "owner" : "admin", studentSection: null, teacherId: null })), isOwner: owner, isAdmin: admin });
+  const members = await getDb().select().from(projectMembers).where(eq(projectMembers.userId, user.userId));
   return json({ projects: all.flatMap((project) => {
     const member = members.find((item) => item.projectId === project.id);
-    return member ? [{ ...project, role: member.role, studentSection: member.studentSection }] : [];
+    return member?.status === "active" ? [{ ...project, role: member.role, studentSection: member.studentSection, teacherId: member.teacherId }] : [];
   }), isOwner: false });
 }
 
 export async function POST(request: Request) {
   const user = await getChatGPTUser();
-  if (!user || !isOwner(user)) return json({ message: "Solo el propietario puede crear proyectos." }, 403);
+  if (!user || !(isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden crear proyectos." }, 403);
   if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") return json({ message: "Formato no válido." }, 415);
   const parsed = z.object({ id: z.string().uuid(), name: z.string().trim().min(1).max(80) }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Escribe un nombre de hasta 80 caracteres." }, 400);
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   const user = await getChatGPTUser();
-  if (!user || !isOwner(user)) return json({ message: "Solo el propietario puede eliminar proyectos." }, 403);
+  if (!user || !(isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden eliminar proyectos." }, 403);
   if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") return json({ message: "Formato no válido." }, 415);
   const parsed = z.object({ id: z.string().min(1).max(80) }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Proyecto no válido." }, 400);

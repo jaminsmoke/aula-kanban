@@ -5,12 +5,13 @@ import { administrators, projectMembers, projects } from "../../db/schema";
 import { getChatGPTUser, type ChatGPTUser } from "../chatgpt-auth";
 
 export const defaultProjectId = "default";
-export type Access = { user: ChatGPTUser; role: "owner" | "admin" | "teacher" | "student"; studentSection: string | null };
+export type Access = { user: ChatGPTUser; role: "owner" | "admin" | "teacher" | "student" | "guest"; studentSection: string | null; teacherId: string | null };
 
-export function isOwner(user: ChatGPTUser) {
+export function isOwnerEmail(email: string) {
   const owner = env.OWNER_EMAIL || (import.meta.env.DEV ? "seedy@sites.test" : "");
-  return Boolean(owner) && user.email.trim().toLowerCase() === owner.trim().toLowerCase();
+  return Boolean(owner) && email.trim().toLowerCase() === owner.trim().toLowerCase();
 }
+export function isOwner(user: ChatGPTUser) { return isOwnerEmail(user.email); }
 
 export async function isAdministrator(user: ChatGPTUser) {
   const db = getDb();
@@ -27,13 +28,13 @@ export async function isAdministrator(user: ChatGPTUser) {
 export async function projectAccess(projectId: string): Promise<Access | null> {
   const user = await getChatGPTUser();
   if (!user) return null;
-  if (isOwner(user)) return { user, role: "owner", studentSection: null };
-  if (await isAdministrator(user)) return { user, role: "admin", studentSection: null };
+  if (isOwner(user)) return { user, role: "owner", studentSection: null, teacherId: null };
+  if (await isAdministrator(user)) return { user, role: "admin", studentSection: null, teacherId: null };
   const [member] = await getDb().select().from(projectMembers).where(and(
-    eq(projectMembers.projectId, projectId), eq(projectMembers.email, user.email.trim().toLowerCase()),
+    eq(projectMembers.projectId, projectId), eq(projectMembers.userId, user.userId), eq(projectMembers.status, "active"),
   ));
-  if (!member || (member.role !== "teacher" && member.role !== "student")) return null;
-  return { user, role: member.role, studentSection: member.studentSection };
+  if (!member || (member.role !== "teacher" && member.role !== "student" && member.role !== "guest")) return null;
+  return { user, role: member.role, studentSection: member.studentSection, teacherId: member.teacherId };
 }
 
 export async function validProject(request: Request) {

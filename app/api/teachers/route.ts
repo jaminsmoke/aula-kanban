@@ -1,7 +1,7 @@
 import { and, asc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
-import { teachers } from "../../../db/schema";
+import { projectMembers, teachers } from "../../../db/schema";
 import { validProject } from "../project";
 
 export const dynamic = "force-dynamic";
@@ -12,25 +12,38 @@ const reference = z.object({ id: z.string().uuid(), revision: z.number().int().p
 export async function GET(request: Request) {
   const project = await validProject(request);
   if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
-  return json(await getDb().select().from(teachers).where(eq(teachers.projectId, project.id)).orderBy(asc(teachers.name), asc(teachers.id)));
+  const db = getDb();
+  const list = await db.select().from(teachers).where(eq(teachers.projectId, project.id)).orderBy(asc(teachers.name), asc(teachers.id));
+  const members = await db.select().from(projectMembers).where(eq(projectMembers.projectId, project.id));
+  return json(list.map(teacher => {
+    const member = members.find(item => item.teacherId === teacher.id);
+    const maySeeEmail = project.access.role === "owner" || project.access.role === "admin" || project.access.teacherId === teacher.id;
+    return { ...teacher, accountStatus: member?.status ?? "unlinked", ...(maySeeEmail ? { accountEmail: member?.email ?? "", accountMemberId: member?.id ?? null } : {}) };
+  }));
 }
 async function mutate(request: Request) {
   const project = await validProject(request);
   if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
-  if (project.access.role === "student") return json({ message: "Solo el profesorado puede gestionar fichas de profesores." }, 403);
+  if (project.access.role === "student" || project.access.role === "guest") return json({ message: "No tienes permiso para gestionar fichas de profesores." }, 403);
   if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") return json({ message: "Formato no válido." }, 415);
   const body = await request.json().catch(() => null);
   if (request.method === "POST") {
-    const parsed = fields.extend({ id: z.string().uuid() }).safeParse(body);
+    if (project.access.role === "teacher") return json({ message: "Solo un administrador puede añadir profesores." }, 403);
+    const parsed = fields.extend({ id: z.string().uuid(), accountEmail: z.string().trim().email().max(254).transform(value => value.toLowerCase()) }).safeParse(body);
     if (!parsed.success) return json({ message: "Revisa los campos de la ficha." }, 400);
     try {
-      const [created] = await getDb().insert(teachers).values({ ...parsed.data, projectId: project.id }).onConflictDoNothing().returning();
-      return created ? json(created, 201) : json({ message: "La ficha ya existe." }, 409);
+      const { accountEmail, ...values } = parsed.data;
+      const db = getDb(); const [created] = await db.batch([
+        db.insert(teachers).values({ ...values, projectId: project.id }).returning(),
+        db.insert(projectMembers).values({ id: crypto.randomUUID(), projectId: project.id, email: accountEmail, role: "teacher", teacherId: values.id, status: "pending" }).returning(),
+      ]);
+      return json({ ...created[0], accountStatus: "pending", accountEmail }, 201);
     } catch { return json({ message: "No se pudo guardar la ficha. Comprueba que el proyecto sigue disponible." }, 409); }
   }
   const parsed = (request.method === "DELETE" ? reference : fields.merge(reference)).safeParse(body);
   if (!parsed.success) return json({ message: "Revisa los datos de la ficha." }, 400);
   const { id, revision, ...changes } = parsed.data;
+  if (project.access.role === "teacher" && project.access.teacherId !== id) return json({ message: "Solo puedes gestionar tu propia ficha de profesor." }, 403);
   const where = and(eq(teachers.id, id), eq(teachers.projectId, project.id), eq(teachers.revision, revision));
   const [result] = request.method === "DELETE"
     ? await getDb().delete(teachers).where(where).returning()

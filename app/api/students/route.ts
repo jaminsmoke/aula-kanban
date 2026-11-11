@@ -1,7 +1,7 @@
 import { and, asc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
-import { students } from "../../../db/schema";
+import { projectMembers, students } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { validProject } from "../project";
 
@@ -24,8 +24,14 @@ export async function GET(request: Request) {
   if (!(await getChatGPTUser())) return json({ message: "Inicia sesión para acceder a las fichas." }, 401);
   const project = await validProject(request);
   if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
-  const current = await getDb().select().from(students).where(eq(students.projectId, project.id)).orderBy(asc(students.section));
-  return json(current.filter((student) => student.deleted === 0));
+  const db = getDb();
+  const current = await db.select().from(students).where(eq(students.projectId, project.id)).orderBy(asc(students.section));
+  const members = await db.select().from(projectMembers).where(eq(projectMembers.projectId, project.id));
+  return json(current.filter((student) => student.deleted === 0).map(student => {
+    const member = members.find(item => item.studentSection === student.section);
+    const maySeeEmail = project.access.role === "owner" || project.access.role === "admin" || project.access.role === "teacher" || project.access.studentSection === student.section;
+    return { ...student, accountStatus: member?.status ?? "unlinked", ...(maySeeEmail ? { accountEmail: member?.email ?? "", accountMemberId: member?.id ?? null } : {}) };
+  }));
 }
 
 async function mutate(request: Request) {
@@ -37,22 +43,23 @@ async function mutate(request: Request) {
   }
   const body = await request.json().catch(() => null);
   if (request.method === "POST") {
-    if (project.access.role === "student") return json({ message: "Solo el profesorado puede crear fichas." }, 403);
-    const parsed = profile.extend({ section: z.string().uuid() }).safeParse(body);
+    if (project.access.role === "student" || project.access.role === "guest") return json({ message: "Solo el profesorado puede crear fichas." }, 403);
+    const parsed = profile.extend({ section: z.string().uuid(), accountEmail: z.string().trim().email().max(254).transform(value => value.toLowerCase()) }).safeParse(body);
     if (!parsed.success) return json({ message: "Revisa los campos del perfil." }, 400);
-    const { section, ...values } = parsed.data;
-    const [created] = await getDb().insert(students).values({
-      ...values, section, projectId: project.id, name: values.displayName,
-    }).onConflictDoNothing().returning();
-    if (created) return json(created, 201);
-    const [existing] = await getDb().select().from(students).where(eq(students.section, section));
-    if (existing && existing.projectId === project.id && existing.deleted === 0 && existing.name === values.displayName && existing.revision === 1 && existing.role === values.role && existing.activities === values.activities && existing.aiHelp === values.aiHelp) return json(existing);
-    return json({ message: "Esta ficha ya cambió. Cierra el formulario y vuelve a intentarlo." }, 409);
+    const { section, accountEmail, ...values } = parsed.data;
+    const db = getDb();
+    try {
+      const [created] = await db.batch([
+        db.insert(students).values({ ...values, section, projectId: project.id, name: values.displayName }).returning(),
+        db.insert(projectMembers).values({ id: crypto.randomUUID(), projectId: project.id, email: accountEmail, role: "student", studentSection: section, status: "pending" }).returning(),
+      ]);
+      return json({ ...created[0], accountStatus: "pending", accountEmail }, 201);
+    } catch { return json({ message: "No se pudo crear la ficha: comprueba que el correo no esté ya vinculado en este proyecto." }, 409); }
   }
   const parsed = (request.method === "DELETE" ? reference : fields).safeParse(body);
   if (!parsed.success) return json({ message: "Revisa los campos del perfil." }, 400);
   const { section, revision, ...changes } = parsed.data;
-  if (project.access.role === "student" && project.access.studentSection !== section) {
+  if (project.access.role === "guest" || (project.access.role === "student" && project.access.studentSection !== section)) {
     return json({ message: "Solo puedes editar tu propia ficha." }, 403);
   }
   const [updated] = await getDb().update(students)

@@ -57,7 +57,12 @@ export const projectMembers = sqliteTable("project_members", {
   email: text("email").notNull(),
   role: text("role").notNull(),
   studentSection: text("student_section"),
+  teacherId: text("teacher_id"),
+  userId: text("user_id"),
+  status: text("status").notNull().default("pending"),
 }, (table) => [
   uniqueIndex("project_member_email").on(table.projectId, table.email),
   uniqueIndex("project_member_student").on(table.projectId, table.studentSection),
+  uniqueIndex("project_member_teacher").on(table.projectId, table.teacherId),
+  uniqueIndex("project_member_user").on(table.projectId, table.userId),
 ]);

@@ -9,7 +9,7 @@ import type { FormEvent, PointerEvent, ReactNode } from "react";
 import { priorities, priorityNames, statuses } from "./task";
 import type { Task, TaskFields } from "./task";
 import type { Student } from "./student";
-import { taskBelongsTo } from "./assignments";
+import { normalizeName, taskBelongsTo } from "./assignments";
 import TeachersView from "./teachers-view";
 
 const columns = {
@@ -22,8 +22,10 @@ const blank: TaskFields = {
   title: "", description: "", assignee: "", dueDate: "", priority: "normal", status: "pending",
 };
 const formatDate = new Intl.DateTimeFormat("es", { day: "numeric", month: "short" });
-type Project = { id: string; name: string; createdAt: number; role: "owner" | "admin" | "teacher" | "student"; studentSection: string | null };
-type Member = { id: string; email: string; role: "teacher" | "student"; studentSection: string | null };
+type Project = { id: string; name: string; createdAt: number; role: "owner" | "admin" | "teacher" | "student" | "guest"; studentSection: string | null; teacherId: string | null };
+type Member = { id: string; email: string; role: "teacher" | "student" | "guest"; studentSection: string | null; teacherId: string | null; status: "pending" | "active" };
+type Invitation = { id: string; projectId: string; projectName: string; role: "teacher" | "student" | "guest" };
+const accountLabel = (status?: string) => status === "active" ? "Cuenta activa" : status === "pending" ? "Invitación pendiente" : "Sin usuario asociado";
 type Administrator = { id: string; email: string; createdAt: number; active: boolean };
 
 class RequestError extends Error {
@@ -78,7 +80,7 @@ function TaskCard({ task, dragging, editable, onEdit, onGrab, onMove, onRelease,
 }) {
   const initials = task.assignee.trim().split(/\s+/).slice(0, 2).map((part) => Array.from(part)[0]).join("").toUpperCase();
   return (
-    <button type="button" className={dragging ? "card dragging" : "card"} onClick={onEdit} aria-disabled={!editable} title={editable ? "Abrir tarea" : "Solo lectura"}>
+    <button type="button" className={dragging ? "card dragging" : "card"} onClick={onEdit} title={editable ? "Abrir tarea" : "Ver tarea (solo lectura)"}>
       <span className="card-top">
         <span className={`priority ${task.priority}`}><Flag size={12} /> {priorityNames[task.priority]}</span>
         <span className="grip" aria-hidden
@@ -124,8 +126,11 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const [projectDeleting, setProjectDeleting] = useState(false);
   const [deleteProjectName, setDeleteProjectName] = useState("");
   const [membersOpen, setMembersOpen] = useState(false);
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [invitationError, setInvitationError] = useState("");
+  const [invitationBusy, setInvitationBusy] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
-  const [memberForm, setMemberForm] = useState({ email: "", role: "student" as "student" | "teacher", studentSection: "" });
+  const [memberForm, setMemberForm] = useState({ email: "", role: "student" as "student" | "teacher" | "guest", studentSection: "", teacherId: "" });
   const [memberError, setMemberError] = useState("");
   const [memberBusy, setMemberBusy] = useState(false);
   const [removeMember, setRemoveMember] = useState<Member | null>(null);
@@ -180,6 +185,16 @@ export default function Board({ user }: { user: { displayName: string; email: st
       setProjectError((error as Error).message);
     }
   }, []);
+
+  const refreshInvitations = useCallback(async () => {
+    try { setInvitations(await request<Invitation[]>("GET", undefined, "/api/invitations")); setInvitationError(""); }
+    catch (error) { setInvitationError((error as Error).message); }
+  }, []);
+  async function acceptInvitation(id: string) {
+    if (invitationBusy) return; setInvitationBusy(true); setInvitationError("");
+    try { const result = await request<{ projectId: string }>("POST", { id }, "/api/invitations"); window.location.assign("/?project=" + encodeURIComponent(result.projectId)); }
+    catch (error) { setInvitationError((error as Error).message); setInvitationBusy(false); }
+  }
 
   async function loadAdmins() {
     try { setAdmins(await request<Administrator[]>("GET", undefined, "/api/administrators")); setAdminError(""); }
@@ -255,9 +270,10 @@ export default function Board({ user }: { user: { displayName: string; email: st
     setMemberBusy(true);
     setMemberError("");
     try {
-      await request("POST", { ...memberForm, studentSection: memberForm.studentSection || null }, "/api/members");
-      setMemberForm({ email: "", role: "student", studentSection: "" });
+      await request("POST", { ...memberForm, studentSection: memberForm.studentSection || null, teacherId: memberForm.teacherId || null }, "/api/members");
+      setMemberForm({ email: "", role: "student", studentSection: "", teacherId: "" });
       await loadMembers();
+      void refreshStudents(); void refreshTeachers();
     } catch (error) { setMemberError((error as Error).message); }
     finally { setMemberBusy(false); }
   }
@@ -270,6 +286,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
       await request("DELETE", { id: removeMember.id }, "/api/members");
       setRemoveMember(null);
       await loadMembers();
+      void refreshStudents(); void refreshTeachers();
     } catch (error) { setMemberError((error as Error).message); }
     finally { setMemberBusy(false); }
   }
@@ -315,6 +332,17 @@ export default function Board({ user }: { user: { displayName: string; email: st
     try {
       const isNew = studentForm.revision === 0;
       const updated = await request<Student>(isNew ? "POST" : "PATCH", studentForm, "/api/students");
+      if (!isNew) {
+        const previous = students?.find(item => item.section === studentForm.section);
+        const nextEmail = (studentForm.accountEmail ?? "").trim().toLowerCase();
+        const priorEmail = (previous?.accountEmail ?? "").trim().toLowerCase();
+        if (nextEmail !== priorEmail) {
+          try {
+            if (nextEmail) await request("POST", { email: nextEmail, role: "student", studentSection: studentForm.section }, "/api/members");
+            else if (previous?.accountMemberId) await request("DELETE", { id: previous.accountMemberId }, "/api/members");
+          } catch (error) { setStudentForm({ ...studentForm, revision: updated.revision }); throw error; }
+        }
+      }
       setStudents((previous) => isNew ? [...(previous ?? []), updated] : previous?.map((student) => student.section === updated.section ? updated : student) ?? [updated]);
       if (isNew) setStudentName(updated.section);
       setStudentForm(null);
@@ -352,6 +380,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
 
   useEffect(() => {
     void refreshProjects();
+    void refreshInvitations();
     void refresh();
     void refreshStudents();
     void refreshTeachers();
@@ -360,6 +389,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
     window.addEventListener("focus", refreshStudents);
     window.addEventListener("focus", refreshTeachers);
     window.addEventListener("focus", refreshProjects);
+    window.addEventListener("focus", refreshInvitations);
     return () => {
       ++readVersion.current;
       ++studentReadVersion.current;
@@ -368,12 +398,13 @@ export default function Board({ user }: { user: { displayName: string; email: st
       window.removeEventListener("focus", refreshStudents);
       window.removeEventListener("focus", refreshTeachers);
       window.removeEventListener("focus", refreshProjects);
+      window.removeEventListener("focus", refreshInvitations);
     };
-  }, [refresh, refreshStudents, refreshProjects, refreshTeachers]);
+  }, [refresh, refreshStudents, refreshProjects, refreshTeachers, refreshInvitations]);
 
   function openEditor(status: TaskFields["status"], task?: Task) {
     if (writing.current) return;
-    if (!activeProject || (task && !canEditTask(task))) return;
+    if (!activeProject || (!task && isGuest)) return;
     setForm(task ?? { ...blank, status });
     setFormError("");
     setDeleting(false);
@@ -430,7 +461,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
 
   function grab(event: GripEvent, task: Task) {
     if (!event.isPrimary || event.button !== 0 || writing.current) return;
-    if (!canManage && (!ownStudent || teachers === null || !taskBelongsTo(task, ownStudent, allPeople))) return;
+    if (!canManage && !ownsTask(task)) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     drag.current = { task, x: event.clientX, y: event.clientY, started: false };
   }
@@ -465,10 +496,13 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const all = tasks ?? [];
   const activeProject = projects.find((item) => item.id === projectId);
   const canManage = activeProject?.role === "owner" || activeProject?.role === "admin" || activeProject?.role === "teacher";
+  const isGuest = activeProject?.role === "guest";
   const ownStudent = students?.find((student) => student.section === activeProject?.studentSection);
-  const allPeople: Student[] = [...(students ?? []), ...(teachers ?? []).map((teacher) => ({ section: teacher.id, name: teacher.name, displayName: teacher.name, role: "", activities: "", aiHelp: "", revision: 1 }))];
+  const allPeople: Student[] = [...(students ?? []).map(student => ({ ...student, displayName: student.name })), ...(teachers ?? []).map((teacher) => ({ section: teacher.id, name: teacher.name, displayName: teacher.name, role: "", activities: "", aiHelp: "", revision: 1 }))];
+  const matchingStudent = (student: Student) => ({ ...student, displayName: student.name });
+  const ownsTask = (task: Task) => Boolean(ownStudent && teachers !== null && normalizeName(task.assignee) === normalizeName(ownStudent.name) && allPeople.filter(person => normalizeName(person.name) === normalizeName(task.assignee)).length === 1);
   const unassigned = (name: string) => !name.trim() || name.trim().toLocaleLowerCase("es") === "por definir";
-  const canEditTask = (task: Task) => Boolean(canManage || (ownStudent && teachers !== null && (unassigned(task.assignee) || taskBelongsTo(task, ownStudent, allPeople))));
+  const canEditTask = (task: Task) => Boolean(!isGuest && (canManage || (ownStudent && teachers !== null && (unassigned(task.assignee) || ownsTask(task)))));
   const claiming = Boolean(editor?.task && !canManage && unassigned(editor.task.assignee));
   const total = all.length;
   const finished = all.filter((task) => task.status === "done").length;
@@ -478,7 +512,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const visible = all.filter((task) => {
     const haystack = [task.title, task.description, task.assignee].join(" ").toLocaleLowerCase("es");
     return (!filter || task.priority === filter) && haystack.includes(query)
-      && (!studentFilter || Boolean(selectedStudent && teachers !== null && taskBelongsTo(task, selectedStudent, allPeople)));
+      && (!studentFilter || Boolean(selectedStudent && teachers !== null && taskBelongsTo(task, matchingStudent(selectedStudent), allPeople)));
   });
   const filtered = Boolean(query || filter || studentFilter);
 
@@ -498,10 +532,10 @@ export default function Board({ user }: { user: { displayName: string; email: st
               <p>Proyectos</p>
               {projects.map((project) => <a key={project.id} href={project.id === "default" ? "/" : `/?project=${encodeURIComponent(project.id)}`} aria-current={project.id === projectId ? "page" : undefined}><span>{project.name}</span>{project.id === projectId && <Check size={16} />}</a>)}
               <div className="project-menu-actions">
-                {owner && <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={16} /> Nuevo proyecto</button>}
+                {(owner || admin) && <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={16} /> Nuevo proyecto</button>}
                 {activeProject && <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setCopied(false); const url = new URL("/", window.location.origin); url.searchParams.set("project", projectId); setShareUrl(url.href); }}><Link2 size={16} /> Compartir proyecto</button>}
                 {canManage && <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setMembersOpen(true); setRemoveMember(null); void loadMembers(); }}><Users size={16} /> Gestionar miembros</button>}
-                {owner && activeProject && <button type="button" className="project-delete-action" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setDeleteProjectName(""); setProjectError(""); setProjectDeleting(true); }}><Trash2 size={16} /> Eliminar proyecto</button>}
+                {(owner || admin) && activeProject && <button type="button" className="project-delete-action" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setDeleteProjectName(""); setProjectError(""); setProjectDeleting(true); }}><Trash2 size={16} /> Eliminar proyecto</button>}
                 <button type="button" className="remix-action" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setRemixCopied(false); setRemixPrompt(`@Sites Crea un remix de Aula Kanban a partir de ${window.location.origin}. Quiero una copia propia, sin datos de usuarios, con su base de datos independiente. Ayúdame a configurar OWNER_EMAIL con mi cuenta de ChatGPT y a publicarla.`); setRemixOpen(true); }}><Plus size={16} /> Haz tu Site de Aula Kanban</button>
               </div>
             </div>
@@ -513,7 +547,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
             </summary>
             <div className="account-dropdown">
               <strong>Cuenta de ChatGPT</strong><span>{user.email}</span>
-              <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setSettingsTab("general"); setSettingsOpen(true); if (owner) void loadAdmins(); }}><Settings size={16} /> Ajustes de la cuenta</button>
+              <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setSettingsTab("general"); setSettingsOpen(true); if (owner || admin) void loadAdmins(); }}><Settings size={16} /> Ajustes de la cuenta</button>
               <a href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
             </div>
           </details>
@@ -522,20 +556,20 @@ export default function Board({ user }: { user: { displayName: string; email: st
 
       {settingsOpen && <Modal title="Cuenta y permisos" onClose={() => setSettingsOpen(false)}>
         <div className="account-settings">
-          {owner && <div className="settings-tabs" role="tablist" aria-label="Secciones de ajustes"><button role="tab" aria-selected={settingsTab === "general"} onClick={() => setSettingsTab("general")}>General</button><button role="tab" aria-selected={settingsTab === "admins"} onClick={() => setSettingsTab("admins")}>Administradores</button></div>}
+          {(owner || admin) && <div className="settings-tabs" role="tablist" aria-label="Secciones de ajustes"><button role="tab" aria-selected={settingsTab === "general"} onClick={() => setSettingsTab("general")}>General</button><button role="tab" aria-selected={settingsTab === "admins"} onClick={() => setSettingsTab("admins")}>Administradores</button></div>}
           {settingsTab === "general" && <>
           <p>Tu cuenta en esta instancia de Aula Kanban.</p>
           <dl>
             <div><dt>Cuenta de ChatGPT</dt><dd>{user.displayName}<br /><span>{user.email}</span></dd></div>
             <div><dt>Permiso en la aplicación</dt><dd>{!projectsLoaded ? "Consultando…" : owner ? "Propietario y administrador" : admin ? "Administrador" : "Sin permisos de administración"}</dd></div>
             <div><dt>Proyecto activo</dt><dd>{activeProject?.name ?? "Ninguno"}</dd></div>
-            <div><dt>Rol en el proyecto</dt><dd>{!projectsLoaded ? "Consultando…" : activeProject ? ({ owner: "Propietario", admin: "Administrador", teacher: "Profesor", student: "Alumno" } as const)[activeProject.role] : "Sin acceso a un proyecto activo"}</dd></div>
+            <div><dt>Rol en el proyecto</dt><dd>{!projectsLoaded ? "Consultando…" : activeProject ? ({ owner: "Propietario", admin: "Administrador", teacher: "Profesor", student: "Alumno", guest: "Invitado" } as const)[activeProject.role] : "Sin acceso a un proyecto activo"}</dd></div>
           </dl>
           <p className="account-settings-note">Los permisos de esta aplicación son independientes de la propiedad del Site en Sites.</p>
           <a className="secondary account-signout" href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
           </>}
-          {owner && settingsTab === "admins" && <section className="admin-management" aria-labelledby="admins-heading">
-            <div><h3 id="admins-heading">Administradores</h3><p>Gestionan el contenido de todos los proyectos. Solo tú puedes crear o eliminar proyectos y gestionar administradores.</p></div>
+          {(owner || admin) && settingsTab === "admins" && <section className="admin-management" aria-labelledby="admins-heading">
+            <div><h3 id="admins-heading">Administradores</h3><p>Gestionan todos los proyectos y administradores. La propiedad del Site se gestiona por separado en Sites.</p></div>
             <form onSubmit={saveAdmin} className="admin-form">
               <label htmlFor="admin-email">{editingAdmin ? "Editar correo" : "Correo de la cuenta de ChatGPT"}</label>
               <div><input id="admin-email" type="email" required maxLength={254} value={adminEmail} onChange={(event) => setAdminEmail(event.target.value)} placeholder="nombre@ejemplo.com" /><button className="primary" type="submit" disabled={adminBusy}>{editingAdmin ? "Guardar" : "Añadir"}</button></div>
@@ -561,14 +595,16 @@ export default function Board({ user }: { user: { displayName: string; email: st
       </div></Modal>}
 
       <main className="shell">
+        {invitations.length > 0 && <section className="invitation-panel" aria-label="Invitaciones pendientes"><h2>Invitaciones pendientes</h2>{invitations.map(invitation => <div className="invitation-row" key={invitation.id}><span><strong>{invitation.projectName}</strong> · {({ teacher: "Profesor", student: "Alumno", guest: "Invitado" } as const)[invitation.role]}</span><button className="primary" disabled={invitationBusy} onClick={() => void acceptInvitation(invitation.id)}>Aceptar invitación</button></div>)}</section>}
+        {invitationError && <div className="alert" role="alert">{invitationError}</div>}
         {projectError && !newProject && !projectDeleting && <div role="alert" className="alert project-alert">{projectError} <button type="button" className="text-button" onClick={() => void refreshProjects()}>Reintentar</button></div>}
-        {projectsLoaded && !activeProject ? <section className="students-view"><h1>Proyectos</h1><p className="intro">{owner ? "Crea un proyecto para empezar." : "Todavía no tienes acceso a ningún proyecto. Pide al profesorado que autorice tu cuenta."}</p>{owner && <button className="primary" type="button" onClick={() => { setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={18} /> Nuevo proyecto</button>}</section> : !activeProject ? null : view === "profesores" ? <TeachersView key={projectId} projectId={projectId} canManage={canManage} tasks={tasks} students={students} openTask={(task) => openEditor(task.status, task)} /> : view === "alumnos" ? (
+        {projectsLoaded && !activeProject ? <section className="students-view"><h1>Proyectos</h1><p className="intro">{owner || admin ? "Crea un proyecto para empezar." : "Todavía no tienes acceso a ningún proyecto. Pide al profesorado que invite tu cuenta."}</p>{(owner || admin) && <button className="primary" type="button" onClick={() => { setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={18} /> Nuevo proyecto</button>}</section> : !activeProject ? null : view === "profesores" ? <TeachersView key={projectId} projectId={projectId} isAdmin={owner || admin} ownTeacherId={activeProject.teacherId} tasks={tasks} students={students} openTask={(task) => openEditor(task.status, task)} /> : view === "alumnos" ? (
           <section className="students-view">
             <p className="eyebrow"><span /> Grupo de clase</p>
             <div className="students-heading">
               <div className="students-title-row">
                 <h1>Alumnos</h1>
-                {canManage && <button type="button" className="primary add-student" aria-label="Añadir alumno" title="Añadir alumno" onClick={() => { setStudentForm({ section: crypto.randomUUID(), name: "", displayName: "", role: "", activities: "", aiHelp: "", revision: 0 }); setStudentFormError(""); }}><Plus size={20} aria-hidden /></button>}
+                {canManage && <button type="button" className="primary add-student" aria-label="Añadir alumno" title="Añadir alumno" onClick={() => { setStudentForm({ section: crypto.randomUUID(), name: "", displayName: "", role: "", activities: "", aiHelp: "", revision: 0, accountEmail: "" }); setStudentFormError(""); }}><Plus size={20} aria-hidden /></button>}
               </div>
               <p className="intro">Fichas del grupo y tareas asignadas.</p>
             </div>
@@ -577,12 +613,12 @@ export default function Board({ user }: { user: { displayName: string; email: st
             {studentName ? (() => {
               const student = students?.find((item) => item.section === studentName);
               if (!student) return <div className="student-detail"><p>Esta ficha ya no está disponible.</p><button className="text-button back-link" onClick={() => setStudentName(null)}>← Todos los alumnos</button></div>;
-              const assigned = teachers === null ? [] : all.filter((task) => taskBelongsTo(task, student, allPeople));
+              const assigned = teachers === null ? [] : all.filter((task) => taskBelongsTo(task, matchingStudent(student), allPeople));
               return <div className="student-detail">
                 <button className="text-button back-link" onClick={() => setStudentName(null)}>← Todos los alumnos</button>
                 <div className="student-profile-header">
                   <span className="student-profile-avatar" aria-hidden>{student.displayName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span>
-                  <div className="student-identity"><span className="student-kicker">Ficha de alumno</span><h2>{student.displayName}</h2><p>{student.role || "Puesto sin especificar"}</p></div>
+                  <div className="student-identity"><span className="student-kicker">Ficha de alumno</span><h2>{student.displayName}</h2><p>{student.role || "Puesto sin especificar"}</p><span className={`account-status ${student.accountStatus ?? "unlinked"}`}>{accountLabel(student.accountStatus)}</span></div>
                   {(canManage || ownStudent?.section === student.section) && <><div className="profile-edit-wrap">
                     <button type="button" className="profile-edit" aria-label="Editar perfil" aria-describedby="edit-profile-tooltip" onClick={() => { setStudentForm(student); setStudentFormError(""); }}><Pencil size={18} aria-hidden /></button>
                     <span className="profile-tooltip" id="edit-profile-tooltip" role="tooltip">Editar perfil</span>
@@ -613,7 +649,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
               {students === null && <p>{studentError ? "No se pudieron cargar las fichas." : "Cargando fichas…"}</p>}
               {students?.map((student) => <button type="button" className="student-card" key={student.section} onClick={() => setStudentName(student.section)}>
                 <span className="student-avatar">{student.displayName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span>
-                <span><strong>{student.displayName}</strong><small>{student.role}</small></span>
+                <span><strong>{student.displayName}</strong><small>{student.role}</small><small className={`account-status ${student.accountStatus ?? "unlinked"}`}>{accountLabel(student.accountStatus)}</small></span>
                 <ArrowRight size={17} />
               </button>)}
             </div></>}
@@ -624,7 +660,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
             <p className="eyebrow"><span /> Grupo de clase</p>
             <h1 id="board-title">Tablero de tareas</h1>
             <p className="intro">Organizad el trabajo y seguid el avance de cada tarea.</p>
-            <button className="primary" type="button" disabled={saving || tasks === null} onClick={() => openEditor("pending")}><Plus size={19} /> Nueva tarea</button>
+            {!isGuest && <button className="primary" type="button" disabled={saving || tasks === null} onClick={() => openEditor("pending")}><Plus size={19} /> Nueva tarea</button>}
           </div>
           <div className="progress-panel">
             <span className="progress-label"><Flag size={15} /> Progreso del grupo</span>
@@ -657,7 +693,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
                   <div className="lane-header">
                     <span className="lane-icon"><Icon size={16} strokeWidth={2.25} /></span>
                     <h3>{name}</h3><span className="count">{cards.length}</span>
-                    <button className="icon-button lane-add" type="button" disabled={saving || tasks === null} aria-label={`Añadir tarea a ${name}`} onClick={() => openEditor(status)}><Plus size={17} /></button>
+                    {!isGuest && <button className="icon-button lane-add" type="button" disabled={saving || tasks === null} aria-label={`Añadir tarea a ${name}`} onClick={() => openEditor(status)}><Plus size={17} /></button>}
                   </div>
                   <div className="lane-body">
                     {cards.map((task) => <TaskCard key={task.id} task={task} dragging={dragged === task.id} editable={canEditTask(task)}
@@ -669,7 +705,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
                         <span>{tasks === null ? (loadError ? "Tablero no disponible" : "Cargando…") : filtered ? "Sin coincidencias" : "Sin tareas"}</span>
                       </div>
                     )}
-                    <button type="button" className="lane-create" disabled={saving || tasks === null} onClick={() => openEditor(status)}><Plus size={16} /> Añadir tarea</button>
+                    {!isGuest && <button type="button" className="lane-create" disabled={saving || tasks === null} onClick={() => openEditor(status)}><Plus size={16} /> Añadir tarea</button>}
                   </div>
                 </section>
               );
@@ -683,8 +719,8 @@ export default function Board({ user }: { user: { displayName: string; email: st
       </main>
 
       {editor && (
-        <Modal title={editor.task ? "Editar tarea" : "Nueva tarea"} onClose={() => { if (!writing.current) setEditor(null); }}>
-          <form onSubmit={submit} className="task-form">
+        <Modal title={editor.task && !canEditTask(editor.task) ? "Detalle de la tarea" : editor.task ? "Editar tarea" : "Nueva tarea"} onClose={() => { if (!writing.current) setEditor(null); }}>
+          {editor.task && !canEditTask(editor.task) ? <div className="share-content"><h3>{editor.task.title}</h3><p>{editor.task.description || "Sin descripción"}</p><p>Responsable: {editor.task.assignee || "Sin asignar"} · Estado: {columns[editor.task.status].name}</p><p>Prioridad: {priorityNames[editor.task.priority]}{editor.task.dueDate ? ` · Fecha: ${editor.task.dueDate}` : ""}</p></div> : <form onSubmit={submit} className="task-form">
             <label>Título<input autoFocus required disabled={claiming} maxLength={120} placeholder="¿Qué hay que hacer?" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></label>
             <label>Descripción <span>(opcional)</span><textarea disabled={claiming} maxLength={2000} rows={3} placeholder="Detalles, materiales o enlaces" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></label>
             <div className="form-row">
@@ -723,7 +759,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
                 </>
               )}
             </div>
-          </form>
+          </form>}
         </Modal>
       )}
 
@@ -731,6 +767,8 @@ export default function Board({ user }: { user: { displayName: string; email: st
         <Modal title={studentForm.revision ? "Editar perfil" : "Añadir alumno"} onClose={() => { if (!studentWriting.current) setStudentForm(null); }}>
           <form onSubmit={saveStudent} className="task-form">
             <label>Nombre visible<input required maxLength={80} value={studentForm.displayName} onChange={(event) => setStudentForm({ ...studentForm, displayName: event.target.value })} /></label>
+            <label>Correo de ChatGPT<input type="email" required={!studentForm.revision} maxLength={254} value={studentForm.accountEmail ?? ""} onChange={(event) => setStudentForm({ ...studentForm, accountEmail: event.target.value })} /></label>
+            <p className="intro">La cuenta recibirá una invitación pendiente dentro de Aula Kanban. Si cambias o eliminas el correo, se retirará el acceso anterior.</p>
             <label>Puesto de trabajo<input maxLength={500} value={studentForm.role} onChange={(event) => setStudentForm({ ...studentForm, role: event.target.value })} /></label>
             <label>Actividades cotidianas<textarea rows={3} maxLength={2000} value={studentForm.activities} onChange={(event) => setStudentForm({ ...studentForm, activities: event.target.value })} /></label>
             <label>Ayuda de la IA<textarea rows={3} maxLength={2000} value={studentForm.aiHelp} onChange={(event) => setStudentForm({ ...studentForm, aiHelp: event.target.value })} /></label>
@@ -774,21 +812,21 @@ export default function Board({ user }: { user: { displayName: string; email: st
       {membersOpen && (
         <Modal title="Gestionar miembros" onClose={() => { if (!memberBusy) setMembersOpen(false); }}>
           <div className="member-content">
-            <p>Autoriza una cuenta de ChatGPT para este proyecto. El alumno deberá iniciar sesión con ese mismo correo.</p>
+            <p>Invita una cuenta de ChatGPT. La persona debe iniciar sesión con ese correo y aceptar antes de acceder.</p>
             <form onSubmit={saveMember} className="task-form member-form">
               <label>Correo de la cuenta<input required type="email" maxLength={254} value={memberForm.email} onChange={(event) => setMemberForm({ ...memberForm, email: event.target.value })} /></label>
               <div className="form-row">
-                <label>Rol<select value={memberForm.role} onChange={(event) => setMemberForm({ ...memberForm, role: event.target.value as "teacher" | "student", studentSection: "" })}><option value="student">Alumno</option><option value="teacher">Profesor</option></select></label>
-                <label>Ficha vinculada<select value={memberForm.studentSection} onChange={(event) => setMemberForm({ ...memberForm, studentSection: event.target.value })}><option value="">Sin vincular</option>{students?.map((student) => <option key={student.section} value={student.section}>{student.displayName}</option>)}</select></label>
+                <label>Rol<select value={memberForm.role} onChange={(event) => setMemberForm({ ...memberForm, role: event.target.value as "teacher" | "student" | "guest", studentSection: "", teacherId: "" })}><option value="student">Alumno</option>{(owner || admin) && <><option value="teacher">Profesor</option><option value="guest">Invitado · solo lectura</option></>}</select></label>
+                {memberForm.role === "student" && <label>Ficha de alumno<select required value={memberForm.studentSection} onChange={(event) => setMemberForm({ ...memberForm, studentSection: event.target.value })}><option value="">Seleccionar ficha</option>{students?.map((student) => <option key={student.section} value={student.section}>{student.displayName}</option>)}</select></label>}
+                {memberForm.role === "teacher" && <label>Ficha de profesor<select required value={memberForm.teacherId} onChange={(event) => setMemberForm({ ...memberForm, teacherId: event.target.value })}><option value="">Seleccionar ficha</option>{teachers?.map((teacher) => <option key={teacher.id} value={teacher.id}>{teacher.name}</option>)}</select></label>}
               </div>
-              <button className="primary" type="submit" disabled={memberBusy}>{memberBusy ? "Guardando…" : "Guardar acceso"}</button>
+              <button className="primary" type="submit" disabled={memberBusy}>{memberBusy ? "Guardando…" : "Crear invitación"}</button>
             </form>
             {memberError && <div role="alert" className="alert">{memberError}</div>}
-            <h3>Personas con acceso</h3>
+            <h3>Invitaciones y miembros</h3>
             {members.length ? members.map((member) => <div className="member-row" key={member.id}>
-              <div><strong>{member.email}</strong><small>{member.role === "teacher" ? "Profesor" : "Alumno"}{member.studentSection ? ` · ${students?.find((student) => student.section === member.studentSection)?.displayName ?? "Ficha no disponible"}` : " · Sin ficha"}</small></div>
-              <button type="button" className="text-button" disabled={memberBusy} onClick={() => { setMemberForm({ email: member.email, role: member.role, studentSection: member.studentSection ?? "" }); setRemoveMember(null); }}>Editar</button>
-              <button type="button" className="danger-quiet" disabled={memberBusy} onClick={() => setRemoveMember(member)}>Quitar</button>
+              <div><strong>{member.email}</strong><small>{member.role === "teacher" ? "Profesor" : member.role === "student" ? "Alumno" : "Invitado"} · {member.status === "active" ? "Activo" : "Pendiente"}{member.studentSection ? ` · ${students?.find((student) => student.section === member.studentSection)?.displayName ?? "Ficha no disponible"}` : member.teacherId ? ` · ${teachers?.find((teacher) => teacher.id === member.teacherId)?.name ?? "Ficha no disponible"}` : ""}</small></div>
+              {(owner || admin || member.role === "student") && <><button type="button" className="text-button" disabled={memberBusy} onClick={() => { setMemberForm({ email: member.email, role: member.role, studentSection: member.studentSection ?? "", teacherId: member.teacherId ?? "" }); setRemoveMember(null); }}>Editar</button><button type="button" className="danger-quiet" disabled={memberBusy} onClick={() => setRemoveMember(member)}>Quitar</button></>}
             </div>) : <p>Sin miembros añadidos.</p>}
             {removeMember && <div className="member-confirm"><p>¿Quitar el acceso de {removeMember.email} a este proyecto?</p><button type="button" className="secondary" disabled={memberBusy} onClick={() => setRemoveMember(null)}>Cancelar</button><button type="button" className="danger" disabled={memberBusy} onClick={() => void deleteMember()}>Quitar acceso</button></div>}
           </div>
