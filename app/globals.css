@@ -153,7 +153,9 @@ progress::-moz-progress-bar { background: #cdb4ff; border-radius: 10px; }
 .priority.low { color: #236348; background: #e1f2e9; }
 .priority.normal { color: #6748a5; background: #eee8fb; }
 .priority.high { color: #982b51; background: #fae5ec; }
-.grip { color: #867d97; cursor: grab; }
+.grip { display: grid; place-items: center; width: 25px; height: 24px; color: #867d97; cursor: grab; touch-action: none; user-select: none; }
+.card.dragging { opacity: .55; }
+.card.dragging .grip { cursor: grabbing; }
 .card strong { font-size: 15px; line-height: 1.28; overflow-wrap: anywhere; }
 .card-description { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; color: var(--muted); font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; }
 .card-meta { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; margin-top: 3px; padding-top: 8px; border-top: 1px solid #f0edf5; color: var(--muted); font-size: 11px; }

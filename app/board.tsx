@@ -5,7 +5,7 @@ import {
   Clock3, Columns3, Flag, GripVertical, Link2, ListFilter, Plus, ScanEye, Search, Trash2, X,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { DragEvent, FormEvent, ReactNode } from "react";
+import type { FormEvent, PointerEvent, ReactNode } from "react";
 import { priorities, priorityNames, statuses } from "./task";
 import type { Task, TaskFields } from "./task";
 
@@ -56,16 +56,28 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
   );
 }
 
-function TaskCard({ task, disabled, onEdit, onDrag, onDragEnd }: {
-  task: Task; disabled: boolean; onEdit: () => void;
-  onDrag: (event: DragEvent<HTMLButtonElement>) => void; onDragEnd: () => void;
+type GripEvent = PointerEvent<HTMLSpanElement>;
+
+function TaskCard({ task, dragging, onEdit, onGrab, onMove, onRelease, onCancel }: {
+  task: Task;
+  dragging: boolean;
+  onEdit: () => void;
+  onGrab: (event: GripEvent) => void;
+  onMove: (event: GripEvent) => void;
+  onRelease: (event: GripEvent) => void;
+  onCancel: () => void;
 }) {
   const initials = task.assignee.trim().split(/\s+/).slice(0, 2).map((part) => Array.from(part)[0]).join("").toUpperCase();
   return (
-    <button type="button" className="card" onClick={onEdit} draggable={!disabled} onDragStart={onDrag} onDragEnd={onDragEnd}>
+    <button type="button" className={dragging ? "card dragging" : "card"} onClick={onEdit}>
       <span className="card-top">
         <span className={`priority ${task.priority}`}><Flag size={12} /> {priorityNames[task.priority]}</span>
-        <GripVertical className="grip" size={17} aria-hidden />
+        <span className="grip" aria-hidden
+          onPointerDown={onGrab} onPointerMove={onMove} onPointerUp={onRelease}
+          onPointerCancel={onCancel} onLostPointerCapture={onCancel}
+          onClick={(event) => event.stopPropagation()}>
+          <GripVertical size={17} />
+        </span>
       </span>
       <strong>{task.title}</strong>
       {task.description && <span className="card-description">{task.description}</span>}
@@ -90,7 +102,8 @@ export default function Board() {
   const [formError, setFormError] = useState("");
   const [loadError, setLoadError] = useState("");
   const [notice, setNotice] = useState("");
-  const [dragged, setDragged] = useState<Task | null>(null);
+  const [dragged, setDragged] = useState<string | null>(null);
+  const drag = useRef<{ task: Task; x: number; y: number; started: boolean } | null>(null);
   const [destination, setDestination] = useState<TaskFields["status"] | null>(null);
   const [shareUrl, setShareUrl] = useState("");
   const [copied, setCopied] = useState(false);
@@ -168,12 +181,41 @@ export default function Board() {
     }
   }
 
-  function drop(event: DragEvent, status: TaskFields["status"]) {
-    event.preventDefault();
+  function laneAt(event: GripEvent) {
+    const lane = document.elementFromPoint(event.clientX, event.clientY)?.closest<HTMLElement>("[data-lane]");
+    return (lane?.dataset.lane as TaskFields["status"] | undefined) ?? null;
+  }
+
+  function grab(event: GripEvent, task: Task) {
+    if (!event.isPrimary || event.button !== 0 || writing.current) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    drag.current = { task, x: event.clientX, y: event.clientY, started: false };
+  }
+
+  function move(event: GripEvent) {
+    const current = drag.current;
+    if (!current || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
+    if (!current.started && Math.hypot(event.clientX - current.x, event.clientY - current.y) < 5) return;
+    current.started = true;
+    setDragged(current.task.id);
+    const status = laneAt(event);
+    setDestination(status === current.task.status ? null : status);
+  }
+
+  function cancelDrag() {
+    drag.current = null;
     setDestination(null);
     setDragged(null);
-    if (dragged && dragged.status !== status) {
-      void mutate("PATCH", { id: dragged.id, revision: dragged.revision, changes: { status } }, `Tarea movida a «${columns[status].name}».`, false);
+  }
+
+  function release(event: GripEvent) {
+    const current = drag.current;
+    if (!current || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
+    const status = laneAt(event);
+    cancelDrag();
+    if (current.started && status && current.task.status !== status) {
+      const { id, revision } = current.task;
+      void mutate("PATCH", { id, revision, changes: { status } }, `Tarea movida a «${columns[status].name}».`, false);
     }
   }
 
@@ -232,32 +274,16 @@ export default function Board() {
               const { name, icon: Icon } = columns[status];
               const cards = visible.filter((task) => task.status === status);
               return (
-                <section key={status} className={`lane ${status}${destination === status ? " drop-target" : ""}`} aria-label={name}
-                  onDragOver={(event) => {
-                    if (!dragged || dragged.status === status) return;
-                    event.preventDefault();
-                    event.dataTransfer.dropEffect = "move";
-                    setDestination(status);
-                  }}
-                  onDragLeave={(event) => {
-                    if (!(event.relatedTarget instanceof Node) || !event.currentTarget.contains(event.relatedTarget)) {
-                      setDestination((current) => current === status ? null : current);
-                    }
-                  }}
-                  onDrop={(event) => drop(event, status)}>
+                <section key={status} className={`lane ${status}${destination === status ? " drop-target" : ""}`} aria-label={name} data-lane={status}>
                   <div className="lane-header">
                     <span className="lane-icon"><Icon size={16} strokeWidth={2.25} /></span>
                     <h3>{name}</h3><span className="count">{cards.length}</span>
                     <button className="icon-button lane-add" type="button" disabled={saving || tasks === null} aria-label={`Añadir tarea a ${name}`} onClick={() => openEditor(status)}><Plus size={17} /></button>
                   </div>
                   <div className="lane-body">
-                    {cards.map((task) => <TaskCard key={task.id} task={task} disabled={saving}
+                    {cards.map((task) => <TaskCard key={task.id} task={task} dragging={dragged === task.id}
                       onEdit={() => openEditor(task.status, task)}
-                      onDrag={(event) => {
-                        setDragged(task);
-                        event.dataTransfer.setData("text/plain", task.id);
-                        event.dataTransfer.effectAllowed = "move";
-                      }} onDragEnd={() => { setDragged(null); setDestination(null); }} />)}
+                      onGrab={(event) => grab(event, task)} onMove={move} onRelease={release} onCancel={cancelDrag} />)}
                     {cards.length === 0 && (
                       <div className="empty">
                         <span className="empty-icon"><ClipboardList size={20} strokeWidth={1.6} /></span>
@@ -270,7 +296,7 @@ export default function Board() {
               );
             })}
           </div>
-          <footer className="board-footer"><span><GripVertical size={16} /> Arrastra una tarjeta o cambia su estado al editarla.</span><span className="sync"><i /> {loadError ? "Sin conexión" : tasks === null ? "Conectando…" : "Tablero compartido"}</span></footer>
+          <footer className="board-footer"><span><GripVertical size={16} /> Arrastra una tarjeta por su asa o cambia su estado al editarla.</span><span className="sync"><i /> {loadError ? "Sin conexión" : tasks === null ? "Conectando…" : "Tablero compartido"}</span></footer>
         </section>
 
         <div className={notice ? "toast" : "sr-only"} role="status">{notice}{notice && <button type="button" className="icon-button" onClick={() => setNotice("")} aria-label="Cerrar aviso"><X size={16} /></button>}</div>
