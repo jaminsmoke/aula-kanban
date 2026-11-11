@@ -1,7 +1,7 @@
 import { and, asc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
-import { students, tasks } from "../../../db/schema";
+import { students, tasks, teachers } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { priorities, statuses } from "../../task";
 import { validProject } from "../project";
@@ -46,12 +46,15 @@ async function handle(request: Request) {
   const body = await request.json().catch(() => null);
   let ownProfile: typeof students.$inferSelect | undefined;
   let projectStudents: (typeof students.$inferSelect)[] = [];
+  let teacherNames: { id: string; name: string }[] = [];
   if (project.access.role === "student") {
     projectStudents = await getDb().select().from(students).where(and(eq(students.projectId, project.id), eq(students.deleted, 0)));
+    teacherNames = await getDb().select({ id: teachers.id, name: teachers.name }).from(teachers).where(eq(teachers.projectId, project.id));
     ownProfile = projectStudents.find((student) => student.section === project.access.studentSection);
   }
   const unassigned = (name: string) => !name.trim() || normalizeName(name) === "por definir";
-  const isOwn = (name: string) => Boolean(ownProfile && taskBelongsTo({ assignee: name }, ownProfile, projectStudents));
+  const matchingPeople = [...projectStudents, ...teacherNames.map(teacher => ({ section: teacher.id, name: teacher.name, displayName: teacher.name, role: "", activities: "", aiHelp: "", revision: 1 }))];
+  const isOwn = (name: string) => Boolean(ownProfile && taskBelongsTo({ assignee: name }, ownProfile, matchingPeople));
 
   if (request.method === "POST") {
     const parsed = fields.safeParse(body);

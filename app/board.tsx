@@ -10,6 +10,7 @@ import { priorities, priorityNames, statuses } from "./task";
 import type { Task, TaskFields } from "./task";
 import type { Student } from "./student";
 import { taskBelongsTo } from "./assignments";
+import TeachersView from "./teachers-view";
 
 const columns = {
   pending: { name: "Por hacer", icon: CircleDashed },
@@ -105,6 +106,10 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const [owner, setOwner] = useState(false);
   const [admin, setAdmin] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<"general" | "admins">("general");
+  const [remixOpen, setRemixOpen] = useState(false);
+  const [remixCopied, setRemixCopied] = useState(false);
+  const [remixPrompt, setRemixPrompt] = useState("");
   const [admins, setAdmins] = useState<Administrator[] | null>(null);
   const [adminEmail, setAdminEmail] = useState("");
   const [editingAdmin, setEditingAdmin] = useState<Administrator | null>(null);
@@ -124,9 +129,10 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const [memberError, setMemberError] = useState("");
   const [memberBusy, setMemberBusy] = useState(false);
   const [removeMember, setRemoveMember] = useState<Member | null>(null);
-  const [view, setView] = useState<"kanban" | "alumnos">("kanban");
+  const [view, setView] = useState<"kanban" | "alumnos" | "profesores">("kanban");
   const [studentName, setStudentName] = useState<string | null>(null);
   const [students, setStudents] = useState<Student[] | null>(null);
+  const [teachers, setTeachers] = useState<{ id: string; name: string }[] | null>(null);
   const [studentError, setStudentError] = useState("");
   const [studentForm, setStudentForm] = useState<Student | null>(null);
   const [studentFormError, setStudentFormError] = useState("");
@@ -294,6 +300,11 @@ export default function Board({ user }: { user: { displayName: string; email: st
     }
   }, []);
 
+  const refreshTeachers = useCallback(async () => {
+    try { setTeachers(await request<{ id: string; name: string }[]>("GET", undefined, "/api/teachers")); }
+    catch { setTeachers(null); }
+  }, []);
+
   async function saveStudent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!studentForm || studentWriting.current) return;
@@ -343,9 +354,11 @@ export default function Board({ user }: { user: { displayName: string; email: st
     void refreshProjects();
     void refresh();
     void refreshStudents();
-    const timer = window.setInterval(() => { if (!document.hidden) { void refresh(); void refreshStudents(); } }, 8000);
+    void refreshTeachers();
+    const timer = window.setInterval(() => { if (!document.hidden) { void refresh(); void refreshStudents(); void refreshTeachers(); } }, 8000);
     window.addEventListener("focus", refresh);
     window.addEventListener("focus", refreshStudents);
+    window.addEventListener("focus", refreshTeachers);
     window.addEventListener("focus", refreshProjects);
     return () => {
       ++readVersion.current;
@@ -353,9 +366,10 @@ export default function Board({ user }: { user: { displayName: string; email: st
       window.clearInterval(timer);
       window.removeEventListener("focus", refresh);
       window.removeEventListener("focus", refreshStudents);
+      window.removeEventListener("focus", refreshTeachers);
       window.removeEventListener("focus", refreshProjects);
     };
-  }, [refresh, refreshStudents, refreshProjects]);
+  }, [refresh, refreshStudents, refreshProjects, refreshTeachers]);
 
   function openEditor(status: TaskFields["status"], task?: Task) {
     if (writing.current) return;
@@ -416,7 +430,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
 
   function grab(event: GripEvent, task: Task) {
     if (!event.isPrimary || event.button !== 0 || writing.current) return;
-    if (!canManage && (!ownStudent || !taskBelongsTo(task, ownStudent, students ?? []))) return;
+    if (!canManage && (!ownStudent || teachers === null || !taskBelongsTo(task, ownStudent, allPeople))) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     drag.current = { task, x: event.clientX, y: event.clientY, started: false };
   }
@@ -452,8 +466,9 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const activeProject = projects.find((item) => item.id === projectId);
   const canManage = activeProject?.role === "owner" || activeProject?.role === "admin" || activeProject?.role === "teacher";
   const ownStudent = students?.find((student) => student.section === activeProject?.studentSection);
+  const allPeople: Student[] = [...(students ?? []), ...(teachers ?? []).map((teacher) => ({ section: teacher.id, name: teacher.name, displayName: teacher.name, role: "", activities: "", aiHelp: "", revision: 1 }))];
   const unassigned = (name: string) => !name.trim() || name.trim().toLocaleLowerCase("es") === "por definir";
-  const canEditTask = (task: Task) => Boolean(canManage || (ownStudent && (unassigned(task.assignee) || taskBelongsTo(task, ownStudent, students ?? []))));
+  const canEditTask = (task: Task) => Boolean(canManage || (ownStudent && teachers !== null && (unassigned(task.assignee) || taskBelongsTo(task, ownStudent, allPeople))));
   const claiming = Boolean(editor?.task && !canManage && unassigned(editor.task.assignee));
   const total = all.length;
   const finished = all.filter((task) => task.status === "done").length;
@@ -463,7 +478,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const visible = all.filter((task) => {
     const haystack = [task.title, task.description, task.assignee].join(" ").toLocaleLowerCase("es");
     return (!filter || task.priority === filter) && haystack.includes(query)
-      && (!studentFilter || Boolean(selectedStudent && taskBelongsTo(task, selectedStudent, students ?? [])));
+      && (!studentFilter || Boolean(selectedStudent && teachers !== null && taskBelongsTo(task, selectedStudent, allPeople)));
   });
   const filtered = Boolean(query || filter || studentFilter);
 
@@ -475,6 +490,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
           <nav className="main-nav" aria-label="Vistas">
             <button type="button" aria-current={view === "kanban" ? "page" : undefined} onClick={() => setView("kanban")}>Kanban</button>
             <button type="button" aria-current={view === "alumnos" ? "page" : undefined} onClick={() => { setView("alumnos"); setStudentName(null); }}>Alumnos</button>
+            <button type="button" aria-current={view === "profesores" ? "page" : undefined} onClick={() => setView("profesores")}>Profesores</button>
           </nav>
           <details className="project-menu">
             <summary aria-label="Seleccionar proyecto"><FolderKanban size={18} /><span>{projects.find((project) => project.id === projectId)?.name ?? (projectError ? "Proyecto no disponible" : "Cargando proyecto…")}</span><ChevronDown size={16} /></summary>
@@ -486,6 +502,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
                 {activeProject && <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setCopied(false); const url = new URL("/", window.location.origin); url.searchParams.set("project", projectId); setShareUrl(url.href); }}><Link2 size={16} /> Compartir proyecto</button>}
                 {canManage && <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setMembersOpen(true); setRemoveMember(null); void loadMembers(); }}><Users size={16} /> Gestionar miembros</button>}
                 {owner && activeProject && <button type="button" className="project-delete-action" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setDeleteProjectName(""); setProjectError(""); setProjectDeleting(true); }}><Trash2 size={16} /> Eliminar proyecto</button>}
+                <button type="button" className="remix-action" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setRemixCopied(false); setRemixPrompt(`@Sites Crea un remix de Aula Kanban a partir de ${window.location.origin}. Quiero una copia propia, sin datos de usuarios, con su base de datos independiente. Ayúdame a configurar OWNER_EMAIL con mi cuenta de ChatGPT y a publicarla.`); setRemixOpen(true); }}><Plus size={16} /> Haz tu Site de Aula Kanban</button>
               </div>
             </div>
           </details>
@@ -496,7 +513,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
             </summary>
             <div className="account-dropdown">
               <strong>Cuenta de ChatGPT</strong><span>{user.email}</span>
-              <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setSettingsOpen(true); if (owner) void loadAdmins(); }}><Settings size={16} /> Ajustes de la cuenta</button>
+              <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setSettingsTab("general"); setSettingsOpen(true); if (owner) void loadAdmins(); }}><Settings size={16} /> Ajustes de la cuenta</button>
               <a href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
             </div>
           </details>
@@ -505,6 +522,8 @@ export default function Board({ user }: { user: { displayName: string; email: st
 
       {settingsOpen && <Modal title="Cuenta y permisos" onClose={() => setSettingsOpen(false)}>
         <div className="account-settings">
+          {owner && <div className="settings-tabs" role="tablist" aria-label="Secciones de ajustes"><button role="tab" aria-selected={settingsTab === "general"} onClick={() => setSettingsTab("general")}>General</button><button role="tab" aria-selected={settingsTab === "admins"} onClick={() => setSettingsTab("admins")}>Administradores</button></div>}
+          {settingsTab === "general" && <>
           <p>Tu cuenta en esta instancia de Aula Kanban.</p>
           <dl>
             <div><dt>Cuenta de ChatGPT</dt><dd>{user.displayName}<br /><span>{user.email}</span></dd></div>
@@ -513,7 +532,9 @@ export default function Board({ user }: { user: { displayName: string; email: st
             <div><dt>Rol en el proyecto</dt><dd>{!projectsLoaded ? "Consultando…" : activeProject ? ({ owner: "Propietario", admin: "Administrador", teacher: "Profesor", student: "Alumno" } as const)[activeProject.role] : "Sin acceso a un proyecto activo"}</dd></div>
           </dl>
           <p className="account-settings-note">Los permisos de esta aplicación son independientes de la propiedad del Site en Sites.</p>
-          {owner && <section className="admin-management" aria-labelledby="admins-heading">
+          <a className="secondary account-signout" href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
+          </>}
+          {owner && settingsTab === "admins" && <section className="admin-management" aria-labelledby="admins-heading">
             <div><h3 id="admins-heading">Administradores</h3><p>Gestionan el contenido de todos los proyectos. Solo tú puedes crear o eliminar proyectos y gestionar administradores.</p></div>
             <form onSubmit={saveAdmin} className="admin-form">
               <label htmlFor="admin-email">{editingAdmin ? "Editar correo" : "Correo de la cuenta de ChatGPT"}</label>
@@ -528,13 +549,20 @@ export default function Board({ user }: { user: { displayName: string; email: st
             </li>)}</ul>}
             {removingAdmin && <div className="admin-confirm" role="alert"><p>¿Eliminar a <strong>{removingAdmin.email}</strong> como administrador? Perderá este acceso de inmediato.</p><div><button type="button" className="secondary" onClick={() => setRemovingAdmin(null)} disabled={adminBusy}>Cancelar</button><button type="button" className="danger" onClick={() => void deleteAdmin()} disabled={adminBusy}>Eliminar acceso</button></div></div>}
           </section>}
-          <a className="secondary account-signout" href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
         </div>
       </Modal>}
 
+      {remixOpen && <Modal title="Haz tu Site de Aula Kanban" onClose={() => setRemixOpen(false)}><div className="share-content">
+        <p>Crea tu propia copia independiente con Sites. La copia empieza sin proyectos, tareas, fichas ni administradores de este Site.</p>
+        <p>Para solicitarla, copia el mensaje y pégalo en un chat de ChatGPT con Sites. Al configurarla, indica tu correo de ChatGPT como <strong>OWNER_EMAIL</strong> en las variables de entorno de tu nuevo Site y vuelve a publicarlo.</p>
+        <p>La copia y su configuración se completan en Sites; este botón no puede crearla ni configurar el propietario automáticamente.</p>
+        <label>Mensaje para Sites<textarea className="remix-prompt" readOnly value={remixPrompt} onFocus={(event) => event.currentTarget.select()} /></label>
+        <div className="remix-controls"><button type="button" className="secondary" onClick={async () => { try { await navigator.clipboard.writeText(remixPrompt); setRemixCopied(true); } catch { setRemixCopied(false); } }}>{remixCopied ? "Mensaje copiado" : "Copiar mensaje"}</button><a className="primary" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Abrir ChatGPT</a></div>
+      </div></Modal>}
+
       <main className="shell">
         {projectError && !newProject && !projectDeleting && <div role="alert" className="alert project-alert">{projectError} <button type="button" className="text-button" onClick={() => void refreshProjects()}>Reintentar</button></div>}
-        {projectsLoaded && !activeProject ? <section className="students-view"><h1>Proyectos</h1><p className="intro">{owner ? "Crea un proyecto para empezar." : "Todavía no tienes acceso a ningún proyecto. Pide al profesorado que autorice tu cuenta."}</p>{owner && <button className="primary" type="button" onClick={() => { setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={18} /> Nuevo proyecto</button>}</section> : !activeProject ? null : view === "alumnos" ? (
+        {projectsLoaded && !activeProject ? <section className="students-view"><h1>Proyectos</h1><p className="intro">{owner ? "Crea un proyecto para empezar." : "Todavía no tienes acceso a ningún proyecto. Pide al profesorado que autorice tu cuenta."}</p>{owner && <button className="primary" type="button" onClick={() => { setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={18} /> Nuevo proyecto</button>}</section> : !activeProject ? null : view === "profesores" ? <TeachersView key={projectId} projectId={projectId} canManage={canManage} tasks={tasks} students={students} openTask={(task) => openEditor(task.status, task)} /> : view === "alumnos" ? (
           <section className="students-view">
             <p className="eyebrow"><span /> Grupo de clase</p>
             <div className="students-heading">
@@ -549,7 +577,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
             {studentName ? (() => {
               const student = students?.find((item) => item.section === studentName);
               if (!student) return <div className="student-detail"><p>Esta ficha ya no está disponible.</p><button className="text-button back-link" onClick={() => setStudentName(null)}>← Todos los alumnos</button></div>;
-              const assigned = all.filter((task) => taskBelongsTo(task, student, students ?? []));
+              const assigned = teachers === null ? [] : all.filter((task) => taskBelongsTo(task, student, allPeople));
               return <div className="student-detail">
                 <button className="text-button back-link" onClick={() => setStudentName(null)}>← Todos los alumnos</button>
                 <div className="student-profile-header">
@@ -660,7 +688,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
             <label>Título<input autoFocus required disabled={claiming} maxLength={120} placeholder="¿Qué hay que hacer?" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></label>
             <label>Descripción <span>(opcional)</span><textarea disabled={claiming} maxLength={2000} rows={3} placeholder="Detalles, materiales o enlaces" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></label>
             <div className="form-row">
-              <label>Responsable{canManage ? <><input list="student-options" maxLength={80} placeholder="Nombre o equipo" value={form.assignee} onChange={(event) => setForm({ ...form, assignee: event.target.value })} /><datalist id="student-options">{students?.map((student) => <option key={student.section} value={student.name}>{student.displayName}</option>)}</datalist></> : <select value={unassigned(form.assignee) ? "" : ownStudent?.name ?? ""} onChange={(event) => setForm({ ...form, assignee: event.target.value || (claiming ? editor?.task?.assignee ?? "" : "") })}>
+              <label>Responsable{canManage ? <><input list="student-options" maxLength={80} placeholder="Nombre o equipo" value={form.assignee} onChange={(event) => setForm({ ...form, assignee: event.target.value })} /><datalist id="student-options">{students?.map((student) => <option key={student.section} value={student.name}>{student.displayName}</option>)}{teachers?.map((teacher) => <option key={teacher.id} value={teacher.name}>Profesor</option>)}</datalist></> : <select value={unassigned(form.assignee) ? "" : ownStudent?.name ?? ""} onChange={(event) => setForm({ ...form, assignee: event.target.value || (claiming ? editor?.task?.assignee ?? "" : "") })}>
                 <option value="">Sin asignar</option>{ownStudent && <option value={ownStudent.name}>{ownStudent.displayName} (tú)</option>}
               </select>}</label>
               <label>Fecha de entrega<input disabled={claiming} type="date" value={form.dueDate} onChange={(event) => setForm({ ...form, dueDate: event.target.value })} /></label>

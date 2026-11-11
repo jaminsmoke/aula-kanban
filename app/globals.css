@@ -91,7 +91,14 @@ svg { flex: none; vertical-align: middle; }
 .account-settings dd { margin:0; text-align:right; font-weight:700; overflow-wrap:anywhere; }
 .account-settings dd span { color:var(--muted); font-weight:400; }
 .account-settings-note { font-size:12px; }
-.admin-management { display:grid; gap:14px; padding-top:16px; border-top:1px solid var(--line); }
+.admin-management { display:grid; gap:14px; }
+.settings-tabs { display:flex; gap:4px; padding:4px; border-radius:10px; background:#eeecf5; }
+.settings-tabs button { flex:1; padding:9px 12px; border:0; border-radius:7px; background:transparent; color:var(--muted); font-weight:700; }
+.settings-tabs button[aria-selected="true"] { background:white; color:var(--violet-dark); box-shadow:0 1px 4px #3022551a; }
+.project-dropdown .remix-action { border-top:1px solid var(--line); border-radius:0; margin-top:6px; padding-top:13px; color:var(--violet-dark); }
+.share-content .remix-prompt { display:block; width:100%; min-height:95px; margin-top:6px; padding:10px; border:1px solid var(--line); border-radius:8px; resize:vertical; color:var(--ink); font:inherit; font-weight:400; }
+.remix-controls { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; }
+.remix-controls a { text-decoration:none; }
 .admin-management h3 { font-size:16px; }
 .admin-management p { color:var(--muted); line-height:1.5; font-size:13px; }
 .admin-management h3 + p { margin-top:6px; }

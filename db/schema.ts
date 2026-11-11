@@ -16,6 +16,16 @@ export const administrators = sqliteTable("administrators", {
   uniqueIndex("administrator_user_id").on(table.userId),
 ]);
 
+export const teachers = sqliteTable("teachers", {
+  id: text("id").primaryKey().notNull(),
+  projectId: text("project_id").notNull(),
+  name: text("name").notNull(),
+  role: text("role").notNull(),
+  activities: text("activities").notNull(),
+  aiHelp: text("ai_help").notNull(),
+  revision: integer("revision").notNull().default(1),
+});
+
 export const tasks = sqliteTable("tasks", {
   id: text("id").primaryKey().notNull(),
   projectId: text("project_id").notNull().default("default"),
