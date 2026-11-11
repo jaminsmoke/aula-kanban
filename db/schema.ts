@@ -19,5 +19,6 @@ export const students = sqliteTable("students", {
   role: text("role").notNull(),
   activities: text("activities").notNull(),
   aiHelp: text("ai_help").notNull(),
+  deleted: integer("deleted").notNull().default(0),
   revision: integer("revision").notNull().default(1),
 });

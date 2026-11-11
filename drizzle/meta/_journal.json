@@ -15,6 +15,13 @@
       "when": 1794406718526,
       "tag": "0001_daily_nico_minoru",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1794407864592,
+      "tag": "0002_solid_wolfsbane",
+      "breakpoints": true
     }
   ]
 }

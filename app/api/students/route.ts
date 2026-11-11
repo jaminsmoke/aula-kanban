@@ -7,14 +7,14 @@ import initialStudents from "../../students.json";
 
 export const dynamic = "force-dynamic";
 
-const fields = z.object({
-  section: z.string().min(1).max(80),
-  revision: z.number().int().positive(),
+const profile = z.object({
   displayName: z.string().trim().min(1).max(80),
   role: z.string().trim().max(500),
   activities: z.string().trim().max(2000),
   aiHelp: z.string().trim().max(2000),
 });
+const reference = z.object({ section: z.string().min(1).max(80), revision: z.number().int().positive() });
+const fields = profile.merge(reference);
 
 function json(data: unknown, status = 200) {
   return Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
@@ -40,20 +40,35 @@ export async function GET() {
     }
     current = await db.select().from(students).orderBy(asc(students.section));
   }
-  return json(current);
+  return json(current.filter((student) => student.deleted === 0));
 }
 
-export async function PATCH(request: Request) {
+async function mutate(request: Request) {
   if (!(await getChatGPTUser())) return json({ message: "Inicia sesión para editar las fichas." }, 401);
   if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") {
     return json({ message: "Formato de solicitud no válido." }, 415);
   }
-  const parsed = fields.safeParse(await request.json().catch(() => null));
+  const body = await request.json().catch(() => null);
+  if (request.method === "POST") {
+    const parsed = profile.extend({ section: z.string().uuid() }).safeParse(body);
+    if (!parsed.success) return json({ message: "Revisa los campos del perfil." }, 400);
+    const { section, ...values } = parsed.data;
+    const [created] = await getDb().insert(students).values({
+      ...values, section, name: values.displayName,
+    }).onConflictDoNothing().returning();
+    if (created) return json(created, 201);
+    const [existing] = await getDb().select().from(students).where(eq(students.section, section));
+    if (existing && existing.deleted === 0 && existing.name === values.displayName && existing.revision === 1 && existing.role === values.role && existing.activities === values.activities && existing.aiHelp === values.aiHelp) return json(existing);
+    return json({ message: "Esta ficha ya cambió. Cierra el formulario y vuelve a intentarlo." }, 409);
+  }
+  const parsed = (request.method === "DELETE" ? reference : fields).safeParse(body);
   if (!parsed.success) return json({ message: "Revisa los campos del perfil." }, 400);
   const { section, revision, ...changes } = parsed.data;
   const [updated] = await getDb().update(students)
-    .set({ ...changes, revision: sql`${students.revision} + 1` })
-    .where(and(eq(students.section, section), eq(students.revision, revision))).returning();
+    .set({ ...changes, ...(request.method === "DELETE" ? { deleted: 1, name: "", displayName: "", role: "", activities: "", aiHelp: "" } : {}), revision: sql`${students.revision} + 1` })
+    .where(and(eq(students.section, section), eq(students.revision, revision), eq(students.deleted, 0))).returning();
   if (!updated) return json({ message: "La ficha ha cambiado en otra sesión. Cierra el formulario y vuelve a abrirla para ver los cambios." }, 409);
   return json(updated);
 }
+
+export { mutate as POST, mutate as PATCH, mutate as DELETE };

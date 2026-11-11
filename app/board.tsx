@@ -2,7 +2,7 @@
 
 import {
   ArrowDown, ArrowRight, CalendarDays, Check, CircleCheck, CircleDashed, ClipboardList,
-  BriefcaseBusiness, Clock3, Columns3, Flag, GripVertical, Lightbulb, Link2, ListFilter, ListTodo, Pencil, Plus, ScanEye, Search, Trash2, X,
+  BriefcaseBusiness, Clock3, Columns3, Flag, GripVertical, LayoutGrid, Lightbulb, Link2, List, ListFilter, ListTodo, Pencil, Plus, ScanEye, Search, Trash2, Users, X,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent, PointerEvent, ReactNode } from "react";
@@ -20,6 +20,18 @@ const blank: TaskFields = {
   title: "", description: "", assignee: "", dueDate: "", priority: "normal", status: "pending",
 };
 const formatDate = new Intl.DateTimeFormat("es", { day: "numeric", month: "short" });
+const normalizeName = (value: string) => value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+function taskBelongsTo(task: Task, student: Student, students: Student[]) {
+  const assignee = normalizeName(task.assignee);
+  if (!assignee) return false;
+  const matches = students.filter((item) => {
+    const first = item.name.split(/\s+/)[0];
+    const uniqueFirst = students.filter((other) => normalizeName(other.name.split(/\s+/)[0]) === normalizeName(first)).length === 1;
+    return assignee === normalizeName(item.name) || assignee === normalizeName(item.displayName) || (uniqueFirst && assignee === normalizeName(first));
+  });
+  return matches.length === 1 && matches[0].section === student.section;
+}
 
 class RequestError extends Error {
   constructor(message: string, readonly status: number) {
@@ -100,11 +112,14 @@ export default function Board() {
   const [studentForm, setStudentForm] = useState<Student | null>(null);
   const [studentFormError, setStudentFormError] = useState("");
   const [studentSaving, setStudentSaving] = useState(false);
+  const [studentDeleting, setStudentDeleting] = useState<Student | null>(null);
+  const [studentLayout, setStudentLayout] = useState<"grid" | "list">("grid");
   const studentWriting = useRef(false);
   const studentReadVersion = useRef(0);
   const [tasks, setTasks] = useState<Task[] | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
+  const [studentFilter, setStudentFilter] = useState("");
   const [editor, setEditor] = useState<{ task?: Task; status: TaskFields["status"] } | null>(null);
   const [form, setForm] = useState<TaskFields>(blank);
   const [deleting, setDeleting] = useState(false);
@@ -154,10 +169,34 @@ export default function Board() {
     setStudentSaving(true);
     setStudentFormError("");
     try {
-      const updated = await request<Student>("PATCH", studentForm, "/api/students");
-      setStudents((previous) => previous?.map((student) => student.section === updated.section ? updated : student) ?? [updated]);
+      const isNew = studentForm.revision === 0;
+      const updated = await request<Student>(isNew ? "POST" : "PATCH", studentForm, "/api/students");
+      setStudents((previous) => isNew ? [...(previous ?? []), updated] : previous?.map((student) => student.section === updated.section ? updated : student) ?? [updated]);
+      if (isNew) setStudentName(updated.section);
       setStudentForm(null);
-      setNotice("Perfil actualizado.");
+      setNotice(isNew ? "Alumno añadido." : "Perfil actualizado.");
+    } catch (error) {
+      setStudentFormError((error as Error).message);
+    } finally {
+      studentWriting.current = false;
+      setStudentSaving(false);
+      void refreshStudents();
+    }
+  }
+
+  async function deleteStudent() {
+    if (!studentDeleting || studentWriting.current) return;
+    studentWriting.current = true;
+    ++studentReadVersion.current;
+    setStudentSaving(true);
+    setStudentFormError("");
+    try {
+      await request<Student>("DELETE", { section: studentDeleting.section, revision: studentDeleting.revision }, "/api/students");
+      setStudents((previous) => previous?.filter((student) => student.section !== studentDeleting.section) ?? []);
+      setStudentFilter((current) => current === studentDeleting.section ? "" : current);
+      setStudentName(null);
+      setStudentDeleting(null);
+      setNotice("Perfil eliminado.");
     } catch (error) {
       setStudentFormError((error as Error).message);
     } finally {
@@ -276,11 +315,13 @@ export default function Board() {
   const finished = all.filter((task) => task.status === "done").length;
   const progress = total ? Math.round(finished / total * 100) : 0;
   const query = search.trim().toLocaleLowerCase("es");
+  const selectedStudent = students?.find((student) => student.section === studentFilter);
   const visible = all.filter((task) => {
     const haystack = [task.title, task.description, task.assignee].join(" ").toLocaleLowerCase("es");
-    return (!filter || task.priority === filter) && haystack.includes(query);
+    return (!filter || task.priority === filter) && haystack.includes(query)
+      && (!studentFilter || Boolean(selectedStudent && taskBelongsTo(task, selectedStudent, students ?? [])));
   });
-  const filtered = Boolean(query || filter);
+  const filtered = Boolean(query || filter || studentFilter);
 
   return (
     <>
@@ -302,18 +343,16 @@ export default function Board() {
         {view === "alumnos" ? (
           <section className="students-view">
             <p className="eyebrow"><span /> Grupo de clase</p>
-            <h1>Alumnos</h1>
-            <p className="intro">Fichas del grupo y tareas asignadas.</p>
+            <div className="students-heading">
+              <div><h1>Alumnos</h1><p className="intro">Fichas del grupo y tareas asignadas.</p></div>
+              <button type="button" className="primary" onClick={() => { setStudentForm({ section: crypto.randomUUID(), name: "", displayName: "", role: "", activities: "", aiHelp: "", revision: 0 }); setStudentFormError(""); }}><Plus size={18} /> Añadir alumno</button>
+            </div>
             {loadError && <div role="alert" className="alert">{loadError} <button type="button" className="text-button" onClick={() => void refresh()}>Reintentar</button></div>}
             {studentError && <div role="alert" className="alert">{studentError} <button type="button" className="text-button" onClick={() => void refreshStudents()}>Reintentar</button></div>}
             {studentName ? (() => {
               const student = students?.find((item) => item.section === studentName);
-              if (!student) return null;
-              const normalize = (value: string) => value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-              const firstName = student.name.split(/\s+/)[0];
-              const firstNameUnique = (students ?? []).filter((item) => normalize(item.name.split(/\s+/)[0]) === normalize(firstName)).length === 1;
-              const displayNameUnique = (students ?? []).filter((item) => normalize(item.name) === normalize(student.displayName) || normalize(item.displayName) === normalize(student.displayName)).length === 1;
-              const assigned = all.filter((task) => normalize(task.assignee) === normalize(student.name) || (displayNameUnique && normalize(task.assignee) === normalize(student.displayName)) || (firstNameUnique && normalize(task.assignee) === normalize(firstName)));
+              if (!student) return <div className="student-detail"><p>Esta ficha ya no está disponible.</p><button className="text-button back-link" onClick={() => setStudentName(null)}>← Todos los alumnos</button></div>;
+              const assigned = all.filter((task) => taskBelongsTo(task, student, students ?? []));
               return <div className="student-detail">
                 <button className="text-button back-link" onClick={() => setStudentName(null)}>← Todos los alumnos</button>
                 <div className="student-profile-header">
@@ -322,6 +361,10 @@ export default function Board() {
                   <div className="profile-edit-wrap">
                     <button type="button" className="profile-edit" aria-label="Editar perfil" aria-describedby="edit-profile-tooltip" onClick={() => { setStudentForm(student); setStudentFormError(""); }}><Pencil size={18} aria-hidden /></button>
                     <span className="profile-tooltip" id="edit-profile-tooltip" role="tooltip">Editar perfil</span>
+                  </div>
+                  <div className="profile-edit-wrap">
+                    <button type="button" className="profile-delete" aria-label="Eliminar perfil" aria-describedby="delete-profile-tooltip" onClick={() => { setStudentDeleting(student); setStudentFormError(""); }}><Trash2 size={18} aria-hidden /></button>
+                    <span className="profile-tooltip" id="delete-profile-tooltip" role="tooltip">Eliminar perfil</span>
                   </div>
                 </div>
                 <div className="student-info">
@@ -335,14 +378,20 @@ export default function Board() {
                   <span className={"student-status " + task.status}>{columns[task.status].name}</span>
                 </button>) : <p className="intro">Todavía no tiene tareas asignadas.</p>}
               </div>;
-            })() : <div className="students-grid">
+            })() : <><div className="students-view-options" aria-label="Vista de alumnos">
+              <span>{students?.length ?? 0} alumnos</span>
+              <div className="layout-toggle" role="group" aria-label="Seleccionar vista">
+                <button type="button" aria-label="Vista mosaico" aria-pressed={studentLayout === "grid"} onClick={() => setStudentLayout("grid")}><LayoutGrid size={18} /></button>
+                <button type="button" aria-label="Vista lista" aria-pressed={studentLayout === "list"} onClick={() => setStudentLayout("list")}><List size={18} /></button>
+              </div>
+            </div><div className={studentLayout === "grid" ? "students-grid" : "students-grid students-list"}>
               {students === null && <p>{studentError ? "No se pudieron cargar las fichas." : "Cargando fichas…"}</p>}
               {students?.map((student) => <button type="button" className="student-card" key={student.section} onClick={() => setStudentName(student.section)}>
                 <span className="student-avatar">{student.displayName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span>
                 <span><strong>{student.displayName}</strong><small>{student.role}</small></span>
                 <ArrowRight size={17} />
               </button>)}
-            </div>}
+            </div></>}
           </section>
         ) : <>
         <section className="hero" aria-labelledby="board-title">
@@ -366,6 +415,10 @@ export default function Board() {
               <label className="filter"><ListFilter size={17} /><select value={filter} aria-label="Filtrar por prioridad" onChange={(event) => setFilter(event.target.value)}>
                 <option value="">Todas las prioridades</option>
                 {priorities.map((priority) => <option key={priority} value={priority}>{priorityNames[priority]}</option>)}
+              </select><ArrowDown size={13} aria-hidden /></label>
+              <label className="filter"><Users size={17} /><select value={studentFilter} aria-label="Filtrar por alumno" onChange={(event) => setStudentFilter(event.target.value)}>
+                <option value="">Todos los alumnos</option>
+                {students?.map((student) => <option key={student.section} value={student.section}>{student.displayName}</option>)}
               </select><ArrowDown size={13} aria-hidden /></label>
             </div>
           </div>
@@ -446,15 +499,25 @@ export default function Board() {
       )}
 
       {studentForm && (
-        <Modal title="Editar perfil" onClose={() => { if (!studentWriting.current) setStudentForm(null); }}>
+        <Modal title={studentForm.revision ? "Editar perfil" : "Añadir alumno"} onClose={() => { if (!studentWriting.current) setStudentForm(null); }}>
           <form onSubmit={saveStudent} className="task-form">
             <label>Nombre visible<input required maxLength={80} value={studentForm.displayName} onChange={(event) => setStudentForm({ ...studentForm, displayName: event.target.value })} /></label>
             <label>Puesto de trabajo<input maxLength={500} value={studentForm.role} onChange={(event) => setStudentForm({ ...studentForm, role: event.target.value })} /></label>
             <label>Actividades cotidianas<textarea rows={3} maxLength={2000} value={studentForm.activities} onChange={(event) => setStudentForm({ ...studentForm, activities: event.target.value })} /></label>
             <label>Ayuda de la IA<textarea rows={3} maxLength={2000} value={studentForm.aiHelp} onChange={(event) => setStudentForm({ ...studentForm, aiHelp: event.target.value })} /></label>
             {studentFormError && <div role="alert" className="alert">{studentFormError}</div>}
-            <div className="modal-actions"><span className="spacer" /><button type="button" className="secondary" disabled={studentSaving} onClick={() => setStudentForm(null)}>Cancelar</button><button type="submit" className="primary" disabled={studentSaving}>{studentSaving ? "Guardando…" : "Guardar cambios"}</button></div>
+            <div className="modal-actions"><span className="spacer" /><button type="button" className="secondary" disabled={studentSaving} onClick={() => setStudentForm(null)}>Cancelar</button><button type="submit" className="primary" disabled={studentSaving}>{studentSaving ? "Guardando…" : studentForm.revision ? "Guardar cambios" : "Añadir alumno"}</button></div>
           </form>
+        </Modal>
+      )}
+
+      {studentDeleting && (
+        <Modal title="Eliminar perfil" onClose={() => { if (!studentWriting.current) setStudentDeleting(null); }}>
+          <div className="share-content">
+            <p>¿Quieres eliminar la ficha de {studentDeleting.displayName}? Las tareas se conservarán en el tablero con el nombre de su responsable.</p>
+            {studentFormError && <div role="alert" className="alert">{studentFormError}</div>}
+            <div className="modal-actions"><span className="spacer" /><button type="button" className="secondary" disabled={studentSaving} onClick={() => setStudentDeleting(null)}>Cancelar</button><button type="button" className="danger" disabled={studentSaving} onClick={() => void deleteStudent()}>{studentSaving ? "Eliminando…" : "Confirmar eliminación"}</button></div>
+          </div>
         </Modal>
       )}
 
