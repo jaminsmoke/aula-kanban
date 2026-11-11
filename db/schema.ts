@@ -11,3 +11,13 @@ export const tasks = sqliteTable("tasks", {
   createdAt: integer("created_at").notNull(),
   revision: integer("revision").notNull().default(1),
 });
+
+export const students = sqliteTable("students", {
+  section: text("section").primaryKey().notNull(),
+  name: text("name").notNull(),
+  displayName: text("display_name").notNull(),
+  role: text("role").notNull(),
+  activities: text("activities").notNull(),
+  aiHelp: text("ai_help").notNull(),
+  revision: integer("revision").notNull().default(1),
+});

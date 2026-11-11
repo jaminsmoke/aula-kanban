@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent, PointerEvent, ReactNode } from "react";
 import { priorities, priorityNames, statuses } from "./task";
 import type { Task, TaskFields } from "./task";
-import students from "./students.json";
+import type { Student } from "./student";
 
 const columns = {
   pending: { name: "Por hacer", icon: CircleDashed },
@@ -27,8 +27,8 @@ class RequestError extends Error {
   }
 }
 
-async function request<T>(method = "GET", body?: unknown): Promise<T> {
-  const response = await fetch("/api/tasks", {
+async function request<T>(method = "GET", body?: unknown, path = "/api/tasks"): Promise<T> {
+  const response = await fetch(path, {
     method,
     cache: "no-store",
     headers: body === undefined ? undefined : { "Content-Type": "application/json" },
@@ -95,6 +95,13 @@ function TaskCard({ task, dragging, onEdit, onGrab, onMove, onRelease, onCancel 
 export default function Board() {
   const [view, setView] = useState<"kanban" | "alumnos">("kanban");
   const [studentName, setStudentName] = useState<string | null>(null);
+  const [students, setStudents] = useState<Student[] | null>(null);
+  const [studentError, setStudentError] = useState("");
+  const [studentForm, setStudentForm] = useState<Student | null>(null);
+  const [studentFormError, setStudentFormError] = useState("");
+  const [studentSaving, setStudentSaving] = useState(false);
+  const studentWriting = useRef(false);
+  const studentReadVersion = useRef(0);
   const [tasks, setTasks] = useState<Task[] | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
@@ -126,16 +133,54 @@ export default function Board() {
     }
   }, []);
 
+  const refreshStudents = useCallback(async () => {
+    if (studentWriting.current) return;
+    const version = ++studentReadVersion.current;
+    try {
+      const next = await request<Student[]>("GET", undefined, "/api/students");
+      if (version !== studentReadVersion.current) return;
+      setStudents(next);
+      setStudentError("");
+    } catch (error) {
+      if (version === studentReadVersion.current) setStudentError((error as Error).message);
+    }
+  }, []);
+
+  async function saveStudent(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!studentForm || studentWriting.current) return;
+    studentWriting.current = true;
+    ++studentReadVersion.current;
+    setStudentSaving(true);
+    setStudentFormError("");
+    try {
+      const updated = await request<Student>("PATCH", studentForm, "/api/students");
+      setStudents((previous) => previous?.map((student) => student.section === updated.section ? updated : student) ?? [updated]);
+      setStudentForm(null);
+      setNotice("Perfil actualizado.");
+    } catch (error) {
+      setStudentFormError((error as Error).message);
+    } finally {
+      studentWriting.current = false;
+      setStudentSaving(false);
+      void refreshStudents();
+    }
+  }
+
   useEffect(() => {
     void refresh();
-    const timer = window.setInterval(() => { if (!document.hidden) void refresh(); }, 8000);
+    void refreshStudents();
+    const timer = window.setInterval(() => { if (!document.hidden) { void refresh(); void refreshStudents(); } }, 8000);
     window.addEventListener("focus", refresh);
+    window.addEventListener("focus", refreshStudents);
     return () => {
       ++readVersion.current;
+      ++studentReadVersion.current;
       window.clearInterval(timer);
       window.removeEventListener("focus", refresh);
+      window.removeEventListener("focus", refreshStudents);
     };
-  }, [refresh]);
+  }, [refresh, refreshStudents]);
 
   function openEditor(status: TaskFields["status"], task?: Task) {
     if (writing.current) return;
@@ -177,10 +222,14 @@ export default function Board() {
       return;
     }
     const task = editor?.task;
+    const matches = (students ?? []).filter((student) =>
+      student.displayName.localeCompare(form.assignee.trim(), "es", { sensitivity: "base" }) === 0,
+    );
+    const fields = matches.length === 1 ? { ...form, assignee: matches[0].name } : form;
     if (task) {
-      void mutate("PATCH", { id: task.id, revision: task.revision, changes: form }, "Cambios guardados.", true);
+      void mutate("PATCH", { id: task.id, revision: task.revision, changes: fields }, "Cambios guardados.", true);
     } else {
-      void mutate("POST", form, "Tarea creada.", true);
+      void mutate("POST", fields, "Tarea creada.", true);
     }
   }
 
@@ -256,17 +305,20 @@ export default function Board() {
             <h1>Alumnos</h1>
             <p className="intro">Fichas del grupo y tareas asignadas.</p>
             {loadError && <div role="alert" className="alert">{loadError} <button type="button" className="text-button" onClick={() => void refresh()}>Reintentar</button></div>}
+            {studentError && <div role="alert" className="alert">{studentError} <button type="button" className="text-button" onClick={() => void refreshStudents()}>Reintentar</button></div>}
             {studentName ? (() => {
-              const student = students.find((item) => item.name === studentName);
+              const student = students?.find((item) => item.section === studentName);
               if (!student) return null;
               const normalize = (value: string) => value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
               const firstName = student.name.split(/\s+/)[0];
-              const firstNameUnique = students.filter((item) => normalize(item.name.split(/\s+/)[0]) === normalize(firstName)).length === 1;
-              const assigned = all.filter((task) => normalize(task.assignee) === normalize(student.name) || (firstNameUnique && normalize(task.assignee) === normalize(firstName)));
+              const firstNameUnique = (students ?? []).filter((item) => normalize(item.name.split(/\s+/)[0]) === normalize(firstName)).length === 1;
+              const displayNameUnique = (students ?? []).filter((item) => normalize(item.name) === normalize(student.displayName) || normalize(item.displayName) === normalize(student.displayName)).length === 1;
+              const assigned = all.filter((task) => normalize(task.assignee) === normalize(student.name) || (displayNameUnique && normalize(task.assignee) === normalize(student.displayName)) || (firstNameUnique && normalize(task.assignee) === normalize(firstName)));
               return <div className="student-detail">
                 <button className="text-button back-link" onClick={() => setStudentName(null)}>← Todos los alumnos</button>
-                <h2>{student.name}</h2>
-                <div className="student-info">{student.details.map((line) => <p key={line}>{line}</p>)}</div>
+                <h2>{student.displayName}</h2>
+                <button type="button" className="secondary" onClick={() => { setStudentForm(student); setStudentFormError(""); }}>Editar perfil</button>
+                <div className="student-info"><p>Puesto de trabajo: {student.role || "Sin especificar"}</p><p>Actividades cotidianas: {student.activities || "Sin especificar"}</p><p>Ayuda de la IA: {student.aiHelp || "Sin especificar"}</p></div>
                 <h3>Sus tareas <span>({assigned.length})</span></h3>
                 {tasks === null ? <p>Cargando tareas…</p> : assigned.length ? assigned.map((task) => <button className="student-task" key={task.id} onClick={() => openEditor(task.status, task)}>
                   <span><strong>{task.title}</strong>{task.dueDate && <small>Entrega {formatDate.format(new Date(task.dueDate + "T12:00:00"))}</small>}</span>
@@ -274,9 +326,10 @@ export default function Board() {
                 </button>) : <p className="intro">Todavía no tiene tareas asignadas.</p>}
               </div>;
             })() : <div className="students-grid">
-              {students.map((student) => <button type="button" className="student-card" key={student.section} onClick={() => setStudentName(student.name)}>
-                <span className="student-avatar">{student.name.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span>
-                <span><strong>{student.name}</strong><small>{student.details[0]?.replace(/^Puesto de trabajo:\s*/i, "")}</small></span>
+              {students === null && <p>{studentError ? "No se pudieron cargar las fichas." : "Cargando fichas…"}</p>}
+              {students?.map((student) => <button type="button" className="student-card" key={student.section} onClick={() => setStudentName(student.section)}>
+                <span className="student-avatar">{student.displayName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span>
+                <span><strong>{student.displayName}</strong><small>{student.role}</small></span>
                 <ArrowRight size={17} />
               </button>)}
             </div>}
@@ -347,7 +400,7 @@ export default function Board() {
             <label>Título<input autoFocus required maxLength={120} placeholder="¿Qué hay que hacer?" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></label>
             <label>Descripción <span>(opcional)</span><textarea maxLength={2000} rows={3} placeholder="Detalles, materiales o enlaces" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></label>
             <div className="form-row">
-              <label>Responsable<input list="student-options" maxLength={80} placeholder="Nombre o equipo" value={form.assignee} onChange={(event) => setForm({ ...form, assignee: event.target.value })} /><datalist id="student-options">{students.map((student) => <option key={student.section} value={student.name} />)}</datalist></label>
+              <label>Responsable<input list="student-options" maxLength={80} placeholder="Nombre o equipo" value={form.assignee} onChange={(event) => setForm({ ...form, assignee: event.target.value })} /><datalist id="student-options">{students?.map((student) => <option key={student.section} value={student.name}>{student.displayName}</option>)}</datalist></label>
               <label>Fecha de entrega<input type="date" value={form.dueDate} onChange={(event) => setForm({ ...form, dueDate: event.target.value })} /></label>
             </div>
             <div className="form-row">
@@ -378,6 +431,19 @@ export default function Board() {
                 </>
               )}
             </div>
+          </form>
+        </Modal>
+      )}
+
+      {studentForm && (
+        <Modal title="Editar perfil" onClose={() => { if (!studentWriting.current) setStudentForm(null); }}>
+          <form onSubmit={saveStudent} className="task-form">
+            <label>Nombre visible<input required maxLength={80} value={studentForm.displayName} onChange={(event) => setStudentForm({ ...studentForm, displayName: event.target.value })} /></label>
+            <label>Puesto de trabajo<input maxLength={500} value={studentForm.role} onChange={(event) => setStudentForm({ ...studentForm, role: event.target.value })} /></label>
+            <label>Actividades cotidianas<textarea rows={3} maxLength={2000} value={studentForm.activities} onChange={(event) => setStudentForm({ ...studentForm, activities: event.target.value })} /></label>
+            <label>Ayuda de la IA<textarea rows={3} maxLength={2000} value={studentForm.aiHelp} onChange={(event) => setStudentForm({ ...studentForm, aiHelp: event.target.value })} /></label>
+            {studentFormError && <div role="alert" className="alert">{studentFormError}</div>}
+            <div className="modal-actions"><span className="spacer" /><button type="button" className="secondary" disabled={studentSaving} onClick={() => setStudentForm(null)}>Cancelar</button><button type="submit" className="primary" disabled={studentSaving}>{studentSaving ? "Guardando…" : "Guardar cambios"}</button></div>
           </form>
         </Modal>
       )}
