@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent, PointerEvent, ReactNode } from "react";
 import { priorities, priorityNames, statuses } from "./task";
 import type { Task, TaskFields } from "./task";
+import students from "./students.json";
 
 const columns = {
   pending: { name: "Por hacer", icon: CircleDashed },
@@ -92,6 +93,8 @@ function TaskCard({ task, dragging, onEdit, onGrab, onMove, onRelease, onCancel 
 }
 
 export default function Board() {
+  const [view, setView] = useState<"kanban" | "alumnos">("kanban");
+  const [studentName, setStudentName] = useState<string | null>(null);
   const [tasks, setTasks] = useState<Task[] | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
@@ -235,6 +238,10 @@ export default function Board() {
       <header className="topbar">
         <div className="shell topbar-inner">
           <span className="wordmark"><span className="brand-icon"><Columns3 size={20} strokeWidth={2.6} /></span>Aula Kanban</span>
+          <nav className="main-nav" aria-label="Vistas">
+            <button type="button" aria-current={view === "kanban" ? "page" : undefined} onClick={() => setView("kanban")}>Kanban</button>
+            <button type="button" aria-current={view === "alumnos" ? "page" : undefined} onClick={() => { setView("alumnos"); setStudentName(null); }}>Alumnos</button>
+          </nav>
           <button type="button" className="secondary share" onClick={() => {
             setCopied(false);
             setShareUrl(window.location.origin + "/");
@@ -243,6 +250,38 @@ export default function Board() {
       </header>
 
       <main className="shell">
+        {view === "alumnos" ? (
+          <section className="students-view">
+            <p className="eyebrow"><span /> Grupo de clase</p>
+            <h1>Alumnos</h1>
+            <p className="intro">Fichas del grupo y tareas asignadas.</p>
+            {loadError && <div role="alert" className="alert">{loadError} <button type="button" className="text-button" onClick={() => void refresh()}>Reintentar</button></div>}
+            {studentName ? (() => {
+              const student = students.find((item) => item.name === studentName);
+              if (!student) return null;
+              const normalize = (value: string) => value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+              const firstName = student.name.split(/\s+/)[0];
+              const firstNameUnique = students.filter((item) => normalize(item.name.split(/\s+/)[0]) === normalize(firstName)).length === 1;
+              const assigned = all.filter((task) => normalize(task.assignee) === normalize(student.name) || (firstNameUnique && normalize(task.assignee) === normalize(firstName)));
+              return <div className="student-detail">
+                <button className="text-button back-link" onClick={() => setStudentName(null)}>← Todos los alumnos</button>
+                <h2>{student.name}</h2>
+                <div className="student-info">{student.details.map((line) => <p key={line}>{line}</p>)}</div>
+                <h3>Sus tareas <span>({assigned.length})</span></h3>
+                {tasks === null ? <p>Cargando tareas…</p> : assigned.length ? assigned.map((task) => <button className="student-task" key={task.id} onClick={() => openEditor(task.status, task)}>
+                  <span><strong>{task.title}</strong>{task.dueDate && <small>Entrega {formatDate.format(new Date(task.dueDate + "T12:00:00"))}</small>}</span>
+                  <span className={"student-status " + task.status}>{columns[task.status].name}</span>
+                </button>) : <p className="intro">Todavía no tiene tareas asignadas.</p>}
+              </div>;
+            })() : <div className="students-grid">
+              {students.map((student) => <button type="button" className="student-card" key={student.section} onClick={() => setStudentName(student.name)}>
+                <span className="student-avatar">{student.name.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span>
+                <span><strong>{student.name}</strong><small>{student.details[0]?.replace(/^Puesto de trabajo:\s*/i, "")}</small></span>
+                <ArrowRight size={17} />
+              </button>)}
+            </div>}
+          </section>
+        ) : <>
         <section className="hero" aria-labelledby="board-title">
           <div className="hero-content">
             <p className="eyebrow"><span /> Grupo de clase</p>
@@ -256,7 +295,6 @@ export default function Board() {
             <progress aria-label="Progreso del grupo" max={100} value={progress} />
           </div>
         </section>
-
         <section className="workspace" aria-label="Columnas del tablero">
           <div className="toolbar">
             <h2><Columns3 size={18} /> Kanban</h2>
@@ -298,6 +336,7 @@ export default function Board() {
           </div>
           <footer className="board-footer"><span><GripVertical size={16} /> Arrastra una tarjeta por su asa o cambia su estado al editarla.</span><span className="sync"><i /> {loadError ? "Sin conexión" : tasks === null ? "Conectando…" : "Tablero compartido"}</span></footer>
         </section>
+        </>}
 
         <div className={notice ? "toast" : "sr-only"} role="status">{notice}{notice && <button type="button" className="icon-button" onClick={() => setNotice("")} aria-label="Cerrar aviso"><X size={16} /></button>}</div>
       </main>
@@ -308,7 +347,7 @@ export default function Board() {
             <label>Título<input autoFocus required maxLength={120} placeholder="¿Qué hay que hacer?" value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} /></label>
             <label>Descripción <span>(opcional)</span><textarea maxLength={2000} rows={3} placeholder="Detalles, materiales o enlaces" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></label>
             <div className="form-row">
-              <label>Responsable<input maxLength={80} placeholder="Nombre o equipo" value={form.assignee} onChange={(event) => setForm({ ...form, assignee: event.target.value })} /></label>
+              <label>Responsable<input list="student-options" maxLength={80} placeholder="Nombre o equipo" value={form.assignee} onChange={(event) => setForm({ ...form, assignee: event.target.value })} /><datalist id="student-options">{students.map((student) => <option key={student.section} value={student.name} />)}</datalist></label>
               <label>Fecha de entrega<input type="date" value={form.dueDate} onChange={(event) => setForm({ ...form, dueDate: event.target.value })} /></label>
             </div>
             <div className="form-row">

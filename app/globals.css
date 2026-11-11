@@ -225,3 +225,28 @@ dialog::backdrop { background: #20173575; }
   .filter select { font-size: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+.main-nav { display:flex; gap:4px; margin-left:24px; margin-right:auto; }
+.main-nav button { border:0; border-radius:8px; padding:9px 13px; background:transparent; color:var(--muted); font-weight:700; }
+.main-nav button[aria-current="page"] { background:var(--violet-pale); color:var(--violet-dark); }
+.students-view { padding-block:42px; }
+.students-view h1 { margin-top:8px; }
+.students-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; margin-top:30px; }
+.student-card { display:flex; align-items:center; gap:12px; min-width:0; padding:18px; text-align:left; border:1px solid var(--line); border-radius:14px; background:white; color:var(--ink); }
+.student-card:hover { border-color:#bca7e9; box-shadow:0 4px 12px #30225510; }
+.student-card > span:nth-child(2) { flex:1; min-width:0; }
+.student-card strong,.student-card small { display:block; overflow-wrap:anywhere; }
+.student-card small { color:var(--muted); margin-top:6px; line-height:1.35; }
+.student-avatar { display:grid; place-items:center; flex:0 0 42px; height:42px; border-radius:12px; background:var(--violet-pale); color:var(--violet-dark); font-weight:700; }
+.student-card > svg { color:var(--violet); }
+.student-detail { background:white; border:1px solid var(--line); border-radius:16px; padding:24px; margin-top:28px; }
+.student-detail h2 { font-size:28px; margin:16px 0; }
+.student-detail h3 { font-size:18px; margin:28px 0 12px; }
+.student-detail h3 span { color:var(--muted); }
+.student-info { display:grid; gap:10px; color:var(--muted); line-height:1.5; }
+.back-link { padding:0; color:var(--violet); }
+.student-task { width:100%; display:flex; gap:12px; justify-content:space-between; align-items:center; text-align:left; padding:14px; margin-top:8px; border:1px solid var(--line); border-radius:10px; background:white; color:var(--ink); }
+.student-task:hover { border-color:#bca7e9; }
+.student-task small { display:block; color:var(--muted); margin-top:5px; }
+.student-status { flex:none; background:var(--violet-pale); color:var(--violet-dark); border-radius:6px; padding:5px 8px; font-size:12px; font-weight:700; }
+.student-status.done { background:#daf1e8; color:#176a50; }
+@media (max-width:620px) { .topbar-inner { flex-wrap:wrap; padding-block:10px; } .main-nav { order:3; margin:0; flex-basis:100%; } .students-view { padding-top:28px; } }
