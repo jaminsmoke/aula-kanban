@@ -2,7 +2,7 @@
 
 import {
   ArrowDown, ArrowRight, CalendarDays, Check, CircleCheck, CircleDashed, ClipboardList,
-  Clock3, Columns3, Flag, GripVertical, Link2, ListFilter, Plus, ScanEye, Search, Trash2, X,
+  BriefcaseBusiness, Clock3, Columns3, Flag, GripVertical, Lightbulb, Link2, ListFilter, ListTodo, Pencil, Plus, ScanEye, Search, Trash2, X,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent, PointerEvent, ReactNode } from "react";
@@ -316,10 +316,20 @@ export default function Board() {
               const assigned = all.filter((task) => normalize(task.assignee) === normalize(student.name) || (displayNameUnique && normalize(task.assignee) === normalize(student.displayName)) || (firstNameUnique && normalize(task.assignee) === normalize(firstName)));
               return <div className="student-detail">
                 <button className="text-button back-link" onClick={() => setStudentName(null)}>← Todos los alumnos</button>
-                <h2>{student.displayName}</h2>
-                <button type="button" className="secondary" onClick={() => { setStudentForm(student); setStudentFormError(""); }}>Editar perfil</button>
-                <div className="student-info"><p>Puesto de trabajo: {student.role || "Sin especificar"}</p><p>Actividades cotidianas: {student.activities || "Sin especificar"}</p><p>Ayuda de la IA: {student.aiHelp || "Sin especificar"}</p></div>
-                <h3>Sus tareas <span>({assigned.length})</span></h3>
+                <div className="student-profile-header">
+                  <span className="student-profile-avatar" aria-hidden>{student.displayName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</span>
+                  <div className="student-identity"><span className="student-kicker">Ficha de alumno</span><h2>{student.displayName}</h2><p>{student.role || "Puesto sin especificar"}</p></div>
+                  <div className="profile-edit-wrap">
+                    <button type="button" className="profile-edit" aria-label="Editar perfil" aria-describedby="edit-profile-tooltip" onClick={() => { setStudentForm(student); setStudentFormError(""); }}><Pencil size={18} aria-hidden /></button>
+                    <span className="profile-tooltip" id="edit-profile-tooltip" role="tooltip">Editar perfil</span>
+                  </div>
+                </div>
+                <div className="student-info">
+                  <div className="student-info-card"><span className="info-icon role"><BriefcaseBusiness size={18} aria-hidden /></span><div><h3>Puesto de trabajo</h3><p>{student.role || "Sin especificar"}</p></div></div>
+                  <div className="student-info-card"><span className="info-icon activities"><ListTodo size={18} aria-hidden /></span><div><h3>Actividades cotidianas</h3><p>{student.activities || "Sin especificar"}</p></div></div>
+                  <div className="student-info-card"><span className="info-icon ai"><Lightbulb size={18} aria-hidden /></span><div><h3>Ayuda de la IA</h3><p>{student.aiHelp || "Sin especificar"}</p></div></div>
+                </div>
+                <h3 className="student-tasks-title">Sus tareas <span>({assigned.length})</span></h3>
                 {tasks === null ? <p>Cargando tareas…</p> : assigned.length ? assigned.map((task) => <button className="student-task" key={task.id} onClick={() => openEditor(task.status, task)}>
                   <span><strong>{task.title}</strong>{task.dueDate && <small>Entrega {formatDate.format(new Date(task.dueDate + "T12:00:00"))}</small>}</span>
                   <span className={"student-status " + task.status}>{columns[task.status].name}</span>
