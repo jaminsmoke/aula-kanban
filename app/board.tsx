@@ -2,7 +2,7 @@
 
 import {
   ArrowDown, ArrowRight, CalendarDays, Check, CircleCheck, CircleDashed, ClipboardList,
-  BriefcaseBusiness, Clock3, Columns3, Flag, GripVertical, LayoutGrid, Lightbulb, Link2, List, ListFilter, ListTodo, Pencil, Plus, ScanEye, Search, Trash2, Users, X,
+  BriefcaseBusiness, ChevronDown, Clock3, Columns3, Flag, FolderKanban, GripVertical, LayoutGrid, Lightbulb, Link2, List, ListFilter, ListTodo, Pencil, Plus, ScanEye, Search, Trash2, Users, X,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent, PointerEvent, ReactNode } from "react";
@@ -20,6 +20,7 @@ const blank: TaskFields = {
   title: "", description: "", assignee: "", dueDate: "", priority: "normal", status: "pending",
 };
 const formatDate = new Intl.DateTimeFormat("es", { day: "numeric", month: "short" });
+type Project = { id: string; name: string; createdAt: number };
 const normalizeName = (value: string) => value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 function taskBelongsTo(task: Task, student: Student, students: Student[]) {
@@ -40,7 +41,9 @@ class RequestError extends Error {
 }
 
 async function request<T>(method = "GET", body?: unknown, path = "/api/tasks"): Promise<T> {
-  const response = await fetch(path, {
+  const projectId = new URLSearchParams(window.location.search).get("project") || "default";
+  const url = path === "/api/projects" ? path : `${path}?project=${encodeURIComponent(projectId)}`;
+  const response = await fetch(url, {
     method,
     cache: "no-store",
     headers: body === undefined ? undefined : { "Content-Type": "application/json" },
@@ -105,6 +108,12 @@ function TaskCard({ task, dragging, onEdit, onGrab, onMove, onRelease, onCancel 
 }
 
 export default function Board() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [projectId, setProjectId] = useState("default");
+  const [projectError, setProjectError] = useState("");
+  const [newProject, setNewProject] = useState<{ id: string; name: string } | null>(null);
+  const [projectSaving, setProjectSaving] = useState(false);
+  const projectWriting = useRef(false);
   const [view, setView] = useState<"kanban" | "alumnos">("kanban");
   const [studentName, setStudentName] = useState<string | null>(null);
   const [students, setStudents] = useState<Student[] | null>(null);
@@ -134,6 +143,34 @@ export default function Board() {
   const [copied, setCopied] = useState(false);
   const writing = useRef(false);
   const readVersion = useRef(0);
+
+  const refreshProjects = useCallback(async () => {
+    try {
+      const next = await request<Project[]>("GET", undefined, "/api/projects");
+      const currentId = new URLSearchParams(window.location.search).get("project") || "default";
+      setProjects(next);
+      setProjectId(currentId);
+      setProjectError(next.some((item) => item.id === currentId) ? "" : "No se encuentra este proyecto.");
+    } catch (error) {
+      setProjectError((error as Error).message);
+    }
+  }, []);
+
+  async function createProject(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!newProject || projectWriting.current) return;
+    projectWriting.current = true;
+    setProjectSaving(true);
+    setProjectError("");
+    try {
+      const created = await request<Project>("POST", newProject, "/api/projects");
+      window.location.assign("/?project=" + encodeURIComponent(created.id));
+    } catch (error) {
+      setProjectError((error as Error).message);
+      projectWriting.current = false;
+      setProjectSaving(false);
+    }
+  }
 
   const refresh = useCallback(async () => {
     if (writing.current) return;
@@ -207,19 +244,22 @@ export default function Board() {
   }
 
   useEffect(() => {
+    void refreshProjects();
     void refresh();
     void refreshStudents();
     const timer = window.setInterval(() => { if (!document.hidden) { void refresh(); void refreshStudents(); } }, 8000);
     window.addEventListener("focus", refresh);
     window.addEventListener("focus", refreshStudents);
+    window.addEventListener("focus", refreshProjects);
     return () => {
       ++readVersion.current;
       ++studentReadVersion.current;
       window.clearInterval(timer);
       window.removeEventListener("focus", refresh);
       window.removeEventListener("focus", refreshStudents);
+      window.removeEventListener("focus", refreshProjects);
     };
-  }, [refresh, refreshStudents]);
+  }, [refresh, refreshStudents, refreshProjects]);
 
   function openEditor(status: TaskFields["status"], task?: Task) {
     if (writing.current) return;
@@ -332,14 +372,22 @@ export default function Board() {
             <button type="button" aria-current={view === "kanban" ? "page" : undefined} onClick={() => setView("kanban")}>Kanban</button>
             <button type="button" aria-current={view === "alumnos" ? "page" : undefined} onClick={() => { setView("alumnos"); setStudentName(null); }}>Alumnos</button>
           </nav>
-          <button type="button" className="secondary share" onClick={() => {
-            setCopied(false);
-            setShareUrl(window.location.origin + "/");
-          }}><Link2 size={17} /> Compartir</button>
+          <details className="project-menu">
+            <summary aria-label="Seleccionar proyecto"><FolderKanban size={18} /><span>{projects.find((project) => project.id === projectId)?.name ?? (projectError ? "Proyecto no disponible" : "Cargando proyecto…")}</span><ChevronDown size={16} /></summary>
+            <div className="project-dropdown">
+              <p>Proyectos</p>
+              {projects.map((project) => <a key={project.id} href={project.id === "default" ? "/" : `/?project=${encodeURIComponent(project.id)}`} aria-current={project.id === projectId ? "page" : undefined}><span>{project.name}</span>{project.id === projectId && <Check size={16} />}</a>)}
+              <div className="project-menu-actions">
+                <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={16} /> Nuevo proyecto</button>
+                <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setCopied(false); const url = new URL("/", window.location.origin); url.searchParams.set("project", projectId); setShareUrl(url.href); }}><Link2 size={16} /> Compartir proyecto</button>
+              </div>
+            </div>
+          </details>
         </div>
       </header>
 
       <main className="shell">
+        {projectError && !newProject && <div role="alert" className="alert project-alert">{projectError} <button type="button" className="text-button" onClick={() => void refreshProjects()}>Reintentar</button></div>}
         {view === "alumnos" ? (
           <section className="students-view">
             <p className="eyebrow"><span /> Grupo de clase</p>
@@ -524,11 +572,21 @@ export default function Board() {
         </Modal>
       )}
 
+      {newProject && (
+        <Modal title="Nuevo proyecto" onClose={() => { if (!projectWriting.current) setNewProject(null); }}>
+          <form className="task-form" onSubmit={createProject}>
+            <label>Nombre del proyecto<input autoFocus required maxLength={80} value={newProject.name} onChange={(event) => setNewProject({ ...newProject, name: event.target.value })} placeholder="Nombre del proyecto" /></label>
+            {projectError && <div role="alert" className="alert">{projectError}</div>}
+            <div className="modal-actions"><span className="spacer" /><button type="button" className="secondary" disabled={projectSaving} onClick={() => setNewProject(null)}>Cancelar</button><button type="submit" className="primary" disabled={projectSaving}>{projectSaving ? "Creando…" : "Crear proyecto"}</button></div>
+          </form>
+        </Modal>
+      )}
+
       {shareUrl && (
-        <Modal title="Compartir tablero" onClose={() => setShareUrl("")}>
+        <Modal title="Compartir proyecto" onClose={() => setShareUrl("")}>
           <div className="share-content">
-            <p>Da acceso a tu grupo desde las opciones de uso compartido de Sites y envíales este enlace. Todos veréis y editaréis las mismas tareas.</p>
-            <label>Enlace del tablero<input aria-label="Enlace del tablero" readOnly value={shareUrl} onFocus={(event) => event.target.select()} /></label>
+            <p>Comparte este enlace para abrir el proyecto «{projects.find((project) => project.id === projectId)?.name}». El acceso se gestiona desde Sites.</p>
+            <label>Enlace del proyecto<input aria-label="Enlace del proyecto" readOnly value={shareUrl} onFocus={(event) => event.target.select()} /></label>
             <button type="button" className="primary" onClick={async () => {
               try {
                 await navigator.clipboard.writeText(shareUrl);

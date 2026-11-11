@@ -56,6 +56,22 @@ svg { flex: none; vertical-align: middle; }
 .secondary:hover:enabled { background: #f8f6ff; border-color: #d9d0f4; }
 .share { min-height: 36px; }
 .share svg { color: var(--violet); }
+.project-menu { position:relative; margin-left:auto; min-width:0; }
+.project-menu summary { display:flex; align-items:center; gap:9px; min-height:38px; max-width:300px; padding:0 12px; border:1px solid var(--line); border-radius:9px; background:white; color:var(--ink); font-size:13px; font-weight:700; cursor:pointer; list-style:none; }
+.project-menu summary::-webkit-details-marker { display:none; }
+.project-menu summary:focus-visible { outline:2px solid #7656dd; outline-offset:3px; }
+.project-menu summary > svg:first-child { color:var(--violet); }
+.project-menu summary span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.project-dropdown { position:absolute; z-index:10; right:0; top:calc(100% + 8px); width:min(310px,calc(100vw - 30px)); max-height:min(70vh,520px); overflow:auto; padding:8px; border:1px solid var(--line); border-radius:12px; background:white; box-shadow:0 12px 35px #30225526; }
+.project-dropdown p { padding:9px 10px 6px; color:var(--muted); font-size:11px; font-weight:750; text-transform:uppercase; letter-spacing:.06em; }
+.project-dropdown a,.project-dropdown button { display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; min-height:39px; padding:8px 10px; border:0; border-radius:8px; background:transparent; color:var(--ink); text-align:left; text-decoration:none; font-size:13px; font-weight:650; cursor:pointer; }
+.project-dropdown a span { overflow-wrap:anywhere; }
+.project-dropdown a:hover,.project-dropdown button:hover { background:#f2effb; }
+.project-dropdown a[aria-current="page"] { color:var(--violet); background:var(--violet-pale); }
+.project-menu-actions { border-top:1px solid var(--line); margin-top:6px; padding-top:6px; }
+.project-menu-actions button { justify-content:flex-start; }
+.project-menu-actions svg { color:var(--violet); }
+.project-alert { margin-top:20px; }
 
 .hero {
   margin-block: 32px 32px;

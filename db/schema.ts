@@ -1,7 +1,14 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+export const projects = sqliteTable("projects", {
+  id: text("id").primaryKey().notNull(),
+  name: text("name").notNull(),
+  createdAt: integer("created_at").notNull(),
+});
+
 export const tasks = sqliteTable("tasks", {
   id: text("id").primaryKey().notNull(),
+  projectId: text("project_id").notNull().default("default"),
   title: text("title").notNull(),
   description: text("description").notNull(),
   assignee: text("assignee").notNull(),
@@ -14,6 +21,7 @@ export const tasks = sqliteTable("tasks", {
 
 export const students = sqliteTable("students", {
   section: text("section").primaryKey().notNull(),
+  projectId: text("project_id").notNull().default("default"),
   name: text("name").notNull(),
   displayName: text("display_name").notNull(),
   role: text("role").notNull(),

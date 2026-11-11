@@ -4,6 +4,7 @@ import { getDb } from "../../../db";
 import { tasks } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { priorities, statuses } from "../../task";
+import { validProject } from "../project";
 
 export const dynamic = "force-dynamic";
 
@@ -29,9 +30,11 @@ async function handle(request: Request) {
   if (!(await getChatGPTUser())) {
     return json({ message: "Inicia sesión para acceder al tablero." }, 401);
   }
+  const project = await validProject(request);
+  if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
 
   if (request.method === "GET") {
-    const list = await getDb().select().from(tasks).orderBy(asc(tasks.createdAt), asc(tasks.id));
+    const list = await getDb().select().from(tasks).where(eq(tasks.projectId, project.id)).orderBy(asc(tasks.createdAt), asc(tasks.id));
     return json(list);
   }
 
@@ -46,6 +49,7 @@ async function handle(request: Request) {
     if (!parsed.success) return json({ message: "Revisa los campos de la tarea." }, 400);
     const [created] = await getDb().insert(tasks).values({
       ...parsed.data,
+      projectId: project.id,
       id: crypto.randomUUID(),
       createdAt: Date.now(),
     }).returning();
@@ -56,7 +60,7 @@ async function handle(request: Request) {
   if (!parsed.success) return json({ message: "La referencia de la tarea no es válida." }, 400);
 
   const { id, revision } = parsed.data;
-  const matches = and(eq(tasks.id, id), eq(tasks.revision, revision));
+  const matches = and(eq(tasks.id, id), eq(tasks.revision, revision), eq(tasks.projectId, project.id));
   if (request.method === "DELETE") {
     const [deleted] = await getDb().delete(tasks).where(matches).returning({ id: tasks.id });
     if (deleted) return json(deleted);

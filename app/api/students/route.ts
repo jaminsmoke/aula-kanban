@@ -4,6 +4,7 @@ import { getDb } from "../../../db";
 import { students } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import initialStudents from "../../students.json";
+import { defaultProjectId, validProject } from "../project";
 
 export const dynamic = "force-dynamic";
 
@@ -20,8 +21,10 @@ function json(data: unknown, status = 200) {
   return Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   if (!(await getChatGPTUser())) return json({ message: "Inicia sesión para acceder a las fichas." }, 401);
+  const project = await validProject(request);
+  if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
   const db = getDb();
   const initial = initialStudents.map((student) => ({
     section: student.section,
@@ -31,20 +34,22 @@ export async function GET() {
     activities: (student.details[1] ?? "").replace(/^Actividades cotidianas:\s*/i, ""),
     aiHelp: (student.details[2] ?? "").replace(/^Ayuda de la IA:\s*/i, ""),
   }));
-  let current = await db.select().from(students).orderBy(asc(students.section));
+  let current = await db.select().from(students).where(eq(students.projectId, project.id)).orderBy(asc(students.section));
   const existing = new Set(current.map((student) => student.section));
-  const missing = initial.filter((student) => !existing.has(student.section));
+  const missing = project.id === defaultProjectId ? initial.filter((student) => !existing.has(student.section)) : [];
   if (missing.length) {
     for (let offset = 0; offset < missing.length; offset += 10) {
       await db.insert(students).values(missing.slice(offset, offset + 10)).onConflictDoNothing();
     }
-    current = await db.select().from(students).orderBy(asc(students.section));
+    current = await db.select().from(students).where(eq(students.projectId, project.id)).orderBy(asc(students.section));
   }
   return json(current.filter((student) => student.deleted === 0));
 }
 
 async function mutate(request: Request) {
   if (!(await getChatGPTUser())) return json({ message: "Inicia sesión para editar las fichas." }, 401);
+  const project = await validProject(request);
+  if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
   if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") {
     return json({ message: "Formato de solicitud no válido." }, 415);
   }
@@ -54,11 +59,11 @@ async function mutate(request: Request) {
     if (!parsed.success) return json({ message: "Revisa los campos del perfil." }, 400);
     const { section, ...values } = parsed.data;
     const [created] = await getDb().insert(students).values({
-      ...values, section, name: values.displayName,
+      ...values, section, projectId: project.id, name: values.displayName,
     }).onConflictDoNothing().returning();
     if (created) return json(created, 201);
     const [existing] = await getDb().select().from(students).where(eq(students.section, section));
-    if (existing && existing.deleted === 0 && existing.name === values.displayName && existing.revision === 1 && existing.role === values.role && existing.activities === values.activities && existing.aiHelp === values.aiHelp) return json(existing);
+    if (existing && existing.projectId === project.id && existing.deleted === 0 && existing.name === values.displayName && existing.revision === 1 && existing.role === values.role && existing.activities === values.activities && existing.aiHelp === values.aiHelp) return json(existing);
     return json({ message: "Esta ficha ya cambió. Cierra el formulario y vuelve a intentarlo." }, 409);
   }
   const parsed = (request.method === "DELETE" ? reference : fields).safeParse(body);
@@ -66,7 +71,7 @@ async function mutate(request: Request) {
   const { section, revision, ...changes } = parsed.data;
   const [updated] = await getDb().update(students)
     .set({ ...changes, ...(request.method === "DELETE" ? { deleted: 1, name: "", displayName: "", role: "", activities: "", aiHelp: "" } : {}), revision: sql`${students.revision} + 1` })
-    .where(and(eq(students.section, section), eq(students.revision, revision), eq(students.deleted, 0))).returning();
+    .where(and(eq(students.section, section), eq(students.revision, revision), eq(students.deleted, 0), eq(students.projectId, project.id))).returning();
   if (!updated) return json({ message: "La ficha ha cambiado en otra sesión. Cierra el formulario y vuelve a abrirla para ver los cambios." }, 409);
   return json(updated);
 }
