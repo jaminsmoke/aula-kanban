@@ -1,11 +1,15 @@
 import { createServer } from 'node:http';
 import { timingSafeEqual } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { readFile, realpath, statfs } from 'node:fs/promises';
+import { readFile, realpath, rm, statfs } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Cada servicio pertenece a un solo proyecto Compose de la instancia.
+// Nodum aún no tiene plantilla Compose validada en este repo: hasta que
+// exista `nodum/compose.yaml.example` con su lista de servicios e imágenes
+// permitidas, no puede gestionarse desde aquí (el catálogo de Aula ya lo
+// prevé, pero el gestor no inventa su stack).
 const applications = { affine: { entry: 'affine', services: ['affine', 'affine_migration', 'affine_postgres', 'affine_redis'] } };
 const allowedImages = { affine: 'ghcr.io/toeverything/affine:stable', affine_migration: 'ghcr.io/toeverything/affine:stable', affine_postgres: 'pgvector/pgvector:pg16', affine_redis: 'redis:7-alpine' };
 const send = (res, status, value) => { res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store' }); res.end(JSON.stringify(value)); };
@@ -41,6 +45,10 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
   const working = new Set();
   const failed = new Set();
   const compose = () => ['compose', '--project-name', stack.project, '--file', path.join(stack.directory, 'compose.yaml')];
+  /** Resuelve un bind aunque aún no exista (primera instalación: Docker lo crea al levantar). */
+  const resolveSource = async (source, realDirectory) => {
+    try { return await realpath(source); } catch { return path.isAbsolute(source) ? path.resolve(source) : path.resolve(realDirectory, source); }
+  };
   const validateCompose = async () => {
     const config = JSON.parse(await execute([...compose(), 'config', '--format', 'json'], stack.directory));
     const realDirectory = await realpath(stack.directory);
@@ -53,7 +61,7 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
       if (service.container_name || service.privileged || service.network_mode || service.pid === 'host' || service.ipc === 'host' || service.build || service.devices?.length || service.cap_add?.length || service.volumes_from?.length || service.security_opt?.length) throw new Error('unsafe_compose');
       for (const volume of service.volumes ?? []) {
         if (volume.type === 'bind') {
-          const relative = path.relative(realDirectory, await realpath(volume.source));
+          const relative = path.relative(realDirectory, await resolveSource(volume.source, realDirectory));
           if (relative.startsWith('..') || path.isAbsolute(relative)) throw new Error('outside_directory');
         }
       }
@@ -61,6 +69,45 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
     }
     for (const volume of Object.values(config.volumes ?? {})) if (volume.external || volume.driver_opts && Object.keys(volume.driver_opts).length || volume.name && !volume.name.startsWith(`${stack.project}_`)) throw new Error('external_volume');
     for (const network of Object.values(config.networks ?? {})) if (network.external || network.name && !network.name.startsWith(`${stack.project}_`)) throw new Error('external_network');
+    return config;
+  };
+  /** Extrae la etiqueta de versión de una imagen (`repo:tag` → `tag`). */
+  const imageVersion = image => {
+    if (typeof image !== 'string') return null;
+    const slash = image.lastIndexOf('/');
+    const colon = image.lastIndexOf(':');
+    return colon > slash && colon < image.length - 1 ? image.slice(colon + 1) : null;
+  };
+  /** Borra exclusivamente los datos de la app, preservando su configuración y volúmenes ajenos. */
+  const resetData = async (app, config) => {
+    const realDirectory = await realpath(stack.directory);
+    const binds = new Set();
+    const volumeNames = new Set();
+    let dataDirectory;
+    try { dataDirectory = await realpath(path.join(realDirectory, 'data', app.id)); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+    if (dataDirectory) {
+      const relative = path.relative(realDirectory, dataDirectory);
+      if (relative !== path.join('data', app.id)) throw new Error('outside_directory');
+    }
+    for (const name of applications[app.id].services) {
+      for (const volume of config.services[name]?.volumes ?? []) {
+        if (volume.type === 'volume') {
+          const named = config.volumes?.[volume.source]?.name;
+          if (!named || !named.startsWith(`${stack.project}_`)) throw new Error('unknown_volume');
+          volumeNames.add(named);
+        }
+        if (volume.type !== 'bind' || !dataDirectory) continue;
+        let target;
+        try { target = await realpath(volume.source); }
+        catch (error) { if (error.code === 'ENOENT') continue; throw error; }
+        const relative = path.relative(dataDirectory, target);
+        if (!relative || (!relative.startsWith('..') && !path.isAbsolute(relative))) binds.add(target);
+      }
+    }
+    for (const target of binds) await rm(target, { recursive: true, force: true });
+    const named = [...volumeNames];
+    if (named.length) await execute(['volume', 'rm', '-f', ...named], stack.directory);
   };
   const status = async app => {
     if (working.has(app.id)) return 'working';
@@ -72,7 +119,9 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
     try { rows = trimmed.startsWith('[') ? JSON.parse(trimmed) : trimmed.split('\n').map(line => JSON.parse(line)); } catch { throw new Error('docker_status_invalid'); }
     if (!Array.isArray(rows)) throw new Error('docker_status_invalid');
     if (!rows.length) return 'not_installed';
-    return rows.some(row => row.Service === applications[app.id].entry && row.State === 'running' && row.Health !== 'unhealthy') ? 'installed' : 'stopped';
+    const entry = rows.find(row => row.Service === applications[app.id].entry);
+    const running = rows.some(row => row.Service === applications[app.id].entry && row.State === 'running' && row.Health !== 'unhealthy');
+    return { status: running ? 'installed' : 'stopped', version: imageVersion(entry?.Image) };
   };
   return createServer(async (req, res) => {
     if (!req.headers.authorization?.startsWith('Bearer ')) return send(res, 401, { message: 'No autorizado.' });
@@ -80,23 +129,26 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
     const expected = Buffer.from(token);
     if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) return send(res, 401, { message: 'No autorizado.' });
     if (req.method === 'GET' && req.url === '/v1/apps') {
-      try { return send(res, 200, { apps: await Promise.all([...catalog.values()].map(async app => ({ id: app.id, status: await status(app), url: app.url }))) }); }
+      try { return send(res, 200, { apps: await Promise.all([...catalog.values()].map(async app => { const result = await status(app); const state = typeof result === 'string' ? { status: result, version: null } : result; return { id: app.id, status: state.status, url: app.url, version: state.version }; })) }); }
       catch { return send(res, 503, { message: 'No se pudo consultar Docker.' }); }
     }
-    const match = /^\/v1\/apps\/(affine|nodum)$/.exec(req.url ?? '');
-    if (!match || !catalog.has(match[1]) || !['POST', 'DELETE'].includes(req.method ?? '')) return send(res, 404, { message: 'No disponible.' });
+    const match = /^\/v1\/apps\/(affine|nodum)(\/reset)?$/.exec(req.url ?? '');
+    const isReset = Boolean(match?.[2]);
+    if (!match || !catalog.has(match[1]) || (req.method !== 'POST' && req.method !== 'DELETE') || (isReset && req.method !== 'POST')) return send(res, 404, { message: 'No disponible.' });
     const app = catalog.get(match[1]);
     if (working.size) return send(res, 409, { message: 'Operación en curso.' });
     failed.delete(app.id);
     working.add(app.id);
-    // Nunca se usa down, --volumes ni prune: solo los servicios de esta app.
-    const action = req.method === 'POST' ? ['up', '-d', '--no-build', applications[app.id].entry] : ['rm', '--stop', '--force', ...applications[app.id].services];
-    void validateCompose().then(async () => {
-      if (req.method === 'POST') {
+    // Nunca se usa down ni prune: solo los servicios de esta app. El reset
+    // añade el borrado acotado de sus binds/volúmenes (función resetData).
+    const action = isReset || req.method === 'DELETE' ? ['rm', '--stop', '--force', ...applications[app.id].services] : ['up', '-d', '--no-build', applications[app.id].entry];
+    void validateCompose().then(async config => {
+      if (req.method === 'POST' && !isReset) {
         const disk = await checkSpace(stack.directory);
         if (disk.bavail * disk.bsize < 5 * 1024 ** 3) throw new Error('insufficient_space');
       }
       await execute([...compose(), ...action], stack.directory);
+      if (isReset) await resetData(app, config);
     }).catch(() => { failed.add(app.id); }).finally(() => working.delete(app.id));
     return send(res, 202, { accepted: true });
   });

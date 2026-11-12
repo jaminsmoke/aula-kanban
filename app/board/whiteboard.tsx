@@ -109,11 +109,12 @@ function sceneSignature(elements: readonly BoardElement[], files: Record<string,
  * Pizarra con Excalidraw, persistida en la API del tablero. En las tareas
  * (`ownerType: "task"`, por defecto) el dueño es la tarea; en el hub
  * (`ownerType: "project"`, con `ownerId` igual al proyecto) es la pizarra
- * compartida del proyecto.
+ * compartida del proyecto, y (`ownerType: "space"`, también con `ownerId`
+ * igual al proyecto) es la pizarra del espacio de trabajo de «Mi espacio».
  * @param props - Tarea dueña, tipo de dueño, identificador del dueño y bandera de solo lectura.
  * @returns La pizarra con sus estados de carga y error.
  */
-export default function Whiteboard({ taskId, readOnly, ownerType = "task", ownerId }: { taskId?: string; readOnly: boolean; ownerType?: "task" | "project"; ownerId?: string }) {
+export default function Whiteboard({ taskId, readOnly, ownerType = "task", ownerId }: { taskId?: string; readOnly: boolean; ownerType?: "task" | "project" | "space"; ownerId?: string }) {
   const boardId = ownerId ?? taskId ?? "";
   const [initial, setInitial] = useState<BoardSnapshot | null>(null);
   const [error, setError] = useState("");

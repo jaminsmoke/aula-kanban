@@ -4,16 +4,31 @@ Cada instancia mantiene sus propios proyectos y datos en D1. Para configurar una
 
 ## Mi espacio: catálogo de aplicaciones (Site + VPS)
 
-> **Trabajo en curso:** la instalación desde Aula y el gestor del VPS son un prototipo sin desplegar. La documentación de configuración de este apartado describe el enfoque anterior y debe actualizarse antes de usarla. No introduzcas credenciales ni despliegues el gestor todavía; consulta `vps-manager/README.md`.
+> **Trabajo en curso:** la tienda de aplicaciones y el gestor del VPS (`vps-manager/`) son un prototipo sin desplegar: la API de Aula (`app/api/space-apps`) tiene el gestor desactivado mediante `VPS_MANAGER_ENABLED = false` y el servicio del VPS exige `SPACE_MANAGER_EXPERIMENTAL=1`. No introduzcas credenciales ni despliegues el gestor todavía; consulta `vps-manager/README.md`. La documentación de despliegue manual de este apartado describe el enfoque anterior y debe actualizarse antes de usarla.
 
 «Mi espacio» es un escritorio con **dos clases de aplicaciones** (ver `app/board/tools.ts`):
 
-- **Del propio Site** (`host: "site"`): librerías npm o código de creación propia que corren dentro de Aula. Siempre disponibles, sin VPS ni variables. Hoy: **Excalidraw**, la pizarra compartida del proyecto (MIT), con persistencia en el D1/R2/Durable Object de Aula.
+- **Del propio Site** (`host: "site"`): librerías npm o código de creación propia que corren dentro de Aula. No necesitan VPS ni variables, pero **se instalan desde Aula Store**: su estado (instalada o no, quién y cuándo) se guarda en la tabla D1 `space_apps` (`drizzle/0022_*`) y solo las instaladas muestran icono en el escritorio. Hoy: **Excalidraw**, la pizarra del propio espacio de trabajo (MIT, `ownerType: "space"`), distinta de las pizarras de las tareas, con persistencia en el D1/R2/Durable Object de Aula. Instalar/desinstalar una app nativa **no toca `package.json`**: las dependencias se fijan en el build de Sites; el registro en la DB solo gobierna la visibilidad y el acceso. Las apps que solo se usen en «Mi espacio» podrían retirarse del build en un deploy posterior si ya no se quieren.
 - **Del VPS** (`host: "vps"`): servicios externos con backend propio que viven en el VPS del propietario y se incrustan en ventana (`iframe`). Solo están activas cuando su instancia está configurada. Hoy: **Nodum** (MIT) y **AFFiNE** (editor MIT, backend Enterprise Edition).
+
+### Tienda de aplicaciones VPS («Aula Store»)
+
+La baldosa **Aula Store** del dock inferior abre una tienda al estilo App Store/Play Store (`app/board/apps-store.tsx`, icono propio hexagonal `app/board/aula-store-icon.tsx`) con las aplicaciones del catálogo que viven en el VPS (hoy: **Nodum** y **AFFiNE**). Cada tarjeta muestra el estado real en Docker del VPS —Instalada, Detenida, No instalada, Procesando o Error— y la **versión** de la imagen, con las acciones:
+
+- **Instalar / Iniciar** (o **Reintentar** tras un error): levanta los servicios de la aplicación en el stack Compose de Aula.
+- **Abrir**: abre la aplicación instalada en su ventana (iframe o pestaña nueva).
+- **Desinstalar**: detiene y retira los contenedores de la aplicación; **conserva** sus volúmenes y datos.
+- **Resetear**: detiene la aplicación y **elimina sus volúmenes y datos** (binds dentro del stack y volúmenes con nombre del proyecto) para toda la instancia. Pide confirmación expresa antes de borrar.
+
+La tienda tiene **dos secciones**: «Aplicaciones VPS» (estado real en Docker, instalar/desinstalar/resetear) y «Aplicaciones nativas» (instalar/desinstalar = registro en `space_apps`). Solo el propietario y los administradores pueden instalar, desinstalar o resetear; el resto de roles ve el estado y puede abrir las aplicaciones instaladas. Sin gestor conectado, la sección VPS muestra el estado «no conectado» y el acceso a la guía de configuración del VPS, pero la sección nativa sigue funcionando.
+
+La tienda no toca Docker directamente: Aula llama a su API (`/api/space-apps`, solo owner/admin para gestionar), que reenvía las órdenes al pequeño servicio `vps-manager` que corre en el VPS con un token (ver `vps-manager/README.md`). Hoy el gestor solo sabe gestionar **AFFiNE** (única con plantilla Compose validada en el repo); **Nodum** entrará en el gestor cuando exista su `nodum/compose.yaml.example` con la lista de servicios e imágenes permitidas.
+
+Las animaciones usan **Motion** (`motion`, con `LazyMotion` + `domAnimation` y `reducedMotion="user"`) y **Lottie** (`lottie-react`): las tarjetas de la tienda y las ventanas del escritorio animan con Motion, y al terminar una instalación aparece un check Lottie (`app/board/check-lottie.json`) sobre la tarjeta. Todo se carga de forma diferida: «Mi espacio» es `React.lazy` desde el tablero, Aula Store es `React.lazy` dentro de «Mi espacio» y el componente Lottie también es `React.lazy`, así que ni Motion ni Lottie se descargan hasta abrir la tienda (verificado en el build: `store-lottie`, `apps-store` y `space-view` quedan en chunks propios).
 
 ### Sin VPS configurado
 
-Al abrir «Mi espacio», si alguna herramienta del VPS no tiene su URL fijada, el escritorio muestra un aviso: sin la configuración del VPS el Space está incompleto y solo están disponibles las aplicaciones del propio Site; se insta a configurar el VPS (a través de Codex o manualmente) para desbloquear todo el potencial de Aula Kanban. Los iconos de las herramientas externas llevan una insignia «VPS» y, al abrirlas, muestran el enlace «Abrir en pestaña nueva» hacia la instancia pública. **Las instancias oficiales no se pueden incrustar**: `nodum.md` responde `X-Frame-Options: DENY` y `affine.pro`/`app.affine.pro` responden `X-Frame-Options: SAMEORIGIN` (verificado por cabeceras); el navegador bloquea el marco sin aviso, por eso el iframe solo funciona con instancia propia.
+Al abrir «Mi espacio», si el gestor del VPS no está conectado, el escritorio muestra un aviso: sin la configuración del VPS el Space está incompleto y solo están disponibles las aplicaciones nativas instaladas; se insta a configurar el VPS (a través de Codex o manualmente) para desbloquear todo el potencial de Aula Kanban. Los iconos de las herramientas externas llevan una insignia «VPS» y, al abrirlas, muestran el enlace «Abrir en pestaña nueva» hacia la instancia pública. **Las instancias oficiales no se pueden incrustar**: `nodum.md` responde `X-Frame-Options: DENY` y `affine.pro`/`app.affine.pro` responden `X-Frame-Options: SAMEORIGIN` (verificado por cabeceras); el navegador bloquea el marco sin aviso, por eso el iframe solo funciona con instancia propia.
 
 ### Desplegar en el VPS de Hostinger
 
@@ -27,7 +42,7 @@ Al abrir «Mi espacio», si alguna herramienta del VPS no tiene su URL fijada, e
 
 No, y no por falta de configuración, sino por arquitectura. El Site es un **Worker de Cloudflare** (vinext): ejecuta JavaScript con D1, R2 y Durable Objects, sin contenedores, sin Python, sin PostgreSQL/Redis reales y sin procesos persistentes. Nodum necesita FastAPI (Python) + Postgres + Redis + MinIO + tareas en segundo plano; AFFiNE necesita servidor Node + Postgres + Redis + Docker Compose. «Integrar el backend» en el Worker no significa reutilizar su código: significaría **reescribir** su API y su persistencia en JS/TS sobre D1/R2/DO (con Hyperdrive/Upstash u otros servicios como sustitutos de Postgres/Redis), es decir, construir una app nueva inspirada en ellos, no Nodum/AFFiNE. Para AFFiNE, además, la licencia EE del backend impide modificarlo/redistribuirlo sin acuerdo comercial. Mantener estos servicios en el VPS tiene otra ventaja: su carga (CPU, memoria, websockets de colaboración) no pesa sobre el Worker, que tiene límites de tiempo de CPU y coste por invocación. Excalidraw sí cabe en el Site porque es una **librería de cliente** (todo ocurre en el navegador) y persiste con la infraestructura que Aula ya usa.
 
-Nodum y AFFiNE son servicios independientes: las cuentas, notas y workspaces viven en cada servicio (con su propio correo), no en Aula. Al borrar un proyecto, Aula no borra nada de Nodum/AFFiNE (la pizarra Excalidraw del hub sí se borra con el proyecto, porque forma parte de Aula).
+Nodum y AFFiNE son servicios independientes: las cuentas, notas y workspaces viven en cada servicio (con su propio correo), no en Aula. Al borrar un proyecto, Aula no borra nada de Nodum/AFFiNE (las pizarras Excalidraw del hub —`ownerType: "space"`— y sus registros en `space_apps` sí forman parte de Aula).
 
 ## Desarrollo
 

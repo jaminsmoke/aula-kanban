@@ -19,7 +19,7 @@ async function boardSocket(request: Request, env: Cloudflare.Env) {
   const projectId = url.searchParams.get("project") || "default";
   const ownerType = url.searchParams.get("ownerType");
   const ownerId = url.searchParams.get("ownerId");
-  if ((ownerType !== "task" && ownerType !== "project") || !ownerId || projectId.length > 80) return new Response(null, { status: 400 });
+  if ((ownerType !== "task" && ownerType !== "project" && ownerType !== "space") || !ownerId || projectId.length > 80) return new Response(null, { status: 400 });
   const db = drizzle(env.DB);
   const [project] = await db.select({ id: projects.id }).from(projects).where(eq(projects.id, projectId));
   if (!project) return new Response(null, { status: 404 });

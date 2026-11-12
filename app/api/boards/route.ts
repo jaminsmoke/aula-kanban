@@ -8,7 +8,7 @@ import { validProject, type Access } from "../../../lib/server/project";
 export const dynamic = "force-dynamic";
 
 const MAX_SNAPSHOT_BYTES = 2 * 1024 * 1024;
-const owner = z.object({ ownerType: z.enum(["task", "project"]), ownerId: z.string().min(1).max(80) });
+const owner = z.object({ ownerType: z.enum(["task", "project", "space"]), ownerId: z.string().min(1).max(80) });
 const payload = owner.extend({ snapshot: z.string().max(MAX_SNAPSHOT_BYTES), revision: z.number().int().nonnegative() });
 
 function json(data: unknown, status = 200) {
@@ -18,7 +18,7 @@ function json(data: unknown, status = 200) {
 /**
  * Indica si el dueño existe en este proyecto.
  * @param projectId - Identificador del proyecto.
- * @param ownerType - Tipo de dueño (`task` o `project`).
+ * @param ownerType - Tipo de dueño (`task`, `project` o `space`).
  * @param ownerId - Identificador del dueño.
  * @returns `true` cuando el dueño existe y pertenece al proyecto.
  */
@@ -34,7 +34,7 @@ async function ownerExists(projectId: string, ownerType: string, ownerId: string
  * Indica si la cuenta puede editar la pizarra del dueño indicado.
  * @param access - Acceso resuelto de la cuenta al proyecto.
  * @param projectId - Identificador del proyecto.
- * @param ownerType - Tipo de dueño (`task` o `project`).
+ * @param ownerType - Tipo de dueño (`task`, `project` o `space`).
  * @param ownerId - Identificador del dueño.
  * @returns `true` cuando puede editarla (el alumnado solo en sus tareas).
  */
@@ -47,7 +47,7 @@ async function canWrite(access: Access, projectId: string, ownerType: string, ow
 }
 
 /**
- * Lee o guarda la pizarra de una tarea o del proyecto.
+ * Lee o guarda la pizarra de una tarea, del proyecto o del espacio de trabajo.
  * @param request - Petición con el proyecto y el dueño en la URL o el cuerpo JSON.
  * @returns Respuesta JSON con el snapshot de la pizarra o el error.
  */

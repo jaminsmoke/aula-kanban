@@ -23,7 +23,8 @@ export type SpaceTool = {
   /**
    * Dónde vive la herramienta:
    * - "site": librería npm o código propio dentro de Aula (Excalidraw).
-   *   Siempre disponible, sin VPS ni variables de entorno.
+   *   No necesita VPS; se instala desde Aula Store y su estado se guarda
+   *   en la tabla `space_apps` (ver `/api/space-apps`).
    * - "vps": servicio externo con backend propio (Nodum, AFFiNE).
    *   Requiere instancia desplegada en el VPS y su URL en una variable.
    */
@@ -91,14 +92,15 @@ export function toolsNeedingVps(tools: SpaceTool[] = spaceTools): SpaceTool[] {
  * comparten entre profesor y alumno; lo específico se filtra por
  * `roles`, y quien es administrador (owner/admin) ve todas.
  * Hay dos clases de herramienta (`host`): las del propio Site —librerías
- * npm o código propio, siempre disponibles (Excalidraw)— y los servicios
- * externos con backend propio, que viven en el VPS del propietario
+ * npm o código propio, instalables desde Aula Store (Excalidraw)— y los
+ * servicios externos con backend propio, que viven en el VPS del propietario
  * (Nodum, AFFiNE) y solo están activas cuando su instancia está
  * configurada vía variables de entorno (ver README, «Mi espacio»).
  * Nodum (MIT) es la alternativa real a Obsidian: base de conocimiento
  * web con wikilinks, backlinks y grafo (ver `nodum-app.tsx`).
- * Excalidraw (MIT) es la misma pizarra de las tareas, pero compartida
- * por todo el proyecto (ver `excalidraw-app.tsx`).
+ * Excalidraw (MIT) es la pizarra del propio espacio de trabajo (ver
+ * `excalidraw-app.tsx`), distinta de las pizarras de las tareas: se
+ * instala desde Aula Store y su estado vive en la DB (`space_apps`).
  * AFFiNE (editor MIT, backend Enterprise Edition) sigue el mismo patrón
  * que Nodum (ver `affine-app.tsx`).
  */
@@ -115,7 +117,7 @@ export const spaceTools: SpaceTool[] = [
   {
     id: "excalidraw",
     name: "Excalidraw",
-    description: "Pizarra compartida del proyecto con Excalidraw (MIT): dibuja y colabora en directo.",
+    description: "Pizarra del espacio de trabajo con Excalidraw (MIT): dibuja y colabora en directo.",
     icon: PencilRuler,
     host: "site",
     envVars: [],

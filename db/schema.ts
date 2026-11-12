@@ -140,6 +140,22 @@ export const uploads = sqliteTable("uploads", {
   createdAt: integer("created_at").notNull(),
 }, (table) => [index("uploads_project").on(table.projectId, table.createdAt)]);
 
+// Estado de las aplicaciones nativas (librerías npm del propio Site) instaladas
+// en «Mi espacio» por el dueño de la instancia. Las apps del VPS no viven aquí:
+// su estado real lo da el gestor del VPS (Docker).
+export const spaceApps = sqliteTable("space_apps", {
+  id: text("id").primaryKey().notNull(),
+  projectId: text("project_id").notNull(),
+  appId: text("app_id").notNull(),
+  installed: integer("installed").notNull().default(0),
+  version: text("version"),
+  installedByUserId: text("installed_by_user_id"),
+  updatedAt: integer("updated_at").notNull(),
+}, (table) => [
+  uniqueIndex("space_app_project_app").on(table.projectId, table.appId),
+  index("space_apps_project").on(table.projectId),
+]);
+
 export const projectMembers = sqliteTable("project_members", {
   id: text("id").primaryKey().notNull(),
   projectId: text("project_id").notNull(),

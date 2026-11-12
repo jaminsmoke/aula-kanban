@@ -1,7 +1,7 @@
 # Ejemplo en revisión: añadir solo tras auditar la seguridad y comprobar DNS.
 # No reemplazar el Caddyfile ni las reglas de la web existente.
 {$AULA_AGENT_DOMAIN} {
-  @api path /v1/apps /v1/apps/affine /v1/apps/nodum
+  @api path /v1/apps /v1/apps/affine /v1/apps/affine/reset /v1/apps/nodum /v1/apps/nodum/reset
   handle @api {
     reverse_proxy 127.0.0.1:8765
   }

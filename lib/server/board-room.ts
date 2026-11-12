@@ -108,7 +108,7 @@ export class BoardRoom extends DurableObject<Cloudflare.Env> {
     if (session.ownerType === "task") {
       const task = await db.prepare("SELECT id FROM tasks WHERE id = ? AND project_id = ?").bind(session.ownerId, session.projectId).first();
       if (!task) return false;
-    } else if (session.ownerType !== "project" || session.ownerId !== session.projectId) return false;
+    } else if ((session.ownerType !== "project" && session.ownerType !== "space") || session.ownerId !== session.projectId) return false;
     const owner = this.env.OWNER_EMAIL?.trim().toLowerCase();
     if (owner && session.email.trim().toLowerCase() === owner) return true;
     const admin = await db.prepare("SELECT id FROM administrators_unified WHERE user_id = ?").bind(session.userId).first();

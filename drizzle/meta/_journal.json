@@ -155,6 +155,13 @@
       "when": 1794493166931,
       "tag": "0021_overconfident_triathlon",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "6",
+      "when": 1794501771455,
+      "tag": "0022_lush_dreadnoughts",
+      "breakpoints": true
     }
   ]
 }

@@ -2,7 +2,13 @@
 
 import { ArrowLeft, Server, X } from "lucide-react";
 import { Suspense, lazy, useCallback, useEffect, useRef, useState, type ComponentType } from "react";
+import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
 import SpaceWindow from "./space-window";
+import type { StoreAction } from "./apps-store";
+import { AulaStoreIcon } from "./aula-store-icon";
+
+// La tienda (con Motion/Lottie) solo se descarga al abrirla.
+const AppsStore = lazy(() => import("./apps-store"));
 import Modal from "../modal";
 import { visibleTools, type SpaceRole, type SpaceTool } from "./tools";
 
@@ -32,7 +38,8 @@ type OpenWindow = {
  */
 export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole; projectId: string; onExit: () => void }) {
   const tools = visibleTools(role);
-  const [managed, setManaged] = useState<{ id: string; status: string; url: string | null }[]>([]);
+  const [managed, setManaged] = useState<{ id: string; status: string; url: string | null; version?: string | null }[]>([]);
+  const [storeOpen, setStoreOpen] = useState(false);
   const [managerConfigured, setManagerConfigured] = useState<boolean | null>(null);
   const [managerError, setManagerError] = useState("");
   const [guideOpen, setGuideOpen] = useState(false);
@@ -46,10 +53,13 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
     } catch { setManagerError("No se pudo consultar el gestor de aplicaciones."); }
   }, [projectId]);
   useEffect(() => { const first = window.setTimeout(() => { void refresh(); }, 0); const timer = window.setInterval(() => { void refresh(); }, 10000); return () => { window.clearTimeout(first); window.clearInterval(timer); }; }, [refresh]);
-  const manage = async (id: string, action: "install" | "uninstall") => {
-    if (action === "uninstall" && !window.confirm("Se detendrá y retirará esta aplicación para todos los proyectos. Sus datos se conservarán. ¿Continuar?")) return;
+  const manage = async (id: string, action: StoreAction) => {
+    const target = tools.find((tool) => tool.id === id);
+    if (action === "uninstall" && !window.confirm(target?.host === "site"
+      ? "Se desinstalará esta aplicación de Mi espacio para los miembros de este proyecto. Las pizarras de las tareas no se ven afectadas. ¿Continuar?"
+      : "Se detendrá y retirará esta aplicación para todos los proyectos. Sus datos se conservarán. ¿Continuar?")) return;
     try {
-      const response = await fetch("/api/space-apps", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, action }) });
+      const response = await fetch(`/api/space-apps?project=${encodeURIComponent(projectId)}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, action }) });
       if (!response.ok) throw new Error();
       await refresh();
     } catch { setManagerError("No se pudo iniciar la operación. Comprueba el gestor del VPS."); }
@@ -86,16 +96,26 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
     return { ...item, maximized: true, saved: { position: item.position, size: item.size }, position: { x: 0, y: 0 }, size: { width: window.innerWidth, height: window.innerHeight - 48 } };
   }));
 
-  const active = windows.filter((item) => !item.minimized).sort((a, b) => b.zIndex - a.zIndex)[0];
+  // En el escritorio solo aparecen las apps instaladas (nativas en la DB,
+  // del VPS según el gestor). Una app no instalada no tiene icono: se
+  // instala desde Aula Store.
+  const installedIds = new Set(managed.filter((app) => app.status === "installed").map((app) => app.id));
+  const desktopTools = tools.filter((tool) => installedIds.has(tool.id));
+  // Si una app se desinstala, su ventana abierta desaparece (filtro en el
+  // render, sin efecto): solo se muestran las de apps instaladas.
+  const shownWindows = managerConfigured === null ? windows : windows.filter((item) => installedIds.has(item.tool.id));
+  const active = shownWindows.filter((item) => !item.minimized).sort((a, b) => b.zIndex - a.zIndex)[0];
   const restore = (id: string) => setWindows((current) => current.map((item) => (item.tool.id === id ? { ...item, minimized: false } : item)));
 
   return (
+    <MotionConfig reducedMotion="user">
+    <LazyMotion features={domAnimation}>
     <section className="space-view" aria-label="Mi espacio">
       <div className="space-topbar">
         <button type="button" className="space-back" onClick={onExit} title="Volver a Aula Kanban"><ArrowLeft size={16} aria-hidden /> Aula Kanban</button>
         <p className="space-topbar-title">{active ? active.tool.name : "Mi espacio"}</p>
         <nav className="space-taskbar" aria-label="Ventanas minimizadas">
-          {windows.filter((item) => item.minimized).map((item) => {
+          {shownWindows.filter((item) => item.minimized).map((item) => {
             const Icon = item.tool.icon;
             return (
               <button key={item.tool.id} type="button" className="space-minimized-icon" title={`${item.tool.name} (minimizada)`} aria-label={`Restaurar ${item.tool.name}`} onClick={() => restore(item.tool.id)}>
@@ -117,30 +137,32 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
           </div>
         ) : null}
         {managerError && <p role="alert" className="space-empty">{managerError}</p>}
-        {tools.length === 0 ? (
+        {managerConfigured === null ? (
+          <p className="space-empty">Cargando aplicaciones…</p>
+        ) : desktopTools.length === 0 ? (
           <p className="space-empty">Todavía no hay herramientas en Mi espacio. Se irán añadiendo aquí.</p>
         ) : null}
         <div className="space-icons">
-          {tools.map((tool) => {
+          {desktopTools.map((tool) => {
             const Icon = tool.icon;
-            const instance = managed.find((app) => app.id === tool.id);
-            const ready = tool.host === "site" || instance?.status === "installed";
             return (
               <div key={tool.id}>
-              <button type="button" className={`space-tool${ready ? "" : " space-tool--locked"}`} onClick={() => open(tool)} title={tool.description}>
+              <button type="button" className="space-tool" onClick={() => open(tool)} title={tool.description}>
                 <span className="space-tool-icon" aria-hidden><Icon size={30} strokeWidth={1.9} /></span>
                 <span className="space-tool-name">{tool.name}</span>
-                {ready ? null : <span className="space-tool-badge" aria-hidden><Server size={10} /> VPS</span>}
               </button>
-              {tool.host === "vps" && instance && (role === "owner" || role === "admin") && <button type="button" disabled={instance.status === "working"} onClick={() => void manage(tool.id, instance.status === "installed" || instance.status === "stopped" ? "uninstall" : "install")}>
-                {instance.status === "working" ? "Procesando…" : instance.status === "installed" || instance.status === "stopped" ? "Desinstalar" : "Instalar"}
-              </button>}
-              {instance?.status === "error" && <span role="alert">Error en la operación</span>}
               </div>
             );
           })}
         </div>
-        {windows.map((item) => {
+        <div className="space-dock">
+          <button type="button" className="space-dock-store" onClick={() => setStoreOpen(true)} title="Aula Store: instala, desinstala o resetea las aplicaciones del catálogo">
+            <span className="space-dock-tile" aria-hidden><AulaStoreIcon size={52} /></span>
+            <span className="space-dock-name">Aula Store</span>
+          </button>
+        </div>
+        <AnimatePresence>
+        {shownWindows.map((item) => {
           const App = toolApps[item.tool.id];
           return (
             <SpaceWindow
@@ -162,7 +184,23 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
             </SpaceWindow>
           );
         })}
+        </AnimatePresence>
       </div>
+      {storeOpen ? (
+        <Suspense fallback={<p className="space-loading">Cargando Aula Store…</p>}>
+        <AppsStore
+          role={role}
+          configured={managerConfigured}
+          apps={managed}
+          error={managerError}
+          onManage={(id, action) => void manage(id, action)}
+          onOpen={(tool) => { setStoreOpen(false); open(tool); }}
+          onRefresh={() => void refresh()}
+          onShowGuide={() => { setStoreOpen(false); setGuideOpen(true); }}
+          onClose={() => setStoreOpen(false)}
+        />
+        </Suspense>
+      ) : null}
       {guideOpen && <Modal title="Conectar un VPS" onClose={() => setGuideOpen(false)}><div className="share-content">
         <p>El gestor de aplicaciones para VPS está en desarrollo y todavía no se puede conectar. Cuando esté disponible, permitirá compartir las aplicaciones instaladas entre todos los proyectos de esta copia de Aula Kanban.</p>
         <p>Podrás pedir ayuda a un agente para revisar tu VPS y sus servicios existentes. La configuración inicial no instala aplicaciones del catálogo. Espera a que el gestor esté disponible antes de configurar la conexión.</p>
@@ -171,5 +209,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
         <div className="remix-controls"><button type="button" className="secondary" onClick={async () => { try { await navigator.clipboard.writeText("Ayúdame a conectar mi VPS con Docker Compose a mi propia instancia de Aula Kanban. Revisa primero mis servicios y copias existentes, prepara una conexión segura sin instalar aplicaciones del catálogo y explícame cómo configurar las credenciales sin compartirlas en el chat."); setCopied(true); } catch { setCopied(false); } }}>{copied ? "Mensaje copiado" : "Copiar mensaje"}</button><a className="primary" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Abrir ChatGPT</a></div>
       </div></Modal>}
     </section>
+    </LazyMotion>
+    </MotionConfig>
   );
 }

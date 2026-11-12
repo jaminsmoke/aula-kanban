@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, type PointerEvent, type ReactNode } from "react";
+import { m } from "motion/react";
 
 /**
  * Ventana estilo macOS: barra de título con botones de cerrar,
@@ -68,7 +69,11 @@ export default function SpaceWindow({
   }
 
   return (
-    <div
+    <m.div
+      initial={{ opacity: 0, scale: 0.96, y: 12 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.96, y: 12 }}
+      transition={{ duration: 0.24, ease: "easeOut" }}
       className="space-window"
       role="dialog"
       aria-label={title}
@@ -85,6 +90,6 @@ export default function SpaceWindow({
       </div>
       <div className="space-window-body">{children}</div>
       {!maximized && <div className="space-resize" onPointerDown={startResize} aria-hidden />}
-    </div>
+    </m.div>
   );
 }

@@ -1,12 +1,13 @@
 "use client";
 
 import { FolderKanban, Plus, X } from "lucide-react";
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import TeachersView from "./teachers/teachers-view";
 import BoardHeader from "./board/header";
 import KanbanView from "./board/kanban-view";
 import StudentsView from "./board/students-view";
-import SpaceView from "./board/space-view";
+// «Mi espacio» (con Motion/Lottie) solo se descarga al abrirlo.
+const SpaceView = lazy(() => import("./board/space-view"));
 import TaskDialog from "./board/task-dialog";
 import SettingsDialog from "./board/settings-dialog";
 import MemberDialog from "./board/member-dialog";
@@ -102,7 +103,9 @@ export default function Board({ user }: { user: { displayName: string; email: st
             <div className="access-remix"><div><strong>¿Quieres tu propio tablero?</strong><p>Solicita una copia independiente de Aula Kanban para personalizarla a tu manera.</p></div><button type="button" className={invitationWelcome ? "secondary" : "primary"} onClick={() => setRemixOpen(true)}><Plus size={18} /> Haz tu Site de Aula Kanban</button></div>
           </div></section>
         ) : view === "espacio" ? (
-          <SpaceView role={activeProject.role} projectId={projectState.projectId} onExit={() => setView("kanban")} />
+          <Suspense fallback={<div className="access-loading" role="status">Cargando Mi espacio…</div>}>
+            <SpaceView role={activeProject.role} projectId={projectState.projectId} onExit={() => setView("kanban")} />
+          </Suspense>
         ) : view === "profesores" ? (
           <TeachersView key={projectState.projectId} projectId={projectState.projectId} isAdmin={projectState.owner || projectState.admin} ownTeacherId={activeProject.teacherId} tasks={data.tasks} students={data.students} openTask={(task) => board.openEditor(task.status, task)} />
         ) : view === "alumnos" ? (
