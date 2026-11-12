@@ -15,11 +15,29 @@ const applications = {
   affine: { entry: 'affine', services: ['affine', 'affine_migration', 'affine_postgres', 'affine_redis'] },
   nodum: { entry: 'nodum_web', services: ['nodum_postgres', 'nodum_redis', 'nodum_redis_control', 'nodum_minio', 'nodum_migrate', 'nodum_api', 'nodum_worker', 'nodum_beat', 'nodum_web', 'nodum_caddy'] },
 };
+/**
+ * Imágenes permitidas, por servicio, fijadas por DIGEST (`tag@sha256:...`) para que un
+ * re-etiquetado en el registro no pueda colar código distinto al auditado. Reflejan los
+ * compose.yaml.example de affine/ y nodum/ (api/web de nodum son imágenes locales
+ * construidas en el VPS, ver nodum/compose.yaml.example).
+ *
+ * EXCEPCIONES con digest de ceros (`sha256:000...0`), a rellenar en el VPS antes del
+ * primer despliegue (ver README «Imágenes por digest»):
+ * - nodum_minio: quay.io/minio/minio exige autenticación para pulls anónimos; hay que
+ *   resolver el digest con sesión iniciada.
+ * - nodum-api/nodum-web: imágenes locales construidas en el VPS; su «digest» es el Id de
+ *   la imagen construida (`docker inspect --format '{{.Id}}'`).
+ * Un digest de ceros no existe en ningún registro: el pull falla hasta sustituirlo.
+ */
+const ZEROS = '0'.repeat(64);
 const allowedImages = {
-  affine: 'ghcr.io/toeverything/affine:stable', affine_migration: 'ghcr.io/toeverything/affine:stable', affine_postgres: 'pgvector/pgvector:pg16', affine_redis: 'redis:7-alpine',
-  nodum_postgres: 'pgvector/pgvector:0.8.0-pg16', nodum_redis: 'redis:7.4.2-alpine', nodum_redis_control: 'redis:7.4.2-alpine', nodum_minio: 'quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z',
-  nodum_migrate: 'nodum-api:prod', nodum_api: 'nodum-api:prod', nodum_worker: 'nodum-api:prod', nodum_beat: 'nodum-api:prod', nodum_web: 'nodum-web:prod', nodum_caddy: 'caddy:2-alpine',
+  affine: 'ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099', affine_migration: 'ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099', affine_postgres: 'pgvector/pgvector:pg16@sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f', affine_redis: 'redis:7-alpine@sha256:7f7d30b7fdd09467bac58198a1f166dd69789d348d4fe859cccb20e0cf287fbe',
+  nodum_postgres: 'pgvector/pgvector:0.8.0-pg16@sha256:a132765ec351c65111b5b675928a3a0515a466a40f97277329db8b8209ad8bc9', nodum_redis: 'redis:7.4.2-alpine@sha256:02419de7eddf55aa5bcf49efb74e88fa8d931b4d77c07eff8a6b2144472b6952', nodum_redis_control: 'redis:7.4.2-alpine@sha256:02419de7eddf55aa5bcf49efb74e88fa8d931b4d77c07eff8a6b2144472b6952', nodum_minio: `quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:${ZEROS}`,
+  nodum_migrate: `nodum-api:prod@sha256:${ZEROS}`, nodum_api: `nodum-api:prod@sha256:${ZEROS}`, nodum_worker: `nodum-api:prod@sha256:${ZEROS}`, nodum_beat: `nodum-api:prod@sha256:${ZEROS}`, nodum_web: `nodum-web:prod@sha256:${ZEROS}`, nodum_caddy: 'caddy:2-alpine@sha256:78bd35025c7ba85961dd149ae670315129954e77abe2383ac47c89106b35ade9',
 };
+
+/** Referencia de imagen fijada por digest: `repo[:tag]@sha256:<64 hex>`. */
+const PINNED_IMAGE = /^[^\s@]+@sha256:[a-f0-9]{64}$/;
 const send = (res, status, value) => { res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store' }); res.end(JSON.stringify(value)); };
 
 // Cuota por app sobre sus datos en data/<app>: 10 GiB por defecto y 100 GiB
@@ -129,6 +147,7 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
     if ([...permitted].some(name => !Object.hasOwn(config.services, name))) throw new Error('missing_service');
     for (const [name, service] of Object.entries(config.services)) {
       if (!permitted.has(name)) throw new Error('unknown_service');
+      if (typeof service.image !== 'string' || !PINNED_IMAGE.test(service.image)) throw new Error('unpinned_image');
       if (service.image !== allowedImages[name]) throw new Error('unknown_image');
       if (service.container_name || service.privileged || service.network_mode || service.pid === 'host' || service.ipc === 'host' || service.build || service.devices?.length || service.cap_add?.length || service.volumes_from?.length || service.security_opt?.length) throw new Error('unsafe_compose');
       for (const volume of service.volumes ?? []) {
@@ -143,12 +162,13 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
     for (const network of Object.values(config.networks ?? {})) if (network.external || network.name && !network.name.startsWith(`${stack.project}_`)) throw new Error('external_network');
     return config;
   };
-  /** Extrae la etiqueta de versión de una imagen (`repo:tag` → `tag`). */
+  /** Extrae la etiqueta de versión de una imagen (`repo:tag@sha256:...` → `tag`). */
   const imageVersion = image => {
     if (typeof image !== 'string') return null;
-    const slash = image.lastIndexOf('/');
-    const colon = image.lastIndexOf(':');
-    return colon > slash && colon < image.length - 1 ? image.slice(colon + 1) : null;
+    const ref = image.split('@')[0];
+    const slash = ref.lastIndexOf('/');
+    const colon = ref.lastIndexOf(':');
+    return colon > slash && colon < ref.length - 1 ? ref.slice(colon + 1) : null;
   };
   /** Borra exclusivamente los datos de la app, preservando su configuración y volúmenes ajenos. */
   const resetData = async (app, config) => {

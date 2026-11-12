@@ -26,6 +26,18 @@
 #   docker build --target production -t nodum-web:prod \
 #     -f web/docker/Dockerfile web
 #
+# Imágenes fijadas por digest (tag@sha256:...), igual que en manager.mjs: el
+# gestor rechaza cualquier imagen que no sea exactamente la permitida. Las
+# marcadas con `@sha256:000...0` son PLACEHOLDERS a rellenar en el VPS antes
+# del primer despliegue (también en manager.mjs, mismo valor):
+# - nodum-api/nodum-web: el Id de la imagen local recién construida
+#   (`docker inspect --format '{{.Id}}' nodum-api:prod`).
+# - nodum_minio: el digest real de quay.io/minio/minio (pull anónimo denegado;
+#   resolver con sesión iniciada: `docker buildx imagetools inspect
+#   quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z`).
+# Un digest de ceros no existe en ningún registro: el pull falla hasta
+# sustituirlo. Ver README «Imágenes por digest».
+#
 # Secretos: el gestor lee ./config/.env del stack. Copiar la estructura de
 # deploy/.env.prod.example del repo oficial y rellenarla (chmod 600). Los
 # valores con `:?` hacen fallar `docker compose config` hasta que existan;
@@ -70,7 +82,7 @@ x-backend-env: &backend-env
 
 services:
   nodum_postgres:
-    image: pgvector/pgvector:0.8.0-pg16
+    image: pgvector/pgvector:0.8.0-pg16@sha256:a132765ec351c65111b5b675928a3a0515a466a40f97277329db8b8209ad8bc9
     environment:
       POSTGRES_USER: ${POSTGRES_USER:?set in ./config/.env}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in ./config/.env}
@@ -90,7 +102,7 @@ services:
           memory: ${POSTGRES_MEM_LIMIT:-1g}
 
   nodum_redis:
-    image: redis:7.4.2-alpine
+    image: redis:7.4.2-alpine@sha256:02419de7eddf55aa5bcf49efb74e88fa8d931b4d77c07eff8a6b2144472b6952
     command:
       - redis-server
       - "--maxmemory"
@@ -114,7 +126,7 @@ services:
           memory: ${REDIS_MEM_LIMIT:-768m}
 
   nodum_redis_control:
-    image: redis:7.4.2-alpine
+    image: redis:7.4.2-alpine@sha256:02419de7eddf55aa5bcf49efb74e88fa8d931b4d77c07eff8a6b2144472b6952
     command:
       - redis-server
       - "--maxmemory"
@@ -138,7 +150,7 @@ services:
           memory: ${REDIS_CONTROL_MEM_LIMIT:-256m}
 
   nodum_minio:
-    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:0000000000000000000000000000000000000000000000000000000000000000 # PLACEHOLDER: rellenar en el VPS (ver cabecera)
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set in ./config/.env}
@@ -159,7 +171,7 @@ services:
           memory: ${MINIO_MEM_LIMIT:-1g}
 
   nodum_migrate:
-    image: nodum-api:prod
+    image: nodum-api:prod@sha256:0000000000000000000000000000000000000000000000000000000000000000 # PLACEHOLDER: Id de la imagen local (ver cabecera)
     environment:
       <<: *backend-env
       RUN_MIGRATIONS: "true"
@@ -172,7 +184,7 @@ services:
       - nodum_internal
 
   nodum_api:
-    image: nodum-api:prod
+    image: nodum-api:prod@sha256:0000000000000000000000000000000000000000000000000000000000000000 # PLACEHOLDER: Id de la imagen local (ver cabecera)
     environment:
       <<: *backend-env
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
@@ -209,7 +221,7 @@ services:
           memory: ${API_MEM_LIMIT:-1g}
 
   nodum_worker:
-    image: nodum-api:prod
+    image: nodum-api:prod@sha256:0000000000000000000000000000000000000000000000000000000000000000 # PLACEHOLDER: Id de la imagen local (ver cabecera)
     environment: *backend-env
     command:
       - uv
@@ -242,7 +254,7 @@ services:
           memory: ${WORKER_MEM_LIMIT:-1g}
 
   nodum_beat:
-    image: nodum-api:prod
+    image: nodum-api:prod@sha256:0000000000000000000000000000000000000000000000000000000000000000 # PLACEHOLDER: Id de la imagen local (ver cabecera)
     environment: *backend-env
     command:
       - uv
@@ -267,7 +279,7 @@ services:
           memory: ${BEAT_MEM_LIMIT:-384m}
 
   nodum_web:
-    image: nodum-web:prod
+    image: nodum-web:prod@sha256:0000000000000000000000000000000000000000000000000000000000000000 # PLACEHOLDER: Id de la imagen local (ver cabecera)
     environment:
       NODE_ENV: production
       API_PROXY_URL: http://nodum_api:8000
@@ -290,7 +302,7 @@ services:
           memory: ${WEB_MEM_LIMIT:-512m}
 
   nodum_caddy:
-    image: caddy:2-alpine
+    image: caddy:2-alpine@sha256:78bd35025c7ba85961dd149ae670315129954e77abe2383ac47c89106b35ade9
     environment:
       # El TLS lo termina el Caddy del VPS; aquí solo HTTP interno.
       NODUM_SITE_ADDRESS: ${NODUM_SITE_ADDRESS:-:80}

@@ -5,7 +5,7 @@ import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-const services = { affine: { image: 'ghcr.io/toeverything/affine:stable' }, affine_migration: { image: 'ghcr.io/toeverything/affine:stable' }, affine_postgres: { image: 'pgvector/pgvector:pg16' }, affine_redis: { image: 'redis:7-alpine' } };
+const services = { affine: { image: 'ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099' }, affine_migration: { image: 'ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099' }, affine_postgres: { image: 'pgvector/pgvector:pg16@sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f' }, affine_redis: { image: 'redis:7-alpine@sha256:7f7d30b7fdd09467bac58198a1f166dd69789d348d4fe859cccb20e0cf287fbe' } };
 
 test('solo acepta el token y operaciones para aplicaciones registradas sin borrar volúmenes', async () => {
   const calls = [], token = 'x'.repeat(40);
@@ -139,16 +139,16 @@ test('no marca AFFiNE activo si solo funciona Redis', async () => {
 });
 
 const nodumServices = {
-  nodum_postgres: { image: 'pgvector/pgvector:0.8.0-pg16' },
-  nodum_redis: { image: 'redis:7.4.2-alpine' },
-  nodum_redis_control: { image: 'redis:7.4.2-alpine' },
-  nodum_minio: { image: 'quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z' },
-  nodum_migrate: { image: 'nodum-api:prod' },
-  nodum_api: { image: 'nodum-api:prod' },
-  nodum_worker: { image: 'nodum-api:prod' },
-  nodum_beat: { image: 'nodum-api:prod' },
-  nodum_web: { image: 'nodum-web:prod' },
-  nodum_caddy: { image: 'caddy:2-alpine', ports: [{ published: '8090', host_ip: '127.0.0.1' }] },
+  nodum_postgres: { image: 'pgvector/pgvector:0.8.0-pg16@sha256:a132765ec351c65111b5b675928a3a0515a466a40f97277329db8b8209ad8bc9' },
+  nodum_redis: { image: 'redis:7.4.2-alpine@sha256:02419de7eddf55aa5bcf49efb74e88fa8d931b4d77c07eff8a6b2144472b6952' },
+  nodum_redis_control: { image: 'redis:7.4.2-alpine@sha256:02419de7eddf55aa5bcf49efb74e88fa8d931b4d77c07eff8a6b2144472b6952' },
+  nodum_minio: { image: `quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:${'0'.repeat(64)}` },
+  nodum_migrate: { image: `nodum-api:prod@sha256:${'0'.repeat(64)}` },
+  nodum_api: { image: `nodum-api:prod@sha256:${'0'.repeat(64)}` },
+  nodum_worker: { image: `nodum-api:prod@sha256:${'0'.repeat(64)}` },
+  nodum_beat: { image: `nodum-api:prod@sha256:${'0'.repeat(64)}` },
+  nodum_web: { image: `nodum-web:prod@sha256:${'0'.repeat(64)}` },
+  nodum_caddy: { image: 'caddy:2-alpine@sha256:78bd35025c7ba85961dd149ae670315129954e77abe2383ac47c89106b35ade9', ports: [{ published: '8090', host_ip: '127.0.0.1' }] },
 };
 
 test('instala, consulta y desinstala Nodum con su stack completo', async () => {
@@ -181,6 +181,20 @@ test('rechaza una imagen de api no oficial aunque el servicio exista', async () 
   try {
     const root = `http://127.0.0.1:${server.address().port}`, headers = { authorization: `Bearer ${token}` };
     assert.equal((await fetch(root + '/v1/apps/nodum', { method: 'POST', headers })).status, 202);
+    await new Promise(resolve => setTimeout(resolve, 10));
+    assert.equal(calls.some(args => args.includes('up')), false);
+    assert.equal((await (await fetch(root + '/v1/apps', { headers })).json()).apps[0].status, 'error');
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('rechaza una imagen sin digest aunque sea la oficial (tag solo)', async () => {
+  const calls = [], token = 'u'.repeat(40);
+  const tampered = { ...services, affine_redis: { image: 'redis:7-alpine' } };
+  const server = createManager({ token, stack: { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'affine', url: 'https://affine.example.test' }], checkSpace: async () => ({ bavail: 10 ** 9, bsize: 4096 }), execute: async args => { calls.push(args); return args.includes('config') ? JSON.stringify({ services: tampered }) : ''; } });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const root = `http://127.0.0.1:${server.address().port}`, headers = { authorization: `Bearer ${token}` };
+    assert.equal((await fetch(root + '/v1/apps/affine', { method: 'POST', headers })).status, 202);
     await new Promise(resolve => setTimeout(resolve, 10));
     assert.equal(calls.some(args => args.includes('up')), false);
     assert.equal((await (await fetch(root + '/v1/apps', { headers })).json()).apps[0].status, 'error');

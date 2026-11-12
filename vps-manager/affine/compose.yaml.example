@@ -1,9 +1,11 @@
 # Ejemplo en revisión; no desplegar sin validar los puertos, las imágenes y el proxy.
 # Basado en la documentación oficial de AFFiNE. Todos los nombres quedan dentro
 # del proyecto Compose de Aula; no fija container_name ni publica bases de datos.
+# Imágenes fijadas por digest (tag@sha256:...), igual que en manager.mjs: el gestor
+# rechaza cualquier imagen que no sea exactamente la permitida (ver README).
 services:
   affine:
-    image: ghcr.io/toeverything/affine:stable
+    image: ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099
     networks: [affine_internal]
     ports:
       - "127.0.0.1:${AFFINE_PORT:-3010}:3010"
@@ -29,7 +31,7 @@ services:
         max-size: 10m
         max-file: "3"
   affine_migration:
-    image: ghcr.io/toeverything/affine:stable
+    image: ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099
     networks: [affine_internal]
     command: ["sh", "-c", "node ./scripts/self-host-predeploy.js"]
     depends_on:
@@ -47,7 +49,7 @@ services:
     mem_limit: 1g
     logging: *logs
   affine_redis:
-    image: redis:7-alpine
+    image: redis:7-alpine@sha256:7f7d30b7fdd09467bac58198a1f166dd69789d348d4fe859cccb20e0cf287fbe
     networks: [affine_internal]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -58,7 +60,7 @@ services:
     mem_limit: 256m
     logging: *logs
   affine_postgres:
-    image: pgvector/pgvector:pg16
+    image: pgvector/pgvector:pg16@sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f
     networks: [affine_internal]
     volumes:
       - ./data/affine/postgres:/var/lib/postgresql/data

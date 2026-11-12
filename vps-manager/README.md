@@ -10,6 +10,17 @@ Existe una plantilla de AFFiNE en `affine/compose.yaml.example`: su estructura s
 
 También hay plantilla de Nodum en `nodum/compose.yaml.example` (con su `nodum/Caddyfile.example`), adaptada de su compose oficial y registrada en el catálogo del gestor (`nodum_web` como entrada). Nodum no publica imágenes oficiales de api/web: las hay que construir una vez a mano en el VPS con los Dockerfile del repo y el gestor las usa con `--no-build`. La plantilla aún no se ha validado con Docker real: falta comprobar `docker compose config` con el `.env` relleno y el arranque completo antes de usarla.
 
+## Imágenes por digest
+
+Las imágenes permitidas están fijadas por digest (`repo:tag@sha256:...`) en `allowedImages` de `manager.mjs` y en las plantillas `compose.yaml.example`. El gestor rechaza cualquier servicio cuya imagen no sea EXACTAMENTE la permitida (`unknown_image`) o no lleve digest (`unpinned_image`): así un re-etiquetado en el registro no puede colar código distinto al auditado. Para actualizar una imagen: resolver su digest actual (`docker buildx imagetools inspect --raw <repo:tag>` o `crane digest <repo:tag>`), sustituirlo en AMBOS ficheros y volver a desplegar el gestor.
+
+Excepciones con digest de ceros (`sha256:000...0`), a rellenar en el VPS antes del primer despliegue en ambos ficheros:
+
+- `nodum-api` / `nodum-web`: imágenes locales construidas en el VPS; su digest es el Id de la imagen construida (`docker inspect --format '{{.Id}}' nodum-api:prod`).
+- `nodum_minio` (`quay.io/minio/minio`): Quay deniega pulls anónimos para este repo, así que hay que resolver el digest con sesión iniciada (`docker login quay.io` y después `docker buildx imagetools inspect quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z`). El propio `docker compose pull` en el VPS necesitará esa misma sesión.
+
+Un digest de ceros no existe en ningún registro: mientras no se sustituya, el pull falla.
+
 Pendiente antes de usarlo: revisión de seguridad y del acceso al daemon de Docker; configuración de proxy y TLS compatible con los servicios existentes; límites de recursos (CPU/RAM); tratamiento y recuperación de fallos; pruebas completas con Docker real, con varios roles y con un VPS de prueba. La configuración, copia de seguridad y primera cuenta de AFFiNE requieren sus propios pasos. La interfaz y la API de Aula también necesitan completar la integración y su validación.
 
 Prueba aislada: `node --test vps-manager/manager.test.mjs`. Los tests no inician ni alteran contenedores.
