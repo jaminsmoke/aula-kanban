@@ -47,7 +47,10 @@ export async function GET(request: Request) {
       if (!app.url) return false;
       const url = new URL(app.url);
       return url.protocol !== "https:" || Boolean(url.username || url.password || url.search || url.hash);
-    })) throw new Error("invalid_response");
+    })) {
+      console.error("space_manager_invalid_response");
+      throw new Error("invalid_response");
+    }
     return json({ configured: true, apps: [...parsed.data.apps, ...natives] });
   } catch { return json({ message: "No se pudo contactar con el gestor del VPS." }, 502); }
 }
