@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
-import { Blocks, PencilRuler, Workflow } from "lucide-react";
+import { Blocks, PencilRuler } from "lucide-react";
 import { NodumIcon } from "./nodum-icon";
+import { N8nIcon } from "./n8n-icon";
 import type { Project } from "./model";
 
 export type SpaceRole = Project["role"];
@@ -138,7 +139,7 @@ export const spaceTools: SpaceTool[] = [
     id: "n8n",
     name: "n8n",
     description: "Automatiza tareas y conecta aplicaciones con flujos visuales (n8n).",
-    icon: Workflow,
+    icon: N8nIcon,
     host: "vps",
     envVars: ["VITE_N8N_URL", "NEXT_PUBLIC_N8N_URL"],
     roles: ["owner", "admin", "teacher", "student", "guest"],

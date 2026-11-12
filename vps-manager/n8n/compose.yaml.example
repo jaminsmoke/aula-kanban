@@ -13,12 +13,13 @@
 #   reset del gestor los borra de forma acotada.
 #
 # Configuración: crear ./.env (junto al compose.yaml, chmod 600) con
-#   WEBHOOK_URL=https://<dominio de n8n>/
+#   N8N_WEBHOOK_URL=https://<dominio de n8n>/
 #   N8N_HOST=<dominio de n8n>            (solo el dominio, sin https://)
 # Los valores con `:?` hacen fallar `docker compose config` hasta que
 # existan; es intencionado. `N8N_HTTP_PORT` debe coincidir con el
-# reverse_proxy del Caddy del VPS. N8N_PROTOCOL=http porque TLS lo termina
-# el Caddy exterior: con https sin certificados n8n no arranca.
+# reverse_proxy del Caddy del VPS. HTTPS indica la URL pública; el TLS
+# termina en el proxy. Configurar la cuenta propietaria antes de abrir el
+# editor a Internet y no exponerlo hasta validar autenticación y licencia.
 #
 # Copiar este contenido como ./compose.yaml en la raíz del stack; el gestor
 # lee ese único fichero para todas las apps (los servicios conviven porque
@@ -38,10 +39,15 @@ services:
     volumes:
       - ./data/n8n:/home/node/.n8n
     environment:
-      WEBHOOK_URL: ${WEBHOOK_URL:?set in ./.env}
+      N8N_WEBHOOK_URL: ${N8N_WEBHOOK_URL:?set in ./.env}
       N8N_HOST: ${N8N_HOST:?set in ./.env}
+      N8N_EDITOR_BASE_URL: ${N8N_WEBHOOK_URL:?set in ./.env}
+      N8N_PROXY_HOPS: "1"
       N8N_PORT: "5678"
-      N8N_PROTOCOL: http
+      N8N_PROTOCOL: https
+      EXECUTIONS_DATA_PRUNE: "true"
+      EXECUTIONS_DATA_MAX_AGE: "${N8N_EXECUTION_RETENTION_HOURS:-336}"
+      EXECUTIONS_DATA_PRUNE_MAX_COUNT: "${N8N_EXECUTION_RETENTION_COUNT:-10000}"
     restart: unless-stopped
     mem_limit: 2g
     logging:
