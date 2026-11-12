@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const projects = sqliteTable("projects", {
   id: text("id").primaryKey().notNull(),
@@ -10,11 +10,21 @@ export const administrators = sqliteTable("administrators", {
   id: text("id").primaryKey().notNull(),
   email: text("email").notNull(),
   userId: text("user_id"),
+  profileId: text("profile_id"),
   createdAt: integer("created_at").notNull(),
 }, (table) => [
   uniqueIndex("administrator_email").on(table.email),
   uniqueIndex("administrator_user_id").on(table.userId),
+  uniqueIndex("administrator_profile").on(table.profileId),
 ]);
+
+// Global administrator profiles may exist without an account or invitation.
+export const administratorProfiles = sqliteTable("administrator_profiles", {
+  id: text("id").primaryKey().notNull(),
+  displayName: text("display_name").notNull().default(""),
+  revision: integer("revision").notNull().default(1),
+  mutationToken: text("mutation_token"),
+});
 
 export const userIdentities = sqliteTable("user_identities", {
   id: text("id").primaryKey().notNull(),
@@ -29,7 +39,8 @@ export const teachers = sqliteTable("teachers", {
   activities: text("activities").notNull(),
   aiHelp: text("ai_help").notNull(),
   revision: integer("revision").notNull().default(1),
-});
+  mutationToken: text("mutation_token"),
+}, (table) => [index("teachers_project_name").on(table.projectId, table.name, table.id)]);
 
 export const tasks = sqliteTable("tasks", {
   id: text("id").primaryKey().notNull(),
@@ -46,7 +57,7 @@ export const tasks = sqliteTable("tasks", {
   creatorMemberId: text("creator_member_id"),
   creatorName: text("creator_name"),
   mutationToken: text("mutation_token"),
-});
+}, (table) => [index("tasks_project_order").on(table.projectId, table.createdAt, table.id)]);
 
 export const taskAssignees = sqliteTable("task_assignees", {
   id: text("id").primaryKey().notNull(),
@@ -54,7 +65,7 @@ export const taskAssignees = sqliteTable("task_assignees", {
   projectId: text("project_id").notNull(),
   kind: text("kind").notNull(),
   profileId: text("profile_id").notNull(),
-}, (table) => [uniqueIndex("task_assignee_profile").on(table.taskId, table.kind, table.profileId)]);
+}, (table) => [uniqueIndex("task_assignee_profile").on(table.taskId, table.kind, table.profileId), index("task_assignees_project_task").on(table.projectId, table.taskId)]);
 
 export const students = sqliteTable("students", {
   section: text("section").primaryKey().notNull(),
@@ -66,7 +77,8 @@ export const students = sqliteTable("students", {
   aiHelp: text("ai_help").notNull(),
   deleted: integer("deleted").notNull().default(0),
   revision: integer("revision").notNull().default(1),
-});
+  mutationToken: text("mutation_token"),
+}, (table) => [index("students_project_active").on(table.projectId, table.deleted, table.section)]);
 
 export const projectMembers = sqliteTable("project_members", {
   id: text("id").primaryKey().notNull(),
@@ -82,4 +94,6 @@ export const projectMembers = sqliteTable("project_members", {
   uniqueIndex("project_member_student").on(table.projectId, table.studentSection),
   uniqueIndex("project_member_teacher").on(table.projectId, table.teacherId),
   uniqueIndex("project_member_user").on(table.projectId, table.userId),
+  index("project_members_user_status").on(table.userId, table.status, table.projectId),
+  index("project_members_invitation").on(table.email, table.status),
 ]);

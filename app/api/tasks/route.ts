@@ -44,9 +44,8 @@ function validateRefs(refs: Ref[], data: Awaited<ReturnType<typeof projectData>>
 function sameRefs(a: Ref[], b: Ref[]) {
   return a.length === b.length && a.every(ref => b.some(other => ref.kind === other.kind && ref.profileId === other.profileId));
 }
-function assignmentSnapshot(refs: Ref[], fallback: string, data: Awaited<ReturnType<typeof projectData>>) {
-  return refs.length ? refs.map(ref => ref.kind === "student" ? data.profiles.find(item => item.section === ref.profileId)?.displayName : data.staff.find(item => item.id === ref.profileId)?.name).filter(Boolean).join(", ") : fallback;
-}
+// Linked assignments live only in task_assignees. The text column is reserved for legacy or external labels.
+function unlinkedAssigneeText(refs: Ref[], fallback: string) { return refs.length ? "" : fallback; }
 
 async function handle(request: Request) {
   const user = await getChatGPTUser(); if (!user) return json({ message: "Inicia sesión para acceder al tablero." }, 401);
@@ -76,7 +75,7 @@ async function handle(request: Request) {
     if (isStudent && (!onlySelfOrNone(refs) || (!refs.length && !unassigned(value.assignee)))) return json({ message: "Solo puedes asignarte la tarea a ti o dejarla sin asignar." }, 403);
     const id = crypto.randomUUID(), member = data.members.find(item => item.status === "active" && item.userId === user.userId);
     const statements = [
-      binding.prepare(`INSERT INTO tasks (id, project_id, title, description, assignee, due_date, priority, status, created_at, revision, creator_user_id, creator_member_id, creator_name) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ? WHERE ${authSql} RETURNING id`).bind(id, project.id, value.title, value.description, assignmentSnapshot(refs, value.assignee, data), value.dueDate, value.priority, value.status, Date.now(), user.userId, member?.id ?? null, user.displayName, ...authArgs),
+      binding.prepare(`INSERT INTO tasks (id, project_id, title, description, assignee, due_date, priority, status, created_at, revision, creator_user_id, creator_member_id, creator_name) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ? WHERE ${authSql} RETURNING id`).bind(id, project.id, value.title, value.description, unlinkedAssigneeText(refs, value.assignee), value.dueDate, value.priority, value.status, Date.now(), user.userId, member?.id ?? null, user.displayName, ...authArgs),
       binding.prepare("INSERT INTO user_identities (id, display_name) SELECT ?, ? WHERE EXISTS (SELECT 1 FROM tasks WHERE id = ? AND project_id = ?) ON CONFLICT(id) DO UPDATE SET display_name = excluded.display_name").bind(user.userId, user.displayName, id, project.id),
       ...refs.map(ref => binding.prepare("INSERT INTO task_assignees (id, task_id, project_id, kind, profile_id) SELECT ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM tasks WHERE id = ? AND project_id = ?)").bind(crypto.randomUUID(), id, project.id, ref.kind, ref.profileId, id, project.id)),
     ];
@@ -121,7 +120,7 @@ async function handle(request: Request) {
   const referenceGuard = currentRefs.map(() => "AND EXISTS (SELECT 1 FROM task_assignees WHERE task_id = ? AND project_id = ? AND kind = ? AND profile_id = ?)").join(" ");
   const referenceArgs = currentRefs.flatMap(ref => [id, project.id, ref.kind, ref.profileId]);
   const statements = [
-    binding.prepare(`UPDATE tasks SET title = ?, description = ?, assignee = ?, due_date = ?, priority = ?, status = ?, revision = revision + 1, mutation_token = ? WHERE id = ? AND project_id = ? AND revision = ? AND ${authSql} AND (SELECT count(*) FROM task_assignees WHERE task_id = ? AND project_id = ?) = ? ${referenceGuard} RETURNING id`).bind(value.title, value.description, assignmentSnapshot(nextRefs, value.assignee, data), value.dueDate, value.priority, value.status, token, id, project.id, revision, ...authArgs, id, project.id, currentRefs.length, ...referenceArgs),
+    binding.prepare(`UPDATE tasks SET title = ?, description = ?, assignee = ?, due_date = ?, priority = ?, status = ?, revision = revision + 1, mutation_token = ? WHERE id = ? AND project_id = ? AND revision = ? AND ${authSql} AND (SELECT count(*) FROM task_assignees WHERE task_id = ? AND project_id = ?) = ? ${referenceGuard} RETURNING id`).bind(value.title, value.description, unlinkedAssigneeText(nextRefs, value.assignee), value.dueDate, value.priority, value.status, token, id, project.id, revision, ...authArgs, id, project.id, currentRefs.length, ...referenceArgs),
     binding.prepare("DELETE FROM task_assignees WHERE task_id = ? AND project_id = ? AND EXISTS (SELECT 1 FROM tasks WHERE id = ? AND project_id = ? AND mutation_token = ?)").bind(id, project.id, id, project.id, token),
     ...nextRefs.map(ref => binding.prepare("INSERT INTO task_assignees (id, task_id, project_id, kind, profile_id) SELECT ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM tasks WHERE id = ? AND project_id = ? AND mutation_token = ?)").bind(crypto.randomUUID(), id, project.id, ref.kind, ref.profileId, id, project.id, token)),
   ];

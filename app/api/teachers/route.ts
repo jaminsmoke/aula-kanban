@@ -3,10 +3,12 @@ import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, teachers } from "../../../db/schema";
 import { validProject } from "../project";
+import { updateProfile } from "../profile-update";
 
 export const dynamic = "force-dynamic";
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 const fields = z.object({ name: z.string().trim().min(1).max(80), role: z.string().trim().max(500), activities: z.string().trim().max(2000), aiHelp: z.string().trim().max(2000) });
+const email = z.string().trim().max(254).refine(value => !value || z.string().email().safeParse(value).success, "Correo no válido").transform(value => value.toLowerCase());
 const reference = z.object({ id: z.string().uuid(), revision: z.number().int().positive() });
 
 export async function GET(request: Request) {
@@ -18,7 +20,8 @@ export async function GET(request: Request) {
   return json(list.map(teacher => {
     const member = members.find(item => item.teacherId === teacher.id);
     const maySeeEmail = project.access.role === "owner" || project.access.role === "admin" || project.access.teacherId === teacher.id;
-    return { ...teacher, accountStatus: member?.status ?? "unlinked", ...(maySeeEmail ? { accountEmail: member?.email ?? "", accountMemberId: member?.id ?? null } : {}) };
+    const { mutationToken, ...safeTeacher } = teacher;
+    return { ...safeTeacher, accountStatus: member?.status ?? "unlinked", ...(maySeeEmail ? { accountEmail: member?.email ?? "", accountMemberId: member?.id ?? null } : {}) };
   }));
 }
 async function mutate(request: Request) {
@@ -29,25 +32,36 @@ async function mutate(request: Request) {
   const body = await request.json().catch(() => null);
   if (request.method === "POST") {
     if (project.access.role === "teacher") return json({ message: "Solo un administrador puede añadir profesores." }, 403);
-    const parsed = fields.extend({ id: z.string().uuid(), accountEmail: z.string().trim().email().max(254).transform(value => value.toLowerCase()) }).safeParse(body);
+    const parsed = fields.extend({ id: z.string().uuid(), accountEmail: email.optional().default("") }).safeParse(body);
     if (!parsed.success) return json({ message: "Revisa los campos de la ficha." }, 400);
     try {
       const { accountEmail, ...values } = parsed.data;
-      const db = getDb(); const [created] = await db.batch([
-        db.insert(teachers).values({ ...values, projectId: project.id }).returning(),
-        db.insert(projectMembers).values({ id: crypto.randomUUID(), projectId: project.id, email: accountEmail, role: "teacher", teacherId: values.id, status: "pending" }).returning(),
-      ]);
-      return json({ ...created[0], accountStatus: "pending", accountEmail }, 201);
-    } catch { return json({ message: "No se pudo guardar la ficha. Comprueba que el proyecto sigue disponible." }, 409); }
+      const db = getDb(); const insert = db.insert(teachers).values({ ...values, projectId: project.id }).returning();
+      const [created] = accountEmail ? (await db.batch([insert, db.insert(projectMembers).values({ id: crypto.randomUUID(), projectId: project.id, email: accountEmail, role: "teacher", teacherId: values.id, status: "pending" }).returning()]))[0] : await insert;
+      const { mutationToken, ...safeTeacher } = created;
+      return json({ ...safeTeacher, accountStatus: accountEmail ? "pending" : "unlinked", accountEmail }, 201);
+    } catch { return json({ message: "No se pudo guardar la ficha. Comprueba que el correo no esté ya vinculado y que el proyecto siga disponible." }, 409); }
   }
-  const parsed = (request.method === "DELETE" ? reference : fields.merge(reference)).safeParse(body);
+  const parsed = (request.method === "DELETE" ? reference : fields.merge(reference).extend({ accountEmail: email.optional() })).safeParse(body);
   if (!parsed.success) return json({ message: "Revisa los datos de la ficha." }, 400);
   const { id, revision, ...changes } = parsed.data;
   if (project.access.role === "teacher" && project.access.teacherId !== id) return json({ message: "Solo puedes gestionar tu propia ficha de profesor." }, 403);
+  if (request.method !== "DELETE") {
+    const { accountEmail, name, role, activities, aiHelp } = changes as z.infer<typeof fields> & { accountEmail?: string };
+    const result = await updateProfile(project, "teacher", id, revision, { name, role, activities, aiHelp }, accountEmail);
+    if (!result.ok) return json({ message: result.message }, result.status);
+    const db = getDb();
+    const [updated] = await db.select().from(teachers).where(and(eq(teachers.id, id), eq(teachers.projectId, project.id)));
+    const [member] = await db.select().from(projectMembers).where(and(eq(projectMembers.teacherId, id), eq(projectMembers.projectId, project.id)));
+    const { mutationToken, ...safeTeacher } = updated;
+    return json({ ...safeTeacher, accountStatus: member?.status ?? "unlinked", accountEmail: member?.email ?? "", accountMemberId: member?.id ?? null });
+  }
   const where = and(eq(teachers.id, id), eq(teachers.projectId, project.id), eq(teachers.revision, revision));
   const [result] = request.method === "DELETE"
     ? await getDb().delete(teachers).where(where).returning()
     : await getDb().update(teachers).set({ ...changes, revision: sql`${teachers.revision} + 1` }).where(where).returning();
-  return result ? json(result) : json({ message: "La ficha ha cambiado en otra sesión. Actualiza la página para verla." }, 409);
+  if (!result) return json({ message: "La ficha ha cambiado en otra sesión. Actualiza la página para verla." }, 409);
+  const { mutationToken, ...safeTeacher } = result;
+  return json(safeTeacher);
 }
 export { mutate as POST, mutate as PATCH, mutate as DELETE };

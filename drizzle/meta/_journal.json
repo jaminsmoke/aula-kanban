@@ -78,6 +78,20 @@
       "when": 1794431940886,
       "tag": "0010_task_creator_cleanup",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1794457399669,
+      "tag": "0011_giant_magdalene",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1794457416072,
+      "tag": "0012_integrity_guards",
+      "breakpoints": true
     }
   ]
 }

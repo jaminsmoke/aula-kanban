@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { getDb } from "../../db";
 import { administrators, projectMembers, projects } from "../../db/schema";
 import { getChatGPTUser, type ChatGPTUser } from "../chatgpt-auth";
@@ -25,9 +25,7 @@ export async function isAdministrator(user: ChatGPTUser) {
       }
       return true;
     }
-    await db.update(administrators).set({ userId: user.userId }).where(and(eq(administrators.email, email), isNull(administrators.userId)));
-    const [admin] = await db.select().from(administrators).where(and(eq(administrators.email, email), eq(administrators.userId, user.userId)));
-    return Boolean(admin);
+    return false;
   } catch {
     return false;
   }

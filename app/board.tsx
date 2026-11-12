@@ -24,9 +24,9 @@ const blank: TaskFields = {
 const formatDate = new Intl.DateTimeFormat("es", { day: "numeric", month: "short" });
 type Project = { id: string; name: string; createdAt: number; role: "owner" | "admin" | "teacher" | "student" | "guest"; studentSection: string | null; teacherId: string | null };
 type Member = { id: string; email: string; role: "teacher" | "student" | "guest"; studentSection: string | null; teacherId: string | null; status: "pending" | "active" };
-type Invitation = { id: string; projectId: string; projectName: string; role: "teacher" | "student" | "guest" };
-const accountLabel = (status?: string) => status === "active" ? "Cuenta activa" : status === "pending" ? "Invitación pendiente" : "Sin usuario asociado";
-type Administrator = { id: string; email: string; createdAt: number; active: boolean };
+type Invitation = { id: string; projectId: string | null; projectName: string; role: "teacher" | "student" | "guest" | "admin"; scope: "project" | "site" };
+const accountLabel = (status?: string) => status === "active" ? "Cuenta activa" : status === "pending" ? "Invitación pendiente" : "Sin cuenta asignada";
+type Administrator = { id: string; displayName: string; email: string; revision: number; accountStatus: "active" | "pending" | "unlinked"; active: boolean };
 
 class RequestError extends Error {
   constructor(message: string, readonly status: number) {
@@ -117,6 +117,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const [remixPrompt, setRemixPrompt] = useState("");
   const [admins, setAdmins] = useState<Administrator[] | null>(null);
   const [adminEmail, setAdminEmail] = useState("");
+  const [adminName, setAdminName] = useState("");
   const [editingAdmin, setEditingAdmin] = useState<Administrator | null>(null);
   const [removingAdmin, setRemovingAdmin] = useState<Administrator | null>(null);
   const [adminError, setAdminError] = useState("");
@@ -203,9 +204,9 @@ export default function Board({ user }: { user: { displayName: string; email: st
     setRemixPrompt(`@Sites Crea un remix de Aula Kanban a partir de ${window.location.origin}. Quiero una copia propia, sin datos de usuarios, con su base de datos independiente. Ayúdame a configurar OWNER_EMAIL con mi cuenta de ChatGPT y a publicarla.`);
     setRemixOpen(true);
   }
-  async function acceptInvitation(id: string) {
+  async function acceptInvitation(invitation: Invitation) {
     if (invitationBusy) return; setInvitationBusy(true); setInvitationError("");
-    try { const result = await request<{ projectId: string }>("POST", { id }, "/api/invitations"); window.location.assign("/?project=" + encodeURIComponent(result.projectId)); }
+    try { const result = await request<{ projectId: string | null }>("POST", { id: invitation.id, scope: invitation.scope }, "/api/invitations"); window.location.assign(result.projectId ? "/?project=" + encodeURIComponent(result.projectId) : "/"); }
     catch (error) { setInvitationError((error as Error).message); setInvitationBusy(false); }
   }
 
@@ -218,8 +219,8 @@ export default function Board({ user }: { user: { displayName: string; email: st
     if (adminBusy) return;
     setAdminBusy(true); setAdminError("");
     try {
-      await request(editingAdmin ? "PATCH" : "POST", editingAdmin ? { id: editingAdmin.id, email: adminEmail } : { email: adminEmail }, "/api/administrators");
-      setAdminEmail(""); setEditingAdmin(null); await loadAdmins();
+      await request(editingAdmin ? "PATCH" : "POST", editingAdmin ? { id: editingAdmin.id, revision: editingAdmin.revision, displayName: adminName, email: adminEmail } : { displayName: adminName, email: adminEmail }, "/api/administrators");
+      setAdminEmail(""); setAdminName(""); setEditingAdmin(null); await loadAdmins(); void refreshProjects();
     } catch (error) { setAdminError((error as Error).message); }
     finally { setAdminBusy(false); }
   }
@@ -227,9 +228,9 @@ export default function Board({ user }: { user: { displayName: string; email: st
     if (!removingAdmin || adminBusy) return;
     setAdminBusy(true); setAdminError("");
     try {
-      await request("DELETE", { id: removingAdmin.id }, "/api/administrators");
-      if (editingAdmin?.id === removingAdmin.id) { setEditingAdmin(null); setAdminEmail(""); }
-      setRemovingAdmin(null); await loadAdmins();
+      await request("DELETE", { id: removingAdmin.id, revision: removingAdmin.revision }, "/api/administrators");
+      if (editingAdmin?.id === removingAdmin.id) { setEditingAdmin(null); setAdminEmail(""); setAdminName(""); }
+      setRemovingAdmin(null); await loadAdmins(); void refreshProjects();
     } catch (error) { setAdminError((error as Error).message); }
     finally { setAdminBusy(false); }
   }
@@ -345,17 +346,6 @@ export default function Board({ user }: { user: { displayName: string; email: st
     try {
       const isNew = studentForm.revision === 0;
       const updated = await request<Student>(isNew ? "POST" : "PATCH", studentForm, "/api/students");
-      if (!isNew) {
-        const previous = students?.find(item => item.section === studentForm.section);
-        const nextEmail = (studentForm.accountEmail ?? "").trim().toLowerCase();
-        const priorEmail = (previous?.accountEmail ?? "").trim().toLowerCase();
-        if (nextEmail !== priorEmail) {
-          try {
-            if (nextEmail) await request("POST", { email: nextEmail, role: "student", studentSection: studentForm.section }, "/api/members");
-            else if (previous?.accountMemberId) await request("DELETE", { id: previous.accountMemberId }, "/api/members");
-          } catch (error) { setStudentForm({ ...studentForm, revision: updated.revision }); throw error; }
-        }
-      }
       setStudents((previous) => isNew ? [...(previous ?? []), updated] : previous?.map((student) => student.section === updated.section ? updated : student) ?? [updated]);
       if (isNew) setStudentName(updated.section);
       setStudentForm(null);
@@ -533,7 +523,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const accessReady = projectsLoaded && invitationsLoaded;
   const accessCheckError = projectLoadError || invitationLoadError;
   const requestedInvitation = invitations.find((invitation) => invitation.projectId === projectId);
-  const invitationWelcome = Boolean(invitations.length && (!hasProjectLink || requestedInvitation));
+  const invitationWelcome = Boolean(invitations.length && (!hasProjectLink || requestedInvitation || invitations.some(invitation => invitation.scope === "site")));
   const orderedInvitations = requestedInvitation ? [requestedInvitation, ...invitations.filter((invitation) => invitation.id !== requestedInvitation.id)] : invitations;
   const privilegedOnboarding = (owner || admin) && !hasProjectLink && projects.length === 0 && invitations.length === 0;
 
@@ -592,17 +582,19 @@ export default function Board({ user }: { user: { displayName: string; email: st
           {(owner || admin) && settingsTab === "admins" && <section className="admin-management" aria-labelledby="admins-heading">
             <div><h3 id="admins-heading">Administradores</h3><p>Gestionan todos los proyectos y administradores. La propiedad del Site se gestiona por separado en Sites.</p></div>
             <form onSubmit={saveAdmin} className="admin-form">
-              <label htmlFor="admin-email">{editingAdmin ? "Editar correo" : "Correo de la cuenta de ChatGPT"}</label>
-              <div><input id="admin-email" type="email" required maxLength={254} value={adminEmail} onChange={(event) => setAdminEmail(event.target.value)} placeholder="nombre@ejemplo.com" /><button className="primary" type="submit" disabled={adminBusy}>{editingAdmin ? "Guardar" : "Añadir"}</button></div>
-              {editingAdmin && <><p>Al cambiar el correo se revoca el acceso anterior y la nueva cuenta tendrá que iniciar sesión.</p><button className="text-button" type="button" onClick={() => { setEditingAdmin(null); setAdminEmail(""); }}>Cancelar edición</button></>}
+              <label htmlFor="admin-name">Nombre de la ficha <span>(opcional)</span></label><input id="admin-name" maxLength={80} value={adminName} onChange={(event) => setAdminName(event.target.value)} placeholder="Nombre del administrador" />
+              <label htmlFor="admin-email">Correo de ChatGPT <span>(opcional)</span></label>
+              <div><input id="admin-email" type="email" maxLength={254} value={adminEmail} onChange={(event) => setAdminEmail(event.target.value)} placeholder="nombre@ejemplo.com" /><button className="primary" type="submit" disabled={adminBusy}>{editingAdmin ? "Guardar" : "Añadir ficha"}</button></div>
+              <p>Sin correo, la ficha no concede acceso. Al añadirlo, la persona deberá aceptar la invitación. Si se cambia o elimina, se retira el acceso anterior.</p>
+              {editingAdmin && <button className="text-button" type="button" onClick={() => { setEditingAdmin(null); setAdminEmail(""); setAdminName(""); }}>Cancelar edición</button>}
             </form>
             {adminError && <p role="alert" className="admin-error">{adminError}</p>}
             {admins === null ? <p>Cargando administradores…</p> : admins.length === 0 ? <p>Aún no hay administradores adicionales.</p> : <ul className="admin-list">{admins.map((item) => <li key={item.id}>
-              <div><strong>{item.email}</strong><small>{item.active ? "Cuenta vinculada" : "Pendiente de primer acceso"}</small></div>
-              <button type="button" className="icon-button" aria-label={`Editar administrador ${item.email}`} title="Editar" onClick={() => { setEditingAdmin(item); setAdminEmail(item.email); setRemovingAdmin(null); setAdminError(""); }}><Pencil size={17} /></button>
-              <button type="button" className="icon-button admin-remove" aria-label={`Eliminar administrador ${item.email}`} title="Eliminar" onClick={() => { setRemovingAdmin(item); setAdminError(""); }}><Trash2 size={17} /></button>
+              <div><strong>{item.displayName || item.email || "Administrador sin nombre"}</strong>{item.displayName && item.email && <small>{item.email}</small>}<small className={`account-status ${item.accountStatus}`}>{accountLabel(item.accountStatus)}</small></div>
+              <button type="button" className="icon-button" aria-label={`Editar administrador ${item.displayName || item.email || "sin nombre"}`} title="Editar" onClick={() => { setEditingAdmin(item); setAdminName(item.displayName); setAdminEmail(item.email); setRemovingAdmin(null); setAdminError(""); }}><Pencil size={17} /></button>
+              <button type="button" className="icon-button admin-remove" aria-label={`Eliminar administrador ${item.displayName || item.email || "sin nombre"}`} title="Eliminar" onClick={() => { setRemovingAdmin(item); setAdminError(""); }}><Trash2 size={17} /></button>
             </li>)}</ul>}
-            {removingAdmin && <div className="admin-confirm" role="alert"><p>¿Eliminar a <strong>{removingAdmin.email}</strong> como administrador? Perderá este acceso de inmediato.</p><div><button type="button" className="secondary" onClick={() => setRemovingAdmin(null)} disabled={adminBusy}>Cancelar</button><button type="button" className="danger" onClick={() => void deleteAdmin()} disabled={adminBusy}>Eliminar acceso</button></div></div>}
+            {removingAdmin && <div className="admin-confirm" role="alert"><p>¿Eliminar la ficha de <strong>{removingAdmin.displayName || removingAdmin.email || "administrador sin nombre"}</strong>? Se retirará cualquier acceso de administrador asociado.</p><div><button type="button" className="secondary" onClick={() => setRemovingAdmin(null)} disabled={adminBusy}>Cancelar</button><button type="button" className="danger" onClick={() => void deleteAdmin()} disabled={adminBusy}>Eliminar ficha</button></div></div>}
           </section>}
         </div>
       </Modal>}
@@ -616,15 +608,15 @@ export default function Board({ user }: { user: { displayName: string; email: st
       </div></Modal>}
 
       <main className="shell">
-        {activeProject && invitations.length > 0 && <section className="invitation-panel" aria-label="Invitaciones pendientes"><h2>Invitaciones pendientes</h2>{invitations.map(invitation => <div className="invitation-row" key={invitation.id}><span><strong>{invitation.projectName}</strong> · {({ teacher: "Profesor", student: "Alumno", guest: "Invitado" } as const)[invitation.role]}</span><button className="primary" disabled={invitationBusy} onClick={() => void acceptInvitation(invitation.id)}>Aceptar invitación</button></div>)}</section>}
+        {activeProject && invitations.length > 0 && <section className="invitation-panel" aria-label="Invitaciones pendientes"><h2>Invitaciones pendientes</h2>{invitations.map(invitation => <div className="invitation-row" key={invitation.id}><span><strong>{invitation.projectName}</strong> · {({ teacher: "Profesor", student: "Alumno", guest: "Invitado", admin: "Administrador" } as const)[invitation.role]}</span><button className="primary" disabled={invitationBusy} onClick={() => void acceptInvitation(invitation)}>Aceptar invitación</button></div>)}</section>}
         {activeProject && invitationLoadError && <div className="alert project-alert" role="alert">No se pudieron consultar las invitaciones. <button type="button" className="text-button" onClick={() => void refreshInvitations()}>Reintentar</button></div>}
         {activeProject && invitationError && <div className="alert" role="alert">{invitationError}</div>}
         {activeProject && projectError && !newProject && !projectDeleting && <div role="alert" className="alert project-alert">{projectError} <button type="button" className="text-button" onClick={() => void refreshProjects()}>Reintentar</button></div>}
         {!activeProject ? !accessReady ? <div className="access-loading" role="status">Comprobando tu acceso…</div> : accessCheckError ? <section className="access-screen" aria-labelledby="access-error-title"><div className="access-card"><p className="eyebrow"><span /> Aula Kanban</p><h1 id="access-error-title">No hemos podido comprobar tu acceso</h1><p>Revisa tu conexión y vuelve a intentarlo para consultar tus proyectos e invitaciones.</p><button type="button" className="primary" onClick={() => { void refreshProjects(); void refreshInvitations(); }}>Reintentar</button></div></section> : privilegedOnboarding ? <section className="access-screen" aria-labelledby="first-project-title"><div className="access-card"><p className="eyebrow"><span /> Aula Kanban</p><h1 id="first-project-title">Tu primer proyecto empieza aquí</h1><p>Crea un tablero para organizar las tareas y compartirlo con tu grupo.</p><button className="primary" type="button" onClick={() => { setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={18} /> Nuevo proyecto</button></div></section> : <section className="access-screen" aria-labelledby="access-title"><div className="access-card">
           <p className="eyebrow"><span /> Aula Kanban</p>
           <h1 id="access-title">{invitationWelcome ? "Tienes una invitación" : hasProjectLink ? "Este enlace no está disponible para tu cuenta" : "Aún no tienes acceso a un proyecto"}</h1>
-          <p>{invitationWelcome ? "Acepta la invitación para entrar al proyecto con esta cuenta de ChatGPT." : "Si te han invitado, comprueba que has iniciado sesión con la cuenta indicada o pide una invitación a quien gestione el proyecto."}</p>
-          {invitations.length > 0 && <section className="access-invitations" aria-label="Invitaciones pendientes"><h2>{invitationWelcome ? "Invitaciones pendientes" : "También tienes invitaciones pendientes"}</h2>{orderedInvitations.map(invitation => <div className="access-invitation" key={invitation.id}><span className="access-invitation-icon" aria-hidden><FolderKanban size={20} /></span><span className="access-invitation-info"><strong>{invitation.projectName}</strong><small>{({ teacher: "Profesor", student: "Alumno", guest: "Invitado" } as const)[invitation.role]}</small></span><button className="primary" disabled={invitationBusy} onClick={() => void acceptInvitation(invitation.id)}>Aceptar invitación</button></div>)}</section>}
+          <p>{invitationWelcome ? "Acepta la invitación para continuar con esta cuenta de ChatGPT." : "Si te han invitado, comprueba que has iniciado sesión con la cuenta indicada o pide una invitación a quien gestione el proyecto."}</p>
+          {invitations.length > 0 && <section className="access-invitations" aria-label="Invitaciones pendientes"><h2>{invitationWelcome ? "Invitaciones pendientes" : "También tienes invitaciones pendientes"}</h2>{orderedInvitations.map(invitation => <div className="access-invitation" key={invitation.id}><span className="access-invitation-icon" aria-hidden><FolderKanban size={20} /></span><span className="access-invitation-info"><strong>{invitation.projectName}</strong><small>{({ teacher: "Profesor", student: "Alumno", guest: "Invitado", admin: "Administrador" } as const)[invitation.role]}</small></span><button className="primary" disabled={invitationBusy} onClick={() => void acceptInvitation(invitation)}>Aceptar invitación</button></div>)}</section>}
           {invitationError && <div className="alert" role="alert">{invitationError}</div>}
           <div className="access-remix"><div><strong>¿Quieres tu propio tablero?</strong><p>Solicita una copia independiente de Aula Kanban para personalizarla a tu manera.</p></div><button type="button" className={invitationWelcome ? "secondary" : "primary"} onClick={openRemix}><Plus size={18} /> Haz tu Site de Aula Kanban</button></div>
         </div></section> : view === "profesores" ? <TeachersView key={projectId} projectId={projectId} isAdmin={owner || admin} ownTeacherId={activeProject.teacherId} tasks={tasks} students={students} openTask={(task) => openEditor(task.status, task)} /> : view === "alumnos" ? (
@@ -797,8 +789,8 @@ export default function Board({ user }: { user: { displayName: string; email: st
         <Modal title={studentForm.revision ? "Editar perfil" : "Añadir alumno"} onClose={() => { if (!studentWriting.current) setStudentForm(null); }}>
           <form onSubmit={saveStudent} className="task-form">
             <label>Nombre visible<input required maxLength={80} value={studentForm.displayName} onChange={(event) => setStudentForm({ ...studentForm, displayName: event.target.value })} /></label>
-            <label>Correo de ChatGPT<input type="email" required={!studentForm.revision} maxLength={254} value={studentForm.accountEmail ?? ""} onChange={(event) => setStudentForm({ ...studentForm, accountEmail: event.target.value })} /></label>
-            <p className="intro">La cuenta recibirá una invitación pendiente dentro de Aula Kanban. Si cambias o eliminas el correo, se retirará el acceso anterior.</p>
+            <label>Correo de ChatGPT <span>(opcional)</span><input type="email" maxLength={254} value={studentForm.accountEmail ?? ""} onChange={(event) => setStudentForm({ ...studentForm, accountEmail: event.target.value })} /></label>
+            <p className="intro">Puedes añadir el correo más adelante. Al guardarlo se creará una invitación pendiente; cambiarlo o eliminarlo retirará el acceso anterior.</p>
             <label>Puesto de trabajo<input maxLength={500} value={studentForm.role} onChange={(event) => setStudentForm({ ...studentForm, role: event.target.value })} /></label>
             <label>Actividades cotidianas<textarea rows={3} maxLength={2000} value={studentForm.activities} onChange={(event) => setStudentForm({ ...studentForm, activities: event.target.value })} /></label>
             <label>Ayuda de la IA<textarea rows={3} maxLength={2000} value={studentForm.aiHelp} onChange={(event) => setStudentForm({ ...studentForm, aiHelp: event.target.value })} /></label>

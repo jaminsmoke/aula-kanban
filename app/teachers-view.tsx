@@ -9,7 +9,7 @@ import { taskBelongsTo } from "./assignments";
 
 type Teacher = { id: string; projectId: string; name: string; role: string; activities: string; aiHelp: string; revision: number; accountStatus?: "pending" | "active" | "unlinked"; accountEmail?: string; accountMemberId?: string | null };
 const blank = () => ({ id: crypto.randomUUID(), projectId: "", name: "", role: "", activities: "", aiHelp: "", revision: 0, accountEmail: "" });
-const accountLabel = (status?: string) => status === "active" ? "Cuenta activa" : status === "pending" ? "Invitación pendiente" : "Sin usuario asociado";
+const accountLabel = (status?: string) => status === "active" ? "Cuenta activa" : status === "pending" ? "Invitación pendiente" : "Sin cuenta asignada";
 const statusNames = { pending: "Por hacer", active: "En curso", review: "En revisión", done: "Hecho" };
 
 export default function TeachersView({ projectId, isAdmin, ownTeacherId, tasks, students, openTask }: { projectId: string; isAdmin: boolean; ownTeacherId: string | null; tasks: Task[] | null; students: Student[] | null; openTask: (task: Task) => void }) {
@@ -40,16 +40,7 @@ export default function TeachersView({ projectId, isAdmin, ownTeacherId, tasks, 
     event.preventDefault(); if (!form || busy) return; setBusy(true); setError("");
     try {
       const { id, name, role, activities, aiHelp, revision } = form;
-      const saved = await send(revision ? "PATCH" : "POST", { id, name, role, activities, aiHelp, ...(revision ? { revision } : { accountEmail: form.accountEmail }) });
-      if (revision) {
-        const old = teachers?.find(item => item.id === id); const email = (form.accountEmail ?? "").trim().toLowerCase();
-        if (email !== (old?.accountEmail ?? "").trim().toLowerCase()) {
-          try {
-            const response = await fetch(`/api/members?project=${encodeURIComponent(projectId)}`, { method: email ? "POST" : "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify(email ? { email, role: "teacher", teacherId: id } : { id: old?.accountMemberId }) });
-            if (!response.ok) { const result = await response.json() as { message?: string }; throw new Error(result.message || "No se pudo actualizar la cuenta."); }
-          } catch (e) { setForm({ ...form, revision: saved.revision }); throw e; }
-        }
-      }
+      const saved = await send(revision ? "PATCH" : "POST", { id, name, role, activities, aiHelp, accountEmail: form.accountEmail ?? "", ...(revision ? { revision } : {}) });
       setForm(null); setSelected(saved.id); await load();
     } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }
@@ -76,7 +67,7 @@ export default function TeachersView({ projectId, isAdmin, ownTeacherId, tasks, 
     </div></>}
     {(form || removing) && <dialog ref={dialog} aria-label={form ? "Ficha de profesor" : "Eliminar ficha de profesor"} onCancel={event => { event.preventDefault(); setForm(null); setRemoving(null); }}>
       <div className="modal-header"><h2>{form ? (form.revision ? "Editar profesor" : "Añadir profesor") : "Eliminar ficha"}</h2><button className="icon-button" aria-label="Cerrar" onClick={() => { setForm(null); setRemoving(null); }}><X size={20} /></button></div>
-      {form ? <form className="task-form" onSubmit={save}><label>Nombre<input autoFocus maxLength={80} required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label><label>Correo de ChatGPT<input type="email" required={!form.revision} maxLength={254} value={form.accountEmail ?? ""} onChange={e => setForm({ ...form, accountEmail: e.target.value })} /></label><p className="intro">La invitación debe aceptarse en Aula Kanban. Cambiar el correo retirará el acceso anterior.</p><label>Puesto de trabajo<input maxLength={500} value={form.role} onChange={e => setForm({ ...form, role: e.target.value })} /></label><label>Actividades cotidianas<textarea maxLength={2000} value={form.activities} onChange={e => setForm({ ...form, activities: e.target.value })} /></label><label>Ayuda de la IA<textarea maxLength={2000} value={form.aiHelp} onChange={e => setForm({ ...form, aiHelp: e.target.value })} /></label>{error && <p className="admin-error" role="alert">{error}</p>}<button className="primary" disabled={busy}>Guardar ficha</button></form> : <div className="share-content"><p>¿Eliminar la ficha de <strong>{removing?.name}</strong>? También se retirará su acceso de profesor a este proyecto.</p>{error && <p className="admin-error" role="alert">{error}</p>}<div className="admin-confirm-actions"><button className="secondary" onClick={() => setRemoving(null)} disabled={busy}>Cancelar</button> <button className="danger" onClick={() => void remove()} disabled={busy}>Eliminar ficha</button></div></div>}
+      {form ? <form className="task-form" onSubmit={save}><label>Nombre<input autoFocus maxLength={80} required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></label><label>Correo de ChatGPT <span>(opcional)</span><input type="email" maxLength={254} value={form.accountEmail ?? ""} onChange={e => setForm({ ...form, accountEmail: e.target.value })} /></label><p className="intro">Puedes añadir el correo más adelante. Al guardarlo se creará una invitación pendiente; cambiarlo o eliminarlo retirará el acceso anterior.</p><label>Puesto de trabajo<input maxLength={500} value={form.role} onChange={e => setForm({ ...form, role: e.target.value })} /></label><label>Actividades cotidianas<textarea maxLength={2000} value={form.activities} onChange={e => setForm({ ...form, activities: e.target.value })} /></label><label>Ayuda de la IA<textarea maxLength={2000} value={form.aiHelp} onChange={e => setForm({ ...form, aiHelp: e.target.value })} /></label>{error && <p className="admin-error" role="alert">{error}</p>}<button className="primary" disabled={busy}>Guardar ficha</button></form> : <div className="share-content"><p>¿Eliminar la ficha de <strong>{removing?.name}</strong>? También se retirará su acceso de profesor a este proyecto.</p>{error && <p className="admin-error" role="alert">{error}</p>}<div className="admin-confirm-actions"><button className="secondary" onClick={() => setRemoving(null)} disabled={busy}>Cancelar</button> <button className="danger" onClick={() => void remove()} disabled={busy}>Eliminar ficha</button></div></div>}
     </dialog>}
   </section>;
 }
