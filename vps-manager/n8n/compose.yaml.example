@@ -17,8 +17,8 @@
 #   N8N_HOST=<dominio de n8n>            (solo el dominio, sin https://)
 # Los valores con `:?` hacen fallar `docker compose config` hasta que
 # existan; es intencionado. `N8N_HTTP_PORT` debe coincidir con el
-# reverse_proxy del Caddy del VPS. N8N_PROTOCOL=https porque TLS lo termina
-# el Caddy exterior, como en el resto de apps del catálogo.
+# reverse_proxy del Caddy del VPS. N8N_PROTOCOL=http porque TLS lo termina
+# el Caddy exterior: con https sin certificados n8n no arranca.
 #
 # Copiar este contenido como ./compose.yaml en la raíz del stack; el gestor
 # lee ese único fichero para todas las apps (los servicios conviven porque
@@ -41,7 +41,7 @@ services:
       WEBHOOK_URL: ${WEBHOOK_URL:?set in ./.env}
       N8N_HOST: ${N8N_HOST:?set in ./.env}
       N8N_PORT: "5678"
-      N8N_PROTOCOL: https
+      N8N_PROTOCOL: http
     restart: unless-stopped
     mem_limit: 2g
     logging:

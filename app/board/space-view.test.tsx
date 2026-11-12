@@ -46,7 +46,7 @@ describe("Mi espacio sin VPS", () => {
   it("no muestra la opción de configuración a un alumno", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ configured: false, apps: [] })));
     render(<SpaceView role="student" projectId="default" onExit={() => {}} />);
-    await screen.findByText(/Las aplicaciones del VPS son opcionales/);
+    await screen.findByText(/el Space está incompleto/);
     expect(screen.queryByRole("button", { name: "Cómo configurar el VPS" })).toBeNull();
   });
 });

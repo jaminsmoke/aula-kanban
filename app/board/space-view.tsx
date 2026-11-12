@@ -131,7 +131,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
           <div className="space-vps-notice" role="status">
             <span className="space-vps-notice-icon" aria-hidden><Server size={20} /></span>
             <p className="space-vps-notice-text">
-              <strong>Las aplicaciones del VPS son opcionales.</strong> El gestor de instalación está en desarrollo y aún no está disponible. Las herramientas integradas se pueden usar normalmente.
+              <strong>Las aplicaciones del VPS aún no están disponibles.</strong> Sin conectar el gestor del VPS, el Space está incompleto; mientras tanto solo puedes usar las aplicaciones nativas instaladas.
               {(role === "owner" || role === "admin") && <> <button type="button" className="text-button" onClick={() => setGuideOpen(true)}>Cómo configurar el VPS</button></>}
             </p>
             <button type="button" className="space-vps-notice-close" onClick={() => setNoticeDismissed(true)} aria-label="Cerrar aviso"><X size={16} aria-hidden /></button>
@@ -203,7 +203,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
         </Suspense>
       ) : null}
       {guideOpen && <Modal title="Conectar un VPS" onClose={() => setGuideOpen(false)}><div className="share-content">
-        <p>El gestor de aplicaciones para VPS está en desarrollo y todavía no se puede conectar. Cuando esté disponible, permitirá compartir las aplicaciones instaladas entre todos los proyectos de esta copia de Aula Kanban.</p>
+        <p>El gestor de aplicaciones para VPS todavía no está conectado. Cuando esté disponible, permitirá instalar y gestionar las aplicaciones del VPS compartidas entre todos los proyectos de esta copia de Aula Kanban.</p>
         <p>Podrás pedir ayuda a un agente para revisar tu VPS y sus servicios existentes. La configuración inicial no instala aplicaciones del catálogo. Espera a que el gestor esté disponible antes de configurar la conexión.</p>
         <p>Solo el propietario y los administradores podrán instalar o desinstalar aplicaciones. No pegues contraseñas ni tokens en el chat: configúralos mediante los ajustes seguros que indique el agente.</p>
         <label>Mensaje para el agente<textarea className="remix-prompt" readOnly value="Ayúdame a conectar mi VPS con Docker Compose a mi propia instancia de Aula Kanban. Revisa primero mis servicios y copias existentes, prepara una conexión segura sin instalar aplicaciones del catálogo y explícame cómo configurar las credenciales sin compartirlas en el chat." onFocus={(event) => event.currentTarget.select()} /></label>
