@@ -1,40 +1,34 @@
 /* eslint-disable @next/next/no-img-element -- Las imágenes son URLs externas puestas por el usuario; next/image no puede optimizar dominios arbitrarios */
 import { CalendarDays, Flag, GripVertical } from "lucide-react";
 import { useState } from "react";
-import type { PointerEvent } from "react";
+import type { CSSProperties, HTMLAttributes, Ref } from "react";
 import { priorityNames } from "../task";
 import type { Task } from "../task";
 import { formatDate } from "./model";
 
-export type GripEvent = PointerEvent<HTMLSpanElement>;
-
 /**
  * Tarjeta de una tarea en su columna Kanban.
- * @param props - Tarea, estado de arrastre y acciones de edición y arrastre.
+ * @param props - Tarea, estado de arrastre, acciones y el cableado opcional de dnd-kit (nodo ordenable, estilo de transformación y props del asa de arrastre).
  * @returns La tarjeta clicable con su meta y asa de arrastre.
  */
-export default function TaskCard({ task, dragging, editable, onEdit, onGrab, onMove, onRelease, onCancel }: {
+export default function TaskCard({ task, dragging, editable, onEdit, style, nodeRef, activatorProps }: {
   task: Task;
   dragging: boolean;
   editable: boolean;
   onEdit: () => void;
-  onGrab: (event: GripEvent) => void;
-  onMove: (event: GripEvent) => void;
-  onRelease: (event: GripEvent) => void;
-  onCancel: () => void;
+  style?: CSSProperties;
+  nodeRef?: Ref<HTMLButtonElement>;
+  activatorProps?: HTMLAttributes<HTMLSpanElement>;
 }) {
   const [brokenImageUrl, setBrokenImageUrl] = useState<string | null>(null);
   const label = task.assignees.length ? task.assignees.map((person) => `${person.name}${person.removed ? " (eliminado)" : ""}`).join(", ") : task.assignee;
   const initials = (task.assignees[0]?.name ?? task.assignee).trim().split(/\s+/).slice(0, 2).map((part) => Array.from(part)[0]).join("").toUpperCase();
   return (
-    <button type="button" className={dragging ? "card dragging" : "card"} onClick={onEdit} title={editable ? "Abrir tarea" : "Ver tarea (solo lectura)"}>
+    <button type="button" ref={nodeRef} style={style} className={dragging ? "card dragging" : "card"} onClick={onEdit} title={editable ? "Abrir tarea" : "Ver tarea (solo lectura)"}>
       {task.imageUrl && task.imageUrl !== brokenImageUrl && <img className="card-image" src={task.imageUrl} alt="" loading="lazy" onError={() => setBrokenImageUrl(task.imageUrl)} />}
       <span className="card-top">
         <span className={`priority ${task.priority}`}><Flag size={12} /> {priorityNames[task.priority]}</span>
-        <span className="grip" aria-hidden
-          onPointerDown={onGrab} onPointerMove={onMove} onPointerUp={onRelease}
-          onPointerCancel={onCancel} onLostPointerCapture={onCancel}
-          onClick={(event) => event.stopPropagation()}>
+        <span className="grip" {...activatorProps} onClick={(event) => event.stopPropagation()}>
           <GripVertical size={17} />
         </span>
       </span>

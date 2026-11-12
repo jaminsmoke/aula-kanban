@@ -20,10 +20,6 @@ const task: Task = {
 function renderCard(overrides: Partial<Task> = {}, props: Partial<Parameters<typeof TaskCard>[0]> = {}) {
   const handlers = {
     onEdit: vi.fn(),
-    onGrab: vi.fn(),
-    onMove: vi.fn(),
-    onRelease: vi.fn(),
-    onCancel: vi.fn(),
   };
   const view = render(<TaskCard task={{ ...task, ...overrides }} dragging={false} editable {...handlers} {...props} />);
   return { ...view, handlers };

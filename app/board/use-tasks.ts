@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import type { FormEvent } from "react";
 import { personLabel, taskBelongsTo } from "../assignments";
 import type { Task, TaskAssignee, TaskFields } from "../task";
 import { blank, columns } from "./model";
 import { request } from "./api";
 import type { BoardData } from "./use-board-data";
-import type { GripEvent } from "./task-card";
+import type { DragEndEvent, DragOverEvent, DragStartEvent, UniqueIdentifier } from "@dnd-kit/core";
 
 /**
  * Estado del tablero de tareas: filtros, editor, responsables y arrastre.
@@ -32,7 +32,6 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
   const [formError, setFormError] = useState("");
   const [dragged, setDragged] = useState<string | null>(null);
   const [destination, setDestination] = useState<TaskFields["status"] | null>(null);
-  const drag = useRef<{ task: Task; x: number; y: number; started: boolean } | null>(null);
 
   const ownsTask = useCallback((task: Task) => Boolean(
     ownStudent && task.assignees?.length === 1 && task.assignees.some((person) => person.kind === "student" && person.profileId === ownStudent.section),
@@ -141,45 +140,42 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
     }
   }
 
-  function laneAt(event: GripEvent) {
-    const lane = document.elementFromPoint(event.clientX, event.clientY)?.closest<HTMLElement>("[data-lane]");
-    return (lane?.dataset.lane as TaskFields["status"] | undefined) ?? null;
+  function statusOf(id: UniqueIdentifier | null | undefined) {
+    if (typeof id === "string" && id.startsWith("lane:")) return id.slice(5) as TaskFields["status"];
+    return (tasks ?? []).find((task) => task.id === id)?.status ?? null;
   }
 
-  function grab(event: GripEvent, task: Task) {
-    if (!event.isPrimary || event.button !== 0 || writingRef.current) return;
-    if (!canManage && !ownsTask(task)) return;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    drag.current = { task, x: event.clientX, y: event.clientY, started: false };
+  function canGrabTask(task: Task) {
+    return Boolean(canManage || ownsTask(task));
   }
 
-  function move(event: GripEvent) {
-    const current = drag.current;
-    if (!current || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
-    if (!current.started && Math.hypot(event.clientX - current.x, event.clientY - current.y) < 5) return;
-    current.started = true;
-    setDragged(current.task.id);
-    const status = laneAt(event);
-    setDestination(status === current.task.status ? null : status);
-  }
-
-  function cancelDrag() {
-    drag.current = null;
+  function handleDragStart(event: DragStartEvent) {
+    setDragged(String(event.active.id));
     setDestination(null);
-    setDragged(null);
   }
 
-  function release(event: GripEvent) {
-    const current = drag.current;
-    if (!current || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
-    const status = laneAt(event);
-    cancelDrag();
-    if (current.started && status && current.task.status !== status) {
-      const { id, revision } = current.task;
-      void mutate("PATCH", { id, revision, changes: { status } }, `Tarea movida a «${columns[status].name}».`, false);
+  function handleDragOver(event: DragOverEvent) {
+    const active = (tasks ?? []).find((task) => task.id === event.active.id);
+    if (!active) return;
+    const status = statusOf(event.over?.id ?? null);
+    setDestination(status && status !== active.status ? status : null);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const active = (tasks ?? []).find((task) => task.id === event.active.id);
+    const status = event.over ? statusOf(event.over.id) : null;
+    setDragged(null);
+    setDestination(null);
+    if (active && status && status !== active.status) {
+      const { id, revision } = active;
+      void mutate("PATCH", { id, revision, changes: { status } }, "Tarea movida a «" + columns[status].name + "».", false);
     }
   }
 
+  function handleDragCancel() {
+    setDragged(null);
+    setDestination(null);
+  }
   const clearStudentFilter = useCallback((section: string) => {
     setStudentFilter((current) => current === section ? "" : current);
   }, []);
@@ -201,7 +197,7 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
   return {
     search, setSearch, filter, setFilter, studentFilter, setStudentFilter, clearStudentFilter,
     editor, setEditor, form, setForm, deleting, setDeleting, saving, formError,
-    dragged, destination, openEditor, mutate, submit, grab, move, cancelDrag, release,
+    dragged, destination, openEditor, mutate, submit, canGrabTask, handleDragStart, handleDragOver, handleDragEnd, handleDragCancel,
     addAssignee, removeAssignee, chooseAssignee, assignWholeClass, removeWholeClass,
     canEditTask, claiming, visible, filtered, total, finished, progress,
   };

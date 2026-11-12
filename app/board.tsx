@@ -149,10 +149,11 @@ export default function Board({ user }: { user: { displayName: string; email: st
             destination={board.destination}
             canEditTask={board.canEditTask}
             onOpenEditor={board.openEditor}
-            onGrab={board.grab}
-            onMove={board.move}
-            onRelease={board.release}
-            onCancelDrag={board.cancelDrag}
+            canGrabTask={board.canGrabTask}
+            onDragStart={board.handleDragStart}
+            onDragOver={board.handleDragOver}
+            onDragEnd={board.handleDragEnd}
+            onDragCancel={board.handleDragCancel}
             finished={board.finished}
             total={board.total}
             progress={board.progress}

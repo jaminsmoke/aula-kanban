@@ -1,12 +1,58 @@
 "use client";
 
+import { DndContext, KeyboardSensor, PointerSensor, closestCorners, useDroppable, useSensor, useSensors } from "@dnd-kit/core";
+import type { DragEndEvent, DragOverEvent, DragStartEvent } from "@dnd-kit/core";
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { ArrowDown, ClipboardList, Columns3, Flag, GripVertical, ListFilter, Plus, Search, Users } from "lucide-react";
 import { priorities, priorityNames, statuses } from "../task";
 import type { Task, TaskFields } from "../task";
 import type { Student } from "../student";
-import TaskCard from "./task-card";
-import type { GripEvent } from "./task-card";
+import SortableTaskCard from "./sortable-task-card";
 import { columns } from "./model";
+
+/**
+ * Una columna del tablero: zona de destino con sus tarjetas ordenables.
+ * @param props - Estado, tarjetas visibles, destino resaltado, permisos y acciones.
+ * @returns La columna con su cabecera y cuerpo.
+ */
+function Lane({ status, cards, destination, isGuest, filtered, tasksNull, loadError, saving, dragged, canEditTask, canGrabTask, onOpenEditor }: {
+  status: TaskFields["status"];
+  cards: Task[];
+  destination: TaskFields["status"] | null;
+  isGuest: boolean;
+  filtered: boolean;
+  tasksNull: boolean;
+  loadError: string;
+  saving: boolean;
+  dragged: string | null;
+  canEditTask: (task: Task) => boolean;
+  canGrabTask: (task: Task) => boolean;
+  onOpenEditor: (status: TaskFields["status"], task?: Task) => void;
+}) {
+  const { name, icon: Icon } = columns[status];
+  const { setNodeRef } = useDroppable({ id: `lane:${status}` });
+  return (
+    <section ref={setNodeRef} className={`lane ${status}${destination === status ? " drop-target" : ""}`} aria-label={name}>
+      <div className="lane-header">
+        <span className="lane-icon"><Icon size={16} strokeWidth={2.25} /></span>
+        <h3>{name}</h3><span className="count">{cards.length}</span>
+        {!isGuest && <button className="icon-button lane-add" type="button" disabled={saving || tasksNull} aria-label={`Añadir tarea a ${name}`} onClick={() => onOpenEditor(status)}><Plus size={17} /></button>}
+      </div>
+      <div className="lane-body">
+        <SortableContext items={cards.map((task) => task.id)} strategy={verticalListSortingStrategy}>
+          {cards.map((task) => <SortableTaskCard key={task.id} task={task} dragging={dragged === task.id} editable={canEditTask(task)} disabled={!canGrabTask(task) || saving} onEdit={() => onOpenEditor(task.status, task)} />)}
+        </SortableContext>
+        {cards.length === 0 && (
+          <div className="empty">
+            <span className="empty-icon"><ClipboardList size={20} strokeWidth={1.6} /></span>
+            <span>{tasksNull ? (loadError ? "Tablero no disponible" : "Cargando…") : filtered ? "Sin coincidencias" : "Sin tareas"}</span>
+          </div>
+        )}
+        {!isGuest && <button type="button" className="lane-create" disabled={saving || tasksNull} onClick={() => onOpenEditor(status)}><Plus size={16} /> Añadir tarea</button>}
+      </div>
+    </section>
+  );
+}
 
 /**
  * Vista Kanban con hero, progreso, filtros y las cuatro columnas.
@@ -15,8 +61,8 @@ import { columns } from "./model";
  */
 export default function KanbanView({
   tasks, visible, students, search, filter, studentFilter, onSearch, onFilter, onStudentFilter,
-  loadError, onRetry, saving, isGuest, filtered, dragged, destination, canEditTask, onOpenEditor,
-  onGrab, onMove, onRelease, onCancelDrag, finished, total, progress,
+  loadError, onRetry, saving, isGuest, filtered, dragged, destination, canEditTask, canGrabTask, onOpenEditor,
+  onDragStart, onDragOver, onDragEnd, onDragCancel, finished, total, progress,
 }: {
   tasks: Task[] | null;
   visible: Task[];
@@ -35,15 +81,20 @@ export default function KanbanView({
   dragged: string | null;
   destination: TaskFields["status"] | null;
   canEditTask: (task: Task) => boolean;
+  canGrabTask: (task: Task) => boolean;
   onOpenEditor: (status: TaskFields["status"], task?: Task) => void;
-  onGrab: (event: GripEvent, task: Task) => void;
-  onMove: (event: GripEvent) => void;
-  onRelease: (event: GripEvent) => void;
-  onCancelDrag: () => void;
+  onDragStart: (event: DragStartEvent) => void;
+  onDragOver: (event: DragOverEvent) => void;
+  onDragEnd: (event: DragEndEvent) => void;
+  onDragCancel: () => void;
   finished: number;
   total: number;
   progress: number;
 }) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
   return (
     <>
       <section className="hero" aria-labelledby="board-title">
@@ -75,34 +126,14 @@ export default function KanbanView({
           </div>
         </div>
         {loadError && <div role="alert" className="alert">{loadError} <button type="button" className="text-button" onClick={onRetry}>Reintentar</button></div>}
-        <div className="board" aria-busy={tasks === null && !loadError}>
-          {statuses.map((status) => {
-            const { name, icon: Icon } = columns[status];
-            const cards = visible.filter((task) => task.status === status);
-            return (
-              <section key={status} className={`lane ${status}${destination === status ? " drop-target" : ""}`} aria-label={name} data-lane={status}>
-                <div className="lane-header">
-                  <span className="lane-icon"><Icon size={16} strokeWidth={2.25} /></span>
-                  <h3>{name}</h3><span className="count">{cards.length}</span>
-                  {!isGuest && <button className="icon-button lane-add" type="button" disabled={saving || tasks === null} aria-label={`Añadir tarea a ${name}`} onClick={() => onOpenEditor(status)}><Plus size={17} /></button>}
-                </div>
-                <div className="lane-body">
-                  {cards.map((task) => <TaskCard key={task.id} task={task} dragging={dragged === task.id} editable={canEditTask(task)}
-                    onEdit={() => onOpenEditor(task.status, task)}
-                    onGrab={(event) => onGrab(event, task)} onMove={onMove} onRelease={onRelease} onCancel={onCancelDrag} />)}
-                  {cards.length === 0 && (
-                    <div className="empty">
-                      <span className="empty-icon"><ClipboardList size={20} strokeWidth={1.6} /></span>
-                      <span>{tasks === null ? (loadError ? "Tablero no disponible" : "Cargando…") : filtered ? "Sin coincidencias" : "Sin tareas"}</span>
-                    </div>
-                  )}
-                  {!isGuest && <button type="button" className="lane-create" disabled={saving || tasks === null} onClick={() => onOpenEditor(status)}><Plus size={16} /> Añadir tarea</button>}
-                </div>
-              </section>
-            );
-          })}
-        </div>
-        <footer className="board-footer"><span><GripVertical size={16} /> Arrastra una tarjeta por su asa o cambia su estado al editarla.</span><span className="sync"><i /> {loadError ? "Sin conexión" : tasks === null ? "Conectando…" : "Tablero compartido"}</span></footer>
+        <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDragCancel={onDragCancel}>
+          <div className="board" aria-busy={tasks === null && !loadError}>
+            {statuses.map((status) => (
+              <Lane key={status} status={status} cards={visible.filter((task) => task.status === status)} destination={destination} isGuest={isGuest} filtered={filtered} tasksNull={tasks === null} loadError={loadError} saving={saving} dragged={dragged} canEditTask={canEditTask} canGrabTask={canGrabTask} onOpenEditor={onOpenEditor} />
+            ))}
+          </div>
+        </DndContext>
+        <footer className="board-footer"><span><GripVertical size={16} /> Arrastra una tarjeta por su asa o muévela con el teclado, o cambia su estado al editarla.</span><span className="sync"><i /> {loadError ? "Sin conexión" : tasks === null ? "Conectando…" : "Tablero compartido"}</span></footer>
       </section>
     </>
   );
