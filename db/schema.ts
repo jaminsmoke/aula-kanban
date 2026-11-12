@@ -118,6 +118,28 @@ export const deletedTeachers = sqliteTable("deleted_teachers", {
   deletedAt: integer("deleted_at").notNull(),
 }, (table) => [index("deleted_teachers_project").on(table.projectId, table.deletedAt)]);
 
+export const boards = sqliteTable("boards", {
+  id: text("id").primaryKey().notNull(),
+  projectId: text("project_id").notNull(),
+  ownerType: text("owner_type").notNull(),
+  ownerId: text("owner_id").notNull(),
+  snapshot: text("snapshot").notNull().default(""),
+  revision: integer("revision").notNull().default(1),
+  updatedAt: integer("updated_at").notNull(),
+}, (table) => [uniqueIndex("board_owner").on(table.ownerType, table.ownerId), index("boards_project").on(table.projectId)]);
+
+export const uploads = sqliteTable("uploads", {
+  id: text("id").primaryKey().notNull(),
+  projectId: text("project_id").notNull(),
+  storageKey: text("storage_key").notNull(),
+  url: text("url").notNull(),
+  mimeType: text("mime_type").notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  purpose: text("purpose").notNull(),
+  ownerUserId: text("owner_user_id"),
+  createdAt: integer("created_at").notNull(),
+}, (table) => [index("uploads_project").on(table.projectId, table.createdAt)]);
+
 export const projectMembers = sqliteTable("project_members", {
   id: text("id").primaryKey().notNull(),
   projectId: text("project_id").notNull(),

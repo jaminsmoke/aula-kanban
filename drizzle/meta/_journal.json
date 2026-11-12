@@ -134,6 +134,13 @@
       "when": 1794476176467,
       "tag": "0018_high_purifiers",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "6",
+      "when": 1794479456494,
+      "tag": "0019_foamy_shockwave",
+      "breakpoints": true
     }
   ]
 }

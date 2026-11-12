@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element -- Las imágenes son URLs externas puestas por el usuario; next/image no puede optimizar dominios arbitrarios */
 "use client";
 
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import type { FormEvent } from "react";
 import { ArrowRight, CalendarDays, Flag, Trash2 } from "lucide-react";
 import { priorities, priorityNames, statuses } from "../task";
@@ -11,6 +11,7 @@ import Modal from "../modal";
 import { columns, formatDate, initials } from "./model";
 
 const personValue = (kind: string, profileId: string) => `${kind}:${profileId}`;
+const Whiteboard = lazy(() => import("./whiteboard"));
 
 function dateValue(offsetDays: number) {
   const date = new Date();
@@ -53,8 +54,9 @@ export default function TaskDialog({
   onDelete: (task: Task) => void;
 }) {
   const readOnly = Boolean(editor.task && !canEditTask(editor.task));
-  const [tab, setTab] = useState<"resumen" | "asignaciones">("resumen");
+  const [tab, setTab] = useState<"resumen" | "asignaciones" | "pizarra">("resumen");
   const [imageError, setImageError] = useState("");
+  const [uploading, setUploading] = useState(false);
   const titleError = formError === "Escribe un título para la tarea." ? formError : "";
   const classStudents = students ?? [];
   const allStudentsAssigned = Boolean(classStudents.length && classStudents.every((student) => form.assignees.some((person) => person.kind === "student" && person.profileId === student.section)));
@@ -74,16 +76,36 @@ export default function TaskDialog({
     });
   }
 
+  async function handleUpload(file: File | undefined) {
+    if (!file) return;
+    setUploading(true);
+    setImageError("");
+    try {
+      const projectId = new URLSearchParams(window.location.search).get("project") || "default";
+      const body = new FormData();
+      body.append("file", file);
+      body.append("purpose", "task-image");
+      const response = await fetch(`/api/uploads?project=${encodeURIComponent(projectId)}`, { method: "POST", body });
+      const data = await response.json().catch(() => null) as { url?: unknown; message?: unknown } | null;
+      if (!response.ok || typeof data?.url !== "string") throw new Error(data && typeof data.message === "string" ? data.message : "No se pudo subir la imagen.");
+      onForm({ ...form, imageUrl: data.url });
+    } catch (error) {
+      setImageError(error instanceof Error ? error.message : "No se pudo subir la imagen.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     if (!form.title.trim()) {
       setTab("resumen");
       onSubmit(event);
       return;
     }
-    if (form.imageUrl && (!/^https?:\/\/\S+$/i.test(form.imageUrl.trim()) || form.imageUrl.trim().length > 2048)) {
+    if (form.imageUrl && (!/^https?:\/\/\S+$/i.test(form.imageUrl.trim()) && !/^\/api\/files\/[A-Za-z0-9-]+$/.test(form.imageUrl.trim()) || form.imageUrl.trim().length > 2048)) {
       event.preventDefault();
       setTab("resumen");
-      setImageError("Introduce una URL de imagen válida que empiece por http:// o https://.");
+      setImageError("Introduce una URL de imagen válida que empiece por http:// o https:// (o sube una imagen).");
       return;
     }
     setImageError("");
@@ -135,6 +157,7 @@ export default function TaskDialog({
         <div className="task-tabs" role="tablist" aria-label="Secciones de la tarea">
           <button type="button" role="tab" id="tab-resumen" aria-selected={tab === "resumen"} aria-controls="panel-resumen" className={tab === "resumen" ? "task-tab active" : "task-tab"} onClick={() => setTab("resumen")}>Resumen</button>
           <button type="button" role="tab" id="tab-asignaciones" aria-selected={tab === "asignaciones"} aria-controls="panel-asignaciones" className={tab === "asignaciones" ? "task-tab active" : "task-tab"} onClick={() => setTab("asignaciones")}>Asignaciones{form.assignees.length > 0 ? ` (${form.assignees.length})` : ""}</button>
+          {editor.task && <button type="button" role="tab" id="tab-pizarra" aria-selected={tab === "pizarra"} aria-controls="panel-pizarra" className={tab === "pizarra" ? "task-tab active" : "task-tab"} onClick={() => setTab("pizarra")}>Pizarra</button>}
         </div>
         <div role="tabpanel" id="panel-resumen" aria-labelledby="tab-resumen" hidden={tab !== "resumen"}>
         <div className="field">
@@ -164,6 +187,11 @@ export default function TaskDialog({
             <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, imageUrl: "" })}>Quitar miniatura</button>
           </div>}
           <p className="field-hint">Enlace directo a una imagen. Se muestra en la tarjeta del tablero para todo el grupo.</p>
+          <div className="upload-row">
+            <input hidden type="file" id="task-image-upload" disabled={claiming} accept="image/png,image/jpeg,image/webp,image/gif" onChange={(event) => { void handleUpload(event.target.files?.[0]); event.target.value = ""; }} />
+            <button type="button" className="secondary" disabled={claiming || uploading} onClick={() => document.getElementById("task-image-upload")?.click()}>{uploading ? "Subiendo…" : "Subir imagen desde el equipo"}</button>
+            <span className="field-hint">Si el almacenamiento está activo, se guarda allí y se usa su URL interna.</span>
+          </div>
         </div>
         <div className="field claim-muted">
             <div className="field-heading">
@@ -244,6 +272,11 @@ export default function TaskDialog({
             </>}
         </div>
         </div>
+        {editor.task && <div role="tabpanel" id="panel-pizarra" aria-labelledby="tab-pizarra" hidden={tab !== "pizarra"}>
+          <Suspense fallback={<p className="board-loading" role="status">Cargando la pizarra…</p>}>
+            <Whiteboard taskId={editor.task.id} readOnly={readOnly || claiming} />
+          </Suspense>
+        </div>}
         {!canManage && !ownStudent && <p className="intro">El profesorado debe vincular tu cuenta a una ficha para que puedas asignarte tareas.</p>}
         {formError && <div role="alert" className="alert">{formError}</div>}
         {deleting && editor.task && <div className="delete-confirm" role="group" aria-label="Confirmar eliminación">

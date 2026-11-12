@@ -2,7 +2,7 @@ import { env } from "cloudflare:workers";
 import { and, asc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
-import { deletedStudents, deletedTeachers, projectMembers, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
+import { boards, deletedStudents, deletedTeachers, projectMembers, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { priorities, statuses } from "../../task";
 import { validProject } from "../../../lib/server/project";
@@ -11,7 +11,7 @@ import { purgeDeletedProfiles } from "../../../lib/server/deleted-profiles";
 
 export const dynamic = "force-dynamic";
 const person = z.object({ kind: z.enum(["student", "teacher"]), profileId: z.string().min(1).max(80) });
-const fields = z.object({ title: z.string().trim().min(1).max(120), description: z.string().trim().max(2000), imageUrl: z.string().trim().max(2048).refine((value) => value === "" || /^https?:\/\/\S+$/i.test(value), "URL de imagen no válida").optional(), assignee: z.string().trim().max(5000), assignees: z.array(person).max(50).optional(), dueDate: z.union([z.literal(""), z.string().date()]), priority: z.enum(priorities), status: z.enum(statuses) });
+const fields = z.object({ title: z.string().trim().min(1).max(120), description: z.string().trim().max(2000), imageUrl: z.string().trim().max(2048).refine((value) => value === "" || /^https?:\/\/\S+$/i.test(value) || /^\/api\/files\/[A-Za-z0-9-]+$/.test(value), "URL de imagen no válida").optional(), assignee: z.string().trim().max(5000), assignees: z.array(person).max(50).optional(), dueDate: z.union([z.literal(""), z.string().date()]), priority: z.enum(priorities), status: z.enum(statuses) });
 const reference = z.object({ id: z.string().uuid(), revision: z.number().int().positive(), changes: z.unknown().optional() });
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 type Ref = z.infer<typeof person>;
@@ -116,6 +116,7 @@ async function handle(request: Request) {
     if (isStudent && (!own(currentRefs) || currentRefs.length !== 1)) return json({ message: "Solo puedes eliminar tareas asignadas únicamente a ti." }, 403);
     const ownGuard = isStudent ? sql`EXISTS (SELECT 1 FROM task_assignees WHERE task_id = ${id} AND project_id = ${project.id} AND kind = 'student' AND profile_id = ${selfId}) AND (SELECT count(*) FROM task_assignees WHERE task_id = ${id} AND project_id = ${project.id}) = 1` : sql`1 = 1`;
     const [deleted] = await db.delete(tasks).where(and(matches, ownGuard)).returning({ id: tasks.id });
+    if (deleted) await db.delete(boards).where(and(eq(boards.projectId, project.id), eq(boards.ownerType, "task"), eq(boards.ownerId, id)));
     return deleted ? json(deleted) : json({ message: "Esta tarea cambió en otra sesión." }, 409);
   }
   const change = z.union([fields, fields.pick({ status: true }).strict()]).safeParse(parsed.data.changes);

@@ -1,0 +1,36 @@
+import { z } from "zod";
+import { getChatGPTUser } from "../../chatgpt-auth";
+import { validProject } from "../../../lib/server/project";
+import { StorageUnavailableError, storeUpload, uploadPurposes, validateUpload } from "../../../lib/server/storage";
+
+export const dynamic = "force-dynamic";
+
+function json(data: unknown, status = 200) {
+  return Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
+}
+
+/**
+ * Sube un fichero (imagen o documento) al almacenamiento del proyecto.
+ * @param request - Petición multipart con `file` y `purpose`, y el proyecto en la URL.
+ * @returns Respuesta JSON con el identificador y la URL interna del fichero.
+ */
+export async function POST(request: Request) {
+  const user = await getChatGPTUser();
+  if (!user) return json({ message: "Inicia sesión para acceder al tablero." }, 401);
+  const project = await validProject(request);
+  if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
+  if (project.access.role === "guest") return json({ message: "Las cuentas invitadas solo pueden consultar el proyecto." }, 403);
+  const form = await request.formData().catch(() => null);
+  const file = form?.get("file");
+  const purpose = z.enum(uploadPurposes).safeParse(form?.get("purpose"));
+  if (!purpose.success || !(file instanceof File)) return json({ message: "Falta el archivo o la finalidad no es válida." }, 400);
+  const problem = validateUpload(purpose.data, file.type, file.size);
+  if (problem) return json({ message: problem }, 400);
+  try {
+    const stored = await storeUpload({ projectId: project.id, purpose: purpose.data, file, ownerUserId: user.userId });
+    return json({ ...stored, mimeType: file.type, sizeBytes: file.size }, 201);
+  } catch (error) {
+    if (error instanceof StorageUnavailableError) return json({ message: "La subida de archivos aún no está habilitada en este despliegue. Usa una URL externa de momento." }, 503);
+    throw error;
+  }
+}

@@ -78,3 +78,12 @@ dialog::backdrop { background: #20173575; }
 .task-detail-people li { display: flex; align-items: center; gap: 7px; min-width: 0; }
 .removed-tag { color: var(--muted); font-size: 12px; }
 .delete-confirm { border: 1px solid #f2cdd9; background: #fff1f6; border-radius: 9px; padding: 10px 12px; }
+/* Subida de imagen y pizarra */
+.upload-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+.upload-row .field-hint { margin-top: 0; }
+.whiteboard { display: grid; gap: 8px; }
+.board-status { color: var(--muted); font-size: 12px; font-weight: 550; min-height: 16px; }
+.board-loading { color: var(--muted); font-size: 14px; padding: 28px 12px; text-align: center; }
+.board-error { display: grid; gap: 10px; justify-items: start; padding: 18px 12px; color: #842746; }
+.whiteboard-canvas { height: 460px; border: 1px solid #e4e0ed; border-radius: 12px; overflow: hidden; background: #fff; }
+.whiteboard-canvas .excalidraw { width: 100%; height: 100%; }

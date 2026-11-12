@@ -4,6 +4,10 @@ Cada instancia mantiene sus propios proyectos y datos en D1. Para configurar una
 
 ## Desarrollo
 
+### Versión para publicar
+
+La versión visible procede de `package.json`. Antes de preparar una publicación con Sites, consulta la versión que está realmente publicada y ejecuta `npm run release:prepare -- --published-version X.Y.Z` con ese valor. Si la versión local coincide, aumenta solo la última cifra; si ya se había preparado una versión posterior, la conserva para que un reintento no incremente dos veces. Las cifras mayor y menor se cambian manualmente, manteniendo sincronizadas las versiones raíz de `package.json` y `package-lock.json`. Después ejecuta pruebas y build y publica esa misma revisión. Esta automatización forma parte del flujo de publicación del repositorio; un despliegue hecho por otra vía que no ejecute el comando no incrementa la versión por sí solo.
+
 A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
 
 ## Prerequisites

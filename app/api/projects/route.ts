@@ -1,9 +1,10 @@
 import { asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
-import { deletedStudents, deletedTeachers, projectMembers, projects, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
+import { boards, deletedStudents, deletedTeachers, projectMembers, projects, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { isAdministrator, isOwner } from "../../../lib/server/project";
+import { cleanupOrphanUploads, deleteProjectUploads } from "../../../lib/server/storage";
 
 export const dynamic = "force-dynamic";
 function json(data: unknown, status = 200) {
@@ -20,6 +21,9 @@ export async function GET() {
   const owner = isOwner(user);
   await getDb().update(userIdentities).set({ displayName: user.displayName }).where(eq(userIdentities.id, user.userId));
   const admin = !owner && await isAdministrator(user);
+  if (owner || admin) {
+    try { await cleanupOrphanUploads(); } catch { /* Se reintentará al volver a cargar proyectos. */ }
+  }
   const all = await getDb().select().from(projects).orderBy(asc(projects.createdAt), asc(projects.id));
   if (owner || admin) return json({ projects: all.map((project) => ({ ...project, role: owner ? "owner" : "admin", studentSection: null, teacherId: null })), isOwner: owner, isAdmin: admin });
   const members = await getDb().select().from(projectMembers).where(eq(projectMembers.userId, user.userId));
@@ -59,7 +63,8 @@ export async function DELETE(request: Request) {
   const parsed = z.object({ id: z.string().min(1).max(80) }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Proyecto no válido." }, 400);
   const db = getDb();
-  const [, , , , , , , result] = await db.batch([
+  const [, , , , , , , , result] = await db.batch([
+    db.delete(boards).where(eq(boards.projectId, parsed.data.id)),
     db.delete(taskAssignees).where(eq(taskAssignees.projectId, parsed.data.id)),
     db.delete(tasks).where(eq(tasks.projectId, parsed.data.id)),
     db.delete(projectMembers).where(eq(projectMembers.projectId, parsed.data.id)),
@@ -69,5 +74,10 @@ export async function DELETE(request: Request) {
     db.delete(deletedTeachers).where(eq(deletedTeachers.projectId, parsed.data.id)),
     db.delete(projects).where(eq(projects.id, parsed.data.id)),
   ]);
+  try {
+    await deleteProjectUploads(parsed.data.id);
+  } catch {
+    return json({ message: "El proyecto se ha eliminado, pero no se han podido limpiar todos sus archivos. Vuelve a intentarlo." }, 503);
+  }
   return json({ id: parsed.data.id, deleted: Boolean(result.meta.changes) });
 }
