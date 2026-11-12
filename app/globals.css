@@ -12,6 +12,11 @@
   --violet-dark: #42299c;
   --violet-pale: #eeebfb;
   --radius: 14px;
+  /* Animación: una sola fuente para duraciones y curvas de toda la app. */
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --duration-fast: .16s;
+  --duration-base: .24s;
+  --duration-slow: .34s;
   font-family: "Instrument Sans", system-ui, sans-serif;
   color: var(--ink);
   background: var(--canvas);
@@ -32,3 +37,16 @@ h1, h2, h3, .wordmark, .progress-value strong {
   font-family: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
 }
 svg { flex: none; vertical-align: middle; }
+
+/* ==========================================================================
+   Animaciones reutilizables: se escriben una vez y se aplican donde sea
+   preciso (diálogos, pestañas, popups, vistas…).
+   ========================================================================== */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-slide-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pop-in { from { opacity: 0; transform: scale(.96) translateY(12px); } 60% { opacity: 1; transform: scale(1.008) translateY(0); } to { opacity: 1; transform: none; } }
+.animate-fade { animation: fade-in var(--duration-fast) var(--ease-out); }
+.animate-in { animation: fade-slide-in var(--duration-base) var(--ease-out); }
+.animate-pop { animation: pop-in var(--duration-base) var(--ease-out); }
+/* Las personas que prefieren movimiento reducido no ven ninguna animación. */
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

@@ -55,4 +55,4 @@
   .filter select { font-size: 12px; }
   .controls .filter { flex-basis: 100%; }
 }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+/* El movimiento reducido se centraliza en globals.css. */

@@ -188,6 +188,25 @@ describe("TaskDialog", () => {
     expect(props.onSubmit).toHaveBeenCalled();
   });
 
+  it("amplía y reduce la pizarra como popup sin hacer crecer el diálogo", () => {
+    const { container } = renderDialog({ editor: { task, status: "pending" } });
+    const dialog = screen.getByRole("dialog", { name: "Editar tarea" });
+    expect(dialog.className).toBe("");
+
+    fireEvent.click(screen.getByRole("tab", { name: "Pizarra" }));
+    expect(dialog.className).toBe("task-dialog-board");
+
+    fireEvent.click(screen.getByRole("button", { name: "Ampliar pizarra a pantalla completa" }));
+    // El popup es la misma pizarra en modo fijo; el diálogo no crece.
+    expect(dialog.className).toBe("task-dialog-board");
+    expect(container.querySelector(".whiteboard-shell")?.className).toContain("expanded");
+    expect(screen.getByRole("button", { name: "Reducir pizarra" }).getAttribute("aria-pressed")).toBe("true");
+
+    fireEvent.click(screen.getByRole("button", { name: "Reducir pizarra" }));
+    expect(container.querySelector(".whiteboard-shell")?.className).not.toContain("expanded");
+    expect(dialog.className).toBe("task-dialog-board");
+  });
+
   it("muestra el error de URL en resumen aunque se envíe desde asignaciones", () => {
     const { props } = renderDialog({ form: { ...blank, title: "Tarea", imageUrl: "no-es-url" } });
     fireEvent.click(screen.getByRole("tab", { name: /Asignaciones/ }));

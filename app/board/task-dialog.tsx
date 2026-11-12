@@ -3,7 +3,7 @@
 
 import { lazy, Suspense, useState } from "react";
 import type { FormEvent } from "react";
-import { ArrowRight, CalendarDays, Flag, Trash2 } from "lucide-react";
+import { ArrowRight, CalendarDays, Flag, Maximize2, Minimize2, Trash2 } from "lucide-react";
 import { priorities, priorityNames, statuses } from "../task";
 import type { Task, TaskFields } from "../task";
 import type { Student } from "../student";
@@ -55,6 +55,11 @@ export default function TaskDialog({
 }) {
   const readOnly = Boolean(editor.task && !canEditTask(editor.task));
   const [tab, setTab] = useState<"resumen" | "asignaciones" | "pizarra">("resumen");
+  const [boardExpanded, setBoardExpanded] = useState(false);
+  // En la pestaña Pizarra el diálogo se ensancha para que el lienzo y sus
+  // menús quepan; al ampliar, la pizarra se muestra como popup fijo sobre
+  // el diálogo (sin hacerlo crecer) y la misma instancia sigue montada.
+  const boardTab = !readOnly && Boolean(editor.task) && tab === "pizarra";
   const [imageError, setImageError] = useState("");
   const [uploading, setUploading] = useState(false);
   const titleError = formError === "Escribe un título para la tarea." ? formError : "";
@@ -113,7 +118,7 @@ export default function TaskDialog({
   }
 
   return (
-    <Modal title={readOnly ? "Detalle de la tarea" : editor.task ? "Editar tarea" : "Nueva tarea"} onClose={onClose} closable={!saving}>
+    <Modal title={readOnly ? "Detalle de la tarea" : editor.task ? "Editar tarea" : "Nueva tarea"} onClose={onClose} closable={!saving} className={boardTab ? "task-dialog-board" : undefined}>
       {readOnly && editor.task ? <div className="task-detail">
         {editor.task.imageUrl && <img className="task-detail-image" src={editor.task.imageUrl} alt={editor.task.title} onError={(event) => { event.currentTarget.style.display = "none"; }} />}
         <div className="task-detail-heading">
@@ -273,9 +278,17 @@ export default function TaskDialog({
         </div>
         </div>
         {editor.task && <div role="tabpanel" id="panel-pizarra" aria-labelledby="tab-pizarra" hidden={tab !== "pizarra"}>
-          <Suspense fallback={<p className="board-loading" role="status">Cargando la pizarra…</p>}>
-            <Whiteboard taskId={editor.task.id} readOnly={readOnly || claiming} />
-          </Suspense>
+          <div className={boardExpanded ? "whiteboard-shell expanded" : "whiteboard-shell"}>
+            <div className="whiteboard-shell-bar">
+              <span className="field-hint">{boardExpanded ? "Pizarra a pantalla completa" : "Pizarra de la tarea"}</span>
+              <button type="button" className="icon-button whiteboard-expand" aria-pressed={boardExpanded} aria-label={boardExpanded ? "Reducir pizarra" : "Ampliar pizarra a pantalla completa"} title={boardExpanded ? "Reducir pizarra" : "Ampliar pizarra a pantalla completa"} onClick={() => setBoardExpanded((value) => !value)}>
+                {boardExpanded ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+              </button>
+            </div>
+            <Suspense fallback={<p className="board-loading" role="status">Cargando la pizarra…</p>}>
+              <Whiteboard taskId={editor.task.id} readOnly={readOnly || claiming} />
+            </Suspense>
+          </div>
         </div>}
         {!canManage && !ownStudent && <p className="intro">El profesorado debe vincular tu cuenta a una ficha para que puedas asignarte tareas.</p>}
         {formError && <div role="alert" className="alert">{formError}</div>}

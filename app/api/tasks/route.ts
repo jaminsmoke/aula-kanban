@@ -116,7 +116,9 @@ async function handle(request: Request) {
     if (isStudent && (!own(currentRefs) || currentRefs.length !== 1)) return json({ message: "Solo puedes eliminar tareas asignadas únicamente a ti." }, 403);
     const ownGuard = isStudent ? sql`EXISTS (SELECT 1 FROM task_assignees WHERE task_id = ${id} AND project_id = ${project.id} AND kind = 'student' AND profile_id = ${selfId}) AND (SELECT count(*) FROM task_assignees WHERE task_id = ${id} AND project_id = ${project.id}) = 1` : sql`1 = 1`;
     const [deleted] = await db.delete(tasks).where(and(matches, ownGuard)).returning({ id: tasks.id });
-    if (deleted) await db.delete(boards).where(and(eq(boards.projectId, project.id), eq(boards.ownerType, "task"), eq(boards.ownerId, id)));
+    if (deleted) {
+      await db.delete(boards).where(and(eq(boards.projectId, project.id), eq(boards.ownerType, "task"), eq(boards.ownerId, id)));
+    }
     return deleted ? json(deleted) : json({ message: "Esta tarea cambió en otra sesión." }, 409);
   }
   const change = z.union([fields, fields.pick({ status: true }).strict()]).safeParse(parsed.data.changes);

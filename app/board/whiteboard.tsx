@@ -106,11 +106,15 @@ function sceneSignature(elements: readonly BoardElement[], files: Record<string,
 }
 
 /**
- * Pizarra de la tarea con Excalidraw, persistida en la API del tablero.
- * @param props - Tarea dueña y bandera de solo lectura.
+ * Pizarra con Excalidraw, persistida en la API del tablero. En las tareas
+ * (`ownerType: "task"`, por defecto) el dueño es la tarea; en el hub
+ * (`ownerType: "project"`, con `ownerId` igual al proyecto) es la pizarra
+ * compartida del proyecto.
+ * @param props - Tarea dueña, tipo de dueño, identificador del dueño y bandera de solo lectura.
  * @returns La pizarra con sus estados de carga y error.
  */
-export default function Whiteboard({ taskId, readOnly }: { taskId: string; readOnly: boolean }) {
+export default function Whiteboard({ taskId, readOnly, ownerType = "task", ownerId }: { taskId?: string; readOnly: boolean; ownerType?: "task" | "project"; ownerId?: string }) {
+  const boardId = ownerId ?? taskId ?? "";
   const [initial, setInitial] = useState<BoardSnapshot | null>(null);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("La pizarra se está guardando…");
@@ -136,16 +140,16 @@ export default function Whiteboard({ taskId, readOnly }: { taskId: string; readO
 
   const fetchBoard = useCallback(async (): Promise<BoardResponse> => {
     const projectId = new URLSearchParams(window.location.search).get("project") || "default";
-    const query = new URLSearchParams({ project: projectId, ownerType: "task", ownerId: taskId });
+    const query = new URLSearchParams({ project: projectId, ownerType, ownerId: boardId });
     const response = await fetch(`/api/boards?${query}`, { cache: "no-store" });
     const data = await response.json().catch(() => null);
     if (!response.ok || data === null) throw new Error("pizarra");
     return data as BoardResponse;
-  }, [taskId]);
+  }, [boardId, ownerType]);
 
-  const [previousTaskId, setPreviousTaskId] = useState(taskId);
-  if (previousTaskId !== taskId) {
-    setPreviousTaskId(taskId);
+  const [previousBoardId, setPreviousBoardId] = useState(boardId);
+  if (previousBoardId !== boardId) {
+    setPreviousBoardId(boardId);
     setInitial(null);
     setError("");
   }
@@ -174,7 +178,7 @@ export default function Whiteboard({ taskId, readOnly }: { taskId: string; readO
       },
     );
     return () => { active = false; };
-  }, [fetchBoard, retry, taskId]);
+  }, [fetchBoard, retry, boardId]);
 
   const persist = useCallback(async (): Promise<void> => {
     if (readOnly || !dirtyRef.current || savingRef.current) return;
@@ -203,7 +207,7 @@ export default function Whiteboard({ taskId, readOnly }: { taskId: string; readO
       }
     }
     const snap = JSON.stringify({ ...next, appState: EMPTY_SNAPSHOT.appState, files });
-      const saved = await request<BoardResponse>("PUT", { ownerType: "task", ownerId: taskId, snapshot: snap, revision: revisionRef.current }, "/api/boards");
+      const saved = await request<BoardResponse>("PUT", { ownerType, ownerId: boardId, snapshot: snap, revision: revisionRef.current }, "/api/boards");
       revisionRef.current = saved.revision;
       updatedAtRef.current = saved.updatedAt;
       if (socketOpenRef.current && socketRef.current) {
@@ -248,7 +252,7 @@ export default function Whiteboard({ taskId, readOnly }: { taskId: string; readO
         saveTimer.current = window.setTimeout(() => { void persistRef.current?.(); }, SAVE_DEBOUNCE_MS);
       }
     }
-  }, [fetchBoard, readOnly, taskId]);
+  }, [fetchBoard, readOnly, boardId, ownerType]);
 
   useEffect(() => {
     persistRef.current = persist;
@@ -290,7 +294,7 @@ export default function Whiteboard({ taskId, readOnly }: { taskId: string; readO
     const connect = () => {
       if (!active) return;
       const projectId = new URLSearchParams(window.location.search).get("project") || "default";
-      const query = new URLSearchParams({ project: projectId, ownerType: "task", ownerId: taskId });
+      const query = new URLSearchParams({ project: projectId, ownerType, ownerId: boardId });
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       socket = new WebSocket(`${protocol}//${window.location.host}/api/board-socket?${query}`);
       socketRef.current = socket;
@@ -330,7 +334,7 @@ export default function Whiteboard({ taskId, readOnly }: { taskId: string; readO
       socketOpenRef.current = false;
       try { socket?.close(); } catch { /* el socket ya está cerrado */ }
     };
-  }, [applyScene, pushPresence, initial, taskId]);
+  }, [applyScene, pushPresence, initial, boardId, ownerType]);
 
   useEffect(() => {
     const tick = () => {
@@ -402,7 +406,6 @@ export default function Whiteboard({ taskId, readOnly }: { taskId: string; readO
           onChange={handleChange as never}
           onPointerUpdate={handlePointer as never}
           viewModeEnabled={readOnly}
-          zenModeEnabled
         />
       </div>
     </div>

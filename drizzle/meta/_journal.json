@@ -141,6 +141,20 @@
       "when": 1794479456494,
       "tag": "0019_foamy_shockwave",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1794492185968,
+      "tag": "0020_secret_wendigo",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "6",
+      "when": 1794493166931,
+      "tag": "0021_overconfident_triathlon",
+      "breakpoints": true
     }
   ]
 }

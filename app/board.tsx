@@ -6,6 +6,7 @@ import TeachersView from "./teachers/teachers-view";
 import BoardHeader from "./board/header";
 import KanbanView from "./board/kanban-view";
 import StudentsView from "./board/students-view";
+import SpaceView from "./board/space-view";
 import TaskDialog from "./board/task-dialog";
 import SettingsDialog from "./board/settings-dialog";
 import MemberDialog from "./board/member-dialog";
@@ -30,7 +31,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const invitations = useInvitations();
   const data = useBoardData(projectState.activeProject);
   const actions = useProjectActions({ projects: projectState.projects, projectId: projectState.projectId });
-  const [view, setView] = useState<"kanban" | "alumnos" | "profesores">("kanban");
+  const [view, setView] = useState<"kanban" | "alumnos" | "profesores" | "espacio">("kanban");
   const [studentName, setStudentName] = useState<string | null>(null);
   const [studentLayout, setStudentLayout] = useState<"grid" | "list">("grid");
   const [notice, setNotice] = useState("");
@@ -100,6 +101,8 @@ export default function Board({ user }: { user: { displayName: string; email: st
             {invitations.invitationError && <div className="alert" role="alert">{invitations.invitationError}</div>}
             <div className="access-remix"><div><strong>¿Quieres tu propio tablero?</strong><p>Solicita una copia independiente de Aula Kanban para personalizarla a tu manera.</p></div><button type="button" className={invitationWelcome ? "secondary" : "primary"} onClick={() => setRemixOpen(true)}><Plus size={18} /> Haz tu Site de Aula Kanban</button></div>
           </div></section>
+        ) : view === "espacio" ? (
+          <SpaceView role={activeProject.role} projectId={projectState.projectId} onExit={() => setView("kanban")} />
         ) : view === "profesores" ? (
           <TeachersView key={projectState.projectId} projectId={projectState.projectId} isAdmin={projectState.owner || projectState.admin} ownTeacherId={activeProject.teacherId} tasks={data.tasks} students={data.students} openTask={(task) => board.openEditor(task.status, task)} />
         ) : view === "alumnos" ? (
