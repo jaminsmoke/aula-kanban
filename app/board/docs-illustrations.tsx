@@ -14,7 +14,6 @@ const LINE = "#e7e4ef";
 const float = { animate: { y: [0, -5, 0] }, transition: { duration: 4.5, repeat: Infinity, ease: "easeInOut" as const } };
 const floatSlow = { animate: { y: [0, -4, 0] }, transition: { duration: 5.5, repeat: Infinity, ease: "easeInOut" as const } };
 
-/** Mini tablero del héroe: tres columnas con tarjetas y botón «+» ámbar. */
 /**
  * Mini tablero del héroe: tres columnas con tarjetas y botón «+» ámbar.
  * @returns El SVG decorativo de la escena.
@@ -52,7 +51,6 @@ function HeroArt() {
   );
 }
 
-/** Qué es: tablero con tres columnas y flecha de progreso. */
 /**
  * Qué es: tablero con tres columnas y flecha de progreso.
  * @returns El SVG decorativo de la escena.
@@ -80,7 +78,6 @@ function QueEsArt() {
   );
 }
 
-/** Roles: jerarquía de un círculo grande y tres pequeños conectados. */
 /**
  * Roles: jerarquía de un círculo grande y tres pequeños conectados.
  * @returns El SVG decorativo de la escena.
@@ -88,28 +85,27 @@ function QueEsArt() {
 function RolesArt() {
   return (
     <svg viewBox="0 0 260 200" aria-hidden focusable="false">
-      <path d="M130 96v26M78 122v18M130 122v18M182 122v18" stroke={LINE} strokeWidth="3" strokeLinecap="round" />
-      <path d="M78 140h104" stroke={LINE} strokeWidth="3" strokeLinecap="round" />
+      <path d="M130 86v20M78 106v14M130 106v14M182 106v14" stroke={LINE} strokeWidth="3" strokeLinecap="round" />
+      <path d="M78 120h104" stroke={LINE} strokeWidth="3" strokeLinecap="round" />
       <m.g {...float}>
-        <circle cx="130" cy="66" r="34" fill={VIOLET} />
-        <path d="M118 56l4 8 8-10 8 10 4-8-2 14h-20z" fill={AMBER} />
+        <circle cx="130" cy="58" r="27" fill={VIOLET} />
+        <path d="M120 50l3 7 7-8 7 8 3-7-2 11h-16z" fill={AMBER} />
       </m.g>
       <g fill="#ffffff" stroke={VIOLET} strokeWidth="3">
-        <circle cx="78" cy="160" r="20" />
-        <circle cx="130" cy="160" r="20" />
-        <circle cx="182" cy="160" r="20" />
+        <circle cx="78" cy="138" r="17" />
+        <circle cx="130" cy="138" r="17" />
+        <circle cx="182" cy="138" r="17" />
       </g>
       <g fill={VIOLET}>
-        <circle cx="78" cy="160" r="5" />
-        <circle cx="130" cy="160" r="5" />
-        <circle cx="182" cy="160" r="5" />
+        <circle cx="78" cy="138" r="4.5" />
+        <circle cx="130" cy="138" r="4.5" />
+        <circle cx="182" cy="138" r="4.5" />
       </g>
-      <circle cx="78" cy="160" r="30" fill="none" stroke={PALE} strokeWidth="3" strokeDasharray="1 7" />
+      <circle cx="78" cy="138" r="25" fill="none" stroke={PALE} strokeWidth="3" strokeDasharray="1 7" />
     </svg>
   );
 }
 
-/** Tareas: tarjeta con casillas marcadas y barra de progreso. */
 /**
  * Tareas: tarjeta con casillas marcadas y barra de progreso.
  * @returns El SVG decorativo de la escena.
@@ -137,7 +133,6 @@ function TareasArt() {
   );
 }
 
-/** Pizarras: trazo dibujándose solo sobre la pizarra. */
 /**
  * Pizarras: trazo dibujándose solo sobre la pizarra.
  * @returns El SVG decorativo de la escena.
@@ -161,7 +156,6 @@ function PizarrasArt() {
   );
 }
 
-/** Mi espacio: ventana de escritorio con apps y tienda. */
 /**
  * Mi espacio: ventana de escritorio con apps y tienda.
  * @returns El SVG decorativo de la escena.
@@ -186,7 +180,6 @@ function EspacioArt() {
   );
 }
 
-/** Ayuda: salvavidas con pulso suave. */
 /**
  * Ayuda: salvavidas con pulso suave.
  * @returns El SVG decorativo de la escena.
