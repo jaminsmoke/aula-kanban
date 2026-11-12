@@ -26,7 +26,8 @@ export async function callSpaceManager(path: string, method: "GET" | "POST" | "D
     // Solo se registran datos de diagnóstico; nunca cabeceras ni secretos.
     const cause = error instanceof Error ? error.cause : undefined;
     const code = typeof cause === "object" && cause !== null && "code" in cause ? String(cause.code) : undefined;
-    console.error("space_manager_fetch_failed", { name: error instanceof Error ? error.name : "unknown", code });
+    const message = error instanceof Error ? error.message.replaceAll(config.SPACE_MANAGER_TOKEN, "[redacted]").slice(0, 300) : "unknown";
+    console.error("space_manager_fetch_failed", { name: error instanceof Error ? error.name : "unknown", code, detail: message });
     throw error;
   }
   if (!response.ok) {
