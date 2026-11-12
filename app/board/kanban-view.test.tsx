@@ -8,6 +8,7 @@ const task = (overrides: Partial<Task> = {}): Task => ({
   id: "t1",
   title: "Investigar placas",
   description: "",
+  imageUrl: "",
   assignee: "",
   assignees: [],
   dueDate: "",

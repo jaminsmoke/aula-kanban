@@ -19,6 +19,7 @@ const task = (overrides: Record<string, unknown> = {}) => ({
   id: "t1",
   title: "Investigar placas",
   description: "",
+  imageUrl: "",
   assignee: "",
   assignees: [],
   dueDate: "",

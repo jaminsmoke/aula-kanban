@@ -18,6 +18,7 @@ const task: Task = {
   id: "t1",
   title: "Investigar sensores",
   description: "",
+  imageUrl: "",
   assignee: "Ada",
   assignees: [{ kind: "student", profileId: "s1", name: "Ada" }],
   dueDate: "",

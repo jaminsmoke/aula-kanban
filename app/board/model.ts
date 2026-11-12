@@ -9,7 +9,7 @@ export const columns = {
 };
 
 export const blank: TaskFields = {
-  title: "", description: "", assignee: "", assignees: [], dueDate: "", priority: "normal", status: "pending",
+  title: "", description: "", imageUrl: "", assignee: "", assignees: [], dueDate: "", priority: "normal", status: "pending",
 };
 
 export const formatDate = new Intl.DateTimeFormat("es", { day: "numeric", month: "short" });

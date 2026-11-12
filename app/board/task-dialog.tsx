@@ -1,5 +1,7 @@
+/* eslint-disable @next/next/no-img-element -- Las imágenes son URLs externas puestas por el usuario; next/image no puede optimizar dominios arbitrarios */
 "use client";
 
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { ArrowRight, CalendarDays, Flag, Trash2 } from "lucide-react";
 import { priorities, priorityNames, statuses } from "../task";
@@ -51,6 +53,8 @@ export default function TaskDialog({
   onDelete: (task: Task) => void;
 }) {
   const readOnly = Boolean(editor.task && !canEditTask(editor.task));
+  const [tab, setTab] = useState<"resumen" | "asignaciones">("resumen");
+  const [imageError, setImageError] = useState("");
   const titleError = formError === "Escribe un título para la tarea." ? formError : "";
   const classStudents = students ?? [];
   const allStudentsAssigned = Boolean(classStudents.length && classStudents.every((student) => form.assignees.some((person) => person.kind === "student" && person.profileId === student.section)));
@@ -59,6 +63,7 @@ export default function TaskDialog({
   const duePreview = form.dueDate ? formatDate.format(new Date(`${form.dueDate}T12:00:00`)) : "Sin fecha";
   const pastDue = Boolean(form.dueDate && form.dueDate < dateValue(0));
   const StatusIcon = editor.task ? columns[editor.task.status].icon : null;
+  const assigneesSummary = form.assignees.length ? form.assignees.map((person) => person.name).join(", ") : (form.assignee || "Sin asignar");
 
   function handleAddAssignee() {
     const nextIndex = form.assignees.length;
@@ -69,9 +74,26 @@ export default function TaskDialog({
     });
   }
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    if (!form.title.trim()) {
+      setTab("resumen");
+      onSubmit(event);
+      return;
+    }
+    if (form.imageUrl && (!/^https?:\/\/\S+$/i.test(form.imageUrl.trim()) || form.imageUrl.trim().length > 2048)) {
+      event.preventDefault();
+      setTab("resumen");
+      setImageError("Introduce una URL de imagen válida que empiece por http:// o https://.");
+      return;
+    }
+    setImageError("");
+    onSubmit(event);
+  }
+
   return (
     <Modal title={readOnly ? "Detalle de la tarea" : editor.task ? "Editar tarea" : "Nueva tarea"} onClose={onClose} closable={!saving}>
       {readOnly && editor.task ? <div className="task-detail">
+        {editor.task.imageUrl && <img className="task-detail-image" src={editor.task.imageUrl} alt={editor.task.title} onError={(event) => { event.currentTarget.style.display = "none"; }} />}
         <div className="task-detail-heading">
           <h3>{editor.task.title}</h3>
           <span className={`priority ${editor.task.priority}`}><Flag size={12} /> {priorityNames[editor.task.priority]}</span>
@@ -107,9 +129,14 @@ export default function TaskDialog({
             <dd>{editor.task.creator || "No registrado"}</dd>
           </div>
         </dl>
-      </div> : <form onSubmit={onSubmit} className={claiming ? "task-form claiming" : "task-form"}>
+      </div> : <form onSubmit={handleSubmit} noValidate className={claiming ? "task-form claiming" : "task-form"}>
         {claiming && <p className="claim-banner">Asígnate esta tarea y guarda para poder editar sus detalles.</p>}
         {editor.task && <p className="intro">Creada por: {editor.task.creator || "No registrado"}</p>}
+        <div className="task-tabs" role="tablist" aria-label="Secciones de la tarea">
+          <button type="button" role="tab" id="tab-resumen" aria-selected={tab === "resumen"} aria-controls="panel-resumen" className={tab === "resumen" ? "task-tab active" : "task-tab"} onClick={() => setTab("resumen")}>Resumen</button>
+          <button type="button" role="tab" id="tab-asignaciones" aria-selected={tab === "asignaciones"} aria-controls="panel-asignaciones" className={tab === "asignaciones" ? "task-tab active" : "task-tab"} onClick={() => setTab("asignaciones")}>Asignaciones{form.assignees.length > 0 ? ` (${form.assignees.length})` : ""}</button>
+        </div>
+        <div role="tabpanel" id="panel-resumen" aria-labelledby="tab-resumen" hidden={tab !== "resumen"}>
         <div className="field">
           <div className="field-heading">
             <label htmlFor="task-title">Título</label>
@@ -125,6 +152,57 @@ export default function TaskDialog({
           </div>
           <textarea id="task-description" disabled={claiming} maxLength={2000} rows={3} placeholder="Detalles, materiales o enlaces" value={form.description} onChange={(event) => onForm({ ...form, description: event.target.value })} />
         </div>
+        <div className="field claim-muted">
+          <div className="field-heading">
+            <label htmlFor="task-image">Miniatura <span>(URL de imagen, opcional)</span></label>
+            <span className="field-count">{form.imageUrl.length}/2048</span>
+          </div>
+          <input id="task-image" type="url" inputMode="url" maxLength={2048} disabled={claiming} placeholder="https://ejemplo.com/imagen.jpg" value={form.imageUrl} aria-invalid={Boolean(imageError)} aria-describedby={imageError ? "task-image-error" : undefined} onChange={(event) => { setImageError(""); onForm({ ...form, imageUrl: event.target.value }); }} />
+          {imageError && <p id="task-image-error" role="alert" className="field-error">{imageError}</p>}
+          {form.imageUrl && <div className="thumb-preview">
+            <img key={form.imageUrl} src={form.imageUrl} alt="Vista previa de la miniatura" onError={(event) => { event.currentTarget.style.display = "none"; }} />
+            <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, imageUrl: "" })}>Quitar miniatura</button>
+          </div>}
+          <p className="field-hint">Enlace directo a una imagen. Se muestra en la tarjeta del tablero para todo el grupo.</p>
+        </div>
+        <div className="field claim-muted">
+            <div className="field-heading">
+              <label htmlFor="task-due-date">Fecha de entrega</label>
+              <span className="field-count">{duePreview}</span>
+            </div>
+            <input id="task-due-date" disabled={claiming} type="date" value={form.dueDate} onChange={(event) => onForm({ ...form, dueDate: event.target.value })} />
+            <div className="date-quick" aria-label="Atajos de fecha">
+              <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, dueDate: dateValue(0) })}>Hoy</button>
+              <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, dueDate: dateValue(1) })}>Mañana</button>
+              <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, dueDate: dateValue(3) })}>En 3 días</button>
+              <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, dueDate: "" })}>Sin fecha</button>
+            </div>
+            {pastDue && <p className="date-warning">La fecha ya pasó.</p>}
+        </div>
+        <div className="form-row claim-muted">
+          <div className="field">
+            <span className="field-label" id="task-priority-label">Prioridad</span>
+            <div className="segmented" role="group" aria-labelledby="task-priority-label">
+              {priorities.map((priority) => (
+                <button key={priority} type="button" className={`segmented-option ${priority}`} aria-pressed={form.priority === priority} disabled={claiming} onClick={() => onForm({ ...form, priority })}>
+                  {priorityNames[priority]}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="field">
+            <label htmlFor="task-status">Estado</label>
+            <select id="task-status" disabled={claiming} value={form.status} onChange={(event) => onForm({ ...form, status: event.target.value as TaskFields["status"] })}>
+              {statuses.map((status) => <option key={status} value={status}>{columns[status].name}</option>)}
+            </select>
+          </div>
+        </div>
+        <div className="task-summary" aria-live="polite">
+          <span className="field-label">Responsables</span>
+          <p>{assigneesSummary}</p>
+        </div>
+        </div>
+        <div role="tabpanel" id="panel-asignaciones" aria-labelledby="tab-asignaciones" hidden={tab !== "asignaciones"}>
         <div className="field assignee-field">
           <span className="field-label" id="task-assignees-label">Responsables</span>
             {canManage ? <>
@@ -165,37 +243,6 @@ export default function TaskDialog({
               {ownStudent && <p className="field-hint">Solo puedes asignarte la tarea a ti.</p>}
             </>}
         </div>
-        <div className="field claim-muted">
-            <div className="field-heading">
-              <label htmlFor="task-due-date">Fecha de entrega</label>
-              <span className="field-count">{duePreview}</span>
-            </div>
-            <input id="task-due-date" disabled={claiming} type="date" value={form.dueDate} onChange={(event) => onForm({ ...form, dueDate: event.target.value })} />
-            <div className="date-quick" aria-label="Atajos de fecha">
-              <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, dueDate: dateValue(0) })}>Hoy</button>
-              <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, dueDate: dateValue(1) })}>Mañana</button>
-              <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, dueDate: dateValue(3) })}>En 3 días</button>
-              <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, dueDate: "" })}>Sin fecha</button>
-            </div>
-            {pastDue && <p className="date-warning">La fecha ya pasó.</p>}
-        </div>
-        <div className="form-row claim-muted">
-          <div className="field">
-            <span className="field-label" id="task-priority-label">Prioridad</span>
-            <div className="segmented" role="group" aria-labelledby="task-priority-label">
-              {priorities.map((priority) => (
-                <button key={priority} type="button" className={`segmented-option ${priority}`} aria-pressed={form.priority === priority} disabled={claiming} onClick={() => onForm({ ...form, priority })}>
-                  {priorityNames[priority]}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="field">
-            <label htmlFor="task-status">Estado</label>
-            <select id="task-status" disabled={claiming} value={form.status} onChange={(event) => onForm({ ...form, status: event.target.value as TaskFields["status"] })}>
-              {statuses.map((status) => <option key={status} value={status}>{columns[status].name}</option>)}
-            </select>
-          </div>
         </div>
         {!canManage && !ownStudent && <p className="intro">El profesorado debe vincular tu cuenta a una ficha para que puedas asignarte tareas.</p>}
         {formError && <div role="alert" className="alert">{formError}</div>}

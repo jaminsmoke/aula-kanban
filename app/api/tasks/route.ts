@@ -11,7 +11,7 @@ import { purgeDeletedProfiles } from "../../../lib/server/deleted-profiles";
 
 export const dynamic = "force-dynamic";
 const person = z.object({ kind: z.enum(["student", "teacher"]), profileId: z.string().min(1).max(80) });
-const fields = z.object({ title: z.string().trim().min(1).max(120), description: z.string().trim().max(2000), assignee: z.string().trim().max(5000), assignees: z.array(person).max(50).optional(), dueDate: z.union([z.literal(""), z.string().date()]), priority: z.enum(priorities), status: z.enum(statuses) });
+const fields = z.object({ title: z.string().trim().min(1).max(120), description: z.string().trim().max(2000), imageUrl: z.string().trim().max(2048).refine((value) => value === "" || /^https?:\/\/\S+$/i.test(value), "URL de imagen no válida").optional(), assignee: z.string().trim().max(5000), assignees: z.array(person).max(50).optional(), dueDate: z.union([z.literal(""), z.string().date()]), priority: z.enum(priorities), status: z.enum(statuses) });
 const reference = z.object({ id: z.string().uuid(), revision: z.number().int().positive(), changes: z.unknown().optional() });
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 type Ref = z.infer<typeof person>;
@@ -48,7 +48,7 @@ function decorate(task: typeof tasks.$inferSelect, data: Awaited<ReturnType<type
   const creatorMember = data.members.find(member => member.id === task.creatorMemberId && member.userId === task.creatorUserId && member.status === "active");
   const creatorProfile = creatorMember?.studentSection ? data.profiles.find(p => p.section === creatorMember.studentSection) : creatorMember?.teacherId ? data.staff.find(p => p.id === creatorMember.teacherId) : undefined;
   const creator = (creatorProfile && personLabel(creatorProfile)) || data.identities.find(identity => identity.id === task.creatorUserId)?.displayName || task.creatorName || null;
-  return { id: task.id, title: task.title, description: task.description, assignee: assignments.length ? assignments.map(item => item.name).join(", ") : task.assignee, assignees: assignments, dueDate: task.dueDate, priority: task.priority, status: task.status, createdAt: task.createdAt, revision: task.revision, creator };
+  return { id: task.id, title: task.title, description: task.description, imageUrl: task.imageUrl ?? "", assignee: assignments.length ? assignments.map(item => item.name).join(", ") : task.assignee, assignees: assignments, dueDate: task.dueDate, priority: task.priority, status: task.status, createdAt: task.createdAt, revision: task.revision, creator };
 }
 function validateRefs(refs: Ref[], data: Awaited<ReturnType<typeof projectData>>, allowed: Ref[] = []) {
   const unique = new Set(refs.map(ref => `${ref.kind}:${ref.profileId}`));
@@ -97,7 +97,7 @@ async function handle(request: Request) {
     if (isStudent && (!onlySelfOrNone(refs) || (!refs.length && !unassigned(value.assignee)))) return json({ message: "Solo puedes asignarte la tarea a ti o dejarla sin asignar." }, 403);
     const id = crypto.randomUUID(), member = data.members.find(item => item.status === "active" && item.userId === user.userId);
     const statements = [
-      binding.prepare(`INSERT INTO tasks (id, project_id, title, description, assignee, due_date, priority, status, created_at, revision, creator_user_id, creator_member_id, creator_name) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ? WHERE ${authSql} RETURNING id`).bind(id, project.id, value.title, value.description, unlinkedAssigneeText(refs, value.assignee), value.dueDate, value.priority, value.status, Date.now(), user.userId, member?.id ?? null, user.displayName, ...authArgs),
+      binding.prepare(`INSERT INTO tasks (id, project_id, title, description, image_url, assignee, due_date, priority, status, created_at, revision, creator_user_id, creator_member_id, creator_name) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ? WHERE ${authSql} RETURNING id`).bind(id, project.id, value.title, value.description, value.imageUrl ?? "", unlinkedAssigneeText(refs, value.assignee), value.dueDate, value.priority, value.status, Date.now(), user.userId, member?.id ?? null, user.displayName, ...authArgs),
       binding.prepare("INSERT INTO user_identities (id, display_name) SELECT ?, ? WHERE EXISTS (SELECT 1 FROM tasks WHERE id = ? AND project_id = ?) ON CONFLICT(id) DO UPDATE SET display_name = excluded.display_name").bind(user.userId, user.displayName, id, project.id),
       ...refs.map(ref => binding.prepare("INSERT INTO task_assignees (id, task_id, project_id, kind, profile_id) SELECT ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM tasks WHERE id = ? AND project_id = ?)").bind(crypto.randomUUID(), id, project.id, ref.kind, ref.profileId, id, project.id)),
     ];
@@ -127,6 +127,7 @@ async function handle(request: Request) {
     return updated ? json(decorate(updated, data)) : json({ message: "Esta tarea cambió en otra sesión." }, 409);
   }
   const value = change.data;
+  const imageUrl = value.imageUrl ?? current.imageUrl ?? "";
   // A legacy client that omits assignees preserves existing references; it cannot silently take ownership.
   const nextRefs = value.assignees ?? currentRefs;
   if (!validateRefs(nextRefs, data, currentRefs)) return json({ message: "Selecciona responsables válidos de este proyecto." }, 400);
@@ -136,7 +137,7 @@ async function handle(request: Request) {
     const otherCurrent = currentRefs.filter(ref => !(ref.kind === "student" && ref.profileId === selfId));
     const otherNext = nextRefs.filter(ref => !(ref.kind === "student" && ref.profileId === selfId));
     if (!sameRefs(otherCurrent, otherNext) || (!nextRefs.length && !unassigned(value.assignee))) return json({ message: "No puedes cambiar la asignación de otras personas." }, 403);
-    if (claims && (value.title !== current.title || value.description !== current.description || value.dueDate !== current.dueDate || value.priority !== current.priority || value.status !== current.status)) return json({ message: "Primero asígnate la tarea y guarda. Después podrás editar sus datos." }, 403);
+    if (claims && (value.title !== current.title || value.description !== current.description || imageUrl !== (current.imageUrl ?? "") || value.dueDate !== current.dueDate || value.priority !== current.priority || value.status !== current.status)) return json({ message: "Primero asígnate la tarea y guarda. Después podrás editar sus datos." }, 403);
   }
   const token = crypto.randomUUID();
   const referenceGuard = currentRefs.map(() => "AND EXISTS (SELECT 1 FROM task_assignees WHERE task_id = ? AND project_id = ? AND kind = ? AND profile_id = ?)").join(" ");
@@ -144,7 +145,7 @@ async function handle(request: Request) {
   const removedRefs = currentRefs.filter(ref => !nextRefs.some(next => next.kind === ref.kind && next.profileId === ref.profileId));
   const addedRefs = nextRefs.filter(ref => !currentRefs.some(current => current.kind === ref.kind && current.profileId === ref.profileId));
   const statements = [
-    binding.prepare(`UPDATE tasks SET title = ?, description = ?, assignee = ?, due_date = ?, priority = ?, status = ?, revision = revision + 1, mutation_token = ? WHERE id = ? AND project_id = ? AND revision = ? AND ${authSql} AND (SELECT count(*) FROM task_assignees WHERE task_id = ? AND project_id = ?) = ? ${referenceGuard} RETURNING id`).bind(value.title, value.description, unlinkedAssigneeText(nextRefs, value.assignee), value.dueDate, value.priority, value.status, token, id, project.id, revision, ...authArgs, id, project.id, currentRefs.length, ...referenceArgs),
+    binding.prepare(`UPDATE tasks SET title = ?, description = ?, image_url = ?, assignee = ?, due_date = ?, priority = ?, status = ?, revision = revision + 1, mutation_token = ? WHERE id = ? AND project_id = ? AND revision = ? AND ${authSql} AND (SELECT count(*) FROM task_assignees WHERE task_id = ? AND project_id = ?) = ? ${referenceGuard} RETURNING id`).bind(value.title, value.description, imageUrl, unlinkedAssigneeText(nextRefs, value.assignee), value.dueDate, value.priority, value.status, token, id, project.id, revision, ...authArgs, id, project.id, currentRefs.length, ...referenceArgs),
     ...removedRefs.map(ref => binding.prepare("DELETE FROM task_assignees WHERE task_id = ? AND project_id = ? AND kind = ? AND profile_id = ? AND EXISTS (SELECT 1 FROM tasks WHERE id = ? AND project_id = ? AND mutation_token = ?)").bind(id, project.id, ref.kind, ref.profileId, id, project.id, token)),
     ...addedRefs.map(ref => binding.prepare("INSERT INTO task_assignees (id, task_id, project_id, kind, profile_id) SELECT ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM tasks WHERE id = ? AND project_id = ? AND mutation_token = ?)").bind(crypto.randomUUID(), id, project.id, ref.kind, ref.profileId, id, project.id, token)),
   ];

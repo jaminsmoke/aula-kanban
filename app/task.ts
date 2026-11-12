@@ -7,6 +7,7 @@ export type TaskAssignee = { kind: "student" | "teacher"; profileId: string; nam
 export type TaskFields = {
   title: string;
   description: string;
+  imageUrl: string;
   assignee: string;
   assignees: TaskAssignee[];
   dueDate: string;

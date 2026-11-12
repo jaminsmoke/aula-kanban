@@ -8,6 +8,7 @@ const task: Task = {
   id: "t1",
   title: "Investigar placas",
   description: "Buscar sensores",
+  imageUrl: "",
   assignee: "Ada",
   assignees: [],
   dueDate: "",
@@ -94,6 +95,7 @@ describe("TaskDialog", () => {
     ];
     const { props } = renderDialog({ form: { ...blank, assignees: [{ kind: "student", profileId: "s1", name: "Ada" }] }, students });
 
+    fireEvent.click(screen.getByRole("tab", { name: /Asignaciones/ }));
     fireEvent.click(screen.getByRole("button", { name: "Añadir responsable" }));
     expect(props.onAddAssignee).toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: /Asignar a toda la clase \(2\)/ }));
@@ -141,8 +143,34 @@ describe("TaskDialog", () => {
   it("deja el responsable libre en texto cuando no hay fichas vinculadas", () => {
     renderDialog();
 
+    fireEvent.click(screen.getByRole("tab", { name: /Asignaciones/ }));
     expect(screen.getByPlaceholderText("Sin asignar o responsable en texto")).toBeTruthy();
     expect(screen.queryByRole("combobox", { name: "Responsable 1" })).toBeNull();
+  });
+
+  it("cambia entre las pestañas Resumen y Asignaciones", () => {
+    renderDialog({ form: { ...blank, assignees: [{ kind: "student", profileId: "s1", name: "Ada" }] }, students: [] });
+
+    expect(screen.getByRole("tab", { name: "Resumen" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("tab", { name: /Asignaciones \(1\)/ })).toBeTruthy();
+    expect(screen.getByText("Ada")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("tab", { name: /Asignaciones/ }));
+    expect(screen.getByRole("tab", { name: /Asignaciones/ }).getAttribute("aria-selected")).toBe("true");
+    expect(document.getElementById("panel-resumen")?.hasAttribute("hidden")).toBe(true);
+    expect(document.getElementById("panel-asignaciones")?.hasAttribute("hidden")).toBe(false);
+  });
+
+  it("actualiza la miniatura desde el campo URL y la previsualiza", () => {
+    const { props } = renderDialog();
+
+    fireEvent.change(screen.getByLabelText(/Miniatura/), { target: { value: "https://ejemplo.com/foto.jpg" } });
+    expect(props.onForm).toHaveBeenCalledWith(expect.objectContaining({ imageUrl: "https://ejemplo.com/foto.jpg" }));
+
+    const { props: props2 } = renderDialog({ form: { ...blank, imageUrl: "https://ejemplo.com/foto.jpg" } });
+    expect(screen.getByAltText("Vista previa de la miniatura")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Quitar miniatura" }));
+    expect(props2.onForm).toHaveBeenCalledWith(expect.objectContaining({ imageUrl: "" }));
   });
 
   it("deshabilita el título mientras se reclama una tarea", () => {
@@ -150,5 +178,22 @@ describe("TaskDialog", () => {
 
     expect((screen.getByPlaceholderText("¿Qué hay que hacer?") as HTMLInputElement).disabled).toBe(true);
     expect(screen.getByText(/Asígnate esta tarea/)).toBeTruthy();
+  });
+
+  it("vuelve al resumen si se envía sin título desde asignaciones", () => {
+    const { props } = renderDialog();
+    fireEvent.click(screen.getByRole("tab", { name: /Asignaciones/ }));
+    fireEvent.submit(screen.getByRole("button", { name: /Crear tarea/ }).closest("form")!);
+    expect(screen.getByRole("tab", { name: "Resumen" }).getAttribute("aria-selected")).toBe("true");
+    expect(props.onSubmit).toHaveBeenCalled();
+  });
+
+  it("muestra el error de URL en resumen aunque se envíe desde asignaciones", () => {
+    const { props } = renderDialog({ form: { ...blank, title: "Tarea", imageUrl: "no-es-url" } });
+    fireEvent.click(screen.getByRole("tab", { name: /Asignaciones/ }));
+    fireEvent.submit(screen.getByRole("button", { name: /Crear tarea/ }).closest("form")!);
+    expect(screen.getByRole("tab", { name: "Resumen" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("alert").textContent).toContain("URL de imagen válida");
+    expect(props.onSubmit).not.toHaveBeenCalled();
   });
 });

@@ -16,6 +16,7 @@ const task = {
   id: "t1",
   title: "Informe",
   description: "",
+  imageUrl: "",
   assignee: "",
   assignees: [],
   dueDate: "",

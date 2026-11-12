@@ -9,6 +9,7 @@ const task: Task = {
   description: "Buscar sensores compatibles",
   assignee: "Ada",
   assignees: [],
+  imageUrl: "",
   dueDate: "2026-11-30",
   priority: "high",
   status: "pending",
@@ -61,5 +62,13 @@ describe("TaskCard", () => {
 
     expect(container.querySelector(".card")?.className).toBe("card dragging");
     expect(screen.getByText("Investigar placas").closest("button")?.title).toBe("Ver tarea (solo lectura)");
+  });
+
+  it("vuelve a intentar la imagen cuando cambia la URL", () => {
+    const { container, rerender, handlers } = renderCard({ imageUrl: "https://ejemplo.test/rota.png" });
+    fireEvent.error(container.querySelector("img")!);
+    expect(container.querySelector("img")).toBeNull();
+    rerender(<TaskCard task={{ ...task, imageUrl: "https://ejemplo.test/nueva.png" }} dragging={false} editable {...handlers} />);
+    expect(container.querySelector("img")?.getAttribute("src")).toBe("https://ejemplo.test/nueva.png");
   });
 });
