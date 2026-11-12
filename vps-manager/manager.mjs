@@ -22,6 +22,13 @@ const allowedImages = {
 };
 const send = (res, status, value) => { res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store' }); res.end(JSON.stringify(value)); };
 
+// Log operativo en JSON por stdout: visible en `journalctl`/logs del VPS sin
+// exponer secretos (nunca se registran token ni cabeceras Authorization).
+const log = (event, fields = {}) => {
+  try { process.stdout.write(`${JSON.stringify({ ts: new Date().toISOString(), event, ...fields })}\n`); } catch { /* el log nunca debe tumbar el gestor */ }
+};
+const safeError = error => String(error?.message ?? error ?? 'unknown').slice(0, 500);
+
 /** Obliga al gestor a usar el socket de Docker rootless de su propio usuario. */
 export function rootlessSocket(uid, runtimeDirectory) {
   if (!Number.isInteger(uid) || uid <= 0 || runtimeDirectory !== `/run/user/${uid}`) throw new Error('El gestor requiere un usuario dedicado y Docker rootless.');
@@ -33,9 +40,15 @@ export function runDocker(args, cwd) {
   return new Promise((resolve, reject) => {
     const child = spawn('docker', args, { cwd, stdio: ['ignore', 'pipe', 'ignore'], env: { PATH: process.env.PATH, HOME: process.env.HOME, XDG_RUNTIME_DIR: process.env.XDG_RUNTIME_DIR, DOCKER_HOST: process.env.DOCKER_HOST } });
     let output = '';
+    let stderr = '';
     child.stdout.on('data', chunk => { output = (output + chunk).slice(-1048576); });
-    child.on('error', reject);
-    child.on('close', code => code === 0 ? resolve(output) : reject(new Error('docker_failed')));
+    child.stderr.on('data', chunk => { stderr = (stderr + chunk).slice(-4000); });
+    child.on('error', error => { log('docker_command_failed', { command: args.slice(0, 2), error: safeError(error) }); reject(error); });
+    child.on('close', code => {
+      if (code === 0) return resolve(output);
+      log('docker_command_failed', { command: args.slice(0, 2), exitCode: code, stderr: stderr.trim().slice(0, 2000) || undefined });
+      reject(new Error('docker_failed'));
+    });
   });
 }
 
@@ -53,9 +66,24 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
   const working = new Set();
   const failed = new Set();
   const compose = () => ['compose', '--project-name', stack.project, '--file', path.join(stack.directory, 'compose.yaml')];
-  /** Resuelve un bind aunque aún no exista (primera instalación: Docker lo crea al levantar). */
+  /**
+   * Resuelve un bind aunque aún no exista (primera instalación: Docker lo crea al levantar).
+   * Si no existe, canoniza el ancestro más largo que sí exista y anexa el resto: así un
+   * symlink (u otro nombre no canónico) en la ruta del stack no hace que el bind parezca
+   * estar fuera del stack al compararlo con la realDirectory (ya canónica).
+   */
   const resolveSource = async (source, realDirectory) => {
-    try { return await realpath(source); } catch { return path.isAbsolute(source) ? path.resolve(source) : path.resolve(realDirectory, source); }
+    const absolute = path.isAbsolute(source) ? path.resolve(source) : path.resolve(realDirectory, source);
+    try { return await realpath(absolute); } catch { /* puede aún no existir: se canoniza el ancestro */ }
+    const { root } = path.parse(absolute);
+    const segments = absolute.slice(root.length).split(path.sep).filter(Boolean);
+    let current = root;
+    const remainder = [];
+    for (const segment of segments) {
+      try { current = await realpath(path.join(current, segment)); }
+      catch { remainder.push(segment); }
+    }
+    return remainder.length ? path.join(current, ...remainder) : current;
   };
   const validateCompose = async () => {
     const config = JSON.parse(await execute([...compose(), 'config', '--format', 'json'], stack.directory));
@@ -138,7 +166,7 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
     if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) return send(res, 401, { message: 'No autorizado.' });
     if (req.method === 'GET' && req.url === '/v1/apps') {
       try { return send(res, 200, { apps: await Promise.all([...catalog.values()].map(async app => { const result = await status(app); const state = typeof result === 'string' ? { status: result, version: null } : result; return { id: app.id, status: state.status, url: app.url, version: state.version }; })) }); }
-      catch { return send(res, 503, { message: 'No se pudo consultar Docker.' }); }
+      catch (error) { log('status_failed', { error: safeError(error) }); return send(res, 503, { message: 'No se pudo consultar Docker.' }); }
     }
     const match = /^\/v1\/apps\/(affine|nodum)(\/reset)?$/.exec(req.url ?? '');
     const isReset = Boolean(match?.[2]);
@@ -150,6 +178,8 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
     // Nunca se usa down ni prune: solo los servicios de esta app. El reset
     // añade el borrado acotado de sus binds/volúmenes (función resetData).
     const action = isReset || req.method === 'DELETE' ? ['rm', '--stop', '--force', ...applications[app.id].services] : ['up', '-d', '--no-build', applications[app.id].entry];
+    const operation = isReset ? 'reset' : req.method === 'DELETE' ? 'uninstall' : 'install';
+    log('operation_accepted', { operation, app: app.id });
     void validateCompose().then(async config => {
       if (req.method === 'POST' && !isReset) {
         const disk = await checkSpace(stack.directory);
@@ -157,7 +187,8 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
       }
       await execute([...compose(), ...action], stack.directory);
       if (isReset) await resetData(app, config);
-    }).catch(() => { failed.add(app.id); }).finally(() => working.delete(app.id));
+      log('operation_done', { operation, app: app.id });
+    }).catch(error => { failed.add(app.id); log('operation_failed', { operation, app: app.id, error: safeError(error) }); }).finally(() => working.delete(app.id));
     return send(res, 202, { accepted: true });
   });
 }
@@ -173,5 +204,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const server = createManager({ token: process.env.SPACE_MANAGER_TOKEN, stack: config.stack, apps: config.apps });
   const port = Number(process.env.SPACE_MANAGER_PORT || 8765);
   if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Puerto no válido.');
-  server.listen(port, '127.0.0.1');
+  server.listen(port, '127.0.0.1', () => log('listening', { port }));
 }

@@ -13,3 +13,5 @@ También hay plantilla de Nodum en `nodum/compose.yaml.example` (con su `nodum/C
 Pendiente antes de usarlo: revisión de seguridad y del acceso al daemon de Docker; configuración de proxy y TLS compatible con los servicios existentes; gestión del espacio y límites de recursos; tratamiento y recuperación de fallos; pruebas completas con Docker real, con varios roles y con un VPS de prueba. La configuración, copia de seguridad y primera cuenta de AFFiNE requieren sus propios pasos. La interfaz y la API de Aula también necesitan completar la integración y su validación.
 
 Prueba aislada: `node --test vps-manager/manager.test.mjs`. Los tests no inician ni alteran contenedores.
+
+Logs operativos: el gestor escribe JSON por stdout (una línea por evento, con `ts`, `event` y datos de la operación): `listening`, `operation_accepted`, `operation_done`, `operation_failed`, `status_failed` y `docker_command_failed` (con los primeros argumentos del comando docker, su código de salida y su stderr truncado, para que los errores de validación y de Docker sean visibles). Nunca se registran el token `SPACE_MANAGER_TOKEN` ni cabeceras `Authorization`.

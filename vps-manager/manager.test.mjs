@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createManager, rootlessSocket } from './manager.mjs';
 import { existsSync } from 'node:fs';
-import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 const services = { affine: { image: 'ghcr.io/toeverything/affine:stable' }, affine_migration: { image: 'ghcr.io/toeverything/affine:stable' }, affine_postgres: { image: 'pgvector/pgvector:pg16' }, affine_redis: { image: 'redis:7-alpine' } };
@@ -212,5 +212,39 @@ test('resetear Nodum borra sus datos pero conserva su configuración', async () 
     assert.equal(calls.some(args => args.includes('rm')), true);
     assert.equal(existsSync(pgDir), false, 'los datos de Nodum se borran');
     assert.equal(existsSync(path.join(configDir, 'Caddyfile')), true);
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('acepta binds bajo un stack con symlink (ruta no canónica)', async t => {
+  const token = 'l'.repeat(40);
+  const base = await mkdtemp(path.join(tmpdir(), 'aula-link-'));
+  const realStack = path.join(base, 'real-stack');
+  const linkStack = path.join(base, 'link-stack');
+  await mkdir(realStack, { recursive: true });
+  try { await symlink(realStack, linkStack, 'junction'); }
+  catch { t.skip('Symlinks no disponibles en este entorno.'); return; }
+  // El bind aún no existe en disco (primera instalación): resolveSource
+  // canoniza el ancestro existente y anexa el resto. Sin el fix, la ruta
+  // textual (bajo el symlink) no coincidía con la realDirectory canónica
+  // y se rechazaba como outside_directory.
+  const calls = [];
+  const server = createManager({
+    token,
+    stack: { directory: linkStack, project: 'aula-kanban-0123456789abcdef' },
+    apps: [{ id: 'nodum', url: 'https://nodum.example.test' }],
+    checkSpace: async () => ({ bavail: 10 ** 9, bsize: 4096 }),
+    execute: async args => {
+      calls.push(args);
+      return args.includes('config')
+        ? JSON.stringify({ services: { ...nodumServices, nodum_postgres: { ...nodumServices.nodum_postgres, volumes: [{ type: 'bind', source: path.join(linkStack, 'data', 'nodum', 'postgres') }] } } })
+        : '';
+    },
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const root = `http://127.0.0.1:${server.address().port}`, headers = { authorization: `Bearer ${token}` };
+    assert.equal((await fetch(root + '/v1/apps/nodum', { method: 'POST', headers })).status, 202);
+    await new Promise(resolve => setTimeout(resolve, 30));
+    assert.equal(calls.some(args => args.includes('up')), true, 'up debe ejecutarse con la ruta del symlink');
   } finally { await new Promise(resolve => server.close(resolve)); }
 });
