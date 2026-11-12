@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createManager, rootlessSocket } from './manager.mjs';
+import { createManager, rootlessSocket, measureUsage } from './manager.mjs';
 import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -247,4 +247,60 @@ test('acepta binds bajo un stack con symlink (ruta no canónica)', async t => {
     await new Promise(resolve => setTimeout(resolve, 30));
     assert.equal(calls.some(args => args.includes('up')), true, 'up debe ejecutarse con la ruta del symlink');
   } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('measureUsage suma ficheros y da 0 si el directorio no existe', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'aula-du-'));
+  assert.equal(await measureUsage(path.join(root, 'falta')), 0);
+  await mkdir(path.join(root, 'sub'), { recursive: true });
+  await writeFile(path.join(root, 'a.bin'), 'x'.repeat(120));
+  await writeFile(path.join(root, 'sub', 'b.bin'), 'y'.repeat(80));
+  assert.equal(await measureUsage(root), 200);
+});
+
+test('rechaza la instalación si los datos ya superan la cuota', async () => {
+  const token = 'u'.repeat(40);
+  const rootDir = await mkdtemp(path.join(tmpdir(), 'aula-quota-'));
+  const dataDir = path.join(rootDir, 'data', 'nodum');
+  await mkdir(dataDir, { recursive: true });
+  await writeFile(path.join(dataDir, 'big.bin'), 'x'.repeat(300));
+  const calls = [];
+  const server = createManager({ token, stack: { directory: rootDir, project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'nodum', url: 'https://nodum.example.test', maxDataBytes: 100 }], checkSpace: async () => ({ bavail: 10 ** 9, bsize: 4096 }), execute: async args => { calls.push(args); return args.includes('config') ? JSON.stringify({ services: nodumServices }) : ''; } });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const root = `http://127.0.0.1:${server.address().port}`, headers = { authorization: `Bearer ${token}` };
+    const state = await (await fetch(root + '/v1/apps', { headers })).json();
+    assert.equal(state.apps[0].dataBytes, 300);
+    assert.equal(state.apps[0].maxDataBytes, 100);
+    assert.equal((await fetch(root + '/v1/apps/nodum', { method: 'POST', headers })).status, 202);
+    await new Promise(resolve => setTimeout(resolve, 30));
+    assert.equal(calls.some(args => args.includes('up')), false, 'no debe instalarse sobre la cuota');
+    assert.equal((await (await fetch(root + '/v1/apps', { headers })).json()).apps[0].status, 'error');
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('acepta la instalación si los datos están por debajo de la cuota', async () => {
+  const token = 'o'.repeat(40);
+  const rootDir = await mkdtemp(path.join(tmpdir(), 'aula-quota-ok-'));
+  const dataDir = path.join(rootDir, 'data', 'nodum');
+  await mkdir(dataDir, { recursive: true });
+  await writeFile(path.join(dataDir, 'small.bin'), 'x'.repeat(50));
+  const calls = [];
+  const server = createManager({ token, stack: { directory: rootDir, project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'nodum', url: 'https://nodum.example.test', maxDataBytes: 100 }], checkSpace: async () => ({ bavail: 10 ** 9, bsize: 4096 }), execute: async args => { calls.push(args); return args.includes('config') ? JSON.stringify({ services: nodumServices }) : ''; } });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const root = `http://127.0.0.1:${server.address().port}`, headers = { authorization: `Bearer ${token}` };
+    assert.equal((await fetch(root + '/v1/apps/nodum', { method: 'POST', headers })).status, 202);
+    await new Promise(resolve => setTimeout(resolve, 30));
+    assert.equal(calls.some(args => args.includes('up')), true);
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('rechaza cuotas de datos no válidas en la configuración', () => {
+  const base = { id: 'affine', url: 'https://app.example.test' };
+  const stack = { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' };
+  const token = 'k'.repeat(40);
+  for (const maxDataBytes of [0, -1, 1.5, '100', 101 * 1024 ** 3]) assert.throws(() => createManager({ token, stack, apps: [{ ...base, maxDataBytes }] }));
+  assert.doesNotThrow(() => createManager({ token, stack, apps: [base] }));
+  assert.doesNotThrow(() => createManager({ token, stack, apps: [{ ...base, maxDataBytes: 100 * 1024 ** 3 }] }));
 });

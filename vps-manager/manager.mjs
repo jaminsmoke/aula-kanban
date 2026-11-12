@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { timingSafeEqual } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { readFile, realpath, rm, statfs } from 'node:fs/promises';
+import { readFile, realpath, readdir, lstat, rm, statfs } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -21,6 +21,34 @@ const allowedImages = {
   nodum_migrate: 'nodum-api:prod', nodum_api: 'nodum-api:prod', nodum_worker: 'nodum-api:prod', nodum_beat: 'nodum-api:prod', nodum_web: 'nodum-web:prod', nodum_caddy: 'caddy:2-alpine',
 };
 const send = (res, status, value) => { res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store' }); res.end(JSON.stringify(value)); };
+
+// Cuota por app sobre sus datos en data/<app>: 10 GiB por defecto y 100 GiB
+// como techo de configuración (evita cifras absurdas por un error al editar
+// el catálogo). Se comprueba antes de instalar; el crecimiento posterior en
+// ejecución no lo puede frenar el gestor (eso requeriría cuotas de FS).
+const DEFAULT_MAX_DATA_BYTES = 10 * 1024 ** 3;
+const MAX_DATA_BYTES_CAP = 100 * 1024 ** 3;
+
+/** Suma los bytes de los ficheros bajo un directorio, sin seguir symlinks; 0 si no existe. */
+export async function measureUsage(directory) {
+  let total = 0;
+  const walk = async dir => {
+    let entries;
+    try { entries = await readdir(dir, { withFileTypes: true }); }
+    catch (error) { if (error.code === 'ENOENT' || error.code === 'ENOTDIR') return; throw error; }
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name);
+      if (entry.isSymbolicLink()) continue;
+      if (entry.isDirectory()) { await walk(full); continue; }
+      if (entry.isFile()) {
+        try { total += (await lstat(full)).size; }
+        catch (error) { if (error.code !== 'ENOENT') throw error; }
+      }
+    }
+  };
+  await walk(directory);
+  return total;
+}
 
 // Log operativo en JSON por stdout: visible en `journalctl`/logs del VPS sin
 // exponer secretos (nunca se registran token ni cabeceras Authorization).
@@ -53,7 +81,7 @@ export function runDocker(args, cwd) {
 }
 
 /** Construye el servidor aislado; el catálogo procede solo de configuración local de confianza. */
-export function createManager({ token, stack, apps, execute = runDocker, checkSpace = statfs }) {
+export function createManager({ token, stack, apps, execute = runDocker, checkSpace = statfs, measure = measureUsage }) {
   if (typeof token !== 'string' || Buffer.byteLength(token) < 32) throw new Error('El token debe tener al menos 32 bytes.');
   if (!stack || !path.isAbsolute(stack.directory) || !/^aula-kanban-[a-f0-9]{16}$/.test(stack.project)) throw new Error('Proyecto de Aula no válido.');
   if (!Array.isArray(apps) || apps.length > 2) throw new Error('Catálogo no válido.');
@@ -61,8 +89,16 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
   for (const app of apps) {
     const url = new URL(app.url);
     if (!Object.hasOwn(applications, app.id) || catalog.has(app.id) || url.protocol !== 'https:' || url.username || url.password || url.search || url.hash) throw new Error('Configuración de aplicación no válida.');
-    catalog.set(app.id, { ...app, url: url.href });
+    const maxDataBytes = app.maxDataBytes ?? DEFAULT_MAX_DATA_BYTES;
+    if (!Number.isSafeInteger(maxDataBytes) || maxDataBytes <= 0 || maxDataBytes > MAX_DATA_BYTES_CAP) throw new Error('Cuota de datos no válida.');
+    catalog.set(app.id, { ...app, url: url.href, maxDataBytes });
   }
+  /** Comprueba que los datos de la app no superen su cuota; devuelve los bytes actuales. */
+  const checkQuota = async app => {
+    const bytes = await measure(path.join(stack.directory, 'data', app.id));
+    if (bytes > app.maxDataBytes) throw new Error('quota_exceeded');
+    return bytes;
+  };
   const working = new Set();
   const failed = new Set();
   const compose = () => ['compose', '--project-name', stack.project, '--file', path.join(stack.directory, 'compose.yaml')];
@@ -165,7 +201,7 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
     const expected = Buffer.from(token);
     if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) return send(res, 401, { message: 'No autorizado.' });
     if (req.method === 'GET' && req.url === '/v1/apps') {
-      try { return send(res, 200, { apps: await Promise.all([...catalog.values()].map(async app => { const result = await status(app); const state = typeof result === 'string' ? { status: result, version: null } : result; return { id: app.id, status: state.status, url: app.url, version: state.version }; })) }); }
+      try { return send(res, 200, { apps: await Promise.all([...catalog.values()].map(async app => { const result = await status(app); const state = typeof result === 'string' ? { status: result, version: null } : result; return { id: app.id, status: state.status, url: app.url, version: state.version, dataBytes: await measure(path.join(stack.directory, 'data', app.id)), maxDataBytes: app.maxDataBytes }; })) }); }
       catch (error) { log('status_failed', { error: safeError(error) }); return send(res, 503, { message: 'No se pudo consultar Docker.' }); }
     }
     const match = /^\/v1\/apps\/(affine|nodum)(\/reset)?$/.exec(req.url ?? '');
@@ -184,6 +220,7 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
       if (req.method === 'POST' && !isReset) {
         const disk = await checkSpace(stack.directory);
         if (disk.bavail * disk.bsize < 5 * 1024 ** 3) throw new Error('insufficient_space');
+        await checkQuota(app);
       }
       await execute([...compose(), ...action], stack.directory);
       if (isReset) await resetData(app, config);
