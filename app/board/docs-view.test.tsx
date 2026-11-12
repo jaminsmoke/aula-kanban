@@ -30,6 +30,15 @@ describe("DocumentationView", () => {
     }
   });
 
+  it("muestra una ilustración por sección y una en el héroe", () => {
+    render(<DocumentationView onBack={vi.fn()} />);
+
+    expect(screen.getByRole("img", { name: "Ilustración: tablero Kanban con columnas de tareas" })).toBeTruthy();
+    for (const section of docSections) {
+      expect(screen.getByRole("img", { name: "Ilustración: " + section.title })).toBeTruthy();
+    }
+  });
+
   it("renderiza todas las secciones con su título y bloques", () => {
     render(<DocumentationView onBack={vi.fn()} />);
 
