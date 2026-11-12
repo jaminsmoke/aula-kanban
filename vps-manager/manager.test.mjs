@@ -137,3 +137,80 @@ test('no marca AFFiNE activo si solo funciona Redis', async () => {
     assert.equal((await response.json()).apps[0].status, 'stopped');
   } finally { await new Promise(resolve => server.close(resolve)); }
 });
+
+const nodumServices = {
+  nodum_postgres: { image: 'pgvector/pgvector:0.8.0-pg16' },
+  nodum_redis: { image: 'redis:7.4.2-alpine' },
+  nodum_redis_control: { image: 'redis:7.4.2-alpine' },
+  nodum_minio: { image: 'quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z' },
+  nodum_migrate: { image: 'nodum-api:prod' },
+  nodum_api: { image: 'nodum-api:prod' },
+  nodum_worker: { image: 'nodum-api:prod' },
+  nodum_beat: { image: 'nodum-api:prod' },
+  nodum_web: { image: 'nodum-web:prod' },
+  nodum_caddy: { image: 'caddy:2-alpine', ports: [{ published: '8090', host_ip: '127.0.0.1' }] },
+};
+
+test('instala, consulta y desinstala Nodum con su stack completo', async () => {
+  const calls = [], token = 'n'.repeat(40);
+  const server = createManager({ token, stack: { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'nodum', url: 'https://nodum.example.test' }], checkSpace: async () => ({ bavail: 10 ** 9, bsize: 4096 }), execute: async args => { calls.push(args); if (args.includes('config')) return JSON.stringify({ services: nodumServices }); if (args.includes('ps')) return JSON.stringify([{ Service: 'nodum_web', State: 'running', Image: 'nodum-web:prod' }]); return ''; } });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const root = `http://127.0.0.1:${server.address().port}`, headers = { authorization: `Bearer ${token}` };
+    const state = await (await fetch(root + '/v1/apps', { headers })).json();
+    assert.equal(state.apps[0].status, 'installed');
+    assert.equal(state.apps[0].version, 'prod');
+    assert.equal((await fetch(root + '/v1/apps/nodum', { method: 'POST', headers })).status, 202);
+    await new Promise(resolve => setTimeout(resolve, 10));
+    const up = calls.find(args => args.includes('up'));
+    assert.ok(up?.includes('nodum_web'), 'la entrada debe ser nodum_web');
+    assert.equal(up.includes('--no-build'), true);
+    assert.equal((await fetch(root + '/v1/apps/nodum', { method: 'DELETE', headers })).status, 202);
+    await new Promise(resolve => setTimeout(resolve, 10));
+    const rmCommand = calls.at(-1);
+    assert.equal(rmCommand.includes('rm'), true);
+    for (const name of Object.keys(nodumServices)) assert.equal(rmCommand.includes(name), true, `rm debe incluir ${name}`);
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('rechaza una imagen de api no oficial aunque el servicio exista', async () => {
+  const calls = [], token = 'm'.repeat(40);
+  const tampered = { ...nodumServices, nodum_api: { image: 'yuvytung/nodum:api-3.2.0' } };
+  const server = createManager({ token, stack: { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'nodum', url: 'https://nodum.example.test' }], checkSpace: async () => ({ bavail: 10 ** 9, bsize: 4096 }), execute: async args => { calls.push(args); return args.includes('config') ? JSON.stringify({ services: tampered }) : ''; } });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const root = `http://127.0.0.1:${server.address().port}`, headers = { authorization: `Bearer ${token}` };
+    assert.equal((await fetch(root + '/v1/apps/nodum', { method: 'POST', headers })).status, 202);
+    await new Promise(resolve => setTimeout(resolve, 10));
+    assert.equal(calls.some(args => args.includes('up')), false);
+    assert.equal((await (await fetch(root + '/v1/apps', { headers })).json()).apps[0].status, 'error');
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('resetear Nodum borra sus datos pero conserva su configuración', async () => {
+  const token = 'q'.repeat(40);
+  const rootDir = await mkdtemp(path.join(tmpdir(), 'aula-nodum-'));
+  const dataDir = path.join(rootDir, 'data', 'nodum');
+  const pgDir = path.join(dataDir, 'postgres');
+  const configDir = path.join(rootDir, 'caddy');
+  await mkdir(pgDir, { recursive: true });
+  await mkdir(configDir, { recursive: true });
+  await writeFile(path.join(pgDir, 'PG_VERSION'), '16');
+  await writeFile(path.join(configDir, 'Caddyfile'), '{}');
+  const withBind = {
+    ...nodumServices,
+    nodum_postgres: { ...nodumServices.nodum_postgres, volumes: [{ type: 'bind', source: pgDir }] },
+    nodum_caddy: { ...nodumServices.nodum_caddy, volumes: [{ type: 'bind', source: path.join(configDir, 'Caddyfile') }] },
+  };
+  const calls = [];
+  const server = createManager({ token, stack: { directory: rootDir, project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'nodum', url: 'https://nodum.example.test' }], execute: async args => { calls.push(args); return args.includes('config') ? JSON.stringify({ services: withBind }) : ''; } });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const root = `http://127.0.0.1:${server.address().port}`, headers = { authorization: `Bearer ${token}` };
+    assert.equal((await fetch(root + '/v1/apps/nodum/reset', { method: 'POST', headers })).status, 202);
+    await new Promise(resolve => setTimeout(resolve, 30));
+    assert.equal(calls.some(args => args.includes('rm')), true);
+    assert.equal(existsSync(pgDir), false, 'los datos de Nodum se borran');
+    assert.equal(existsSync(path.join(configDir, 'Caddyfile')), true);
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});

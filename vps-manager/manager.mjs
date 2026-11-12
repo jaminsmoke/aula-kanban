@@ -6,12 +6,20 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Cada servicio pertenece a un solo proyecto Compose de la instancia.
-// Nodum aún no tiene plantilla Compose validada en este repo: hasta que
-// exista `nodum/compose.yaml.example` con su lista de servicios e imágenes
-// permitidas, no puede gestionarse desde aquí (el catálogo de Aula ya lo
-// prevé, pero el gestor no inventa su stack).
-const applications = { affine: { entry: 'affine', services: ['affine', 'affine_migration', 'affine_postgres', 'affine_redis'] } };
-const allowedImages = { affine: 'ghcr.io/toeverything/affine:stable', affine_migration: 'ghcr.io/toeverything/affine:stable', affine_postgres: 'pgvector/pgvector:pg16', affine_redis: 'redis:7-alpine' };
+// Catálogo fijo: AFFiNE y Nodum. Las imágenes de Nodum salen de su compose
+// oficial (deploy/docker-compose.yml + docker-compose.deploy.yml en el repo
+// nodummd/nodum); las de api/web se construyen a mano en el VPS porque
+// Nodum no publica imágenes oficiales y este gestor no compila
+// (`up --no-build`). Ver vps-manager/nodum/compose.yaml.example.
+const applications = {
+  affine: { entry: 'affine', services: ['affine', 'affine_migration', 'affine_postgres', 'affine_redis'] },
+  nodum: { entry: 'nodum_web', services: ['nodum_postgres', 'nodum_redis', 'nodum_redis_control', 'nodum_minio', 'nodum_migrate', 'nodum_api', 'nodum_worker', 'nodum_beat', 'nodum_web', 'nodum_caddy'] },
+};
+const allowedImages = {
+  affine: 'ghcr.io/toeverything/affine:stable', affine_migration: 'ghcr.io/toeverything/affine:stable', affine_postgres: 'pgvector/pgvector:pg16', affine_redis: 'redis:7-alpine',
+  nodum_postgres: 'pgvector/pgvector:0.8.0-pg16', nodum_redis: 'redis:7.4.2-alpine', nodum_redis_control: 'redis:7.4.2-alpine', nodum_minio: 'quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z',
+  nodum_migrate: 'nodum-api:prod', nodum_api: 'nodum-api:prod', nodum_worker: 'nodum-api:prod', nodum_beat: 'nodum-api:prod', nodum_web: 'nodum-web:prod', nodum_caddy: 'caddy:2-alpine',
+};
 const send = (res, status, value) => { res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store' }); res.end(JSON.stringify(value)); };
 
 /** Obliga al gestor a usar el socket de Docker rootless de su propio usuario. */

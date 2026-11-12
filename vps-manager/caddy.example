@@ -1,5 +1,15 @@
 # Ejemplo en revisión: añadir solo tras auditar la seguridad y comprobar DNS.
 # No reemplazar el Caddyfile ni las reglas de la web existente.
+{$NODUM_DOMAIN} {
+  # El Caddy interno de Nodum escucha en 127.0.0.1:${NODUM_HTTP_PORT:-8090}
+  # (HTTP plano); el TLS lo termina este proxy exterior.
+  reverse_proxy 127.0.0.1:8090 {
+    header_down -X-Frame-Options
+    # Añade la restricción sin eliminar otras políticas de seguridad de Nodum.
+    header_down +Content-Security-Policy "frame-ancestors 'self' {$AULA_SITE_ORIGIN}"
+  }
+}
+
 {$AULA_AGENT_DOMAIN} {
   @api path /v1/apps /v1/apps/affine /v1/apps/affine/reset /v1/apps/nodum /v1/apps/nodum/reset
   handle @api {

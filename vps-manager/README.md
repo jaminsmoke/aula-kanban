@@ -8,6 +8,8 @@ Para aislarlo del daemon que usa el resto del VPS, el prototipo exige un usuario
 
 Existe una plantilla de AFFiNE en `affine/compose.yaml.example`: su estructura se ha validado con `docker compose config --quiet` en un VPS real sin iniciar contenedores. Esta comprobación no prueba el arranque, la red, el proxy ni la persistencia. El gestor evita iniciar instalaciones si quedan menos de 5 GiB libres, pero aún no impone cuotas de almacenamiento ni realiza purgas.
 
+También hay plantilla de Nodum en `nodum/compose.yaml.example` (con su `nodum/Caddyfile.example`), adaptada de su compose oficial y registrada en el catálogo del gestor (`nodum_web` como entrada). Nodum no publica imágenes oficiales de api/web: las hay que construir una vez a mano en el VPS con los Dockerfile del repo y el gestor las usa con `--no-build`. La plantilla aún no se ha validado con Docker real: falta comprobar `docker compose config` con el `.env` relleno y el arranque completo antes de usarla.
+
 Pendiente antes de usarlo: revisión de seguridad y del acceso al daemon de Docker; configuración de proxy y TLS compatible con los servicios existentes; gestión del espacio y límites de recursos; tratamiento y recuperación de fallos; pruebas completas con Docker real, con varios roles y con un VPS de prueba. La configuración, copia de seguridad y primera cuenta de AFFiNE requieren sus propios pasos. La interfaz y la API de Aula también necesitan completar la integración y su validación.
 
 Prueba aislada: `node --test vps-manager/manager.test.mjs`. Los tests no inician ni alteran contenedores.

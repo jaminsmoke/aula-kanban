@@ -1,0 +1,324 @@
+# Ejemplo en revisión: Nodum para el gestor de VpsManager (Aula Kanban).
+# No desplegar sin validar el APS/módulo y auditar las vulnerabilidades y dependencias.
+#
+# Adaptado del despliegue oficial de Nodum (github.com/nodummd/nodum,
+# deploy/docker-compose.deploy.yml + deploy/docker-compose.yml, v3.x) a las
+# reglas estrictas de vps-manager/manager.mjs:
+# - Sin `build`: el gestor arranca con `docker compose up --no-build`, así que
+#   las imágenes `nodum-api:prod` y `nodum-web:prod` hay que construirlas UNA
+#   VEZ a mano en el VPS (ver "Imágenes locales" abajo) y dejarlas en el
+#   almacén local de Docker. Nodum no publica imágenes oficiales de api/web.
+# - Sin `container_name`, sin `security_opt`, sin `cap_add`/`cap_drop`.
+# - Único puerto publicado: el Caddy interno, solo loopback
+#   (127.0.0.1:${NODUM_HTTP_PORT:-8090}:80). Detrás del Caddy del VPS, que
+#   termina TLS y redirige a ese puerto, como ya hace con AFFiNE.
+# - Servicios prefijados `nodum_*` para convivir en el mismo compose.yaml que
+#   AFFiNE. Datos en ./data/nodum/* (binds): así el reset del gestor los
+#   borra de forma acotada. ./caddy/Caddyfile (bind solo lectura) se conserva.
+#
+# Imágenes locales (una vez, tras clonar el repo de Nodum en el VPS en una
+# carpeta fuera del stack, por ejemplo ~/nodum-build, fijando una etiqueta):
+#
+#   git clone https://github.com/nodummd/nodum.git ~/nodum-build
+#   cd ~/nodum-build
+#   docker build --target production -t nodum-api:prod \
+#     -f back/build/Dockerfile.api back
+#   docker build --target production -t nodum-web:prod \
+#     -f web/docker/Dockerfile web
+#
+# Secretos: el gestor lee ./config/.env del stack. Copiar la estructura de
+# deploy/.env.prod.example del repo oficial y rellenarla (chmod 600). Los
+# valores con `:?` hacen fallar `docker compose config` hasta que existan;
+# es intencionado. `NODUM_HTTP_PORT` debe coincidir con el reverse_proxy del
+# Caddy del VPS. En S3_PUBLIC_URL, la opción por defecto (MinIO) es
+# https://<dominio de nodum>/s3; con un almacén gestionado debe IGUALAR a
+# S3_ENDPOINT_URL.
+#
+# Copiar este contenido como ./config/compose.yaml cuando se despliegue de
+# verdad y `./caddy/Caddyfile.example` como ./caddy/Caddyfile.
+#
+# Fuentes: https://github.com/nodummd/nodum/blob/main/deploy/docker-compose.deploy.yml
+#          https://github.com/nodummd/nodum/blob/main/docs/deploy.md
+
+x-backend-env: &backend-env
+  ENVIRONMENT: production
+  POSTGRES_SERVER: nodum_postgres
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: ${POSTGRES_USER:?set in ./config/.env}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in ./config/.env}
+  POSTGRES_DB: ${POSTGRES_DB:?set in ./config/.env}
+  REDIS_URL: redis://nodum_redis:6379/0
+  REDIS_CONTROL_URL: redis://nodum_redis_control:6379/0
+  CELERY_BROKER_URL: redis://nodum_redis:6379/1
+  CELERY_RESULT_BACKEND: redis://nodum_redis:6379/2
+  S3_ENDPOINT_URL: ${S3_ENDPOINT_URL:-http://nodum_minio:9000}
+  S3_PUBLIC_URL: ${S3_PUBLIC_URL:?set in ./config/.env}
+  S3_ACCESS_KEY: ${S3_ACCESS_KEY:-${MINIO_ROOT_USER:-}}
+  S3_SECRET_KEY: ${S3_SECRET_KEY:-${MINIO_ROOT_PASSWORD:-}}
+  S3_BUCKET_NAME: ${S3_BUCKET_NAME:-nodum}
+  S3_REGION: ${S3_REGION:-us-east-1}
+  SECRET_KEY: ${SECRET_KEY:?set in ./config/.env}
+  JWT_SECRET_KEY: ${JWT_SECRET_KEY:?set in ./config/.env}
+  AI_ENCRYPTION_KEY: ${AI_ENCRYPTION_KEY:-}
+  OAUTH_REDIRECT_BASE_URL: ${FRONTEND_BASE_URL:?set in ./config/.env}
+  FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:?set in ./config/.env}
+  BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:?set in ./config/.env}
+  TRUST_PROXY_HEADERS: ${TRUST_PROXY_HEADERS:-true}
+  TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-1}
+  RUN_MIGRATIONS: "false"
+  EMAIL_VERIFICATION_REQUIRED: ${EMAIL_VERIFICATION_REQUIRED:-true}
+
+services:
+  nodum_postgres:
+    image: pgvector/pgvector:0.8.0-pg16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set in ./config/.env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in ./config/.env}
+      POSTGRES_DB: ${POSTGRES_DB:?set in ./config/.env}
+    volumes:
+      - ./data/nodum/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:?set in ./config/.env}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nodum_internal
+    deploy:
+      resources:
+        limits:
+          memory: ${POSTGRES_MEM_LIMIT:-1g}
+
+  nodum_redis:
+    image: redis:7.4.2-alpine
+    command:
+      - redis-server
+      - "--maxmemory"
+      - ${REDIS_MAXMEMORY:-512mb}
+      - "--maxmemory-policy"
+      - allkeys-lru
+      - "--save"
+      - "60 1"
+    volumes:
+      - ./data/nodum/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nodum_internal
+    deploy:
+      resources:
+        limits:
+          memory: ${REDIS_MEM_LIMIT:-768m}
+
+  nodum_redis_control:
+    image: redis:7.4.2-alpine
+    command:
+      - redis-server
+      - "--maxmemory"
+      - ${REDIS_CONTROL_MAXMEMORY:-128mb}
+      - "--maxmemory-policy"
+      - noeviction
+      - "--save"
+      - "60 1"
+    volumes:
+      - ./data/nodum/redis-control:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nodum_internal
+    deploy:
+      resources:
+        limits:
+          memory: ${REDIS_CONTROL_MEM_LIMIT:-256m}
+
+  nodum_minio:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set in ./config/.env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set in ./config/.env}
+    volumes:
+      - ./data/nodum/minio:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nodum_internal
+      - nodum_edge
+    deploy:
+      resources:
+        limits:
+          memory: ${MINIO_MEM_LIMIT:-1g}
+
+  nodum_migrate:
+    image: nodum-api:prod
+    environment:
+      <<: *backend-env
+      RUN_MIGRATIONS: "true"
+    command: ["true"]
+    restart: "no"
+    depends_on:
+      nodum_postgres:
+        condition: service_healthy
+    networks:
+      - nodum_internal
+
+  nodum_api:
+    image: nodum-api:prod
+    environment:
+      <<: *backend-env
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+    command:
+      - uv
+      - run
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --workers
+      - ${API_WORKERS:-4}
+    depends_on:
+      nodum_migrate:
+        condition: service_completed_successfully
+      nodum_postgres:
+        condition: service_healthy
+      nodum_redis:
+        condition: service_healthy
+      nodum_redis_control:
+        condition: service_healthy
+      nodum_minio:
+        condition: service_healthy
+    networks:
+      - nodum_internal
+      - nodum_edge
+    deploy:
+      resources:
+        limits:
+          cpus: "${API_CPU_LIMIT:-2}"
+          memory: ${API_MEM_LIMIT:-1g}
+
+  nodum_worker:
+    image: nodum-api:prod
+    environment: *backend-env
+    command:
+      - uv
+      - run
+      - celery
+      - -A
+      - app.core.celery:celery_app
+      - worker
+      - --loglevel=${CELERY_LOG_LEVEL:-INFO}
+      - --concurrency=${CELERY_CONCURRENCY:-4}
+    healthcheck:
+      test: ["CMD-SHELL", "uv run celery -A app.core.celery:celery_app inspect ping -t 10 | grep -q pong"]
+      interval: 60s
+      timeout: 20s
+      retries: 3
+      start_period: 60s
+    depends_on:
+      nodum_migrate:
+        condition: service_completed_successfully
+      nodum_postgres:
+        condition: service_healthy
+      nodum_redis:
+        condition: service_healthy
+    networks:
+      - nodum_internal
+    deploy:
+      resources:
+        limits:
+          cpus: "${WORKER_CPU_LIMIT:-2}"
+          memory: ${WORKER_MEM_LIMIT:-1g}
+
+  nodum_beat:
+    image: nodum-api:prod
+    environment: *backend-env
+    command:
+      - uv
+      - run
+      - celery
+      - -A
+      - app.core.celery:celery_app
+      - beat
+      - --loglevel=${CELERY_LOG_LEVEL:-INFO}
+      - --schedule=/tmp/celerybeat-schedule
+    depends_on:
+      nodum_migrate:
+        condition: service_completed_successfully
+      nodum_redis:
+        condition: service_healthy
+    networks:
+      - nodum_internal
+    deploy:
+      resources:
+        limits:
+          cpus: "${BEAT_CPU_LIMIT:-0.5}"
+          memory: ${BEAT_MEM_LIMIT:-384m}
+
+  nodum_web:
+    image: nodum-web:prod
+    environment:
+      NODE_ENV: production
+      API_PROXY_URL: http://nodum_api:8000
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      nodum_api:
+        condition: service_started
+    networks:
+      - nodum_internal
+      - nodum_edge
+    deploy:
+      resources:
+        limits:
+          cpus: "${WEB_CPU_LIMIT:-1}"
+          memory: ${WEB_MEM_LIMIT:-512m}
+
+  nodum_caddy:
+    image: caddy:2-alpine
+    environment:
+      # El TLS lo termina el Caddy del VPS; aquí solo HTTP interno.
+      NODUM_SITE_ADDRESS: ${NODUM_SITE_ADDRESS:-:80}
+    ports:
+      - "127.0.0.1:${NODUM_HTTP_PORT:-8090}:80"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/nodum/caddy-data:/data
+      - ./data/nodum/caddy-config:/config
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "--spider", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      nodum_web:
+        condition: service_healthy
+    networks:
+      - nodum_edge
+    deploy:
+      resources:
+        limits:
+          cpus: "${CADDY_CPU_LIMIT:-1}"
+          memory: ${CADDY_MEM_LIMIT:-256m}
+
+networks:
+  nodum_internal:
+    driver: bridge
+  nodum_edge:
+    driver: bridge
