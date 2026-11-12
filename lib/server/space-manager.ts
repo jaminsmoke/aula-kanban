@@ -20,14 +20,15 @@ export async function callSpaceManager(path: string, method: "GET" | "POST" | "D
   try {
     response = await fetch(new URL(path, base), {
       method, headers: { Authorization: `Bearer ${config.SPACE_MANAGER_TOKEN}`, Accept: "application/json" },
-      redirect: "error", signal: AbortSignal.timeout(12000),
+      // Workers no admite "error"; "manual" evita reenviar el token y
+      // las respuestas 3xx se rechazan mediante response.ok más abajo.
+      redirect: "manual", signal: AbortSignal.timeout(12000),
     });
   } catch (error) {
     // Solo se registran datos de diagnóstico; nunca cabeceras ni secretos.
     const cause = error instanceof Error ? error.cause : undefined;
     const code = typeof cause === "object" && cause !== null && "code" in cause ? String(cause.code) : undefined;
-    const message = error instanceof Error ? error.message.replaceAll(config.SPACE_MANAGER_TOKEN, "[redacted]").slice(0, 300) : "unknown";
-    console.error("space_manager_fetch_failed", { name: error instanceof Error ? error.name : "unknown", code, detail: message });
+    console.error("space_manager_fetch_failed", { name: error instanceof Error ? error.name : "unknown", code });
     throw error;
   }
   if (!response.ok) {
