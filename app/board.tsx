@@ -106,6 +106,8 @@ function TaskCard({ task, dragging, editable, onEdit, onGrab, onMove, onRelease,
 export default function Board({ user }: { user: { displayName: string; email: string } }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectsLoaded, setProjectsLoaded] = useState(false);
+  const [projectLoadError, setProjectLoadError] = useState("");
+  const [hasProjectLink, setHasProjectLink] = useState(false);
   const [owner, setOwner] = useState(false);
   const [admin, setAdmin] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -128,6 +130,8 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const [deleteProjectName, setDeleteProjectName] = useState("");
   const [membersOpen, setMembersOpen] = useState(false);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [invitationsLoaded, setInvitationsLoaded] = useState(false);
+  const [invitationLoadError, setInvitationLoadError] = useState("");
   const [invitationError, setInvitationError] = useState("");
   const [invitationBusy, setInvitationBusy] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
@@ -165,6 +169,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const [copied, setCopied] = useState(false);
   const writing = useRef(false);
   const readVersion = useRef(0);
+  const activeProject = projects.find((item) => item.id === projectId);
 
   const refreshProjects = useCallback(async () => {
     try {
@@ -178,19 +183,26 @@ export default function Board({ user }: { user: { displayName: string; email: st
       setProjects(next.projects);
       setOwner(next.isOwner);
       setAdmin(Boolean(next.isAdmin));
+      setHasProjectLink(Boolean(explicit));
       setProjectsLoaded(true);
       setProjectId(currentId);
-      setProjectError(next.projects.some((item) => item.id === currentId) || (!next.projects.length && !explicit) ? "" : "No tienes acceso a este proyecto o ya no existe.");
+      setProjectLoadError("");
     } catch (error) {
       setProjectsLoaded(true);
-      setProjectError((error as Error).message);
+      setProjectLoadError((error as Error).message);
     }
   }, []);
 
   const refreshInvitations = useCallback(async () => {
-    try { setInvitations(await request<Invitation[]>("GET", undefined, "/api/invitations")); setInvitationError(""); }
-    catch (error) { setInvitationError((error as Error).message); }
+    try { setInvitations(await request<Invitation[]>("GET", undefined, "/api/invitations")); setInvitationLoadError(""); }
+    catch (error) { setInvitationLoadError((error as Error).message); }
+    finally { setInvitationsLoaded(true); }
   }, []);
+  function openRemix() {
+    setRemixCopied(false);
+    setRemixPrompt(`@Sites Crea un remix de Aula Kanban a partir de ${window.location.origin}. Quiero una copia propia, sin datos de usuarios, con su base de datos independiente. Ayúdame a configurar OWNER_EMAIL con mi cuenta de ChatGPT y a publicarla.`);
+    setRemixOpen(true);
+  }
   async function acceptInvitation(id: string) {
     if (invitationBusy) return; setInvitationBusy(true); setInvitationError("");
     try { const result = await request<{ projectId: string }>("POST", { id }, "/api/invitations"); window.location.assign("/?project=" + encodeURIComponent(result.projectId)); }
@@ -382,6 +394,16 @@ export default function Board({ user }: { user: { displayName: string; email: st
   useEffect(() => {
     void refreshProjects();
     void refreshInvitations();
+    window.addEventListener("focus", refreshProjects);
+    window.addEventListener("focus", refreshInvitations);
+    return () => {
+      window.removeEventListener("focus", refreshProjects);
+      window.removeEventListener("focus", refreshInvitations);
+    };
+  }, [refreshProjects, refreshInvitations]);
+
+  useEffect(() => {
+    if (!activeProject) return;
     void refresh();
     void refreshStudents();
     void refreshTeachers();
@@ -389,8 +411,6 @@ export default function Board({ user }: { user: { displayName: string; email: st
     window.addEventListener("focus", refresh);
     window.addEventListener("focus", refreshStudents);
     window.addEventListener("focus", refreshTeachers);
-    window.addEventListener("focus", refreshProjects);
-    window.addEventListener("focus", refreshInvitations);
     return () => {
       ++readVersion.current;
       ++studentReadVersion.current;
@@ -398,10 +418,8 @@ export default function Board({ user }: { user: { displayName: string; email: st
       window.removeEventListener("focus", refresh);
       window.removeEventListener("focus", refreshStudents);
       window.removeEventListener("focus", refreshTeachers);
-      window.removeEventListener("focus", refreshProjects);
-      window.removeEventListener("focus", refreshInvitations);
     };
-  }, [refresh, refreshStudents, refreshProjects, refreshTeachers, refreshInvitations]);
+  }, [activeProject?.id, refresh, refreshStudents, refreshTeachers]);
 
   function openEditor(status: TaskFields["status"], task?: Task) {
     if (writing.current) return;
@@ -492,7 +510,6 @@ export default function Board({ user }: { user: { displayName: string; email: st
   }
 
   const all = tasks ?? [];
-  const activeProject = projects.find((item) => item.id === projectId);
   const canManage = activeProject?.role === "owner" || activeProject?.role === "admin" || activeProject?.role === "teacher";
   const isGuest = activeProject?.role === "guest";
   const ownStudent = students?.find((student) => student.section === activeProject?.studentSection);
@@ -513,19 +530,25 @@ export default function Board({ user }: { user: { displayName: string; email: st
       && (!studentFilter || Boolean(selectedStudent && teachers !== null && taskBelongsTo(task, matchingStudent(selectedStudent), allPeople)));
   });
   const filtered = Boolean(query || filter || studentFilter);
+  const accessReady = projectsLoaded && invitationsLoaded;
+  const accessCheckError = projectLoadError || invitationLoadError;
+  const requestedInvitation = invitations.find((invitation) => invitation.projectId === projectId);
+  const invitationWelcome = Boolean(invitations.length && (!hasProjectLink || requestedInvitation));
+  const orderedInvitations = requestedInvitation ? [requestedInvitation, ...invitations.filter((invitation) => invitation.id !== requestedInvitation.id)] : invitations;
+  const privilegedOnboarding = (owner || admin) && !hasProjectLink && projects.length === 0 && invitations.length === 0;
 
   return (
     <>
       <header className="topbar">
-        <div className="shell topbar-inner">
+        <div className={`shell topbar-inner${activeProject ? "" : " no-project"}`}>
           <span className="wordmark"><span className="brand-icon"><Columns3 size={20} strokeWidth={2.6} /></span>Aula Kanban</span>
-          <nav className="main-nav" aria-label="Vistas">
+          {activeProject && <nav className="main-nav" aria-label="Vistas">
             <button type="button" aria-current={view === "kanban" ? "page" : undefined} onClick={() => setView("kanban")}>Kanban</button>
             <button type="button" aria-current={view === "alumnos" ? "page" : undefined} onClick={() => { setView("alumnos"); setStudentName(null); }}>Alumnos</button>
             <button type="button" aria-current={view === "profesores" ? "page" : undefined} onClick={() => setView("profesores")}>Profesores</button>
-          </nav>
-          <details className="project-menu">
-            <summary aria-label="Seleccionar proyecto"><FolderKanban size={18} /><span>{projects.find((project) => project.id === projectId)?.name ?? (projectError ? "Proyecto no disponible" : "Cargando proyecto…")}</span><ChevronDown size={16} /></summary>
+          </nav>}
+          {activeProject && <details className="project-menu">
+            <summary aria-label="Seleccionar proyecto"><FolderKanban size={18} /><span>{activeProject.name}</span><ChevronDown size={16} /></summary>
             <div className="project-dropdown">
               <p>Proyectos</p>
               {projects.map((project) => <a key={project.id} href={project.id === "default" ? "/" : `/?project=${encodeURIComponent(project.id)}`} aria-current={project.id === projectId ? "page" : undefined}><span>{project.name}</span>{project.id === projectId && <Check size={16} />}</a>)}
@@ -534,10 +557,10 @@ export default function Board({ user }: { user: { displayName: string; email: st
                 {activeProject && <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setCopied(false); const url = new URL("/", window.location.origin); url.searchParams.set("project", projectId); setShareUrl(url.href); }}><Link2 size={16} /> Compartir proyecto</button>}
                 {canManage && <button type="button" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setMembersOpen(true); setRemoveMember(null); void loadMembers(); }}><Users size={16} /> Gestionar miembros</button>}
                 {(owner || admin) && activeProject && <button type="button" className="project-delete-action" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setDeleteProjectName(""); setProjectError(""); setProjectDeleting(true); }}><Trash2 size={16} /> Eliminar proyecto</button>}
-                <button type="button" className="remix-action" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); setRemixCopied(false); setRemixPrompt(`@Sites Crea un remix de Aula Kanban a partir de ${window.location.origin}. Quiero una copia propia, sin datos de usuarios, con su base de datos independiente. Ayúdame a configurar OWNER_EMAIL con mi cuenta de ChatGPT y a publicarla.`); setRemixOpen(true); }}><Plus size={16} /> Haz tu Site de Aula Kanban</button>
+                <button type="button" className="remix-action" onClick={(event) => { event.currentTarget.closest("details")?.removeAttribute("open"); openRemix(); }}><Plus size={16} /> Haz tu Site de Aula Kanban</button>
               </div>
             </div>
-          </details>
+          </details>}
           <details className="account-menu">
             <summary className="account-indicator" aria-label="Ver cuenta de ChatGPT">
               <span className="account-avatar" aria-hidden>{(user.displayName.trim()[0] || user.email[0]).toUpperCase()}</span>
@@ -593,10 +616,18 @@ export default function Board({ user }: { user: { displayName: string; email: st
       </div></Modal>}
 
       <main className="shell">
-        {invitations.length > 0 && <section className="invitation-panel" aria-label="Invitaciones pendientes"><h2>Invitaciones pendientes</h2>{invitations.map(invitation => <div className="invitation-row" key={invitation.id}><span><strong>{invitation.projectName}</strong> · {({ teacher: "Profesor", student: "Alumno", guest: "Invitado" } as const)[invitation.role]}</span><button className="primary" disabled={invitationBusy} onClick={() => void acceptInvitation(invitation.id)}>Aceptar invitación</button></div>)}</section>}
-        {invitationError && <div className="alert" role="alert">{invitationError}</div>}
-        {projectError && !newProject && !projectDeleting && <div role="alert" className="alert project-alert">{projectError} <button type="button" className="text-button" onClick={() => void refreshProjects()}>Reintentar</button></div>}
-        {projectsLoaded && !activeProject ? <section className="students-view"><h1>Proyectos</h1><p className="intro">{owner || admin ? "Crea un proyecto para empezar." : "Todavía no tienes acceso a ningún proyecto. Pide al profesorado que invite tu cuenta."}</p>{(owner || admin) && <button className="primary" type="button" onClick={() => { setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={18} /> Nuevo proyecto</button>}</section> : !activeProject ? null : view === "profesores" ? <TeachersView key={projectId} projectId={projectId} isAdmin={owner || admin} ownTeacherId={activeProject.teacherId} tasks={tasks} students={students} openTask={(task) => openEditor(task.status, task)} /> : view === "alumnos" ? (
+        {activeProject && invitations.length > 0 && <section className="invitation-panel" aria-label="Invitaciones pendientes"><h2>Invitaciones pendientes</h2>{invitations.map(invitation => <div className="invitation-row" key={invitation.id}><span><strong>{invitation.projectName}</strong> · {({ teacher: "Profesor", student: "Alumno", guest: "Invitado" } as const)[invitation.role]}</span><button className="primary" disabled={invitationBusy} onClick={() => void acceptInvitation(invitation.id)}>Aceptar invitación</button></div>)}</section>}
+        {activeProject && invitationLoadError && <div className="alert project-alert" role="alert">No se pudieron consultar las invitaciones. <button type="button" className="text-button" onClick={() => void refreshInvitations()}>Reintentar</button></div>}
+        {activeProject && invitationError && <div className="alert" role="alert">{invitationError}</div>}
+        {activeProject && projectError && !newProject && !projectDeleting && <div role="alert" className="alert project-alert">{projectError} <button type="button" className="text-button" onClick={() => void refreshProjects()}>Reintentar</button></div>}
+        {!activeProject ? !accessReady ? <div className="access-loading" role="status">Comprobando tu acceso…</div> : accessCheckError ? <section className="access-screen" aria-labelledby="access-error-title"><div className="access-card"><p className="eyebrow"><span /> Aula Kanban</p><h1 id="access-error-title">No hemos podido comprobar tu acceso</h1><p>Revisa tu conexión y vuelve a intentarlo para consultar tus proyectos e invitaciones.</p><button type="button" className="primary" onClick={() => { void refreshProjects(); void refreshInvitations(); }}>Reintentar</button></div></section> : privilegedOnboarding ? <section className="access-screen" aria-labelledby="first-project-title"><div className="access-card"><p className="eyebrow"><span /> Aula Kanban</p><h1 id="first-project-title">Tu primer proyecto empieza aquí</h1><p>Crea un tablero para organizar las tareas y compartirlo con tu grupo.</p><button className="primary" type="button" onClick={() => { setProjectError(""); setNewProject({ id: crypto.randomUUID(), name: "" }); }}><Plus size={18} /> Nuevo proyecto</button></div></section> : <section className="access-screen" aria-labelledby="access-title"><div className="access-card">
+          <p className="eyebrow"><span /> Aula Kanban</p>
+          <h1 id="access-title">{invitationWelcome ? "Tienes una invitación" : hasProjectLink ? "Este enlace no está disponible para tu cuenta" : "Aún no tienes acceso a un proyecto"}</h1>
+          <p>{invitationWelcome ? "Acepta la invitación para entrar al proyecto con esta cuenta de ChatGPT." : "Si te han invitado, comprueba que has iniciado sesión con la cuenta indicada o pide una invitación a quien gestione el proyecto."}</p>
+          {invitations.length > 0 && <section className="access-invitations" aria-label="Invitaciones pendientes"><h2>{invitationWelcome ? "Invitaciones pendientes" : "También tienes invitaciones pendientes"}</h2>{orderedInvitations.map(invitation => <div className="access-invitation" key={invitation.id}><span className="access-invitation-icon" aria-hidden><FolderKanban size={20} /></span><span className="access-invitation-info"><strong>{invitation.projectName}</strong><small>{({ teacher: "Profesor", student: "Alumno", guest: "Invitado" } as const)[invitation.role]}</small></span><button className="primary" disabled={invitationBusy} onClick={() => void acceptInvitation(invitation.id)}>Aceptar invitación</button></div>)}</section>}
+          {invitationError && <div className="alert" role="alert">{invitationError}</div>}
+          <div className="access-remix"><div><strong>¿Quieres tu propio tablero?</strong><p>Solicita una copia independiente de Aula Kanban para personalizarla a tu manera.</p></div><button type="button" className={invitationWelcome ? "secondary" : "primary"} onClick={openRemix}><Plus size={18} /> Haz tu Site de Aula Kanban</button></div>
+        </div></section> : view === "profesores" ? <TeachersView key={projectId} projectId={projectId} isAdmin={owner || admin} ownTeacherId={activeProject.teacherId} tasks={tasks} students={students} openTask={(task) => openEditor(task.status, task)} /> : view === "alumnos" ? (
           <section className="students-view">
             <p className="eyebrow"><span /> Grupo de clase</p>
             <div className="students-heading">

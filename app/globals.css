@@ -34,6 +34,7 @@ svg { flex: none; vertical-align: middle; }
 .shell { width: min(1344px, calc(100% - 88px)); margin-inline: auto; }
 .topbar { background: var(--white); border-bottom: 1px solid var(--line); }
 .topbar-inner { min-height: 69px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.topbar-inner.no-project .account-menu { margin-left:auto; }
 .wordmark { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 800; letter-spacing: -.035em; }
 .brand-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--violet); color: white; }
 
@@ -98,6 +99,22 @@ svg { flex: none; vertical-align: middle; }
 .invitation-panel { display:grid; gap:12px; margin-top:24px; padding:18px; border:1px solid #d9cffa; border-radius:14px; background:#f4f0ff; }
 .invitation-panel h2 { font-size:17px; }
 .invitation-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:14px; }
+.access-loading { padding:64px 0; color:var(--muted); font-size:14px; }
+.access-screen { width:min(760px, 100%); margin:clamp(38px, 7vw, 88px) auto; }
+.access-card { display:grid; justify-items:start; gap:18px; padding:clamp(24px, 4.5vw, 48px); border:1px solid #e6def7; border-radius:22px; background:#fff; box-shadow:0 18px 55px #3022550b; }
+.access-card h1 { max-width:620px; font-size:clamp(31px, 4vw, 46px); line-height:1.08; letter-spacing:-.045em; }
+.access-card > p:not(.eyebrow) { max-width:570px; color:var(--muted); font-size:15px; line-height:1.6; }
+.access-invitations { display:grid; gap:10px; width:100%; margin-top:4px; }
+.access-invitations h2 { font-family:"Instrument Sans",system-ui,sans-serif; color:var(--muted); font-size:12px; letter-spacing:.035em; text-transform:uppercase; }
+.access-invitation { display:flex; align-items:center; gap:14px; padding:16px; border:1px solid #e2d9f7; border-radius:14px; background:#f4f0ff; }
+.access-invitation-icon { display:grid; place-items:center; flex:none; width:42px; height:42px; border-radius:12px; background:#e6defa; color:var(--violet); }
+.access-invitation-info { flex:1; min-width:0; }
+.access-invitation-info strong,.access-invitation-info small { display:block; overflow-wrap:anywhere; }
+.access-invitation-info small { margin-top:4px; color:var(--muted); font-size:13px; }
+.access-remix { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; width:100%; margin-top:6px; padding-top:20px; border-top:1px solid var(--line); }
+.access-remix strong { font-size:14px; }
+.access-remix p { margin-top:5px; color:var(--muted); font-size:13px; line-height:1.5; }
+@media (max-width:560px) { .access-invitation { flex-wrap:wrap; } .access-invitation .primary { width:100%; } .access-remix button { width:100%; } }
 .admin-management { display:grid; gap:14px; }
 .settings-tabs { display:flex; gap:4px; padding:4px; border-radius:10px; background:#eeecf5; }
 .settings-tabs button { flex:1; padding:9px 12px; border:0; border-radius:7px; background:transparent; color:var(--muted); font-weight:700; }
