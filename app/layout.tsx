@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./board/chrome.css";
+import "./board/access.css";
+import "./board/kanban.css";
+import "./board/dialogs.css";
+import "./board/views.css";
+import "./board/responsive.css";
 
 export const metadata: Metadata = {
   title: "Aula Kanban",

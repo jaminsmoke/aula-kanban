@@ -45,6 +45,8 @@ Local tool usage metrics are disabled by default. Set `WRANGLER_SEND_METRICS=tru
 ## Included Shape
 
 - edit site code under `app/`
+- stylesheets sit next to the code they style: `app/globals.css` (tokens and base elements) plus `app/board/chrome.css` (top bar, menus, shared button primitives), `access.css`, `kanban.css`, `dialogs.css`, and `views.css`; `app/board/responsive.css` is imported last so its overrides win. Plain CSS, no Tailwind or shadcn scaffolding
+- `npm test` runs Vitest; tests sit next to their source as `*.test.tsx`, for example `app/board/use-tasks.test.tsx`
 - `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
 - `.openai/hosting.json` declares optional Sites D1 and R2 bindings
 - `vite.config.ts` simulates declared bindings for local development
