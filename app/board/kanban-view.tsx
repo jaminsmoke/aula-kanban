@@ -65,7 +65,7 @@ export default function KanbanView({
             </select><ArrowDown size={13} aria-hidden /></label>
             <label className="filter"><Users size={17} /><select value={studentFilter} aria-label="Filtrar por alumno" onChange={(event) => onStudentFilter(event.target.value)}>
               <option value="">Todos los alumnos</option>
-              {students?.map((student) => <option key={student.section} value={student.section}>{student.displayName}</option>)}
+              {students?.map((student) => <option key={student.section} value={student.section}>{student.displayName || student.name}</option>)}
             </select><ArrowDown size={13} aria-hidden /></label>
           </div>
         </div>

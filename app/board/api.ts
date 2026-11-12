@@ -4,8 +4,8 @@ export class RequestError extends Error {
   }
 }
 
-export async function request<T>(method = "GET", body?: unknown, path = "/api/tasks"): Promise<T> {
-  const projectId = new URLSearchParams(window.location.search).get("project") || "default";
+export async function request<T>(method = "GET", body?: unknown, path = "/api/tasks", projectIdParam?: string): Promise<T> {
+  const projectId = projectIdParam || new URLSearchParams(window.location.search).get("project") || "default";
   const url = path === "/api/projects" ? path : `${path}?project=${encodeURIComponent(projectId)}`;
   const response = await fetch(url, {
     method,

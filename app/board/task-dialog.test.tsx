@@ -32,6 +32,10 @@ function renderDialog(overrides: Partial<Parameters<typeof TaskDialog>[0]> = {})
     students: [],
     teachers: [],
     claiming: false,
+    onAddAssignee: vi.fn(),
+    onRemoveAssignee: vi.fn(),
+    onAssignee: vi.fn(),
+    onAssignClass: vi.fn(),
     onSubmit: vi.fn(),
     onClose: vi.fn(),
     onDelete: vi.fn(),
@@ -78,6 +82,30 @@ describe("TaskDialog", () => {
     expect(screen.getByRole("dialog", { name: "Detalle de la tarea" })).toBeTruthy();
     expect(screen.getByText("Creada por: Marta")).toBeTruthy();
     expect(screen.queryByPlaceholderText("¿Qué hay que hacer?")).toBeNull();
+  });
+
+  it("gestiona una lista de responsables con varias filas", () => {
+    const students = [
+      { section: "s1", name: "Ada", displayName: "Ada", role: "", activities: "", aiHelp: "", revision: 1 },
+      { section: "s2", name: "Grace", displayName: "Grace", role: "", activities: "", aiHelp: "", revision: 1 },
+    ];
+    const { props } = renderDialog({ form: { ...blank, assignees: [{ kind: "student", profileId: "s1", name: "Ada" }] }, students });
+
+    fireEvent.click(screen.getByRole("button", { name: "Añadir responsable" }));
+    expect(props.onAddAssignee).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Asignar a toda la clase" }));
+    expect(props.onAssignClass).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Quitar responsable 1" }));
+    expect(props.onRemoveAssignee).toHaveBeenCalledWith(0);
+    fireEvent.change(screen.getByRole("combobox", { name: "Responsable 1" }), { target: { value: "student:s2" } });
+    expect(props.onAssignee).toHaveBeenCalledWith(0, "student:s2");
+  });
+
+  it("deja el responsable libre en texto cuando no hay fichas vinculadas", () => {
+    renderDialog();
+
+    expect(screen.getByPlaceholderText("Sin asignar o responsable en texto")).toBeTruthy();
+    expect(screen.queryByRole("combobox", { name: "Responsable 1" })).toBeNull();
   });
 
   it("deshabilita el título mientras se reclama una tarea", () => {

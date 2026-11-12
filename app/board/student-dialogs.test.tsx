@@ -15,13 +15,16 @@ const student: Student = {
 };
 
 describe("StudentFormDialog", () => {
-  it("cambia el nombre visible de la ficha", () => {
+  it("distingue el nombre de la ficha del nombre a mostrar", () => {
     const onChange = vi.fn();
     render(<StudentFormDialog student={student} onChange={onChange} error="" saving={false} onSubmit={vi.fn()} onClose={vi.fn()} />);
 
     expect(screen.getByRole("dialog", { name: "Añadir alumno" })).toBeTruthy();
-    fireEvent.change(screen.getByLabelText(/Nombre visible/), { target: { value: "Grace" } });
+    fireEvent.change(screen.getByLabelText(/^Nombre$/), { target: { value: "Grace Hopper" } });
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ name: "Grace Hopper" }));
 
+    onChange.mockClear();
+    fireEvent.change(screen.getByLabelText(/Nombre a mostrar/), { target: { value: "Grace" } });
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ displayName: "Grace" }));
   });
 

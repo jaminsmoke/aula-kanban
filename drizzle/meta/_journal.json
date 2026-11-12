@@ -113,6 +113,20 @@
       "when": 1794467067439,
       "tag": "0015_lock_legacy_administrators",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "6",
+      "when": 1794467260868,
+      "tag": "0016_retain_teacher_assignments",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1794467452847,
+      "tag": "0017_protect_history",
+      "breakpoints": true
     }
   ]
 }

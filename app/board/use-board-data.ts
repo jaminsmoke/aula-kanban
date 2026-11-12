@@ -12,7 +12,7 @@ export type BoardData = ReturnType<typeof useBoardData>;
 export function useBoardData(activeProject?: Project) {
   const [tasks, setTasks] = useState<Task[] | null>(null);
   const [students, setStudents] = useState<Student[] | null>(null);
-  const [teachers, setTeachers] = useState<{ id: string; name: string }[] | null>(null);
+  const [teachers, setTeachers] = useState<{ id: string; name: string; displayName: string }[] | null>(null);
   const [loadError, setLoadError] = useState("");
   const [studentError, setStudentError] = useState("");
   const taskVersion = useRef(0);
@@ -48,7 +48,7 @@ export function useBoardData(activeProject?: Project) {
   }, []);
 
   const refreshTeachers = useCallback(async () => {
-    try { setTeachers(await request<{ id: string; name: string }[]>("GET", undefined, "/api/teachers")); }
+    try { setTeachers(await request<{ id: string; name: string; displayName: string }[]>("GET", undefined, "/api/teachers")); }
     catch { setTeachers(null); }
   }, []);
 
@@ -68,7 +68,7 @@ export function useBoardData(activeProject?: Project) {
       (next) => { if (active && peopleLoad === peopleVersion.current) { setStudents(next); setStudentError(""); } },
       (error) => { if (active && peopleLoad === peopleVersion.current) setStudentError((error as Error).message); },
     );
-    request<{ id: string; name: string }[]>("GET", undefined, "/api/teachers").then(
+    request<{ id: string; name: string; displayName: string }[]>("GET", undefined, "/api/teachers").then(
       (next) => { if (active) setTeachers(next); },
       () => { if (active) setTeachers(null); },
     );
@@ -84,8 +84,8 @@ export function useBoardData(activeProject?: Project) {
 
   const ownStudent = students?.find((student) => student.section === activeProject?.studentSection);
   const allPeople: Student[] = [
-    ...(students ?? []).map((student) => ({ ...student, displayName: student.name })),
-    ...(teachers ?? []).map((teacher) => ({ section: teacher.id, name: teacher.name, displayName: teacher.name, role: "", activities: "", aiHelp: "", revision: 1 })),
+    ...(students ?? []).map((student) => ({ ...student, displayName: student.displayName || student.name })),
+    ...(teachers ?? []).map((teacher) => ({ section: teacher.id, name: teacher.name, displayName: teacher.displayName || teacher.name, role: "", activities: "", aiHelp: "", revision: 1 })),
   ];
 
   return {

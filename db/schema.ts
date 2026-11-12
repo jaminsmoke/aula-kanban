@@ -11,7 +11,7 @@ export const transitionState = sqliteTable("transition_state", {
   status: text("status").notNull(),
 });
 
-export const administrators = sqliteTable("administrators", {
+export const legacyAdministrators = sqliteTable("administrators", {
   id: text("id").primaryKey().notNull(),
   email: text("email").notNull(),
   userId: text("user_id"),
@@ -23,7 +23,7 @@ export const administrators = sqliteTable("administrators", {
   uniqueIndex("administrator_profile").on(table.profileId),
 ]);
 
-export const unifiedAdministrators = sqliteTable("administrators_unified", {
+export const administrators = sqliteTable("administrators_unified", {
   id: text("id").primaryKey().notNull(),
   email: text("email"),
   userId: text("user_id"),

@@ -41,6 +41,8 @@
 .admin-list li > div { flex:1; min-width:0; }
 .admin-list strong,.admin-list small { display:block; overflow-wrap:anywhere; }
 .admin-list small { margin-top:3px; color:var(--muted); }
+.admin-list small.admin-no-email { color:#8a5a00; font-weight:650; }
+.admin-management .admin-note { padding:9px 11px; border:1px solid #f0dcb0; border-radius:9px; background:#fff8ea; color:#7a5000; }
 .admin-remove { color:#a52545; }
 .admin-confirm { display:grid; gap:10px; padding:12px; border-radius:9px; background:#fff1f6; }
 .admin-confirm > div { display:flex; justify-content:flex-end; gap:8px; }

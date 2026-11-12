@@ -1,0 +1,1 @@
+DROP TRIGGER IF EXISTS task_assignees_remove_with_teacher;

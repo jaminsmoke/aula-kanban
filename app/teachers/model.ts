@@ -2,6 +2,7 @@ export type Teacher = {
   id: string;
   projectId: string;
   name: string;
+  displayName: string;
   role: string;
   activities: string;
   aiHelp: string;
@@ -11,4 +12,4 @@ export type Teacher = {
   accountMemberId?: string | null;
 };
 
-export const blankTeacher = (): Teacher => ({ id: crypto.randomUUID(), projectId: "", name: "", role: "", activities: "", aiHelp: "", revision: 0, accountEmail: "" });
+export const blankTeacher = (): Teacher => ({ id: crypto.randomUUID(), projectId: "", name: "", displayName: "", role: "", activities: "", aiHelp: "", revision: 0, accountEmail: "" });

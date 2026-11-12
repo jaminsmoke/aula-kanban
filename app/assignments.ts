@@ -1,6 +1,10 @@
 import type { Student } from "./student";
 import type { Task } from "./task";
 
+export function personLabel(person: { name: string; displayName?: string }) {
+  return person.displayName?.trim() || person.name.trim() || "Sin nombre";
+}
+
 export function normalizeName(value: string) {
   return value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }

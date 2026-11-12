@@ -1,4 +1,5 @@
-import { and, asc, eq, sql } from "drizzle-orm";
+import { env } from "cloudflare:workers";
+import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, teachers } from "../../../db/schema";
@@ -7,7 +8,7 @@ import { updateProfile } from "../profile-update";
 
 export const dynamic = "force-dynamic";
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
-const fields = z.object({ name: z.string().trim().min(1).max(80), role: z.string().trim().max(500), activities: z.string().trim().max(2000), aiHelp: z.string().trim().max(2000) });
+const fields = z.object({ name: z.string().trim().min(1).max(80), displayName: z.string().trim().max(80).default(""), role: z.string().trim().max(500), activities: z.string().trim().max(2000), aiHelp: z.string().trim().max(2000) });
 const email = z.string().trim().max(254).refine(value => !value || z.string().email().safeParse(value).success, "Correo no válido").transform(value => value.toLowerCase());
 const reference = z.object({ id: z.string().uuid(), revision: z.number().int().positive() });
 
@@ -44,24 +45,35 @@ async function mutate(request: Request) {
   }
   const parsed = (request.method === "DELETE" ? reference : fields.merge(reference).extend({ accountEmail: email.optional() })).safeParse(body);
   if (!parsed.success) return json({ message: "Revisa los datos de la ficha." }, 400);
-  const { id, revision, ...changes } = parsed.data;
+  const { id, revision } = parsed.data;
   if (project.access.role === "teacher" && project.access.teacherId !== id) return json({ message: "Solo puedes gestionar tu propia ficha de profesor." }, 403);
-  if (request.method !== "DELETE") {
-    const { accountEmail, name, role, activities, aiHelp } = changes as z.infer<typeof fields> & { accountEmail?: string };
-    const result = await updateProfile(project, "teacher", id, revision, { name, role, activities, aiHelp }, accountEmail);
-    if (!result.ok) return json({ message: result.message }, result.status);
-    const db = getDb();
-    const [updated] = await db.select().from(teachers).where(and(eq(teachers.id, id), eq(teachers.projectId, project.id)));
-    const [member] = await db.select().from(projectMembers).where(and(eq(projectMembers.teacherId, id), eq(projectMembers.projectId, project.id)));
-    const { mutationToken, ...safeTeacher } = updated;
-    return json({ ...safeTeacher, accountStatus: member?.status ?? "unlinked", accountEmail: member?.email ?? "", accountMemberId: member?.id ?? null });
+  if (request.method === "DELETE") {
+    // The ficha moves to the history table: assignments keep pointing at it for 30 days, then purge.
+    const binding = env.DB;
+    if (!binding) return json({ message: "Base de datos no disponible." }, 503);
+    const deletedAt = Date.now();
+    try {
+      const result = await binding.batch([
+        binding.prepare(`INSERT INTO deleted_teachers (id, project_id, name, display_name, user_id, deleted_at)
+          SELECT t.id, t.project_id, t.name, t.display_name,
+            (SELECT m.user_id FROM project_members m WHERE m.project_id = t.project_id AND m.teacher_id = t.id), ?
+          FROM teachers t WHERE t.id = ? AND t.project_id = ? AND t.revision = ?
+          ON CONFLICT(id) DO UPDATE SET name = excluded.name, display_name = excluded.display_name, user_id = excluded.user_id, deleted_at = excluded.deleted_at
+          RETURNING id`).bind(deletedAt, id, project.id, revision),
+        binding.prepare("DELETE FROM project_members WHERE project_id = ? AND teacher_id = ? AND EXISTS (SELECT 1 FROM deleted_teachers WHERE id = ? AND deleted_at = ?)").bind(project.id, id, id, deletedAt),
+        binding.prepare("DELETE FROM teachers WHERE id = ? AND project_id = ? AND EXISTS (SELECT 1 FROM deleted_teachers WHERE id = ? AND deleted_at = ?) RETURNING id").bind(id, project.id, id, deletedAt),
+      ]);
+      return result[0].results?.length ? json({ id }) : json({ message: "La ficha ha cambiado en otra sesión. Actualiza la página para verla." }, 409);
+    } catch { return json({ message: "No se pudo eliminar la ficha. Inténtalo de nuevo." }, 409); }
   }
-  const where = and(eq(teachers.id, id), eq(teachers.projectId, project.id), eq(teachers.revision, revision));
-  const [result] = request.method === "DELETE"
-    ? await getDb().delete(teachers).where(where).returning()
-    : await getDb().update(teachers).set({ ...changes, revision: sql`${teachers.revision} + 1` }).where(where).returning();
-  if (!result) return json({ message: "La ficha ha cambiado en otra sesión. Actualiza la página para verla." }, 409);
-  const { mutationToken, ...safeTeacher } = result;
-  return json(safeTeacher);
+  const changes = parsed.data as unknown as z.infer<typeof fields> & { accountEmail?: string };
+  const { accountEmail, name, displayName, role, activities, aiHelp } = changes;
+  const result = await updateProfile(project, "teacher", id, revision, { name, displayName, role, activities, aiHelp }, accountEmail);
+  if (!result.ok) return json({ message: result.message }, result.status);
+  const db = getDb();
+  const [updated] = await db.select().from(teachers).where(and(eq(teachers.id, id), eq(teachers.projectId, project.id)));
+  const [member] = await db.select().from(projectMembers).where(and(eq(projectMembers.teacherId, id), eq(projectMembers.projectId, project.id)));
+  const { mutationToken, ...safeTeacher } = updated;
+  return json({ ...safeTeacher, accountStatus: member?.status ?? "unlinked", accountEmail: member?.email ?? "", accountMemberId: member?.id ?? null });
 }
 export { mutate as POST, mutate as PATCH, mutate as DELETE };

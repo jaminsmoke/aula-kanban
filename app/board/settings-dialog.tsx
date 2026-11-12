@@ -85,15 +85,16 @@ export default function SettingsDialog({ user, projectsLoaded, owner, admin, act
             <label htmlFor="admin-email">Correo de ChatGPT <span>(opcional)</span></label>
             <div><input id="admin-email" type="email" maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nombre@ejemplo.com" /><button className="primary" type="submit" disabled={busy}>{editing ? "Guardar" : "Añadir ficha"}</button></div>
             <p>Sin correo, la ficha no concede acceso. Al añadirlo, la persona deberá aceptar la invitación. Si se cambia o elimina, se retira el acceso anterior.</p>
+            {editing && !editing.email && <p className="admin-note">Esta ficha no tiene correo: aparece en la lista, pero no da acceso a nadie hasta que añadas uno y la persona acepte la invitación.</p>}
             {editing && <button className="text-button" type="button" onClick={() => { setEditing(null); setEmail(""); setName(""); }}>Cancelar edición</button>}
           </form>
           {error && <p role="alert" className="admin-error">{error}</p>}
           {admins === null ? <p>Cargando administradores…</p> : admins.length === 0 ? <p>Aún no hay administradores adicionales.</p> : <ul className="admin-list">{admins.map((item) => <li key={item.id}>
-            <div><strong>{item.displayName || item.email || "Administrador sin nombre"}</strong>{item.displayName && item.email && <small>{item.email}</small>}<small className={`account-status ${item.accountStatus}`}>{accountLabel(item.accountStatus)}</small></div>
+            <div><strong>{item.displayName || item.email || "Administrador sin nombre"}</strong>{item.email ? <>{item.displayName && <small>{item.email}</small>}<small className={`account-status ${item.accountStatus}`}>{accountLabel(item.accountStatus)}</small></> : <small className="admin-no-email">Sin correo: no concede acceso</small>}</div>
             <button type="button" className="icon-button" aria-label={`Editar administrador ${item.displayName || item.email || "sin nombre"}`} title="Editar" onClick={() => { setEditing(item); setName(item.displayName); setEmail(item.email); setRemoving(null); setError(""); }}><Pencil size={17} /></button>
             <button type="button" className="icon-button admin-remove" aria-label={`Eliminar administrador ${item.displayName || item.email || "sin nombre"}`} title="Eliminar" onClick={() => { setRemoving(item); setError(""); }}><Trash2 size={17} /></button>
           </li>)}</ul>}
-          {removing && <div className="admin-confirm" role="alert"><p>¿Eliminar la ficha de <strong>{removing.displayName || removing.email || "administrador sin nombre"}</strong>? Se retirará cualquier acceso de administrador asociado.</p><div><button type="button" className="secondary" onClick={() => setRemoving(null)} disabled={busy}>Cancelar</button><button type="button" className="danger" onClick={() => void remove()} disabled={busy}>Eliminar ficha</button></div></div>}
+          {removing && <div className="admin-confirm" role="alert"><p>¿Eliminar la ficha de <strong>{removing.displayName || removing.email || "administrador sin nombre"}</strong>? {removing.email ? "Se retirará cualquier acceso de administrador asociado." : "No tiene correo, así que no concede acceso."}</p><div><button type="button" className="secondary" onClick={() => setRemoving(null)} disabled={busy}>Cancelar</button><button type="button" className="danger" onClick={() => void remove()} disabled={busy}>Eliminar ficha</button></div></div>}
         </section>}
       </div>
     </Modal>

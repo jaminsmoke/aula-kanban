@@ -102,6 +102,28 @@ describe("useTasks", () => {
     expect(updater([])).toEqual([created]);
   });
 
+  it("asigna toda la clase y descarta las filas vacías al guardar", async () => {
+    const created = task({ id: "t10", title: "Tarea de clase" });
+    const fetchMock = vi.fn(async (_url: string, _init?: RequestInit) => jsonResponse(created));
+    vi.stubGlobal("fetch", fetchMock);
+    const data = makeData({ students: [student, { ...student, section: "s2", name: "Grace", displayName: "Grace" }] });
+    const { result } = renderHook(() => useTasks({ data, hasProject: true, canManage: true, isGuest: false, notify: vi.fn() }));
+
+    act(() => result.current.openEditor("pending"));
+    act(() => result.current.setForm((current) => ({ ...current, title: "Tarea de clase" })));
+    act(() => result.current.assignWholeClass());
+    expect(result.current.form.assignees).toHaveLength(2);
+    expect(result.current.form.assignee).toBe("Ada, Grace");
+
+    act(() => result.current.addAssignee());
+    expect(result.current.form.assignees).toHaveLength(3);
+    await act(async () => result.current.submit(submitEvent()));
+
+    const body = JSON.parse(String((fetchMock.mock.calls[0][1] as RequestInit).body));
+    expect(body.assignees).toHaveLength(2);
+    expect(body.assignee).toBe("Ada, Grace");
+  });
+
   it("no envía la tarea sin título", () => {
     const data = makeData();
     const { result } = renderHook(() => useTasks({ data, hasProject: true, canManage: true, isGuest: false, notify: vi.fn() }));

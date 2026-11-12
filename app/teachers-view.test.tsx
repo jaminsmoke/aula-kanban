@@ -8,6 +8,7 @@ const teacher: Teacher = {
   id: "tch1",
   projectId: "p1",
   name: "Marta",
+  displayName: "",
   role: "Profesora",
   activities: "Coordina el grupo",
   aiHelp: "",

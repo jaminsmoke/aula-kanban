@@ -31,8 +31,6 @@ export default function StudentsView({
   onDelete: (student: Student) => void;
   onOpenTask: (task: Task) => void;
 }) {
-  const matchingStudent = (student: Student) => ({ ...student, displayName: student.name });
-
   const student = studentName ? students?.find((item) => item.section === studentName) : undefined;
   return (
     <section className="students-view">
@@ -48,11 +46,11 @@ export default function StudentsView({
       {studentError && <div role="alert" className="alert">{studentError} <button type="button" className="text-button" onClick={onRetryStudents}>Reintentar</button></div>}
       {studentName ? (() => {
         if (!student) return <div className="student-detail"><p>Esta ficha ya no está disponible.</p><button className="text-button back-link" onClick={() => onSelectStudent(null)}>← Todos los alumnos</button></div>;
-        const assigned = students === null ? [] : all.filter((task) => taskBelongsTo(task, matchingStudent(student), allPeople));
+        const assigned = students === null ? [] : all.filter((task) => taskBelongsTo(task, student, allPeople));
         return <ProfileDetail
           kicker="Ficha de alumno"
           backLabel="Todos los alumnos"
-          person={{ name: student.displayName, role: student.role, activities: student.activities, aiHelp: student.aiHelp, accountStatus: student.accountStatus }}
+          person={{ name: student.displayName || student.name, role: student.role, activities: student.activities, aiHelp: student.aiHelp, accountStatus: student.accountStatus }}
           canEdit={Boolean(canManage || ownStudent?.section === student.section)}
           onBack={() => onSelectStudent(null)}
           onEdit={() => onEdit(student)}
@@ -65,7 +63,7 @@ export default function StudentsView({
         <LayoutToggle count={students?.length ?? 0} unit="alumnos" ariaLabel="Seleccionar vista de alumnos" layout={layout} onLayout={onLayout} />
         <div className={layout === "grid" ? "students-grid" : "students-grid students-list"}>
           {students === null && <p>{studentError ? "No se pudieron cargar las fichas." : "Cargando fichas…"}</p>}
-          {students?.map((item) => <ProfileCard key={item.section} name={item.displayName} role={item.role} accountStatus={item.accountStatus} onOpen={() => onSelectStudent(item.section)} />)}
+          {students?.map((item) => <ProfileCard key={item.section} name={item.displayName || item.name} role={item.role} accountStatus={item.accountStatus} onOpen={() => onSelectStudent(item.section)} />)}
         </div>
       </>}
     </section>

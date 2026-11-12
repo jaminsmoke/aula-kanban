@@ -2,8 +2,8 @@
 
 import { useCallback, useRef, useState } from "react";
 import type { FormEvent } from "react";
-import { taskBelongsTo } from "../assignments";
-import type { Task, TaskFields } from "../task";
+import { personLabel, taskBelongsTo } from "../assignments";
+import type { Task, TaskAssignee, TaskFields } from "../task";
 import { blank, columns } from "./model";
 import { request } from "./api";
 import type { BoardData } from "./use-board-data";
@@ -39,6 +39,39 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
 
   function canEditTask(task: Task) {
     return Boolean(!isGuest && (canManage || (ownStudent && (task.assignees.length === 0 && unassigned(task.assignee) || ownsTask(task)))));
+  }
+
+  const assigneeOptions: TaskAssignee[] = [
+    ...(students ?? []).map((student) => ({ kind: "student" as const, profileId: student.section, name: personLabel(student) })),
+    ...(teachers ?? []).map((teacher) => ({ kind: "teacher" as const, profileId: teacher.id, name: personLabel(teacher) })),
+  ];
+
+  function storeAssignees(next: TaskAssignee[]) {
+    const linked = next.filter((person) => person.profileId);
+    setForm((current) => ({ ...current, assignees: linked, assignee: linked.length ? linked.map((person) => person.name).join(", ") : current.assignee }));
+  }
+
+  function addAssignee() {
+    setForm((current) => ({ ...current, assignees: [...current.assignees, { kind: "student", profileId: "", name: "" }] }));
+  }
+
+  function removeAssignee(index: number) {
+    setForm((current) => ({ ...current, assignees: current.assignees.filter((_, position) => position !== index) }));
+  }
+
+  function chooseAssignee(index: number, value: string) {
+    const person = assigneeOptions.find((option) => `${option.kind}:${option.profileId}` === value);
+    if (!person) return;
+    storeAssignees(form.assignees.map((item, position) => position === index ? person : item));
+  }
+
+  function assignWholeClass() {
+    const classPeople = assigneeOptions.filter((person) => person.kind === "student");
+    const merged = [
+      ...form.assignees.filter((person) => person.profileId),
+      ...classPeople.filter((person) => !form.assignees.some((item) => item.kind === person.kind && item.profileId === person.profileId)),
+    ];
+    storeAssignees(merged);
   }
 
   function openEditor(status: TaskFields["status"], task?: Task) {
@@ -82,10 +115,11 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
       return;
     }
     const task = editor?.task;
+    const values = { ...form, assignees: form.assignees.filter((person) => person.profileId) };
     if (task) {
-      void mutate("PATCH", { id: task.id, revision: task.revision, changes: form }, "Cambios guardados.", true);
+      void mutate("PATCH", { id: task.id, revision: task.revision, changes: values }, "Cambios guardados.", true);
     } else {
-      void mutate("POST", form, "Tarea creada.", true);
+      void mutate("POST", values, "Tarea creada.", true);
     }
   }
 
@@ -140,7 +174,7 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
   const selectedStudent = students?.find((student) => student.section === studentFilter);
   const visible = all.filter((task) => {
     const haystack = [task.title, task.description, task.assignee].join(" ").toLocaleLowerCase("es");
-    const matchesStudent = Boolean(selectedStudent && teachers !== null && taskBelongsTo(task, { ...selectedStudent, displayName: selectedStudent.name }, allPeople));
+    const matchesStudent = Boolean(selectedStudent && teachers !== null && taskBelongsTo(task, selectedStudent, allPeople));
     return (!filter || task.priority === filter) && haystack.includes(query) && (!studentFilter || matchesStudent);
   });
   const filtered = Boolean(query || filter || studentFilter);
@@ -150,6 +184,7 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
     search, setSearch, filter, setFilter, studentFilter, setStudentFilter, clearStudentFilter,
     editor, setEditor, form, setForm, deleting, setDeleting, saving, formError,
     dragged, destination, openEditor, mutate, submit, grab, move, cancelDrag, release,
+    addAssignee, removeAssignee, chooseAssignee, assignWholeClass,
     canEditTask, claiming, visible, filtered, total, finished, progress,
   };
 }

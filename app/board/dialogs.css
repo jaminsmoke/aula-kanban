@@ -28,3 +28,9 @@ dialog::backdrop { background: #20173575; }
 .toast .icon-button { color: #f0e7ff; }
 .toast .icon-button:hover { background: #493668; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Responsables múltiples */
+.assignee-rows { display: flex; flex-direction: column; gap: 8px; }
+.assignee-row { display: flex; align-items: center; gap: 8px; }
+.assignee-row select { flex: 1; min-width: 0; }
+.assignee-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }

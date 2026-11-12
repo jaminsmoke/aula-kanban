@@ -165,6 +165,10 @@ export default function Board({ user }: { user: { displayName: string; email: st
         students={data.students}
         teachers={data.teachers}
         claiming={board.claiming}
+        onAddAssignee={board.addAssignee}
+        onRemoveAssignee={board.removeAssignee}
+        onAssignee={board.chooseAssignee}
+        onAssignClass={board.assignWholeClass}
         onSubmit={board.submit}
         onClose={() => { if (!data.writingRef.current) board.setEditor(null); }}
         onDelete={(task) => void board.mutate("DELETE", { id: task.id, revision: task.revision }, "Tarea eliminada.", true)}

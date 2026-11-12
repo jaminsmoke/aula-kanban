@@ -1,7 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
-import { projectMembers, projects, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
+import { deletedStudents, deletedTeachers, projectMembers, projects, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { isAdministrator, isOwner } from "../project";
 
@@ -45,12 +45,14 @@ export async function DELETE(request: Request) {
   const parsed = z.object({ id: z.string().min(1).max(80) }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Proyecto no válido." }, 400);
   const db = getDb();
-  const [, , , , , result] = await db.batch([
+  const [, , , , , , , result] = await db.batch([
     db.delete(taskAssignees).where(eq(taskAssignees.projectId, parsed.data.id)),
     db.delete(tasks).where(eq(tasks.projectId, parsed.data.id)),
     db.delete(projectMembers).where(eq(projectMembers.projectId, parsed.data.id)),
     db.delete(students).where(eq(students.projectId, parsed.data.id)),
     db.delete(teachers).where(eq(teachers.projectId, parsed.data.id)),
+    db.delete(deletedStudents).where(eq(deletedStudents.projectId, parsed.data.id)),
+    db.delete(deletedTeachers).where(eq(deletedTeachers.projectId, parsed.data.id)),
     db.delete(projects).where(eq(projects.id, parsed.data.id)),
   ]);
   return json({ id: parsed.data.id, deleted: Boolean(result.meta.changes) });

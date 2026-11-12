@@ -16,7 +16,8 @@ export default function TaskCard({ task, dragging, editable, onEdit, onGrab, onM
   onRelease: (event: GripEvent) => void;
   onCancel: () => void;
 }) {
-  const initials = task.assignee.trim().split(/\s+/).slice(0, 2).map((part) => Array.from(part)[0]).join("").toUpperCase();
+  const label = task.assignees.length ? task.assignees.map((person) => `${person.name}${person.removed ? " (eliminado)" : ""}`).join(", ") : task.assignee;
+  const initials = (task.assignees[0]?.name ?? task.assignee).trim().split(/\s+/).slice(0, 2).map((part) => Array.from(part)[0]).join("").toUpperCase();
   return (
     <button type="button" className={dragging ? "card dragging" : "card"} onClick={onEdit} title={editable ? "Abrir tarea" : "Ver tarea (solo lectura)"}>
       <span className="card-top">
@@ -31,9 +32,9 @@ export default function TaskCard({ task, dragging, editable, onEdit, onGrab, onM
       <strong>{task.title}</strong>
       {task.description && <span className="card-description">{task.description}</span>}
       {!task.assignees.length && task.assignee.trim() && task.assignee.trim().toLocaleLowerCase("es") !== "por definir" && <span className="legacy-assignee">Responsable sin vincular</span>}
-      {(task.assignee || task.dueDate) && (
+      {(label || task.dueDate) && (
         <span className="card-meta">
-          {task.assignee && <span className="assignee" title={task.assignee}><span className="avatar">{initials}</span><span>{task.assignee}</span></span>}
+          {label && <span className="assignee" title={label}><span className="avatar">{initials}</span><span>{label}</span></span>}
           {task.dueDate && <span className="date"><CalendarDays size={14} /> <time dateTime={task.dueDate}>{formatDate.format(new Date(task.dueDate + "T12:00:00"))}</time></span>}
         </span>
       )}

@@ -15,7 +15,8 @@ export function StudentFormDialog({ student, onChange, error, saving, onSubmit, 
   return (
     <Modal title={student.revision ? "Editar perfil" : "Añadir alumno"} onClose={onClose}>
       <form onSubmit={onSubmit} className="task-form">
-        <label>Nombre visible<input required maxLength={80} value={student.displayName} onChange={(event) => onChange({ ...student, displayName: event.target.value })} /></label>
+        <label>Nombre<input required maxLength={80} value={student.name} onChange={(event) => onChange({ ...student, name: event.target.value })} /></label>
+        <label>Nombre a mostrar <span>(opcional)</span><input maxLength={80} placeholder="Igual que el nombre" value={student.displayName} onChange={(event) => onChange({ ...student, displayName: event.target.value })} /></label>
         <label>Correo de ChatGPT <span>(opcional)</span><input type="email" maxLength={254} value={student.accountEmail ?? ""} onChange={(event) => onChange({ ...student, accountEmail: event.target.value })} /></label>
         <p className="intro">Puedes añadir el correo más adelante. Al guardarlo se creará una invitación pendiente; cambiarlo o eliminarlo retirará el acceso anterior.</p>
         <label>Puesto de trabajo<input maxLength={500} value={student.role} onChange={(event) => onChange({ ...student, role: event.target.value })} /></label>
@@ -38,7 +39,7 @@ export function StudentDeleteDialog({ student, error, saving, onClose, onConfirm
   return (
     <Modal title="Eliminar perfil" onClose={onClose}>
       <div className="share-content">
-        <p>¿Quieres eliminar la ficha de {student.displayName}? Las tareas se conservarán en el tablero con el nombre de su responsable.</p>
+        <p>¿Quieres eliminar la ficha de {student.displayName || student.name}? Su cuenta pierde el acceso ahora. Sus tareas seguirán en el tablero con su nombre como alumno eliminado durante 30 días; después quedarán sin asignar y las tareas que creó aparecerán como del propietario del aula.</p>
         {error && <div role="alert" className="alert">{error}</div>}
         <div className="modal-actions"><span className="spacer" /><button type="button" className="secondary" disabled={saving} onClick={onClose}>Cancelar</button><button type="button" className="danger" disabled={saving} onClick={onConfirm}>{saving ? "Eliminando…" : "Confirmar eliminación"}</button></div>
       </div>
