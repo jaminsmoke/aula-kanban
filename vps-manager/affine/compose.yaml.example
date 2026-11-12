@@ -1,0 +1,79 @@
+# Ejemplo en revisión; no desplegar sin validar los puertos, las imágenes y el proxy.
+# Basado en la documentación oficial de AFFiNE. Todos los nombres quedan dentro
+# del proyecto Compose de Aula; no fija container_name ni publica bases de datos.
+services:
+  affine:
+    image: ghcr.io/toeverything/affine:stable
+    networks: [affine_internal]
+    ports:
+      - "127.0.0.1:${AFFINE_PORT:-3010}:3010"
+    depends_on:
+      affine_postgres:
+        condition: service_healthy
+      affine_redis:
+        condition: service_healthy
+      affine_migration:
+        condition: service_completed_successfully
+    volumes:
+      - ./data/affine/storage:/root/.affine/storage
+      - ./config/affine:/root/.affine/config
+    environment:
+      REDIS_SERVER_HOST: affine_redis
+      DATABASE_URL: postgresql://affine@affine_postgres:5432/affine
+      AFFINE_INDEXER_ENABLED: "false"
+    restart: unless-stopped
+    mem_limit: 2g
+    logging: &logs
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+  affine_migration:
+    image: ghcr.io/toeverything/affine:stable
+    networks: [affine_internal]
+    command: ["sh", "-c", "node ./scripts/self-host-predeploy.js"]
+    depends_on:
+      affine_postgres:
+        condition: service_healthy
+      affine_redis:
+        condition: service_healthy
+    volumes:
+      - ./data/affine/storage:/root/.affine/storage
+      - ./config/affine:/root/.affine/config
+    environment:
+      REDIS_SERVER_HOST: affine_redis
+      DATABASE_URL: postgresql://affine@affine_postgres:5432/affine
+      AFFINE_INDEXER_ENABLED: "false"
+    mem_limit: 1g
+    logging: *logs
+  affine_redis:
+    image: redis:7-alpine
+    networks: [affine_internal]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    mem_limit: 256m
+    logging: *logs
+  affine_postgres:
+    image: pgvector/pgvector:pg16
+    networks: [affine_internal]
+    volumes:
+      - ./data/affine/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: affine
+      POSTGRES_DB: affine
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+      POSTGRES_HOST_AUTH_METHOD: trust
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "affine", "-d", "affine"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    mem_limit: 1g
+    logging: *logs
+networks:
+  affine_internal: {}

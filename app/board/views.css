@@ -24,6 +24,14 @@
 .space-tool:focus-visible { outline:2px solid #cdb4ff; outline-offset:2px; }
 .space-tool-icon { display:grid; place-items:center; width:64px; height:64px; border-radius:16px; background:linear-gradient(150deg,#a98bf5,#7859d8); box-shadow:0 6px 16px #00000038, inset 0 1px #ffffff59; }
 .space-tool-name { font-size:13px; font-weight:650; text-shadow:0 1px 4px #0007; }
+.space-tool--locked .space-tool-icon { opacity:.55; filter:saturate(.4); }
+.space-tool-badge { display:inline-flex; align-items:center; gap:3px; padding:1px 7px; border-radius:999px; background:#febc2e; color:#3a2a00; font-size:10px; font-weight:800; letter-spacing:.04em; }
+/* Sin VPS configurado: aviso global del catálogo (ver tools.ts). */
+.space-vps-notice { position:absolute; z-index:30; top:14px; left:50%; transform:translateX(-50%); display:flex; align-items:flex-start; gap:12px; width:min(640px, calc(100% - 32px)); padding:14px 16px; border-radius:14px; background:#fff7e8f2; color:#4a3a10; box-shadow:0 12px 32px #00000044, 0 0 0 1px #febc2e55; }
+.space-vps-notice-icon { flex:none; display:grid; place-items:center; width:36px; height:36px; border-radius:10px; background:#febc2e; color:#fff; }
+.space-vps-notice-text { flex:1 1 auto; margin:0; font-size:13.5px; line-height:1.55; }
+.space-vps-notice-close { flex:none; display:grid; place-items:center; width:28px; height:28px; padding:0; border:0; border-radius:8px; background:transparent; color:#8a6d1f; cursor:pointer; }
+.space-vps-notice-close:hover { background:#febc2e33; }
 .space-window { position:absolute; display:flex; flex-direction:column; max-width:calc(100% - 24px); overflow:hidden; border-radius:12px; background:#f5f4f8; box-shadow:0 24px 60px #00000055, 0 0 0 1px #00000022; animation:pop-in var(--duration-base) var(--ease-out); }
 .space-window-titlebar { display:flex; align-items:center; gap:10px; min-height:38px; padding:0 12px; background:#eceaf2; border-bottom:1px solid #00000014; cursor:grab; touch-action:none; user-select:none; }
 .space-window-titlebar:active { cursor:grabbing; }
@@ -47,6 +55,12 @@
 .nodum-bar-note { color:#4c4660; font-size:12.5px; }
 .nodum-bar-link { display:inline-flex; align-items:center; gap:5px; color:var(--violet); font-size:12.5px; font-weight:650; text-decoration:none; white-space:nowrap; }
 .nodum-frame { flex:1 1 auto; width:100%; min-height:0; border:0; }
+/* Ventana «AFFiNE»: mismo patrón que Nodum (iframe o aviso). */
+.affine-app { flex:1 1 auto; display:flex; flex-direction:column; min-height:0; background:#fff; }
+.affine-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:7px 12px; background:#eef4ff; border-bottom:1px solid #d7e5f5; }
+.affine-bar-note { color:#4c4660; font-size:12.5px; }
+.affine-bar-link { display:inline-flex; align-items:center; gap:5px; color:var(--violet); font-size:12.5px; font-weight:650; text-decoration:none; white-space:nowrap; }
+.affine-frame { flex:1 1 auto; width:100%; min-height:0; border:0; }
 .students-view h1 { margin:0; }
 .students-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; margin-top:30px; }
 .student-card { display:flex; align-items:center; gap:12px; min-width:0; padding:18px; text-align:left; border:1px solid var(--line); border-radius:14px; background:white; color:var(--ink); }

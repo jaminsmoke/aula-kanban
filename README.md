@@ -2,6 +2,33 @@
 
 Cada instancia mantiene sus propios proyectos y datos en D1. Para configurar una copia, añade `OWNER_EMAIL` en la configuración de variables de entorno de Sites con el correo de ChatGPT del propietario y vuelve a publicar para aplicar el cambio. La base de datos y las variables de entorno no se copian durante un remix. Una copia nueva comienza sin proyectos ni alumnos. El propietario y los administradores pueden crear o eliminar proyectos y administrar la lista de administradores. La propiedad de alojamiento del Site se gestiona en Sites, no desde la aplicación. Las invitaciones de proyecto se aceptan dentro de la aplicación y vinculan al identificador de ChatGPT de la cuenta invitada.
 
+## Mi espacio: catálogo de aplicaciones (Site + VPS)
+
+> **Trabajo en curso:** la instalación desde Aula y el gestor del VPS son un prototipo sin desplegar. La documentación de configuración de este apartado describe el enfoque anterior y debe actualizarse antes de usarla. No introduzcas credenciales ni despliegues el gestor todavía; consulta `vps-manager/README.md`.
+
+«Mi espacio» es un escritorio con **dos clases de aplicaciones** (ver `app/board/tools.ts`):
+
+- **Del propio Site** (`host: "site"`): librerías npm o código de creación propia que corren dentro de Aula. Siempre disponibles, sin VPS ni variables. Hoy: **Excalidraw**, la pizarra compartida del proyecto (MIT), con persistencia en el D1/R2/Durable Object de Aula.
+- **Del VPS** (`host: "vps"`): servicios externos con backend propio que viven en el VPS del propietario y se incrustan en ventana (`iframe`). Solo están activas cuando su instancia está configurada. Hoy: **Nodum** (MIT) y **AFFiNE** (editor MIT, backend Enterprise Edition).
+
+### Sin VPS configurado
+
+Al abrir «Mi espacio», si alguna herramienta del VPS no tiene su URL fijada, el escritorio muestra un aviso: sin la configuración del VPS el Space está incompleto y solo están disponibles las aplicaciones del propio Site; se insta a configurar el VPS (a través de Codex o manualmente) para desbloquear todo el potencial de Aula Kanban. Los iconos de las herramientas externas llevan una insignia «VPS» y, al abrirlas, muestran el enlace «Abrir en pestaña nueva» hacia la instancia pública. **Las instancias oficiales no se pueden incrustar**: `nodum.md` responde `X-Frame-Options: DENY` y `affine.pro`/`app.affine.pro` responden `X-Frame-Options: SAMEORIGIN` (verificado por cabeceras); el navegador bloquea el marco sin aviso, por eso el iframe solo funciona con instancia propia.
+
+### Desplegar en el VPS de Hostinger
+
+1. **DNS:** crea subdominios apuntando a la IP del VPS (p. ej. `notas.tudominio` para Nodum y `affine.tudominio` para AFFiNE). Un solo VPS puede hospedar ambos servicios junto a tus otras aplicaciones (siberIA, Personal Hostel).
+2. **Nodum (MIT, stack completo):** despliega tu instancia con Docker Compose en el VPS ([guía oficial](https://github.com/nodummd/nodum/blob/main/docs/deploy.md) — FastAPI + PostgreSQL + Redis + MinIO + Caddy con TLS automático). En la configuración de Caddy, quita el `X-Frame-Options: DENY` y permite el encuadre solo desde el dominio de tu Site (p. ej. `Content-Security-Policy: frame-ancestors` con el dominio de Aula).
+3. **AFFiNE:** despliega tu instancia con Docker Compose ([guía oficial](https://docs.affine.pro/self-host-affine/install/docker-compose-recommended) — PostgreSQL + Redis + almacenamiento) y permite el encuadre desde tu Site en tu proxy reverso. Ojo a la licencia: el editor de AFFiNE es MIT, pero el backend es AFFiNE Enterprise Edition (source-available); según [su página oficial](https://affine.pro/about-us), modificar/compilar/redistribuir el backend EE requiere acuerdo comercial. Usar la nube `app.affine.pro` en pestaña nueva no requiere esa licencia.
+4. **Variables en Sites (solo quien gestiona el panel de ChatGPT puede fijarlas):** añade `VITE_NODUM_URL` (URL de tu instancia de Nodum) y/o `VITE_AFFINE_URL` (URL de tu instancia de AFFiNE). Las variables `VITE_*` se incrustan **en el build** (`import.meta.env`), no en runtime: hay que publicar de nuevo después de fijarlas para que el iframe aparezca y el aviso desaparezca.
+5. Publica con el flujo habitual (ver «Versión para publicar»).
+
+### ¿Y si no tuviéramos VPS? ¿Cabe el backend dentro del Site?
+
+No, y no por falta de configuración, sino por arquitectura. El Site es un **Worker de Cloudflare** (vinext): ejecuta JavaScript con D1, R2 y Durable Objects, sin contenedores, sin Python, sin PostgreSQL/Redis reales y sin procesos persistentes. Nodum necesita FastAPI (Python) + Postgres + Redis + MinIO + tareas en segundo plano; AFFiNE necesita servidor Node + Postgres + Redis + Docker Compose. «Integrar el backend» en el Worker no significa reutilizar su código: significaría **reescribir** su API y su persistencia en JS/TS sobre D1/R2/DO (con Hyperdrive/Upstash u otros servicios como sustitutos de Postgres/Redis), es decir, construir una app nueva inspirada en ellos, no Nodum/AFFiNE. Para AFFiNE, además, la licencia EE del backend impide modificarlo/redistribuirlo sin acuerdo comercial. Mantener estos servicios en el VPS tiene otra ventaja: su carga (CPU, memoria, websockets de colaboración) no pesa sobre el Worker, que tiene límites de tiempo de CPU y coste por invocación. Excalidraw sí cabe en el Site porque es una **librería de cliente** (todo ocurre en el navegador) y persiste con la infraestructura que Aula ya usa.
+
+Nodum y AFFiNE son servicios independientes: las cuentas, notas y workspaces viven en cada servicio (con su propio correo), no en Aula. Al borrar un proyecto, Aula no borra nada de Nodum/AFFiNE (la pizarra Excalidraw del hub sí se borra con el proyecto, porque forma parte de Aula).
+
 ## Desarrollo
 
 ### Versión para publicar
