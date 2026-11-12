@@ -6,6 +6,11 @@ export const projects = sqliteTable("projects", {
   createdAt: integer("created_at").notNull(),
 });
 
+export const transitionState = sqliteTable("transition_state", {
+  id: text("id").primaryKey().notNull(),
+  status: text("status").notNull(),
+});
+
 export const administrators = sqliteTable("administrators", {
   id: text("id").primaryKey().notNull(),
   email: text("email").notNull(),
@@ -16,6 +21,19 @@ export const administrators = sqliteTable("administrators", {
   uniqueIndex("administrator_email").on(table.email),
   uniqueIndex("administrator_user_id").on(table.userId),
   uniqueIndex("administrator_profile").on(table.profileId),
+]);
+
+export const unifiedAdministrators = sqliteTable("administrators_unified", {
+  id: text("id").primaryKey().notNull(),
+  email: text("email"),
+  userId: text("user_id"),
+  displayName: text("display_name").notNull().default(""),
+  revision: integer("revision").notNull().default(1),
+  mutationToken: text("mutation_token"),
+  createdAt: integer("created_at").notNull(),
+}, (table) => [
+  uniqueIndex("unified_administrator_email").on(table.email),
+  uniqueIndex("unified_administrator_user_id").on(table.userId),
 ]);
 
 // Global administrator profiles may exist without an account or invitation.
@@ -35,6 +53,7 @@ export const teachers = sqliteTable("teachers", {
   id: text("id").primaryKey().notNull(),
   projectId: text("project_id").notNull(),
   name: text("name").notNull(),
+  displayName: text("display_name").notNull().default(""),
   role: text("role").notNull(),
   activities: text("activities").notNull(),
   aiHelp: text("ai_help").notNull(),
@@ -79,6 +98,24 @@ export const students = sqliteTable("students", {
   revision: integer("revision").notNull().default(1),
   mutationToken: text("mutation_token"),
 }, (table) => [index("students_project_active").on(table.projectId, table.deleted, table.section)]);
+
+export const deletedStudents = sqliteTable("deleted_students", {
+  section: text("section").primaryKey().notNull(),
+  projectId: text("project_id").notNull(),
+  name: text("name").notNull().default(""),
+  displayName: text("display_name").notNull().default(""),
+  userId: text("user_id"),
+  deletedAt: integer("deleted_at").notNull(),
+}, (table) => [index("deleted_students_project").on(table.projectId, table.deletedAt)]);
+
+export const deletedTeachers = sqliteTable("deleted_teachers", {
+  id: text("id").primaryKey().notNull(),
+  projectId: text("project_id").notNull(),
+  name: text("name").notNull().default(""),
+  displayName: text("display_name").notNull().default(""),
+  userId: text("user_id"),
+  deletedAt: integer("deleted_at").notNull(),
+}, (table) => [index("deleted_teachers_project").on(table.projectId, table.deletedAt)]);
 
 export const projectMembers = sqliteTable("project_members", {
   id: text("id").primaryKey().notNull(),

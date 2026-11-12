@@ -92,6 +92,27 @@
       "when": 1794457416072,
       "tag": "0012_integrity_guards",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1794467025728,
+      "tag": "0013_heavy_wiccan",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1794467060629,
+      "tag": "0014_dear_dark_beast",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "6",
+      "when": 1794467067439,
+      "tag": "0015_lock_legacy_administrators",
+      "breakpoints": true
     }
   ]
 }

@@ -30,7 +30,7 @@ async function projectData(projectId: string) {
 function decorate(task: typeof tasks.$inferSelect, data: Awaited<ReturnType<typeof projectData>>) {
   const assignments = data.refs.filter(ref => ref.taskId === task.id).flatMap(ref => {
     const profile = ref.kind === "student" ? data.profiles.find(p => p.section === ref.profileId) : ref.kind === "teacher" ? data.staff.find(p => p.id === ref.profileId) : undefined;
-    return profile ? [{ kind: ref.kind, profileId: ref.profileId, name: "displayName" in profile ? profile.displayName : profile.name }] : [];
+    return profile ? [{ kind: ref.kind, profileId: ref.profileId, name: profile.displayName || profile.name }] : [];
   });
   const creatorMember = data.members.find(member => member.id === task.creatorMemberId && member.userId === task.creatorUserId && member.status === "active");
   const creatorProfile = creatorMember?.studentSection ? data.profiles.find(p => p.section === creatorMember.studentSection)?.displayName : creatorMember?.teacherId ? data.staff.find(p => p.id === creatorMember.teacherId)?.name : undefined;
