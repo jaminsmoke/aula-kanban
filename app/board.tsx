@@ -3,11 +3,12 @@
 import { FolderKanban, Plus, X } from "lucide-react";
 import { Suspense, lazy, useState } from "react";
 import TeachersView from "./teachers/teachers-view";
-import BoardHeader from "./board/header";
+import BoardHeader, { type BoardView } from "./board/header";
 import KanbanView from "./board/kanban-view";
 import StudentsView from "./board/students-view";
-// «Mi espacio» (con Motion/Lottie) solo se descarga al abrirlo.
+// «Mi espacio» (con Motion/Lottie) y la documentación solo se descargan al abrirlos.
 const SpaceView = lazy(() => import("./board/space-view"));
+const DocumentationView = lazy(() => import("./board/docs-view"));
 import TaskDialog from "./board/task-dialog";
 import SettingsDialog from "./board/settings-dialog";
 import MemberDialog from "./board/member-dialog";
@@ -32,7 +33,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const invitations = useInvitations();
   const data = useBoardData(projectState.activeProject);
   const actions = useProjectActions({ projects: projectState.projects, projectId: projectState.projectId });
-  const [view, setView] = useState<"kanban" | "alumnos" | "profesores" | "espacio">("kanban");
+  const [view, setView] = useState<BoardView>("kanban");
   const [studentName, setStudentName] = useState<string | null>(null);
   const [studentLayout, setStudentLayout] = useState<"grid" | "list">("grid");
   const [notice, setNotice] = useState("");
@@ -102,6 +103,10 @@ export default function Board({ user }: { user: { displayName: string; email: st
             {invitations.invitationError && <div className="alert" role="alert">{invitations.invitationError}</div>}
             <div className="access-remix"><div><strong>¿Quieres tu propio tablero?</strong><p>Solicita una copia independiente de Aula Kanban para personalizarla a tu manera.</p></div><button type="button" className={invitationWelcome ? "secondary" : "primary"} onClick={() => setRemixOpen(true)}><Plus size={18} /> Haz tu Site de Aula Kanban</button></div>
           </div></section>
+        ) : view === "documentacion" ? (
+          <Suspense fallback={<div className="access-loading" role="status">Cargando la documentación…</div>}>
+            <DocumentationView onBack={() => setView("kanban")} />
+          </Suspense>
         ) : view === "espacio" ? (
           <Suspense fallback={<div className="access-loading" role="status">Cargando Mi espacio…</div>}>
             <SpaceView role={activeProject.role} projectId={projectState.projectId} onExit={() => setView("kanban")} />

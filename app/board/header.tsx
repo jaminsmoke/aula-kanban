@@ -8,7 +8,8 @@ import type { Project } from "./model";
 const appVersion = appPackage.version;
 const appAuthor = typeof appPackage.author === "string" ? appPackage.author : "";
 
-type View = "kanban" | "alumnos" | "profesores" | "espacio";
+export type BoardView = "kanban" | "alumnos" | "profesores" | "espacio" | "documentacion";
+type View = BoardView;
 
 /**
  * Cabecera del tablero con marca, versión, navegación y menús.
@@ -48,6 +49,7 @@ export default function BoardHeader({
           <button type="button" aria-current={view === "alumnos" ? "page" : undefined} onClick={() => onView("alumnos")}>Alumnos</button>
           <button type="button" aria-current={view === "profesores" ? "page" : undefined} onClick={() => onView("profesores")}>Profesores</button>
           <button type="button" aria-current={view === "espacio" ? "page" : undefined} onClick={() => onView("espacio")}>Mi espacio</button>
+          <button type="button" aria-current={view === "documentacion" ? "page" : undefined} onClick={() => onView("documentacion")}>Documentación</button>
         </nav>}
         {activeProject && <details className="project-menu">
           <summary aria-label="Seleccionar proyecto"><FolderKanban size={18} /><span>{activeProject.name}</span><ChevronDown size={16} /></summary>
