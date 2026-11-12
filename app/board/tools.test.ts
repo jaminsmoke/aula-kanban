@@ -18,8 +18,8 @@ describe("visibleTools", () => {
   });
 
   it("Nodum, Excalidraw y AFFiNE son las herramientas del hub", () => {
-    expect(visibleTools("student").map((tool) => tool.id)).toEqual(["nodum", "excalidraw", "affine"]);
-    expect(visibleTools("owner").map((tool) => tool.id)).toEqual(["nodum", "excalidraw", "affine"]);
+    expect(visibleTools("student").map((tool) => tool.id)).toEqual(["nodum", "excalidraw", "affine", "n8n"]);
+    expect(visibleTools("owner").map((tool) => tool.id)).toEqual(["nodum", "excalidraw", "affine", "n8n"]);
   });
 });
 
@@ -39,6 +39,7 @@ describe("estado del catálogo (site vs vps)", () => {
     expect(isToolReady(byId.get("excalidraw")!)).toBe(true);
     expect(isToolReady(byId.get("nodum")!)).toBe(false);
     expect(isToolReady(byId.get("affine")!)).toBe(false);
-    expect(toolsNeedingVps().map((tool) => tool.id)).toEqual(["nodum", "affine"]);
+    expect(isToolReady(byId.get("n8n")!)).toBe(false);
+    expect(toolsNeedingVps().map((tool) => tool.id)).toEqual(["nodum", "affine", "n8n"]);
   });
 });

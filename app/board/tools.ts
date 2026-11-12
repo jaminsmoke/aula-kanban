@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import { Blocks, PencilRuler } from "lucide-react";
+import { Blocks, PencilRuler, Workflow } from "lucide-react";
 import { NodumIcon } from "./nodum-icon";
 import type { Project } from "./model";
 
@@ -25,7 +25,7 @@ export type SpaceTool = {
    * - "site": librería npm o código propio dentro de Aula (Excalidraw).
    *   No necesita VPS; se instala desde Aula Store y su estado se guarda
    *   en la tabla `space_apps` (ver `/api/space-apps`).
-   * - "vps": servicio externo con backend propio (Nodum, AFFiNE).
+   * - "vps": servicio externo con backend propio (Nodum, AFFiNE, n8n).
    *   Requiere instancia desplegada en el VPS y su URL en una variable.
    */
   host: "site" | "vps";
@@ -94,7 +94,7 @@ export function toolsNeedingVps(tools: SpaceTool[] = spaceTools): SpaceTool[] {
  * Hay dos clases de herramienta (`host`): las del propio Site —librerías
  * npm o código propio, instalables desde Aula Store (Excalidraw)— y los
  * servicios externos con backend propio, que viven en el VPS del propietario
- * (Nodum, AFFiNE) y solo están activas cuando su instancia está
+ * (Nodum, AFFiNE, n8n) y solo están activas cuando su instancia está
  * configurada vía variables de entorno (ver README, «Mi espacio»).
  * Nodum (MIT) es la alternativa real a Obsidian: base de conocimiento
  * web con wikilinks, backlinks y grafo (ver `nodum-app.tsx`).
@@ -103,6 +103,8 @@ export function toolsNeedingVps(tools: SpaceTool[] = spaceTools): SpaceTool[] {
  * instala desde Aula Store y su estado vive en la DB (`space_apps`).
  * AFFiNE (editor MIT, backend Enterprise Edition) sigue el mismo patrón
  * que Nodum (ver `affine-app.tsx`).
+ * n8n (Sustainable Use License) automatiza flujos y conecta aplicaciones;
+ * también sigue ese patrón VPS (ver `n8n-app.tsx`).
  */
 export const spaceTools: SpaceTool[] = [
   {
@@ -130,6 +132,15 @@ export const spaceTools: SpaceTool[] = [
     icon: Blocks,
     host: "vps",
     envVars: ["VITE_AFFINE_URL", "NEXT_PUBLIC_AFFINE_URL"],
+    roles: ["owner", "admin", "teacher", "student", "guest"],
+  },
+  {
+    id: "n8n",
+    name: "n8n",
+    description: "Automatiza tareas y conecta aplicaciones con flujos visuales (n8n).",
+    icon: Workflow,
+    host: "vps",
+    envVars: ["VITE_N8N_URL", "NEXT_PUBLIC_N8N_URL"],
     roles: ["owner", "admin", "teacher", "student", "guest"],
   },
 ];

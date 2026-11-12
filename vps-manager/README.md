@@ -10,6 +10,8 @@ Existe una plantilla de AFFiNE en `affine/compose.yaml.example`: su estructura s
 
 También hay plantilla de Nodum en `nodum/compose.yaml.example` (con su `nodum/Caddyfile.example`), adaptada de su compose oficial y registrada en el catálogo del gestor (`nodum_web` como entrada). Nodum no publica imágenes oficiales de api/web: las hay que construir una vez a mano en el VPS con los Dockerfile del repo y el gestor las usa con `--no-build`. La plantilla aún no se ha validado con Docker real: falta comprobar `docker compose config` con el `.env` relleno y el arranque completo antes de usarla.
 
+n8n también está registrada en el catálogo (`n8n` como entrada) con su plantilla `n8n/compose.yaml.example`: un solo contenedor con la imagen oficial `n8nio/n8n` (digest real fijado, sin excepciones), puerto en loopback y datos en `data/n8n`. Requiere un `.env` en el directorio del stack con `WEBHOOK_URL` y `N8N_HOST` (ver cabecera de la plantilla). Su estructura se ha validado con `docker compose config` en local; al igual que las demás, no prueba el arranque completo.
+
 ## Imágenes por digest
 
 Las imágenes permitidas están fijadas por digest (`repo:tag@sha256:...`) en `allowedImages` de `manager.mjs` y en las plantillas `compose.yaml.example`. El gestor rechaza cualquier servicio cuya imagen no sea EXACTAMENTE la permitida (`unknown_image`) o no lleve digest (`unpinned_image`): así un re-etiquetado en el registro no puede colar código distinto al auditado. Para actualizar una imagen: resolver su digest actual (`docker buildx imagetools inspect --raw <repo:tag>` o `crane digest <repo:tag>`), sustituirlo en AMBOS ficheros y volver a desplegar el gestor.

@@ -97,7 +97,7 @@ describe("Tienda de aplicaciones VPS", () => {
 
   it("no permite instalar una aplicación que el gestor no ofrece", () => {
     render(<AppsStore {...baseProps} role="owner" apps={[{ id: "affine", status: "not_installed", url: null }]} />);
-    expect(screen.getByText("No disponible en este gestor")).toBeTruthy();
+    expect(screen.getAllByText("No disponible en este gestor")).toHaveLength(2);
     expect(screen.getAllByRole("button", { name: /Instalar/ })).toHaveLength(2);
   });
 });

@@ -18,6 +18,7 @@ const toolApps: Record<string, ComponentType<{ projectId: string; role: SpaceRol
   nodum: lazy(() => import("./nodum-app")),
   excalidraw: lazy(() => import("./excalidraw-app")),
   affine: lazy(() => import("./affine-app")),
+  n8n: lazy(() => import("./n8n-app")),
 };
 
 type OpenWindow = {

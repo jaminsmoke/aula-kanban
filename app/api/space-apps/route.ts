@@ -8,7 +8,7 @@ import { callSpaceManager } from "../../../lib/server/space-manager";
 
 export const dynamic = "force-dynamic";
 const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
-const appId = z.enum(["nodum", "affine", "excalidraw"]);
+const appId = z.enum(["nodum", "affine", "n8n", "excalidraw"]);
 /** Aplicaciones nativas (librerías del propio Site): su estado vive en la DB. */
 const NATIVE_APP_IDS = ["excalidraw"] as const;
 // El gestor aún está en desarrollo; no se activa con secretos por accidente.
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
   try {
     const result = await callSpaceManager("/v1/apps", "GET");
     if (result === null) return json({ configured: false, apps: natives });
-    const parsed = z.object({ apps: z.array(item).max(2) }).safeParse(result);
+    const parsed = z.object({ apps: z.array(item).max(3) }).safeParse(result);
     if (!parsed.success || parsed.data.apps.some(app => {
       if (!app.url) return false;
       const url = new URL(app.url);

@@ -6,14 +6,17 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Cada servicio pertenece a un solo proyecto Compose de la instancia.
-// Catálogo fijo: AFFiNE y Nodum. Las imágenes de Nodum salen de su compose
+// Catálogo fijo: AFFiNE, Nodum y n8n. Las imágenes de Nodum salen de su compose
 // oficial (deploy/docker-compose.yml + docker-compose.deploy.yml en el repo
 // nodummd/nodum); las de api/web se construyen a mano en el VPS porque
 // Nodum no publica imágenes oficiales y este gestor no compila
 // (`up --no-build`). Ver vps-manager/nodum/compose.yaml.example.
+// n8n es un único contenedor oficial (n8nio/n8n). Ver
+// vps-manager/n8n/compose.yaml.example.
 const applications = {
   affine: { entry: 'affine', services: ['affine', 'affine_migration', 'affine_postgres', 'affine_redis'] },
   nodum: { entry: 'nodum_web', services: ['nodum_postgres', 'nodum_redis', 'nodum_redis_control', 'nodum_minio', 'nodum_migrate', 'nodum_api', 'nodum_worker', 'nodum_beat', 'nodum_web', 'nodum_caddy'] },
+  n8n: { entry: 'n8n', services: ['n8n'] },
 };
 /**
  * Imágenes permitidas, por servicio, fijadas por DIGEST (`tag@sha256:...`) para que un
@@ -33,6 +36,7 @@ const ZEROS = '0'.repeat(64);
 const allowedImages = {
   affine: 'ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099', affine_migration: 'ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099', affine_postgres: 'pgvector/pgvector:pg16@sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f', affine_redis: 'redis:7-alpine@sha256:7f7d30b7fdd09467bac58198a1f166dd69789d348d4fe859cccb20e0cf287fbe',
   nodum_postgres: 'pgvector/pgvector:0.8.0-pg16@sha256:a132765ec351c65111b5b675928a3a0515a466a40f97277329db8b8209ad8bc9', nodum_redis: 'redis:7.4.2-alpine@sha256:02419de7eddf55aa5bcf49efb74e88fa8d931b4d77c07eff8a6b2144472b6952', nodum_redis_control: 'redis:7.4.2-alpine@sha256:02419de7eddf55aa5bcf49efb74e88fa8d931b4d77c07eff8a6b2144472b6952', nodum_minio: `quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:${ZEROS}`,
+  n8n: 'n8nio/n8n:2.47.0@sha256:bde957dfc5faf0fbe64f2db3f196c83909ca26da32600da0dce60fccd099b3e5',
   nodum_migrate: `nodum-api:prod@sha256:${ZEROS}`, nodum_api: `nodum-api:prod@sha256:${ZEROS}`, nodum_worker: `nodum-api:prod@sha256:${ZEROS}`, nodum_beat: `nodum-api:prod@sha256:${ZEROS}`, nodum_web: `nodum-web:prod@sha256:${ZEROS}`, nodum_caddy: 'caddy:2-alpine@sha256:78bd35025c7ba85961dd149ae670315129954e77abe2383ac47c89106b35ade9',
 };
 
@@ -224,7 +228,7 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
       try { return send(res, 200, { apps: await Promise.all([...catalog.values()].map(async app => { const result = await status(app); const state = typeof result === 'string' ? { status: result, version: null } : result; return { id: app.id, status: state.status, url: app.url, version: state.version, dataBytes: await measure(path.join(stack.directory, 'data', app.id)), maxDataBytes: app.maxDataBytes }; })) }); }
       catch (error) { log('status_failed', { error: safeError(error) }); return send(res, 503, { message: 'No se pudo consultar Docker.' }); }
     }
-    const match = /^\/v1\/apps\/(affine|nodum)(\/reset)?$/.exec(req.url ?? '');
+    const match = /^\/v1\/apps\/(affine|nodum|n8n)(\/reset)?$/.exec(req.url ?? '');
     const isReset = Boolean(match?.[2]);
     if (!match || !catalog.has(match[1]) || (req.method !== 'POST' && req.method !== 'DELETE') || (isReset && req.method !== 'POST')) return send(res, 404, { message: 'No disponible.' });
     const app = catalog.get(match[1]);

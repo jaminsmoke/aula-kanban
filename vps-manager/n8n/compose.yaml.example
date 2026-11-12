@@ -1,0 +1,51 @@
+# Ejemplo en revisión: n8n para el gestor de VpsManager (Aula Kanban).
+# No desplegar sin validar los puertos, la imagen y el proxy.
+#
+# Adaptado del despliegue oficial (https://docs.n8n.io/hosting/installation/docker/)
+# a las reglas estrictas de vps-manager/manager.mjs:
+# - Sin `build`: el gestor arranca con `docker compose up --no-build`; la
+#   imagen es la oficial `n8nio/n8n` (2.47.0, fijada por digest).
+# - Sin `container_name`, sin `security_opt`, sin `cap_add`/`cap_drop`.
+# - Único puerto publicado: el propio n8n, solo loopback
+#   (127.0.0.1:${N8N_HTTP_PORT:-5680}:5678). Detrás del Caddy del VPS, que
+#   termina TLS y redirige a ese puerto, como ya hace con AFFiNE y Nodum.
+# - Datos en ./data/n8n (bind al directorio oficial /home/node/.n8n): así el
+#   reset del gestor los borra de forma acotada.
+#
+# Configuración: crear ./.env (junto al compose.yaml, chmod 600) con
+#   WEBHOOK_URL=https://<dominio de n8n>/
+#   N8N_HOST=<dominio de n8n>            (solo el dominio, sin https://)
+# Los valores con `:?` hacen fallar `docker compose config` hasta que
+# existan; es intencionado. `N8N_HTTP_PORT` debe coincidir con el
+# reverse_proxy del Caddy del VPS. N8N_PROTOCOL=https porque TLS lo termina
+# el Caddy exterior, como en el resto de apps del catálogo.
+#
+# Copiar este contenido como ./compose.yaml en la raíz del stack; el gestor
+# lee ese único fichero para todas las apps (los servicios conviven porque
+# cada app usa los suyos; n8n solo usa el servicio `n8n`).
+#
+# Licencia: Sustainable Use License — uso interno/personal en la propia
+# instancia permitido; no redistribuir como producto ni hostear para clientes.
+# Ver https://n8n.io/legal/sustainable-use-license/
+#
+# Fuentes: https://docs.n8n.io/hosting/installation/docker/
+#          https://hub.docker.com/r/n8nio/n8n
+services:
+  n8n:
+    image: n8nio/n8n:2.47.0@sha256:bde957dfc5faf0fbe64f2db3f196c83909ca26da32600da0dce60fccd099b3e5
+    ports:
+      - "127.0.0.1:${N8N_HTTP_PORT:-5680}:5678"
+    volumes:
+      - ./data/n8n:/home/node/.n8n
+    environment:
+      WEBHOOK_URL: ${WEBHOOK_URL:?set in ./.env}
+      N8N_HOST: ${N8N_HOST:?set in ./.env}
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: https
+    restart: unless-stopped
+    mem_limit: 2g
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
