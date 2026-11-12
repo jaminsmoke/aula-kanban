@@ -6,6 +6,17 @@ type ProfileInput = { name: string; displayName: string; role: string; activitie
 
 // A unique mutation token makes the account change conditional on this exact optimistic update.
 // D1 batch executes both statements transactionally, including uniqueness checks on the email.
+/**
+ * Actualiza una ficha de alumno o profesor condicionada a su revisión.
+ * Si se pasa `accountEmail`, crea o retira la invitación `pending` vinculada.
+ * @param project - Proyecto validado con el acceso de la cuenta.
+ * @param kind - Tipo de ficha (`student` o `teacher`).
+ * @param id - Identificador de la ficha (`section` o `id`).
+ * @param revision - Revisión esperada para detectar cambios concurrentes.
+ * @param values - Nuevos valores de la ficha.
+ * @param accountEmail - Correo a vincular, cadena vacía para retirar o `undefined` para no tocarlo.
+ * @returns Resultado de la actualización con estado HTTP si falla.
+ */
 export async function updateProfile(project: Project, kind: "student" | "teacher", id: string, revision: number, values: ProfileInput, accountEmail?: string) {
   const db = env.DB;
   if (!db) return { ok: false as const, status: 503, message: "Base de datos no disponible." };

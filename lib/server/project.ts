@@ -2,17 +2,33 @@ import { env } from "cloudflare:workers";
 import { and, eq } from "drizzle-orm";
 import { getDb } from "../../db";
 import { administrators, projectMembers, projects } from "../../db/schema";
-import { getChatGPTUser, type ChatGPTUser } from "../chatgpt-auth";
+import { getChatGPTUser, type ChatGPTUser } from "../../app/chatgpt-auth";
 
 export const defaultProjectId = "default";
 export type Access = { user: ChatGPTUser; role: "owner" | "admin" | "teacher" | "student" | "guest"; studentSection: string | null; teacherId: string | null };
 
+/**
+ * Indica si un correo es el del propietario de la instancia.
+ * @param email - Correo a comprobar (sin distinción de mayúsculas).
+ * @returns `true` cuando coincide con `OWNER_EMAIL`.
+ */
 export function isOwnerEmail(email: string) {
   const owner = env.OWNER_EMAIL || (import.meta.env.DEV ? "seedy@sites.test" : "");
   return Boolean(owner) && email.trim().toLowerCase() === owner.trim().toLowerCase();
 }
+/**
+ * Indica si la cuenta autenticada es la propietaria de la instancia.
+ * @param user - Cuenta autenticada.
+ * @returns `true` cuando su correo es el del propietario.
+ */
 export function isOwner(user: ChatGPTUser) { return isOwnerEmail(user.email); }
 
+/**
+ * Indica si la cuenta está vinculada a una ficha de administrador.
+ * Sincroniza el correo guardado con el de la cuenta si ha cambiado.
+ * @param user - Cuenta autenticada.
+ * @returns `true` cuando existe una ficha de administrador vinculada.
+ */
 export async function isAdministrator(user: ChatGPTUser) {
   const db = getDb();
   const email = user.email.trim().toLowerCase();
@@ -31,6 +47,11 @@ export async function isAdministrator(user: ChatGPTUser) {
   }
 }
 
+/**
+ * Resuelve el acceso de la cuenta autenticada a un proyecto.
+ * @param projectId - Identificador del proyecto.
+ * @returns El acceso con rol y ficha vinculada, o `null` sin acceso.
+ */
 export async function projectAccess(projectId: string): Promise<Access | null> {
   const user = await getChatGPTUser();
   if (!user) return null;
@@ -47,6 +68,11 @@ export async function projectAccess(projectId: string): Promise<Access | null> {
   return { user, role: member.role, studentSection: member.studentSection, teacherId: member.teacherId };
 }
 
+/**
+ * Valida el proyecto pedido en la URL y el acceso de la cuenta a él.
+ * @param request - Petición entrante con el parámetro `project`.
+ * @returns El proyecto con su acceso, o `null` si no existe o no hay acceso.
+ */
 export async function validProject(request: Request) {
   const id = new URL(request.url).searchParams.get("project") || defaultProjectId;
   if (id.length > 80) return null;

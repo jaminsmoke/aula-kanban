@@ -10,6 +10,11 @@ export type ProfilePerson = {
   accountStatus?: "pending" | "active" | "unlinked";
 };
 
+/**
+ * Detalle de una ficha con sus datos, estado de la cuenta y tareas.
+ * @param props - Persona, permisos, tareas y acciones de navegación y edición.
+ * @returns La vista de detalle de la ficha.
+ */
 export default function ProfileDetail({ kicker, backLabel, person, canEdit, onBack, onEdit, onRemove, tasks, loading, onOpenTask }: {
   kicker: string;
   backLabel: string;
@@ -43,6 +48,7 @@ export default function ProfileDetail({ kicker, backLabel, person, canEdit, onBa
         </div>
       </>}
     </div>
+    {(person.accountStatus ?? "unlinked") === "unlinked" && <p className="no-email-note">Sin correo, la ficha no da acceso a esta cuenta. Añade un correo en Editar para activarla.</p>}
     <div className="student-info">
       <div className="student-info-card"><span className="info-icon role"><BriefcaseBusiness size={18} aria-hidden /></span><div><h3>Puesto de trabajo</h3><p>{person.role || "Sin especificar"}</p></div></div>
       <div className="student-info-card"><span className="info-icon activities"><ListTodo size={18} aria-hidden /></span><div><h3>Actividades cotidianas</h3><p>{person.activities || "Sin especificar"}</p></div></div>

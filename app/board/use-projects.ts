@@ -7,6 +7,10 @@ import { request } from "./api";
 type ProjectsResponse = { projects: Project[]; isOwner: boolean; isAdmin?: boolean };
 const requestProjects = () => request<ProjectsResponse>("GET", undefined, "/api/projects");
 
+/**
+ * Proyectos accesibles para la cuenta y el proyecto activo de la URL.
+ * @returns Proyectos, permisos de propietario/administrador y refresco.
+ */
 export function useProjects() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectsLoaded, setProjectsLoaded] = useState(false);

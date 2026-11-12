@@ -18,6 +18,8 @@ async function expired(projectId: string, table: "deleted_students" | "deleted_t
  * Purges profiles deleted more than 30 days ago. Their assignments are removed so the tasks become
  * unassigned, and the tasks they authored are credited to the owner of the instance.
  * Runs at most once per hour per project, so it can be called from any read route.
+ * @param projectId - Proyecto cuyas bajas caducadas se purgan.
+ * @returns Promesa que se resuelve cuando termina la purga.
  */
 export async function purgeDeletedProfiles(projectId: string) {
   const binding = env.DB;

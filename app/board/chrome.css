@@ -8,6 +8,8 @@
 .topbar-inner.no-project .account-menu { margin-left:auto; }
 .wordmark { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 800; letter-spacing: -.035em; }
 .brand-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--violet); color: white; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.05; }
+.brand-meta { margin-top: 3px; color: var(--muted); font-family: "Instrument Sans", system-ui, sans-serif; font-size: 10px; font-weight: 650; line-height: 1.2; letter-spacing: 0; }
 
 .primary, .secondary, .danger, .danger-quiet {
   display: inline-flex;

@@ -6,6 +6,11 @@ import { formatDate } from "./model";
 
 export type GripEvent = PointerEvent<HTMLSpanElement>;
 
+/**
+ * Tarjeta de una tarea en su columna Kanban.
+ * @param props - Tarea, estado de arrastre y acciones de edición y arrastre.
+ * @returns La tarjeta clicable con su meta y asa de arrastre.
+ */
 export default function TaskCard({ task, dragging, editable, onEdit, onGrab, onMove, onRelease, onCancel }: {
   task: Task;
   dragging: boolean;

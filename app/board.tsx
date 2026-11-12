@@ -2,7 +2,7 @@
 
 import { FolderKanban, Plus, X } from "lucide-react";
 import { useState } from "react";
-import TeachersView from "./teachers-view";
+import TeachersView from "./teachers/teachers-view";
 import BoardHeader from "./board/header";
 import KanbanView from "./board/kanban-view";
 import StudentsView from "./board/students-view";
@@ -20,6 +20,11 @@ import { useStudents } from "./board/use-students";
 
 const invitationRoleNames = { teacher: "Profesor", student: "Alumno", guest: "Invitado", admin: "Administrador" } as const;
 
+/**
+ * Tablero principal: cabecera, invitaciones y la vista activa.
+ * @param props - Cuenta autenticada de ChatGPT.
+ * @returns La aplicación completa del tablero.
+ */
 export default function Board({ user }: { user: { displayName: string; email: string } }) {
   const projectState = useProjects();
   const invitations = useInvitations();
@@ -169,6 +174,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
         onRemoveAssignee={board.removeAssignee}
         onAssignee={board.chooseAssignee}
         onAssignClass={board.assignWholeClass}
+        onRemoveClass={board.removeWholeClass}
         onSubmit={board.submit}
         onClose={() => { if (!data.writingRef.current) board.setEditor(null); }}
         onDelete={(task) => void board.mutate("DELETE", { id: task.id, revision: task.revision }, "Tarea eliminada.", true)}

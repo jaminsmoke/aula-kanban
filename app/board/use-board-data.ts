@@ -8,7 +8,11 @@ import { request } from "./api";
 
 export type BoardData = ReturnType<typeof useBoardData>;
 
-/** Datos del tablero activo: tareas, fichas de alumnos y profesores, con sondeo. */
+/**
+ * Datos del tablero activo: tareas, fichas de alumnos y profesores, con sondeo.
+ * @param activeProject - Proyecto activo cuyas fichas se cargan.
+ * @returns Estado, refrescos e invalidaciones de las colecciones.
+ */
 export function useBoardData(activeProject?: Project) {
   const [tasks, setTasks] = useState<Task[] | null>(null);
   const [students, setStudents] = useState<Student[] | null>(null);

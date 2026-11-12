@@ -6,6 +6,10 @@ import { request } from "./api";
 
 const requestInvitations = () => request<Invitation[]>("GET", undefined, "/api/invitations");
 
+/**
+ * Invitaciones pendientes de la cuenta y su aceptación.
+ * @returns Invitaciones, estado de carga y acción de aceptar.
+ */
 export function useInvitations() {
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [invitationsLoaded, setInvitationsLoaded] = useState(false);

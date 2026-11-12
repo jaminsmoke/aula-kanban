@@ -6,6 +6,11 @@ import { getChatGPTUser } from "../../chatgpt-auth";
 
 export const dynamic = "force-dynamic";
 const json = (value: unknown, status = 200) => Response.json(value, { status, headers: { "Cache-Control": "no-store" } });
+/**
+ * Lista las invitaciones pendientes para la cuenta autenticada.
+ * Incluye invitaciones de proyecto y de administración del sitio.
+ * @returns Respuesta JSON con las invitaciones pendientes.
+ */
 export async function GET() {
   const user = await getChatGPTUser(); if (!user) return json({ message: "Inicia sesión." }, 401);
   const db = getDb(), email = user.email.trim().toLowerCase();
@@ -15,6 +20,11 @@ export async function GET() {
   ]);
   return json([...rows.map(row => ({ ...row, scope: "project" })), ...adminInvitations.map(row => ({ id: row.id, projectId: null, projectName: "Administración de Aula Kanban", role: "admin", scope: "site" }))]);
 }
+/**
+ * Acepta una invitación pendiente y activa el acceso de la cuenta.
+ * @param request - Petición con el identificador y ámbito de la invitación.
+ * @returns Respuesta JSON con el proyecto aceptado o el error.
+ */
 export async function POST(request: Request) {
   const user = await getChatGPTUser(); if (!user) return json({ message: "Inicia sesión." }, 401);
   if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") return json({ message: "Formato no válido." }, 415);

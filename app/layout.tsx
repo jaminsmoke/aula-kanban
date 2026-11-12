@@ -16,6 +16,11 @@ export const metadata: Metadata = {
 const fontStylesheet =
   "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap";
 
+/**
+ * Layout raíz con metadatos, fuentes y hojas de estilo.
+ * @param props - Contenido de la página.
+ * @returns El documento HTML de la aplicación.
+ */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">

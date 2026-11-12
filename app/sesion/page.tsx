@@ -1,5 +1,9 @@
 import { chatGPTSignInPath } from "../chatgpt-auth";
 
+/**
+ * Pantalla tras cerrar sesión con enlace para volver a entrar.
+ * @returns La tarjeta de sesión cerrada.
+ */
 export default function SessionPage() {
   return <main className="session-page">
     <div className="session-card">

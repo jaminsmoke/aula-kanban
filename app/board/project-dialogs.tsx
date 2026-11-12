@@ -6,6 +6,17 @@ import { Check, Link2 } from "lucide-react";
 import Modal from "../modal";
 import type { Project } from "./model";
 
+/**
+ * Diálogo para crear un proyecto nuevo.
+ * @param props.project - Proyecto en edición.
+ * @param props.name - Nombre de la ficha.
+ * @param props.onName - Manejador de la acción «name».
+ * @param props.error - Mensaje de error a mostrar.
+ * @param props.saving - Si el formulario se está guardando.
+ * @param props.onSubmit - Envía el formulario.
+ * @param props.onClose - Cierra el diálogo.
+ * @returns El formulario de creación de proyecto.
+ */
 export function NewProjectDialog({ project, onChange, error, saving, onSubmit, onClose }: {
   project: { id: string; name: string };
   onChange: (project: { id: string; name: string }) => void;
@@ -25,6 +36,13 @@ export function NewProjectDialog({ project, onChange, error, saving, onSubmit, o
   );
 }
 
+/**
+ * Diálogo de confirmación para eliminar un proyecto.
+ * @param props.url - Enlace a compartir.
+ * @param props.projectName - Nombre del proyecto compartido.
+ * @param props.onClose - Cierra el diálogo.
+ * @returns El formulario de confirmación de borrado.
+ */
 export function DeleteProjectDialog({ project, name, onName, error, saving, onSubmit, onClose }: {
   project: Project;
   name: string;
@@ -46,6 +64,11 @@ export function DeleteProjectDialog({ project, name, onName, error, saving, onSu
   );
 }
 
+/**
+ * Diálogo para compartir el enlace del proyecto.
+ * @param props.onClose - Cierra el diálogo.
+ * @returns El diálogo con el enlace y el botón de copiar.
+ */
 export function ShareDialog({ url, projectName, onClose }: { url: string; projectName: string; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
   return (
@@ -68,6 +91,11 @@ export function ShareDialog({ url, projectName, onClose }: { url: string; projec
   );
 }
 
+/**
+ * Diálogo con el mensaje para crear una copia propia en Sites.
+ * @param props - Acción de cierre del diálogo.
+ * @returns El diálogo con el mensaje listo para copiar.
+ */
 export function RemixDialog({ onClose }: { onClose: () => void }) {
   const [copied, setCopied] = useState(false);
   const [prompt] = useState(() => `@Sites Crea un remix de Aula Kanban a partir de ${window.location.origin}. Quiero una copia propia, sin datos de usuarios, con su base de datos independiente. Ayúdame a configurar OWNER_EMAIL con mi cuenta de ChatGPT y a publicarla.`);

@@ -2,18 +2,28 @@ import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, students, teachers } from "../../../db/schema";
-import { validProject } from "../project";
+import { validProject } from "../../../lib/server/project";
 
 export const dynamic = "force-dynamic";
 const json = (value: unknown, status = 200) => Response.json(value, { status, headers: { "Cache-Control": "no-store" } });
 const form = z.object({ email: z.string().trim().email().max(254).transform(value => value.toLowerCase()), role: z.enum(["teacher", "student", "guest"]), studentSection: z.string().min(1).max(80).nullable().optional(), teacherId: z.string().uuid().nullable().optional() });
 
+/**
+ * Lista los miembros e invitaciones del proyecto.
+ * @param request - Petición con el proyecto en la URL.
+ * @returns Respuesta JSON con los miembros sin exponer `userId`.
+ */
 export async function GET(request: Request) {
   const project = await validProject(request);
   if (!project || project.access.role === "student" || project.access.role === "guest") return json({ message: "No tienes permiso para gestionar miembros." }, 403);
   const rows = await getDb().select().from(projectMembers).where(eq(projectMembers.projectId, project.id)).orderBy(asc(projectMembers.email));
   return json(rows.filter(row => project.access.role !== "teacher" || row.role === "student" || row.userId === project.access.user.userId).map(({ userId, ...row }) => row));
 }
+/**
+ * Crea una invitación `pending` para un correo con rol y ficha opcional.
+ * @param request - Petición con correo, rol y ficha a vincular.
+ * @returns Respuesta JSON con la invitación creada o actualizada.
+ */
 export async function POST(request: Request) {
   const project = await validProject(request);
   if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
@@ -44,6 +54,11 @@ export async function POST(request: Request) {
     return json({ ...created, userId: undefined }, 201);
   } catch { return json({ message: "Ese correo o ficha ya está vinculado a otra cuenta del proyecto." }, 409); }
 }
+/**
+ * Retira un miembro o invitación del proyecto.
+ * @param request - Petición con el identificador del miembro.
+ * @returns Respuesta JSON con el identificador retirado o el error.
+ */
 export async function DELETE(request: Request) {
   const project = await validProject(request);
   if (!project) return json({ message: "No se encuentra el proyecto." }, 404);

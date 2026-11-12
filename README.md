@@ -36,7 +36,7 @@ For managed Linux browser QA, follow the Sites skill's managed preview reference
 
 The portable profile simulates ChatGPT sign-in only for loopback development requests. Visit `/signin-with-chatgpt?return_to=/` to sign in as `local_seedy` (`seedy@sites.test`, display name `Seedy`) and `/signout-with-chatgpt?return_to=/` to sign out. The development cookie preserves that identity across server restarts. Mock auth is disabled in the managed-linux profile and is not included in production builds; hosted authentication remains dispatch-owned.
 
-The Worker uses `vinext/server/fetch-handler`, including Vinext's config-aware image handling. After building, `npm start` runs that Worker locally through Wrangler on `127.0.0.1`, sharing `.wrangler/state` with dev preview and local D1 migrations; it does not deploy the site or simulate sign-in. Use the URL printed by the server. Pass `npm start -- --port <port>` to select a different built-preview port.
+The Worker uses `vinext/server/fetch-handler`, including Vinext's config-aware image handling. After building, `npm start` runs that Worker locally through Wrangler on `127.0.0.1`, sharing `.wrangler/state-v20` with dev preview and local D1 migrations; it does not deploy the site or simulate sign-in. Use the URL printed by the server. Pass `npm start -- --port <port>` to select a different built-preview port.
 
 Local previews use Miniflare's placeholder `Request.cf` metadata without a network lookup. Set `CLOUDFLARE_CF_FETCH_ENABLED=true` to opt into fetching preview metadata; this setting does not change hosted request metadata.
 
@@ -56,7 +56,7 @@ Local tool usage metrics are disabled by default. Set `WRANGLER_SEND_METRICS=tru
 - the remaining `scripts/` files select execution profiles and run installation, development, and builds; the plugin's helpers orchestrate the Sites lifecycle
 - `dist/` contains generated deployment output; `.vinext/`, `.wrangler/`, and `.sites-runtime/` contain ignored local tool state
 - `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
+- `db/schema.ts` describes the D1 tables used by Aula Kanban
 - `@cloudflare/workers-types` provides Worker types; `cloudflare-env.d.ts` declares optional `DB`/`BUCKET` bindings—update these declarations if binding names change
 - `examples/d1/` contains an optional D1 example surface
 - `drizzle.config.ts` supports local migration generation when needed
@@ -111,15 +111,30 @@ SIWC establishes identity only; it does not prove workspace membership. Use the 
 
 Use SIWC for account pages, user-specific dashboards, saved records, and write actions tied to the current ChatGPT user. Leave public content anonymous.
 
-## Local D1 migrations
+## Base de datos local y migraciones
 
-For a D1-backed local preview, generate SQL with `npm run db:generate`. Build once through the Sites skill's build entrypoint (or `npm run build` for standalone use) to generate `dist/server/wrangler.json`, rebuilding if bindings change. From the project root, apply each pending migration in order:
+La base de desarrollo es **independiente de producción**. Tanto `npm run dev` como `npm start` usan `.wrangler/state-v20`; los datos de prueba no se publican ni se sincronizan con el Site. La antigua `.wrangler/state` pertenece a una línea de migraciones anterior: consérvala si tiene datos que necesites y no la uses con el código actual.
+
+`wrangler.local.jsonc` sirve exclusivamente para migraciones locales: identifica la carpeta `drizzle` y una base de prueba. El despliegue sigue usando la configuración de Sites y `.openai/hosting.json`.
+
+Para crear la base local o aplicar únicamente las migraciones pendientes, desde esta carpeta:
 
 ```sh
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_example.sql
+node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 migrations apply DB --local --config wrangler.local.jsonc --persist-to .wrangler/state-v20
 ```
 
-Replace the filename with the pending migration and `DB` with your D1 binding name if different. Use `.wrangler/state`, not `.wrangler/state/v3`; Wrangler adds the versioned directories. Do not replay migrations already applied locally. This updates only the preview database; publishing applies production migrations separately.
+Wrangler registra las migraciones aplicadas en esa base; es seguro repetir el comando y no debe aplicarse cada archivo con `d1 execute --file` en esta misma base, porque ese comando no actualiza el registro. No sustituyas `--local` por `--remote`. No compartas una misma carpeta de estado entre varias instancias activas; detén el servidor antes de migrar.
+
+Para un cambio nuevo:
+
+1. Parte de la última versión publicada y comprueba `git status`. No sobrescribas cambios ajenos.
+2. Actualiza `db/schema.ts` y ejecuta `npm run db:generate`. Revisa el SQL y los metadatos generados en `drizzle/`.
+3. Mantén las migraciones **solo de esquema** y pequeñas. No incluyas datos, semillas ni traslados masivos; planifica esas operaciones por separado y de forma transaccional y repetible. No modifiques ni elimines migraciones o metadatos ya aplicados: añade otra migración. Presta especial atención a las reconstrucciones de tablas generadas automáticamente.
+4. Para experimentar con migraciones todavía no definitivas, usa una carpeta `--persist-to` diferente y desechable. Si una migración ya se aplicó en tu base de trabajo, no la reescribas: crea una nueva base de prueba para revisar la alternativa. Conserva las copias anteriores y nunca borres una base con datos sin revisarla.
+5. Con el servidor detenido, aplica las migraciones pendientes con el comando anterior. Ejecuta `npm test -- --run`, `npx tsc --noEmit`, `npm run lint` y `npm run build`, y prueba los flujos afectados. La base vacía local no representa automáticamente los datos o permisos reales: prueba también copias autorizadas o datos de prueba representativos cuando sea necesario.
+6. Para publicar, deja que el agente de Sites revise la diferencia respecto a producción, las migraciones y la preservación de datos, haga una copia antes de cambios sensibles y complete el flujo de compilación y publicación. Sites aplica las migraciones de esquema antes de subir la nueva versión. Una compilación correcta no garantiza que una migración sea segura.
+
+La transición de la versión 20 conserva `administrators` y `administrator_profiles` como tablas históricas; la aplicación usa `administrators_unified`. No elimines ni vuelvas a migrar esas tablas por tu cuenta sin revisar el estado de cada instancia. `deleted_students` y `deleted_teachers` almacenan el historial de fichas eliminadas y su purga está en `lib/server/deleted-profiles.ts`.
 
 ## Diagnostic Commands
 

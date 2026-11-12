@@ -4,8 +4,8 @@ import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, students } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
-import { validProject } from "../project";
-import { updateProfile } from "../profile-update";
+import { validProject } from "../../../lib/server/project";
+import { updateProfile } from "../../../lib/server/profile-update";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +24,11 @@ function json(data: unknown, status = 200) {
   return Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 }
 
+/**
+ * Lista las fichas de alumnos activas del proyecto con su estado de cuenta.
+ * @param request - Petición con el proyecto en la URL.
+ * @returns Respuesta JSON con las fichas sin el token de mutación.
+ */
 export async function GET(request: Request) {
   if (!(await getChatGPTUser())) return json({ message: "Inicia sesión para acceder a las fichas." }, 401);
   const project = await validProject(request);
@@ -39,6 +44,11 @@ export async function GET(request: Request) {
   }));
 }
 
+/**
+ * Crea, edita o elimina (histórico de 30 días) una ficha de alumno.
+ * @param request - Petición POST, PATCH o DELETE con los datos de la ficha.
+ * @returns Respuesta JSON con la ficha resultante o el error.
+ */
 async function mutate(request: Request) {
   if (!(await getChatGPTUser())) return json({ message: "Inicia sesión para editar las fichas." }, 401);
   const project = await validProject(request);

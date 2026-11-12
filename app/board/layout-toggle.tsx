@@ -1,5 +1,10 @@
 import { LayoutGrid, List } from "lucide-react";
 
+/**
+ * Selector de vista en mosaico o lista con su contador.
+ * @param props - Contador, unidad, etiqueta accesible y estado de la vista.
+ * @returns El control de cambio de distribución.
+ */
 export default function LayoutToggle({ count, unit, ariaLabel, layout, onLayout }: {
   count: number;
   unit: string;

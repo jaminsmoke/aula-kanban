@@ -8,6 +8,11 @@ import { accountLabel } from "./model";
 import type { Administrator, Project } from "./model";
 import { request } from "./api";
 
+/**
+ * Diálogo de ajustes de la cuenta y gestión de administradores.
+ * @param props - Cuenta, permisos, proyecto activo y acciones de cierre y recarga.
+ * @returns El diálogo de ajustes con sus pestañas.
+ */
 export default function SettingsDialog({ user, projectsLoaded, owner, admin, activeProject, onClose, onProjectsChanged }: {
   user: { displayName: string; email: string };
   projectsLoaded: boolean;
@@ -82,9 +87,9 @@ export default function SettingsDialog({ user, projectsLoaded, owner, admin, act
           <div><h3 id="admins-heading">Administradores</h3><p>Gestionan todos los proyectos y administradores. La propiedad del Site se gestiona por separado en Sites.</p></div>
           <form onSubmit={save} className="admin-form">
             <label htmlFor="admin-name">Nombre de la ficha <span>(opcional)</span></label><input id="admin-name" maxLength={80} value={name} onChange={(event) => setName(event.target.value)} placeholder="Nombre del administrador" />
-            <label htmlFor="admin-email">Correo de ChatGPT <span>(opcional)</span></label>
+            <label htmlFor="admin-email">Correo de ChatGPT <span>(opcional)</span>{editing && <small className={`account-status ${email !== editing.email ? "pending" : editing.accountStatus}`}>{email !== editing.email ? "Cambio sin guardar" : accountLabel(editing.accountStatus)}</small>}</label>
             <div><input id="admin-email" type="email" maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nombre@ejemplo.com" /><button className="primary" type="submit" disabled={busy}>{editing ? "Guardar" : "Añadir ficha"}</button></div>
-            <p>Sin correo, la ficha no concede acceso. Al añadirlo, la persona deberá aceptar la invitación. Si se cambia o elimina, se retira el acceso anterior.</p>
+            <p>Sin correo, la ficha no concede acceso. Añadir o cambiar el correo crea una invitación al guardar; no se envía ningún email. Cambiarlo o eliminarlo retira el acceso anterior.</p>
             {editing && !editing.email && <p className="admin-note">Esta ficha no tiene correo: aparece en la lista, pero no da acceso a nadie hasta que añadas uno y la persona acepte la invitación.</p>}
             {editing && <button className="text-button" type="button" onClick={() => { setEditing(null); setEmail(""); setName(""); }}>Cancelar edición</button>}
           </form>

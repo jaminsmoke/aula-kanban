@@ -2,10 +2,19 @@
 
 import type { MouseEvent } from "react";
 import { Check, ChevronDown, Columns3, FolderKanban, Link2, LogOut, Plus, Settings, Trash2, Users } from "lucide-react";
+import appPackage from "../../package.json";
 import type { Project } from "./model";
+
+const appVersion = appPackage.version;
+const appAuthor = typeof appPackage.author === "string" ? appPackage.author : "";
 
 type View = "kanban" | "alumnos" | "profesores";
 
+/**
+ * Cabecera del tablero con marca, versión, navegación y menús.
+ * @param props - Cuenta, proyectos, vista activa y acciones de la cabecera.
+ * @returns La cabecera con selector de proyecto y menú de cuenta.
+ */
 export default function BoardHeader({
   user, activeProject, projects, projectId, view, onView, owner, admin, canManage,
   onNewProject, onShareProject, onMembers, onDeleteProject, onRemix, onSettings,
@@ -33,7 +42,7 @@ export default function BoardHeader({
   return (
     <header className="topbar">
       <div className={`shell topbar-inner${activeProject ? "" : " no-project"}`}>
-        <span className="wordmark"><span className="brand-icon"><Columns3 size={20} strokeWidth={2.6} /></span>Aula Kanban</span>
+        <span className="wordmark"><span className="brand-icon" aria-hidden><Columns3 size={20} strokeWidth={2.6} /></span><span className="brand-text"><span>Aula Kanban</span><small className="brand-meta">v{appVersion} - {appAuthor}</small></span></span>
         {activeProject && <nav className="main-nav" aria-label="Vistas">
           <button type="button" aria-current={view === "kanban" ? "page" : undefined} onClick={() => onView("kanban")}>Kanban</button>
           <button type="button" aria-current={view === "alumnos" ? "page" : undefined} onClick={() => onView("alumnos")}>Alumnos</button>

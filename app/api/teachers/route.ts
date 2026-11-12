@@ -3,8 +3,8 @@ import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, teachers } from "../../../db/schema";
-import { validProject } from "../project";
-import { updateProfile } from "../profile-update";
+import { validProject } from "../../../lib/server/project";
+import { updateProfile } from "../../../lib/server/profile-update";
 
 export const dynamic = "force-dynamic";
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
@@ -12,6 +12,11 @@ const fields = z.object({ name: z.string().trim().min(1).max(80), displayName: z
 const email = z.string().trim().max(254).refine(value => !value || z.string().email().safeParse(value).success, "Correo no válido").transform(value => value.toLowerCase());
 const reference = z.object({ id: z.string().uuid(), revision: z.number().int().positive() });
 
+/**
+ * Lista las fichas de profesores del proyecto con su estado de cuenta.
+ * @param request - Petición con el proyecto en la URL.
+ * @returns Respuesta JSON con las fichas sin el token de mutación.
+ */
 export async function GET(request: Request) {
   const project = await validProject(request);
   if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
@@ -25,6 +30,11 @@ export async function GET(request: Request) {
     return { ...safeTeacher, accountStatus: member?.status ?? "unlinked", ...(maySeeEmail ? { accountEmail: member?.email ?? "", accountMemberId: member?.id ?? null } : {}) };
   }));
 }
+/**
+ * Crea, edita o elimina (histórico de 30 días) una ficha de profesor.
+ * @param request - Petición POST, PATCH o DELETE con los datos de la ficha.
+ * @returns Respuesta JSON con la ficha resultante o el error.
+ */
 async function mutate(request: Request) {
   const project = await validProject(request);
   if (!project) return json({ message: "No se encuentra el proyecto." }, 404);

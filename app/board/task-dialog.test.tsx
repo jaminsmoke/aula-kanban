@@ -36,6 +36,7 @@ function renderDialog(overrides: Partial<Parameters<typeof TaskDialog>[0]> = {})
     onRemoveAssignee: vi.fn(),
     onAssignee: vi.fn(),
     onAssignClass: vi.fn(),
+    onRemoveClass: vi.fn(),
     onSubmit: vi.fn(),
     onClose: vi.fn(),
     onDelete: vi.fn(),
@@ -80,7 +81,9 @@ describe("TaskDialog", () => {
     renderDialog({ editor: { task, status: "pending" }, canEditTask: () => false });
 
     expect(screen.getByRole("dialog", { name: "Detalle de la tarea" })).toBeTruthy();
-    expect(screen.getByText("Creada por: Marta")).toBeTruthy();
+    expect(screen.getByText("Marta")).toBeTruthy();
+    expect(screen.getByText("Media")).toBeTruthy();
+    expect(screen.getByText("Sin fecha")).toBeTruthy();
     expect(screen.queryByPlaceholderText("¿Qué hay que hacer?")).toBeNull();
   });
 
@@ -93,12 +96,46 @@ describe("TaskDialog", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Añadir responsable" }));
     expect(props.onAddAssignee).toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: "Asignar a toda la clase" }));
+    fireEvent.click(screen.getByRole("button", { name: /Asignar a toda la clase \(2\)/ }));
     expect(props.onAssignClass).toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Quitar responsable 1" }));
     expect(props.onRemoveAssignee).toHaveBeenCalledWith(0);
     fireEvent.change(screen.getByRole("combobox", { name: "Responsable 1" }), { target: { value: "student:s2" } });
     expect(props.onAssignee).toHaveBeenCalledWith(0, "student:s2");
+  });
+
+  it("muestra contadores, atajos de fecha y prioridad segmentada", () => {
+    const { props } = renderDialog({ form: { ...blank, dueDate: "2020-01-01" } });
+
+    expect(screen.getByText("0/120")).toBeTruthy();
+    expect(screen.getByText("0/2000")).toBeTruthy();
+    expect(screen.getByText("La fecha ya pasó.")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Sin fecha" }));
+    expect(props.onForm).toHaveBeenCalledWith(expect.objectContaining({ dueDate: "" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Hoy" }));
+    expect(props.onForm).toHaveBeenCalledWith(expect.objectContaining({ dueDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/) }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Alta" }));
+    expect(props.onForm).toHaveBeenCalledWith(expect.objectContaining({ priority: "high" }));
+  });
+
+  it("etiqueta el botón de reclamación y detalla la eliminación", () => {
+    const { props, rerender } = renderDialog({ editor: { task, status: "pending" }, claiming: true });
+
+    expect(screen.getByRole("button", { name: /Asignarme y guardar/ })).toBeTruthy();
+    expect(screen.getByText("Asígnate esta tarea y guarda para poder editar sus detalles.")).toBeTruthy();
+
+    rerender(<TaskDialog {...props} claiming={false} deleting />);
+    expect(screen.getByText(/no hay papelera/)).toBeTruthy();
+    expect(screen.getByText(/Investigar placas/)).toBeTruthy();
+  });
+
+  it("bloquea el cierre del modal mientras se guarda", () => {
+    renderDialog({ saving: true });
+
+    expect((screen.getByRole("button", { name: "Cerrar" }) as HTMLButtonElement).disabled).toBe(true);
   });
 
   it("deja el responsable libre en texto cuando no hay fichas vinculadas", () => {

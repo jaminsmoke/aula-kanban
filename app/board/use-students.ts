@@ -6,6 +6,11 @@ import type { Student } from "../student";
 import { request } from "./api";
 import type { BoardData } from "./use-board-data";
 
+/**
+ * Formularios de crear, editar y eliminar fichas de alumno.
+ * @param props - Datos del tablero y acciones de navegación y aviso.
+ * @returns Estado de los formularios de alumno y sus acciones.
+ */
 export function useStudents({ data, openStudent, onStudentRemoved, notify }: {
   data: BoardData;
   openStudent: (section: string | null) => void;

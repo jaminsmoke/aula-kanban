@@ -1,18 +1,32 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { ArrowRight, Trash2, X } from "lucide-react";
+import { ArrowRight, CalendarDays, Flag, Trash2 } from "lucide-react";
 import { priorities, priorityNames, statuses } from "../task";
 import type { Task, TaskFields } from "../task";
 import type { Student } from "../student";
 import Modal from "../modal";
-import { columns } from "./model";
+import { columns, formatDate, initials } from "./model";
 
 const personValue = (kind: string, profileId: string) => `${kind}:${profileId}`;
 
+function dateValue(offsetDays: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * Diálogo para crear, editar o ver una tarea en solo lectura.
+ * @param props - Editor, formulario, responsables, permisos y acciones.
+ * @returns El diálogo de tarea o su detalle de solo lectura.
+ */
 export default function TaskDialog({
   editor, form, onForm, formError, saving, deleting, onDeleting, canManage, canEditTask, ownStudent,
-  students, teachers, claiming, onAddAssignee, onRemoveAssignee, onAssignee, onAssignClass, onSubmit, onClose, onDelete,
+  students, teachers, claiming, onAddAssignee, onRemoveAssignee, onAssignee, onAssignClass, onRemoveClass, onSubmit, onClose, onDelete,
 }: {
   editor: { task?: Task; status: TaskFields["status"] };
   form: TaskFields;
@@ -31,57 +45,163 @@ export default function TaskDialog({
   onRemoveAssignee: (index: number) => void;
   onAssignee: (index: number, value: string) => void;
   onAssignClass: () => void;
+  onRemoveClass: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onClose: () => void;
   onDelete: (task: Task) => void;
 }) {
+  const readOnly = Boolean(editor.task && !canEditTask(editor.task));
+  const titleError = formError === "Escribe un título para la tarea." ? formError : "";
+  const classStudents = students ?? [];
+  const allStudentsAssigned = Boolean(classStudents.length && classStudents.every((student) => form.assignees.some((person) => person.kind === "student" && person.profileId === student.section)));
+  const selectablePeople = (students?.length ?? 0) + (teachers?.length ?? 0);
+  const addDisabled = claiming || saving || form.assignees.length >= 50 || (students !== null && teachers !== null && selectablePeople === 0) || (students !== null && teachers !== null && form.assignees.length >= selectablePeople && form.assignees.length > 0);
+  const duePreview = form.dueDate ? formatDate.format(new Date(`${form.dueDate}T12:00:00`)) : "Sin fecha";
+  const pastDue = Boolean(form.dueDate && form.dueDate < dateValue(0));
+  const StatusIcon = editor.task ? columns[editor.task.status].icon : null;
+
+  function handleAddAssignee() {
+    const nextIndex = form.assignees.length;
+    onAddAssignee();
+    window.requestAnimationFrame(() => {
+      const select = document.querySelector(`[data-assignee-index="${nextIndex}"]`) as HTMLSelectElement | null;
+      select?.focus();
+    });
+  }
+
   return (
-    <Modal title={editor.task && !canEditTask(editor.task) ? "Detalle de la tarea" : editor.task ? "Editar tarea" : "Nueva tarea"} onClose={onClose}>
-      {editor.task && !canEditTask(editor.task) ? <div className="share-content"><h3>{editor.task.title}</h3><p>{editor.task.description || "Sin descripción"}</p><p>Responsable: {editor.task.assignee || "Sin asignar"} · Estado: {columns[editor.task.status].name}</p><p>Prioridad: {priorityNames[editor.task.priority]}{editor.task.dueDate ? ` · Fecha: ${editor.task.dueDate}` : ""}</p><p>Creada por: {editor.task.creator || "No registrado"}</p></div> : <form onSubmit={onSubmit} className="task-form">
+    <Modal title={readOnly ? "Detalle de la tarea" : editor.task ? "Editar tarea" : "Nueva tarea"} onClose={onClose} closable={!saving}>
+      {readOnly && editor.task ? <div className="task-detail">
+        <div className="task-detail-heading">
+          <h3>{editor.task.title}</h3>
+          <span className={`priority ${editor.task.priority}`}><Flag size={12} /> {priorityNames[editor.task.priority]}</span>
+        </div>
+        <p>{editor.task.description || "Sin descripción"}</p>
+        <dl className="task-detail-meta">
+          <div>
+            <dt>Responsables</dt>
+            <dd>
+              {editor.task.assignees.length ? (
+                <ul className="task-detail-people">
+                  {editor.task.assignees.map((person) => (
+                    <li key={`${person.kind}:${person.profileId}`}>
+                      <span className="avatar">{initials(person.name)}</span>
+                      <span>{person.name}</span>
+                      {person.removed && <span className="removed-tag">(eliminado)</span>}
+                    </li>
+                  ))}
+                </ul>
+              ) : editor.task.assignee || "Sin asignar"}
+            </dd>
+          </div>
+          <div>
+            <dt>Estado</dt>
+            <dd>{StatusIcon && <StatusIcon size={15} />} {columns[editor.task.status].name}</dd>
+          </div>
+          <div>
+            <dt>Fecha de entrega</dt>
+            <dd>{editor.task.dueDate ? <time dateTime={editor.task.dueDate}><CalendarDays size={14} /> {formatDate.format(new Date(`${editor.task.dueDate}T12:00:00`))}</time> : "Sin fecha"}</dd>
+          </div>
+          <div>
+            <dt>Creada por</dt>
+            <dd>{editor.task.creator || "No registrado"}</dd>
+          </div>
+        </dl>
+      </div> : <form onSubmit={onSubmit} className={claiming ? "task-form claiming" : "task-form"}>
+        {claiming && <p className="claim-banner">Asígnate esta tarea y guarda para poder editar sus detalles.</p>}
         {editor.task && <p className="intro">Creada por: {editor.task.creator || "No registrado"}</p>}
-        <label>Título<input autoFocus required disabled={claiming} maxLength={120} placeholder="¿Qué hay que hacer?" value={form.title} onChange={(event) => onForm({ ...form, title: event.target.value })} /></label>
-        <label>Descripción <span>(opcional)</span><textarea disabled={claiming} maxLength={2000} rows={3} placeholder="Detalles, materiales o enlaces" value={form.description} onChange={(event) => onForm({ ...form, description: event.target.value })} /></label>
-        <div className="form-row">
-          <label>Responsables{canManage ? <>
-            <div className="assignee-rows">
-              {form.assignees.map((person, index) => {
-                const taken = new Set(form.assignees.filter((_, position) => position !== index).map((item) => personValue(item.kind, item.profileId)));
-                const value = personValue(person.kind, person.profileId);
-                // A responsable eliminated from the class keeps their row as history for 30 days.
-                const active = person.kind === "student" ? students?.some((student) => student.section === person.profileId) : teachers?.some((teacher) => teacher.id === person.profileId);
-                return <div className="assignee-row" key={`${person.kind}:${person.profileId}:${index}`}>
-                  <select aria-label={`Responsable ${index + 1}`} value={person.profileId ? value : ""} disabled={claiming} onChange={(event) => onAssignee(index, event.target.value)}>
-                    {person.profileId && !active && <option value={value}>{person.name} (eliminado)</option>}
-                    <option value="" disabled>Selecciona una persona</option>
-                    <optgroup label="Alumnos">{students?.filter((student) => !taken.has(personValue("student", student.section))).map((student) => <option key={student.section} value={personValue("student", student.section)}>{student.displayName || student.name}</option>)}</optgroup>
-                    <optgroup label="Profesores">{teachers?.filter((teacher) => !taken.has(personValue("teacher", teacher.id))).map((teacher) => <option key={teacher.id} value={personValue("teacher", teacher.id)}>{teacher.displayName || teacher.name}</option>)}</optgroup>
-                  </select>
-                  <button type="button" className="icon-button" aria-label={`Quitar responsable ${index + 1}`} disabled={claiming} onClick={() => onRemoveAssignee(index)}><X size={16} /></button>
-                </div>;
-              })}
-            </div>
-            <div className="assignee-actions">
-              <button type="button" className="text-button" disabled={claiming} onClick={onAddAssignee}>Añadir responsable</button>
-              <button type="button" className="text-button" disabled={claiming || !students?.length} onClick={onAssignClass}>Asignar a toda la clase</button>
-            </div>
-            {!form.assignees.length && <input maxLength={80} placeholder="Sin asignar o responsable en texto" value={form.assignee} onChange={(event) => onForm({ ...form, assignee: event.target.value })} />}
-          </> : <select value={ownStudent && form.assignees.some(person => person.kind === "student" && person.profileId === ownStudent.section) ? ownStudent.section : ""} onChange={(event) => { const assigned = Boolean(event.target.value && ownStudent); onForm({ ...form, assignee: assigned ? ownStudent!.name : "", assignees: assigned ? [{ kind: "student", profileId: ownStudent!.section, name: ownStudent!.displayName || ownStudent!.name }] : [] }); }}>
-            <option value="">Sin asignar</option>{ownStudent && <option value={ownStudent.section}>{ownStudent.displayName || ownStudent.name} (tú)</option>}
-          </select>}</label>
-          <label>Fecha de entrega<input disabled={claiming} type="date" value={form.dueDate} onChange={(event) => onForm({ ...form, dueDate: event.target.value })} /></label>
+        <div className="field">
+          <div className="field-heading">
+            <label htmlFor="task-title">Título</label>
+            <span className="field-count">{form.title.length}/120</span>
+          </div>
+          <input id="task-title" autoFocus required disabled={claiming} maxLength={120} placeholder="¿Qué hay que hacer?" value={form.title} aria-invalid={Boolean(titleError)} aria-describedby={titleError ? "task-title-error" : undefined} onChange={(event) => onForm({ ...form, title: event.target.value })} />
+          {titleError && <p id="task-title-error" className="field-error">{titleError}</p>}
         </div>
-        <div className="form-row">
-          <label>Prioridad<select disabled={claiming} value={form.priority} onChange={(event) => onForm({ ...form, priority: event.target.value as TaskFields["priority"] })}>
-            {priorities.map((priority) => <option key={priority} value={priority}>{priorityNames[priority]}</option>)}
-          </select></label>
-          <label>Estado<select disabled={claiming} value={form.status} onChange={(event) => onForm({ ...form, status: event.target.value as TaskFields["status"] })}>
-            {statuses.map((status) => <option key={status} value={status}>{columns[status].name}</option>)}
-          </select></label>
+        <div className="field claim-muted">
+          <div className="field-heading">
+            <label htmlFor="task-description">Descripción <span>(opcional)</span></label>
+            <span className="field-count">{form.description.length}/2000</span>
+          </div>
+          <textarea id="task-description" disabled={claiming} maxLength={2000} rows={3} placeholder="Detalles, materiales o enlaces" value={form.description} onChange={(event) => onForm({ ...form, description: event.target.value })} />
         </div>
-        {claiming && <p className="intro">Asígnate esta tarea y guarda para poder editar sus detalles.</p>}
+        <div className="field assignee-field">
+          <span className="field-label" id="task-assignees-label">Responsables</span>
+            {canManage ? <>
+              <div className="assignee-rows">
+                {form.assignees.map((person, index) => {
+                  const taken = new Set(form.assignees.filter((_, position) => position !== index).map((item) => personValue(item.kind, item.profileId)));
+                  const value = personValue(person.kind, person.profileId);
+                  // A responsable eliminated from the class keeps their row as history for 30 days.
+                  const active = person.kind === "student" ? students?.some((student) => student.section === person.profileId) : teachers?.some((teacher) => teacher.id === person.profileId);
+                  return <div className="assignee-row" key={`${person.kind}:${person.profileId}:${index}`}>
+                    <select data-assignee-index={index} aria-label={`Responsable ${index + 1}`} value={person.profileId ? value : ""} disabled={claiming} onChange={(event) => onAssignee(index, event.target.value)}>
+                      {person.profileId && !active && <option value={value}>{person.name} (eliminado)</option>}
+                      <option value="">Selecciona una persona</option>
+                      <optgroup label="Alumnos">{students?.filter((student) => !taken.has(personValue("student", student.section))).map((student) => <option key={student.section} value={personValue("student", student.section)}>{student.displayName || student.name}</option>)}</optgroup>
+                      <optgroup label="Profesores">{teachers?.filter((teacher) => !taken.has(personValue("teacher", teacher.id))).map((teacher) => <option key={teacher.id} value={personValue("teacher", teacher.id)}>{teacher.displayName || teacher.name}</option>)}</optgroup>
+                    </select>
+                    <button type="button" className="text-button remove-assignee" aria-label={`Quitar responsable ${index + 1}`} disabled={claiming} onClick={() => onRemoveAssignee(index)}>Quitar</button>
+                  </div>;
+                })}
+              </div>
+              <div className="assignee-actions">
+                <button type="button" className="text-button" disabled={addDisabled} onClick={handleAddAssignee}>Añadir responsable</button>
+                <button type="button" className="text-button" disabled={claiming || !classStudents.length} onClick={allStudentsAssigned ? onRemoveClass : onAssignClass}>
+                  {allStudentsAssigned ? "Quitar clase" : `Asignar a toda la clase (${classStudents.length})`}
+                </button>
+              </div>
+              {form.assignees.length > 0 && <p className="field-hint">Los responsables vinculados sustituyen al texto libre.</p>}
+              {(students === null || teachers === null) && <p className="field-hint">Cargando responsables…</p>}
+              {students !== null && teachers !== null && selectablePeople === 0 && <p className="field-hint">Sin fichas de alumnos o profesores. Puedes usar texto libre o crear fichas.</p>}
+              {!form.assignees.length && <>
+                <input id="task-assignee-text" aria-labelledby="task-assignees-label" maxLength={80} placeholder="Sin asignar o responsable en texto" value={form.assignee} onChange={(event) => onForm({ ...form, assignee: event.target.value })} />
+                <p className="field-hint">Máx. 80 caracteres. Solo se usa si no hay responsables vinculados.</p>
+              </>}
+            </> : <>
+              <select id="task-own-assignee" aria-labelledby="task-assignees-label" value={ownStudent && form.assignees.some(person => person.kind === "student" && person.profileId === ownStudent.section) ? ownStudent.section : ""} onChange={(event) => { const assigned = Boolean(event.target.value && ownStudent); onForm({ ...form, assignee: assigned ? ownStudent!.name : "", assignees: assigned ? [{ kind: "student", profileId: ownStudent!.section, name: ownStudent!.displayName || ownStudent!.name }] : [] }); }}>
+                <option value="">Sin asignar</option>{ownStudent && <option value={ownStudent.section}>{ownStudent.displayName || ownStudent.name} (tú)</option>}
+              </select>
+              {ownStudent && <p className="field-hint">Solo puedes asignarte la tarea a ti.</p>}
+            </>}
+        </div>
+        <div className="field claim-muted">
+            <div className="field-heading">
+              <label htmlFor="task-due-date">Fecha de entrega</label>
+              <span className="field-count">{duePreview}</span>
+            </div>
+            <input id="task-due-date" disabled={claiming} type="date" value={form.dueDate} onChange={(event) => onForm({ ...form, dueDate: event.target.value })} />
+            <div className="date-quick" aria-label="Atajos de fecha">
+              <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, dueDate: dateValue(0) })}>Hoy</button>
+              <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, dueDate: dateValue(1) })}>Mañana</button>
+              <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, dueDate: dateValue(3) })}>En 3 días</button>
+              <button type="button" className="text-button" disabled={claiming} onClick={() => onForm({ ...form, dueDate: "" })}>Sin fecha</button>
+            </div>
+            {pastDue && <p className="date-warning">La fecha ya pasó.</p>}
+        </div>
+        <div className="form-row claim-muted">
+          <div className="field">
+            <span className="field-label" id="task-priority-label">Prioridad</span>
+            <div className="segmented" role="group" aria-labelledby="task-priority-label">
+              {priorities.map((priority) => (
+                <button key={priority} type="button" className={`segmented-option ${priority}`} aria-pressed={form.priority === priority} disabled={claiming} onClick={() => onForm({ ...form, priority })}>
+                  {priorityNames[priority]}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="field">
+            <label htmlFor="task-status">Estado</label>
+            <select id="task-status" disabled={claiming} value={form.status} onChange={(event) => onForm({ ...form, status: event.target.value as TaskFields["status"] })}>
+              {statuses.map((status) => <option key={status} value={status}>{columns[status].name}</option>)}
+            </select>
+          </div>
+        </div>
         {!canManage && !ownStudent && <p className="intro">El profesorado debe vincular tu cuenta a una ficha para que puedas asignarte tareas.</p>}
         {formError && <div role="alert" className="alert">{formError}</div>}
-        {deleting && <p className="delete-prompt">¿Eliminar esta tarea del tablero de todo el grupo?</p>}
+        {deleting && editor.task && <div className="delete-confirm" role="group" aria-label="Confirmar eliminación">
+          <p className="delete-prompt"><strong>¿Eliminar “{editor.task.title}”?</strong> Se eliminará del tablero de todo el grupo y no hay papelera.</p>
+        </div>}
         <div className="modal-actions">
           {editor.task && !deleting && !claiming && <button type="button" className="danger-quiet" disabled={saving} onClick={() => onDeleting(true)}><Trash2 size={16} /> Eliminar</button>}
           <span className="spacer" />
@@ -93,7 +213,7 @@ export default function TaskDialog({
           ) : (
             <>
               <button type="button" className="secondary" disabled={saving} onClick={onClose}>Cancelar</button>
-              <button type="submit" className="primary" disabled={saving}>{saving ? "Guardando…" : editor.task ? "Guardar cambios" : "Crear tarea"} <ArrowRight size={17} /></button>
+              <button type="submit" className="primary" disabled={saving}>{saving ? "Guardando…" : claiming ? "Asignarme y guardar" : editor.task ? "Guardar cambios" : "Crear tarea"} <ArrowRight size={17} /></button>
             </>
           )}
         </div>

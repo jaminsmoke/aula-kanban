@@ -5,9 +5,9 @@ import { getDb } from "../../../db";
 import { deletedStudents, deletedTeachers, projectMembers, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { priorities, statuses } from "../../task";
-import { validProject } from "../project";
+import { validProject } from "../../../lib/server/project";
 import { normalizeName, personLabel } from "../../assignments";
-import { purgeDeletedProfiles } from "../deleted-profiles";
+import { purgeDeletedProfiles } from "../../../lib/server/deleted-profiles";
 
 export const dynamic = "force-dynamic";
 const person = z.object({ kind: z.enum(["student", "teacher"]), profileId: z.string().min(1).max(80) });
@@ -62,6 +62,12 @@ function sameRefs(a: Ref[], b: Ref[]) {
 // Linked assignments live only in task_assignees. The text column is reserved for legacy or external labels.
 function unlinkedAssigneeText(refs: Ref[], fallback: string) { return refs.length ? "" : fallback; }
 
+/**
+ * Lista, crea, edita o elimina tareas del proyecto según el método.
+ * Al listar purga primero las bajas caducadas de 30 días.
+ * @param request - Petición con el proyecto en la URL y, si aplica, el cuerpo JSON.
+ * @returns Respuesta JSON con las tareas decoradas o el error.
+ */
 async function handle(request: Request) {
   const user = await getChatGPTUser(); if (!user) return json({ message: "Inicia sesión para acceder al tablero." }, 401);
   const project = await validProject(request); if (!project) return json({ message: "No se encuentra el proyecto." }, 404);

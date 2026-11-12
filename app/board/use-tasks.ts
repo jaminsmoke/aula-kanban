@@ -9,6 +9,11 @@ import { request } from "./api";
 import type { BoardData } from "./use-board-data";
 import type { GripEvent } from "./task-card";
 
+/**
+ * Estado del tablero de tareas: filtros, editor, responsables y arrastre.
+ * @param props - Datos del tablero, permisos y avisos.
+ * @returns Filtros, editor, tareas visibles, progreso y acciones.
+ */
 export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
   data: BoardData;
   hasProject: boolean;
@@ -48,7 +53,7 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
 
   function storeAssignees(next: TaskAssignee[]) {
     const linked = next.filter((person) => person.profileId);
-    setForm((current) => ({ ...current, assignees: linked, assignee: linked.length ? linked.map((person) => person.name).join(", ") : current.assignee }));
+    setForm((current) => ({ ...current, assignees: linked, assignee: linked.length ? linked.map((person) => person.name).join(", ") : "" }));
   }
 
   function addAssignee() {
@@ -56,10 +61,14 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
   }
 
   function removeAssignee(index: number) {
-    setForm((current) => ({ ...current, assignees: current.assignees.filter((_, position) => position !== index) }));
+    storeAssignees(form.assignees.filter((_, position) => position !== index));
   }
 
   function chooseAssignee(index: number, value: string) {
+    if (!value) {
+      storeAssignees(form.assignees.map((item, position) => position === index ? { ...item, profileId: "", name: "" } : item));
+      return;
+    }
     const person = assigneeOptions.find((option) => `${option.kind}:${option.profileId}` === value);
     if (!person) return;
     storeAssignees(form.assignees.map((item, position) => position === index ? person : item));
@@ -72,6 +81,10 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
       ...classPeople.filter((person) => !form.assignees.some((item) => item.kind === person.kind && item.profileId === person.profileId)),
     ];
     storeAssignees(merged);
+  }
+
+  function removeWholeClass() {
+    storeAssignees(form.assignees.filter((person) => person.kind !== "student"));
   }
 
   function openEditor(status: TaskFields["status"], task?: Task) {
@@ -112,6 +125,11 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
     event.preventDefault();
     if (!form.title.trim()) {
       setFormError("Escribe un título para la tarea.");
+      return;
+    }
+    const emptyIndex = form.assignees.findIndex((person) => !person.profileId);
+    if (emptyIndex >= 0) {
+      setFormError(`Elige o quita el responsable ${emptyIndex + 1}.`);
       return;
     }
     const task = editor?.task;
@@ -184,7 +202,7 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
     search, setSearch, filter, setFilter, studentFilter, setStudentFilter, clearStudentFilter,
     editor, setEditor, form, setForm, deleting, setDeleting, saving, formError,
     dragged, destination, openEditor, mutate, submit, grab, move, cancelDrag, release,
-    addAssignee, removeAssignee, chooseAssignee, assignWholeClass,
+    addAssignee, removeAssignee, chooseAssignee, assignWholeClass, removeWholeClass,
     canEditTask, claiming, visible, filtered, total, finished, progress,
   };
 }

@@ -7,6 +7,11 @@ import Modal from "../modal";
 import type { Member } from "./model";
 import { request } from "./api";
 
+/**
+ * Diálogo para invitar cuentas y gestionar miembros del proyecto.
+ * @param props - Fichas disponibles, permisos y acciones de cierre y recarga.
+ * @returns El diálogo de gestión de miembros.
+ */
 export default function MemberDialog({ students, teachers, owner, admin, onClose, onChanged }: {
   students: Student[] | null;
   teachers: { id: string; name: string; displayName: string }[] | null;

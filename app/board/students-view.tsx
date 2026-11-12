@@ -8,6 +8,11 @@ import LayoutToggle from "./layout-toggle";
 import ProfileCard from "./profile-card";
 import ProfileDetail from "./profile-detail";
 
+/**
+ * Vista de alumnos con su rejilla o lista y el detalle de la ficha.
+ * @param props - Alumnos, tareas, selección, vista y acciones de gestión.
+ * @returns La vista completa de alumnos.
+ */
 export default function StudentsView({
   students, tasks, all, allPeople, ownStudent, canManage, loadError, studentError, onRetryTasks, onRetryStudents,
   studentName, onSelectStudent, layout, onLayout, onCreate, onEdit, onDelete, onOpenTask,

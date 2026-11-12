@@ -18,6 +18,10 @@ const SIGN_IN_PATH = "/signin-with-chatgpt";
 const SIGN_OUT_PATH = "/signout-with-chatgpt";
 const CALLBACK_PATH = "/callback";
 
+/**
+ * Lee la cuenta autenticada desde las cabeceras de ChatGPT.
+ * @returns La cuenta con identificador, correo y nombre, o `null` sin sesión.
+ */
 export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
   const requestHeaders = await headers();
   const userId = requestHeaders.get(USER_ID_HEADER);
@@ -39,6 +43,11 @@ export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
   };
 }
 
+/**
+ * Exige sesión: devuelve la cuenta o redirige al inicio de sesión.
+ * @param returnTo - Ruta a la que volver tras iniciar sesión.
+ * @returns La cuenta autenticada.
+ */
 export async function requireChatGPTUser(
   returnTo: string,
 ): Promise<ChatGPTUser> {
@@ -48,11 +57,21 @@ export async function requireChatGPTUser(
   redirect(chatGPTSignInPath(returnTo));
 }
 
+/**
+ * Construye la ruta de inicio de sesión con retorno seguro.
+ * @param returnTo - Ruta relativa de destino tras iniciar sesión.
+ * @returns Ruta de inicio de sesión.
+ */
 export function chatGPTSignInPath(returnTo: string): string {
   const safeReturnTo = safeRelativeReturnPath(returnTo);
   return `${SIGN_IN_PATH}?return_to=${encodeURIComponent(safeReturnTo)}`;
 }
 
+/**
+ * Construye la ruta de cierre de sesión con retorno seguro.
+ * @param returnTo - Ruta relativa de destino tras cerrar sesión.
+ * @returns Ruta de cierre de sesión.
+ */
 export function chatGPTSignOutPath(returnTo = "/"): string {
   const safeReturnTo = safeRelativeReturnPath(returnTo);
   return `${SIGN_OUT_PATH}?return_to=${encodeURIComponent(safeReturnTo)}`;

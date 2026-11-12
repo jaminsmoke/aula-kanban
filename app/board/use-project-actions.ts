@@ -5,6 +5,11 @@ import type { FormEvent } from "react";
 import type { Project } from "./model";
 import { RequestError, request } from "./api";
 
+/**
+ * Acciones de crear, eliminar y compartir proyectos.
+ * @param props - Proyectos disponibles y el identificador activo.
+ * @returns Estado de los diálogos de proyecto y sus acciones.
+ */
 export function useProjectActions({ projects, projectId }: { projects: Project[]; projectId: string }) {
   const [newProject, setNewProject] = useState<{ id: string; name: string } | null>(null);
   const [projectError, setProjectError] = useState("");

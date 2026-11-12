@@ -3,13 +3,17 @@ import { z } from "zod";
 import { getDb } from "../../../db";
 import { deletedStudents, deletedTeachers, projectMembers, projects, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
-import { isAdministrator, isOwner } from "../project";
+import { isAdministrator, isOwner } from "../../../lib/server/project";
 
 export const dynamic = "force-dynamic";
 function json(data: unknown, status = 200) {
   return Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 }
 
+/**
+ * Lista los proyectos accesibles para la cuenta autenticada.
+ * @returns Respuesta JSON con proyectos, rol y banderas de propietario/administrador.
+ */
 export async function GET() {
   const user = await getChatGPTUser();
   if (!user) return json({ message: "Inicia sesión para acceder a los proyectos." }, 401);
@@ -25,6 +29,11 @@ export async function GET() {
   }), isOwner: false });
 }
 
+/**
+ * Crea un proyecto nuevo (solo propietario o administrador).
+ * @param request - Petición con identificador y nombre del proyecto.
+ * @returns Respuesta JSON con el proyecto creado.
+ */
 export async function POST(request: Request) {
   const user = await getChatGPTUser();
   if (!user || !(isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden crear proyectos." }, 403);
@@ -38,6 +47,11 @@ export async function POST(request: Request) {
   return json({ message: "No se pudo crear el proyecto. Vuelve a intentarlo." }, 409);
 }
 
+/**
+ * Elimina un proyecto con sus tareas, fichas, miembros e histórico.
+ * @param request - Petición con el identificador del proyecto.
+ * @returns Respuesta JSON con el identificador y si se borró.
+ */
 export async function DELETE(request: Request) {
   const user = await getChatGPTUser();
   if (!user || !(isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden eliminar proyectos." }, 403);

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { getDb } from "../../../db";
 import { administrators } from "../../../db/schema";
 import { getChatGPTUser, type ChatGPTUser } from "../../chatgpt-auth";
-import { isAdministrator, isOwner, isOwnerEmail } from "../project";
+import { isAdministrator, isOwner, isOwnerEmail } from "../../../lib/server/project";
 
 export const dynamic = "force-dynamic";
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
@@ -19,12 +19,21 @@ function view(row: Row) {
   return { id: row.id, displayName: row.displayName, email: row.email ?? "", revision: row.revision, accountStatus: row.userId ? "active" : row.email ? "pending" : "unlinked", active: Boolean(row.userId) };
 }
 
+/**
+ * Lista las fichas de administrador ordenadas por nombre y correo.
+ * @returns Respuesta JSON con las fichas visibles.
+ */
 export async function GET() {
   if (!await authorized()) return json({ message: "Solo el propietario o un administrador pueden gestionar administradores." }, 403);
   const rows = await getDb().select().from(administrators).orderBy(asc(administrators.displayName), asc(administrators.email));
   return json(rows.map(view));
 }
 
+/**
+ * Crea una ficha de administrador, con invitación pendiente si lleva correo.
+ * @param request - Petición con nombre a mostrar y correo opcional.
+ * @returns Respuesta JSON con la ficha creada.
+ */
 export async function POST(request: Request) {
   const user = await authorized(); if (!user) return json({ message: "Solo el propietario o un administrador pueden gestionar administradores." }, 403);
   const parsed = fields.safeParse(await input(request)); if (!parsed.success) return json({ message: "Revisa los datos de la ficha." }, 400);
@@ -41,6 +50,11 @@ export async function POST(request: Request) {
   } catch { return json({ message: "No se pudo crear la ficha. Comprueba que el correo no esté ya asignado a otro administrador." }, 409); }
 }
 
+/**
+ * Actualiza una ficha; cambiar el correo retira el acceso hasta reaceptar.
+ * @param request - Petición con identificador, revisión y nuevos valores.
+ * @returns Respuesta JSON con la ficha actualizada.
+ */
 export async function PATCH(request: Request) {
   const user = await authorized(); if (!user) return json({ message: "Solo el propietario o un administrador pueden gestionar administradores." }, 403);
   const parsed = fields.extend({ id: z.string().uuid(), revision: z.number().int().nonnegative().optional() }).safeParse(await input(request));
@@ -62,6 +76,11 @@ export async function PATCH(request: Request) {
   } catch { return json({ message: "No se guardaron los cambios. Comprueba que el correo no esté asignado a otro administrador." }, 409); }
 }
 
+/**
+ * Elimina una ficha de administrador.
+ * @param request - Petición con identificador y revisión de la ficha.
+ * @returns Respuesta JSON con el identificador eliminado.
+ */
 export async function DELETE(request: Request) {
   const user = await authorized(); if (!user) return json({ message: "Solo el propietario o un administrador pueden gestionar administradores." }, 403);
   const parsed = z.object({ id: z.string().uuid(), revision: z.number().int().nonnegative().optional() }).safeParse(await input(request));

@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import TeachersView from "./teachers-view";
-import { jsonResponse } from "../vitest.setup";
-import type { Teacher } from "./teachers/model";
+import { jsonResponse } from "../../vitest.setup";
+import type { Teacher } from "./model";
 
 const teacher: Teacher = {
   id: "tch1",

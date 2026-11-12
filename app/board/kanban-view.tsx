@@ -8,6 +8,11 @@ import TaskCard from "./task-card";
 import type { GripEvent } from "./task-card";
 import { columns } from "./model";
 
+/**
+ * Vista Kanban con hero, progreso, filtros y las cuatro columnas.
+ * @param props - Tareas visibles, filtros, estado de carga y acciones de edición y arrastre.
+ * @returns La vista completa del tablero.
+ */
 export default function KanbanView({
   tasks, visible, students, search, filter, studentFilter, onSearch, onFilter, onStudentFilter,
   loadError, onRetry, saving, isGuest, filtered, dragged, destination, canEditTask, onOpenEditor,

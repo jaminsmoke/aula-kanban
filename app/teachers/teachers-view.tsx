@@ -3,17 +3,22 @@
 import { useCallback, useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { Plus } from "lucide-react";
-import type { Task } from "./task";
-import type { Student } from "./student";
-import { taskBelongsTo } from "./assignments";
-import LayoutToggle from "./board/layout-toggle";
-import ProfileCard from "./board/profile-card";
-import ProfileDetail from "./board/profile-detail";
-import { TeacherDeleteDialog, TeacherFormDialog } from "./teachers/teacher-dialogs";
-import { blankTeacher } from "./teachers/model";
-import { listTeachers, saveTeacher } from "./teachers/api";
-import type { Teacher } from "./teachers/model";
+import type { Task } from "../task";
+import type { Student } from "../student";
+import { taskBelongsTo } from "../assignments";
+import LayoutToggle from "../board/layout-toggle";
+import ProfileCard from "../board/profile-card";
+import ProfileDetail from "../board/profile-detail";
+import { TeacherDeleteDialog, TeacherFormDialog } from "./teacher-dialogs";
+import { blankTeacher } from "./model";
+import { listTeachers, saveTeacher } from "./api";
+import type { Teacher } from "./model";
 
+/**
+ * Vista de profesores con su rejilla o lista y el detalle de la ficha.
+ * @param props - Proyecto, permisos, tareas y alumnos para las asignaciones.
+ * @returns La vista completa de profesores.
+ */
 export default function TeachersView({ projectId, isAdmin, ownTeacherId, tasks, students, openTask }: { projectId: string; isAdmin: boolean; ownTeacherId: string | null; tasks: Task[] | null; students: Student[] | null; openTask: (task: Task) => void }) {
   const [teachers, setTeachers] = useState<Teacher[] | null>(null);
   const [selected, setSelected] = useState<string | null>(null);

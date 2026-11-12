@@ -4,14 +4,19 @@ import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import { X } from "lucide-react";
 
-export default function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
+/**
+ * Diálogo modal nativo con título y botón de cierre.
+ * @param props - Título, cierre, contenido y si se puede cerrar.
+ * @returns El elemento `dialog` abierto con su contenido.
+ */
+export default function Modal({ title, onClose, children, closable = true }: { title: string; onClose: () => void; children: ReactNode; closable?: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => { ref.current?.showModal(); }, []);
   return (
-    <dialog ref={ref} aria-label={title} onCancel={(event) => { event.preventDefault(); onClose(); }}>
+    <dialog ref={ref} aria-label={title} onCancel={(event) => { event.preventDefault(); if (closable) onClose(); }}>
       <div className="modal-header">
         <h2>{title}</h2>
-        <button type="button" className="icon-button" onClick={onClose} aria-label="Cerrar"><X size={20} /></button>
+        <button type="button" className="icon-button" disabled={!closable} onClick={onClose} aria-label="Cerrar"><X size={20} /></button>
       </div>
       {children}
     </dialog>
