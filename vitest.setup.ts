@@ -41,3 +41,24 @@ export function stubLocation(search = "") {
 export function jsonResponse(body: unknown, ok = true, status = ok ? 200 : 400) {
   return { ok, status, json: async () => body } as Response;
 }
+
+/* motion/react (whileInView) necesita IntersectionObserver; jsdom no lo tiene
+   y las secciones con reveal quedarían invisibles. El stub considera
+   visible todo lo observado. */
+if (typeof globalThis.IntersectionObserver === "undefined") {
+  class IntersectionObserverStub {
+    private readonly callback: IntersectionObserverCallback;
+    constructor(callback: IntersectionObserverCallback) {
+      this.callback = callback;
+    }
+    observe(target: Element) {
+      this.callback(
+        [{ isIntersecting: true, target } as IntersectionObserverEntry],
+        this as unknown as IntersectionObserver,
+      );
+    }
+    unobserve() {}
+    disconnect() {}
+  }
+  Object.defineProperty(globalThis, "IntersectionObserver", { configurable: true, value: IntersectionObserverStub });
+}
