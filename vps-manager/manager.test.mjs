@@ -45,6 +45,15 @@ test('exige el socket rootless del usuario propio', () => {
   assert.throws(() => rootlessSocket(undefined, '/var/run'));
 });
 
+test('acepta las tres aplicaciones registradas en el mismo catálogo', () => {
+  const server = createManager({
+    token: 'x'.repeat(40),
+    stack: { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' },
+    apps: ['affine', 'nodum', 'n8n'].map(id => ({ id, url: `https://${id}.example.test` })),
+  });
+  server.close();
+});
+
 test('bloquea un compose que define nombres globales de contenedor', async () => {
   const calls = [], token = 'y'.repeat(40);
   const server = createManager({ token, stack: { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'affine', url: 'https://affine.example.test' }], execute: async args => { calls.push(args); return args.includes('config') ? JSON.stringify({ services: { ...services, affine: { ...services.affine, container_name: 'identity' } } }) : ''; } });

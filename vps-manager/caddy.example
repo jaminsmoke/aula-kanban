@@ -11,7 +11,7 @@
 }
 
 {$AULA_AGENT_DOMAIN} {
-  @api path /v1/apps /v1/apps/affine /v1/apps/affine/reset /v1/apps/nodum /v1/apps/nodum/reset
+  @api path /v1/apps /v1/apps/affine /v1/apps/affine/reset /v1/apps/nodum /v1/apps/nodum/reset /v1/apps/n8n /v1/apps/n8n/reset
   handle @api {
     reverse_proxy 127.0.0.1:8765
   }

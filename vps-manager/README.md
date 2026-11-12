@@ -1,6 +1,6 @@
-# Gestor de aplicaciones: prototipo
+# Gestor de aplicaciones VPS
 
-Este directorio contiene un prototipo local **todavía no apto para producción**. No lo instales en un VPS ni configures credenciales de producción todavía. Se exige `SPACE_MANAGER_EXPERIMENTAL=1` para arrancarlo y las pruebas usan un Docker simulado.
+El gestor requiere `SPACE_MANAGER_EXPERIMENTAL=1` para arrancar. La instalación inicial se ha probado con AFFiNE en Docker local y con un gestor aislado en el VPS; las pruebas automatizadas del gestor usan Docker simulado. Antes de habilitar otras aplicaciones hay que validar sus plantillas y configuración.
 
 El protocolo en preparación usa `SPACE_MANAGER_URL` y `SPACE_MANAGER_TOKEN` solo en el servidor de Sites. El gestor escucha exclusivamente en `127.0.0.1`; deberá quedar protegido por HTTPS y controles de acceso antes de conectarlo. Cada copia tiene un solo proyecto Compose con nombre `aula-kanban-` y un identificador propio. La configuración local registra un catálogo fijo y las operaciones no aceptan comandos ni rutas desde la web. La desinstalación se limita a los servicios de la aplicación y conserva los volúmenes; no se ejecutan `down` ni `prune`.
 

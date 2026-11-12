@@ -11,8 +11,6 @@ const json = (body: unknown, status = 200) => Response.json(body, { status, head
 const appId = z.enum(["nodum", "affine", "n8n", "excalidraw"]);
 /** Aplicaciones nativas (librerías del propio Site): su estado vive en la DB. */
 const NATIVE_APP_IDS = ["excalidraw"] as const;
-// El gestor aún está en desarrollo; no se activa con secretos por accidente.
-const VPS_MANAGER_ENABLED: boolean = false;
 const item = z.object({ id: appId, status: z.enum(["installed", "stopped", "not_installed", "working", "error"]), url: z.string().url().nullable(), version: z.string().min(1).max(64).nullable() });
 
 /**
@@ -41,7 +39,6 @@ export async function GET(request: Request) {
   try {
     natives = await nativeApps(project.id);
   } catch { return json({ message: "No se pudo consultar las aplicaciones instaladas." }, 502); }
-  if (!VPS_MANAGER_ENABLED) return json({ configured: false, apps: natives });
   try {
     const result = await callSpaceManager("/v1/apps", "GET");
     if (result === null) return json({ configured: false, apps: natives });
@@ -81,7 +78,6 @@ export async function POST(request: Request) {
     });
     return json({ accepted: true }, 200);
   }
-  if (!VPS_MANAGER_ENABLED) return json({ message: "El gestor de aplicaciones VPS está en desarrollo." }, 503);
   try {
     const path = parsed.data.action === "reset" ? `/v1/apps/${parsed.data.id}/reset` : `/v1/apps/${parsed.data.id}`;
     const result = await callSpaceManager(path, parsed.data.action === "install" || parsed.data.action === "reset" ? "POST" : "DELETE");

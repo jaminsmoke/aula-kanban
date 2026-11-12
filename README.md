@@ -4,7 +4,7 @@ Cada instancia mantiene sus propios proyectos y datos en D1. Para configurar una
 
 ## Mi espacio: catálogo de aplicaciones (Site + VPS)
 
-> **Trabajo en curso:** la tienda de aplicaciones y el gestor del VPS (`vps-manager/`) son un prototipo sin desplegar: la API de Aula (`app/api/space-apps`) tiene el gestor desactivado mediante `VPS_MANAGER_ENABLED = false` y el servicio del VPS exige `SPACE_MANAGER_EXPERIMENTAL=1`. No introduzcas credenciales ni despliegues el gestor todavía; consulta `vps-manager/README.md`. La documentación de despliegue manual de este apartado describe el enfoque anterior y debe actualizarse antes de usarla.
+> La conexión del VPS utiliza `SPACE_MANAGER_URL` y `SPACE_MANAGER_TOKEN` en los ajustes seguros de Sites. Consulta `vps-manager/README.md` antes de configurar otra instancia. El catálogo depende de las aplicaciones preparadas en cada gestor; Nodum y n8n requieren configuración y validación adicionales.
 
 «Mi espacio» es un escritorio con **dos clases de aplicaciones** (ver `app/board/tools.ts`):
 

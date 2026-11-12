@@ -5,6 +5,7 @@ import "./board/access.css";
 import "./board/kanban.css";
 import "./board/dialogs.css";
 import "./board/views.css";
+import "./board/docs/docs.css";
 import "./board/responsive.css";
 
 export const metadata: Metadata = {

@@ -8,7 +8,7 @@ import KanbanView from "./board/kanban-view";
 import StudentsView from "./board/students-view";
 // «Mi espacio» (con Motion/Lottie) y la documentación solo se descargan al abrirlos.
 const SpaceView = lazy(() => import("./board/space-view"));
-const DocumentationView = lazy(() => import("./board/docs-view"));
+const DocumentationView = lazy(() => import("./board/docs/docs-view"));
 import TaskDialog from "./board/task-dialog";
 import SettingsDialog from "./board/settings-dialog";
 import MemberDialog from "./board/member-dialog";

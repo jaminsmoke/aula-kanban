@@ -88,7 +88,7 @@ export function rootlessSocket(uid, runtimeDirectory) {
 /** Ejecuta solo Docker Compose con argumentos separados, sin intérprete de comandos. */
 export function runDocker(args, cwd) {
   return new Promise((resolve, reject) => {
-    const child = spawn('docker', args, { cwd, stdio: ['ignore', 'pipe', 'ignore'], env: { PATH: process.env.PATH, HOME: process.env.HOME, XDG_RUNTIME_DIR: process.env.XDG_RUNTIME_DIR, DOCKER_HOST: process.env.DOCKER_HOST } });
+    const child = spawn('docker', args, { cwd, stdio: ['ignore', 'pipe', 'pipe'], env: { PATH: process.env.PATH, HOME: process.env.HOME, XDG_RUNTIME_DIR: process.env.XDG_RUNTIME_DIR, DOCKER_HOST: process.env.DOCKER_HOST } });
     let output = '';
     let stderr = '';
     child.stdout.on('data', chunk => { output = (output + chunk).slice(-1048576); });
@@ -106,7 +106,7 @@ export function runDocker(args, cwd) {
 export function createManager({ token, stack, apps, execute = runDocker, checkSpace = statfs, measure = measureUsage }) {
   if (typeof token !== 'string' || Buffer.byteLength(token) < 32) throw new Error('El token debe tener al menos 32 bytes.');
   if (!stack || !path.isAbsolute(stack.directory) || !/^aula-kanban-[a-f0-9]{16}$/.test(stack.project)) throw new Error('Proyecto de Aula no válido.');
-  if (!Array.isArray(apps) || apps.length > 2) throw new Error('Catálogo no válido.');
+  if (!Array.isArray(apps) || apps.length > Object.keys(applications).length) throw new Error('Catálogo no válido.');
   const catalog = new Map();
   for (const app of apps) {
     const url = new URL(app.url);
