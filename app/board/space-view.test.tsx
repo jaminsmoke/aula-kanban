@@ -4,6 +4,13 @@ import SpaceView from "./space-view";
 import { jsonResponse } from "../../vitest.setup";
 
 describe("Mi espacio sin VPS", () => {
+  it("mantiene las herramientas nativas si el gestor no responde", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ configured: false, connectionError: true, apps: [{ id: "excalidraw", status: "installed", url: null }] })));
+    render(<SpaceView role="owner" projectId="default" onExit={() => {}} />);
+    expect(await screen.findByRole("button", { name: /Excalidraw/ })).toBeTruthy();
+    expect(screen.getByText(/La conexión segura con las aplicaciones del VPS no está disponible/)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /AFFiNE/ })).toBeNull();
+  });
   it("ofrece al propietario una guía que no solicita instalar aplicaciones ni revelar secretos", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ configured: false, apps: [] })));
     render(<SpaceView role="owner" projectId="default" onExit={() => {}} />);

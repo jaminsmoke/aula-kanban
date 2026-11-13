@@ -52,7 +52,10 @@ export async function GET(request: Request) {
       throw new Error("invalid_response");
     }
     return json({ configured: true, apps: [...parsed.data.apps, ...natives] });
-  } catch { return json({ message: "No se pudo contactar con el gestor del VPS." }, 502); }
+  } catch {
+    // El estado del VPS no debe impedir usar las herramientas nativas.
+    return json({ configured: false, apps: natives, connectionError: true });
+  }
 }
 
 /**

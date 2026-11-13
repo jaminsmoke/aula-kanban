@@ -49,9 +49,14 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
     try {
       const response = await fetch(`/api/space-apps?project=${encodeURIComponent(projectId)}`, { cache: "no-store" });
       if (!response.ok) throw new Error();
-      const data = await response.json() as { configured: boolean; apps: typeof managed };
-      setManaged(data.apps); setManagerConfigured(data.configured); setManagerError("");
-    } catch { setManagerError("No se pudo consultar el gestor de aplicaciones."); }
+      const data = await response.json() as { configured: boolean; apps: typeof managed; connectionError?: boolean };
+      setManaged(data.apps); setManagerConfigured(data.configured);
+      setManagerError(data.connectionError ? "La conexión segura con las aplicaciones del VPS no está disponible. Las herramientas nativas siguen disponibles." : "");
+    } catch {
+      setManaged((current) => current.filter((app) => app.id === "excalidraw"));
+      setManagerConfigured(false);
+      setManagerError("No se pudo consultar el gestor de aplicaciones.");
+    }
   }, [projectId]);
   useEffect(() => { const first = window.setTimeout(() => { void refresh(); }, 0); const timer = window.setInterval(() => { void refresh(); }, 10000); return () => { window.clearTimeout(first); window.clearInterval(timer); }; }, [refresh]);
   const manage = async (id: string, action: StoreAction) => {
