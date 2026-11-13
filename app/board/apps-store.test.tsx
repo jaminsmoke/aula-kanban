@@ -30,8 +30,8 @@ describe("Tienda de aplicaciones VPS", () => {
     render(<AppsStore {...baseProps} role="owner" />);
     expect(screen.getByText("Instalada")).toBeTruthy();
     expect(screen.getByText("v1.2.3")).toBeTruthy();
-    expect(screen.getAllByText("No instalada")).toHaveLength(2);
-    expect(screen.getAllByRole("button", { name: /Instalar/ })).toHaveLength(2);
+    expect(screen.getAllByText("No instalada")).toHaveLength(3);
+    expect(screen.getAllByRole("button", { name: /Instalar/ })).toHaveLength(3);
     expect(screen.getByRole("region", { name: "Aplicaciones VPS" })).toBeTruthy();
     expect(screen.getByRole("region", { name: "Aplicaciones nativas" })).toBeTruthy();
   });
@@ -95,9 +95,10 @@ describe("Tienda de aplicaciones VPS", () => {
     });
   });
 
-  it("no permite instalar una aplicación que el gestor no ofrece", () => {
+  it("muestra las aplicaciones VPS ausentes como disponibles y no instaladas", () => {
     render(<AppsStore {...baseProps} role="owner" apps={[{ id: "affine", status: "not_installed", url: null }]} />);
-    expect(screen.getAllByText("No disponible en este gestor")).toHaveLength(2);
-    expect(screen.getAllByRole("button", { name: /Instalar/ })).toHaveLength(2);
+    expect(screen.queryByText("No disponible en este gestor")).toBeNull();
+    expect(screen.getAllByText("No instalada")).toHaveLength(4);
+    expect(screen.getAllByRole("button", { name: /Instalar/ })).toHaveLength(4);
   });
 });

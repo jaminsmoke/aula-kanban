@@ -127,7 +127,6 @@ export default function AppsStore({ role, configured, apps, error, onManage, onO
   const vpsCard = (tool: SpaceTool, index: number) => {
     const Icon = tool.icon;
     const app = apps.find((item) => item.id === tool.id);
-    const available = Boolean(app);
     const status = app?.status ?? "not_installed";
     const busy = status === "working";
     const manageable = status === "installed" || status === "stopped" || status === "error";
@@ -149,7 +148,7 @@ export default function AppsStore({ role, configured, apps, error, onManage, onO
           <p className="store-meta">
             <span className={`store-chip ${STATUS_META[status]?.className ?? "store-chip--pending"}`}>
               <span className="store-chip-dot" aria-hidden />
-              {busy ? <LoaderCircle size={11} className="store-spin" aria-hidden /> : null}{available ? statusLabel(status) : "No disponible en este gestor"}
+              {busy ? <LoaderCircle size={11} className="store-spin" aria-hidden /> : null}{statusLabel(status)}
             </span>
             {app?.version ? <span className="store-version">v{app.version}</span> : null}
           </p>
@@ -157,7 +156,7 @@ export default function AppsStore({ role, configured, apps, error, onManage, onO
         <div className="store-actions">
           {status === "installed" ? (
             <button type="button" className="store-primary" onClick={() => onOpen(tool)}><Play size={14} aria-hidden /> Abrir</button>
-          ) : isAdmin && available && !busy ? (
+          ) : isAdmin && !busy ? (
             <button type="button" className="store-primary" onClick={() => onManage(tool.id, "install")}>
               {status === "not_installed" ? <><Download size={14} aria-hidden /> Instalar</> : status === "error" ? <><RefreshCw size={14} aria-hidden /> Reintentar</> : <><Play size={14} aria-hidden /> Iniciar</>}
             </button>
