@@ -27,16 +27,27 @@ function upstreamHeaders(req, externalHost, websocket = false) {
   return headers;
 }
 
-function copyResponseHeaders(headers) {
+function partitionCookie(value) {
+  const parts = value.split(';').map(part => part.trim()).filter(Boolean);
+  if (!parts.length || parts[0].toLowerCase().startsWith(`${COOKIE.toLowerCase()}=`)) return null;
+  // Keep application cookies host-only and partition them by the top-level Site.
+  const attrs = parts.slice(1).filter(part => !/^(samesite|secure|partitioned|domain)(?:\s*=|$)/i.test(part));
+  return [parts[0], ...attrs, 'Secure', 'SameSite=None', 'Partitioned'].join('; ');
+}
+
+function copyResponseHeaders(headers, siteOrigin) {
   const result = {};
   const nominated = new Set((headers.connection || '').toLowerCase().split(',').map(v => v.trim()));
   for (const [key, value] of Object.entries(headers)) {
     if (HOP.has(key) || nominated.has(key)) continue;
     if (key === 'set-cookie') {
-      const cookies = (Array.isArray(value) ? value : [value]).filter(v => typeof v === 'string' && !v.trim().toLowerCase().startsWith(`${COOKIE.toLowerCase()}=`));
+      const cookies = (Array.isArray(value) ? value : [value]).filter(v => typeof v === 'string').map(partitionCookie).filter(Boolean);
       if (cookies.length) result[key] = cookies;
     } else result[key] = value;
   }
+  // Preserve upstream CSP and add a separate restrictive embedding policy.
+  const csp = `frame-ancestors 'self' ${siteOrigin}`;
+  result['content-security-policy'] = result['content-security-policy'] ? [].concat(result['content-security-policy'], csp) : csp;
   return result;
 }
 
@@ -63,7 +74,7 @@ export function createGateway({ gate, publicOrigin, siteOrigin, upstreamPort, ch
     if (!SAFE.has(req.method)) return req.headers.origin === external.origin;
     if (req.headers.origin && req.headers.origin !== external.origin) return false;
     if (req.headers['sec-fetch-site'] !== 'cross-site') return true;
-    return req.method === 'GET' && req.url === '/' && req.headers['sec-fetch-mode'] === 'navigate' && req.headers['sec-fetch-dest'] === 'document';
+    return req.method === 'GET' && ['/', '/admin/setup'].includes(req.url) && req.headers['sec-fetch-mode'] === 'navigate' && ['document', 'iframe'].includes(req.headers['sec-fetch-dest']);
   };
   const server = createServer(async (req, res) => {
     try {
@@ -73,14 +84,17 @@ export function createGateway({ gate, publicOrigin, siteOrigin, upstreamPort, ch
         const ticket = await readLaunch(req);
         const id = ticket && await gate.launch(ticket);
         if (!id) return stop(res);
-        res.writeHead(303, { 'set-cookie': `${COOKIE}=${id}; Path=/; Max-Age=900; Secure; HttpOnly; SameSite=Lax`, location: '/', 'cache-control': 'no-store', 'referrer-policy': 'no-referrer' });
-        return res.end();
+        // Finish the cross-site form submission on the gateway's origin first.
+        // A direct redirect retains the cross-site navigation chain, making the
+        // subsequent AFFiNE setup redirect fail the Fetch Metadata policy.
+        res.writeHead(200, { 'set-cookie': `${COOKIE}=${id}; Path=/; Max-Age=900; Secure; HttpOnly; SameSite=None; Partitioned`, 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'referrer-policy': 'no-referrer', 'content-security-policy': `default-src 'none'; base-uri 'none'; frame-ancestors 'self' ${site.origin}; form-action 'none'` });
+        return res.end('<!doctype html><html lang="es"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=/"><title>Abriendo AFFiNE</title></head><body><p>Abriendo AFFiNE… <a href="/">Continuar</a></p></body></html>');
       }
       if (req.url.startsWith('/__aula/')) return stop(res, 404);
       const id = sessionCookie(req.headers.cookie);
       if (!safeOrigin(req) || !await gate.check(id)) return stop(res);
       const upstream = httpRequest({ hostname: '127.0.0.1', port: upstreamPort, path: req.url, method: req.method, headers: upstreamHeaders(req, external.host) }, response => {
-        res.writeHead(response.statusCode || 502, copyResponseHeaders(response.headers));
+        res.writeHead(response.statusCode || 502, copyResponseHeaders(response.headers, site.origin));
         response.pipe(res);
       });
       upstream.on('error', () => { if (!res.headersSent) stop(res, 502); else res.destroy(); });
@@ -96,7 +110,7 @@ export function createGateway({ gate, publicOrigin, siteOrigin, upstreamPort, ch
       const upstream = httpRequest({ hostname: '127.0.0.1', port: upstreamPort, path: req.url, method: 'GET', headers: upstreamHeaders(req, external.host, true) });
       upstream.on('upgrade', (response, peer, upstreamHead) => {
         const lines = [`HTTP/1.1 ${response.statusCode} Switching Protocols`, 'Connection: Upgrade', 'Upgrade: websocket'];
-        for (const [key, value] of Object.entries(copyResponseHeaders(response.headers))) for (const item of Array.isArray(value) ? value : [value]) lines.push(`${key}: ${item}`);
+        for (const [key, value] of Object.entries(copyResponseHeaders(response.headers, site.origin))) for (const item of Array.isArray(value) ? value : [value]) lines.push(`${key}: ${item}`);
         socket.write(`${lines.join('\r\n')}\r\n\r\n`);
         if (head.length) peer.write(head);
         if (upstreamHead.length) socket.write(upstreamHead);

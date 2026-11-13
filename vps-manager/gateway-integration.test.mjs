@@ -29,7 +29,7 @@ test('real ticket, persistent replay store and proxy enforce revocation together
   const open = () => fetch(`${base}/__aula/launch`, { method: 'POST', headers: { origin: 'https://site.example', 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ ticket }), redirect: 'manual' });
   try {
     const first = await open();
-    assert.equal(first.status, 303);
+    assert.equal(first.status, 200);
     const cookie = first.headers.get('set-cookie').split(';')[0];
     assert.equal((await open()).status, 403);
     assert.equal(await (await fetch(base, { headers: { cookie } })).text(), 'upstream');

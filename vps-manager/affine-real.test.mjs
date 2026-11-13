@@ -29,7 +29,7 @@ test('AFFiNE real: setup, Socket.IO and revocation through gateway', { skip: pro
   try {
     assert.equal((await fetch(`${base}/admin/setup`)).status, 403);
     const launch = await fetch(`${base}/__aula/launch`, { method: 'POST', headers: { origin: 'https://site.example', 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ ticket }), redirect: 'manual' });
-    assert.equal(launch.status, 303);
+    assert.equal(launch.status, 200);
     const cookie = launch.headers.get('set-cookie').split(';')[0];
     const setup = await fetch(`${base}/admin/setup`, { headers: { cookie } });
     assert.equal(setup.status, 200);

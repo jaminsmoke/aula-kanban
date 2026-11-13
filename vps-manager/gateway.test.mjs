@@ -21,8 +21,10 @@ test('requires a live session, rejects cross-origin writes and strips gateway id
     assert.equal((await fetch(`${base}/`, { headers })).status, 403);
     assert.equal((await fetch(`${base}/__aula/launch`, { method: 'POST', headers: { ...headers, origin: 'https://evil.example', 'content-type': 'application/x-www-form-urlencoded' }, body: 'ticket=ticket', redirect: 'manual' })).status, 403);
     const launch = await fetch(`${base}/__aula/launch`, { method: 'POST', headers: { ...headers, origin: 'https://site.example', 'content-type': 'application/x-www-form-urlencoded' }, body: 'ticket=ticket', redirect: 'manual' });
-    assert.equal(launch.status, 303);
-    assert.match(launch.headers.get('set-cookie'), /HttpOnly; SameSite=Lax/);
+    assert.equal(launch.status, 200);
+    assert.match(await launch.text(), /http-equiv="refresh"/);
+    assert.match(launch.headers.get('set-cookie'), /HttpOnly; SameSite=None; Partitioned/);
+    assert.match(launch.headers.get('content-security-policy'), /frame-ancestors 'self' https:\/\/site\.example/);
     const cookie = '__Host-aula_session=session; app=own';
     const result = await fetch(`${base}/graphql`, { headers: { ...headers, cookie, 'oai-authenticated-user-id': 'forged', 'x-forwarded-host': 'evil.example', authorization: 'Bearer app-token' } });
     assert.equal(result.status, 200);
@@ -32,6 +34,8 @@ test('requires a live session, rejects cross-origin writes and strips gateway id
     assert.equal(seen['x-forwarded-host'], `127.0.0.1:${port}`);
     assert.equal(seen.authorization, 'Bearer app-token');
     assert.doesNotMatch(result.headers.get('set-cookie'), /aula_session/);
+    assert.match(result.headers.get('set-cookie'), /app=ok; Path=\/; Secure; SameSite=None; Partitioned/);
+    assert.match(result.headers.get('content-security-policy'), /frame-ancestors 'self' https:\/\/site\.example/);
     assert.equal((await fetch(`${base}/graphql`, { method: 'POST', headers: { ...headers, cookie, origin: 'https://evil.example' } })).status, 403);
     assert.equal((await fetch(`${base}/graphql`, { headers: { ...headers, cookie, 'sec-fetch-site': 'cross-site' } })).status, 403);
     allowed = false;

@@ -31,7 +31,7 @@ test('local Worker identity and real AFFiNE follow active project membership', {
     const { ticket } = await response.json();
     const base = `http://127.0.0.1:${port}`;
     const launch = await fetch(`${base}/__aula/launch`, { method: 'POST', headers: { origin: 'https://site.example', 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ ticket }), redirect: 'manual' });
-    assert.equal(launch.status, 303);
+    assert.equal(launch.status, 200);
     const cookie = launch.headers.get('set-cookie').split(';')[0];
     assert.equal((await fetch(`${base}/admin/setup`, { headers: { cookie } })).status, 200);
     execFileSync(process.execPath, ['node_modules/wrangler/bin/wrangler.js', 'd1', 'execute', 'DB', '--local', '--config', 'dist/server/wrangler.json', '--persist-to', 'outputs/gateway-d1', '--command', "UPDATE project_members SET status='pending',user_id=NULL WHERE id='member-test';"], { stdio: 'pipe' });
