@@ -85,25 +85,49 @@ export function rootlessSocket(uid, runtimeDirectory) {
   return `unix:///run/user/${uid}/docker.sock`;
 }
 
-/** Ejecuta solo Docker Compose con argumentos separados, sin intérprete de comandos. */
-export function runDocker(args, cwd) {
+/** Límites para que un comando Docker colgado no deje «Procesando» para siempre. */
+const DOCKER_COMMAND_TIMEOUT_MS = 60_000;
+const DOCKER_OPERATION_TIMEOUT_MS = 15 * 60_000;
+const MANAGER_OPERATION_TIMEOUT_MS = 20 * 60_000;
+
+/**
+ * Ejecuta solo Docker Compose con argumentos separados, sin intérprete de comandos.
+ * @param args - Argumentos de Docker Compose.
+ * @param cwd - Directorio del stack.
+ * @param timeoutMs - Límite para terminar el proceso si no responde.
+ * @returns La salida estándar del comando.
+ */
+export function runDocker(args, cwd, timeoutMs = args.includes('up') ? DOCKER_OPERATION_TIMEOUT_MS : DOCKER_COMMAND_TIMEOUT_MS) {
   return new Promise((resolve, reject) => {
     const child = spawn('docker', args, { cwd, stdio: ['ignore', 'pipe', 'pipe'], env: { PATH: process.env.PATH, HOME: process.env.HOME, XDG_RUNTIME_DIR: process.env.XDG_RUNTIME_DIR, DOCKER_HOST: process.env.DOCKER_HOST } });
     let output = '';
     let stderr = '';
+    let settled = false;
+    const settle = (callback, value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      callback(value);
+    };
+    const timer = setTimeout(() => {
+      log('docker_command_timeout', { command: args.slice(0, 2), timeoutMs });
+      child.kill('SIGKILL');
+      settle(reject, new Error('docker_timeout'));
+    }, timeoutMs);
     child.stdout.on('data', chunk => { output = (output + chunk).slice(-1048576); });
     child.stderr.on('data', chunk => { stderr = (stderr + chunk).slice(-4000); });
-    child.on('error', error => { log('docker_command_failed', { command: args.slice(0, 2), error: safeError(error) }); reject(error); });
+    child.on('error', error => { log('docker_command_failed', { command: args.slice(0, 2), error: safeError(error) }); settle(reject, error); });
     child.on('close', code => {
-      if (code === 0) return resolve(output);
+      if (settled) return;
+      if (code === 0) return settle(resolve, output);
       log('docker_command_failed', { command: args.slice(0, 2), exitCode: code, stderr: stderr.trim().slice(0, 2000) || undefined });
-      reject(new Error('docker_failed'));
+      settle(reject, new Error('docker_failed'));
     });
   });
 }
 
 /** Construye el servidor aislado; el catálogo procede solo de configuración local de confianza. */
-export function createManager({ token, stack, apps, execute = runDocker, checkSpace = statfs, measure = measureUsage }) {
+export function createManager({ token, stack, apps, execute = runDocker, checkSpace = statfs, measure = measureUsage, operationTimeoutMs = MANAGER_OPERATION_TIMEOUT_MS }) {
   if (typeof token !== 'string' || Buffer.byteLength(token) < 32) throw new Error('El token debe tener al menos 32 bytes.');
   if (!stack || !path.isAbsolute(stack.directory) || !/^aula-kanban-[a-f0-9]{16}$/.test(stack.project)) throw new Error('Proyecto de Aula no válido.');
   if (!Array.isArray(apps) || apps.length > Object.keys(applications).length) throw new Error('Catálogo no válido.');
@@ -123,6 +147,10 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
   };
   const working = new Set();
   const failed = new Set();
+  // Último estado Docker conocido por app. Durante una operación, las
+  // consultas de las demás apps responden con este estado en lugar de
+  // lanzar `docker compose ps` contra un daemon ocupado en la pull/up.
+  const statusCache = new Map();
   const compose = () => ['compose', '--project-name', stack.project, '--file', path.join(stack.directory, 'compose.yaml')];
   /**
    * Resuelve un bind aunque aún no exista (primera instalación: Docker lo crea al levantar).
@@ -208,16 +236,29 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
   const status = async app => {
     if (working.has(app.id)) return 'working';
     if (failed.has(app.id)) return 'error';
+    // Evita bloquear la respuesta mientras Docker está ocupado con una
+    // instalación de otra app: se sirve el último estado conocido.
+    if (working.size) return statusCache.get(app.id) ?? { status: 'not_installed', version: null };
     const raw = await execute([...compose(), 'ps', '--all', '--format', 'json', ...applications[app.id].services], stack.directory);
     const trimmed = raw.trim();
-    if (!trimmed) return 'not_installed';
+    if (!trimmed) {
+      const result = { status: 'not_installed', version: null };
+      statusCache.set(app.id, result);
+      return result;
+    }
     let rows;
     try { rows = trimmed.startsWith('[') ? JSON.parse(trimmed) : trimmed.split('\n').map(line => JSON.parse(line)); } catch { throw new Error('docker_status_invalid'); }
     if (!Array.isArray(rows)) throw new Error('docker_status_invalid');
-    if (!rows.length) return 'not_installed';
+    if (!rows.length) {
+      const result = { status: 'not_installed', version: null };
+      statusCache.set(app.id, result);
+      return result;
+    }
     const entry = rows.find(row => row.Service === applications[app.id].entry);
     const running = rows.some(row => row.Service === applications[app.id].entry && row.State === 'running' && row.Health !== 'unhealthy');
-    return { status: running ? 'installed' : 'stopped', version: imageVersion(entry?.Image) };
+    const result = { status: running ? 'installed' : 'stopped', version: imageVersion(entry?.Image) };
+    statusCache.set(app.id, result);
+    return result;
   };
   return createServer(async (req, res) => {
     if (!req.headers.authorization?.startsWith('Bearer ')) return send(res, 401, { message: 'No autorizado.' });
@@ -240,7 +281,8 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
     const action = isReset || req.method === 'DELETE' ? ['rm', '--stop', '--force', ...applications[app.id].services] : ['up', '-d', '--no-build', applications[app.id].entry];
     const operation = isReset ? 'reset' : req.method === 'DELETE' ? 'uninstall' : 'install';
     log('operation_accepted', { operation, app: app.id });
-    void validateCompose().then(async config => {
+    const operationPromise = (async () => {
+      const config = await validateCompose();
       if (req.method === 'POST' && !isReset) {
         const disk = await checkSpace(stack.directory);
         if (disk.bavail * disk.bsize < 5 * 1024 ** 3) throw new Error('insufficient_space');
@@ -249,7 +291,14 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
       await execute([...compose(), ...action], stack.directory);
       if (isReset) await resetData(app, config);
       log('operation_done', { operation, app: app.id });
-    }).catch(error => { failed.add(app.id); log('operation_failed', { operation, app: app.id, error: safeError(error) }); }).finally(() => working.delete(app.id));
+    })();
+    const timeout = new Promise((_, reject) => {
+      const timer = setTimeout(() => reject(new Error('operation_timeout')), operationTimeoutMs);
+      operationPromise.then(() => clearTimeout(timer), () => clearTimeout(timer));
+    });
+    void Promise.race([operationPromise, timeout])
+      .catch(error => { failed.add(app.id); log('operation_failed', { operation, app: app.id, error: safeError(error) }); })
+      .finally(() => working.delete(app.id));
     return send(res, 202, { accepted: true });
   });
 }

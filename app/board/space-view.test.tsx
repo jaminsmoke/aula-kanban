@@ -22,7 +22,7 @@ describe("Mi espacio sin VPS", () => {
     fireEvent.click(screen.getByRole("button", { name: /Aula Store/ }));
     const store = await screen.findByRole("region", { name: "Aula Store" });
     expect(store).toBeTruthy();
-    expect(screen.getAllByText("No instalada")).toHaveLength(2);
+    expect(screen.getAllByText("No instalada")).toHaveLength(3);
   });
 
   it("oculta el icono de Excalidraw hasta que se instala y lo muestra al instalarse", async () => {

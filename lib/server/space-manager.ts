@@ -22,7 +22,7 @@ export async function callSpaceManager(path: string, method: "GET" | "POST" | "D
       method, headers: { Authorization: `Bearer ${config.SPACE_MANAGER_TOKEN}`, Accept: "application/json" },
       // Workers no admite "error"; "manual" evita reenviar el token y
       // las respuestas 3xx se rechazan mediante response.ok más abajo.
-      redirect: "manual", signal: AbortSignal.timeout(12000),
+      redirect: "manual", signal: AbortSignal.timeout(30000),
     });
   } catch (error) {
     // Solo se registran datos de diagnóstico; nunca cabeceras ni secretos.

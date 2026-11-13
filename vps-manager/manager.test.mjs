@@ -342,6 +342,62 @@ test('acepta la instalación si los datos están por debajo de la cuota', async 
   } finally { await new Promise(resolve => server.close(resolve)); }
 });
 
+test('una operación colgada en Docker acaba en error por timeout', async () => {
+  const token = 't'.repeat(40);
+  const server = createManager({
+    token,
+    stack: { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' },
+    apps: [{ id: 'affine', url: 'https://affine.example.test' }],
+    checkSpace: async () => ({ bavail: 10 ** 9, bsize: 4096 }),
+    operationTimeoutMs: 20,
+    execute: async args => args.includes('config')
+      ? JSON.stringify({ services })
+      : new Promise(() => {}),
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const root = `http://127.0.0.1:${server.address().port}`, headers = { authorization: `Bearer ${token}` };
+    assert.equal((await fetch(root + '/v1/apps/affine', { method: 'POST', headers })).status, 202);
+    await new Promise(resolve => setTimeout(resolve, 45));
+    const state = await (await fetch(root + '/v1/apps', { headers })).json();
+    assert.equal(state.apps[0].status, 'error');
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('durante una instalación el estado de las demás apps responde rápido desde caché', async () => {
+  const token = 'c'.repeat(40);
+  const calls = [];
+  const server = createManager({
+    token,
+    stack: { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' },
+    apps: [
+      { id: 'affine', url: 'https://affine.example.test' },
+      { id: 'n8n', url: 'https://n8n.example.test' },
+    ],
+    checkSpace: async () => ({ bavail: 10 ** 9, bsize: 4096 }),
+    execute: async args => {
+      calls.push(args);
+      if (args.includes('config')) return JSON.stringify({ services: { ...services, ...n8nServices } });
+      if (args.includes('up')) return new Promise(resolve => setTimeout(() => resolve(''), 150));
+      if (args.includes('ps') && args.includes('n8n')) return JSON.stringify([{ Service: 'n8n', State: 'running', Image: 'n8nio/n8n:2.47.0' }]);
+      return '';
+    },
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const root = `http://127.0.0.1:${server.address().port}`, headers = { authorization: `Bearer ${token}` };
+    const initial = await (await fetch(root + '/v1/apps', { headers })).json();
+    assert.equal(initial.apps.find(app => app.id === 'n8n').status, 'installed');
+    const psCallsBefore = calls.filter(args => args.includes('ps')).length;
+    assert.equal((await fetch(root + '/v1/apps/affine', { method: 'POST', headers })).status, 202);
+    const during = await (await fetch(root + '/v1/apps', { headers })).json();
+    assert.equal(during.apps.find(app => app.id === 'affine').status, 'working');
+    assert.equal(during.apps.find(app => app.id === 'n8n').status, 'installed');
+    assert.equal(calls.filter(args => args.includes('ps')).length, psCallsBefore, 'sin docker ps mientras hay una operación en curso');
+    await new Promise(resolve => setTimeout(resolve, 250));
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
 test('rechaza cuotas de datos no válidas en la configuración', () => {
   const base = { id: 'affine', url: 'https://app.example.test' };
   const stack = { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' };
