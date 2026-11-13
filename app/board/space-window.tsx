@@ -30,6 +30,7 @@ export default function SpaceWindow({
   const drag = useRef<{ dx: number; dy: number } | null>(null);
 
   function startDrag(event: PointerEvent<HTMLDivElement>) {
+    if (maximized) return;
     if ((event.target as HTMLElement).closest(".space-window-controls")) return;
     drag.current = { dx: event.clientX - position.x, dy: event.clientY - position.y };
     onFocus();
@@ -74,7 +75,7 @@ export default function SpaceWindow({
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.96, y: 12 }}
       transition={{ duration: 0.24, ease: "easeOut" }}
-      className="space-window"
+      className={`space-window${maximized ? " space-window--maximized" : ""}`}
       role="dialog"
       aria-label={title}
       style={{ left: position.x, top: position.y, zIndex, width: size.width, height: size.height, borderRadius: maximized ? 0 : undefined, display: minimized ? "none" : undefined }}

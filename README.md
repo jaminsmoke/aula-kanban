@@ -4,7 +4,9 @@ Cada instancia mantiene sus propios proyectos y datos en D1. Para configurar una
 
 ## Mi espacio y Aula Store
 
-Mi espacio reúne aplicaciones nativas de Aula Kanban. Actualmente incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas. El propietario y los administradores pueden instalarla o desinstalarla desde Aula Store; el estado se guarda por proyecto en la tabla `space_apps`. Desinstalarla de Mi espacio no elimina las pizarras de las tareas ni sus datos.
+Mi espacio reúne aplicaciones nativas de Aula Kanban. Ahora incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, y Herramientas de aula (calculadora, tabla periódica, regla y transportador con `@smst/edu-tools`). Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Mi espacio no elimina las pizarras de las tareas ni sus datos.
+
+La lista de aplicaciones integradas, candidatas y descartadas, con licencias y versiones comprobadas, está en [`docs/aplicaciones-nativas.md`](docs/aplicaciones-nativas.md).
 
 ## Desarrollo
 
@@ -143,6 +145,8 @@ Para un cambio nuevo:
 6. Para publicar, deja que el agente de Sites revise la diferencia respecto a producción, las migraciones y la preservación de datos, haga una copia antes de cambios sensibles y complete el flujo de compilación y publicación. Sites aplica las migraciones de esquema antes de subir la nueva versión. Una compilación correcta no garantiza que una migración sea segura.
 
 La transición de la versión 20 conserva `administrators` y `administrator_profiles` como tablas históricas; la aplicación usa `administrators_unified`. No elimines ni vuelvas a migrar esas tablas por tu cuenta sin revisar el estado de cada instancia. `deleted_students` y `deleted_teachers` almacenan el historial de fichas eliminadas y su purga está en `lib/server/deleted-profiles.ts`.
+
+La migración `0023` añade `instance_apps`, que guarda qué aplicaciones nativas están instaladas en la instancia (no por proyecto); `space_apps` queda como tabla histórica sin uso. Las aplicaciones comienzan desinstaladas y solo el propietario o un administrador las gestionan desde Aula Store. La migración `0024` añade `blockly_programs`, que guarda el programa de Blockly por proyecto.
 
 ## Diagnostic Commands
 

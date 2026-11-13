@@ -15,6 +15,8 @@ import { visibleTools, type SpaceRole, type SpaceTool } from "./tools";
 // solo se descarga cuando su ventana se abre por primera vez.
 const toolApps: Record<string, ComponentType<{ projectId: string; role: SpaceRole; instanceUrl?: string }>> = {
   excalidraw: lazy(() => import("./excalidraw-app")),
+  "edu-tools": lazy(() => import("./edu-tools-app")),
+  blockly: lazy(() => import("./blockly-app")),
 };
 
 type OpenWindow = {
@@ -63,6 +65,15 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
   };
   const [windows, setWindows] = useState<OpenWindow[]>([]);
   const zCounter = useRef(10);
+  // Una ventana ampliada sigue pegada a los bordes cuando cambia el tamaño
+  // del navegador: recalcula su caja con el nuevo viewport.
+  useEffect(() => {
+    const onResize = () => setWindows((current) => current.map((item) => item.maximized
+      ? { ...item, position: { x: 0, y: 0 }, size: { width: window.innerWidth, height: window.innerHeight - 48 } }
+      : item));
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const open = (tool: SpaceTool) => {
     setWindows((current) => {
@@ -71,8 +82,13 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
       if (existing) {
         return current.map((item) => (item.tool.id === tool.id ? { ...item, minimized: false, zIndex: zCounter.current } : item));
       }
-      const width = Math.min(880, window.innerWidth - 24);
-      const height = Math.min(560, window.innerHeight - 72);
+      const preferred = tool.id === "edu-tools"
+        ? { width: 1120, height: 760 }
+        : tool.id === "blockly"
+          ? { width: 1080, height: 720 }
+          : { width: 880, height: 560 };
+      const width = Math.min(preferred.width, window.innerWidth - 24);
+      const height = Math.min(preferred.height, window.innerHeight - 72);
       const offset = Math.max(12, Math.min(150 + current.length * 30, window.innerWidth - width - 12));
       const position = { x: offset, y: 12 };
       const size = { width, height };
@@ -145,7 +161,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
         </div>
         <div className="space-dock">
           <button type="button" className="space-dock-store" onClick={() => setStoreOpen(true)} title="Aula Store: instala o desinstala aplicaciones del catálogo">
-            <span className="space-dock-tile" aria-hidden><AulaStoreIcon size={52} /></span>
+            <span className="space-dock-tile" aria-hidden><AulaStoreIcon size={24} /></span>
             <span className="space-dock-name">Aula Store</span>
           </button>
         </div>

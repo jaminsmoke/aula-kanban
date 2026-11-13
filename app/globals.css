@@ -23,7 +23,11 @@
   color-scheme: light;
 }
 * { box-sizing: border-box; }
-body { margin: 0; min-width: 280px; }
+/* Las apps nativas cargan CSS de terceros que incluye un `body` sin capa con
+   variables de tema (claro/oscuro). Esta regla gana por especificidad y fija
+   el lienzo y el color del Site, que no tiene tema oscuro. */
+html { background: var(--canvas); }
+html body { margin: 0; min-width: 280px; background: var(--canvas); color: var(--ink); }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: default; opacity: .6; }

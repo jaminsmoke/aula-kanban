@@ -141,7 +141,21 @@ export const uploads = sqliteTable("uploads", {
 }, (table) => [index("uploads_project").on(table.projectId, table.createdAt)]);
 
 // Estado de las aplicaciones nativas (librerías npm del propio Site) instaladas
-// en «Mi espacio» por el dueño de la instancia.
+// en «Mi espacio». Es por instancia: el dueño o un administrador decide qué
+// aplicaciones están disponibles para toda la instancia de Aula Kanban.
+export const instanceApps = sqliteTable("instance_apps", {
+  id: text("id").primaryKey().notNull(),
+  appId: text("app_id").notNull(),
+  installed: integer("installed").notNull().default(0),
+  version: text("version"),
+  installedByUserId: text("installed_by_user_id"),
+  updatedAt: integer("updated_at").notNull(),
+}, (table) => [
+  uniqueIndex("instance_app_app").on(table.appId),
+]);
+
+// Histórica: el estado por proyecto anterior a la instalación por instancia.
+// Se conserva para no perder datos ni forzar una migración destructiva.
 export const spaceApps = sqliteTable("space_apps", {
   id: text("id").primaryKey().notNull(),
   projectId: text("project_id").notNull(),
@@ -154,6 +168,14 @@ export const spaceApps = sqliteTable("space_apps", {
   uniqueIndex("space_app_project_app").on(table.projectId, table.appId),
   index("space_apps_project").on(table.projectId),
 ]);
+
+// Programa de Blockly guardado por proyecto (estado serializado del lienzo).
+export const blocklyPrograms = sqliteTable("blockly_programs", {
+  projectId: text("project_id").primaryKey().notNull(),
+  state: text("state").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+  updatedByUserId: text("updated_by_user_id"),
+});
 
 export const projectMembers = sqliteTable("project_members", {
   id: text("id").primaryKey().notNull(),

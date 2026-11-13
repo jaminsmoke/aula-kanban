@@ -1,22 +1,21 @@
-import { eq } from "drizzle-orm";
+
 import { z } from "zod";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { getDb } from "../../../db";
-import { spaceApps } from "../../../db/schema";
+import { instanceApps } from "../../../db/schema";
 import { isAdministrator, isOwner, validProject } from "../../../lib/server/project";
 
 export const dynamic = "force-dynamic";
 const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
-const appId = z.literal("excalidraw");
 /** Aplicaciones nativas (librerías del propio Site): su estado vive en la DB. */
-const NATIVE_APP_IDS = ["excalidraw"] as const;
+const NATIVE_APP_IDS = ["excalidraw", "edu-tools", "blockly"] as const;
+const appId = z.enum(NATIVE_APP_IDS);
 /**
- * Lee el estado de las aplicaciones nativas instaladas en el proyecto.
- * @param projectId - Identificador del proyecto.
+ * Lee el estado de las aplicaciones nativas instaladas en la instancia.
  * @returns Una entrada por aplicación nativa (`installed` o `not_installed`).
  */
-async function nativeApps(projectId: string) {
-  const rows = await getDb().select().from(spaceApps).where(eq(spaceApps.projectId, projectId));
+async function nativeApps() {
+  const rows = await getDb().select().from(instanceApps);
   return NATIVE_APP_IDS.map((id) => {
     const row = rows.find((item) => item.appId === id);
     return { id, status: row?.installed ? "installed" : "not_installed", url: null, version: row?.version ?? null };
@@ -26,21 +25,22 @@ async function nativeApps(projectId: string) {
 /**
  * Lista las aplicaciones nativas para miembros activos del proyecto.
  * @param request - Petición con el proyecto activo.
- * @returns Lista de aplicaciones.
+ * @returns Lista de aplicaciones de la instancia.
  */
 export async function GET(request: Request) {
   const project = await validProject(request);
   if (!project) return json({ message: "No tienes acceso al proyecto." }, 403);
   try {
-    return json({ apps: await nativeApps(project.id) });
+    return json({ apps: await nativeApps() });
   } catch {
     return json({ message: "No se pudo consultar las aplicaciones instaladas." }, 502);
   }
 }
 
 /**
- * Instala o desinstala una aplicación nativa mediante su registro en la DB.
- * @param request - Petición con el proyecto, identificador y acción.
+ * Instala o desinstala una aplicación nativa en toda la instancia. Solo el
+ * propietario o un administrador pueden gestionarla.
+ * @param request - Petición con el identificador y la acción.
  * @returns Estado aceptado o error de autorización.
  */
 export async function POST(request: Request) {
@@ -54,9 +54,9 @@ export async function POST(request: Request) {
   if (!project) return json({ message: "No tienes acceso al proyecto." }, 403);
   const installed = parsed.data.action === "install" ? 1 : 0;
   const now = Date.now();
-  const values = { id: crypto.randomUUID(), projectId: project.id, appId: parsed.data.id, installed, version: null, installedByUserId: user.userId, updatedAt: now };
-  await getDb().insert(spaceApps).values(values).onConflictDoUpdate({
-    target: [spaceApps.projectId, spaceApps.appId],
+  const values = { id: crypto.randomUUID(), appId: parsed.data.id, installed, version: null, installedByUserId: user.userId, updatedAt: now };
+  await getDb().insert(instanceApps).values(values).onConflictDoUpdate({
+    target: instanceApps.appId,
     set: { installed, version: null, installedByUserId: user.userId, updatedAt: now },
   });
   return json({ accepted: true }, 200);

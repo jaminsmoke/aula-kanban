@@ -162,6 +162,20 @@
       "when": 1794501771455,
       "tag": "0022_lush_dreadnoughts",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "6",
+      "when": 1794590578926,
+      "tag": "0023_burly_red_wolf",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "6",
+      "when": 1794604500017,
+      "tag": "0024_easy_zaran",
+      "breakpoints": true
     }
   ]
 }

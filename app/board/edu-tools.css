@@ -1,0 +1,345 @@
+/* ==========================================================================
+   Herramientas de aula (@smst/edu-tools)
+   La librería trae su CSS compilado en capas (Tailwind) y respeta
+   `prefers-color-scheme`. Estas reglas, sin capa, fijan la paleta clara del
+   Site y el tamaño de la ventana, y ganan a lo que traiga el paquete.
+   ========================================================================== */
+
+.edu-app {
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  background:#f4f2f9;
+  color:var(--ink);
+  font-family:"Instrument Sans",system-ui,sans-serif;
+  /* Las vistas responden al ancho de la ventana, no al del navegador. */
+  container-type:inline-size;
+  container-name:eduapp;
+  /* Paleta clara de edu-tools, independiente del tema del sistema. */
+  --background:#fffef9;
+  --foreground:var(--ink);
+  --card:#fffdfa;
+  --surface:#f4f2f9;
+  --border:#e7e4ef;
+  --rule:#dcd6ec;
+  --muted-foreground:var(--muted);
+  --accent:var(--violet);
+  --accent-foreground:#fff;
+  --calc-key:#f1eefb;
+  --calc-operator:var(--violet);
+  --calc-operator-foreground:#fff;
+  --calc-func:#eeebfb;
+  --calc-func-foreground:#3b2c6b;
+}
+
+.edu-app-tabs { display:flex; flex:none; gap:4px; padding:8px 10px; overflow-x:auto; background:#eceaf2; border-bottom:1px solid #00000014; }
+
+.edu-app-tab { flex:none; padding:7px 13px; border:0; border-radius:8px; background:transparent; color:#4a4458; font:inherit; font-size:12.5px; font-weight:650; cursor:pointer; white-space:nowrap; transition:background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+
+.edu-app-tab:hover { background:#ffffffb3; }
+
+.edu-app-tab[aria-selected="true"] { background:#fff; color:var(--violet); box-shadow:0 1px 3px #30225520; }
+
+.edu-app-tab:focus-visible { outline:2px solid var(--violet); outline-offset:2px; }
+
+.edu-app-body { flex:1 1 auto; min-height:0; display:flex; }
+
+.edu-view { flex:1 1 auto; min-width:0; min-height:0; display:flex; flex-direction:column; gap:14px; padding:16px; overflow:auto; }
+
+.edu-view--center { align-items:center; justify-content:center; }
+
+.edu-view--fill { align-items:stretch; }
+
+.edu-card { display:flex; flex-direction:column; gap:10px; min-width:0; padding:16px 18px; border:1px solid #e6e2f0; border-radius:14px; background:#fff; box-shadow:0 6px 18px #3022550f; }
+
+.edu-card-title { margin:0; font-size:13px; font-weight:750; letter-spacing:.01em; color:#4a4458; }
+
+.edu-hint { margin:0; color:var(--muted); font-size:12px; line-height:1.45; }
+
+.edu-card--calc { width:min(360px, 100%); align-items:center; text-align:center; }
+
+.edu-card--periodic { flex:1 1 auto; min-height:0; gap:14px; }
+
+.edu-card--ruler { flex:1 1 auto; min-height:0; }
+
+.edu-ruler { position:relative; flex:1 1 auto; display:flex; align-items:center; min-height:150px; padding:6px 0; cursor:crosshair; touch-action:none; }
+
+/* El componente mide su ancho con ResizeObserver y ocupa todo el alto; aquí se
+   centra el dibujo para dejar espacio de medición arriba y abajo. */
+.edu-ruler > div { display:flex; align-items:center; }
+
+.edu-ruler-overlay { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+
+.edu-ruler-overlay line { stroke:var(--violet); stroke-width:2; }
+
+.edu-ruler-overlay circle { fill:#fff; stroke:var(--violet); stroke-width:2; }
+
+.edu-ruler-readout { position:absolute; transform:translate(-50%,-150%); padding:3px 8px; border-radius:7px; background:#302255; color:#fff; font-size:11.5px; font-weight:700; white-space:nowrap; pointer-events:none; }
+
+.edu-card--tts { flex:1 1 auto; min-height:0; }
+
+.edu-tts { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
+
+.edu-tts > * { flex:1 1 auto; min-height:0; }
+
+/* Conmutador interno de «Medir»: cada instrumento ocupa la tarjeta completa. */
+.edu-segmented { display:inline-flex; flex:none; align-self:flex-start; gap:4px; padding:4px; border-radius:10px; background:#eceaf2; }
+
+.edu-segmented button { padding:6px 12px; border:0; border-radius:7px; background:transparent; color:#4a4458; font:inherit; font-size:12px; font-weight:650; cursor:pointer; }
+
+.edu-segmented button[aria-pressed="true"] { background:#fff; color:var(--violet); box-shadow:0 1px 3px #30225520; }
+
+.edu-segmented button:focus-visible { outline:2px solid var(--violet); outline-offset:2px; }
+
+.edu-card-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+
+.edu-turn-info { display:flex; align-items:center; gap:10px; }
+
+.edu-turn-info > span { min-width:3.5ch; text-align:right; color:var(--violet); font-size:14px; font-weight:750; font-variant-numeric:tabular-nums; }
+
+.edu-turn-info button { padding:5px 10px; border:1px solid #e0daef; border-radius:8px; background:#fff; color:#4a4458; font:inherit; font-size:11.5px; font-weight:650; cursor:pointer; }
+
+.edu-turn-info button:hover { background:#f5f2fb; }
+
+.edu-card--protractor { flex:1 1 auto; min-height:0; }
+
+/* Cuadrado de giro: el transportador puede rotar 360° sin salirse de la tarjeta. */
+.edu-protractor-box { position:relative; flex:1 1 auto; min-height:0; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+
+.edu-protractor-rig { position:relative; flex:none; }
+
+/* Guía del campo de giro: convierte el espacio reservado en parte del diseño. */
+.edu-protractor-guide { position:absolute; inset:0; border:1px dashed #ddd6ee; border-radius:50%; }
+
+.edu-protractor-guide::after { content:""; position:absolute; left:50%; top:50%; width:7px; height:7px; margin:-3.5px 0 0 -3.5px; border-radius:50%; background:#d9d2ea; }
+
+.edu-protractor-turn { position:absolute; left:50%; bottom:50%; width:calc(100% - 40px); transform-origin:50% 100%; }
+
+.edu-protractor-knob { position:absolute; top:-13px; left:50%; width:22px; height:22px; margin-left:-11px; padding:0; border:2px solid #fff; border-radius:50%; background:var(--violet); box-shadow:0 2px 8px #30225540; cursor:grab; touch-action:none; }
+
+.edu-protractor-knob:hover { background:var(--violet-dark); }
+
+.edu-protractor-knob:focus-visible { outline:2px solid #7656dd; outline-offset:3px; }
+
+.edu-protractor-knob.is-dragging { cursor:grabbing; background:var(--violet-dark); }
+
+.edu-card--equation { flex:1 1 auto; min-height:0; }
+
+/* Calculadora: una sola vista con teclado ampliable. */
+.edu-mode-center { flex:1 1 auto; min-height:0; display:flex; align-items:center; justify-content:center; }
+
+.calc { width:100%; display:flex; flex-direction:column; gap:8px; }
+
+.calc-screen { display:flex; flex-direction:column; gap:4px; padding:8px 12px 10px; border:1px solid #d9d2ea; border-radius:14px; background:#fff; box-shadow:inset 0 1px 3px #30225514; }
+
+.calc-screen-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+
+.calc-back { margin-left:auto; width:28px; height:26px; padding:0; border:0; border-radius:8px; background:transparent; color:var(--muted); font-size:15px; cursor:pointer; }
+
+.calc-back:hover { background:#f3f0fa; color:var(--ink); }
+
+.calc-expression { min-height:16px; color:var(--muted); font-size:12.5px; text-align:right; overflow-wrap:anywhere; }
+
+.calc-value { color:var(--ink); font-size:25px; font-weight:750; line-height:1.1; text-align:right; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+
+.calc-value.is-error { color:#8f1d2c; font-size:14px; font-weight:650; }
+
+.calc-exact { color:var(--muted); font-size:11.5px; font-weight:650; text-align:right; }
+
+.calc-extra { max-height:0; opacity:0; transform:translateY(-4px); overflow:hidden; transition:max-height .28s var(--ease-out), opacity .2s var(--ease-out), transform .28s var(--ease-out); }
+
+.calc-extra.is-open { max-height:150px; opacity:1; transform:none; }
+
+.calc-pad { display:flex; flex-direction:column; gap:4px; }
+
+.calc-row { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:4px; margin-top:4px; }
+
+.calc-extra .calc-row { grid-template-columns:repeat(5, minmax(0,1fr)); margin-top:0; }
+
+.calc-extra { display:flex; flex-direction:column; gap:4px; }
+
+.calc-key { min-height:35px; padding:0 8px; border:1px solid #e0daef; border-radius:10px; background:#f7f5fd; color:var(--ink); font:inherit; font-size:16px; font-weight:650; cursor:pointer; transition:background var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out); }
+
+.calc-key:hover { background:#eeebfb; }
+
+.calc-key:active { transform:scale(.97); }
+
+.calc-key:focus-visible { outline:2px solid var(--violet); outline-offset:2px; }
+
+.calc-key--function { min-height:28px; font-size:11.5px; font-weight:700; }
+
+.calc-key--operator { color:var(--violet); font-weight:750; }
+
+.calc-key--utility { color:#4a4458; }
+
+.calc-key--equals { border-color:var(--violet); background:var(--violet); color:#fff; font-weight:750; }
+
+.calc-key--equals:hover { background:var(--violet-dark); }
+
+/* Memoria, historial y disposición en dos columnas. */
+.calc-layout { flex:1 1 auto; min-height:0; width:100%; display:flex; align-items:flex-start; justify-content:center; gap:14px; }
+
+.calc-layout .edu-card--calc { flex:0 1 380px; }
+
+.calc-screen-head { justify-content:flex-start; }
+
+.calc-modes { display:flex; flex-wrap:wrap; gap:4px; margin-top:2px; }
+
+.calc-modes button { flex:1 1 auto; min-height:26px; padding:0 7px; border:1px solid #e0daef; border-radius:999px; background:#fff; color:#4a4458; font:inherit; font-size:10.5px; font-weight:700; cursor:pointer; }
+
+.calc-modes button:hover { background:#f5f2fb; }
+
+.calc-modes button[aria-pressed="true"] { border-color:var(--violet); background:var(--violet); color:#fff; }
+
+.calc-modes .calc-modes-equations[aria-pressed="true"] { background:var(--violet-dark); }
+
+.calc-pager { display:flex; justify-content:flex-end; gap:4px; }
+
+.calc-pager button { width:26px; height:20px; padding:0; border:1px solid #e0daef; border-radius:6px; background:#fff; color:#4a4458; font:inherit; font-size:10.5px; font-weight:700; cursor:pointer; }
+
+.calc-pager button[aria-pressed="true"] { border-color:var(--violet); background:var(--violet); color:#fff; }
+
+.calc-equations { flex:0 1 380px; max-height:100%; overflow:auto; }
+
+.calc-memory { padding:2px 8px; border-radius:999px; background:var(--violet-pale); color:var(--violet); font-size:11px; font-weight:750; }
+
+.calc-tools { display:flex; flex-wrap:wrap; gap:5px; margin-top:2px; }
+
+.calc-tools button { flex:1 1 auto; min-height:26px; padding:0 8px; border:1px solid #e0daef; border-radius:8px; background:#fff; color:#4a4458; font:inherit; font-size:11px; font-weight:700; cursor:pointer; }
+
+.calc-tools button:hover:not(:disabled) { background:#f5f2fb; }
+
+.calc-tools button:disabled { opacity:.5; cursor:default; }
+
+
+
+.calc-history { flex:0 1 250px; max-height:100%; overflow:auto; text-align:left; }
+
+.calc-history-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+
+.calc-history-head button { padding:4px 8px; border:1px solid #e0daef; border-radius:7px; background:#fff; color:#8f1d2c; font:inherit; font-size:10.5px; font-weight:650; cursor:pointer; }
+
+.calc-history-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+
+.calc-history-list button { display:flex; flex-direction:column; gap:2px; width:100%; padding:7px 9px; border:1px solid #ece8f6; border-radius:8px; background:#fbfaff; text-align:left; cursor:pointer; }
+
+.calc-history-list button:hover { background:#f3f0fa; }
+
+.calc-history-expr { color:var(--ink); font-size:12px; overflow-wrap:anywhere; }
+
+.calc-history-result { color:var(--violet); font-size:12px; font-weight:750; }
+
+/* Teclado de ecuaciones por líneas. */
+.multi-eq-pad { flex:none; display:flex; flex-direction:column; gap:5px; margin-top:2px; }
+
+.multi-eq-pad-row { display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:5px; }
+
+.multi-eq-key { min-height:30px; padding:0 6px; border:1px solid #e0daef; border-radius:8px; background:#fff; color:#4a4458; font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; }
+
+.multi-eq-key:hover { background:#f5f2fb; }
+
+.multi-eq-key:active { transform:scale(.97); }
+
+.multi-eq-key.is-equals { border-color:var(--violet); background:var(--violet); color:#fff; }
+
+.multi-eq-key.is-equals:hover { background:var(--violet-dark); }
+
+.multi-eq { flex:1 1 auto; min-height:0; width:100%; max-width:680px; margin:0 auto; display:flex; flex-direction:column; gap:10px; }
+
+.multi-eq-rows { flex:1 1 auto; min-height:0; overflow:auto; display:flex; flex-direction:column; gap:8px; padding-right:2px; }
+
+.multi-eq-row { display:grid; grid-template-columns:22px minmax(0,1fr) minmax(70px,auto) 26px; align-items:center; gap:8px; }
+
+.multi-eq-index { color:var(--muted); font-size:11px; font-weight:700; text-align:right; font-variant-numeric:tabular-nums; }
+
+.multi-eq-input { width:100%; padding:9px 12px; border:1px solid #e0daef; border-radius:9px; background:#fff; color:var(--ink); font:14px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+.multi-eq-input:focus-visible { outline:2px solid var(--violet); outline-offset:1px; }
+
+.multi-eq-result { color:var(--violet); font-size:13px; font-weight:750; font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+.multi-eq-result.is-error { color:#8f1d2c; font-weight:600; font-size:11.5px; white-space:normal; }
+
+.multi-eq-remove { width:24px; height:24px; padding:0; border:0; border-radius:6px; background:transparent; color:var(--muted); font-size:16px; line-height:1; cursor:pointer; }
+
+.multi-eq-remove:hover { background:#f3f0fa; color:#8f1d2c; }
+
+.multi-eq-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+
+.multi-eq-actions button { padding:7px 12px; border:1px solid #e0daef; border-radius:8px; background:#fff; color:#4a4458; font:inherit; font-size:12px; font-weight:650; cursor:pointer; }
+
+.multi-eq-actions button:hover:not(:disabled) { background:#f5f2fb; }
+
+.multi-eq-actions button:disabled { opacity:.6; cursor:default; }
+
+.multi-eq-actions .edu-eq-primary { border-color:var(--violet); background:var(--violet); color:#fff; }
+
+.multi-eq-actions .edu-eq-primary:hover:not(:disabled) { background:var(--violet-dark); }
+
+.multi-eq-hint { flex:1 1 220px; color:var(--muted); font-size:11.5px; }
+
+/* Lector de texto a voz. */
+.tts { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:12px; }
+
+.tts-text { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:6px; }
+
+.tts-label { color:var(--muted); font-size:12px; font-weight:650; }
+
+.tts-text textarea { flex:1 1 auto; min-height:140px; padding:12px 14px; border:1px solid #e0daef; border-radius:10px; background:#fff; color:var(--ink); font:inherit; font-size:14px; line-height:1.55; resize:none; }
+
+.tts-text textarea:focus-visible { outline:2px solid var(--violet); outline-offset:1px; }
+
+.tts-controls { display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px; }
+
+.tts-field { display:flex; flex-direction:column; gap:6px; }
+
+.tts-field select { padding:8px 10px; border:1px solid #e0daef; border-radius:9px; background:#fff; color:var(--ink); font:inherit; font-size:12.5px; max-width:260px; }
+
+.tts-rate input { width:180px; accent-color:var(--violet); }
+
+.tts-actions { display:flex; gap:8px; }
+
+.tts-actions button { padding:8px 14px; border:1px solid #e0daef; border-radius:9px; background:#fff; color:#4a4458; font:inherit; font-size:12.5px; font-weight:650; cursor:pointer; }
+
+.tts-actions button:disabled { opacity:.5; cursor:default; }
+
+.tts-actions .tts-primary { border-color:var(--violet); background:var(--violet); color:#fff; }
+
+.tts-actions .tts-primary:hover:not(:disabled) { background:var(--violet-dark); }
+
+.tts-count { margin-left:auto; color:var(--muted); font-size:11.5px; font-weight:650; font-variant-numeric:tabular-nums; }
+
+@media (max-width: 560px) {
+  .edu-view { padding:12px; }
+  .edu-card { padding:14px; }
+}
+
+/* ==========================================================================
+   Responsividad por ancho de ventana (container queries)
+   La tabla periódica usa breakpoints de viewport, que no sirven dentro de una
+   ventana redimensionable: aquí se apilan tabla y detalles y se conserva un
+   ancho mínimo legible con desplazamiento horizontal.
+   ========================================================================== */
+
+@container eduapp (max-width: 760px) {
+  .edu-view { padding:10px; gap:10px; }
+  .edu-card { padding:12px 13px; }
+  .edu-card-title { font-size:12px; }
+  .edu-hint { font-size:11.5px; }
+  .edu-ruler { min-height:120px; }
+  .calc-layout { flex-direction:column; align-items:center; }
+  .calc-history, .calc-equations { flex:0 0 auto; width:min(380px, 100%); max-height:240px; }
+}
+
+@container eduapp (max-width: 700px) {
+  .edu-hint { display:none; }
+}
+
+@container eduapp (max-width: 620px) {
+  .edu-app-tab { padding:6px 10px; font-size:12px; }
+  .edu-card--calc { width:100%; }
+  .edu-view--medir { gap:8px; }
+}

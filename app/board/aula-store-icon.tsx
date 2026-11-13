@@ -1,12 +1,12 @@
 import type { SpaceIconProps } from "./tools";
 
 /**
- * Logo de Aula Store: baldosa hexagonal ámbar con un glifo de tienda
- * (tejado, toldo festoneado y puerta), dibujado en SVG propio para no
- * depender de iconos genéricos. Forma geométrica distinta de los iconos
- * redondeados de las apps del escritorio.
+ * Glifo de Aula Store: bolsa de compra con asa, dibujada en SVG propio para no
+ * depender de iconos genéricos. Es solo el trazo, sin baldosa, para que cada
+ * superficie (lanzador del escritorio, cabecera de la tienda) ponga su propio
+ * fondo y el icono herede el color con `currentColor`.
  * @param props - Tamaño y clases del icono.
- * @returns El logo de Aula Store como SVG.
+ * @returns El glifo de Aula Store como SVG.
  */
 export function AulaStoreIcon({ size = 24, className }: SpaceIconProps) {
   return (
@@ -17,29 +17,16 @@ export function AulaStoreIcon({ size = 24, className }: SpaceIconProps) {
       className={className}
       aria-hidden="true"
       focusable="false"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     >
-      <defs>
-        <linearGradient id="aula-store-tile" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#febc2e" />
-          <stop offset="1" stopColor="#f59e0b" />
-        </linearGradient>
-      </defs>
-      {/* Baldosa hexagonal */}
-      <path
-        d="M32 3 58 18v28L32 61 6 46V18L32 3Z"
-        fill="url(#aula-store-tile)"
-        stroke="#b45309"
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      {/* Glifo de tienda: tejado, toldo festoneado, cuerpo y puerta */}
-      <g fill="none" stroke="#3a2a00" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M19 28 32 16l13 12" />
-        <path d="M21 28h22" />
-        <path d="M21 28c0 3.3 2.5 6 5.5 6s5.5-2.7 5.5-6c0 3.3 2.5 6 5.5 6s5.5-2.7 5.5-6" />
-        <path d="M24 34v12c0 1.7 1.3 3 3 3h10c1.7 0 3-1.3 3-3V34" />
-        <path d="M29 49V40a3 3 0 0 1 6 0v9" />
-      </g>
+      {/* Cuerpo de la bolsa, ligeramente más ancho en la base */}
+      <path d="M19 26h26l1.8 20.6A6.5 6.5 0 0 1 40.3 54H23.7a6.5 6.5 0 0 1-6.5-7.4L19 26Z" />
+      {/* Asa */}
+      <path d="M24.5 26v-5.5a7.5 7.5 0 0 1 15 0V26" />
     </svg>
   );
 }

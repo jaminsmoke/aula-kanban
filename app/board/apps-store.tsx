@@ -162,7 +162,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
           <button type="button" className="store-refresh" onClick={onRefresh} title="Actualizar estado"><RefreshCw size={16} aria-hidden /> Actualizar</button>
         </div>
         <div className="store-hero-main">
-          <span className="store-logo" aria-hidden><AulaStoreIcon size={54} /></span>
+          <span className="store-logo" aria-hidden><AulaStoreIcon size={36} /></span>
           <div className="store-heading">
             <h2>Aula Store</h2>
             <p>Catálogo de Aula Kanban: instala y abre aplicaciones para tu proyecto.</p>

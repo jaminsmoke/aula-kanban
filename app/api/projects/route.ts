@@ -1,7 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
-import { boards, deletedStudents, deletedTeachers, projectMembers, projects, spaceApps, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
+import { blocklyPrograms, boards, deletedStudents, deletedTeachers, projectMembers, projects, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { isAdministrator, isOwner } from "../../../lib/server/project";
 import { cleanupOrphanUploads, deleteProjectUploads } from "../../../lib/server/storage";
@@ -65,6 +65,7 @@ export async function DELETE(request: Request) {
   const db = getDb();
   const [, , , , , , , , , result] = await db.batch([
     db.delete(boards).where(eq(boards.projectId, parsed.data.id)),
+    db.delete(blocklyPrograms).where(eq(blocklyPrograms.projectId, parsed.data.id)),
     db.delete(taskAssignees).where(eq(taskAssignees.projectId, parsed.data.id)),
     db.delete(tasks).where(eq(tasks.projectId, parsed.data.id)),
     db.delete(projectMembers).where(eq(projectMembers.projectId, parsed.data.id)),
@@ -72,7 +73,6 @@ export async function DELETE(request: Request) {
     db.delete(teachers).where(eq(teachers.projectId, parsed.data.id)),
     db.delete(deletedStudents).where(eq(deletedStudents.projectId, parsed.data.id)),
     db.delete(deletedTeachers).where(eq(deletedTeachers.projectId, parsed.data.id)),
-    db.delete(spaceApps).where(eq(spaceApps.projectId, parsed.data.id)),
     db.delete(projects).where(eq(projects.id, parsed.data.id)),
   ]);
   try {
