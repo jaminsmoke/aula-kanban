@@ -5,6 +5,37 @@ import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+
+test('la medición rootless usa un contenedor aislado de solo lectura si PostgreSQL deniega acceso', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'aula-usage-'));
+  await mkdir(path.join(root, 'data', 'affine'), { recursive: true });
+  const calls = [], token = 'q'.repeat(40);
+  const server = createManager({ token, stack: { directory: root, project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'affine', url: 'https://affine.example.test' }], measure: async () => { const e = new Error('denied'); e.code = 'EACCES'; throw e; }, execute: async args => { calls.push(args); return args[0] === 'run' ? '12345\t/measure\n' : ''; } });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const response = await fetch(`http://127.0.0.1:${server.address().port}/v1/apps`, { headers: { authorization: `Bearer ${token}` } });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).apps[0].dataBytes, 12345);
+    const command = calls.find(args => args[0] === 'run');
+    assert.ok(command.includes('none'));
+    assert.ok(command.some(arg => arg.includes('dst=/measure,readonly')));
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('si no se puede medir el espacio, el estado sigue disponible y la cuota no se omite', async () => {
+  const token = 'r'.repeat(40);
+  const server = createManager({ token, stack: { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'affine', url: 'https://affine.example.test' }], measure: async () => { throw new Error('disco no accesible'); }, checkSpace: async () => ({ bavail: 10 ** 9, bsize: 4096 }), execute: async args => args.includes('config') ? JSON.stringify({ services }) : '' });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const base = `http://127.0.0.1:${server.address().port}`, headers = { authorization: `Bearer ${token}` };
+    const response = await fetch(base + '/v1/apps', { headers });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).apps[0].dataBytes, null);
+    assert.equal((await fetch(base + '/v1/apps/affine', { method: 'POST', headers })).status, 202);
+    await new Promise(resolve => setTimeout(resolve, 20));
+    assert.equal((await (await fetch(base + '/v1/apps', { headers })).json()).apps[0].status, 'error');
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
 const services = { affine: { image: 'ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099' }, affine_migration: { image: 'ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099' }, affine_postgres: { image: 'pgvector/pgvector:pg16@sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f' }, affine_redis: { image: 'redis:7-alpine@sha256:7f7d30b7fdd09467bac58198a1f166dd69789d348d4fe859cccb20e0cf287fbe' } };
 const n8nServices = { n8n: { image: 'n8nio/n8n:2.47.0@sha256:bde957dfc5faf0fbe64f2db3f196c83909ca26da32600da0dce60fccd099b3e5', ports: [{ published: '5680', host_ip: '127.0.0.1', target: 5678 }], volumes: [{ type: 'bind', source: './data/n8n' }] } };
 

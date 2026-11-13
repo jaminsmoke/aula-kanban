@@ -139,9 +139,31 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
     if (!Number.isSafeInteger(maxDataBytes) || maxDataBytes <= 0 || maxDataBytes > MAX_DATA_BYTES_CAP) throw new Error('Cuota de datos no válida.');
     catalog.set(app.id, { ...app, url: url.href, maxDataBytes });
   }
+  // Los volúmenes de PostgreSQL rootless pertenecen a un UID subordinado.
+  // Si el usuario del gestor no puede leerlos, medimos con una imagen fijada,
+  // sin red y con un montaje de solo lectura en el mismo Docker rootless.
+  const usageCache = new Map();
+  const usage = async (app, cached = false) => {
+    const saved = usageCache.get(app.id);
+    if (cached && saved && Date.now() - saved.time < 60_000) return saved.bytes;
+    const root = await realpath(stack.directory);
+    const directory = path.join(root, 'data', app.id);
+    let bytes;
+    try { bytes = await measure(directory); }
+    catch (error) {
+      if (error.code !== 'EACCES' && error.code !== 'EPERM') throw error;
+      if (await realpath(directory) !== directory || directory.includes(',')) throw new Error('outside_directory');
+      const result = await execute(['run', '--rm', '--network', 'none', '--pull', 'never', '--entrypoint', 'du', '--mount', `type=bind,src=${directory},dst=/measure,readonly`, allowedImages.affine_redis, '-sb', '/measure'], root);
+      const match = /^(\d+)\s+\/measure\s*$/.exec(result.trim());
+      if (!match || !Number.isSafeInteger(Number(match[1]))) throw new Error('invalid_usage');
+      bytes = Number(match[1]);
+    }
+    usageCache.set(app.id, { bytes, time: Date.now() });
+    return bytes;
+  };
   /** Comprueba que los datos de la app no superen su cuota; devuelve los bytes actuales. */
   const checkQuota = async app => {
-    const bytes = await measure(path.join(stack.directory, 'data', app.id));
+    const bytes = await usage(app);
     if (bytes > app.maxDataBytes) throw new Error('quota_exceeded');
     return bytes;
   };
@@ -234,8 +256,8 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
     if (named.length) await execute(['volume', 'rm', '-f', ...named], stack.directory);
   };
   const status = async app => {
-    if (working.has(app.id)) return 'working';
     if (failed.has(app.id)) return 'error';
+    if (working.has(app.id)) return 'working';
     // Evita bloquear la respuesta mientras Docker está ocupado con una
     // instalación de otra app: se sirve el último estado conocido.
     if (working.size) return statusCache.get(app.id) ?? { status: 'not_installed', version: null };
@@ -266,7 +288,7 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
     const expected = Buffer.from(token);
     if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) return send(res, 401, { message: 'No autorizado.' });
     if (req.method === 'GET' && req.url === '/v1/apps') {
-      try { return send(res, 200, { apps: await Promise.all([...catalog.values()].map(async app => { const result = await status(app); const state = typeof result === 'string' ? { status: result, version: null } : result; return { id: app.id, status: state.status, url: app.url, version: state.version, dataBytes: await measure(path.join(stack.directory, 'data', app.id)), maxDataBytes: app.maxDataBytes }; })) }); }
+      try { return send(res, 200, { apps: await Promise.all([...catalog.values()].map(async app => { const result = await status(app); const state = typeof result === 'string' ? { status: result, version: null } : result; let dataBytes = null; try { dataBytes = await usage(app, true); } catch (error) { log('usage_failed', { app: app.id, error: safeError(error) }); } return { id: app.id, status: state.status, url: app.url, version: state.version, dataBytes, maxDataBytes: app.maxDataBytes }; })) }); }
       catch (error) { log('status_failed', { error: safeError(error) }); return send(res, 503, { message: 'No se pudo consultar Docker.' }); }
     }
     const match = /^\/v1\/apps\/(affine|nodum|n8n)(\/reset)?$/.exec(req.url ?? '');
@@ -297,8 +319,10 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
       operationPromise.then(() => clearTimeout(timer), () => clearTimeout(timer));
     });
     void Promise.race([operationPromise, timeout])
-      .catch(error => { failed.add(app.id); log('operation_failed', { operation, app: app.id, error: safeError(error) }); })
-      .finally(() => working.delete(app.id));
+      .catch(error => { failed.add(app.id); log('operation_failed', { operation, app: app.id, error: safeError(error) }); });
+    // Un timeout no cancela el trabajo subyacente: mantener el bloqueo hasta
+    // que termine de verdad evita operaciones simultáneas sobre el stack.
+    void operationPromise.then(() => working.delete(app.id), () => working.delete(app.id));
     return send(res, 202, { accepted: true });
   });
 }
