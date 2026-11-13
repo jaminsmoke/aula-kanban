@@ -42,7 +42,7 @@ export const docsHero = {
 
 /**
  * Secciones en el orden en que se muestran.
- * Las secciones por rol y las guías de VPS se añadirán en iteraciones futuras.
+ * Las secciones por rol se añadirán en iteraciones futuras.
  */
 export const docSections: DocSection[] = [
   {
@@ -105,7 +105,7 @@ export const docSections: DocSection[] = [
   {
     id: "espacio",
     title: "Mi espacio y las aplicaciones",
-    lead: "«Mi espacio» es el escritorio del proyecto: desde ahí se abren las aplicaciones del grupo en ventanas. Las aplicaciones nativas ya vienen instaladas; las aplicaciones de VPS (AFFiNE, n8n y otras) se instalan desde Aula Store cuando el gestor del VPS está conectado.",
+    lead: "«Mi espacio» es el escritorio del proyecto: desde ahí se abren las aplicaciones del grupo en ventanas. Las aplicaciones nativas se pueden instalar desde Aula Store para usarlas en el proyecto.",
     blocks: [
       {
         type: "steps",
@@ -115,7 +115,6 @@ export const docSections: DocSection[] = [
           "Abre Aula Store para ver el catálogo e instalar o desinstalar aplicaciones.",
         ],
       },
-      { type: "note", tone: "info", text: "Mientras el gestor del VPS no esté conectado, en Mi espacio solo estarán disponibles las aplicaciones nativas." },
     ],
   },
   {

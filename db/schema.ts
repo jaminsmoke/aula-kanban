@@ -141,8 +141,7 @@ export const uploads = sqliteTable("uploads", {
 }, (table) => [index("uploads_project").on(table.projectId, table.createdAt)]);
 
 // Estado de las aplicaciones nativas (librerías npm del propio Site) instaladas
-// en «Mi espacio» por el dueño de la instancia. Las apps del VPS no viven aquí:
-// su estado real lo da el gestor del VPS (Docker).
+// en «Mi espacio» por el dueño de la instancia.
 export const spaceApps = sqliteTable("space_apps", {
   id: text("id").primaryKey().notNull(),
   projectId: text("project_id").notNull(),

@@ -3,8 +3,8 @@
 #
 # Adaptado del despliegue oficial (https://docs.n8n.io/hosting/installation/docker/)
 # a las reglas estrictas de vps-manager/manager.mjs:
-# - Sin `build`: el gestor arranca con `docker compose up --no-build`; la
-#   imagen es la oficial `n8nio/n8n` (2.47.0, fijada por digest).
+# - Sin `build`: se usan imágenes oficiales fijadas por digest, con un
+#   ejecutor separado para aislar el código de los flujos.
 # - Sin `container_name`, sin `security_opt`, sin `cap_add`/`cap_drop`.
 # - Único puerto publicado: el propio n8n, solo loopback
 #   (127.0.0.1:${N8N_HTTP_PORT:-5680}:5678). Detrás del Caddy del VPS, que
@@ -15,6 +15,7 @@
 # Configuración: crear ./.env (junto al compose.yaml, chmod 600) con
 #   N8N_WEBHOOK_URL=https://<dominio de n8n>/
 #   N8N_HOST=<dominio de n8n>            (solo el dominio, sin https://)
+#   N8N_RUNNERS_AUTH_TOKEN=<secreto aleatorio largo y exclusivo>
 # Los valores con `:?` hacen fallar `docker compose config` hasta que
 # existan; es intencionado. `N8N_HTTP_PORT` debe coincidir con el
 # reverse_proxy del Caddy del VPS. HTTPS indica la URL pública; el TLS
@@ -45,13 +46,39 @@ services:
       N8N_PROXY_HOPS: "1"
       N8N_PORT: "5678"
       N8N_PROTOCOL: https
+      N8N_RUNNERS_MODE: external
+      N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 0.0.0.0
+      N8N_RUNNERS_AUTH_TOKEN: ${N8N_RUNNERS_AUTH_TOKEN:?set in ./.env}
       EXECUTIONS_DATA_PRUNE: "true"
       EXECUTIONS_DATA_MAX_AGE: "${N8N_EXECUTION_RETENTION_HOURS:-336}"
       EXECUTIONS_DATA_PRUNE_MAX_COUNT: "${N8N_EXECUTION_RETENTION_COUNT:-10000}"
     restart: unless-stopped
+    depends_on:
+      - n8n_runners
+    networks:
+      - default
+      - n8n_runners_internal
     mem_limit: 2g
     logging:
       driver: json-file
       options:
         max-size: 10m
         max-file: "3"
+  n8n_runners:
+    image: n8nio/runners:2.47.0@sha256:61acfe410d5018dd5b208a4991e85b74bfebe01d96d62f19cea9e73557ed47f1
+    environment:
+      N8N_RUNNERS_AUTH_TOKEN: ${N8N_RUNNERS_AUTH_TOKEN:?set in ./.env}
+      N8N_RUNNERS_TASK_BROKER_URI: http://n8n:5679
+    networks:
+      - n8n_runners_internal
+    restart: unless-stopped
+    mem_limit: 1g
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  n8n_runners_internal:
+    internal: true

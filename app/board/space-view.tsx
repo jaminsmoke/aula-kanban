@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Server, X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Suspense, lazy, useCallback, useEffect, useRef, useState, type ComponentType } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
 import SpaceWindow from "./space-window";
@@ -9,16 +9,12 @@ import { AulaStoreIcon } from "./aula-store-icon";
 
 // La tienda (con Motion/Lottie) solo se descarga al abrirla.
 const AppsStore = lazy(() => import("./apps-store"));
-import Modal from "../modal";
 import { visibleTools, type SpaceRole, type SpaceTool } from "./tools";
 
 // Cada herramienta del hub se registra aquí como componente lazy: su código
 // solo se descarga cuando su ventana se abre por primera vez.
 const toolApps: Record<string, ComponentType<{ projectId: string; role: SpaceRole; instanceUrl?: string }>> = {
-  nodum: lazy(() => import("./nodum-app")),
   excalidraw: lazy(() => import("./excalidraw-app")),
-  affine: lazy(() => import("./affine-app")),
-  n8n: lazy(() => import("./n8n-app")),
 };
 
 type OpenWindow = {
@@ -43,35 +39,29 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
   const [storeOpen, setStoreOpen] = useState(false);
   const [managerConfigured, setManagerConfigured] = useState<boolean | null>(null);
   const [managerError, setManagerError] = useState("");
-  const [guideOpen, setGuideOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
   const refresh = useCallback(async () => {
     try {
       const response = await fetch(`/api/space-apps?project=${encodeURIComponent(projectId)}`, { cache: "no-store" });
       if (!response.ok) throw new Error();
-      const data = await response.json() as { configured: boolean; apps: typeof managed; connectionError?: boolean };
-      setManaged(data.apps); setManagerConfigured(data.configured);
-      setManagerError(data.connectionError ? "La conexión segura con las aplicaciones del VPS no está disponible. Las herramientas nativas siguen disponibles." : "");
+      const data = await response.json() as { apps: typeof managed };
+      setManaged(data.apps); setManagerConfigured(true);
+      setManagerError("");
     } catch {
       setManaged((current) => current.filter((app) => app.id === "excalidraw"));
       setManagerConfigured(false);
-      setManagerError("No se pudo consultar el gestor de aplicaciones.");
+      setManagerError("No se pudieron consultar las aplicaciones.");
     }
   }, [projectId]);
   useEffect(() => { const first = window.setTimeout(() => { void refresh(); }, 0); const timer = window.setInterval(() => { void refresh(); }, 10000); return () => { window.clearTimeout(first); window.clearInterval(timer); }; }, [refresh]);
   const manage = async (id: string, action: StoreAction) => {
-    const target = tools.find((tool) => tool.id === id);
-    if (action === "uninstall" && !window.confirm(target?.host === "site"
-      ? "Se desinstalará esta aplicación de Mi espacio para los miembros de este proyecto. Las pizarras de las tareas no se ven afectadas. ¿Continuar?"
-      : "Se detendrá y retirará esta aplicación para todos los proyectos. Sus datos se conservarán. ¿Continuar?")) return;
+    if (action === "uninstall" && !window.confirm("Se desinstalará esta aplicación de Mi espacio para los miembros de este proyecto. Las pizarras de las tareas no se ven afectadas. ¿Continuar?")) return;
     try {
       const response = await fetch(`/api/space-apps?project=${encodeURIComponent(projectId)}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, action }) });
       if (!response.ok) throw new Error();
       await refresh();
-    } catch { setManagerError("No se pudo iniciar la operación. Comprueba el gestor del VPS."); }
+    } catch { setManagerError("No se pudo actualizar la aplicación. Inténtalo de nuevo."); }
   };
   const [windows, setWindows] = useState<OpenWindow[]>([]);
-  const [noticeDismissed, setNoticeDismissed] = useState(false);
   const zCounter = useRef(10);
 
   const open = (tool: SpaceTool) => {
@@ -84,7 +74,9 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
       const width = Math.min(880, window.innerWidth - 24);
       const height = Math.min(560, window.innerHeight - 72);
       const offset = Math.max(12, Math.min(150 + current.length * 30, window.innerWidth - width - 12));
-      return [...current, { tool, minimized: false, position: { x: offset, y: 12 }, size: { width, height }, maximized: false, zIndex: zCounter.current }];
+      const position = { x: offset, y: 12 };
+      const size = { width, height };
+      return [...current, { tool, minimized: false, position, size, maximized: false, zIndex: zCounter.current }];
     });
   };
 
@@ -103,7 +95,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
   }));
 
   // En el escritorio solo aparecen las apps instaladas (nativas en la DB,
-  // del VPS según el gestor). Una app no instalada no tiene icono: se
+  // según su estado guardado. Una app no instalada no tiene icono: se
   // instala desde Aula Store.
   const installedIds = new Set(managed.filter((app) => app.status === "installed").map((app) => app.id));
   const desktopTools = tools.filter((tool) => installedIds.has(tool.id));
@@ -132,16 +124,6 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
         </nav>
       </div>
       <div className="space-desktop" aria-label="Escritorio de herramientas">
-        {managerConfigured === false && !noticeDismissed ? (
-          <div className="space-vps-notice" role="status">
-            <span className="space-vps-notice-icon" aria-hidden><Server size={20} /></span>
-            <p className="space-vps-notice-text">
-              <strong>Las aplicaciones del VPS aún no están disponibles.</strong> Sin conectar el gestor del VPS, el Space está incompleto; mientras tanto solo puedes usar las aplicaciones nativas instaladas.
-              {(role === "owner" || role === "admin") && <> <button type="button" className="text-button" onClick={() => setGuideOpen(true)}>Cómo configurar el VPS</button></>}
-            </p>
-            <button type="button" className="space-vps-notice-close" onClick={() => setNoticeDismissed(true)} aria-label="Cerrar aviso"><X size={16} aria-hidden /></button>
-          </div>
-        ) : null}
         {managerError && <p role="alert" className="space-empty">{managerError}</p>}
         {managerConfigured === null ? (
           <p className="space-empty">Cargando aplicaciones…</p>
@@ -162,7 +144,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
           })}
         </div>
         <div className="space-dock">
-          <button type="button" className="space-dock-store" onClick={() => setStoreOpen(true)} title="Aula Store: instala, desinstala o resetea las aplicaciones del catálogo">
+          <button type="button" className="space-dock-store" onClick={() => setStoreOpen(true)} title="Aula Store: instala o desinstala aplicaciones del catálogo">
             <span className="space-dock-tile" aria-hidden><AulaStoreIcon size={52} /></span>
             <span className="space-dock-name">Aula Store</span>
           </button>
@@ -196,24 +178,15 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
         <Suspense fallback={<p className="space-loading">Cargando Aula Store…</p>}>
         <AppsStore
           role={role}
-          configured={managerConfigured}
           apps={managed}
           error={managerError}
           onManage={(id, action) => void manage(id, action)}
           onOpen={(tool) => { setStoreOpen(false); open(tool); }}
           onRefresh={() => void refresh()}
-          onShowGuide={() => { setStoreOpen(false); setGuideOpen(true); }}
           onClose={() => setStoreOpen(false)}
         />
         </Suspense>
       ) : null}
-      {guideOpen && <Modal title="Conectar un VPS" onClose={() => setGuideOpen(false)}><div className="share-content">
-        <p>El gestor de aplicaciones para VPS todavía no está conectado. Cuando esté disponible, permitirá instalar y gestionar las aplicaciones del VPS compartidas entre todos los proyectos de esta copia de Aula Kanban.</p>
-        <p>Puedes pedir ayuda a un agente para revisar tu VPS y sus servicios existentes y configurar una conexión segura. La configuración inicial no instala aplicaciones del catálogo.</p>
-        <p>Solo el propietario y los administradores podrán instalar o desinstalar aplicaciones. No pegues contraseñas ni tokens en el chat: configúralos mediante los ajustes seguros que indique el agente.</p>
-        <label>Mensaje para el agente<textarea className="remix-prompt" readOnly value="Ayúdame a conectar mi VPS con Docker Compose a mi propia instancia de Aula Kanban. Revisa primero mis servicios y copias existentes, prepara una conexión segura sin instalar aplicaciones del catálogo y explícame cómo configurar las credenciales sin compartirlas en el chat." onFocus={(event) => event.currentTarget.select()} /></label>
-        <div className="remix-controls"><button type="button" className="secondary" onClick={async () => { try { await navigator.clipboard.writeText("Ayúdame a conectar mi VPS con Docker Compose a mi propia instancia de Aula Kanban. Revisa primero mis servicios y copias existentes, prepara una conexión segura sin instalar aplicaciones del catálogo y explícame cómo configurar las credenciales sin compartirlas en el chat."); setCopied(true); } catch { setCopied(false); } }}>{copied ? "Mensaje copiado" : "Copiar mensaje"}</button><a className="primary" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Abrir ChatGPT</a></div>
-      </div></Modal>}
     </section>
     </LazyMotion>
     </MotionConfig>

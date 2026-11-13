@@ -1,17 +1,9 @@
-import { currentVpsAccess } from "../../../../lib/server/vps-access";
-import { authorizeVpsRequest } from "../../../../lib/server/vps-authorize-handler";
-import { gatewayConfig } from "../../../../lib/server/gateway-config";
-
 export const dynamic = "force-dynamic";
 
 /**
- * Answer a request from the isolated gateway.
- * @param request - Gateway request.
- * @returns Current role or denial.
+ * La integración de aplicaciones externas se ha retirado.
+ * @returns Respuesta que indica que la ruta ya no está disponible.
  */
-export async function POST(request: Request) {
-  try {
-    const config = await gatewayConfig();
-    return authorizeVpsRequest(request, { serviceToken: config?.serviceToken, ticketSecret: config?.ticketSecret, access: currentVpsAccess });
-  } catch { return Response.json({ allowed: false }, { status: 503, headers: { "Cache-Control": "no-store" } }); }
+export async function POST() {
+  return Response.json({ message: "Esta integración ya no está disponible." }, { status: 410, headers: { "Cache-Control": "no-store" } });
 }

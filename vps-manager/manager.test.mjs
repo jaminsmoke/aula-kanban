@@ -37,7 +37,7 @@ test('si no se puede medir el espacio, el estado sigue disponible y la cuota no 
   } finally { await new Promise(resolve => server.close(resolve)); }
 });
 const services = { affine: { image: 'ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099' }, affine_migration: { image: 'ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099' }, affine_postgres: { image: 'pgvector/pgvector:pg16@sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f' }, affine_redis: { image: 'redis:7-alpine@sha256:7f7d30b7fdd09467bac58198a1f166dd69789d348d4fe859cccb20e0cf287fbe' } };
-const n8nServices = { n8n: { image: 'n8nio/n8n:2.47.0@sha256:bde957dfc5faf0fbe64f2db3f196c83909ca26da32600da0dce60fccd099b3e5', ports: [{ published: '5680', host_ip: '127.0.0.1', target: 5678 }], volumes: [{ type: 'bind', source: './data/n8n' }] } };
+const n8nServices = { n8n: { image: 'n8nio/n8n:2.47.0@sha256:bde957dfc5faf0fbe64f2db3f196c83909ca26da32600da0dce60fccd099b3e5', ports: [{ published: '5680', host_ip: '127.0.0.1', target: 5678 }], volumes: [{ type: 'bind', source: './data/n8n' }] }, n8n_runners: { image: 'n8nio/runners:2.47.0@sha256:61acfe410d5018dd5b208a4991e85b74bfebe01d96d62f19cea9e73557ed47f1' } };
 
 test('solo acepta el token y operaciones para aplicaciones registradas sin borrar volúmenes', async () => {
   const calls = [], token = 'x'.repeat(40);
@@ -229,9 +229,19 @@ test('instala, consulta y desinstala Nodum con su stack completo', async () => {
   } finally { await new Promise(resolve => server.close(resolve)); }
 });
 
-test('instala, consulta y desinstala n8n con su contenedor único', async () => {
+test('n8n informa de error si su ejecutor no está funcionando', async () => {
+  const token = '8'.repeat(40);
+  const server = createManager({ token, stack: { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'n8n', url: 'https://n8n.example.test' }], execute: async args => args.includes('ps') ? JSON.stringify([{ Service: 'n8n', State: 'running', Image: 'n8nio/n8n:2.47.0' }, { Service: 'n8n_runners', State: 'exited' }]) : '' });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const response = await fetch(`http://127.0.0.1:${server.address().port}/v1/apps`, { headers: { authorization: `Bearer ${token}` } });
+    assert.equal((await response.json()).apps[0].status, 'error');
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('instala, consulta y desinstala n8n y sus ejecutores', async () => {
   const calls = [], token = '8'.repeat(40);
-  const server = createManager({ token, stack: { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'n8n', url: 'https://n8n.example.test' }], checkSpace: async () => ({ bavail: 10 ** 9, bsize: 4096 }), execute: async args => { calls.push(args); if (args.includes('config')) return JSON.stringify({ services: n8nServices }); if (args.includes('ps')) return JSON.stringify([{ Service: 'n8n', State: 'running', Image: 'n8nio/n8n:2.47.0' }]); return ''; } });
+  const server = createManager({ token, stack: { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'n8n', url: 'https://n8n.example.test' }], checkSpace: async () => ({ bavail: 10 ** 9, bsize: 4096 }), execute: async args => { calls.push(args); if (args.includes('config')) return JSON.stringify({ services: n8nServices }); if (args.includes('ps')) return JSON.stringify([{ Service: 'n8n', State: 'running', Image: 'n8nio/n8n:2.47.0' }, { Service: 'n8n_runners', State: 'running' }]); return ''; } });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   try {
     const root = `http://127.0.0.1:${server.address().port}`, headers = { authorization: `Bearer ${token}` };
@@ -248,6 +258,7 @@ test('instala, consulta y desinstala n8n con su contenedor único', async () => 
     const rmCommand = calls.at(-1);
     assert.equal(rmCommand.includes('rm'), true);
     assert.equal(rmCommand.includes('n8n'), true);
+    assert.equal(rmCommand.includes('n8n_runners'), true);
   } finally { await new Promise(resolve => server.close(resolve)); }
 });
 
@@ -425,7 +436,7 @@ test('durante una instalación el estado de las demás apps responde rápido des
       calls.push(args);
       if (args.includes('config')) return JSON.stringify({ services: { ...services, ...n8nServices } });
       if (args.includes('up')) return new Promise(resolve => setTimeout(() => resolve(''), 150));
-      if (args.includes('ps') && args.includes('n8n')) return JSON.stringify([{ Service: 'n8n', State: 'running', Image: 'n8nio/n8n:2.47.0' }]);
+      if (args.includes('ps') && args.includes('n8n')) return JSON.stringify([{ Service: 'n8n', State: 'running', Image: 'n8nio/n8n:2.47.0' }, { Service: 'n8n_runners', State: 'running' }]);
       return '';
     },
   });

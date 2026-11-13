@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 const applications = {
   affine: { entry: 'affine', services: ['affine', 'affine_migration', 'affine_postgres', 'affine_redis'] },
   nodum: { entry: 'nodum_web', services: ['nodum_postgres', 'nodum_redis', 'nodum_redis_control', 'nodum_minio', 'nodum_migrate', 'nodum_api', 'nodum_worker', 'nodum_beat', 'nodum_web', 'nodum_caddy'] },
-  n8n: { entry: 'n8n', services: ['n8n'] },
+  n8n: { entry: 'n8n', services: ['n8n', 'n8n_runners'] },
 };
 /**
  * Imágenes permitidas, por servicio, fijadas por DIGEST (`tag@sha256:...`) para que un
@@ -37,6 +37,7 @@ const allowedImages = {
   affine: 'ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099', affine_migration: 'ghcr.io/toeverything/affine:stable@sha256:b649f5ce2384ffdf13c23bccf81d759e15973d59d0b0058af65d895a84373099', affine_postgres: 'pgvector/pgvector:pg16@sha256:0dd3149a06e4579a0d70d8fef9945636cd514005e7237deb27f9b67886f8dc4f', affine_redis: 'redis:7-alpine@sha256:7f7d30b7fdd09467bac58198a1f166dd69789d348d4fe859cccb20e0cf287fbe',
   nodum_postgres: 'pgvector/pgvector:0.8.0-pg16@sha256:a132765ec351c65111b5b675928a3a0515a466a40f97277329db8b8209ad8bc9', nodum_redis: 'redis:7.4.2-alpine@sha256:02419de7eddf55aa5bcf49efb74e88fa8d931b4d77c07eff8a6b2144472b6952', nodum_redis_control: 'redis:7.4.2-alpine@sha256:02419de7eddf55aa5bcf49efb74e88fa8d931b4d77c07eff8a6b2144472b6952', nodum_minio: `quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:${ZEROS}`,
   n8n: 'n8nio/n8n:2.47.0@sha256:bde957dfc5faf0fbe64f2db3f196c83909ca26da32600da0dce60fccd099b3e5',
+  n8n_runners: 'n8nio/runners:2.47.0@sha256:61acfe410d5018dd5b208a4991e85b74bfebe01d96d62f19cea9e73557ed47f1',
   nodum_migrate: `nodum-api:prod@sha256:${ZEROS}`, nodum_api: `nodum-api:prod@sha256:${ZEROS}`, nodum_worker: `nodum-api:prod@sha256:${ZEROS}`, nodum_beat: `nodum-api:prod@sha256:${ZEROS}`, nodum_web: `nodum-web:prod@sha256:${ZEROS}`, nodum_caddy: 'caddy:2-alpine@sha256:78bd35025c7ba85961dd149ae670315129954e77abe2383ac47c89106b35ade9',
 };
 
@@ -277,9 +278,14 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
       return result;
     }
     const entry = rows.find(row => row.Service === applications[app.id].entry);
-    const state = entry?.State === 'running'
+    let state = entry?.State === 'running'
       ? entry.Health === 'starting' ? 'working' : entry.Health === 'unhealthy' ? 'error' : 'installed'
       : 'stopped';
+    if (app.id === 'n8n' && state === 'installed') {
+      const runner = rows.find(row => row.Service === 'n8n_runners');
+      if (!runner || runner.State !== 'running' || runner.Health === 'unhealthy') state = 'error';
+      else if (runner.Health === 'starting') state = 'working';
+    }
     const result = { status: state, version: imageVersion(entry?.Image) };
     statusCache.set(app.id, result);
     return result;
