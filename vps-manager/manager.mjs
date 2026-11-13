@@ -277,8 +277,10 @@ export function createManager({ token, stack, apps, execute = runDocker, checkSp
       return result;
     }
     const entry = rows.find(row => row.Service === applications[app.id].entry);
-    const running = rows.some(row => row.Service === applications[app.id].entry && row.State === 'running' && row.Health !== 'unhealthy');
-    const result = { status: running ? 'installed' : 'stopped', version: imageVersion(entry?.Image) };
+    const state = entry?.State === 'running'
+      ? entry.Health === 'starting' ? 'working' : entry.Health === 'unhealthy' ? 'error' : 'installed'
+      : 'stopped';
+    const result = { status: state, version: imageVersion(entry?.Image) };
     statusCache.set(app.id, result);
     return result;
   };

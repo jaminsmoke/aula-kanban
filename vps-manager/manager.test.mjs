@@ -136,6 +136,21 @@ test('incluye la versión de la imagen en el estado', async () => {
   } finally { await new Promise(resolve => server.close(resolve)); }
 });
 
+test('espera a que el servicio esté sano y comunica fallos de salud', async () => {
+  const token = 'h'.repeat(40);
+  let health = 'starting';
+  const server = createManager({ token, stack: { directory: process.cwd(), project: 'aula-kanban-0123456789abcdef' }, apps: [{ id: 'affine', url: 'https://affine.example.test' }], execute: async args => args.includes('ps') ? JSON.stringify([{ Service: 'affine', State: 'running', Health: health }]) : '' });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const root = `http://127.0.0.1:${server.address().port}/v1/apps`, headers = { authorization: `Bearer ${token}` };
+    assert.equal((await (await fetch(root, { headers })).json()).apps[0].status, 'working');
+    health = 'unhealthy';
+    assert.equal((await (await fetch(root, { headers })).json()).apps[0].status, 'error');
+    health = 'healthy';
+    assert.equal((await (await fetch(root, { headers })).json()).apps[0].status, 'installed');
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
 test('resetear detiene los servicios y borra solo los datos de esa app', async () => {
   const token = 'r'.repeat(40);
   const rootDir = await mkdtemp(path.join(tmpdir(), 'aula-vps-'));
