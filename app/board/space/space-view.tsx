@@ -116,7 +116,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
     <LazyMotion features={domAnimation}>
     <section className="space-view" aria-label="Mi espacio">
       <div className="space-topbar">
-        <button type="button" className="space-back" onClick={onExit} title="Volver a Aula Kanban"><ArrowLeft size={16} aria-hidden /> Aula Kanban</button>
+        <button type="button" className="space-back" onClick={onExit} title="Volver a Clase"><ArrowLeft size={16} aria-hidden /> Clase</button>
         <p className="space-topbar-title">{active ? active.tool.name : "Mi espacio"}</p>
         <nav className="space-taskbar" aria-label="Ventanas minimizadas">
           {shownWindows.filter((item) => item.minimized).map((item) => {

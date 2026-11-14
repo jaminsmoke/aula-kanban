@@ -7,9 +7,18 @@ export type NativeCategory = "Aula" | "Pizarras" | "Programación" | "Diagramas"
 
 export const SPACE_CATEGORIES: NativeCategory[] = ["Aula", "Pizarras", "Programación", "Diagramas"];
 
+/** Versión de Aula Store como producto, independiente de las apps y del Site. */
+export const AULA_STORE_VERSION = "1.0.0";
+
 export const NATIVE_APP_IDS = ["excalidraw", "edu-tools", "blockly", "mermaid"] as const;
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
+
+/** Paquete npm y versión exacta que forma parte de una app. */
+export type NativeAppPackage = {
+  name: string;
+  version: string;
+};
 
 export type NativeAppMeta = {
   id: NativeAppId;
@@ -19,6 +28,14 @@ export type NativeAppMeta = {
   category: NativeCategory;
   cover: string;
   features: readonly string[];
+  /** Versión de nuestra integración, independiente de la versión del Site. */
+  appVersion: string;
+  /** Etiqueta opcional para la versión; por defecto, el nombre de la app. */
+  versionLabel?: string;
+  /** Paquete upstream principal y versión instalada. */
+  upstream: NativeAppPackage;
+  /** Piezas adicionales que añade nuestra integración. */
+  extras?: readonly NativeAppPackage[];
   /** Tamaño inicial de la ventana en Mi espacio. */
   window: { width: number; height: number };
 };
@@ -32,6 +49,8 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     category: "Pizarras",
     cover: "/store/excalidraw.png",
     features: ["Lienzo infinito con formas, texto y flechas", "Ideal para esquemas y explicaciones en directo", "Exporta el resultado a imagen"],
+    appVersion: "1.0.0",
+    upstream: { name: "@excalidraw/excalidraw", version: "0.18.1" },
     window: { width: 880, height: 560 },
   },
   {
@@ -42,6 +61,9 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     category: "Aula",
     cover: "/store/edu-tools.png",
     features: ["Calculadora básica y científica con memoria e historial", "Tabla periódica con ficha, modelo atómico e historia", "Regla, transportador y lectura en voz alta"],
+    appVersion: "1.0.0",
+    upstream: { name: "@smst/edu-tools", version: "2.2.1" },
+    extras: [{ name: "@cortex-js/compute-engine", version: "0.188.0" }],
     window: { width: 1120, height: 760 },
   },
   {
@@ -52,6 +74,8 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     category: "Programación",
     cover: "/store/blockly.png",
     features: ["Bloques de lógica, bucles, matemáticas y texto", "Código generado en JavaScript y Python", "Guardado por proyecto y ejecución de la salida"],
+    appVersion: "1.0.0",
+    upstream: { name: "blockly", version: "13.4.0" },
     window: { width: 1080, height: 720 },
   },
   {
@@ -62,6 +86,8 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     category: "Diagramas",
     cover: "/store/mermaid.png",
     features: ["Flujos, secuencia, Gantt, clases y estados", "Plantillas listas y vista previa en vivo", "Guardado por proyecto y exportación SVG"],
+    appVersion: "1.0.0",
+    upstream: { name: "mermaid", version: "12.3.0" },
     window: { width: 1120, height: 720 },
   },
 ];

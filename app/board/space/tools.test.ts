@@ -2,8 +2,8 @@ import { Gem } from "lucide-react";
 import { describe, expect, it } from "vitest";
 import { visibleTools, type SpaceTool } from "./tools";
 
-const shared: SpaceTool = { id: "shared", name: "Compartida", description: "", tagline: "", category: "Aula", cover: "", features: [], window: { width: 880, height: 560 }, icon: Gem, roles: ["teacher", "student"] };
-const teacherOnly: SpaceTool = { id: "teacher", name: "Profesor", description: "", tagline: "", category: "Aula", cover: "", features: [], window: { width: 880, height: 560 }, icon: Gem, roles: ["teacher"] };
+const shared: SpaceTool = { id: "shared", name: "Compartida", description: "", tagline: "", category: "Aula", cover: "", features: [], appVersion: "1.0.0", upstream: { name: "test", version: "1.0.0" }, window: { width: 880, height: 560 }, icon: Gem, roles: ["teacher", "student"] };
+const teacherOnly: SpaceTool = { id: "teacher", name: "Profesor", description: "", tagline: "", category: "Aula", cover: "", features: [], appVersion: "1.0.0", upstream: { name: "test", version: "1.0.0" }, window: { width: 880, height: 560 }, icon: Gem, roles: ["teacher"] };
 const catalog = [shared, teacherOnly];
 
 describe("catálogo nativo", () => {

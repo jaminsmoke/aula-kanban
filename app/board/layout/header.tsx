@@ -1,7 +1,7 @@
 "use client";
 
 import type { MouseEvent } from "react";
-import { Check, ChevronDown, Columns3, FolderKanban, Link2, LogOut, Plus, Settings, Trash2, Users } from "lucide-react";
+import { BookOpen, Check, ChevronDown, Columns3, FolderKanban, LayoutGrid, Link2, LogOut, Plus, Settings, Trash2, Users } from "lucide-react";
 import appPackage from "../../../package.json";
 import type { Project } from "../shared/model";
 import "./header.css";
@@ -9,7 +9,7 @@ import "./header.css";
 const appVersion = appPackage.version;
 const appAuthor = typeof appPackage.author === "string" ? appPackage.author : "";
 
-export type BoardView = "kanban" | "alumnos" | "profesores" | "espacio" | "documentacion";
+export type BoardView = "clase" | "alumnos" | "profesores" | "espacio" | "ajustes" | "documentacion";
 type View = BoardView;
 
 /**
@@ -46,11 +46,10 @@ export default function BoardHeader({
       <div className={`shell topbar-inner${activeProject ? "" : " no-project"}`}>
         <span className="wordmark"><span className="brand-icon" aria-hidden><Columns3 size={20} strokeWidth={2.6} /></span><span className="brand-text"><span>Aula Kanban</span><small className="brand-meta">v{appVersion} - {appAuthor}</small></span></span>
         {activeProject && <nav className="main-nav" aria-label="Vistas">
-          <button type="button" aria-current={view === "kanban" ? "page" : undefined} onClick={() => onView("kanban")}>Kanban</button>
+          <button type="button" aria-current={view === "clase" ? "page" : undefined} onClick={() => onView("clase")}>Clase</button>
           <button type="button" aria-current={view === "alumnos" ? "page" : undefined} onClick={() => onView("alumnos")}>Alumnos</button>
           <button type="button" aria-current={view === "profesores" ? "page" : undefined} onClick={() => onView("profesores")}>Profesores</button>
-          <button type="button" aria-current={view === "espacio" ? "page" : undefined} onClick={() => onView("espacio")}>Mi espacio</button>
-          <button type="button" aria-current={view === "documentacion" ? "page" : undefined} onClick={() => onView("documentacion")}>Documentación</button>
+          <button type="button" className="space-action" aria-label="Mi espacio" title="Mi espacio" aria-current={view === "espacio" ? "page" : undefined} onClick={() => onView("espacio")}><LayoutGrid size={17} aria-hidden /></button>
         </nav>}
         {activeProject && <details className="project-menu">
           <summary aria-label="Seleccionar proyecto"><FolderKanban size={18} /><span>{activeProject.name}</span><ChevronDown size={16} /></summary>
@@ -66,6 +65,13 @@ export default function BoardHeader({
             </div>
           </div>
         </details>}
+        <button type="button" className="header-docs" aria-current={view === "documentacion" ? "page" : undefined} onClick={() => onView("documentacion")} aria-label="Documentación" title="Documentación">
+          <BookOpen size={16} aria-hidden />
+          <span className="header-docs-label">Documentación</span>
+        </button>
+        <button type="button" className="header-settings" aria-current={view === "ajustes" ? "page" : undefined} onClick={onSettings} aria-label="Ajustes" title="Ajustes">
+          <Settings size={17} aria-hidden />
+        </button>
         <details className="account-menu">
           <summary className="account-indicator" aria-label="Ver cuenta de ChatGPT">
             <span className="account-avatar" aria-hidden>{(user.displayName.trim()[0] || user.email[0]).toUpperCase()}</span>
@@ -73,7 +79,6 @@ export default function BoardHeader({
           </summary>
           <div className="account-dropdown">
             <strong>Cuenta de ChatGPT</strong><span>{user.email}</span>
-            <button type="button" onClick={(event) => { close(event); onSettings(); }}><Settings size={16} /> Ajustes de la cuenta</button>
             <a href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
           </div>
         </details>

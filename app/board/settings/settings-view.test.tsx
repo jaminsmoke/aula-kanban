@@ -1,0 +1,46 @@
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { jsonResponse } from "../../../vitest.setup";
+import type { Project } from "../shared/model";
+import SettingsView from "./settings-view";
+
+const project: Project = {
+  id: "p1",
+  name: "Pruebas",
+  createdAt: 1,
+  role: "teacher",
+  studentSection: null,
+  teacherId: "t1",
+};
+
+const props = {
+  user: { displayName: "Seedy", email: "seedy@sites.test" },
+  projectsLoaded: true,
+  owner: true,
+  admin: false,
+  activeProject: project,
+  onProjectsChanged: vi.fn(),
+};
+
+describe("SettingsView", () => {
+  it("muestra Cuenta y permite abrir Administradores", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse([])));
+
+    render(<SettingsView {...props} />);
+
+    expect(screen.getByRole("navigation", { name: "Secciones de ajustes" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Cuenta" }).getAttribute("aria-current")).toBe("page");
+    expect(screen.getByText("seedy@sites.test")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Administradores" }));
+    await waitFor(() => expect(screen.getByRole("heading", { name: "Administradores" })).toBeTruthy());
+    expect(screen.getByRole("button", { name: "Administradores" }).getAttribute("aria-current")).toBe("page");
+  });
+
+  it("oculta Administradores a quien no es propietario ni administrador", () => {
+    render(<SettingsView {...props} owner={false} admin={false} />);
+
+    expect(screen.queryByRole("button", { name: "Administradores" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Cuenta" }).getAttribute("aria-current")).toBe("page");
+  });
+});

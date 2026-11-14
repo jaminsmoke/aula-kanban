@@ -1,0 +1,31 @@
+/* ==========================================================================
+   Workspace: marco de viewport, sidebar y contenido
+   ========================================================================== */
+
+.app-frame { min-height:100dvh; display:flex; flex-direction:column; }
+.app-frame--viewport { height:100vh; height:100dvh; overflow:hidden; }
+.app-frame > .topbar { flex:none; }
+.workspace-main { flex:1 1 auto; min-height:0; width:100%; }
+
+.workspace-layout { display:grid; grid-template-columns:208px minmax(0,1fr); height:100%; min-height:0; }
+.workspace-sidebar { height:100%; overflow-y:auto; padding:24px 14px; border-right:1px solid var(--line); background:var(--white); }
+.workspace-sidebar-title { margin:0 0 10px; padding-inline:10px; color:var(--muted); font-size:10.5px; font-weight:750; letter-spacing:.055em; text-transform:uppercase; }
+.workspace-nav { display:grid; gap:4px; }
+.workspace-nav button { display:flex; align-items:center; gap:8px; width:100%; min-height:38px; padding:8px 10px; border:0; border-radius:var(--radius-sm); background:transparent; color:var(--ink-soft); font:inherit; font-size:13px; font-weight:700; text-align:left; cursor:pointer; }
+.workspace-nav button:hover { background:var(--surface-hover); }
+.workspace-nav button[aria-current="page"] { background:var(--violet-pale); color:var(--violet-dark); }
+.workspace-nav button svg { flex:none; }
+
+.workspace-content { min-width:0; height:100%; overflow-y:auto; }
+
+@media (max-width: 1050px) {
+  .workspace-layout { grid-template-columns:196px minmax(0,1fr); }
+}
+
+@media (max-width: 720px) {
+  .workspace-layout { grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr); }
+  .workspace-sidebar { display:flex; align-items:center; gap:10px; height:auto; overflow:visible; padding:8px 12px; border-right:0; border-bottom:1px solid var(--line); }
+  .workspace-sidebar-title { margin:0; padding-inline:6px; }
+  .workspace-nav { display:flex; gap:4px; overflow-x:auto; }
+  .workspace-nav button { width:auto; white-space:nowrap; }
+}

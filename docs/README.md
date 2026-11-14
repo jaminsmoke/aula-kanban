@@ -40,6 +40,8 @@ La fuente única es `app/globals.css`. Los tokens se agrupan por intención:
 
 Regla: un token debe representar un patrón compartido o una intención; no se tokeniza cada valor aislado, cada sombra ni cada tamaño de letra.
 
+Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fonts`, con sus licencias OFL. `public/_headers` fija caché inmutable de un año para los archivos de fuente; no se depende de Google Fonts en producción.
+
 ### CSS compartido y CSS específico
 
 - `globals.css` contiene los tokens, la base, las animaciones y las reglas compartidas por más de un componente o usadas más de una vez.
@@ -72,14 +74,18 @@ Regla: un token debe representar un patrón compartido o una intención; no se t
 - **Roadmap de componentes completado:** Aula Store, calculadora, Mermaid, diálogo de tarea, Blockly y Whiteboard divididos; verificación final correcta. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de reintento de pizarra completado:** el error de carga se limpia cuando la pizarra vuelve a cargar; regresión de hook y vista añadida. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de carga por pestañas de `edu-tools` completado:** tabla periódica, medición, lectura y ecuaciones se cargan bajo demanda; datos periódicos en JSON. Resumen en [`changelog.md`](changelog.md).
-- **Versión:** 1.1.20. Los últimos hitos están en [`changelog.md`](changelog.md).
+- **Versión:** 1.1.22. Los últimos hitos están en [`changelog.md`](changelog.md).
 - **Roadmap de respuestas sin sesión completado:** contrato 401/403/404/400 aplicado a las 12 rutas y contrato del socket documentado. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de propiedad completado:** identidad estable en `instance_owner`, migración `0028`, helper común y checklist de remix. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de `compute-engine` completado:** motor mantenido, carga selectiva en Científica/Ecuaciones y estado de cálculo. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de documentos completado:** Blockly y Mermaid usan `app_documents`; las dos tablas históricas se retiraron tras la auditoría y respaldo.
-- **Roadmap activo:** detalles de rendimiento y acabado; fases 1 y 2 completadas.
-- **Backlog pendiente:** sin entradas.
-- **Próximo paso:** fase 3 del roadmap activo, fuentes, verificación final y cierre.
+- **Roadmap de rendimiento y acabado completado:** tokens CSS, check de Aula Store sin Lottie y fuentes autohospedadas; verificación final correcta. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de versiones de Aula Store completado:** versiones propias por app, versión de la tienda y ficha técnica con upstream y ampliaciones. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de navegación de Clase completado:** Clase como vista principal, sidebar de pantalla partida, Tareas, header de cuatro vistas y Mi espacio como icono. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de ajustes generales completado:** vista con sidebar, Cuenta, Administradores y engranaje de cabecera. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap activo:** sin fase activa. La próxima entrada se elegirá del backlog.
+- **Backlog pendiente:** 3 entradas: whiteboard, jerarquía de personas y herramienta Medir.
+- **Próximo paso:** decidir qué entrada del backlog pasa al roadmap.
 
 ## Documentación relacionada
 

@@ -65,6 +65,36 @@ los de las futuras apps que usen este modelo.
 | Herramientas de aula | `@smst/edu-tools` 2.2.1 | MIT | ✅ Integrada | **Calculadora** en el centro con chips de modo (Básica / Científica con dos páginas de funciones / Ecuaciones), memoria M+/M−/MR, historial persistente y resultado decimal y exacto; al activar **Ecuaciones** aparece su panel al lado, con varias líneas, variables compartidas, teclado matemático y resultado por fila. **Ciencias** (tabla periódica propia en español con búsqueda, filtros, modelo atómico animado, descripción e historia), **Medir** (regla con medición + transportador giratorio) y **Lectura** en voz alta. Atajos Alt+1…4 |
 | Diagramas | `mermaid` 12.3.0 | MIT | ✅ Integrada | Diagramas de flujo, secuencia, Gantt, clases, estados y líneas de tiempo; editor y vista previa, plantillas, guardado por proyecto en D1 (`app_documents`) y exportación SVG |
 
+## Versiones
+
+Cada aplicación y la propia tienda tienen versiones independientes:
+
+| Nivel | Fuente | Dónde se ve |
+|---|---|---|
+| Site | `package.json` | Cabecera de Aula Kanban |
+| Aula Store | `AULA_STORE_VERSION` en `lib/native-apps.ts` | Cabecera de Aula Store |
+| App | `NativeAppMeta.appVersion` | Ficha de la app |
+| Upstream | `NativeAppMeta.upstream` y `extras` | Ficha de la app |
+
+La versión de la app empieza en `1.0.0` y describe **nuestra integración**, no la librería original. La versión upstream se toma del paquete instalado; `lib/native-apps.test.ts` comprueba que coincide con `package-lock.json`.
+
+Política de incremento:
+
+- **Parche:** corrección, texto o estilo sin nueva capacidad.
+- **Menor:** nueva capacidad o actualización upstream con cambio visible.
+- **Mayor:** cambio incompatible de almacenamiento, API o contrato.
+
+Aula Store usa la misma política para su propia versión. La versión del Site se gestiona aparte con el flujo de publicación y no se incrementa al cambiar una app.
+
+| App | Versión de la app | Upstream |
+|---|---|---|
+| Excalidraw | `1.0.0` | `@excalidraw/excalidraw 0.18.1` |
+| Herramientas de aula | `1.0.0` | `@smst/edu-tools 2.2.1` · `@cortex-js/compute-engine 0.188.0` |
+| Programación por bloques | `1.0.0` | `blockly 13.4.0` |
+| Diagramas | `1.0.0` | `mermaid 12.3.0` |
+
+La tienda empieza en `1.0.0`. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
+
 ## Candidatas
 
 Peso = orden de magnitud del chunk diferido, sin medir en este repo.
@@ -128,7 +158,8 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 | App | Paquete | Licencia | Motivo |
 |---|---|---|---|
 | Python en el navegador | `pyodide` 314.0.7 | MPL-2.0 | Permitida, pero 10-30 MB en la primera carga |
-| Cuadernos marimo | `marimo` (Python) | Apache-2.0 | No es npm ni cliente puro: necesita kernel Python || Notas colaborativas | `@blocksuite/editor` 0.10.0 | MPL-2.0 | Pensada para colaboración con backend |
+| Cuadernos marimo | `marimo` (Python) | Apache-2.0 | No es npm ni cliente puro: necesita kernel Python |
+| Notas colaborativas | `@blocksuite/editor` 0.10.0 | MPL-2.0 | Pensada para colaboración con backend |
 
 ## Paquetes mencionados en la conversación
 

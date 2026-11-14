@@ -10,22 +10,15 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.svg" },
 };
 
-const fontStylesheet =
-  "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap";
-
 /**
- * Layout raíz con metadatos, fuentes y hojas de estilo.
+ * Layout raíz con metadatos y hojas de estilo.
+ * Las fuentes se autohospedan en `public/fonts` y se declaran en `globals.css`.
  * @param props - Contenido de la página.
  * @returns El documento HTML de la aplicación.
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="stylesheet" href={fontStylesheet} precedence="default" />
-      </head>
       <body>{children}</body>
     </html>
   );

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
 import { ArrowLeft, Download, Package, Play, RefreshCw, Trash2, TriangleAlert } from "lucide-react";
-import { visibleTools, type SpaceCategory, type SpaceRole, type SpaceTool } from "../tools";
+import { AULA_STORE_VERSION, visibleTools, type SpaceCategory, type SpaceRole, type SpaceTool } from "../tools";
 import { AulaStoreIcon } from "./aula-store-icon";
 import StoreCard from "./store-card";
 import StoreDetail from "./store-detail";
@@ -35,7 +35,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
   const [justInstalled, setJustInstalled] = useState<string | null>(null);
   const prevStatuses = useRef<Map<string, string>>(new Map());
 
-  // Al pasar una app a «instalada», mostrar el check Lottie unos instantes.
+  // Al pasar una app a «instalada», mostrar el check de éxito unos instantes.
   useEffect(() => {
     const next = apps.find((app) => prevStatuses.current.get(app.id) !== "installed" && app.status === "installed");
     prevStatuses.current = new Map(apps.map((app) => [app.id, app.status]));
@@ -109,6 +109,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
           <button type="button" className="store-back" onClick={onClose}><ArrowLeft size={16} aria-hidden /> Escritorio</button>
           <span className="store-mark" aria-hidden><AulaStoreIcon size={26} /></span>
           <h2 className="store-title">Aula Store</h2>
+          <span className="store-version">v{AULA_STORE_VERSION}</span>
           <div className="store-stats" aria-label="Resumen de la tienda">
             <span className="store-stat"><strong>{installedCount}</strong> instaladas</span>
             <span className="store-stat"><strong>{allTools.length}</strong> disponibles</span>

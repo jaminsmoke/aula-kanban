@@ -12,11 +12,11 @@ describe("DocumentationView", () => {
     expect(screen.getByText(docsHero.intro)).toBeTruthy();
   });
 
-  it("vuelve al Kanban con el botón de vuelta", () => {
+  it("vuelve a Clase con el botón de vuelta", () => {
     const onBack = vi.fn();
     render(<DocumentationView onBack={onBack} />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Volver a Kanban/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Volver a Clase/ }));
 
     expect(onBack).toHaveBeenCalled();
   });

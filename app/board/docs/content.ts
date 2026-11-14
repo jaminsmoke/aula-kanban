@@ -35,7 +35,7 @@ export const docsHero = {
   title: "Documentación de",
   titleAccent: "Aula Kanban",
   intro: "Cómo funciona el tablero, qué puede hacer cada rol y dónde están las herramientas del grupo.",
-  back: "Volver a Kanban",
+  back: "Volver a Clase",
   indexLabel: "Secciones de la documentación",
   indexTitle: "En esta página",
 } as const;
@@ -51,6 +51,7 @@ export const docSections: DocSection[] = [
     lead: "Aula Kanban es el tablero colaborativo del grupo de clase: organiza el trabajo del proyecto en tareas, sigue el avance de cada una y comparte pizarras y aplicaciones útiles con todo el grupo.",
     blocks: [
       { type: "paragraph", text: "Cada proyecto es un tablero independiente. Las tareas, los alumnos, los profesores y las aplicaciones de Mi espacio pertenecen a ese proyecto: si cambias de proyecto en el selector de la cabecera, cambias de tablero." },
+      { type: "paragraph", text: "La cabecera separa el trabajo en Clase, Alumnos, Profesores y Documentación. Mi espacio se abre desde el icono de aplicaciones, junto a las vistas principales. El engranaje abre los ajustes generales, con Cuenta y Administradores." },
     ],
   },
   {
@@ -61,8 +62,8 @@ export const docSections: DocSection[] = [
       {
         type: "definitions",
         items: [
-          { term: "Propietario o administrador", text: "Gestiona el proyecto, los miembros y los ajustes de la cuenta." },
-          { term: "Profesor", text: "Crea y edita cualquier tarea, y gestiona alumnos y profesores." },
+          { term: "Propietario o administrador", text: "Gestiona el proyecto, los miembros y los ajustes generales." },
+          { term: "Profesor", text: "Crea y edita tareas, gestiona alumnos y puede editar su propia ficha de profesor." },
           { term: "Alumno", text: "Edita sus propias tareas, puede reclamar tareas sin responsable y mueve sus tarjetas entre columnas." },
           { term: "Invitado", text: "Consulta el tablero y las pizarras, sin crear ni editar nada." },
         ],
@@ -73,7 +74,7 @@ export const docSections: DocSection[] = [
   {
     id: "tareas",
     title: "Trabajar con tareas",
-    lead: "Las tareas viven en cuatro columnas según su estado: Por hacer, En curso, En revisión y Hecho. El panel de progreso del tablero muestra el porcentaje de tareas hechas del grupo.",
+    lead: "Dentro de Clase, la sección Tareas reúne las cuatro columnas según su estado: Por hacer, En curso, En revisión y Hecho. El panel de progreso del tablero muestra el porcentaje de tareas hechas del grupo.",
     blocks: [
       {
         type: "steps",
@@ -110,7 +111,7 @@ export const docSections: DocSection[] = [
       {
         type: "steps",
         items: [
-          "Abre «Mi espacio» desde la navegación de la cabecera.",
+          "Abre «Mi espacio» desde el icono de la cabecera.",
           "Haz clic en un icono para abrir la aplicación en una ventana; puedes arrastrar la ventana, minimizarla o cambiar su tamaño.",
           "Abre Aula Store para ver el catálogo e instalar o desinstalar aplicaciones.",
         ],

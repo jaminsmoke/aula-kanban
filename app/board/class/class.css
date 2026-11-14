@@ -1,0 +1,14 @@
+/* ==========================================================================
+   Clase: contenido de la sección activa
+   ========================================================================== */
+
+.class-content { padding:24px clamp(24px, 3.5vw, 56px) 32px; }
+.class-content .hero { margin-top:0; }
+
+@media (max-width: 1050px) {
+  .class-content { padding-inline:24px; }
+}
+
+@media (max-width: 720px) {
+  .class-content { padding:16px 16px 24px; }
+}

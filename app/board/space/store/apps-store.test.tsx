@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { AULA_STORE_VERSION } from "../tools";
 import AppsStore, { type StoreApp } from "./apps-store";
 
 const noop = () => {};
@@ -12,6 +13,7 @@ describe("Aula Store", () => {
     render(<AppsStore {...props} role="owner" onManage={manage} />);
     fireEvent.click(screen.getByRole("button", { name: /Desinstalar/ }));
     expect(manage).toHaveBeenCalledWith("excalidraw", "uninstall");
+    expect(screen.getByText(`v${AULA_STORE_VERSION}`)).toBeTruthy();
     expect(screen.queryByText(/VPS/)).toBeNull();
   });
   it("permite al alumnado abrir sin gestionar", () => {

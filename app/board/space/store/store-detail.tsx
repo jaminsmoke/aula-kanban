@@ -36,6 +36,22 @@ export default function StoreDetail({ tool, status, isAdmin, actions, onClose }:
           <ul className="store-detail-features">
             {tool.features.map((feature) => <li key={feature}>{feature}</li>)}
           </ul>
+          <dl className="store-detail-tech" aria-label="Información de versión">
+            <div>
+              <dt>Versión de {tool.versionLabel ?? tool.name}</dt>
+              <dd>{tool.appVersion}</dd>
+            </div>
+            <div>
+              <dt>Upstream</dt>
+              <dd>{tool.upstream.name} {tool.upstream.version}</dd>
+            </div>
+            {tool.extras?.length ? (
+              <div>
+                <dt>Ampliaciones</dt>
+                <dd>{tool.extras.map((extra) => `${extra.name} ${extra.version}`).join(" · ")}</dd>
+              </div>
+            ) : null}
+          </dl>
           {!isAdmin && status !== "installed" ? (
             <p className="store-detail-note">Solo el propietario o un administrador puede instalar aplicaciones.</p>
           ) : null}

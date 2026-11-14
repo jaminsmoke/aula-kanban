@@ -19,7 +19,7 @@ El propietario y los administradores pueden crear o eliminar proyectos y adminis
 
 ## Mi espacio y Aula Store
 
-Mi espacio reúne aplicaciones nativas de Aula Kanban. Ahora incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, y Herramientas de aula (calculadora, tabla periódica, regla y transportador con `@smst/edu-tools`). Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Mi espacio no elimina las pizarras de las tareas ni sus datos.
+La cabecera organiza el trabajo en **Clase**, **Alumnos**, **Profesores** y **Documentación**; **Mi espacio** se abre desde el icono de aplicaciones y el engranaje abre los **ajustes generales**, con Cuenta y Administradores. Incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, Herramientas de aula, Programación por bloques y Diagramas. Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Mi espacio no elimina las pizarras de las tareas ni sus datos.
 
 La lista de aplicaciones integradas, candidatas y descartadas, con licencias y versiones comprobadas, está en [`docs/aplicaciones-nativas.md`](docs/aplicaciones-nativas.md). El índice de documentación y el flujo de roadmap, backlog y changelog están en [`docs/README.md`](docs/README.md).
 

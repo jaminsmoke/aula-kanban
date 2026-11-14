@@ -3,14 +3,14 @@
 import { FolderKanban, Plus, X } from "lucide-react";
 import { Suspense, lazy, useState } from "react";
 import BoardHeader, { type BoardView } from "./board/layout/header";
-import KanbanView from "./board/tasks/kanban-view";
+import ClassView, { type ClassSection } from "./board/class/class-view";
 // Las vistas secundarias solo se descargan al abrirlas.
 const TeachersView = lazy(() => import("./board/people/teachers/teachers-view"));
 const StudentsView = lazy(() => import("./board/people/students-view"));
 const SpaceView = lazy(() => import("./board/space/space-view"));
 const DocumentationView = lazy(() => import("./board/docs/docs-view"));
+const SettingsView = lazy(() => import("./board/settings/settings-view"));
 import TaskDialog from "./board/tasks/task-dialog";
-import SettingsDialog from "./board/layout/settings-dialog";
 import MemberDialog from "./board/projects/member-dialog";
 import { DeleteProjectDialog, NewProjectDialog, RemixDialog, ShareDialog } from "./board/projects/project-dialogs";
 import { StudentDeleteDialog, StudentFormDialog } from "./board/people/student-dialogs";
@@ -33,11 +33,11 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const invitations = useInvitations();
   const data = useBoardData(projectState.activeProject);
   const actions = useProjectActions({ projects: projectState.projects, projectId: projectState.projectId });
-  const [view, setView] = useState<BoardView>("kanban");
+  const [view, setView] = useState<BoardView>("clase");
+  const [classSection, setClassSection] = useState<ClassSection>("tareas");
   const [studentName, setStudentName] = useState<string | null>(null);
   const [studentLayout, setStudentLayout] = useState<"grid" | "list">("grid");
   const [notice, setNotice] = useState("");
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [remixOpen, setRemixOpen] = useState(false);
   const [membersOpen, setMembersOpen] = useState(false);
   const activeProject = projectState.activeProject;
@@ -54,7 +54,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
   const privilegedOnboarding = (projectState.owner || projectState.admin) && !projectState.hasProjectLink && projectState.projects.length === 0 && invitations.invitations.length === 0;
 
   return (
-    <>
+    <div className={`app-frame${view === "ajustes" || (activeProject && view === "clase") ? " app-frame--viewport" : ""}`}>
       <BoardHeader
         user={user}
         activeProject={activeProject}
@@ -70,27 +70,32 @@ export default function Board({ user }: { user: { displayName: string; email: st
         onMembers={() => setMembersOpen(true)}
         onDeleteProject={actions.openDeleteProject}
         onRemix={() => setRemixOpen(true)}
-        onSettings={() => setSettingsOpen(true)}
+        onSettings={() => setView("ajustes")}
       />
-
-      {settingsOpen && <SettingsDialog
-        user={user}
-        projectsLoaded={projectState.projectsLoaded}
-        owner={projectState.owner}
-        admin={projectState.admin}
-        activeProject={activeProject}
-        onClose={() => setSettingsOpen(false)}
-        onProjectsChanged={() => void projectState.refreshProjects()}
-      />}
 
       {remixOpen && <RemixDialog onClose={() => setRemixOpen(false)} />}
 
-      <main className="shell">
+      <main className={view === "ajustes" || (activeProject && view === "clase") ? "workspace-main" : "shell"}>
         {activeProject && invitations.invitations.length > 0 && <section className="invitation-panel" aria-label="Invitaciones pendientes"><h2>Invitaciones pendientes</h2>{invitations.invitations.map((invitation) => <div className="invitation-row" key={invitation.id}><span><strong>{invitation.projectName}</strong> · {invitationRoleNames[invitation.role]}</span><button className="primary" disabled={invitations.invitationBusy} onClick={() => void invitations.acceptInvitation(invitation)}>Aceptar invitación</button></div>)}</section>}
         {activeProject && invitations.invitationLoadError && <div className="alert project-alert" role="alert">No se pudieron consultar las invitaciones. <button type="button" className="text-button" onClick={() => void invitations.refreshInvitations()}>Reintentar</button></div>}
         {activeProject && invitations.invitationError && <div className="alert" role="alert">{invitations.invitationError}</div>}
         {activeProject && actions.projectError && !actions.newProject && !actions.projectDeleting && <div role="alert" className="alert project-alert">{actions.projectError} <button type="button" className="text-button" onClick={() => void projectState.refreshProjects()}>Reintentar</button></div>}
-        {!activeProject ? !accessReady ? <div className="access-loading" role="status">Comprobando tu acceso…</div> : accessCheckError ? (
+        {view === "documentacion" ? (
+          <Suspense fallback={<div className="access-loading" role="status">Cargando la documentación…</div>}>
+            <DocumentationView onBack={() => setView("clase")} />
+          </Suspense>
+        ) : view === "ajustes" ? (
+          <Suspense fallback={<div className="access-loading" role="status">Cargando ajustes…</div>}>
+            <SettingsView
+              user={user}
+              projectsLoaded={projectState.projectsLoaded}
+              owner={projectState.owner}
+              admin={projectState.admin}
+              activeProject={activeProject}
+              onProjectsChanged={() => void projectState.refreshProjects()}
+            />
+          </Suspense>
+        ) : !activeProject ? !accessReady ? <div className="access-loading" role="status">Comprobando tu acceso…</div> : accessCheckError ? (
           <section className="access-screen" aria-labelledby="access-error-title"><div className="access-card"><p className="eyebrow"><span /> Aula Kanban</p><h1 id="access-error-title">No hemos podido comprobar tu acceso</h1><p>Revisa tu conexión y vuelve a intentarlo para consultar tus proyectos e invitaciones.</p><button type="button" className="primary" onClick={() => { void projectState.refreshProjects(); void invitations.refreshInvitations(); }}>Reintentar</button></div></section>
         ) : privilegedOnboarding ? (
           <section className="access-screen" aria-labelledby="first-project-title"><div className="access-card"><p className="eyebrow"><span /> Aula Kanban</p><h1 id="first-project-title">Tu primer proyecto empieza aquí</h1><p>Crea un tablero para organizar las tareas y compartirlo con tu grupo.</p><button className="primary" type="button" onClick={actions.openNewProject}><Plus size={18} /> Nuevo proyecto</button></div></section>
@@ -103,13 +108,9 @@ export default function Board({ user }: { user: { displayName: string; email: st
             {invitations.invitationError && <div className="alert" role="alert">{invitations.invitationError}</div>}
             <div className="access-remix"><div><strong>¿Quieres tu propio tablero?</strong><p>Solicita una copia independiente de Aula Kanban para personalizarla a tu manera.</p></div><button type="button" className={invitationWelcome ? "secondary" : "primary"} onClick={() => setRemixOpen(true)}><Plus size={18} /> Haz tu Site de Aula Kanban</button></div>
           </div></section>
-        ) : view === "documentacion" ? (
-          <Suspense fallback={<div className="access-loading" role="status">Cargando la documentación…</div>}>
-            <DocumentationView onBack={() => setView("kanban")} />
-          </Suspense>
         ) : view === "espacio" ? (
           <Suspense fallback={<div className="access-loading" role="status">Cargando Mi espacio…</div>}>
-            <SpaceView role={activeProject.role} projectId={projectState.projectId} onExit={() => setView("kanban")} />
+            <SpaceView role={activeProject.role} projectId={projectState.projectId} onExit={() => setView("clase")} />
           </Suspense>
         ) : view === "profesores" ? (
           <Suspense fallback={<div className="access-loading" role="status">Cargando profesores…</div>}>
@@ -139,33 +140,37 @@ export default function Board({ user }: { user: { displayName: string; email: st
           />
           </Suspense>
         ) : (
-          <KanbanView
-            tasks={data.tasks}
-            visible={board.visible}
-            students={data.students}
-            search={board.search}
-            filter={board.filter}
-            studentFilter={board.studentFilter}
-            onSearch={board.setSearch}
-            onFilter={board.setFilter}
-            onStudentFilter={board.setStudentFilter}
-            loadError={data.loadError}
-            onRetry={() => void data.refresh()}
-            saving={board.saving}
-            isGuest={Boolean(isGuest)}
-            filtered={board.filtered}
-            dragged={board.dragged}
-            destination={board.destination}
-            canEditTask={board.canEditTask}
-            onOpenEditor={board.openEditor}
-            canGrabTask={board.canGrabTask}
-            onDragStart={board.handleDragStart}
-            onDragOver={board.handleDragOver}
-            onDragEnd={board.handleDragEnd}
-            onDragCancel={board.handleDragCancel}
-            finished={board.finished}
-            total={board.total}
-            progress={board.progress}
+          <ClassView
+            section={classSection}
+            onSection={setClassSection}
+            kanban={{
+              tasks: data.tasks,
+              visible: board.visible,
+              students: data.students,
+              search: board.search,
+              filter: board.filter,
+              studentFilter: board.studentFilter,
+              onSearch: board.setSearch,
+              onFilter: board.setFilter,
+              onStudentFilter: board.setStudentFilter,
+              loadError: data.loadError,
+              onRetry: () => void data.refresh(),
+              saving: board.saving,
+              isGuest: Boolean(isGuest),
+              filtered: board.filtered,
+              dragged: board.dragged,
+              destination: board.destination,
+              canEditTask: board.canEditTask,
+              onOpenEditor: board.openEditor,
+              canGrabTask: board.canGrabTask,
+              onDragStart: board.handleDragStart,
+              onDragOver: board.handleDragOver,
+              onDragEnd: board.handleDragEnd,
+              onDragCancel: board.handleDragCancel,
+              finished: board.finished,
+              total: board.total,
+              progress: board.progress,
+            }}
           />
         )}
 
@@ -246,6 +251,6 @@ export default function Board({ user }: { user: { displayName: string; email: st
         projectName={projectState.projects.find((project) => project.id === projectState.projectId)?.name ?? ""}
         onClose={actions.closeShare}
       />}
-    </>
+    </div>
   );
 }

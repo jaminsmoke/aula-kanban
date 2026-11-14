@@ -10,7 +10,7 @@ import { DocSectionView } from "./components/doc-section";
 /**
  * Documentación de Aula Kanban: página propia dentro de la app, visible para
  * todos los roles, con botón claro de vuelta al tablero.
- * @param props - Acción «Volver a Kanban».
+ * @param props - Acción «Volver a Clase».
  * @returns La página de documentación con héroe, índice y secciones.
  */
 export default function DocumentationView({ onBack }: { onBack: () => void }) {

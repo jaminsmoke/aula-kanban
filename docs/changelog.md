@@ -6,6 +6,90 @@
 
 ---
 
+## 2026-11-14 — Roadmap de ajustes generales cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- Ajustes sale del menú de cuenta y pasa a una vista propia con engranaje en la cabecera.
+- El sidebar de Ajustes comparte el layout de pantalla partida con Clase.
+- Secciones reales: Cuenta y Administradores, sin placeholders.
+- Cuenta conserva información de la cuenta, permisos, proyecto, rol, aviso de propiedad y cierre de sesión.
+- Administradores conserva alta, edición, borrado, confirmación, errores y refresco de proyectos.
+- El modal antiguo de ajustes se elimina.
+- Documentación y README actualizados con la nueva navegación.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (47 archivos / 185 tests) y `npm run build` correctos.
+- Smoke responsive de Ajustes con 15 comprobaciones y smoke final de 8 comprobaciones.
+- Cobertura de Cuenta y Administradores: carga, estados, alta, edición, borrado y error.
+- La versión publicada sigue siendo **1.1.22**; este hito queda pendiente de publicación.
+- Roadmap cerrado tras completar sus fases 1, 2, 3 y 4; se reinicia desde la plantilla.
+
+## 2026-11-14 — Roadmap de navegación de Clase cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- “Kanban” pasa a ser **Clase**, con un sidebar de secciones que empieza bajo el header y llega al final del viewport.
+- El sidebar es una zona de navegación a pantalla partida, sin tarjeta ni radio; el contenido tiene scroll independiente.
+- Tareas es la única sección real por ahora, sin placeholders.
+- El header mantiene el bloque de trabajo —Clase, Alumnos, Profesores y Mi espacio— con el selector de proyecto a continuación; Documentación y cuenta quedan en el extremo derecho.
+- Mi espacio pasa a una acción de icono con etiqueta accesible. Documentación se muestra como texto en escritorio y como icono accesible en pantallas estrechas.
+- Mi espacio y Documentación vuelven a Clase; la documentación visible explica la nueva navegación.
+- Responsive: header envuelto a partir de 1000 px, tablero de 4 columnas en escritorio, 2 en tablet y 1 en móvil.
+- Foco visible y orden de teclado revisados para los controles principales.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (44 archivos / 175 tests) y `npm run build` correctos.
+- Smoke responsive con 22 comprobaciones; smoke de navegación con 12 comprobaciones; recorrido de teclado por los 8 controles principales correcto.
+- La versión publicada sigue siendo **1.1.22**; este hito queda pendiente de publicación.
+- Roadmap cerrado tras completar sus fases 1, 1B, 2, 3 y 4; se reinicia desde la plantilla.
+
+## 2026-11-14 — Roadmap de versiones de Aula Store cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- Cada app declara `appVersion` como versión propia de integración, empezando en `1.0.0`, separada de su paquete `upstream`.
+- Aula Store tiene su propia versión (`AULA_STORE_VERSION = "1.0.0"`), visible como chip en la cabecera de la tienda.
+- La ficha muestra «Versión de {app}», «Upstream» y, cuando corresponde, «Ampliaciones». EduTools incluye `@smst/edu-tools 2.2.1` y `@cortex-js/compute-engine 0.188.0`.
+- `NativeAppMeta.version` se sustituyó por `appVersion`; `versionLabel` permite una etiqueta distinta del nombre.
+- Un test mantiene las versiones upstream sincronizadas con `package-lock.json`.
+- La política de incremento y la tabla de versiones quedaron documentadas en `docs/aplicaciones-nativas.md` y en la guía de apps.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (42 archivos / 171 tests) y `npm run build` correctos.
+- Smoke final de Aula Store con 17 comprobaciones: cabecera `v1.0.0` y fichas de las cuatro apps con versión propia, upstream y ampliaciones.
+- La versión publicada sigue siendo **1.1.22**; este hito queda pendiente de publicación.
+- Roadmap cerrado tras completar sus fases 1, 2, 2B y 3; se reinicia desde la plantilla.
+
+## 2026-11-14 — Roadmap de rendimiento y acabado cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- Fase 1: auditoría de `globals.css`; `--font-mono` retirado, 11 colores repetidos promocionados y 47 tokens finales.
+- Fase 2: el check de Aula Store usa SVG/CSS; `lottie-react`, `check-lottie.json` y su chunk eliminados.
+- Fase 3: Bricolage Grotesque e Instrument Sans se sirven desde `public/fonts`; retirados los preconnect y la hoja de Google Fonts. Se conservan los subsets latin y latin-ext, `font-display: swap` y las licencias OFL.
+- `public/_headers` fija caché inmutable de un año para `/fonts/*` y mantiene la de `/_next/static/*`.
+- La medición de partida era de 3 peticiones, ~2,4 KB de CSS y ~108 KB de fuentes latinas. Sin cambios de diseño ni de comportamiento.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (40 archivos / 166 tests) y `npm run build` correctos.
+- Build sin referencias a `fonts.googleapis.com` ni `fonts.gstatic.com`; las fuentes locales se copian a `dist/client/fonts`.
+- Smoke de tablero, Aula Store y documentación correcto; las dos familias cargan desde el Site.
+- La versión publicada sigue siendo **1.1.22**; este hito queda pendiente de publicación.
+- Roadmap cerrado tras completar sus tres fases y reiniciado desde la plantilla.
+
 ## 2026-11-14 — Fondo de Mi espacio y carga de vistas
 
 **Versión:** 1.1.22

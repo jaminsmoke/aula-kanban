@@ -33,6 +33,17 @@ La carpeta se carga en diferido: su código solo se descarga al abrir la
 ventana. El estado instalado/desinstalado es común a todas las apps y vive en
 `instance_apps`; no hace falta implementarlo de nuevo.
 
+## Versiones
+
+Cada ficha de `lib/native-apps.ts` declara:
+
+- `appVersion`: versión de nuestra integración; empieza en `1.0.0`.
+- `versionLabel`: etiqueta opcional para la ficha; si falta, se usa el nombre de la app.
+- `upstream`: paquete principal y versión exacta instalada.
+- `extras`: librerías adicionales que añade nuestra integración, si las hay.
+
+La versión de Aula Store vive en `AULA_STORE_VERSION` y se muestra en la cabecera de la tienda. La versión del Site es independiente. La política de incremento y la tabla de versiones están en [`docs/aplicaciones-nativas.md`](../../../docs/aplicaciones-nativas.md#versiones).
+
 ## Tamaño y estado
 
 - `window` en la ficha define el tamaño inicial de la ventana.

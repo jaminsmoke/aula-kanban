@@ -9,7 +9,7 @@ import { revealContainer, revealItem } from "../motion";
 /**
  * Héroe de la documentación: vuelta al tablero, título y la ilustración del
  * tablero. Entra escalonado al abrir la página.
- * @param props - Acción «Volver a Kanban».
+ * @param props - Acción «Volver a Clase».
  * @returns La cabecera de la página.
  */
 export function DocsHero({ onBack }: { onBack: () => void }) {
