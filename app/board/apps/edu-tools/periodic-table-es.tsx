@@ -1,9 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import elementsData from "./periodic-elements.json";
 import BohrModel from "./bohr-model";
-import { ELEMENTS, type PeriodicElement } from "./periodic-data";
+import type { PeriodicElement } from "./periodic-types";
 import "./periodic-table-es.css";
+
+const ELEMENTS = elementsData as PeriodicElement[];
 
 const CATEGORY_LABELS: Record<string, string> = {
   alkali: "Metal alcalino",

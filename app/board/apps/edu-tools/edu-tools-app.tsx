@@ -1,13 +1,14 @@
 "use client";
 
 import "@smst/edu-tools/styles";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Protractor } from "@smst/edu-tools/protractor";
-import { Ruler } from "@smst/edu-tools/ruler";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import CalculatorPanel from "./calculator-panel";
-import PeriodicTableEs from "./periodic-table-es";
-import TtsEs from "./edu-tts";
 import "./edu-tools.css";
+
+const PeriodicTableEs = lazy(() => import("./periodic-table-es"));
+const TtsEs = lazy(() => import("./edu-tts"));
+const Ruler = lazy(() => import("@smst/edu-tools/ruler").then((module) => ({ default: module.Ruler })));
+const Protractor = lazy(() => import("@smst/edu-tools/protractor").then((module) => ({ default: module.Protractor })));
 
 type ToolView = "calculadora" | "ciencias" | "medir" | "lectura";
 type MeasureTool = "regla" | "transportador";
@@ -165,7 +166,9 @@ export default function EduToolsApp() {
           <div className="edu-view edu-view--fill">
             <section className="edu-card edu-card--periodic">
               <h3 className="edu-card-title">Tabla periódica</h3>
-              <PeriodicTableEs />
+              <Suspense fallback={<p className="edu-hint" role="status">Cargando la tabla periódica…</p>}>
+                <PeriodicTableEs />
+              </Suspense>
             </section>
           </div>
         ) : null}
@@ -196,7 +199,9 @@ export default function EduToolsApp() {
                   onPointerUp={endMeasure}
                   onPointerCancel={endMeasure}
                 >
-                  <Ruler />
+                  <Suspense fallback={<p className="edu-hint" role="status">Cargando la regla…</p>}>
+                    <Ruler />
+                  </Suspense>
                   {segment ? (
                     <svg className="edu-ruler-overlay" aria-hidden>
                       <line x1={segment.a.x} y1={segment.a.y} x2={segment.b.x} y2={segment.b.y} />
@@ -225,7 +230,9 @@ export default function EduToolsApp() {
                   <div className="edu-protractor-rig" ref={rigRef} style={{ width: rigSize, height: rigSize }}>
                     <span className="edu-protractor-guide" aria-hidden />
                     <div className="edu-protractor-turn" style={{ transform: `translateX(-50%) rotate(${rotation}deg)` }}>
-                      <Protractor radiusPx={radius} />
+                      <Suspense fallback={<p className="edu-hint" role="status">Cargando el transportador…</p>}>
+                        <Protractor radiusPx={radius} />
+                      </Suspense>
                       <button
                         type="button"
                         role="slider"
@@ -252,7 +259,11 @@ export default function EduToolsApp() {
           <div className="edu-view edu-view--fill">
             <section className="edu-card edu-card--tts">
               <h3 className="edu-card-title">Lectura en voz alta</h3>
-              <div className="edu-tts"><TtsEs /></div>
+              <div className="edu-tts">
+                <Suspense fallback={<p className="edu-hint" role="status">Cargando el lector…</p>}>
+                  <TtsEs />
+                </Suspense>
+              </div>
               <p className="edu-hint">Escribe o pega un texto, elige la voz y pulsa Leer. Usa la voz del sistema, sin enviar nada fuera.</p>
             </section>
           </div>

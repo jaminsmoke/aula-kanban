@@ -15,10 +15,10 @@
 ## 2. Alcance
 
 **Dentro:**
-- 
+-
 
 **Fuera de alcance:**
-- 
+-
 
 ## 3. Decisiones de arquitectura
 
@@ -43,4 +43,4 @@
 
 ## 6. Notas de sesión
 
-- 2026-11-14: roadmap reiniciado tras completar todas las fases del roadmap de guardas HTTP y registrar el cierre en [`changelog.md`](changelog.md).
+- 2026-11-14: roadmap de carga por pestañas de `edu-tools` reiniciado tras completar sus tres fases y registrar el cierre en [`changelog.md`](changelog.md).

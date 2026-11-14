@@ -8,41 +8,6 @@
 
 ---
 
-## 2026-11-14 — Separar `api/tasks` en servicio, permisos y ruta
-
-- Contexto: `app/api/tasks/route.ts` mezcla autenticación, validación, permisos, SQL manual, concurrencia, decoración y respuestas HTTP. Es la ruta más compleja y no tiene test propio.
-- Qué falta antes de retomarlo:
-  - [ ] Tener las guardas HTTP comunes.
-  - [ ] Extraer consultas y decoración a `lib/server/tasks/queries.ts`.
-  - [ ] Extraer reglas de alumno/profesor/admin a `lib/server/tasks/permissions.ts`.
-  - [ ] Extraer crear/editar/borrar a `lib/server/tasks/mutations.ts`.
-  - [ ] Añadir tests de permisos y de conflicto de revisión.
-- Notas técnicas: conservar el SQL de guarda y el `mutation_token`; el objetivo es moverlo, no reescribir la concurrencia.
-
-## 2026-11-14 — Partir los componentes grandes
-
-- Contexto: `blockly-app` (406 líneas), `whiteboard` (393), `task-dialog` (308), `calculator-panel` (300), `mermaid-app` (281) y `apps-store` (259) concentran demasiadas responsabilidades.
-- Qué falta antes de retomarlo:
-  - [ ] Terminar la reorganización de `app/board`.
-  - [ ] Partir Blockly en `toolbox.ts`, `starter.ts`, `run-worker.ts`, `code-panel.tsx` y `use-blockly.ts`.
-  - [ ] Partir Mermaid en `templates.ts`, `render.ts` y `use-mermaid-preview.ts`.
-  - [ ] Partir la calculadora en motor, historial y teclado.
-  - [ ] Partir `task-dialog` en formulario, responsables y pizarra.
-  - [ ] Partir `apps-store` en filtros, tarjeta, detalle y éxito.
-  - [ ] Extraer `use-whiteboard` de `whiteboard.tsx`.
-- Notas técnicas: hacerlo de uno en uno, con tests después de cada división. No mezclar con cambios de diseño.
-
-## 2026-11-14 — `edu-tools`: carga por pestañas y datos periódicos fuera del código
-
-- Contexto: al abrir `edu-tools` se importan estáticamente la calculadora, la tabla periódica, TTS, regla y transportador. `periodic-data.ts` tiene 3.241 líneas y unos 62 KB.
-- Qué falta antes de retomarlo:
-  - [ ] Convertir `periodic-data.ts` en un JSON con tipos aparte.
-  - [ ] Cargar la tabla periódica solo al abrir `Ciencias`.
-  - [ ] Cargar TTS y medición solo al abrir sus pestañas.
-  - [ ] Cargar el panel de ecuaciones solo al activar ese modo.
-  - [ ] Medir el tamaño del chunk inicial de `edu-tools` antes y después.
-- Notas técnicas: la app ya es lazy; esto reduce el coste de abrirla, no el del tablero. Mantener la calculadora como vista inicial sin lazy para que el primer uso sea inmediato.
-
 ## 2026-11-14 — Evaluar el peso de `compute-engine`
 
 - Contexto: `@cortex-js/compute-engine` genera un chunk de 6,3 MB sin comprimir. Se carga al primer cálculo, no al abrir la app, pero puede ser muy lento en conexiones lentas.

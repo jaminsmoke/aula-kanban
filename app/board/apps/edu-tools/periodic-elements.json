@@ -1,30 +1,4 @@
-// Datos de los elementos para la tabla periódica en español.
-// Proceden del catálogo incluido en @smst/edu-tools (MIT); los nombres y las
-// categorías se han traducido al español en este repositorio.
-
-export type PeriodicElement = {
-  number: number;
-  symbol: string;
-  name: string;
-  englishName: string;
-  mass: number;
-  category: string;
-  predicted: boolean;
-  block: string;
-  group: number;
-  period: number;
-  phase: string;
-  electronConfiguration: string;
-  electronegativity: number | null;
-  density: number | null;
-  melt: number | null;
-  boil: number | null;
-  shells: number[];
-  discoveredBy: string | null;
-  namedBy: string | null;
-};
-
-export const ELEMENTS: PeriodicElement[] = [
+[
   {
     "number": 1,
     "symbol": "H",
@@ -3240,4 +3214,4 @@ export const ELEMENTS: PeriodicElement[] = [
     "discoveredBy": "Joint Institute for Nuclear Research",
     "namedBy": null
   }
-];
+]

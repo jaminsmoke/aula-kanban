@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
 > **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Backlog:** [`backlog.md`](backlog.md)
@@ -6,9 +6,91 @@
 
 ---
 
-## 2026-11-14 — Guardas HTTP comunes y respuestas de API
+## 2026-11-14 — Herramientas de aula carga por pestañas
 
 **Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- `periodic-data.ts` (3.241 líneas) se sustituye por `periodic-elements.json` y `periodic-types.ts`; se conservan los 118 elementos y sus fichas.
+- La tabla periódica, el lector TTS, el editor de ecuaciones, la regla y el transportador pasan a imports dinámicos con `Suspense`.
+- La calculadora sigue estática y disponible en el primer render; el estado de medición se conserva al cambiar de pestaña.
+- Cada vista diferida muestra un aviso breve mientras se descarga.
+- No cambian el diseño, los textos, las interacciones ni la persistencia.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (32 archivos / 138 tests) y `npm run build` correctos.
+- Chunk de `edu-tools`: **78,8 KB → 17,4 KB** sin comprimir. Cierre estático con framework: **460,0 → 400,4 KB** sin comprimir (**133,2 → 119,6 KB gzip**).
+- Chunks diferidos: tabla periódica 49,9 KB, ecuaciones 4,5 KB, lector 2,7 KB, regla 3,8 KB y transportador 3,6 KB.
+- Smoke: la calculadora abre sin tabla; Ciencias muestra 118 elementos y busca sodio; Medir carga regla y transportador; Lectura carga TTS; Ecuaciones carga el editor. Sin cambios de estado en la base.
+- La versión publicada sigue siendo **1.1.17**; este hito queda pendiente de publicación.
+- Roadmap de carga por pestañas cerrado tras completar sus tres fases y reiniciado desde la plantilla.
+
+## 2026-11-14 — Reintento de pizarra recupera la vista
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- `useWhiteboard` limpia el error de carga cuando la petición de `/api/boards` termina correctamente.
+- Tras un fallo de red, «Reintentar» vuelve a mostrar el lienzo; si el reintento falla, el mensaje sigue visible.
+- Añadida la regresión en `use-whiteboard.test.tsx` y un nuevo `whiteboard.test.tsx` con el canvas simulado.
+- No cambian el guardado, la fusión de escenas, el socket, la presencia ni los permisos.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (32 archivos / 137 tests) y `npm run build` correctos.
+- Smoke real: primer GET de pizarra forzado a 500, aviso y «Reintentar» visibles; segundo GET correcto, lienzo recuperado y aviso eliminado. Sin cambios en la base.
+- La versión publicada sigue siendo **1.1.17**; este hito queda pendiente de publicación.
+- Roadmap del reintento cerrado tras completar su única fase y reiniciado desde la plantilla.
+
+## 2026-11-14 — Componentes grandes divididos por responsabilidad
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- Auditoría de Aula Store, calculadora, Mermaid, diálogo de tarea, Blockly y Whiteboard; sin cambios de diseño, contratos, permisos ni comportamiento.
+- Aula Store: filtros, tarjeta, detalle, éxito y modelo extraídos.
+- Calculadora: teclas, hook de estado, teclado e historial; `edu-evaluate` sigue siendo la única fuente de cálculo.
+- Mermaid: plantillas, render y hook de vista previa.
+- Diálogo de tarea: formulario, responsables, detalle y pizarra con carga lazy.
+- Blockly: toolbox, starter, worker aislado, panel de código y hook del workspace.
+- Whiteboard: modelo, hook de sincronización/presencia y lienzo de Excalidraw.
+- Tests de caracterización añadidos para Mermaid, Blockly y Whiteboard.
+- La versión publicada sigue siendo **1.1.17**; este hito queda pendiente de publicación.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (31 archivos / 136 tests) y `npm run build` correctos.
+- Smoke visual: Aula Store (búsqueda, filtro y ficha), calculadora (7+5=12 e historial), Diagramas/Mermaid (editor y SVG), Kanban y tarea (resumen, asignaciones, pizarra y ampliación), Blockly (ejemplo, código y salida) y pizarra de `Mi espacio`.
+- Mermaid se abrió con una respuesta de instalación simulada solo en el navegador; la API confirmó después que sigue desinstalada y no se alteró la base.
+- Bundle inicial: 381,2 KB sin comprimir (113,3 KB gzip) y solo framework/runtime. Aula Store y las cuatro apps siguen en chunks lazy; ninguna está en el cierre estático de la entrada.
+- Roadmap de componentes cerrado tras completar todas sus fases y reiniciado desde la plantilla.
+
+## 2026-11-14 — Tareas separadas en consultas, permisos y mutaciones
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- `app/api/tasks/route.ts` queda como orquestador HTTP.
+- Nuevo `lib/server/tasks/types.ts` con tipos de fila, referencia, datos de proyecto y escritura.
+- Nuevo `queries.ts` con `projectData` y `decorate`, incluida la resolución de fichas eliminadas y creadores.
+- Nuevo `permissions.ts` con validación de referencias, reglas de alumno y guardas SQL por rol.
+- Nuevo `mutations.ts` con crear, editar y borrar; conserva SQL, `mutation_token`, revisión optimista y borrado de la pizarra.
+- Añadidos tests de permisos y de ruta para guest, alumno, admin, cuerpo inválido y conflicto 409.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (26 archivos / 121 tests) y `npm run build` correctos.
+- Smoke real: crear 201, cambio de estado 200, edición completa 200 y borrado 200; sin tareas temporales.
+- Roadmap de tareas cerrado tras completar todas sus fases y reiniciado desde la plantilla.
+
+## 2026-11-14 — Guardas HTTP comunes y respuestas de API
+
+**Estado:** Publicada
 
 ### Cambios
 
@@ -27,7 +109,7 @@
 
 ## 2026-11-14 — Dominio y autenticación en `lib/`
 
-**Estado:** Completada · Pendiente de publicación
+**Estado:** Publicada
 
 ### Cambios
 
@@ -46,7 +128,7 @@
 
 ## 2026-11-14 — CSS con tokens y estilos por feature
 
-**Estado:** Completada · Pendiente de publicación
+**Estado:** Publicada
 
 ### Cambios
 
@@ -67,7 +149,7 @@
 
 ## 2026-11-14 — Reorganización de `app/board` (fase 1)
 
-**Estado:** Completada · Pendiente de publicación
+**Estado:** Publicada
 
 ### Cambios
 

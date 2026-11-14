@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import EduToolsApp from "./edu-tools-app";
 
@@ -7,7 +7,7 @@ beforeEach(() => {
 });
 
 describe("Herramientas de aula", () => {
-  it("abre la calculadora, amplía a científica y cambia entre vistas", () => {
+  it("abre la calculadora, amplía a científica y cambia entre vistas", async () => {
     render(<EduToolsApp />);
     expect(screen.getByRole("button", { name: "7" })).toBeTruthy();
 
@@ -16,14 +16,15 @@ describe("Herramientas de aula", () => {
     expect(screen.getByRole("button", { name: "Básica" })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Ecuaciones" }));
-    expect(screen.getByRole("group", { name: "Teclado de ecuaciones" })).toBeTruthy();
+    expect(await screen.findByRole("group", { name: "Teclado de ecuaciones" })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
     expect(screen.getByRole("group", { name: "Instrumento de medida" })).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Ciencias" }));
-    expect(screen.getByText("Tabla periódica")).toBeTruthy();
+    expect(await screen.findByRole("searchbox", { name: "Buscar elemento" })).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Lectura" }));
     expect(screen.getByText("Lectura en voz alta")).toBeTruthy();
+    await waitFor(() => expect(document.querySelector(".edu-tts .tts, .edu-tts .pt-empty")).toBeTruthy());
   });
 
   it("calcula una suma con el ratón", async () => {
@@ -71,7 +72,7 @@ describe("Herramientas de aula", () => {
   it("escribe en las líneas con el teclado de ecuaciones", async () => {
     render(<EduToolsApp />);
     fireEvent.click(screen.getByRole("button", { name: "Ecuaciones" }));
-    fireEvent.click(screen.getByLabelText("Línea 1"));
+    fireEvent.click(await screen.findByLabelText("Línea 1"));
     const pad = within(document.querySelector(".multi-eq-pad") as HTMLElement);
     fireEvent.click(pad.getByRole("button", { name: "7" }));
     fireEvent.click(pad.getByRole("button", { name: "Sumar" }));
@@ -83,7 +84,7 @@ describe("Herramientas de aula", () => {
   it("calcula varias líneas con variables compartidas", async () => {
     render(<EduToolsApp />);
     fireEvent.click(screen.getByRole("button", { name: "Ecuaciones" }));
-    fireEvent.change(screen.getByLabelText("Línea 1"), { target: { value: "x=5" } });
+    fireEvent.change(await screen.findByLabelText("Línea 1"), { target: { value: "x=5" } });
     fireEvent.change(screen.getByLabelText("Línea 2"), { target: { value: "y=2" } });
     fireEvent.change(screen.getByLabelText("Línea 3"), { target: { value: "x+y" } });
     fireEvent.click(screen.getByRole("button", { name: "Calcular" }));
@@ -106,6 +107,18 @@ describe("Herramientas de aula", () => {
     expect(knob.getAttribute("aria-valuenow")).toBe("0");
   });
 
+  it("conserva el ángulo del transportador al cambiar de pestaña", () => {
+    render(<EduToolsApp />);
+    fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
+    fireEvent.click(screen.getByRole("button", { name: "Transportador" }));
+    fireEvent.keyDown(screen.getByRole("slider", { name: "Girar transportador" }), { key: "ArrowRight" });
+    expect(screen.getByRole("slider", { name: "Girar transportador" }).getAttribute("aria-valuenow")).toBe("5");
+
+    fireEvent.click(screen.getByRole("tab", { name: "Calculadora" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
+    expect(screen.getByRole("slider", { name: "Girar transportador" }).getAttribute("aria-valuenow")).toBe("5");
+  });
+
   it("mide una distancia arrastrando sobre la regla", () => {
     const { container } = render(<EduToolsApp />);
     fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
@@ -117,10 +130,10 @@ describe("Herramientas de aula", () => {
     expect(screen.getAllByText(/2\.6 cm/).length).toBeGreaterThan(0);
   });
 
-  it("busca en español y muestra la ficha del elemento", () => {
+  it("busca en español y muestra la ficha del elemento", async () => {
     render(<EduToolsApp />);
     fireEvent.click(screen.getByRole("tab", { name: "Ciencias" }));
-    fireEvent.change(screen.getByRole("searchbox", { name: "Buscar elemento" }), { target: { value: "sodio" } });
+    fireEvent.change(await screen.findByRole("searchbox", { name: "Buscar elemento" }), { target: { value: "sodio" } });
     expect(screen.getByRole("status").textContent).toBe("1 de 118");
     fireEvent.click(screen.getByRole("gridcell", { name: /Sodio/ }));
     expect(screen.getByText("Sodio")).toBeTruthy();
@@ -133,17 +146,17 @@ describe("Herramientas de aula", () => {
     expect(screen.getByRole("link", { name: "Ver en Wikipedia" })).toBeTruthy();
   });
 
-  it("filtra por bloque", () => {
+  it("filtra por bloque", async () => {
     render(<EduToolsApp />);
     fireEvent.click(screen.getByRole("tab", { name: "Ciencias" }));
-    fireEvent.change(screen.getByLabelText("Bloque"), { target: { value: "f" } });
+    fireEvent.change(await screen.findByLabelText("Bloque"), { target: { value: "f" } });
     expect(screen.getByRole("status").textContent).toBe("28 de 118");
   });
 
-  it("marca los elementos con categoría predicha", () => {
+  it("marca los elementos con categoría predicha", async () => {
     render(<EduToolsApp />);
     fireEvent.click(screen.getByRole("tab", { name: "Ciencias" }));
-    fireEvent.change(screen.getByRole("searchbox", { name: "Buscar elemento" }), { target: { value: "oganeson" } });
+    fireEvent.change(await screen.findByRole("searchbox", { name: "Buscar elemento" }), { target: { value: "oganeson" } });
     fireEvent.click(screen.getByRole("gridcell", { name: /Oganes/ }));
     expect(document.querySelector(".pt-detail-head.is-predicted")).toBeTruthy();
     expect(document.querySelector(".pt-detail-cat")?.textContent).toContain("predicha");

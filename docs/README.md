@@ -60,10 +60,13 @@ Regla: un token debe representar un patrón compartido o una intención; no se t
 - **Fase 1 completada:** reorganización de `app/board` por dominios, módulos compartidos y estilos.
 - **Roadmap CSS completado:** tokens, CSS por feature, limpieza y verificación final. Resumen en [`changelog.md`](changelog.md); la auditoría temporal ya se eliminó.
 - **Roadmap de dominio/auth completado:** `lib/domain/`, `lib/server/auth.ts`, regla de frontera y documentación. Resumen en [`changelog.md`](changelog.md).
-- **Roadmap de guardas HTTP completado:** `lib/server/http.ts`, 12 rutas con `json`, mutaciones JSON con origen/formato y `uploads` con origen. Resumen en [`changelog.md`](changelog.md).
-- **Roadmap:** sin fase activa, reiniciado desde la plantilla.
-- **Backlog pendiente:** servicio de tareas, división de componentes grandes, lazy-load de `edu-tools`, evaluación de `compute-engine`, limpieza de tablas históricas y detalles de rendimiento.
-- **Próximo paso:** elegir una entrada del backlog y abrir un roadmap nuevo.
+- **Roadmap de guardas HTTP completado:** `lib/server/http.ts`, 12 rutas con `json`, mutaciones JSON con origen/formato y `uploads` con origen. Publicado en la versión 1.1.17; resumen en [`changelog.md`](changelog.md).
+- **Roadmap de tareas completado:** `lib/server/tasks/` con tipos, consultas, permisos y mutaciones; ruta HTTP delgada. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de componentes completado:** Aula Store, calculadora, Mermaid, diálogo de tarea, Blockly y Whiteboard divididos; verificación final correcta. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de reintento de pizarra completado:** el error de carga se limpia cuando la pizarra vuelve a cargar; regresión de hook y vista añadida. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de carga por pestañas de `edu-tools` completado:** tabla periódica, medición, lectura y ecuaciones se cargan bajo demanda; datos periódicos en JSON. Resumen en [`changelog.md`](changelog.md).
+- **Backlog pendiente:** evaluación de `compute-engine`, limpieza de tablas históricas y detalles de rendimiento.
+- **Próximo paso:** valorar la publicación de los hitos pendientes o elegir una entrada del backlog.
 
 ## Documentación relacionada
 
