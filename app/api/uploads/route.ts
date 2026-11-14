@@ -1,13 +1,11 @@
 import { z } from "zod";
-import { getChatGPTUser } from "../../chatgpt-auth";
+import { getChatGPTUser } from "../../../lib/server/auth";
 import { validProject } from "../../../lib/server/project";
 import { StorageUnavailableError, storeUpload, uploadPurposes, validateUpload } from "../../../lib/server/storage";
+import { isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
 
-function json(data: unknown, status = 200) {
-  return Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
-}
 
 /**
  * Sube un fichero (imagen o documento) al almacenamiento del proyecto.
@@ -15,6 +13,7 @@ function json(data: unknown, status = 200) {
  * @returns Respuesta JSON con el identificador y la URL interna del fichero.
  */
 export async function POST(request: Request) {
+  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
   const user = await getChatGPTUser();
   if (!user) return json({ message: "Inicia sesión para acceder al tablero." }, 401);
   const project = await validProject(request);

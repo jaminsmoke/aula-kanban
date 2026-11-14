@@ -2,24 +2,24 @@
 
 import { FolderKanban, Plus, X } from "lucide-react";
 import { Suspense, lazy, useState } from "react";
-import TeachersView from "./teachers/teachers-view";
-import BoardHeader, { type BoardView } from "./board/header";
-import KanbanView from "./board/kanban-view";
-import StudentsView from "./board/students-view";
+import TeachersView from "./board/people/teachers/teachers-view";
+import BoardHeader, { type BoardView } from "./board/layout/header";
+import KanbanView from "./board/tasks/kanban-view";
+import StudentsView from "./board/people/students-view";
 // «Mi espacio» (con Motion/Lottie) y la documentación solo se descargan al abrirlos.
-const SpaceView = lazy(() => import("./board/space-view"));
+const SpaceView = lazy(() => import("./board/space/space-view"));
 const DocumentationView = lazy(() => import("./board/docs/docs-view"));
-import TaskDialog from "./board/task-dialog";
-import SettingsDialog from "./board/settings-dialog";
-import MemberDialog from "./board/member-dialog";
-import { DeleteProjectDialog, NewProjectDialog, RemixDialog, ShareDialog } from "./board/project-dialogs";
-import { StudentDeleteDialog, StudentFormDialog } from "./board/student-dialogs";
-import { useProjects } from "./board/use-projects";
-import { useInvitations } from "./board/use-invitations";
-import { useBoardData } from "./board/use-board-data";
-import { useProjectActions } from "./board/use-project-actions";
-import { useTasks } from "./board/use-tasks";
-import { useStudents } from "./board/use-students";
+import TaskDialog from "./board/tasks/task-dialog";
+import SettingsDialog from "./board/layout/settings-dialog";
+import MemberDialog from "./board/projects/member-dialog";
+import { DeleteProjectDialog, NewProjectDialog, RemixDialog, ShareDialog } from "./board/projects/project-dialogs";
+import { StudentDeleteDialog, StudentFormDialog } from "./board/people/student-dialogs";
+import { useProjects } from "./board/projects/use-projects";
+import { useInvitations } from "./board/projects/use-invitations";
+import { useBoardData } from "./board/shared/use-board-data";
+import { useProjectActions } from "./board/projects/use-project-actions";
+import { useTasks } from "./board/tasks/use-tasks";
+import { useStudents } from "./board/people/use-students";
 
 const invitationRoleNames = { teacher: "Profesor", student: "Alumno", guest: "Invitado", admin: "Administrador" } as const;
 

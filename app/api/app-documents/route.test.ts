@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({
   read: vi.fn(),
 }));
 vi.mock("../../../lib/server/project", () => ({ validProject: async () => mocks.allowed ? { id: "project1", access: { role: mocks.role } } : null }));
-vi.mock("../../chatgpt-auth", () => ({ getChatGPTUser: async () => ({ userId: "user1" }) }));
+vi.mock("../../../lib/server/auth", () => ({ getChatGPTUser: async () => ({ userId: "user1" }) }));
 vi.mock("../../../lib/server/app-documents", () => ({ saveAppDocument: mocks.save, readAppDocument: mocks.read }));
 
 import { GET, POST } from "./route";
@@ -36,6 +36,26 @@ describe("documentos de apps", () => {
   it("rechaza apps que no están en el catálogo", async () => {
     const response = await GET(new Request("https://site.test/api/app-documents?project=project1&app=otra"));
     expect(response.status).toBe(400);
+  });
+
+  it("rechaza una mutación sin origen", async () => {
+    const response = await POST(new Request(endpoint, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: '{"state":{"code":"x"}}',
+    }));
+    expect(response.status).toBe(403);
+    expect(mocks.save).not.toHaveBeenCalled();
+  });
+
+  it("rechaza una mutación que no es JSON", async () => {
+    const response = await POST(new Request(endpoint, {
+      method: "POST",
+      headers: { origin: "https://site.test", "content-type": "text/plain" },
+      body: '{"state":{"code":"x"}}',
+    }));
+    expect(response.status).toBe(415);
+    expect(mocks.save).not.toHaveBeenCalled();
   });
 
   it("impide a un invitado sobrescribir el documento", async () => {

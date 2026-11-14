@@ -6,7 +6,7 @@ Cada instancia mantiene sus propios proyectos y datos en D1. Para configurar una
 
 Mi espacio reúne aplicaciones nativas de Aula Kanban. Ahora incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, y Herramientas de aula (calculadora, tabla periódica, regla y transportador con `@smst/edu-tools`). Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Mi espacio no elimina las pizarras de las tareas ni sus datos.
 
-La lista de aplicaciones integradas, candidatas y descartadas, con licencias y versiones comprobadas, está en [`docs/aplicaciones-nativas.md`](docs/aplicaciones-nativas.md).
+La lista de aplicaciones integradas, candidatas y descartadas, con licencias y versiones comprobadas, está en [`docs/aplicaciones-nativas.md`](docs/aplicaciones-nativas.md). El índice de documentación y el flujo de roadmap, backlog y changelog están en [`docs/README.md`](docs/README.md).
 
 ## Desarrollo
 
@@ -55,9 +55,10 @@ Local tool usage metrics are disabled by default. Set `WRANGLER_SEND_METRICS=tru
 ## Included Shape
 
 - edit site code under `app/`
-- stylesheets sit next to the code they style: `app/globals.css` (tokens and base elements) plus `app/board/chrome.css` (top bar, menus, shared button primitives), `access.css`, `kanban.css`, `dialogs.css`, and `views.css`; `app/board/responsive.css` is imported last so its overrides win. Plain CSS, no Tailwind or shadcn scaffolding
-- `npm test` runs Vitest; tests sit next to their source as `*.test.tsx`, for example `app/board/use-tasks.test.tsx`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
+- dependency direction is `app → lib → db`: `lib/domain/` holds pure types and helpers, `lib/server/` holds auth and server-side access, and ESLint blocks any `lib → app` import
+- stylesheets sit next to the code they style: `app/globals.css` (tokens and base elements), shared board styles in `app/board/styles/` (`buttons.css`, `access.css`, `dialogs.css`) and feature CSS next to its component (`tasks/kanban.css`, `people/people.css`, `layout/header.css`, `space/space.css`, `space/store/store.css`, docs and each app). Responsive rules live in the CSS of their feature. Plain CSS, no Tailwind or shadcn scaffolding
+- `npm test` runs Vitest; tests sit next to their source as `*.test.tsx`, for example `app/board/tasks/use-tasks.test.tsx`
+- `lib/server/auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
 - `.openai/hosting.json` declares optional Sites D1 and R2 bindings
 - `vite.config.ts` simulates declared bindings for local development
 - `worker/index.ts` is the production Worker entrypoint and preserves request-scoped connector bindings
@@ -103,7 +104,7 @@ export default async function Home() {
 
 ## Optional Dispatch-Owned ChatGPT Sign-In
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs optional or required ChatGPT sign-in:
+Import the ready-to-use helpers from `lib/server/auth.ts` when the site needs optional or required ChatGPT sign-in:
 
 - Use `getChatGPTUser()` for optional signed-in UI.
 - Use the returned `userId` as the stable user key for user-owned records; do not use email as a durable identifier.

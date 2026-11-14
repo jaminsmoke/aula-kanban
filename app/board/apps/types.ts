@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 import type { NativeAppMeta, NativeCategory } from "../../../lib/native-apps";
-import type { Project } from "../model";
+import type { Project } from "../shared/model";
 
 /** Rol del usuario en el proyecto activo. */
 export type SpaceRole = Project["role"];

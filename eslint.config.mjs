@@ -32,13 +32,31 @@ const eslintConfig = defineConfig([
       "no-console": ["warn", { allow: ["warn", "error"] }],
     },
   },
+  // Frontera de capas: `lib` puede consumir `db` y sus propios módulos, pero
+  // nunca importar desde `app`. La dirección permitida es app → lib → db.
+  {
+    files: ["lib/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["../app/*", "../../app/*", "../../../app/*", "../../../../app/*", "app/*", "@/app/*"],
+              message: "La capa lib no puede importar desde app. Mueve el código compartido a lib/domain o lib/server.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // JSDoc estricto (recomendado para TypeScript) solo para el código de la app:
   // cada función/componente/hook exportado debe documentar qué hace, sus
   // parámetros y (si devuelve algo) su retorno. Los tests y el andamiaje del
   // starter (lib/, scripts/, worker/, examples/) quedan fuera de esta exigencia.
   {
     files: ["app/**/*.{ts,tsx}", "db/**/*.{ts,tsx}", "lib/server/**/*.{ts,tsx}"],
-    ignores: ["app/**/*.test.{ts,tsx}"],
+    ignores: ["app/**/*.test.{ts,tsx}", "lib/**/*.test.{ts,tsx}"],
     plugins: { jsdoc },
     settings: {
       jsdoc: { mode: "typescript" },

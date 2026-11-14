@@ -1,12 +1,10 @@
-import { getChatGPTUser } from "../../../chatgpt-auth";
+import { getChatGPTUser } from "../../../../lib/server/auth";
 import { validProject } from "../../../../lib/server/project";
 import { readUpload } from "../../../../lib/server/storage";
+import { json } from "../../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
 
-function json(data: unknown, status = 200) {
-  return Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
-}
 
 /**
  * Sirve un fichero subido a los miembros de su proyecto.

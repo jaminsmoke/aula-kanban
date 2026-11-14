@@ -1,0 +1,58 @@
+/* ==========================================================================
+   Botones, iconos y estados compartidos
+   ========================================================================== */
+
+.primary, .secondary, .danger, .danger-quiet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 41px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 680;
+  transition: background .16s ease, border-color .16s ease;
+}
+
+.primary { background: var(--violet); color: var(--white); }
+.primary:hover:enabled { background: var(--violet-dark); }
+.secondary { background: var(--white); color: var(--ink); border-color: var(--line); }
+.secondary:hover:enabled { background: #f8f6ff; border-color: #d9d0f4; }
+.danger { background: var(--danger); color: var(--white); }
+.danger:hover:enabled { background: #8c1937; }
+.danger-quiet { padding-inline: 4px; color: var(--danger); background: transparent; }
+.danger-quiet:hover:enabled { background: #fbe8ee; }
+.share { min-height: 36px; }
+.share svg { color: var(--violet); }
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+}
+
+.icon-button:hover:enabled { color: var(--violet); background: var(--violet-pale); }
+
+.account-status {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 7px;
+  padding: 3px 7px;
+  border-radius: 7px;
+  background: #eeecf4;
+  color: #635d70;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.account-status.pending { background: #fff2db; color: #805500; }
+.account-status.active { background: #ddf3ea; color: var(--success); }
+.student-card .account-status { display: inline-flex; }

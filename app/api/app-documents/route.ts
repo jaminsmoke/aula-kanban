@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { getChatGPTUser } from "../../chatgpt-auth";
+import { getChatGPTUser } from "../../../lib/server/auth";
 import { validProject } from "../../../lib/server/project";
 import { boundedJson } from "../../../lib/server/bounded-json";
 import { NATIVE_APP_IDS } from "../../../lib/native-apps";
 import { readAppDocument, saveAppDocument } from "../../../lib/server/app-documents";
+import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
-const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
 const MAX_STATE = 200_000;
 const nativeApp = z.enum(NATIVE_APP_IDS);
 
@@ -45,10 +45,8 @@ export async function GET(request: Request) {
  * @returns Confirmación con la fecha de guardado.
  */
 export async function POST(request: Request) {
-  const origin = request.headers.get("origin");
-  if (!origin || origin !== new URL(request.url).origin || request.headers.get("content-type")?.split(";")[0] !== "application/json") {
-    return json({ message: "Solicitud no válida." }, 403);
-  }
+  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const user = await getChatGPTUser();
   const project = await validProject(request);
   if (!project) return json({ message: "No tienes acceso al proyecto." }, 403);

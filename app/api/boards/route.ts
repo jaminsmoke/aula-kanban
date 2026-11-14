@@ -2,8 +2,9 @@ import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { boards, taskAssignees, tasks } from "../../../db/schema";
-import { getChatGPTUser } from "../../chatgpt-auth";
+import { getChatGPTUser } from "../../../lib/server/auth";
 import { validProject, type Access } from "../../../lib/server/project";
+import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
 
@@ -11,9 +12,6 @@ const MAX_SNAPSHOT_BYTES = 2 * 1024 * 1024;
 const owner = z.object({ ownerType: z.enum(["task", "project", "space"]), ownerId: z.string().min(1).max(80) });
 const payload = owner.extend({ snapshot: z.string().max(MAX_SNAPSHOT_BYTES), revision: z.number().int().nonnegative() });
 
-function json(data: unknown, status = 200) {
-  return Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
-}
 
 /**
  * Indica si el dueño existe en este proyecto.
@@ -52,6 +50,10 @@ async function canWrite(access: Access, projectId: string, ownerType: string, ow
  * @returns Respuesta JSON con el snapshot de la pizarra o el error.
  */
 async function handle(request: Request) {
+  if (request.method !== "GET") {
+    if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+    if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
+  }
   const user = await getChatGPTUser();
   if (!user) return json({ message: "Inicia sesión para acceder al tablero." }, 401);
   const project = await validProject(request);

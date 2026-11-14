@@ -1,4 +1,4 @@
-import { requireChatGPTUser } from "./chatgpt-auth";
+import { requireChatGPTUser } from "../lib/server/auth";
 import Board from "./board";
 
 export const dynamic = "force-dynamic";

@@ -2,7 +2,7 @@ import { env } from "cloudflare:workers";
 import { and, eq } from "drizzle-orm";
 import { getDb } from "../../db";
 import { administrators, projectMembers, projects } from "../../db/schema";
-import { getChatGPTUser, type ChatGPTUser } from "../../app/chatgpt-auth";
+import { getChatGPTUser, type ChatGPTUser } from "./auth";
 
 export const defaultProjectId = "default";
 export type Access = { user: ChatGPTUser; role: "owner" | "admin" | "teacher" | "student" | "guest"; studentSection: string | null; teacherId: string | null };

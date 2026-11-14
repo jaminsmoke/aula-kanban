@@ -2,10 +2,10 @@ import { and, eq, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { administrators, projectMembers, projects } from "../../../db/schema";
-import { getChatGPTUser } from "../../chatgpt-auth";
+import { getChatGPTUser } from "../../../lib/server/auth";
+import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
-const json = (value: unknown, status = 200) => Response.json(value, { status, headers: { "Cache-Control": "no-store" } });
 /**
  * Lista las invitaciones pendientes para la cuenta autenticada.
  * Incluye invitaciones de proyecto y de administración del sitio.
@@ -26,8 +26,9 @@ export async function GET() {
  * @returns Respuesta JSON con el proyecto aceptado o el error.
  */
 export async function POST(request: Request) {
+  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const user = await getChatGPTUser(); if (!user) return json({ message: "Inicia sesión." }, 401);
-  if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") return json({ message: "Formato no válido." }, 415);
   const parsed = z.object({ id: z.string().uuid(), scope: z.enum(["project", "site"]).default("project") }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Invitación no válida." }, 400);
   try {

@@ -3,15 +3,15 @@ import { asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { administrators } from "../../../db/schema";
-import { getChatGPTUser, type ChatGPTUser } from "../../chatgpt-auth";
+import { getChatGPTUser, type ChatGPTUser } from "../../../lib/server/auth";
 import { isAdministrator, isOwner, isOwnerEmail } from "../../../lib/server/project";
+import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
-const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 const email = z.string().trim().max(254).refine(value => !value || z.string().email().safeParse(value).success, "Correo no válido").transform(value => value.toLowerCase());
 const fields = z.object({ displayName: z.string().trim().max(80).optional(), email: email.default("") });
 async function authorized() { const user = await getChatGPTUser(); return user && (isOwner(user) || await isAdministrator(user)) ? user : null; }
-async function input(request: Request) { return request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() === "application/json" ? request.json().catch(() => null) : null; }
+async function input(request: Request) { return request.json().catch(() => null); }
 function guard(user: ChatGPTUser) { return isOwner(user) ? { sql: "1 = 1", args: [] as string[] } : { sql: "EXISTS (SELECT 1 FROM administrators_unified WHERE user_id = ?)", args: [user.userId] }; }
 type Row = typeof administrators.$inferSelect;
 // An email is an invitation until an account accepts it; a row without email grants nothing.
@@ -35,6 +35,8 @@ export async function GET() {
  * @returns Respuesta JSON con la ficha creada.
  */
 export async function POST(request: Request) {
+  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const user = await authorized(); if (!user) return json({ message: "Solo el propietario o un administrador pueden gestionar administradores." }, 403);
   const parsed = fields.safeParse(await input(request)); if (!parsed.success) return json({ message: "Revisa los datos de la ficha." }, 400);
   const { email } = parsed.data, displayName = parsed.data.displayName ?? "";
@@ -56,6 +58,8 @@ export async function POST(request: Request) {
  * @returns Respuesta JSON con la ficha actualizada.
  */
 export async function PATCH(request: Request) {
+  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const user = await authorized(); if (!user) return json({ message: "Solo el propietario o un administrador pueden gestionar administradores." }, 403);
   const parsed = fields.extend({ id: z.string().uuid(), revision: z.number().int().nonnegative().optional() }).safeParse(await input(request));
   if (!parsed.success) return json({ message: "Revisa los datos de la ficha." }, 400);
@@ -82,6 +86,8 @@ export async function PATCH(request: Request) {
  * @returns Respuesta JSON con el identificador eliminado.
  */
 export async function DELETE(request: Request) {
+  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const user = await authorized(); if (!user) return json({ message: "Solo el propietario o un administrador pueden gestionar administradores." }, 403);
   const parsed = z.object({ id: z.string().uuid(), revision: z.number().int().nonnegative().optional() }).safeParse(await input(request));
   if (!parsed.success) return json({ message: "Ficha no válida." }, 400);

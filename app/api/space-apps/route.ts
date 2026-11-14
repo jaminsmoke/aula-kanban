@@ -1,13 +1,13 @@
 
 import { z } from "zod";
-import { getChatGPTUser } from "../../chatgpt-auth";
+import { getChatGPTUser } from "../../../lib/server/auth";
 import { getDb } from "../../../db";
 import { instanceApps } from "../../../db/schema";
 import { isAdministrator, isOwner, validProject } from "../../../lib/server/project";
 import { NATIVE_APP_IDS } from "../../../lib/native-apps";
+import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
-const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
 const appId = z.enum(NATIVE_APP_IDS);
 /**
  * Lee el estado de las aplicaciones nativas instaladas en la instancia.
@@ -43,10 +43,10 @@ export async function GET(request: Request) {
  * @returns Estado aceptado o error de autorización.
  */
 export async function POST(request: Request) {
+  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const user = await getChatGPTUser();
   if (!user || !(isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden gestionar aplicaciones." }, 403);
-  const origin = request.headers.get("origin");
-  if (!origin || origin !== new URL(request.url).origin || request.headers.get("content-type")?.split(";")[0] !== "application/json") return json({ message: "Solicitud no válida." }, 403);
   const parsed = z.object({ id: appId, action: z.enum(["install", "uninstall"]) }).strict().safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Aplicación o acción no válida." }, 400);
   const project = await validProject(request);

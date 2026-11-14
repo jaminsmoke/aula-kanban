@@ -1,6 +1,6 @@
 "use client";
 
-import Whiteboard from "../../whiteboard";
+import Whiteboard from "../../shared/whiteboard";
 import type { SpaceRole } from "../types";
 
 /**

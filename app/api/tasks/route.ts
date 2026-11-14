@@ -3,17 +3,17 @@ import { and, asc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { boards, deletedStudents, deletedTeachers, projectMembers, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
-import { getChatGPTUser } from "../../chatgpt-auth";
-import { priorities, statuses } from "../../task";
+import { getChatGPTUser } from "../../../lib/server/auth";
+import { priorities, statuses } from "../../../lib/domain/task";
 import { validProject } from "../../../lib/server/project";
-import { normalizeName, personLabel } from "../../assignments";
+import { normalizeName, personLabel } from "../../../lib/domain/assignments";
 import { purgeDeletedProfiles } from "../../../lib/server/deleted-profiles";
+import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
 const person = z.object({ kind: z.enum(["student", "teacher"]), profileId: z.string().min(1).max(80) });
 const fields = z.object({ title: z.string().trim().min(1).max(120), description: z.string().trim().max(2000), imageUrl: z.string().trim().max(2048).refine((value) => value === "" || /^https?:\/\/\S+$/i.test(value) || /^\/api\/files\/[A-Za-z0-9-]+$/.test(value), "URL de imagen no válida").optional(), assignee: z.string().trim().max(5000), assignees: z.array(person).max(50).optional(), dueDate: z.union([z.literal(""), z.string().date()]), priority: z.enum(priorities), status: z.enum(statuses) });
 const reference = z.object({ id: z.string().uuid(), revision: z.number().int().positive(), changes: z.unknown().optional() });
-const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 type Ref = z.infer<typeof person>;
 const unassigned = (name: string) => !name.trim() || normalizeName(name) === "por definir";
 
@@ -69,6 +69,10 @@ function unlinkedAssigneeText(refs: Ref[], fallback: string) { return refs.lengt
  * @returns Respuesta JSON con las tareas decoradas o el error.
  */
 async function handle(request: Request) {
+  if (request.method !== "GET") {
+    if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+    if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
+  }
   const user = await getChatGPTUser(); if (!user) return json({ message: "Inicia sesión para acceder al tablero." }, 401);
   const project = await validProject(request); if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
   const db = getDb();
@@ -78,7 +82,6 @@ async function handle(request: Request) {
     return json(list.map(task => decorate(task, data)));
   }
   if (project.access.role === "guest") return json({ message: "Las cuentas invitadas solo pueden consultar el proyecto." }, 403);
-  if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") return json({ message: "Formato de solicitud no válido." }, 415);
   const body = await request.json().catch(() => null);
   const data = await projectData(project.id);
   const selfId = project.access.studentSection;

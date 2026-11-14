@@ -3,9 +3,10 @@ import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, students } from "../../../db/schema";
-import { getChatGPTUser } from "../../chatgpt-auth";
+import { getChatGPTUser } from "../../../lib/server/auth";
 import { validProject } from "../../../lib/server/project";
 import { updateProfile } from "../../../lib/server/profile-update";
+import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
 
@@ -20,9 +21,6 @@ const reference = z.object({ section: z.string().min(1).max(80), revision: z.num
 const email = z.string().trim().max(254).refine(value => !value || z.string().email().safeParse(value).success, "Correo no válido").transform(value => value.toLowerCase());
 const fields = profile.merge(reference).extend({ accountEmail: email.optional() });
 
-function json(data: unknown, status = 200) {
-  return Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
-}
 
 /**
  * Lista las fichas de alumnos activas del proyecto con su estado de cuenta.
@@ -50,12 +48,11 @@ export async function GET(request: Request) {
  * @returns Respuesta JSON con la ficha resultante o el error.
  */
 async function mutate(request: Request) {
+  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   if (!(await getChatGPTUser())) return json({ message: "Inicia sesión para editar las fichas." }, 401);
   const project = await validProject(request);
   if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
-  if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") {
-    return json({ message: "Formato de solicitud no válido." }, 415);
-  }
   const body = await request.json().catch(() => null);
   if (request.method === "POST") {
     if (project.access.role === "student" || project.access.role === "guest") return json({ message: "Solo el profesorado puede crear fichas." }, 403);

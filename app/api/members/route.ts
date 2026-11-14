@@ -3,9 +3,9 @@ import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, students, teachers } from "../../../db/schema";
 import { validProject } from "../../../lib/server/project";
+import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
-const json = (value: unknown, status = 200) => Response.json(value, { status, headers: { "Cache-Control": "no-store" } });
 const form = z.object({ email: z.string().trim().email().max(254).transform(value => value.toLowerCase()), role: z.enum(["teacher", "student", "guest"]), studentSection: z.string().min(1).max(80).nullable().optional(), teacherId: z.string().uuid().nullable().optional() });
 
 /**
@@ -25,9 +25,10 @@ export async function GET(request: Request) {
  * @returns Respuesta JSON con la invitación creada o actualizada.
  */
 export async function POST(request: Request) {
+  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const project = await validProject(request);
   if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
-  if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") return json({ message: "Formato no válido." }, 415);
   const parsed = form.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Revisa el correo y el rol." }, 400);
   const { email, role } = parsed.data;
@@ -60,9 +61,10 @@ export async function POST(request: Request) {
  * @returns Respuesta JSON con el identificador retirado o el error.
  */
 export async function DELETE(request: Request) {
+  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const project = await validProject(request);
   if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
-  if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") return json({ message: "Formato no válido." }, 415);
   const parsed = z.object({ id: z.string().uuid() }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Miembro no válido." }, 400);
   const db = getDb(); const [member] = await db.select().from(projectMembers).where(and(eq(projectMembers.id, parsed.data.id), eq(projectMembers.projectId, project.id)));

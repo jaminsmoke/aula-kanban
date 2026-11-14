@@ -1,6 +1,7 @@
 "use client";
 
 import { LazyMotion, MotionConfig, domAnimation } from "motion/react";
+import "./docs.css";
 import { docSections } from "./content";
 import { DocsHero } from "./components/docs-hero";
 import { DocsIndex } from "./components/docs-index";

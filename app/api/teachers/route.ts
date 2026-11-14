@@ -5,9 +5,9 @@ import { getDb } from "../../../db";
 import { projectMembers, teachers } from "../../../db/schema";
 import { validProject } from "../../../lib/server/project";
 import { updateProfile } from "../../../lib/server/profile-update";
+import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
-const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 const fields = z.object({ name: z.string().trim().min(1).max(80), displayName: z.string().trim().max(80).default(""), role: z.string().trim().max(500), activities: z.string().trim().max(2000), aiHelp: z.string().trim().max(2000) });
 const email = z.string().trim().max(254).refine(value => !value || z.string().email().safeParse(value).success, "Correo no válido").transform(value => value.toLowerCase());
 const reference = z.object({ id: z.string().uuid(), revision: z.number().int().positive() });
@@ -36,10 +36,11 @@ export async function GET(request: Request) {
  * @returns Respuesta JSON con la ficha resultante o el error.
  */
 async function mutate(request: Request) {
+  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const project = await validProject(request);
   if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
   if (project.access.role === "student" || project.access.role === "guest") return json({ message: "No tienes permiso para gestionar fichas de profesores." }, 403);
-  if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") return json({ message: "Formato no válido." }, 415);
   const body = await request.json().catch(() => null);
   if (request.method === "POST") {
     if (project.access.role === "teacher") return json({ message: "Solo un administrador puede añadir profesores." }, 403);

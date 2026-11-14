@@ -3,21 +3,53 @@
    ========================================================================== */
 
 :root {
+  /* Superficies y texto */
   --canvas: #f7f8fc;
   --white: #fff;
   --ink: #211b36;
+  --ink-soft: #4a4458;
+  --ink-deep: #302255;
   --muted: #625c74;
   --line: #e7e4ef;
+  --line-strong: #e0daef;
+  --line-subtle: #00000014;
+  --surface-muted: #eeecf5;
+  --surface-hover: #f5f2fb;
+
+  /* Marca y foco */
   --violet: #5839be;
   --violet-dark: #42299c;
   --violet-pale: #eeebfb;
+  --focus: #7656dd;
+  --focus-on-dark: #cdb4ff;
+
+  /* Estados */
+  --danger: #a52545;
+  --danger-ink: #8f1d2c;
+  --danger-soft: #fff1f6;
+  --success: #176a50;
+  --success-soft: #daf1e8;
+  --warning-ink: #936013;
+  --warning-soft: #fff1d9;
+  --info-ink: #315a9f;
+  --info-soft: #e6eefc;
+
+  /* Radios y tipografía */
   --radius: 14px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+  --font-body: "Instrument Sans", system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
   /* Animación: una sola fuente para duraciones y curvas de toda la app. */
   --ease-out: cubic-bezier(.22, 1, .36, 1);
   --duration-fast: .16s;
   --duration-base: .24s;
   --duration-slow: .34s;
-  font-family: "Instrument Sans", system-ui, sans-serif;
+  font-family: var(--font-body);
   color: var(--ink);
   background: var(--canvas);
   color-scheme: light;
@@ -32,13 +64,13 @@ button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: default; opacity: .6; }
 button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 2px solid #7656dd;
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
 }
 button, input, textarea, select { -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, p { margin: 0; }
 h1, h2, h3, .wordmark, .progress-value strong {
-  font-family: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
+  font-family: var(--font-display);
 }
 svg { flex: none; vertical-align: middle; }
 
