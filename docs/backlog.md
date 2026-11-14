@@ -8,16 +8,6 @@
 
 ---
 
-## 2026-11-14 — Limpieza de tablas históricas tras verificar producción
-
-- Contexto: `blockly_programs` y `mermaid_diagrams` siguen como respaldo de `app_documents`. La migración de esquema ya está publicada, pero la copia de datos es una operación aparte.
-- Qué falta antes de retomarlo:
-  - [ ] Comprobar en producción que los documentos de Blockly y Mermaid están en `app_documents`.
-  - [ ] Ejecutar la copia idempotente si falta algún proyecto.
-  - [ ] Mantener la lectura histórica durante al menos una versión publicada.
-  - [ ] Eliminar las tablas, sus exports de esquema y el fallback en una migración posterior.
-- Notas técnicas: no borrar las tablas hasta confirmar datos reales. El fallback actual evita pérdidas, pero no debe quedarse indefinidamente.
-
 ## 2026-11-14 — Detalles de rendimiento y acabado
 
 - Contexto: quedan mejoras pequeñas que no justifican una fase propia.

@@ -39,10 +39,8 @@ Para guardar trabajo hay una persistencia común, sin tabla ni endpoint por app:
    servidor `/api/app-documents?project=…&app=…`. No hace falta migración nueva
    para una app que solo guarde un documento.
 
-`blockly_programs` y `mermaid_diagrams` quedan como tablas históricas: la API
-nueva las lee si todavía no hay fila en `app_documents`, así que no se pierde
-trabajo. `scripts/migrate-app-documents.sql` copia esos datos de forma
-idempotente cuando se quiera completar la migración.
+Los documentos de Blockly y Mermaid se guardan en `app_documents`, igual que
+los de las futuras apps que usen este modelo.
 
 ## Cómo se integra una app
 

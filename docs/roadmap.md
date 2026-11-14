@@ -1,9 +1,8 @@
-# Roadmap
+# Plantilla de Roadmap
 
-> **Estado:** Sin fase activa
-> **Inicio:** —
-> **Backlog:** [`backlog.md`](backlog.md) · **Changelog:** [`changelog.md`](changelog.md)
-> **Regla:** Este documento contiene solo la fase activa. Lo que se aparca pasa al backlog; lo completado pasa al changelog cuando **todas** las fases del roadmap hayan terminado.
+> **Uso:** Copia esta plantilla para crear un nuevo `docs/roadmap.md`. Al completar un roadmap, muévelo a `docs/changelog.md` (arriba del todo) y reinicia `docs/roadmap.md` desde esta plantilla.
+> **Backlog:** Lo que se aparca del roadmap se anota en `docs/backlog.md` (también lo nuevo arriba). Lo que sale del backlog entra aquí como fase.
+> **Estado:** `Activo` · `En curso` · `Completado`
 
 ---
 
@@ -15,10 +14,10 @@
 ## 2. Alcance
 
 **Dentro:**
--
+- 
 
 **Fuera de alcance:**
--
+- 
 
 ## 3. Decisiones de arquitectura
 
@@ -28,12 +27,20 @@
 
 ## 4. Fases
 
-### Fase 1:
+### Fase 1: 
+- [ ] Tarea
+- [ ] Tarea
+- **Criterios de aceptación:** 
 
+### Fase 2: 
 - [ ] Tarea
 - [ ] Tarea
-- **Criterios de aceptación:**
-- **Estado:**
+- **Criterios de aceptación:** 
+
+### Fase 3: 
+- [ ] Tarea
+- [ ] Tarea
+- **Criterios de aceptación:** 
 
 ## 5. Riesgos y bloqueos
 
@@ -43,4 +50,4 @@
 
 ## 6. Notas de sesión
 
-- 2026-11-14: roadmap de `compute-engine` reiniciado tras completar sus tres fases y registrar el cierre en [`changelog.md`](changelog.md).
+- 

@@ -1,14 +1,12 @@
 import { and, eq } from "drizzle-orm";
 import { getDb } from "../../db";
-import { appDocuments, blocklyPrograms, mermaidDiagrams } from "../../db/schema";
+import { appDocuments } from "../../db/schema";
 
 /** Documento guardado de una app en un proyecto. */
 export type AppDocument = { state: unknown; updatedAt: number };
 
 /**
- * Lee el documento de una app. Si todavía no existe en `app_documents`,
- * recupera el formato histórico de Blockly o Mermaid para no perder trabajo
- * guardado antes de unificar la persistencia.
+ * Lee el documento de una app en la tabla común.
  * @param projectId - Proyecto activo.
  * @param appId - Identificador de la app.
  * @returns El documento o `null` si nunca se guardó.
@@ -17,17 +15,7 @@ export async function readAppDocument(projectId: string, appId: string): Promise
   const db = getDb();
   const [row] = await db.select().from(appDocuments)
     .where(and(eq(appDocuments.projectId, projectId), eq(appDocuments.appId, appId)));
-  if (row) return { state: JSON.parse(row.state) as unknown, updatedAt: row.updatedAt };
-
-  if (appId === "blockly") {
-    const [legacy] = await db.select().from(blocklyPrograms).where(eq(blocklyPrograms.projectId, projectId));
-    if (legacy) return { state: JSON.parse(legacy.state) as unknown, updatedAt: legacy.updatedAt };
-  }
-  if (appId === "mermaid") {
-    const [legacy] = await db.select().from(mermaidDiagrams).where(eq(mermaidDiagrams.projectId, projectId));
-    if (legacy) return { state: { code: legacy.code }, updatedAt: legacy.updatedAt };
-  }
-  return null;
+  return row ? { state: JSON.parse(row.state) as unknown, updatedAt: row.updatedAt } : null;
 }
 
 /**

@@ -65,12 +65,13 @@ Regla: un token debe representar un patrón compartido o una intención; no se t
 - **Roadmap de componentes completado:** Aula Store, calculadora, Mermaid, diálogo de tarea, Blockly y Whiteboard divididos; verificación final correcta. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de reintento de pizarra completado:** el error de carga se limpia cuando la pizarra vuelve a cargar; regresión de hook y vista añadida. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de carga por pestañas de `edu-tools` completado:** tabla periódica, medición, lectura y ecuaciones se cargan bajo demanda; datos periódicos en JSON. Resumen en [`changelog.md`](changelog.md).
-- **Versión publicada:** 1.1.18. Los últimos hitos están en [`changelog.md`](changelog.md).
+- **Versión:** 1.1.20. Los últimos hitos están en [`changelog.md`](changelog.md).
 - **Roadmap de respuestas sin sesión completado:** contrato 401/403/404/400 aplicado a las 12 rutas y contrato del socket documentado. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de propiedad completado:** identidad estable en `instance_owner`, migración `0028`, helper común y checklist de remix. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de `compute-engine` completado:** motor mantenido, carga selectiva en Científica/Ecuaciones y estado de cálculo. Resumen en [`changelog.md`](changelog.md).
-- **Backlog pendiente:** limpieza de tablas históricas y detalles de rendimiento.
-- **Próximo paso:** valorar la publicación de los hitos pendientes o elegir una entrada del backlog.
+- **Roadmap de documentos completado:** Blockly y Mermaid usan `app_documents`; las dos tablas históricas se retiraron tras la auditoría y respaldo.
+- **Backlog pendiente:** detalles de rendimiento.
+- **Próximo paso:** elegir una entrada del backlog.
 
 ## Documentación relacionada
 

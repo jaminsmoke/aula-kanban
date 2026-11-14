@@ -6,6 +6,16 @@
 
 ---
 
+## 2026-11-14 — Retirada de tablas históricas de documentos
+
+**Versión:** 1.1.20
+
+- La migración `0029` elimina `blockly_programs` y `mermaid_diagrams`; Blockly y Mermaid usan exclusivamente `app_documents`.
+- Se retiraron los exports, el fallback de lectura y las referencias al eliminar proyectos, así como los scripts de transición que dependían de esas tablas.
+- Antes de la migración, ambas tablas de producción estaban vacías. En local había una fila histórica de cada tipo y ambas tenían su documento activo en la tabla común.
+- Se guardó una copia íntegra de la base local en `work/private-backups/aula-antes-0029-20261114-121912.sqlite`. Tras aplicar la migración local, los dos documentos activos coincidían con el respaldo.
+- La migración se probó en una base aislada y con documentos representativos. Pasaron 162 pruebas, tipos y lint.
+
 ## 2026-11-14 — Calculadora con carga diferida y estado de cálculo
 
 **Estado:** Completada · Pendiente de publicación

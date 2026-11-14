@@ -190,22 +190,6 @@ export const appDocuments = sqliteTable("app_documents", {
   index("app_documents_app").on(table.appId, table.updatedAt),
 ]);
 
-// Históricas: el estado de Blockly y Mermaid anterior a `app_documents`.
-// Se conservan para no perder datos; la API nueva las lee si aún no hay fila.
-export const blocklyPrograms = sqliteTable("blockly_programs", {
-  projectId: text("project_id").primaryKey().notNull(),
-  state: text("state").notNull(),
-  updatedAt: integer("updated_at").notNull(),
-  updatedByUserId: text("updated_by_user_id"),
-});
-
-export const mermaidDiagrams = sqliteTable("mermaid_diagrams", {
-  projectId: text("project_id").primaryKey().notNull(),
-  code: text("code").notNull(),
-  updatedAt: integer("updated_at").notNull(),
-  updatedByUserId: text("updated_by_user_id"),
-});
-
 export const projectMembers = sqliteTable("project_members", {
   id: text("id").primaryKey().notNull(),
   projectId: text("project_id").notNull(),
