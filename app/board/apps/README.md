@@ -20,8 +20,9 @@ La API no debe tener su propia lista de ids: usa `NATIVE_APP_IDS`.
 
 1. Crea `apps/<id>/` con su componente y sus estilos. No importes archivos de
    otras apps; si algo es común, súbelo a `app/board` o a `lib`.
-2. Añade su ficha a `NATIVE_APPS` en `lib/native-apps.ts` (nombre, categoría,
-   portada en `public/store`, características y tamaño de ventana).
+2. Añade su id a `NATIVE_APP_IDS` y su ficha a `NATIVE_APPS` en
+   `lib/native-apps.ts` (nombre, categoría, portada en `public/store`,
+   características y tamaño de ventana).
 3. Regístrala en `apps/registry.tsx`: icono en `ICONS` y componente lazy en
    `APPS`. El test `registry.test.ts` falla si falta alguno.
 4. Si guarda un documento, usa `useAppDocument(projectId, appId)` y
@@ -39,5 +40,5 @@ ventana. El estado instalado/desinstalado es común a todas las apps y vive en
   todos los roles.
 - La tienda solo pinta el catálogo; instalar o desinstalar llama a
   `/api/space-apps`.
-- `useAppDocument` guarda en `app_documents` y mantiene un respaldo en
-  `localStorage` por app y proyecto.
+- `useAppDocument` lee y guarda en `app_documents`. Cada aplicación decide
+  si necesita implementar además un respaldo local por proyecto.
