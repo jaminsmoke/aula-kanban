@@ -26,4 +26,11 @@ describe("Aula Store", () => {
     fireEvent.click(screen.getByRole("button", { name: /Instaladas/ }));
     expect(screen.getByText("Excalidraw")).toBeTruthy();
   });
+  it("filtra por categoría y abre la ficha de detalle", () => {
+    render(<AppsStore {...props} role="owner" />);
+    fireEvent.click(screen.getByRole("button", { name: /^Aula/ }));
+    expect(screen.getByText("Herramientas de aula")).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: /Detalles/ })[0]);
+    expect(screen.getByRole("dialog")).toBeTruthy();
+  });
 });

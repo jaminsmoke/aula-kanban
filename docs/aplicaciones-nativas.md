@@ -1,9 +1,9 @@
-# Aplicaciones nativas de Aula Store
+﻿# Aplicaciones nativas de Aula Store
 
 Lista viva de las aplicaciones nativas de Aula Kanban: qué está integrado, qué es
 candidato y qué se ha descartado, con la licencia y la versión comprobadas en npm.
 
-Última verificación: **2026-11-13**.
+Última verificación: **2026-11-14**.
 
 ## Qué es una aplicación nativa
 
@@ -28,23 +28,32 @@ Requisitos para entrar en el catálogo:
 ### Persistencia
 
 La tabla `instance_apps` guarda solo el estado **instalada / no instalada de la
-instancia**; lo gestionan el propietario y los administradores. Una app nueva no
-guarda documentos salvo que se le añada almacenamiento propio:
+instancia**; lo gestionan el propietario y los administradores.
+
+Para guardar trabajo hay una persistencia común, sin tabla ni endpoint por app:
 
 1. **Sin persistencia** (abrir, trabajar, exportar y cerrar): la opción barata.
 2. **`localStorage`**: progreso por navegador, no compartido entre el equipo.
-3. **Tabla propia + endpoint**: documento por proyecto, con permisos y borrado.
-   Es trabajo aparte del paquete y requiere migración.
+3. **`app_documents`**: un estado JSON por proyecto y app, con permisos de
+   edición y borrado. La interfaz usa `useAppDocument(projectId, appId)` y el
+   servidor `/api/app-documents?project=…&app=…`. No hace falta migración nueva
+   para una app que solo guarde un documento.
+
+`blockly_programs` y `mermaid_diagrams` quedan como tablas históricas: la API
+nueva las lee si todavía no hay fila en `app_documents`, así que no se pierde
+trabajo. `scripts/migrate-app-documents.sql` copia esos datos de forma
+idempotente cuando se quiera completar la migración.
 
 ## Cómo se integra una app
 
-1. Entrada en `app/board/tools.ts`: `id`, nombre, descripción, icono y roles.
-2. Componente cliente en `app/board/<app>.tsx` y registro en el mapa `toolApps`
-   de `app/board/space-view.tsx`.
-3. Icono propio con el estilo de la tienda.
-4. Catálogo del servidor: ampliar `NATIVE_APP_IDS` y el enum de
-   `app/api/space-apps/route.ts`. Sin esto, la tarjeta aparece pero «Instalar»
-   responde 400.
+1. Carpeta propia en `app/board/apps/<id>/` con su componente y estilos.
+2. Ficha en `NATIVE_APPS` de `lib/native-apps.ts` (data pura, también para el
+   servidor): nombre, categoría, portada, características y tamaño de ventana.
+3. Registro en `app/board/apps/registry.tsx`: icono y componente lazy. El test
+   `registry.test.ts` avisa si falta algo o si los ids no coinciden con la API.
+4. Si guarda un documento, usa `useAppDocument` y añade su estado a esa tabla;
+   no crees una tabla ni una ruta nuevas salvo que el dato no sea un documento
+   JSON por proyecto.
 5. Avisos de licencia en `THIRD-PARTY-NOTICES.md` (Apache-2.0 y BSD obligan a
    conservar el aviso de copyright).
 6. Test de la tarjeta y de la ventana, y actualizar esta lista.
@@ -54,8 +63,9 @@ guarda documentos salvo que se le añada almacenamiento propio:
 | App | Paquete | Licencia | Estado | Notas |
 |---|---|---|---|---|
 | Pizarra Excalidraw | `@excalidraw/excalidraw` 0.18.1 | MIT | ✅ Integrada | Escribe en las pizarras de las tareas; instalable desde Aula Store |
-| Programación por bloques | `blockly` 13.4.0 | Apache-2.0 | ✅ Integrada | Caja de herramientas en español, bloques de lógica, bucles, matemáticas, texto, variables y funciones; guardado por proyecto en D1 (`blockly_programs`), ejemplo inicial, descarga en JSON y **panel de código** JavaScript/Python con copia y **ejecución de JavaScript** (salida, errores y tiempo agotado). Los recursos (`media/`) se sirven desde `public/blockly-media` |
+| Programación por bloques | `blockly` 13.4.0 | Apache-2.0 | ✅ Integrada | Caja de herramientas en español, bloques de lógica, bucles, matemáticas, texto, variables y funciones; guardado por proyecto en D1 (`app_documents`), ejemplo inicial, descarga en JSON y **panel de código** JavaScript/Python con copia y **ejecución de JavaScript** (salida, errores y tiempo agotado). Los recursos (`media/`) se sirven desde `public/blockly-media` |
 | Herramientas de aula | `@smst/edu-tools` 2.2.1 | MIT | ✅ Integrada | **Calculadora** en el centro con chips de modo (Básica / Científica con dos páginas de funciones / Ecuaciones), memoria M+/M−/MR, historial persistente y resultado decimal y exacto; al activar **Ecuaciones** aparece su panel al lado, con varias líneas, variables compartidas, teclado matemático y resultado por fila. **Ciencias** (tabla periódica propia en español con búsqueda, filtros, modelo atómico animado, descripción e historia), **Medir** (regla con medición + transportador giratorio) y **Lectura** en voz alta. Atajos Alt+1…4 |
+| Diagramas | `mermaid` 12.3.0 | MIT | ✅ Integrada | Diagramas de flujo, secuencia, Gantt, clases, estados y líneas de tiempo; editor y vista previa, plantillas, guardado por proyecto en D1 (`app_documents`) y exportación SVG |
 
 ## Candidatas
 
@@ -75,7 +85,6 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|
 | Laboratorio STEM | `@itkdm/open-lab-components` 0.1.1 | MIT | 210+ fragmentos interactivos de física, química, biología y matemáticas | ~3 MB sin empaquetar | Fragmentos HTML/CSS/JS, no componentes React: hay que aislarlos en `iframe` con `sandbox` o sanearlos. Versión 0.1.x muy joven (febrero 2026) |
-| Programación por bloques | `blockly` 13.4.0 | Apache-2.0 | Programación visual tipo Scratch: variables, bucles, funciones | ~1,2 MB + `media/` | No es React: montar con `useEffect`, copiar `media/` a `public/`, cargar idioma `es` |
 | Física 2D | `matter-js` 0.20.0 | MIT | Gravedad, colisiones, muelles, péndulos | ~90 KB gzip | Sandbox manipulable; UI propia |
 | Física 2D (WASM) | `@dimforge/rapier2d` 0.21.0 | Apache-2.0 | Motor de física más preciso | ~1 MB WASM | Alternativa a Matter.js si hace falta precisión |
 | Geometría interactiva | `jsxgraph` 1.14.3 | MIT **o** LGPL-3.0 | Construcciones, funciones, lugares geométricos | ~400 KB | Elegir la opción MIT de la licencia dual |
@@ -93,7 +102,6 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|
-| Diagramas | `mermaid` 12.3.0 | MIT | Flujo, secuencia, Gantt, clases, estados | ~1 MB diferido | Render de texto; exportar SVG |
 | Mapas conceptuales | `@xyflow/react` 12.12.1 | MIT | Nodos y conexiones arrastrables | ~150 KB | Vista propia de mapas |
 | Mapas mentales | `markmap-lib` 0.18.13 | MIT | Markdown a mapa mental | ~200 KB | Con `markmap-view` |
 | Código | `codemirror` 6.0.2 | MIT | Editor con resaltado y autocompletado | ~300 KB | Alternativa ligera a Monaco |
@@ -150,10 +158,9 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
 ## Orden recomendado
 
-1. **`@smst/edu-tools`** — varias herramientas de aula en un solo paquete; empezar por
-   calculadora y tabla periódica.
-2. **`blockly`** — la más identificable como «app de colegio».
-3. **`mermaid`** — diagramas, coste bajo y uso transversal.
+1. ~~`@smst/edu-tools`~~ — ✅ integrada (calculadora, ciencias, medir y lectura).
+2. ~~`blockly`~~ — ✅ integrada (programación por bloques).
+3. ~~`mermaid`~~ — ✅ integrada (diagramas).
 4. **`chess.js` + `react-chessboard`** — el añadido más barato.
 5. **`matter-js`** y **`jsxgraph`** — física y geometría.
 6. Resto según necesidad real de aula.

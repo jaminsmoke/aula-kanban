@@ -4,11 +4,10 @@ import { getChatGPTUser } from "../../chatgpt-auth";
 import { getDb } from "../../../db";
 import { instanceApps } from "../../../db/schema";
 import { isAdministrator, isOwner, validProject } from "../../../lib/server/project";
+import { NATIVE_APP_IDS } from "../../../lib/native-apps";
 
 export const dynamic = "force-dynamic";
 const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
-/** Aplicaciones nativas (librerías del propio Site): su estado vive en la DB. */
-const NATIVE_APP_IDS = ["excalidraw", "edu-tools", "blockly"] as const;
 const appId = z.enum(NATIVE_APP_IDS);
 /**
  * Lee el estado de las aplicaciones nativas instaladas en la instancia.

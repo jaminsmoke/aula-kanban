@@ -2,8 +2,8 @@
 
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation, m } from "motion/react";
-import { ArrowLeft, Download, Package, Play, RefreshCw, Search, Trash2, TriangleAlert } from "lucide-react";
-import { visibleTools, type SpaceRole, type SpaceTool } from "./tools";
+import { ArrowLeft, Download, GraduationCap, GitBranch, Info, Package, PencilRuler, Play, Puzzle, RefreshCw, Search, Trash2, TriangleAlert, X } from "lucide-react";
+import { SPACE_CATEGORIES, visibleTools, type SpaceCategory, type SpaceRole, type SpaceTool } from "./tools";
 import { AulaStoreIcon } from "./aula-store-icon";
 
 /** Lottie solo para el check de instalación: chunk aparte, cargado con lazy. */
@@ -24,8 +24,13 @@ export type StoreApp = {
 /** Acciones de gestión disponibles en la tienda. */
 export type StoreAction = "install" | "uninstall";
 
-/** Filtros de la tienda (chips estilo Play Store). */
-type StoreFilter = "all" | "installed";
+/** Icono de cada categoría del catálogo. */
+const CATEGORY_ICONS = {
+  Aula: GraduationCap,
+  Pizarras: PencilRuler,
+  Programación: Puzzle,
+  Diagramas: GitBranch,
+} as const;
 
 const STATUS_META: Record<string, { label: string; className: string }> = {
   installed: { label: "Instalada", className: "store-chip--installed" },
@@ -45,7 +50,8 @@ function statusLabel(status: string): string {
 }
 
 /**
- * Catálogo de aplicaciones nativas de Mi espacio.
+ * Catálogo de aplicaciones nativas de Mi espacio, agrupado por categorías y con
+ * ficha de detalle.
  * @returns La tienda de aplicaciones.
  */
 export default function AppsStore({ role, apps, error, onManage, onOpen, onRefresh, onClose }: {
@@ -59,7 +65,9 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
 }) {
   const isAdmin = role === "owner" || role === "admin";
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<StoreFilter>("all");
+  const [category, setCategory] = useState<SpaceCategory | "todas">("todas");
+  const [installedOnly, setInstalledOnly] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [justInstalled, setJustInstalled] = useState<string | null>(null);
   const prevStatuses = useRef<Map<string, string>>(new Map());
 
@@ -77,70 +85,100 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
     return () => clearTimeout(timer);
   }, [justInstalled]);
 
+  // Cerrar la ficha con Escape.
+  useEffect(() => {
+    if (!selectedId) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedId(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedId]);
+
   const allTools = useMemo(() => visibleTools(role), [role]);
   const statusOf = (id: string) => apps.find((item) => item.id === id)?.status ?? "not_installed";
   const installedCount = allTools.filter((tool) => statusOf(tool.id) === "installed").length;
-  const firstInstalledId = allTools.find((tool) => statusOf(tool.id) === "installed")?.id;
+  const selectedTool = allTools.find((tool) => tool.id === selectedId) ?? null;
+  const SelectedIcon = selectedTool?.icon;
 
   /**
-   * ¿Pasa una herramienta el buscador y el chip activo?
+   * ¿Pasa una herramienta el buscador, la categoría y el filtro de instaladas?
    * @param tool - Herramienta del catálogo.
-   * @returns `true` si coincide con la búsqueda y el filtro.
+   * @returns `true` si debe mostrarse.
    */
   const matches = (tool: SpaceTool) => {
-    const text = `${tool.name} ${tool.description}`.toLowerCase();
-    return text.includes(query.trim().toLowerCase()) && (filter !== "installed" || statusOf(tool.id) === "installed");
+    if (category !== "todas" && tool.category !== category) return false;
+    if (installedOnly && statusOf(tool.id) !== "installed") return false;
+    const text = `${tool.name} ${tool.tagline} ${tool.description} ${tool.category}`.toLowerCase();
+    return text.includes(query.trim().toLowerCase());
   };
 
-  const nativeTools = allTools.filter(matches);
-
-  const filters: { id: StoreFilter; label: string; count: number }[] = [
-    { id: "all", label: "Todo", count: allTools.length },
-    { id: "installed", label: "Instaladas", count: installedCount },
-  ];
+  const visibleCount = allTools.filter(matches).length;
+  const sectionTools = allTools.filter(matches);
+  const sectionTitle = category !== "todas" ? category : installedOnly ? "Instaladas" : "Todas las aplicaciones";
+  const SectionIcon = category !== "todas" ? CATEGORY_ICONS[category] : Package;
 
   /**
-   * Tarjeta de una aplicación nativa (librería del propio Site).
+   * Acciones de una app (abrir, instalar o desinstalar).
    * @param tool - Herramienta del catálogo.
-   * @param index - Posición en la lista (para la entrada escalonada).
+   * @param installed - Si está instalada.
+   * @returns Los botones disponibles para el rol actual.
+   */
+  const actions = (tool: SpaceTool, installed: boolean) => (
+    <>
+      {installed ? (
+        <button type="button" className="store-primary" onClick={() => onOpen(tool)}><Play size={14} aria-hidden /> Abrir</button>
+      ) : isAdmin ? (
+        <button type="button" className="store-primary" onClick={() => onManage(tool.id, "install")}><Download size={14} aria-hidden /> Instalar</button>
+      ) : null}
+      {isAdmin && installed ? (
+        <button type="button" className="store-secondary" onClick={() => onManage(tool.id, "uninstall")}><Trash2 size={14} aria-hidden /> Desinstalar</button>
+      ) : null}
+    </>
+  );
+
+  /**
+   * Tarjeta estándar de una aplicación.
+   * @param tool - Herramienta del catálogo.
+   * @param index - Posición en la lista (entrada escalonada).
    * @returns La tarjeta de la tienda.
    */
   const nativeCard = (tool: SpaceTool, index: number) => {
     const Icon = tool.icon;
-    const app = apps.find((item) => item.id === tool.id);
-    const installed = app?.status === "installed";
+    const installed = statusOf(tool.id) === "installed";
     return (
       <m.article
-        key={tool.id}
         layout
+        key={tool.id}
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        transition={{ duration: 0.24, ease: "easeOut", delay: index * 0.05 }}
-        whileHover={{ y: -3 }}
-        className={`store-card${tool.id === firstInstalledId ? " store-card--featured" : ""}`}
+        transition={{ duration: 0.24, ease: "easeOut", delay: index * 0.04 }}
+        className="store-card"
       >
-        <span className={`store-app-icon store-app-icon--${tool.id}`} aria-hidden><Icon size={38} strokeWidth={1.9} /></span>
+        <button type="button" className="store-card-cover" onClick={() => setSelectedId(tool.id)} aria-label={`Ver detalles de ${tool.name}`}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={tool.cover} alt="" loading="lazy" />
+          <span className="store-card-icon" aria-hidden><Icon size={22} strokeWidth={2} /></span>
+          <span className="store-card-category">{tool.category}</span>
+        </button>
+
         <div className="store-card-body">
           <h3>{tool.name}</h3>
-          <p>{tool.description}</p>
+          <p className="store-card-tagline">{tool.tagline}</p>
           <p className="store-meta">
-            <span className={`store-chip ${installed ? "store-chip--installed" : "store-chip--pending"}`}>
+            <span className={`store-chip ${STATUS_META[statusOf(tool.id)]?.className ?? "store-chip--pending"}`}>
               <span className="store-chip-dot" aria-hidden />
-              {statusLabel(app?.status ?? "not_installed")}
+              {statusLabel(statusOf(tool.id))}
             </span>
           </p>
         </div>
-        <div className="store-actions">
-          {installed ? (
-            <button type="button" className="store-primary" onClick={() => onOpen(tool)}><Play size={14} aria-hidden /> Abrir</button>
-          ) : isAdmin ? (
-            <button type="button" className="store-primary" onClick={() => onManage(tool.id, "install")}><Download size={14} aria-hidden /> Instalar</button>
-          ) : null}
-          {isAdmin && installed ? (
-            <button type="button" className="store-secondary" onClick={() => onManage(tool.id, "uninstall")}><Trash2 size={14} aria-hidden /> Desinstalar</button>
-          ) : null}
+
+        <div className="store-card-footer">
+          {actions(tool, installed)}
+          <button type="button" className="store-secondary store-details" onClick={() => setSelectedId(tool.id)}><Info size={14} aria-hidden /> Detalles</button>
         </div>
+
         <AnimatePresence>
           {justInstalled === tool.id ? (
             <m.div className="store-success" initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.7 }} transition={{ duration: 0.3, ease: "easeOut" }}>
@@ -156,56 +194,87 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
     <MotionConfig reducedMotion="user">
     <LazyMotion features={domAnimation}>
     <div className="store-view" role="region" aria-label="Aula Store">
-      <header className="store-hero">
-        <div className="store-hero-top">
+      <header className="store-header">
+        <div className="store-header-main">
           <button type="button" className="store-back" onClick={onClose}><ArrowLeft size={16} aria-hidden /> Escritorio</button>
-          <button type="button" className="store-refresh" onClick={onRefresh} title="Actualizar estado"><RefreshCw size={16} aria-hidden /> Actualizar</button>
-        </div>
-        <div className="store-hero-main">
-          <span className="store-logo" aria-hidden><AulaStoreIcon size={36} /></span>
-          <div className="store-heading">
-            <h2>Aula Store</h2>
-            <p>Catálogo de Aula Kanban: instala y abre aplicaciones para tu proyecto.</p>
-          </div>
+          <span className="store-mark" aria-hidden><AulaStoreIcon size={26} /></span>
+          <h2 className="store-title">Aula Store</h2>
           <div className="store-stats" aria-label="Resumen de la tienda">
             <span className="store-stat"><strong>{installedCount}</strong> instaladas</span>
+            <span className="store-stat"><strong>{allTools.length}</strong> disponibles</span>
           </div>
+          <button type="button" className="store-refresh" onClick={onRefresh} title="Actualizar estado"><RefreshCw size={15} aria-hidden /> Actualizar</button>
         </div>
-        <label className="store-search">
-          <Search size={17} aria-hidden />
-          <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar en Aula Store" aria-label="Buscar aplicaciones" />
-        </label>
-        <div className="store-filters" role="group" aria-label="Filtrar aplicaciones">
-          {filters.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              aria-pressed={filter === item.id}
-              className={`store-filter${filter === item.id ? " store-filter--active" : ""}`}
-              onClick={() => setFilter(item.id)}
-            >
-              {item.label}<span className="store-filter-count">{item.count}</span>
+        <div className="store-toolbar">
+          <label className="store-search">
+            <Search size={17} aria-hidden />
+            <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar en Aula Store" aria-label="Buscar aplicaciones" />
+          </label>
+          <div className="store-filters" role="group" aria-label="Filtrar aplicaciones">
+            <button type="button" className={`store-filter${category === "todas" && !installedOnly ? " store-filter--active" : ""}`} aria-pressed={category === "todas" && !installedOnly} onClick={() => { setCategory("todas"); setInstalledOnly(false); }}>
+              Todo<span className="store-filter-count">{allTools.length}</span>
             </button>
-          ))}
+            {SPACE_CATEGORIES.map((name) => {
+              const count = allTools.filter((tool) => tool.category === name).length;
+              if (!count) return null;
+              return (
+                <button key={name} type="button" className={`store-filter${category === name ? " store-filter--active" : ""}`} aria-pressed={category === name} onClick={() => setCategory(name)}>
+                  {name}<span className="store-filter-count">{count}</span>
+                </button>
+              );
+            })}
+            <button type="button" className={`store-filter${installedOnly ? " store-filter--active" : ""}`} aria-pressed={installedOnly} onClick={() => setInstalledOnly((current) => !current)}>
+              Instaladas<span className="store-filter-count">{installedCount}</span>
+            </button>
+          </div>
         </div>
       </header>
 
       {error ? <p role="alert" className="store-alert"><TriangleAlert size={15} aria-hidden /> {error}</p> : null}
 
-      <section className="store-section" aria-label="Aplicaciones nativas">
-        <h3 className="store-section-title"><Package size={17} aria-hidden /> Aplicaciones nativas<span className="store-section-count">{nativeTools.length}</span></h3>
-        {nativeTools.length === 0 ? (
-          <p className="store-results-empty">Sin resultados para «{query}».</p>
-        ) : (
+      {visibleCount === 0 ? (
+        <p className="store-results-empty">Sin resultados para «{query}».</p>
+      ) : (
+        <section className="store-section" aria-label={sectionTitle}>
+          <h3 className="store-section-title"><SectionIcon size={17} aria-hidden /> {sectionTitle}<span className="store-section-count">{sectionTools.length}</span></h3>
           <div className="store-grid">
             <AnimatePresence mode="popLayout">
-              {nativeTools.map(nativeCard)}
+              {sectionTools.map(nativeCard)}
             </AnimatePresence>
           </div>
-        )}
-        <p className="store-note">Las aplicaciones nativas son librerías del propio Aula: instalarlas o desinstalarlas de «Mi espacio» solo registra su estado y no borra paquetes ni datos. Excalidraw sigue alimentando la pizarra de las tareas.</p>
-      </section>
+        </section>
+      )}
 
+      <p className="store-note"><Package size={14} aria-hidden /> Las aplicaciones nativas son librerías del propio Aula: instalarlas o desinstalarlas de «Mi espacio» solo registra su estado y no borra paquetes ni datos.</p>
+
+      {selectedTool ? (
+        <div className="store-detail" role="presentation" onClick={(event) => { if (event.target === event.currentTarget) setSelectedId(null); }}>
+          <div className="store-detail-card" role="dialog" aria-modal="true" aria-label={selectedTool.name}>
+            <button type="button" className="store-detail-close" aria-label="Cerrar detalles" onClick={() => setSelectedId(null)} autoFocus><X size={18} aria-hidden /></button>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="store-detail-cover" src={selectedTool.cover} alt="" />
+            <div className="store-detail-body">
+              <div className="store-detail-head">
+                <span className="store-card-icon store-card-icon--static" aria-hidden>{SelectedIcon ? <SelectedIcon size={24} strokeWidth={2} /> : null}</span>
+                <div className="store-detail-title">
+                  <h3>{selectedTool.name}</h3>
+                  <p>{selectedTool.category} · {statusLabel(statusOf(selectedTool.id))}</p>
+                </div>
+              </div>
+              <p className="store-detail-description">{selectedTool.description}</p>
+              <ul className="store-detail-features">
+                {selectedTool.features.map((feature) => <li key={feature}>{feature}</li>)}
+              </ul>
+              {!isAdmin && statusOf(selectedTool.id) !== "installed" ? (
+                <p className="store-detail-note">Solo el propietario o un administrador puede instalar aplicaciones.</p>
+              ) : null}
+              <div className="store-detail-actions">
+                {actions(selectedTool, statusOf(selectedTool.id) === "installed")}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
     </LazyMotion>
     </MotionConfig>

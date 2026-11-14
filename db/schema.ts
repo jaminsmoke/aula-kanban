@@ -1,4 +1,4 @@
-import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const projects = sqliteTable("projects", {
   id: text("id").primaryKey().notNull(),
@@ -169,10 +169,31 @@ export const spaceApps = sqliteTable("space_apps", {
   index("space_apps_project").on(table.projectId),
 ]);
 
-// Programa de Blockly guardado por proyecto (estado serializado del lienzo).
+// Documentos de las apps nativas: un estado JSON por proyecto y app. Es la
+// forma común de guardar el trabajo de cualquier app que lo necesite.
+export const appDocuments = sqliteTable("app_documents", {
+  projectId: text("project_id").notNull(),
+  appId: text("app_id").notNull(),
+  state: text("state").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+  updatedByUserId: text("updated_by_user_id"),
+}, (table) => [
+  primaryKey({ columns: [table.projectId, table.appId] }),
+  index("app_documents_app").on(table.appId, table.updatedAt),
+]);
+
+// Históricas: el estado de Blockly y Mermaid anterior a `app_documents`.
+// Se conservan para no perder datos; la API nueva las lee si aún no hay fila.
 export const blocklyPrograms = sqliteTable("blockly_programs", {
   projectId: text("project_id").primaryKey().notNull(),
   state: text("state").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+  updatedByUserId: text("updated_by_user_id"),
+});
+
+export const mermaidDiagrams = sqliteTable("mermaid_diagrams", {
+  projectId: text("project_id").primaryKey().notNull(),
+  code: text("code").notNull(),
   updatedAt: integer("updated_at").notNull(),
   updatedByUserId: text("updated_by_user_id"),
 });

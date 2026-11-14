@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { SpaceRole } from "./tools";
+import type { SpaceRole } from "../types";
+import { useAppDocument } from "../use-app-document";
 import "./blockly.css";
 
 /** Bloques disponibles en la caja de herramientas. */
@@ -128,7 +129,7 @@ export default function BlocklyApp({ projectId, role }: { projectId: string; rol
   const statusTimer = useRef<number | null>(null);
 
   const storageKey = `aula.blockly.${projectId}`;
-  const endpoint = `/api/blockly-programs?project=${encodeURIComponent(projectId)}`;
+  const { load: loadDocument, save: saveDocument } = useAppDocument<Record<string, unknown>>(projectId, "blockly");
 
   const flash = useCallback((message: string) => {
     setStatus(message);
@@ -252,17 +253,14 @@ export default function BlocklyApp({ projectId, role }: { projectId: string; rol
       workspace.current = space;
 
       let restored = false;
-      try {
-        const response = await fetch(endpoint, { cache: "no-store" });
-        if (response.ok) {
-          const data = (await response.json()) as { state?: unknown };
-          if (data.state) {
-            lib.serialization.workspaces.load(data.state as Record<string, unknown>, space);
-            restored = true;
-          }
+      const document = await loadDocument();
+      if (document.state) {
+        try {
+          lib.serialization.workspaces.load(document.state, space);
+          restored = true;
+        } catch {
+          /* documento no válido: se intenta el respaldo local */
         }
-      } catch {
-        /* sin conexión con la base de datos */
       }
       if (!restored) {
         try {
@@ -285,7 +283,7 @@ export default function BlocklyApp({ projectId, role }: { projectId: string; rol
       workspace.current?.dispose();
       workspace.current = null;
     };
-  }, [endpoint, storageKey, readOnly]);
+  }, [loadDocument, storageKey, readOnly]);
 
   // Mientras el panel de código está abierto, se regenera al cambiar el lienzo.
   useEffect(() => {
@@ -318,30 +316,18 @@ export default function BlocklyApp({ projectId, role }: { projectId: string; rol
     } catch {
       /* sin respaldo local */
     }
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ state }),
-      });
-      if (!response.ok) throw new Error();
-      flash("Programa guardado");
-    } catch {
-      flash("Guardado solo en este navegador");
-    }
+    const saved = await saveDocument(state);
+    flash(saved ? "Programa guardado" : "Guardado solo en este navegador");
   };
 
   const load = async () => {
     if (!workspace.current || !blockly.current) return;
     try {
-      const response = await fetch(endpoint, { cache: "no-store" });
-      if (response.ok) {
-        const data = (await response.json()) as { state?: unknown };
-        if (data.state) {
-          blockly.current.serialization.workspaces.load(data.state as Record<string, unknown>, workspace.current);
-          flash("Programa cargado");
-          return;
-        }
+      const document = await loadDocument();
+      if (document.state) {
+        blockly.current.serialization.workspaces.load(document.state, workspace.current);
+        flash("Programa cargado");
+        return;
       }
       const saved = window.localStorage.getItem(storageKey);
       if (!saved) { flash("No hay ningún programa guardado"); return; }

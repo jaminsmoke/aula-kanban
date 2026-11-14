@@ -39,52 +39,53 @@
 .space-tool:focus-visible { outline:2px solid #cdb4ff; outline-offset:2px; }
 .space-tool-icon { display:grid; place-items:center; width:64px; height:64px; border-radius:16px; background:linear-gradient(150deg,#a98bf5,#7859d8); box-shadow:0 6px 16px #00000038, inset 0 1px #ffffff59; }
 .space-tool-name { font-size:13px; font-weight:650; text-shadow:0 1px 4px #0007; }
-/* Aula Store: catálogo estilo Play Store (CSS puro, sin librerías). */
-.store-view { position:absolute; inset:0; z-index:40; display:flex; flex-direction:column; overflow-y:auto; padding:22px 26px 28px; background:linear-gradient(160deg,#f5f4f8,#eceaf2); animation:fade-in var(--duration-base) var(--ease-out); }
-/* Cabecera hero: degradado Aula con logo, buscador y chips. */
-.store-hero { display:flex; flex-direction:column; gap:16px; margin-bottom:22px; padding:18px 20px 20px; border-radius:20px; background:radial-gradient(600px 220px at 12% 0%, #8a6fe055, transparent 60%), linear-gradient(150deg,#5839be,#2c1c5e); color:#fff; box-shadow:0 10px 28px #30225533; }
-.store-hero-top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.store-back,.store-refresh { display:inline-flex; align-items:center; gap:7px; flex:none; padding:8px 13px; border:0; border-radius:10px; background:#ffffff1f; color:#fff; font:inherit; font-size:13px; font-weight:650; cursor:pointer; transition:background var(--duration-fast) var(--ease-out); }
-.store-back:hover,.store-refresh:hover { background:#ffffff33; }
-.store-hero-main { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-.store-logo { display:grid; place-items:center; flex:none; width:66px; height:66px; border-radius:18px; background:#ffffff14; box-shadow:inset 0 0 0 1px #ffffff2a; }
-.store-heading { flex:1 1 220px; min-width:0; }
-.store-heading h2 { margin:0; font-size:26px; letter-spacing:-.02em; }
-.store-heading p { margin:5px 0 0; color:#d9d2f2; font-size:13px; line-height:1.5; }
-.store-stats { display:flex; gap:8px; flex-wrap:wrap; }
-.store-stat { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; background:#ffffff1a; font-size:12px; font-weight:650; color:#e9e4ff; }
-.store-stat strong { font-size:13px; color:#fff; }
-.store-search { display:flex; align-items:center; gap:9px; padding:0 14px; border-radius:999px; background:#ffffff; color:#6b657d; box-shadow:0 4px 14px #00000026; }
-.store-search input { flex:1 1 auto; min-width:0; padding:12px 0; border:0; background:transparent; color:var(--ink); font-size:14px; }
+/* Aula Store: catálogo con portadas, categorías y ficha de detalle. */
+.store-view { position:absolute; inset:0; z-index:40; display:flex; flex-direction:column; overflow-y:auto; padding:20px 24px 28px; background:linear-gradient(160deg,#f5f4f8,#eceaf2); animation:fade-in var(--duration-base) var(--ease-out); }
+/* Cabecera ligera: integrada en el fondo, sin bloque que separe la tienda. */
+.store-header { display:flex; flex-direction:column; gap:12px; margin-bottom:18px; }
+.store-header-main { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.store-back,.store-refresh { display:inline-flex; align-items:center; gap:7px; flex:none; padding:7px 12px; border:1px solid #e0daef; border-radius:9px; background:#fff; color:#4a4458; font:inherit; font-size:12.5px; font-weight:650; cursor:pointer; transition:background var(--duration-fast) var(--ease-out); }
+.store-back:hover,.store-refresh:hover { background:#f5f2fb; }
+.store-mark { display:grid; place-items:center; flex:none; width:38px; height:38px; border-radius:11px; background:linear-gradient(150deg,#a98bf5,#7859d8); color:#fff; box-shadow:0 6px 14px #5839be33; }
+.store-title { margin:0; color:var(--ink); font-size:20px; letter-spacing:-.02em; }
+.store-stats { display:flex; gap:6px; flex-wrap:wrap; margin-left:4px; }
+.store-stat { display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:999px; background:#eeebfb; color:#5839be; font-size:11.5px; font-weight:650; }
+.store-stat strong { color:#42299c; font-size:12px; }
+.store-header-main .store-refresh { margin-left:auto; }
+.store-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.store-search { flex:1 1 280px; display:flex; align-items:center; gap:9px; padding:0 14px; border:1px solid #e0daef; border-radius:999px; background:#fff; color:#6b657d; }
+.store-search input { flex:1 1 auto; min-width:0; padding:9px 0; border:0; background:transparent; color:var(--ink); font-size:13.5px; }
 .store-search input:focus { outline:none; }
-.store-search:focus-within { box-shadow:0 0 0 3px #febc2e88, 0 4px 14px #00000026; }
-.store-filters { display:flex; gap:8px; flex-wrap:wrap; }
-.store-filter { display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border:1px solid #ffffff38; border-radius:999px; background:transparent; color:#e9e4ff; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; transition:background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
-.store-filter:hover { background:#ffffff1f; }
-.store-filter--active { background:#febc2e; border-color:#febc2e; color:#3a2a00; }
-.store-filter-count { display:inline-grid; place-items:center; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:#ffffff2e; font-size:11px; font-weight:800; }
-.store-filter--active .store-filter-count { background:#3a2a0026; }
+.store-search:focus-within { border-color:#b9a7e6; box-shadow:0 0 0 3px #5839be1f; }
+.store-filters { display:flex; gap:6px; flex-wrap:wrap; }
+.store-filter { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid #e0daef; border-radius:999px; background:#fff; color:#4a4458; font:inherit; font-size:12px; font-weight:700; cursor:pointer; transition:background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); }
+.store-filter:hover { background:#f5f2fb; }
+.store-filter--active { background:var(--violet); border-color:var(--violet); color:#fff; }
+.store-filter-count { display:inline-grid; place-items:center; min-width:18px; height:18px; padding:0 5px; border-radius:999px; background:#eeebfb; color:#5839be; font-size:10.5px; font-weight:800; }
+.store-filter--active .store-filter-count { background:#ffffff2e; color:#fff; }
 .store-alert { display:flex; align-items:center; gap:8px; margin:0 0 14px; padding:11px 14px; border-radius:10px; background:#fdecec; color:#8f1d2c; font-size:13.5px; }
 .store-section { display:flex; flex-direction:column; gap:14px; margin:0 0 26px; }
 .store-section:last-child { margin-bottom:0; }
-.store-section[hidden] { display:none; }
-.store-section-title { display:flex; align-items:center; gap:8px; margin:0; padding-bottom:10px; border-bottom:1px solid #00000014; font-size:16px; font-weight:750; color:#2c2540; }
+.store-section-title { display:flex; align-items:center; gap:8px; margin:0; padding-bottom:10px; border-bottom:1px solid #00000014; font-size:15px; font-weight:750; color:#2c2540; }
 .store-section-count { margin-left:auto; display:inline-grid; place-items:center; min-width:22px; height:22px; padding:0 7px; border-radius:999px; background:#ece6fc; color:#6340b3; font-size:11.5px; font-weight:800; }
-.store-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr)); gap:14px; align-content:start; }
-/* Tarjeta: icono con identidad por app, elevación al pasar y entrada escalonada. */
-.store-card { position:relative; display:flex; gap:15px; overflow:hidden; padding:18px; border:1px solid #00000012; border-radius:20px; background:#fff; box-shadow:0 3px 10px #3022550d; transition:box-shadow var(--duration-fast) var(--ease-out); }
-.store-card:hover { box-shadow:0 12px 26px #3022551f; }
-/* Overlay de «instalada» con el check Lottie (Motion lo anima). */
-.store-success { position:absolute; inset:0; z-index:2; display:grid; place-items:center; background:#ffffffd9; }
-.store-success-lottie { display:block; width:74px; height:74px; }
-.store-card--featured { border-color:#5839be55; box-shadow:0 8px 22px #5839be26; }
-.store-app-icon { display:grid; place-items:center; flex:none; width:72px; height:72px; border-radius:20px; background:linear-gradient(150deg,#a98bf5,#7859d8); color:#fff; box-shadow:0 8px 16px #00000024; transition:transform var(--duration-fast) var(--ease-out); }
-.store-card:hover .store-app-icon { transform:scale(1.06) rotate(-2deg); }
-.store-app-icon--excalidraw { background:linear-gradient(150deg,#c4b5fd,#6d28d9); }
-.store-card-body { flex:1 1 auto; min-width:0; }
-.store-card-body h3 { margin:0; font-size:17px; color:#2c2540; }
-.store-card-body > p { margin:5px 0 0; color:var(--muted); font-size:12.5px; line-height:1.5; }
-.store-meta { display:flex; align-items:center; gap:8px; margin-top:10px !important; }
+.store-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(290px,100%),1fr)); gap:16px; align-content:start; }
+
+/* Tarjeta estándar: portada 16:9, icono y categoría, cuerpo y acciones. */
+.store-card { position:relative; display:flex; flex-direction:column; overflow:hidden; border:1px solid #00000012; border-radius:18px; background:#fff; box-shadow:0 3px 10px #3022550d; transition:transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out); }
+.store-card:hover { transform:translateY(-2px); box-shadow:0 14px 30px #3022551f; }
+
+.store-card-cover { position:relative; display:block; width:100%; aspect-ratio:16 / 9; padding:0; border:0; background:#ece8f6; cursor:pointer; overflow:hidden; }
+.store-card-cover img { display:block; width:100%; height:100%; object-fit:cover; transition:transform var(--duration-slow) var(--ease-out); }
+.store-card-cover:hover img { transform:scale(1.03); }
+.store-card-cover:focus-visible { outline:2px solid var(--violet); outline-offset:-2px; }
+
+.store-card-icon { position:absolute; left:12px; top:12px; display:grid; place-items:center; width:42px; height:42px; border-radius:12px; background:#ffffffe8; color:var(--violet); box-shadow:0 4px 12px #00000026; }
+.store-card-category { position:absolute; right:10px; top:12px; padding:3px 9px; border-radius:999px; background:#1c1433b8; color:#fff; font-size:10.5px; font-weight:750; backdrop-filter:blur(6px); }
+
+.store-card-body { flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:4px; padding:13px 16px 4px; }
+.store-card-body h3 { margin:0; font-size:16px; color:#2c2540; }
+.store-card-tagline { margin:0; color:var(--muted); font-size:12.5px; line-height:1.45; min-height:2.9em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.store-meta { display:flex; align-items:center; gap:8px; margin:4px 0 0 !important; }
 .store-chip { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:750; }
 .store-chip-dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex:none; }
 .store-chip--installed .store-chip-dot { animation:store-pulse 1.6s ease-in-out infinite; }
@@ -93,7 +94,15 @@
 .store-chip--pending { background:#eeecf5; color:#6b657d; }
 .store-chip--working { background:#e6eefc; color:#315a9f; }
 .store-chip--error { background:#fdecec; color:#8f1d2c; }
-.store-actions { display:flex; flex-direction:column; justify-content:center; gap:7px; flex:none; }
+
+.store-card-footer { display:flex; align-items:center; flex-wrap:wrap; gap:6px; padding:10px 16px 14px; }
+.store-card-footer .store-primary { flex:1 1 auto; }
+.store-details { flex:0 0 auto; }
+
+/* Overlay de «instalada» con el check Lottie (Motion lo anima). */
+.store-success { position:absolute; inset:0; z-index:2; display:grid; place-items:center; background:#ffffffd9; }
+.store-success-lottie { display:block; width:74px; height:74px; }
+
 .store-primary { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:9px 16px; border:0; border-radius:999px; background:var(--violet); color:#fff; font:inherit; font-size:12.5px; font-weight:700; cursor:pointer; white-space:nowrap; transition:background var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out); }
 .store-primary:hover { background:var(--violet-dark); transform:translateY(-1px); }
 .store-secondary { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:7px 12px; border:1px solid #00000018; border-radius:999px; background:#fff; color:#4a4458; font:inherit; font-size:12px; font-weight:650; cursor:pointer; white-space:nowrap; }
@@ -101,8 +110,26 @@
 .store-secondary:disabled { opacity:.55; cursor:wait; }
 /* Latido del punto verde de «Instalada» en las tarjetas de la tienda. */
 @keyframes store-pulse { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+
 .store-results-empty { margin:0; padding:22px; text-align:center; color:var(--muted); font-size:13.5px; }
-.store-note { grid-column:1 / -1; margin:4px 0 0; color:var(--muted); font-size:12.5px; line-height:1.5; }
+.store-note { display:flex; align-items:center; gap:7px; margin:4px 0 0; color:var(--muted); font-size:12.5px; line-height:1.5; }
+
+/* Ficha de detalle. */
+.store-detail { position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:24px; background:#1c1433b3; backdrop-filter:blur(4px); animation:fade-in var(--duration-fast) var(--ease-out); }
+.store-detail-card { position:relative; width:min(700px, 100%); max-height:calc(100vh - 40px); overflow:auto; border-radius:20px; background:#fff; box-shadow:0 30px 80px #00000066; }
+.store-detail-close { position:absolute; right:12px; top:12px; z-index:2; display:grid; place-items:center; width:34px; height:34px; padding:0; border:0; border-radius:50%; background:#ffffffe0; color:#2c2540; cursor:pointer; box-shadow:0 2px 8px #00000026; }
+.store-detail-close:hover { background:#fff; }
+.store-detail-cover { display:block; width:100%; aspect-ratio:16 / 7; object-fit:cover; background:#ece8f6; }
+.store-detail-body { display:flex; flex-direction:column; gap:12px; padding:16px 22px 22px; }
+.store-detail-head { display:flex; align-items:center; gap:12px; }
+.store-card-icon--static { position:static; width:48px; height:48px; }
+.store-detail-title { min-width:0; }
+.store-detail-title h3 { margin:0; font-size:20px; color:#2c2540; }
+.store-detail-title p { margin:3px 0 0; color:var(--muted); font-size:12px; font-weight:650; }
+.store-detail-description { margin:0; color:#4a4458; font-size:13px; line-height:1.6; }
+.store-detail-features { margin:0; padding-left:18px; color:#4a4458; font-size:12.5px; line-height:1.7; }
+.store-detail-note { margin:0; padding:9px 11px; border-radius:8px; background:#fff8e6; color:#7a5b00; font-size:12px; }
+.store-detail-actions { display:flex; flex-wrap:wrap; gap:8px; }
 .space-window { position:absolute; display:flex; flex-direction:column; max-width:calc(100% - 24px); overflow:hidden; border-radius:12px; background:#f5f4f8; box-shadow:0 24px 60px #00000055, 0 0 0 1px #00000022; }
 /* Ampliada: ocupa todo el escritorio, sin el margen de 24px que reserva la
    ventana flotante ni sombra o esquinas. */

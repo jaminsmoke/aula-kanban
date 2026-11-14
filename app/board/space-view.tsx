@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft } from "lucide-react";
-import { Suspense, lazy, useCallback, useEffect, useRef, useState, type ComponentType } from "react";
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
 import SpaceWindow from "./space-window";
 import type { StoreAction } from "./apps-store";
@@ -10,14 +10,7 @@ import { AulaStoreIcon } from "./aula-store-icon";
 // La tienda (con Motion/Lottie) solo se descarga al abrirla.
 const AppsStore = lazy(() => import("./apps-store"));
 import { visibleTools, type SpaceRole, type SpaceTool } from "./tools";
-
-// Cada herramienta del hub se registra aquí como componente lazy: su código
-// solo se descarga cuando su ventana se abre por primera vez.
-const toolApps: Record<string, ComponentType<{ projectId: string; role: SpaceRole; instanceUrl?: string }>> = {
-  excalidraw: lazy(() => import("./excalidraw-app")),
-  "edu-tools": lazy(() => import("./edu-tools-app")),
-  blockly: lazy(() => import("./blockly-app")),
-};
+import { toolApps, toolWindow } from "./apps/registry";
 
 type OpenWindow = {
   tool: SpaceTool;
@@ -82,11 +75,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
       if (existing) {
         return current.map((item) => (item.tool.id === tool.id ? { ...item, minimized: false, zIndex: zCounter.current } : item));
       }
-      const preferred = tool.id === "edu-tools"
-        ? { width: 1120, height: 760 }
-        : tool.id === "blockly"
-          ? { width: 1080, height: 720 }
-          : { width: 880, height: 560 };
+      const preferred = toolWindow(tool.id);
       const width = Math.min(preferred.width, window.innerWidth - 24);
       const height = Math.min(preferred.height, window.innerHeight - 72);
       const offset = Math.max(12, Math.min(150 + current.length * 30, window.innerWidth - width - 12));

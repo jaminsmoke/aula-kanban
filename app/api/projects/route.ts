@@ -1,7 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
-import { blocklyPrograms, boards, deletedStudents, deletedTeachers, projectMembers, projects, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
+import { appDocuments, blocklyPrograms, boards, deletedStudents, deletedTeachers, mermaidDiagrams, projectMembers, projects, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { isAdministrator, isOwner } from "../../../lib/server/project";
 import { cleanupOrphanUploads, deleteProjectUploads } from "../../../lib/server/storage";
@@ -63,9 +63,11 @@ export async function DELETE(request: Request) {
   const parsed = z.object({ id: z.string().min(1).max(80) }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Proyecto no válido." }, 400);
   const db = getDb();
-  const [, , , , , , , , , result] = await db.batch([
+  const [, , , , , , , , , , , result] = await db.batch([
     db.delete(boards).where(eq(boards.projectId, parsed.data.id)),
     db.delete(blocklyPrograms).where(eq(blocklyPrograms.projectId, parsed.data.id)),
+    db.delete(mermaidDiagrams).where(eq(mermaidDiagrams.projectId, parsed.data.id)),
+    db.delete(appDocuments).where(eq(appDocuments.projectId, parsed.data.id)),
     db.delete(taskAssignees).where(eq(taskAssignees.projectId, parsed.data.id)),
     db.delete(tasks).where(eq(tasks.projectId, parsed.data.id)),
     db.delete(projectMembers).where(eq(projectMembers.projectId, parsed.data.id)),

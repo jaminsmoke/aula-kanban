@@ -146,7 +146,7 @@ Para un cambio nuevo:
 
 La transición de la versión 20 conserva `administrators` y `administrator_profiles` como tablas históricas; la aplicación usa `administrators_unified`. No elimines ni vuelvas a migrar esas tablas por tu cuenta sin revisar el estado de cada instancia. `deleted_students` y `deleted_teachers` almacenan el historial de fichas eliminadas y su purga está en `lib/server/deleted-profiles.ts`.
 
-La migración `0023` añade `instance_apps`, que guarda qué aplicaciones nativas están instaladas en la instancia (no por proyecto); `space_apps` queda como tabla histórica sin uso. Las aplicaciones comienzan desinstaladas y solo el propietario o un administrador las gestionan desde Aula Store. La migración `0024` añade `blockly_programs`, que guarda el programa de Blockly por proyecto.
+La migración `0023` añade `instance_apps`, que guarda qué aplicaciones nativas están instaladas en la instancia (no por proyecto); `space_apps` queda como tabla histórica sin uso. Las aplicaciones comienzan desinstaladas y solo el propietario o un administrador las gestionan desde Aula Store. Las migraciones `0024` y `0025` añadieron `blockly_programs` y `mermaid_diagrams`, que quedan como tablas históricas. La `0026` añade `app_documents`, la persistencia común de las apps nativas: un estado JSON por proyecto y app. La API nueva lee las tablas históricas si aún no hay fila, así que no se pierde trabajo; `scripts/migrate-app-documents.sql` es la copia idempotente opcional, separada de las migraciones de esquema.
 
 ## Diagnostic Commands
 

@@ -1,7 +1,7 @@
 "use client";
 
-import Whiteboard from "./whiteboard";
-import type { SpaceRole } from "./tools";
+import Whiteboard from "../../whiteboard";
+import type { SpaceRole } from "../types";
 
 /**
  * Ventana «Excalidraw» de «Mi espacio»: la pizarra del espacio de trabajo
