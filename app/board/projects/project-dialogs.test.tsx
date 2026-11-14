@@ -17,4 +17,11 @@ describe("RemixDialog", () => {
     expect(screen.getByText(/solo copia el mensaje y abre ChatGPT/)).toBeTruthy();
     expect(screen.getByRole("link", { name: "Abrir ChatGPT" }).getAttribute("target")).toBe("_blank");
   });
+
+  it("ofrece el mensaje de clonado con git junto al de Sites", () => {
+    render(<RemixDialog onClose={vi.fn()} />);
+
+    expect(screen.getByText(/git clone https:\/\/github\.com\/jaminsmoke\/aula-kanban\.git/)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Copiar mensaje (git)" })).toBeTruthy();
+  });
 });

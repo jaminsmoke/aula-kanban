@@ -2,13 +2,25 @@
 
 Cada instancia mantiene sus propios proyectos y datos en D1. La propiedad de alojamiento del Site se gestiona en Sites, no desde la aplicación. Las invitaciones de proyecto se aceptan dentro de la aplicación y vinculan al identificador de ChatGPT de la cuenta invitada.
 
+## Clonar desde GitHub
+
+El código fuente está en un repositorio público con licencia MIT: [jaminsmoke/aula-kanban](https://github.com/jaminsmoke/aula-kanban). Si trabajas con Aula Kanban desde un agente o desde otra máquina, clona desde GitHub en lugar de reconstruir la fuente a partir del Site (la reconstrucción desde una instancia publicada sale desactualizada):
+
+```sh
+git clone https://github.com/jaminsmoke/aula-kanban.git aula-kanban
+cd aula-kanban
+npm ci
+```
+
+Eso basta para desarrollar en local (`npm run dev`) y para comprobar en CI (lint, `tsc --noEmit` y tests, en push y pull request a `main`). Para publicar tu propia copia como Site, decide el `project_id` de `.openai/hosting.json` con el flujo aprendido (el fichero versionado lleva un valor de ejemplo; el real para una publicación se edita en tu copia) y sigue la publicación con Sites y `npm run release:prepare -- --published-version X.Y.Z`.
+
 ## Propiedad y checklist de remix
 
 En un remix, el propietario es quien da la orden: el agente de ChatGPT publica la copia en la cuenta de la persona que le pide el cambio, y esa cuenta queda ligada a la instancia. La propiedad se inicializa con `OWNER_EMAIL`, que debe coincidir con el correo de la cuenta de ChatGPT del propietario. En el primer acceso de esa cuenta se guarda su identificador estable en `instance_owner`; a partir de ahí la propiedad se comprueba por identidad y el correo solo se actualiza como dato de contacto. Si la instancia aún no tiene propietario persistido, `OWNER_EMAIL` sigue actuando como bootstrap.
 
 **Checklist para un remix:**
 
-1. Pide la copia con el botón «Haz tu Site de Aula Kanban» y entrega el mensaje a tu agente de ChatGPT. El propietario es **quien da la orden**: el agente publica la copia en tu cuenta de ChatGPT.
+1. Pide la copia con el botón «Haz tu Site de Aula Kanban» y entrega el mensaje a tu agente de ChatGPT. El propietario es **quien da la orden**: el agente publica la copia en tu cuenta de ChatGPT. Alternativa sin Sites: clona directamente el repo público de GitHub (`git clone https://github.com/jaminsmoke/aula-kanban.git`) y publica esa revisión con el flujo que prefieras; el resto de la lista es igual.
 2. La copia no hereda base de datos, proyectos, fichas, administradores ni variables de entorno. No importes datos de otra instancia: una copia nueva debe empezar vacía.
 3. Antes de compartirla, comprueba que `OWNER_EMAIL` es el correo de esa misma cuenta de ChatGPT y vuelve a publicar.
 4. Entra con esa cuenta: el primer acceso guarda la identidad estable del propietario. Comprueba que aparecen las acciones de propietario.

@@ -76,10 +76,17 @@
 
 ### Fase 3: Creación del repositorio y primer push
 
-- [ ] Crear el repositorio público `jaminsmoke/aula-kanban` en la cuenta personal de GitHub, añadirlo como remote adicional `github` y, si se quiere, tags `v1.1.24` alineados con `package.json`.
-- [ ] Antes del primer push: `git log --format='%ae %ce' | sort -u` sin Gmail; búsqueda de secretos en árbol e historial (hoy no hay `API keys`, tokens, `.env` ni `.dev.vars` rastreados; `.env*` y `.dev.vars*` ya están en `.gitignore`); `.gitignore` intacto respecto a esos patrones.
-- [ ] Primer push a `github` y comprobar que la CI corre y pasa en verde en el repositorio.
-- **Criterios de aceptación:** repositorio público clonable en `jaminsmoke/aula-kanban`; historial reescrito sin Gmail; CI en verde en el primer push; tags (si se crean) alineados con `package.json`.
+- [x] Crear el repositorio público `jaminsmoke/aula-kanban` en la cuenta personal de GitHub, añadirlo como remote adicional `github` y, si se quiere, tags `v1.1.24` alineados con `package.json`.
+- [x] Antes del primer push: `git log --format='%ae %ce' | sort -u` sin Gmail; búsqueda de secretos en árbol e historial (hoy no hay `API keys`, tokens, `.env` ni `.dev.vars` rastreados; `.env*` y `.dev.vars*` ya están en `.gitignore`); `.gitignore` intacto respecto a esos patrones.
+- [x] Primer push a `github` y comprobar que la CI corre y pasa en verde en el repositorio.
+- [x] **Criterios de aceptación:** repositorio público clonable en `jaminsmoke/aula-kanban`; historial reescrito sin Gmail; CI en verde en el primer push; tags (si se crean) alineados con `package.json`.
+
+**Implementación (2026-11-14):**
+
+- **Commit previo de la Fase 2** como `1a91ee4 «Update Site source»` (LICENSE, CI, textos de fuentes, `hosting.json` con ejemplo, override local, `.gitignore` y `docs/roadmap.md`), con el árbol limpio salvo el bundle y el override.
+- **Comprobaciones previas.** `git log --all --format='%ae %ce' | sort -u` sin Gmail en `main` (el Gmail aparece solo en la rama de respaldo `respaldo-pre-github`, que no se publica); escaneo del historial y del árbol sin claves (`AKIA…`, `ghp_…`, `gho_…`, claves privadas, `sk-…`); `.env*` y `.dev.vars*` ignorados. El `project_id` real histórico ya estaba aceptado en el backlog como no secreto (el fichero versionado lleva el ejemplo desde esta fase).
+- **Creación y push.** `gh repo create jaminsmoke/aula-kanban --public --source=. --remote=github` (la cuenta `jaminsmoke` ya estaba autenticada con `repo`), push de `main` y del tag **`v1.1.24`**, alineado con `package.json`. El bundle de respaldo y `hosting.local.json` no se subieron (gitignored). La publicación de Sites no se tocó: el remote de Sites sigue trabajando desde el árbol local.
+- **CI en verde en el repositorio.** `gh run watch` completó con `✓` en `npm test` y todos los pasos; el run `43638843937` pasó en el primer push. Solo notas de deprecación de acciones (Node 20 → 24) sin efecto.
 
 ### Fase 4: Después del push
 

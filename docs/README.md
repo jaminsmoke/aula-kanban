@@ -94,8 +94,9 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap de Servidor MCP completado:** servidor MCP remoto en `/api/mcp` con 8 herramientas, tokens personales en Ajustes > Cuenta, límite básico por token y documentación de instalación en README y `/documentacion`. Resumen en [`changelog.md`](changelog.md).
 - **Backlog pendiente:** 3 entradas (OAuth 2.1 para clientes externos, GPT con Actions y recortes de rendimiento de chunks).
 - **Roadmap de hidratación en `view=ajustes` completado:** el estado inicial de vista/sección pasa de la página (servidor) al hook, y la primera pintura ya coincide. Resumen en [`changelog.md`](changelog.md).
-- **Roadmap activo:** Repositorio público en GitHub, licencia MIT y CI (4 fases: respaldo y reescritura de autores, licencia/Excalidraw/CI, publicación con comprobaciones, documentación tras el push). Extraído del backlog el 2026-11-14.
-- **Próximo paso:** ejecutar la Fase 1 del roadmap activo (respaldo y reescritura de autores).
+- **Repositorio público en GitHub:** `jaminsmoke/aula-kanban`, con licencia MIT en la raíz, textos de licencia de las fuentes de Excalidraw y CI en verde (lint, `tsc --noEmit` y tests). El `project_id` versionado es un ejemplo; el real vive en `.openai/hosting.local.json` (gitignored) y la propia build lo usa al publicar.
+- **Roadmap activo:** Repositorio público en GitHub, licencia MIT y CI (Fase 4: instrucciones de clonado en README y mensaje de remix). Extraído del backlog el 2026-11-14.
+- **Próximo paso:** ejecutar la Fase 4 del roadmap activo (instrucciones de clonado y segundo push).
 
 ## Documentación relacionada
 
