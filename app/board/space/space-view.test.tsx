@@ -15,7 +15,14 @@ describe("Mi espacio", () => {
   it("oculta las herramientas no instaladas", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ apps: [{ id: "excalidraw", status: "not_installed", url: null }] })));
     render(<SpaceView role="owner" projectId="default" onExit={() => {}} />);
-    await screen.findByText(/Todavía no hay herramientas en Mi espacio/);
+    await screen.findByText(/Todavía no hay herramientas instaladas/);
     expect(screen.queryByRole("button", { name: /Excalidraw/ })).toBeNull();
+  });
+
+  it("muestra un error de conexión sin afirmar que no hay aplicaciones instaladas", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("sin conexión")));
+    render(<SpaceView role="owner" projectId="default" onExit={() => {}} />);
+    expect((await screen.findByRole("alert")).textContent).toContain("No se pudieron consultar las aplicaciones");
+    expect(screen.queryByText(/Todavía no hay herramientas instaladas/)).toBeNull();
   });
 });

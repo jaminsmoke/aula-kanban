@@ -6,6 +6,14 @@
 
 ---
 
+## 2026-11-14 — Fondo de Mi espacio y carga de vistas
+
+**Versión:** 1.1.22
+
+- Corregido el color del degradado de Mi espacio y añadido un fondo opaco de respaldo para evitar que se transparente la cabecera.
+- Las vistas de alumnos y profesores se cargan al abrirlas; Mi espacio y Documentación ya usaban carga diferida.
+- El escritorio vacío indica cómo instalar aplicaciones desde Aula Store y distingue la ausencia de apps de un error al consultar su estado.
+
 ## 2026-11-14 — Limpieza de tablas históricas de administración y aplicaciones
 
 **Versión:** 1.1.21

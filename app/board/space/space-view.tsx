@@ -7,7 +7,7 @@ import SpaceWindow from "./space-window";
 import type { StoreAction } from "./store/apps-store";
 import { AulaStoreIcon } from "./store/aula-store-icon";
 
-// La tienda (con Motion/Lottie) solo se descarga al abrirla.
+// La tienda solo se descarga al abrirla.
 const AppsStore = lazy(() => import("./store/apps-store"));
 import { visibleTools, type SpaceRole, type SpaceTool } from "./tools";
 import { toolApps, toolWindow } from "../apps/registry";
@@ -133,8 +133,8 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
         {managerError && <p role="alert" className="space-empty">{managerError}</p>}
         {managerConfigured === null ? (
           <p className="space-empty">Cargando aplicaciones…</p>
-        ) : desktopTools.length === 0 ? (
-          <p className="space-empty">Todavía no hay herramientas en Mi espacio. Se irán añadiendo aquí.</p>
+        ) : !managerError && desktopTools.length === 0 ? (
+          <p className="space-empty">Todavía no hay herramientas instaladas. Abre Aula Store para añadirlas.</p>
         ) : null}
         <div className="space-icons">
           {desktopTools.map((tool) => {

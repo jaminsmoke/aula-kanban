@@ -2,11 +2,11 @@
 
 import { FolderKanban, Plus, X } from "lucide-react";
 import { Suspense, lazy, useState } from "react";
-import TeachersView from "./board/people/teachers/teachers-view";
 import BoardHeader, { type BoardView } from "./board/layout/header";
 import KanbanView from "./board/tasks/kanban-view";
-import StudentsView from "./board/people/students-view";
-// «Mi espacio» (con Motion/Lottie) y la documentación solo se descargan al abrirlos.
+// Las vistas secundarias solo se descargan al abrirlas.
+const TeachersView = lazy(() => import("./board/people/teachers/teachers-view"));
+const StudentsView = lazy(() => import("./board/people/students-view"));
 const SpaceView = lazy(() => import("./board/space/space-view"));
 const DocumentationView = lazy(() => import("./board/docs/docs-view"));
 import TaskDialog from "./board/tasks/task-dialog";
@@ -112,8 +112,11 @@ export default function Board({ user }: { user: { displayName: string; email: st
             <SpaceView role={activeProject.role} projectId={projectState.projectId} onExit={() => setView("kanban")} />
           </Suspense>
         ) : view === "profesores" ? (
+          <Suspense fallback={<div className="access-loading" role="status">Cargando profesores…</div>}>
           <TeachersView key={projectState.projectId} projectId={projectState.projectId} isAdmin={projectState.owner || projectState.admin} ownTeacherId={activeProject.teacherId} tasks={data.tasks} students={data.students} openTask={(task) => board.openEditor(task.status, task)} />
+          </Suspense>
         ) : view === "alumnos" ? (
+          <Suspense fallback={<div className="access-loading" role="status">Cargando alumnos…</div>}>
           <StudentsView
             students={data.students}
             tasks={data.tasks}
@@ -134,6 +137,7 @@ export default function Board({ user }: { user: { displayName: string; email: st
             onDelete={people.openRemoveStudent}
             onOpenTask={(task) => board.openEditor(task.status, task)}
           />
+          </Suspense>
         ) : (
           <KanbanView
             tasks={data.tasks}
