@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getChatGPTUser } from "../../../lib/server/auth";
 import { getDb } from "../../../db";
 import { instanceApps } from "../../../db/schema";
-import { isAdministrator, isOwner, validProject } from "../../../lib/server/project";
+import { isAdministrator, isOwner, projectFailureResponse, resolveProject } from "../../../lib/server/project";
 import { NATIVE_APP_IDS } from "../../../lib/native-apps";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
@@ -27,8 +27,8 @@ async function nativeApps() {
  * @returns Lista de aplicaciones de la instancia.
  */
 export async function GET(request: Request) {
-  const project = await validProject(request);
-  if (!project) return json({ message: "No tienes acceso al proyecto." }, 403);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
   try {
     return json({ apps: await nativeApps() });
   } catch {
@@ -46,11 +46,12 @@ export async function POST(request: Request) {
   if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
   if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const user = await getChatGPTUser();
-  if (!user || !(isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden gestionar aplicaciones." }, 403);
+  if (!user) return projectFailureResponse("unauthenticated");
+  if (!(await isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden gestionar aplicaciones." }, 403);
   const parsed = z.object({ id: appId, action: z.enum(["install", "uninstall"]) }).strict().safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Aplicación o acción no válida." }, 400);
-  const project = await validProject(request);
-  if (!project) return json({ message: "No tienes acceso al proyecto." }, 403);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
   const installed = parsed.data.action === "install" ? 1 : 0;
   const now = Date.now();
   const values = { id: crypto.randomUUID(), appId: parsed.data.id, installed, version: null, installedByUserId: user.userId, updatedAt: now };

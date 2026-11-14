@@ -3,7 +3,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, teachers } from "../../../db/schema";
-import { validProject } from "../../../lib/server/project";
+import { projectFailureResponse, resolveProject } from "../../../lib/server/project";
 import { updateProfile } from "../../../lib/server/profile-update";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
@@ -18,8 +18,9 @@ const reference = z.object({ id: z.string().uuid(), revision: z.number().int().p
  * @returns Respuesta JSON con las fichas sin el token de mutación.
  */
 export async function GET(request: Request) {
-  const project = await validProject(request);
-  if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
+  const project = resolved.project;
   const db = getDb();
   const list = await db.select().from(teachers).where(eq(teachers.projectId, project.id)).orderBy(asc(teachers.name), asc(teachers.id));
   const members = await db.select().from(projectMembers).where(eq(projectMembers.projectId, project.id));
@@ -38,8 +39,9 @@ export async function GET(request: Request) {
 async function mutate(request: Request) {
   if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
   if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
-  const project = await validProject(request);
-  if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
+  const project = resolved.project;
   if (project.access.role === "student" || project.access.role === "guest") return json({ message: "No tienes permiso para gestionar fichas de profesores." }, 403);
   const body = await request.json().catch(() => null);
   if (request.method === "POST") {

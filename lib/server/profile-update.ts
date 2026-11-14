@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
-import type { validProject } from "./project";
+import type { ProjectWithAccess } from "./project";
 
-type Project = NonNullable<Awaited<ReturnType<typeof validProject>>>;
+type Project = ProjectWithAccess;
 type ProfileInput = { name: string; displayName: string; role: string; activities: string; aiHelp: string };
 
 // A unique mutation token makes the account change conditional on this exact optimistic update.

@@ -25,13 +25,13 @@ export default function CalculatorPanel() {
         <h3 className="edu-card-title">Calculadora</h3>
 
         <div className="calc">
-          <div className="calc-screen" role="status" aria-live="polite">
+          <div className="calc-screen" role="status" aria-live="polite" aria-busy={calc.busy}>
             <div className="calc-screen-head">
               {calc.memory !== 0 ? <span className="calc-memory" title="Memoria">M {formatNumber(calc.memory)}</span> : null}
               <button type="button" className="calc-back" aria-label="Borrar último" onClick={calc.backspace}>⌫</button>
             </div>
             <div className="calc-expression">{pretty(calc.expression) || "\u00a0"}</div>
-            <div className={`calc-value${calc.error ? " is-error" : ""}`}>{calc.shown}</div>
+            <div className={`calc-value${calc.error ? " is-error" : ""}${calc.busy ? " is-loading" : ""}`}>{calc.shown}</div>
             {calc.exact ? <div className="calc-exact">Exacto: {calc.exact.replace(/sqrt\(/g, "√(")}</div> : null}
           </div>
 

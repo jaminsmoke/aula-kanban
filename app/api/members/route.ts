@@ -2,7 +2,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, students, teachers } from "../../../db/schema";
-import { validProject } from "../../../lib/server/project";
+import { projectFailureResponse, resolveProject } from "../../../lib/server/project";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
@@ -14,8 +14,10 @@ const form = z.object({ email: z.string().trim().email().max(254).transform(valu
  * @returns Respuesta JSON con los miembros sin exponer `userId`.
  */
 export async function GET(request: Request) {
-  const project = await validProject(request);
-  if (!project || project.access.role === "student" || project.access.role === "guest") return json({ message: "No tienes permiso para gestionar miembros." }, 403);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
+  const project = resolved.project;
+  if (project.access.role === "student" || project.access.role === "guest") return json({ message: "No tienes permiso para gestionar miembros." }, 403);
   const rows = await getDb().select().from(projectMembers).where(eq(projectMembers.projectId, project.id)).orderBy(asc(projectMembers.email));
   return json(rows.filter(row => project.access.role !== "teacher" || row.role === "student" || row.userId === project.access.user.userId).map(({ userId, ...row }) => row));
 }
@@ -27,8 +29,9 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
   if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
-  const project = await validProject(request);
-  if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
+  const project = resolved.project;
   const parsed = form.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Revisa el correo y el rol." }, 400);
   const { email, role } = parsed.data;
@@ -63,8 +66,9 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
   if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
-  const project = await validProject(request);
-  if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
+  const project = resolved.project;
   const parsed = z.object({ id: z.string().uuid() }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Miembro no válido." }, 400);
   const db = getDb(); const [member] = await db.select().from(projectMembers).where(and(eq(projectMembers.id, parsed.data.id), eq(projectMembers.projectId, project.id)));

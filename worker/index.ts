@@ -4,11 +4,20 @@ import handler from "vinext/server/fetch-handler";
 import { administrators, projectMembers, projects, tasks } from "../db/schema";
 import { runWithConnectorBinding } from "../lib/connector-context";
 import { BoardRoom } from "../lib/server/board-room";
+import { ensureInstanceOwner, isInstanceOwner } from "../lib/server/owner";
 import type { ConnectorBinding } from "../lib/connector-contract.mjs";
 
 export { BoardRoom };
 
-/** Comprueba la cuenta de la petición y la delega a la sala de su pizarra. */
+/**
+ * Comprueba la cuenta de la petición y la delega a la sala de su pizarra.
+ * Contrato HTTP del upgrade: 401 sin sesión, 400 parámetros inválidos, 404
+ * proyecto, dueño o acceso no disponible y 503 sin bindings. El 404 de acceso
+ * evita revelar la existencia de pizarras a cuentas no autorizadas.
+ * @param request - Petición de upgrade del socket.
+ * @param env - Entorno con los bindings de salas y base de datos.
+ * @returns La respuesta del Durable Object o el error HTTP del contrato.
+ */
 async function boardSocket(request: Request, env: Cloudflare.Env) {
   const userId = request.headers.get("oai-authenticated-user-id");
   const email = request.headers.get("oai-authenticated-user-email") || "";
@@ -23,9 +32,8 @@ async function boardSocket(request: Request, env: Cloudflare.Env) {
   const db = drizzle(env.DB);
   const [project] = await db.select({ id: projects.id }).from(projects).where(eq(projects.id, projectId));
   if (!project) return new Response(null, { status: 404 });
-  const ownerEmail = env.OWNER_EMAIL || "";
-  const isOwner = Boolean(ownerEmail) && email.trim().toLowerCase() === ownerEmail.trim().toLowerCase();
-  let allowed = isOwner;
+  const owner = await ensureInstanceOwner(env.DB, { userId, email }, env.OWNER_EMAIL);
+  let allowed = isInstanceOwner(owner, { userId, email });
   if (!allowed) {
     const [admin] = await db.select({ id: administrators.id }).from(administrators).where(eq(administrators.userId, userId));
     allowed = Boolean(admin);

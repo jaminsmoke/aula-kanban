@@ -2,9 +2,8 @@ import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { tasks } from "../../../db/schema";
-import { getChatGPTUser } from "../../../lib/server/auth";
 import { priorities, statuses } from "../../../lib/domain/task";
-import { validProject } from "../../../lib/server/project";
+import { projectFailureResponse, resolveProject } from "../../../lib/server/project";
 import { purgeDeletedProfiles } from "../../../lib/server/deleted-profiles";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 import { createTaskPermissions, taskAuthGuard, unassigned, validateRefs } from "../../../lib/server/tasks/permissions";
@@ -29,8 +28,10 @@ async function handle(request: Request) {
     if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
     if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   }
-  const user = await getChatGPTUser(); if (!user) return json({ message: "Inicia sesión para acceder al tablero." }, 401);
-  const project = await validProject(request); if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
+  const project = resolved.project;
+  const user = project.access.user;
   const db = getDb();
   if (request.method === "GET") {
     await purgeDeletedProfiles(project.id);

@@ -11,6 +11,14 @@ export const transitionState = sqliteTable("transition_state", {
   status: text("status").notNull(),
 });
 
+// Una sola fila con id "owner" guarda la identidad estable del propietario.
+export const instanceOwner = sqliteTable("instance_owner", {
+  id: text("id").primaryKey().notNull(),
+  userId: text("user_id").notNull(),
+  email: text("email").notNull().default(""),
+  claimedAt: integer("claimed_at").notNull(),
+});
+
 export const legacyAdministrators = sqliteTable("administrators", {
   id: text("id").primaryKey().notNull(),
   email: text("email").notNull(),

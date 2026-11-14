@@ -1,5 +1,5 @@
 import { getChatGPTUser } from "../../../../lib/server/auth";
-import { validProject } from "../../../../lib/server/project";
+import { projectFailureResponse, resolveProject } from "../../../../lib/server/project";
 import { readUpload } from "../../../../lib/server/storage";
 import { json } from "../../../../lib/server/http";
 
@@ -15,12 +15,12 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
   const user = await getChatGPTUser();
-  if (!user) return json({ message: "Inicia sesión para acceder al tablero." }, 401);
+  if (!user) return projectFailureResponse("unauthenticated");
   const found = await readUpload(id);
   if (!found) return json({ message: "Archivo no encontrado." }, 404);
   const projectRequest = new Request(`http://local/?project=${encodeURIComponent(found.row.projectId)}`);
-  const project = await validProject(projectRequest);
-  if (!project) return json({ message: "Archivo no encontrado." }, 404);
+  const resolved = await resolveProject(projectRequest);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
   return new Response(found.object.body, {
     headers: {
       "Content-Type": found.row.mimeType,

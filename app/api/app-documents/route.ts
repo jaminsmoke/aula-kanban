@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { getChatGPTUser } from "../../../lib/server/auth";
-import { validProject } from "../../../lib/server/project";
+import { projectFailureResponse, resolveProject } from "../../../lib/server/project";
 import { boundedJson } from "../../../lib/server/bounded-json";
 import { NATIVE_APP_IDS } from "../../../lib/native-apps";
 import { readAppDocument, saveAppDocument } from "../../../lib/server/app-documents";
@@ -26,8 +25,9 @@ function appFrom(request: Request): string | null {
  * @returns El estado guardado o `null` si la app aún no tiene documento.
  */
 export async function GET(request: Request) {
-  const project = await validProject(request);
-  if (!project) return json({ message: "No tienes acceso al proyecto." }, 403);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
+  const project = resolved.project;
   const appId = appFrom(request);
   if (!appId) return json({ message: "Aplicación no válida." }, 400);
   try {
@@ -47,9 +47,9 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
   if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
-  const user = await getChatGPTUser();
-  const project = await validProject(request);
-  if (!project) return json({ message: "No tienes acceso al proyecto." }, 403);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
+  const project = resolved.project;
   if (project.access.role === "guest") return json({ message: "Las cuentas invitadas solo pueden consultar el proyecto." }, 403);
   const appId = appFrom(request);
   if (!appId) return json({ message: "Aplicación no válida." }, 400);
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
       projectId: project.id,
       appId,
       state: serialized,
-      updatedByUserId: user?.userId ?? null,
+      updatedByUserId: project.access.user.userId,
     });
     return json({ accepted: true, updatedAt });
   } catch {

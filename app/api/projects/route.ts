@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getDb } from "../../../db";
 import { appDocuments, blocklyPrograms, boards, deletedStudents, deletedTeachers, mermaidDiagrams, projectMembers, projects, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
 import { getChatGPTUser } from "../../../lib/server/auth";
-import { isAdministrator, isOwner } from "../../../lib/server/project";
+import { isAdministrator, isOwner, projectFailureResponse } from "../../../lib/server/project";
 import { cleanupOrphanUploads, deleteProjectUploads } from "../../../lib/server/storage";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
@@ -15,8 +15,8 @@ export const dynamic = "force-dynamic";
  */
 export async function GET() {
   const user = await getChatGPTUser();
-  if (!user) return json({ message: "Inicia sesión para acceder a los proyectos." }, 401);
-  const owner = isOwner(user);
+  if (!user) return projectFailureResponse("unauthenticated");
+  const owner = await isOwner(user);
   await getDb().update(userIdentities).set({ displayName: user.displayName }).where(eq(userIdentities.id, user.userId));
   const admin = !owner && await isAdministrator(user);
   if (owner || admin) {
@@ -40,7 +40,8 @@ export async function POST(request: Request) {
   if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
   if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const user = await getChatGPTUser();
-  if (!user || !(isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden crear proyectos." }, 403);
+  if (!user) return projectFailureResponse("unauthenticated");
+  if (!(await isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden crear proyectos." }, 403);
   const parsed = z.object({ id: z.string().uuid(), name: z.string().trim().min(1).max(80) }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Escribe un nombre de hasta 80 caracteres." }, 400);
   const [created] = await getDb().insert(projects).values({ ...parsed.data, createdAt: Date.now() }).onConflictDoNothing().returning();
@@ -59,7 +60,8 @@ export async function DELETE(request: Request) {
   if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
   if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const user = await getChatGPTUser();
-  if (!user || !(isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden eliminar proyectos." }, 403);
+  if (!user) return projectFailureResponse("unauthenticated");
+  if (!(await isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden eliminar proyectos." }, 403);
   const parsed = z.object({ id: z.string().min(1).max(80) }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Proyecto no válido." }, 400);
   const db = getDb();

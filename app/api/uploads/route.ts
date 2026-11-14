@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { getChatGPTUser } from "../../../lib/server/auth";
-import { validProject } from "../../../lib/server/project";
+import { projectFailureResponse, resolveProject } from "../../../lib/server/project";
 import { StorageUnavailableError, storeUpload, uploadPurposes, validateUpload } from "../../../lib/server/storage";
 import { isSameOrigin, json } from "../../../lib/server/http";
 
@@ -14,10 +13,10 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
-  const user = await getChatGPTUser();
-  if (!user) return json({ message: "Inicia sesión para acceder al tablero." }, 401);
-  const project = await validProject(request);
-  if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
+  const project = resolved.project;
+  const user = project.access.user;
   if (project.access.role === "guest") return json({ message: "Las cuentas invitadas solo pueden consultar el proyecto." }, 403);
   const form = await request.formData().catch(() => null);
   const file = form?.get("file");

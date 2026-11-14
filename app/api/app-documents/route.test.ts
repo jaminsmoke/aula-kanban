@@ -2,12 +2,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   role: "guest",
-  allowed: true,
+  status: "ok" as "ok" | "unauthenticated" | "forbidden" | "not_found" | "invalid",
   save: vi.fn(),
   read: vi.fn(),
 }));
-vi.mock("../../../lib/server/project", () => ({ validProject: async () => mocks.allowed ? { id: "project1", access: { role: mocks.role } } : null }));
-vi.mock("../../../lib/server/auth", () => ({ getChatGPTUser: async () => ({ userId: "user1" }) }));
+vi.mock("../../../lib/server/project", () => ({
+  resolveProject: async () => mocks.status === "ok"
+    ? { status: "ok", project: { id: "project1", access: { user: { userId: "user1", displayName: "Alumno", email: "alumno@example.com", fullName: null }, role: mocks.role } } }
+    : { status: mocks.status },
+  projectFailureResponse: (status: string) => new Response(JSON.stringify({ message: status }), {
+    status: status === "unauthenticated" ? 401 : status === "forbidden" ? 403 : status === "not_found" ? 404 : 400,
+  }),
+}));
 vi.mock("../../../lib/server/app-documents", () => ({ saveAppDocument: mocks.save, readAppDocument: mocks.read }));
 
 import { GET, POST } from "./route";
@@ -20,7 +26,7 @@ const request = (body: string, url = endpoint) => new Request(url, {
 describe("documentos de apps", () => {
   beforeEach(() => {
     mocks.role = "guest";
-    mocks.allowed = true;
+    mocks.status = "ok";
     mocks.save.mockReset();
     mocks.read.mockReset();
     mocks.read.mockResolvedValue({ state: { code: "inicio" }, updatedAt: 5 });
@@ -31,6 +37,13 @@ describe("documentos de apps", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ state: { code: "inicio" }, updatedAt: 5 });
     expect(mocks.read).toHaveBeenCalledWith("project1", "blockly");
+  });
+
+  it("distingue sin sesión, sin acceso y proyecto inexistente", async () => {
+    for (const [status, code] of [["unauthenticated", 401], ["forbidden", 403], ["not_found", 404]] as const) {
+      mocks.status = status;
+      expect((await GET(new Request(endpoint))).status).toBe(code);
+    }
   });
 
   it("rechaza apps que no están en el catálogo", async () => {

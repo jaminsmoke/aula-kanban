@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   role: "admin" as "owner" | "admin" | "teacher" | "student" | "guest",
   studentSection: null as string | null,
+  status: "ok" as "ok" | "unauthenticated" | "forbidden" | "not_found" | "invalid",
   rows: [] as Array<Record<string, unknown>>,
   create: vi.fn(),
   update: vi.fn(),
@@ -11,9 +12,13 @@ const mocks = vi.hoisted(() => ({
   decorate: vi.fn(),
 }));
 
-vi.mock("../../../lib/server/auth", () => ({ getChatGPTUser: async () => ({ userId: "u1", displayName: "Admin" }) }));
 vi.mock("../../../lib/server/project", () => ({
-  validProject: async () => ({ id: "p1", access: { role: mocks.role, studentSection: mocks.studentSection } }),
+  resolveProject: async () => mocks.status === "ok"
+    ? { status: "ok", project: { id: "p1", access: { user: { userId: "u1", displayName: "Admin", email: "admin@example.com", fullName: null }, role: mocks.role, studentSection: mocks.studentSection, teacherId: null } } }
+    : { status: mocks.status },
+  projectFailureResponse: (status: string) => new Response(JSON.stringify({ message: status }), {
+    status: status === "unauthenticated" ? 401 : status === "forbidden" ? 403 : status === "not_found" ? 404 : 400,
+  }),
 }));
 vi.mock("../../../lib/server/deleted-profiles", () => ({ purgeDeletedProfiles: async () => {} }));
 vi.mock("../../../lib/server/tasks/queries", () => ({ projectData: mocks.projectData, decorate: mocks.decorate }));
@@ -26,7 +31,7 @@ vi.mock("../../../db", () => ({
   getDb: () => ({ select: () => ({ from: () => ({ where: async () => mocks.rows }) }) }),
 }));
 
-import { PATCH, POST } from "./route";
+import { GET, PATCH, POST } from "./route";
 
 const endpoint = "https://site.test/api/tasks?project=p1";
 const validTask = { title: "Tarea", description: "", assignee: "", dueDate: "", priority: "normal", status: "pending", assignees: [] };
@@ -54,6 +59,7 @@ describe("ruta de tareas", () => {
   beforeEach(() => {
     mocks.role = "admin";
     mocks.studentSection = null;
+    mocks.status = "ok";
     mocks.rows = [current];
     mocks.create.mockReset();
     mocks.update.mockReset();
@@ -62,6 +68,13 @@ describe("ruta de tareas", () => {
     mocks.decorate.mockReset().mockReturnValue({ id: "t1" });
     mocks.create.mockResolvedValue({ ok: true, value: current });
     mocks.update.mockResolvedValue({ ok: true, value: { task: current, data: project() } });
+  });
+
+  it("distingue sin sesión, sin acceso y proyecto inexistente", async () => {
+    for (const [status, code] of [["unauthenticated", 401], ["forbidden", 403], ["not_found", 404]] as const) {
+      mocks.status = status;
+      expect((await GET(new Request(endpoint))).status).toBe(code);
+    }
   });
 
   it("impide a un invitado crear tareas", async () => {

@@ -6,9 +6,76 @@
 
 ---
 
-## 2026-11-14 — Herramientas de aula carga por pestañas
+## 2026-11-14 — Calculadora con carga diferida y estado de cálculo
 
 **Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- La calculadora básica sigue abriendo sin descargar `compute-engine`.
+- El motor se precarga solo al entrar en **Científica** o al abrir **Ecuaciones**.
+- La pantalla muestra **«Calculando…»** y `aria-busy` durante el primer cálculo.
+- El editor de ecuaciones también expone `aria-busy` mientras calcula.
+- Decisión documentada: mantener `compute-engine`; `mathjs` ahorra peso pero no cubre LaTeX nativo ni la exactitud simbólica actual.
+- `mathlive` 0.29.1 no se fuerza ni se deduplica porque no entra en el bundle cliente.
+- Test añadido para comprobar que la calculadora básica no precarga y que Científica/Ecuaciones sí.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (37 archivos / 160 tests) y `npm run build` correctos.
+- Smoke de producción: el motor no aparece al abrir la calculadora básica; Científica y Ecuaciones lo cargan.
+- Smoke de red lenta: «Calculando…» y `aria-busy=true` visibles, resultado `5` y pantalla liberada después.
+- La versión publicada sigue siendo **1.1.18**; este hito queda pendiente de publicación.
+- Roadmap de `compute-engine` cerrado tras completar sus tres fases y reiniciado desde la plantilla.
+
+## 2026-11-14 — Propiedad de instancia por identidad de ChatGPT
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- Nueva tabla `instance_owner` y migración `0028`; guarda el `user_id` estable, el correo de contacto y la fecha de reclamación.
+- El primer acceso con el correo de `OWNER_EMAIL` reclama la propiedad; no hay reclamación automática de un visitante cualquiera.
+- `lib/server/owner.ts` centraliza lectura, reclamación y comprobación por identidad.
+- `project.ts`, `board-room.ts` y `worker/index.ts` usan el mismo helper.
+- Después de la reclamación, cambiar el correo no retira la propiedad ni permite transferirla con el correo anterior.
+- README y diálogo de compartir actualizados con el checklist de remix.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (36 archivos / 158 tests) y `npm run build` correctos.
+- Tests de instancia sin `OWNER_EMAIL`, primer arranque, cambio de correo y no transferencia a otra cuenta.
+- Migración `0028` aplicada en local; `instance_owner` contiene `local_seedy` / `seedy@sites.test`.
+- Smoke autenticado: rol `owner`, `/api/administrators` y `/api/members` 200, tablero y pizarra en vivo sin error.
+- Incluye la migración `0028`; debe aplicarse al publicar este hito.
+- La versión publicada sigue siendo **1.1.18**; este hito queda pendiente de publicación.
+- Roadmap de propiedad cerrado tras completar sus tres fases y reiniciado desde la plantilla.
+
+## 2026-11-14 — Respuestas sin sesión uniformes en la API
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- Nuevo `ProjectResolution`, `projectFailureResponse` y `resolveProject` con estados tipados.
+- Las 12 rutas API usan el contrato común: **401** sin sesión, **403** sin acceso, **404** para proyecto/recurso inexistente y **400** para proyecto inválido.
+- El mensaje sin sesión es común: «Inicia sesión para continuar.».
+- `validProject` se retiró; `profile-update` usa `ProjectWithAccess`.
+- Se mantienen el orden de origen, formato, autenticación y permisos en las mutaciones.
+- `files/[id]` devuelve 403 cuando falta acceso al proyecto y mantiene 404 para archivos inexistentes.
+- Documentado el contrato del socket de pizarra: 401 sin sesión, 400 parámetros inválidos, 404 proyecto/dueño/sin acceso, 503 sin bindings; 426 si no es WebSocket y cierre 1008 si se retira el acceso.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (34 archivos / 151 tests) y `npm run build` correctos.
+- Peticiones sin cookie: 401 uniforme en las 11 rutas GET y en `uploads` POST con origen válido.
+- Smoke autenticado: `/api/projects`, `/api/tasks`, `/api/space-apps` y `/api/boards` responden 200; tablero y pizarra en vivo cargan sin error.
+- La versión publicada sigue siendo **1.1.18**; este hito queda pendiente de publicación.
+- Roadmap de respuestas sin sesión cerrado tras completar sus tres fases y reiniciado desde la plantilla.
+
+## 2026-11-14 — Herramientas de aula carga por pestañas
+
+**Estado:** Publicada en 1.1.18
 
 ### Cambios
 
@@ -24,12 +91,12 @@
 - Chunk de `edu-tools`: **78,8 KB → 17,4 KB** sin comprimir. Cierre estático con framework: **460,0 → 400,4 KB** sin comprimir (**133,2 → 119,6 KB gzip**).
 - Chunks diferidos: tabla periódica 49,9 KB, ecuaciones 4,5 KB, lector 2,7 KB, regla 3,8 KB y transportador 3,6 KB.
 - Smoke: la calculadora abre sin tabla; Ciencias muestra 118 elementos y busca sodio; Medir carga regla y transportador; Lectura carga TTS; Ecuaciones carga el editor. Sin cambios de estado en la base.
-- La versión publicada sigue siendo **1.1.17**; este hito queda pendiente de publicación.
+- Publicada en la versión **1.1.18**.
 - Roadmap de carga por pestañas cerrado tras completar sus tres fases y reiniciado desde la plantilla.
 
 ## 2026-11-14 — Reintento de pizarra recupera la vista
 
-**Estado:** Completada · Pendiente de publicación
+**Estado:** Publicada en 1.1.18
 
 ### Cambios
 
@@ -42,12 +109,12 @@
 
 - `npm run lint`, `npx tsc --noEmit`, `npm test` (32 archivos / 137 tests) y `npm run build` correctos.
 - Smoke real: primer GET de pizarra forzado a 500, aviso y «Reintentar» visibles; segundo GET correcto, lienzo recuperado y aviso eliminado. Sin cambios en la base.
-- La versión publicada sigue siendo **1.1.17**; este hito queda pendiente de publicación.
+- Publicada en la versión **1.1.18**.
 - Roadmap del reintento cerrado tras completar su única fase y reiniciado desde la plantilla.
 
 ## 2026-11-14 — Componentes grandes divididos por responsabilidad
 
-**Estado:** Completada · Pendiente de publicación
+**Estado:** Publicada en 1.1.18
 
 ### Cambios
 
@@ -59,7 +126,7 @@
 - Blockly: toolbox, starter, worker aislado, panel de código y hook del workspace.
 - Whiteboard: modelo, hook de sincronización/presencia y lienzo de Excalidraw.
 - Tests de caracterización añadidos para Mermaid, Blockly y Whiteboard.
-- La versión publicada sigue siendo **1.1.17**; este hito queda pendiente de publicación.
+- Publicada en la versión **1.1.18**.
 
 ### Verificación
 
@@ -71,7 +138,7 @@
 
 ## 2026-11-14 — Tareas separadas en consultas, permisos y mutaciones
 
-**Estado:** Completada · Pendiente de publicación
+**Estado:** Publicada en 1.1.18
 
 ### Cambios
 

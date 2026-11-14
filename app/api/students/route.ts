@@ -3,8 +3,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, students } from "../../../db/schema";
-import { getChatGPTUser } from "../../../lib/server/auth";
-import { validProject } from "../../../lib/server/project";
+import { projectFailureResponse, resolveProject } from "../../../lib/server/project";
 import { updateProfile } from "../../../lib/server/profile-update";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
@@ -28,9 +27,9 @@ const fields = profile.merge(reference).extend({ accountEmail: email.optional() 
  * @returns Respuesta JSON con las fichas sin el token de mutación.
  */
 export async function GET(request: Request) {
-  if (!(await getChatGPTUser())) return json({ message: "Inicia sesión para acceder a las fichas." }, 401);
-  const project = await validProject(request);
-  if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
+  const project = resolved.project;
   const db = getDb();
   const current = await db.select().from(students).where(eq(students.projectId, project.id)).orderBy(asc(students.section));
   const members = await db.select().from(projectMembers).where(eq(projectMembers.projectId, project.id));
@@ -50,9 +49,9 @@ export async function GET(request: Request) {
 async function mutate(request: Request) {
   if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
   if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
-  if (!(await getChatGPTUser())) return json({ message: "Inicia sesión para editar las fichas." }, 401);
-  const project = await validProject(request);
-  if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
+  const project = resolved.project;
   const body = await request.json().catch(() => null);
   if (request.method === "POST") {
     if (project.access.role === "student" || project.access.role === "guest") return json({ message: "Solo el profesorado puede crear fichas." }, 403);

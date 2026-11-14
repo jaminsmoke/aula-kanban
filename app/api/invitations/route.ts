@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getDb } from "../../../db";
 import { administrators, projectMembers, projects } from "../../../db/schema";
 import { getChatGPTUser } from "../../../lib/server/auth";
+import { projectFailureResponse } from "../../../lib/server/project";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +13,7 @@ export const dynamic = "force-dynamic";
  * @returns Respuesta JSON con las invitaciones pendientes.
  */
 export async function GET() {
-  const user = await getChatGPTUser(); if (!user) return json({ message: "Inicia sesión." }, 401);
+  const user = await getChatGPTUser(); if (!user) return projectFailureResponse("unauthenticated");
   const db = getDb(), email = user.email.trim().toLowerCase();
   const [rows, adminInvitations] = await Promise.all([
     db.select({ id: projectMembers.id, projectId: projects.id, projectName: projects.name, role: projectMembers.role }).from(projectMembers).innerJoin(projects, eq(projects.id, projectMembers.projectId)).where(and(eq(projectMembers.email, email), eq(projectMembers.status, "pending"))),
@@ -28,7 +29,7 @@ export async function GET() {
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
   if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
-  const user = await getChatGPTUser(); if (!user) return json({ message: "Inicia sesión." }, 401);
+  const user = await getChatGPTUser(); if (!user) return projectFailureResponse("unauthenticated");
   const parsed = z.object({ id: z.string().uuid(), scope: z.enum(["project", "site"]).default("project") }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Invitación no válida." }, 400);
   try {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { evaluateLatex } from "./edu-evaluate";
+import { evaluateLatex, preloadEngine } from "./edu-evaluate";
 import { HISTORY_KEY, type HistoryEntry, type Key } from "./calculator-keys";
 
 /**
@@ -15,7 +15,7 @@ export function useCalculator() {
   const [exact, setExact] = useState<string | null>(null);
   const [resultValue, setResultValue] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [keypad, setKeypad] = useState<"basica" | "cientifica">("basica");
+  const [keypad, setKeypadState] = useState<"basica" | "cientifica">("basica");
   const [sciPage, setSciPage] = useState(0);
   const [showEquations, setShowEquations] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -32,6 +32,20 @@ export function useCalculator() {
   const [showHistory, setShowHistory] = useState(false);
   const justEvaluated = useRef(false);
   const lastAnswer = useRef("");
+
+  // El motor solo se adelanta en las vistas que lo necesitan; la calculadora
+  // básica sigue abriendo sin descargar compute-engine.
+  const setKeypad = useCallback((mode: "basica" | "cientifica") => {
+    setKeypadState(mode);
+    if (mode === "cientifica") preloadEngine();
+  }, []);
+
+  const toggleEquations = useCallback(() => {
+    setShowEquations((current) => {
+      if (!current) preloadEngine();
+      return !current;
+    });
+  }, []);
 
   const remember = useCallback((entry: HistoryEntry) => {
     setHistory((current) => {
@@ -180,10 +194,10 @@ export function useCalculator() {
     memory,
     history,
     showHistory,
-    shown: error ?? (busy ? "…" : result ?? "0"),
+    shown: error ?? (busy ? "Calculando…" : result ?? "0"),
     setKeypad,
     setSciPage,
-    toggleEquations: () => setShowEquations((current) => !current),
+    toggleEquations,
     toggleHistory: () => setShowHistory((current) => !current),
     clearMemory: () => setMemory(0),
     memorize,

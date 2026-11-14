@@ -99,11 +99,12 @@ export function ShareDialog({ url, projectName, onClose }: { url: string; projec
  */
 export function RemixDialog({ onClose }: { onClose: () => void }) {
   const [copied, setCopied] = useState(false);
-  const [prompt] = useState(() => `@Sites Crea un remix de Aula Kanban a partir de ${window.location.origin}. Quiero una copia propia, sin datos de usuarios, con su base de datos independiente. Ayúdame a configurar OWNER_EMAIL con mi cuenta de ChatGPT y a publicarla.`);
+  const [prompt] = useState(() => `@Sites Crea un remix de Aula Kanban a partir de ${window.location.origin}. Quiero una copia propia, sin datos de usuarios, con su base de datos independiente. Configura OWNER_EMAIL con mi correo de ChatGPT antes de publicar y ayúdame a verificar que puedo crear el primer proyecto.`);
   return (
     <Modal title="Haz tu Site de Aula Kanban" onClose={onClose}><div className="share-content">
       <p>Crea tu propia copia independiente con Sites. La copia empieza sin proyectos, tareas, fichas ni administradores de este Site.</p>
-      <p>Para solicitarla, copia el mensaje y pégalo en un chat de ChatGPT con Sites. Al configurarla, indica tu correo de ChatGPT como <strong>OWNER_EMAIL</strong> en las variables de entorno de tu nuevo Site y vuelve a publicarlo.</p>
+      <p>La copia no hereda variables de entorno. Antes de compartirla, configura <strong>OWNER_EMAIL</strong> con tu correo de ChatGPT, vuelve a publicar e inicia sesión con esa cuenta para guardar la identidad del propietario.</p>
+      <p>Comprueba que puedes crear un proyecto y gestionar administradores. Si no aparece el rol de propietario, revisa <strong>OWNER_EMAIL</strong> antes de compartir la copia.</p>
       <p>La copia y su configuración se completan en Sites; este botón no puede crearla ni configurar el propietario automáticamente.</p>
       <label>Mensaje para Sites<textarea className="remix-prompt" readOnly value={prompt} onFocus={(event) => event.currentTarget.select()} /></label>
       <div className="remix-controls"><button type="button" className="secondary" onClick={async () => { try { await navigator.clipboard.writeText(prompt); setCopied(true); } catch { setCopied(false); } }}>{copied ? "Mensaje copiado" : "Copiar mensaje"}</button><a className="primary" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Abrir ChatGPT</a></div>

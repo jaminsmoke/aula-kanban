@@ -8,17 +8,6 @@
 
 ---
 
-## 2026-11-14 — Evaluar el peso de `compute-engine`
-
-- Contexto: `@cortex-js/compute-engine` genera un chunk de 6,3 MB sin comprimir. Se carga al primer cálculo, no al abrir la app, pero puede ser muy lento en conexiones lentas.
-- Qué falta antes de retomarlo:
-  - [ ] Medir el tamaño gzip real y el tiempo de primera evaluación.
-  - [ ] Confirmar qué operaciones necesita el aula: aritmética, fracciones, variables o simbólico.
-  - [ ] Comparar con `mathjs` o un evaluador propio para el caso básico.
-  - [ ] Si se mantiene, añadir estado de carga y precargar solo al entrar en Científica o Ecuaciones.
-  - [ ] Revisar la versión duplicada que arrastra `mathlive` (`0.29.1` frente a `0.188.0`).
-- Notas técnicas: no cambiar el motor sin probar los resultados exactos actuales. Es la optimización de mayor impacto, pero también la de mayor riesgo matemático.
-
 ## 2026-11-14 — Limpieza de tablas históricas tras verificar producción
 
 - Contexto: `blockly_programs` y `mermaid_diagrams` siguen como respaldo de `app_documents`. La migración de esquema ya está publicada, pero la copia de datos es una operación aparte.

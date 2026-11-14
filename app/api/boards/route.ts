@@ -2,8 +2,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { boards, taskAssignees, tasks } from "../../../db/schema";
-import { getChatGPTUser } from "../../../lib/server/auth";
-import { validProject, type Access } from "../../../lib/server/project";
+import { projectFailureResponse, resolveProject, type Access } from "../../../lib/server/project";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
@@ -54,10 +53,9 @@ async function handle(request: Request) {
     if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
     if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   }
-  const user = await getChatGPTUser();
-  if (!user) return json({ message: "Inicia sesión para acceder al tablero." }, 401);
-  const project = await validProject(request);
-  if (!project) return json({ message: "No se encuentra el proyecto." }, 404);
+  const resolved = await resolveProject(request);
+  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
+  const project = resolved.project;
   const db = getDb();
   if (request.method === "GET") {
     const parsed = owner.safeParse(Object.fromEntries(new URL(request.url).searchParams));

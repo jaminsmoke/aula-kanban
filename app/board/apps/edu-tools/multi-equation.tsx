@@ -119,6 +119,7 @@ export default function MultiEquation() {
   return (
     <div
       className="multi-eq"
+      aria-busy={busy}
       onKeyDown={(event) => {
         if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
           event.preventDefault();

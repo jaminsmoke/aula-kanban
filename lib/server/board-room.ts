@@ -1,4 +1,5 @@
 import { DurableObject } from "cloudflare:workers";
+import { ensureInstanceOwner, isInstanceOwner } from "./owner";
 
 const MAX_MESSAGE_BYTES = 1_000_000;
 
@@ -109,8 +110,8 @@ export class BoardRoom extends DurableObject<Cloudflare.Env> {
       const task = await db.prepare("SELECT id FROM tasks WHERE id = ? AND project_id = ?").bind(session.ownerId, session.projectId).first();
       if (!task) return false;
     } else if ((session.ownerType !== "project" && session.ownerType !== "space") || session.ownerId !== session.projectId) return false;
-    const owner = this.env.OWNER_EMAIL?.trim().toLowerCase();
-    if (owner && session.email.trim().toLowerCase() === owner) return true;
+    const owner = await ensureInstanceOwner(db, { userId: session.userId, email: session.email }, this.env.OWNER_EMAIL);
+    if (isInstanceOwner(owner, session)) return true;
     const admin = await db.prepare("SELECT id FROM administrators_unified WHERE user_id = ?").bind(session.userId).first();
     if (admin) return true;
     const member = await db.prepare("SELECT role, student_section AS studentSection FROM project_members WHERE project_id = ? AND user_id = ? AND status = 'active'").bind(session.projectId, session.userId).first<{ role: string; studentSection: string | null }>();

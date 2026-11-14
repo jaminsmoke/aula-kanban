@@ -1,6 +1,21 @@
 # Aula Kanban
 
-Cada instancia mantiene sus propios proyectos y datos en D1. Para configurar una copia, añade `OWNER_EMAIL` en la configuración de variables de entorno de Sites con el correo de ChatGPT del propietario y vuelve a publicar para aplicar el cambio. La base de datos y las variables de entorno no se copian durante un remix. Una copia nueva comienza sin proyectos ni alumnos. El propietario y los administradores pueden crear o eliminar proyectos y administrar la lista de administradores. La propiedad de alojamiento del Site se gestiona en Sites, no desde la aplicación. Las invitaciones de proyecto se aceptan dentro de la aplicación y vinculan al identificador de ChatGPT de la cuenta invitada.
+Cada instancia mantiene sus propios proyectos y datos en D1. La propiedad de alojamiento del Site se gestiona en Sites, no desde la aplicación. Las invitaciones de proyecto se aceptan dentro de la aplicación y vinculan al identificador de ChatGPT de la cuenta invitada.
+
+## Propiedad y checklist de remix
+
+La propiedad se inicializa con `OWNER_EMAIL`, que debe coincidir con el correo de la cuenta de ChatGPT del propietario. En el primer acceso de esa cuenta se guarda su identificador estable en `instance_owner`; a partir de ahí la propiedad se comprueba por identidad y el correo solo se actualiza como dato de contacto. Si la instancia aún no tiene propietario persistido, `OWNER_EMAIL` sigue actuando como bootstrap.
+
+**Checklist para un remix:**
+
+1. Crea el remix en Sites. La base de datos, los proyectos, las fichas y las variables de entorno no se copian.
+2. Antes de compartir la copia, configura `OWNER_EMAIL` en el nuevo Site con el correo de ChatGPT del propietario y vuelve a publicar.
+3. Entra con esa cuenta: el primer acceso guarda la identidad estable del propietario. Comprueba que aparecen las acciones de propietario.
+4. Crea el primer proyecto y añade administradores si hacen falta.
+5. No importes datos de otra instancia; una copia nueva debe empezar vacía.
+6. Si la copia no tiene propietario, corrige `OWNER_EMAIL` y vuelve a publicar antes de compartirla.
+
+El propietario y los administradores pueden crear o eliminar proyectos y administrar la lista de administradores.
 
 ## Mi espacio y Aula Store
 
