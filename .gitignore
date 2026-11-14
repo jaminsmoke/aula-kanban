@@ -30,6 +30,10 @@ yarn-error.log*
 .env*
 .dev.vars*
 *.pem
+# Valor real de project_id para publicar el Site en local (el fichero
+# versionado lleva un valor de ejemplo para el repo público de GitHub).
+.openai/hosting.local.json
+respaldo-pre-github.bundle
 
 # Checkout-local tool state
 /.wrangler/

@@ -46,19 +46,33 @@
 
 ### Fase 1: Respaldo y reescritura de autores
 
-- [ ] Dejar la copia de seguridad deliberada antes de reescribir: rama `respaldo-pre-github` y/o `git bundle create respaldo-pre-github.bundle --all`, sin borrar remotes ni el flujo de publicación de Sites.
-- [ ] Commitear el trabajo acumulado pendiente en esta carpeta (index + resto del árbol) antes de la reescritura; comprobar en `git status` que no queda nada sin commitear.
-- [ ] Reescribir autor y committer de todo el historial sustituendo `jaminsmoke@gmail.com` por `<id>+jaminsmoke@users.noreply.github.com` (nombre `JaminSmoke`), con `git filter-repo --use-base --mailmap` o equivalente; comprobar con `git log --format='%ae %ce' | sort -u` que no queda Gmail.
-- [ ] Configurar `user.email` del repo local al `noreply` a partir de la reescritura y comprobar que la publicación en Sites sigue funcionando tras el cambio (verificar el flujo de publicación con la revisión reescrita).
-- **Criterios de aceptación:** copia de respaldo creada; `git log --format='%ae %ce' | sort -u` sin `jaminsmoke@gmail.com`; el `user.email` local es el `noreply`; la publicación en Sites sigue operativa.
+- [x] Dejar la copia de seguridad deliberada antes de reescribir: rama `respaldo-pre-github` y/o `git bundle create respaldo-pre-github.bundle --all`, sin borrar remotes ni el flujo de publicación de Sites.
+- [x] Commitear el trabajo acumulado pendiente en esta carpeta (index + resto del árbol) antes de la reescritura; comprobar en `git status` que no queda nada sin commitear.
+- [x] Reescribir autor y committer de todo el historial sustituendo `jaminsmoke@gmail.com` por `<id>+jaminsmoke@users.noreply.github.com` (nombre `JaminSmoke`), con `git filter-repo --use-base --mailmap` o equivalente; comprobar con `git log --format='%ae %ce' | sort -u` que no queda Gmail.
+- [x] Configurar `user.email` del repo local al `noreply` a partir de la reescritura y comprobar que la publicación en Sites sigue funcionando tras el cambio (verificar el flujo de publicación con la revisión reescrita).
+- [x] **Criterios de aceptación:** copia de respaldo creada; `git log --format='%ae %ce' | sort -u` sin `jaminsmoke@gmail.com`; el `user.email` local es el `noreply`; la publicación en Sites sigue operativa.
+
+**Implementación (2026-11-14):**
+
+- **Commit previo.** Todo el trabajo acumulado (66 archivos: URLs por vista, portada pública, Calendario, servidor MCP en 3 fases, hidratación, migraciones 0031/0032, docs) se commiteó como `4a4656e «Update Site source»`, con el estilo del historial; `git status` quedó limpio salvo el bundle de respaldo.
+- **Respaldo.** Rama `respaldo-pre-github` = `4a4656e` y `respaldo-pre-github.bundle` (`--all`, ~1,9 MB) en la raíz, sin trackear; ambos quedan en esta carpeta y no se publican. No había remotes, así que ninguno se borró; el flujo de Sites (árbol + `.openai/hosting.json`) no se tocó.
+- **Reescritura.** Id de la cuenta `jaminsmoke` consultado con `gh api /users/jaminsmoke` (`80690017`). `git filter-repo` no estaba instalado y el script de pip quedó fuera del PATH, así que se ejecutó por módulo (`python -m pip install git-filter-repo` + `python -m git_filter_repo`), con `mailmap` (`JaminSmoke <80690017+jaminsmoke@users.noreply.github.com>` ← `jaminsmoke@gmail.com`) y `--refs refs/heads/main`, para no reescribir la rama de respaldo. Los 65 commits de `main` quedaron con autor/committer `JaminSmoke <80690017+jaminsmoke@users.noreply.github.com>`; `git log --format='%ae %ce' | sort -u` ya no muestra el Gmail y `respaldo-pre-github` conserva el historial original.
+- **Configuración y comprobación.** `user.email` local = `80690017+jaminsmoke@users.noreply.github.com` (nombre: `JaminSmoke`); `.openai/hosting.json` intacto; `npm run build` en verde tras la reescritura, lo que confirma que el árbol y el flujo de publicación de Sites siguen operativos (la reescritura no cambia ficheros, solo el historial).
 
 ### Fase 2: Licencia, textos de Excalidraw y CI
 
-- [ ] Comprobar cómo Sites lee el `project_id` de `.openai/hosting.json` antes de tocarlo; poner un valor de ejemplo en la versión versionada y conservar el real para publicar el Site en local (override sin trackear o dejar el real solo en Sites), verificando que publicar sigue funcionando tras el cambio.
-- [ ] Añadir `LICENSE` con MIT, © 2026 Jorge Martín Delgado (JaminSmoke).
-- [ ] Copiar en `public/excalidraw/fonts` los textos oficiales de licencia de las ocho familias (Assistant, Cascadia, Comic Shanns, Excalifont, Liberation, Lilita, Nunito y Virgil) descargados de las fuentes oficiales, conservando los avisos (OFL o equivalentes permisivos compatibles con un repo MIT si no se venden las fuentes por separado; Xiaolai no entra).
-- [ ] Añadir `.github/workflows/ci.yml` en push y pull request a `main`: `npm ci`, lint, `tsc --noEmit` y `vitest`; comprobar que pasa en local con los mismos comandos y que no publica secretos ni usa `.env` / `.dev.vars`.
-- **Criterios de aceptación:** `LICENSE` presente; los ocho textos de licencia copiados y verificados frente al oficial; el CI pasa en local; `.openai/hosting.json` con valor de ejemplo sin romper la publicación local.
+- [x] Comprobar cómo Sites lee el `project_id` de `.openai/hosting.json` antes de tocarlo; poner un valor de ejemplo en la versión versionada y conservar el real para publicar el Site en local (override sin trackear o dejar el real solo en Sites), verificando que publicar sigue funcionando tras el cambio.
+- [x] Añadir `LICENSE` con MIT, © 2026 Jorge Martín Delgado (JaminSmoke).
+- [x] Copiar en `public/excalidraw/fonts` los textos oficiales de licencia de las ocho familias (Assistant, Cascadia, Comic Shanns, Excalifont, Liberation, Lilita, Nunito y Virgil) descargados de las fuentes oficiales, conservando los avisos (OFL o equivalentes permisivos compatibles con un repo MIT si no se venden las fuentes por separado; Xiaolai no entra).
+- [x] Añadir `.github/workflows/ci.yml` en push y pull request a `main`: `npm ci`, lint, `tsc --noEmit` y `vitest`; comprobar que pasa en local con los mismos comandos y que no publica secretos ni usa `.env` / `.dev.vars`.
+- [x] **Criterios de aceptación:** `LICENSE` presente; los ocho textos de licencia copiados y verificados frente al oficial; el CI pasa en local; `.openai/hosting.json` con valor de ejemplo sin romper la publicación local.
+
+**Implementación (2026-11-14):**
+
+- **`hosting.json` protegido.** La pregunta «cómo Sites lee el `project_id`» se resolvió en el árbol: ningún script local lo lee (solo los bindings `d1`/`r2` en `vite.config.ts`); lo lee el flujo de publicación porque el plugin vendored (`scripts/vite/sites-vite-plugin.ts`, `closeBundle`) copia el fichero del árbol de trabajo a `dist/.openai/hosting.json` en cada build. Por eso el fichero versionado lleva el ejemplo `appgprj_00000000000000000000000000000000` y el real vive en `.openai/hosting.local.json`, **gitignored** (añadido a `.gitignore` junto al bundle de respaldo). Desviación mínima y comentada en el vendored: `closeBundle` prefiere copiar `hosting.local.json` cuando existe. Verificado: `npm run build` con el override deja el `project_id` real en `dist/` (lo que se publica) y sin él deja el ejemplo, ambos builds en verde.
+- **`LICENSE`.** MIT con «Copyright (c) 2026 Jorge Martín Delgado (JaminSmoke)» en la raíz (compatible con las dependencias, todas MIT).
+- **Textos de las fuentes.** Un `LICENSE` por familia en `public/excalidraw/fonts/<Familia>/` (y `LICENSE.md` para Virgil, como su repo oficial): Assistant, Lilita y Nunito desde `google/fonts` (OFL); Virgil desde `excalidraw/virgil` (OFL); Cascadia desde `microsoft/cascadia-code` (OFL); Liberation desde `liberationfonts/liberation-fonts` (OFL); ComicShanns desde `shannpersand/comic-shanns` (MIT de Shannon Miwa); Excalifont sin fichero en su monorepo (la licencia va incrustada en la propia fuente, OFL 1.1 según Excalidraw), así que se escribió con su encabezado oficial («Copyright (c) 2024 by Excalidraw…; trademark of Excalidraw») y el cuerpo OFL 1.1 verbatim. Xiaolai sigue fuera.
+- **CI.** `.github/workflows/ci.yml` en push y PR a `main`: `npm ci`, `npm run lint`, `npx tsc --noEmit`, `npm test` (el `build` quedó fuera del alcance, como pedía el roadmap); permisos de solo lectura, sin secretos ni `.env`. Comprobado en local con los mismos tres comandos tras `npm ci` ya resuelto: **lint, tsc y 65/258 tests en verde**.
 
 ### Fase 3: Creación del repositorio y primer push
 

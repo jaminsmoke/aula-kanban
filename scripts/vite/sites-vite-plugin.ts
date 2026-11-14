@@ -175,12 +175,17 @@ export function sites({ mockAuth = true } = {}): Plugin {
 
       const outputDirectory = resolve(root, "dist", ".openai");
       const hostingConfig = resolve(root, ".openai", "hosting.json");
+      // Desviación local sobre el vendored: el `project_id` versionado es un
+      // ejemplo para el repo público; el real vive en un fichero gitignorado
+      // (`.openai/hosting.local.json`) y es ese el que se publica.
+      const localOverride = resolve(root, ".openai", "hosting.local.json");
+      const source = (await exists(localOverride)) ? localOverride : hostingConfig;
       const drizzleSource = resolve(root, "drizzle");
 
       await rm(outputDirectory, { recursive: true, force: true });
       await mkdir(outputDirectory, { recursive: true });
 
-      await cp(hostingConfig, resolve(outputDirectory, "hosting.json"));
+      await cp(source, resolve(outputDirectory, "hosting.json"));
       if (await exists(drizzleSource)) {
         await cp(drizzleSource, resolve(outputDirectory, "drizzle"), {
           recursive: true,
