@@ -6,6 +6,102 @@
 
 ---
 
+## 2026-11-14 — Roadmap de Hidratación en `view=ajustes` cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- La página (`app/page.tsx`) pasa el estado de vista/sección ya parseado de la URL a `<Board>` y el hook `useBoardUrlState` lo usa como estado inicial, en vez de leer `window.location.search` en el primer render del cliente, que era la causa del aviso «Hydration failed» (`app-frame--viewport` y `aria-current` distintos entre servidor y cliente). La primera pintura ya coincide con la vista pedida (`ajustes`, `calendario` o clase), sin regenerar el árbol.
+- Sin cambios de comportamiento: `popstate`, `pushState` y `parseBoardUrl` siguen siendo la única fuente de verdad de vista/sección en la URL. Las demás lecturas de `window.location.search` (efectos o manejadores) no se tocan.
+- **Verificación:** navegador con Chrome headless sobre el dev no registra el aviso en ninguna visita; **65 archivos / 258 tests**, `lint`, `tsc` y `build` en verde (un test nuevo de paridad primer render).
+
+### Seguimiento en backlog
+
+OAuth 2.1, GPT con Actions, repositorio público en GitHub y recortes de chunks.
+
+## 2026-11-14 — Roadmap de Servidor MCP de Aula Kanban cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Servidor MCP remoto alojado en el propio Site** en `/api/mcp` (transporte HTTP Streamable web-standard, sin sesiones, respuestas JSON, SDK `@modelcontextprotocol/sdk` 1.32.2 MIT con aviso en `THIRD-PARTY-NOTICES.md`). La producción es remota: no hay proceso local entregado; lo local es solo para probar.
+- **Contrato de 8 herramientas** (`lib/server/mcp/tools.ts`): `listar_proyectos`, `listar_tareas` (filtros por estado, prioridad, alumno y texto, con paginación), `obtener_tarea`, `listar_alumnos`, `listar_profesores`, `crear_tarea`, `actualizar_tarea` y `eliminar_tarea`. Los manejadores reutilizan `lib/server` (`projectData`, `decorate`, `projectAccessForUser`, `createTask`, `updateTask`, `deleteTask`, `taskAuthGuard`, `createTaskPermissions`): un alumno ve y edita lo mismo que en el tablero y una cuenta invitada solo consulta, por MCP y por web.
+- **Tokens personales** (`mcp_tokens`, migraciones `0031` y `0032` con la columna `email`): formato `ak_mcp_…`, SHA-256 con sal por token, verificación en tiempo constante, y creación/listado/revocación desde **Ajustes > Cuenta** (el token se muestra una sola vez). Sin token, inválido o revocado, el endpoint responde `401`; cada token tiene un límite básico de 120 peticiones por minuto (`429` con `retry-after`).
+- **Enlaces en las respuestas** con el esquema `?project=…&view=…&section=…` ya publicado (`lib/server/mcp/links.ts`).
+- **Documentación de instalación** en `README.md` (sección «Servidor MCP»: bloque JSON con URL + cabecera `Authorization: Bearer`, clientes HTTP remotos y puente stdio para clientes clásicos, revocación) y en `/documentacion` (sección nueva «Servidor MCP»: pasos, bloque `code` JSON, ilustración `McpArt`).
+- **Verificación:** 65 archivos / 257 tests, `lint`, `tsc` y `build` en verde; smoke real en dev con cliente SDK (lecturas, ciclo crear → mover → renombrar → eliminar con control optimista de revisión, `429` tras ~120 peticiones, revocación con `204`).
+
+### Seguimiento en backlog
+
+Hidratación distinta entre servidor y cliente en `view=ajustes` (overlay de desarrollo; sin tocar layouts en este roadmap), OAuth 2.1, GPT con Actions, repositorio público en GitHub y recortes de chunks.
+
+## 2026-11-14 — Roadmap de Calendario en Clase cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- Nueva sección **Calendario** en Clase (`ClassSection = "tareas" | "calendario"`), con su entrada en el sidebar de secciones y la vista en carga diferida (`lazy`) desde `app/board/class/calendar/calendar-view.tsx`.
+- Librería `react-big-calendar` 1.20.0 (MIT) con localizer de `date-fns` 4.4.0, mensajes en español y vistas Mes, Semana y Agenda. Sin edición, arrastre ni creación desde el calendario.
+- Las tareas visibles del proyecto se colocan en su `dueDate` como evento de día completo en medianoche local (sin desplazamiento UTC); las tareas sin vencimiento no reciben una fecha inventada. El estado colorea el evento con el mismo código que las columnas del tablero y aparece en el tooltip.
+- Pulsar un evento abre el diálogo de tarea existente (`kanban.onOpenEditor(task.status, task)`), así que se mantienen `canEditTask`, el invitado en solo lectura y el `mutation_token`. No hay consulta ni API nuevas.
+- Estados propios de la sección: carga, error con «Reintentar» y aviso de estado vacío cuando ninguna tarea tiene fecha.
+- URL: `section=calendario` validado en `board-url.ts` (`CLASS_SECTIONS`), escrito solo en Clase y persistido/restaurado con atrás/adelante por `useBoardUrlState`.
+- Estilos de la librería adaptados a los tokens en `calendar-view.css` (superficies, líneas, marca, foco, eventos por estado, agenda y semana), con ajuste a 860 px y `prefers-reduced-motion`.
+- `THIRD-PARTY-NOTICES.md` nuevo con los avisos MIT de `react-big-calendar` (Jason Quense) y `date-fns` (Sasha y Lesha Koss).
+- `package.json`: dependencias `react-big-calendar` y `date-fns`, tipos en dev y `allowScripts` para `esbuild`, `workerd` y `unrs-resolver` sin fijar versión (npm 12 bloquea los scripts de instalación).
+- Tests nuevos: `calendar-view.test.tsx` (fecha, sin fecha, estado vacío, región y estado del evento, apertura, carga y error), `class-view.calendar.test.tsx` (integración real con carga diferida y editor) y casos de `section=calendario` en `board-url` y `use-board-url`.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (58 archivos / 222 tests) y `npm run build` correctos.
+- Chunk diferido `calendar-view`: 220.700 B brutos / **62.122 B gzip**, más CSS 17.490 B / 3.552 B gzip; `board` 112.954 B / 33.274 B gzip (+236 B brutos frente a la línea base 112.718 / 33.196). El calendario sigue fuera de la carga inicial.
+- Smoke en Chrome headless con sesión: escritorio 1440×950 y móvil real a 390×844 (medido en un iframe de 390 px, porque el modo headless impone 500 px de ventana). Sin desbordamiento horizontal: siete columnas completas, toolbar apilada y `docScrollWidth = 390`.
+- La versión publicada sigue siendo **1.1.23**; este hito queda pendiente de publicación.
+- Roadmap cerrado tras completar sus tres fases; se reinicia sin roadmap activo. La confirmación de que el Site está compartido como público sigue en el backlog.
+
+## 2026-11-14 — Roadmap de portada pública y mensaje de remix cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- Portada pública en `/`: `app/page.tsx` usa solo `getChatGPTUser()`. Sin sesión se muestra `app/portada.tsx` (qué es Aula Kanban, «Iniciar sesión con ChatGPT» con `returnTo` completo y «Ver documentación» a `/documentacion`); con sesión se mantiene el tablero actual. `?view=documentacion` sin sesión sigue redirigiendo a `/documentacion`.
+- El tablero, las API y el socket siguen exigiendo sesión: sin cookie, las 9 rutas API GET responden 401 y `boardSocket` conserva su contrato 401/400/404/503. No se tocaron esos contratos.
+- Nuevo mensaje de remix en `RemixDialog`: pide una copia vacía con base propia, deja como propietario a **quien da la orden** (la cuenta de ChatGPT desde la que publica el agente) y pide `OWNER_EMAIL` con el correo de esa misma cuenta. Los párrafos aclaran que el agente publica la copia, que nadie tiene que reclamar la instancia y que el botón solo copia el mensaje.
+- README: nueva sección «Visibilidad del Site en Sites» con cómo comprobar si el Site es público (ventana privada y `curl`), y checklist de remix reescrito en ese orden.
+- Tests nuevos/actualizados: `portada.test.tsx`, `page.test.tsx` (portada sin sesión, `returnTo` profundo, tablero con sesión, Documentación sin sesión) y `project-dialogs.test.tsx` (mensaje de remix).
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (56 archivos / 213 tests) y `npm run build` correctos.
+- Smoke en dev: `/` sin cookie 200 con portada (antes 307 al OAuth), `/documentacion` 200, tablero con sesión 200, `/api/tasks` sin sesión 401; portada correcta en Chrome headless a 390×844.
+- El socket no se pudo probar con petición real en dev (vinext no enruta `/api/board-socket` por `worker/index.ts`); su contrato se mantiene por código y documentación.
+- La versión publicada sigue siendo **1.1.23**; este hito queda pendiente de publicación.
+- Roadmap cerrado tras completar sus tres fases; se reinicia desde la plantilla. La confirmación de que el Site está compartido como público queda en el backlog como tarea de plataforma.
+
+## 2026-11-14 — Roadmap de URLs por vista y sección cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- Esquema query canónico en `app/board/shared/board-url.ts` (`parseBoardUrl`/`buildBoardUrl`): `project` se conserva, `view` admite `clase | alumnos | profesores | espacio | ajustes | documentacion` y `section` solo en `clase` (`tareas`) y `ajustes` (`cuenta | administradores`); defectos omitidos e inválidos resueltos al defecto.
+- Nuevo hook `use-board-url.ts` usado por `Board`: lee la URL al entrar, escucha `popstate` (atrás/adelante) y escribe cada cambio con `pushState` sin recargar; la sección de Ajustes queda controlada desde el tablero y `use-projects` conserva vista/sección al redirigir al primer proyecto.
+- `BoardHeader` conserva `aria-current` y sus enlaces de proyecto ahora escriben la URL completa con la vista/sección activas (`projectHref`), incluido el proyecto `default`.
+- `app/page.tsx` pasa como `returnTo` de `requireChatGPTUser` la URL completa canonizada (proyecto, vista y sección), p. ej. `/?project=p1&view=ajustes&section=administradores`; tras el login se vuelve al enlace profundo.
+- Documentación sin sesión: nueva ruta pública `/documentacion` reutilizando `DocumentationView`, con enlace para iniciar sesión; la raíz redirige a ella al visitante anónimo que pide `?view=documentacion`. El resto de vistas del tablero sigue protegido. La portada pública completa queda en el backlog.
+- Tests nuevos/actualizados: `board-url` (7), `use-board-url` (enlace inicial, cambio de vista/sección y `popstate`), `page` (`returnTo` completo, canonización y Documentación sin sesión), `documentacion` (ruta pública), `header` (enlace conserva vista/sección) y `use-projects` (redirección conserva vista).
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (54 archivos / 210 tests) y `npm run build` correctos; el build lista la ruta `/documentacion`.
+- Smoke en dev (Chrome headless, escritorio y 390×844): sin sesión, el enlace profundo redirige a `/signin-with-chatgpt?return_to=` con la URL completa codificada y el login vuelve a ese enlace; con sesión, `?view=ajustes&section=administradores` abre Administradores con `aria-current` y el enlace de proyecto conserva vista/sección; `/documentacion` responde 200 sin sesión y `/?view=documentacion` sin sesión redirige a ella, mientras `/?view=alumnos` sigue protegido.
+- La versión publicada sigue siendo **1.1.23**; este hito queda pendiente de publicación.
+- Roadmap cerrado tras completar sus tres fases; se reinicia desde la plantilla.
+
 ## 2026-11-14 — Roadmap de extracción de Medir cerrado
 
 **Estado:** Completada · Pendiente de publicación

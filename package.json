@@ -23,14 +23,17 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@excalidraw/excalidraw": "^0.18.1",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "@smst/edu-tools": "^2.2.1",
     "blockly": "^13.4.0",
+    "date-fns": "^4.4.0",
     "drizzle-orm": "0.45.2",
     "lucide-react": "^1.31.0",
     "mermaid": "^12.3.0",
     "motion": "^14.13.0",
     "next": "16.3.4",
     "react": "19.2.6",
+    "react-big-calendar": "^1.20.0",
     "react-dom": "19.2.6",
     "zod": "^3.25.76"
   },
@@ -41,6 +44,7 @@
     "@testing-library/react": "^16.3.3",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",
+    "@types/react-big-calendar": "^1.16.3",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",
     "@vitejs/plugin-rsc": "0.5.26",
@@ -63,5 +67,10 @@
     "miniflare": {
       "sharp": "0.35.4"
     }
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "workerd": true,
+    "unrs-resolver": true
   }
 }

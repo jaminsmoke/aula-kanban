@@ -45,6 +45,14 @@ describe("useProjects", () => {
     expect(result.current.projects).toEqual([]);
   });
 
+  it("conserva vista y sección al redirigir al primer proyecto", async () => {
+    const { replace } = stubLocation("?view=alumnos");
+    vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ projects: [aula], isOwner: false })));
+
+    renderHook(() => useProjects());
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/?view=alumnos&project=p1"));
+  });
+
   it("deja el mensaje del servidor cuando la carga falla", async () => {
     stubLocation("");
     vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ message: "Sin sesión" }, false, 401)));

@@ -4,6 +4,9 @@ import type { MouseEvent } from "react";
 import { BookOpen, Check, ChevronDown, Columns3, FolderKanban, LayoutGrid, Link2, LogOut, Plus, Settings, Trash2, Users } from "lucide-react";
 import appPackage from "../../../package.json";
 import type { Project } from "../shared/model";
+import { buildBoardUrl } from "../shared/board-url";
+import type { ClassSection } from "../class/class-view";
+import type { SettingsSection } from "../settings/settings-view";
 import "./header.css";
 
 const appVersion = appPackage.version;
@@ -20,6 +23,7 @@ type View = BoardView;
 export default function BoardHeader({
   user, activeProject, projects, projectId, view, onView, owner, admin, canManage,
   onNewProject, onShareProject, onMembers, onDeleteProject, onRemix, onSettings,
+  classSection = "tareas", settingsSection = "cuenta",
 }: {
   user: { displayName: string; email: string };
   activeProject?: Project;
@@ -27,6 +31,8 @@ export default function BoardHeader({
   projectId: string;
   view: View;
   onView: (view: View) => void;
+  classSection?: ClassSection;
+  settingsSection?: SettingsSection;
   owner: boolean;
   admin: boolean;
   canManage: boolean;
@@ -39,6 +45,12 @@ export default function BoardHeader({
 }) {
   function close(event: MouseEvent<HTMLButtonElement>) {
     event.currentTarget.closest("details")?.removeAttribute("open");
+  }
+
+  function projectHref(id: string) {
+    const base = id === "default" ? "" : `?project=${encodeURIComponent(id)}`;
+    const search = buildBoardUrl(base, { view, classSection, settingsSection });
+    return search ? `/${search}` : "/";
   }
 
   return (
@@ -55,7 +67,7 @@ export default function BoardHeader({
           <summary aria-label="Seleccionar proyecto"><FolderKanban size={18} /><span>{activeProject.name}</span><ChevronDown size={16} /></summary>
           <div className="project-dropdown">
             <p>Proyectos</p>
-            {projects.map((project) => <a key={project.id} href={project.id === "default" ? "/" : `/?project=${encodeURIComponent(project.id)}`} aria-current={project.id === projectId ? "page" : undefined}><span>{project.name}</span>{project.id === projectId && <Check size={16} />}</a>)}
+            {projects.map((project) => <a key={project.id} href={projectHref(project.id)} aria-current={project.id === projectId ? "page" : undefined}><span>{project.name}</span>{project.id === projectId && <Check size={16} />}</a>)}
             <div className="project-menu-actions">
               {(owner || admin) && <button type="button" onClick={(event) => { close(event); onNewProject(); }}><Plus size={16} /> Nuevo proyecto</button>}
               {activeProject && <button type="button" onClick={(event) => { close(event); onShareProject(); }}><Link2 size={16} /> Compartir proyecto</button>}

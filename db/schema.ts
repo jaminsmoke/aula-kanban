@@ -150,6 +150,21 @@ export const appDocuments = sqliteTable("app_documents", {
   index("app_documents_app").on(table.appId, table.updatedAt),
 ]);
 
+// Tokens personales del servidor MCP: cada fila pertenece a una cuenta y se
+// guarda solo el hash del secreto, con sal por token. El token completo se
+// muestra un único vez al crearlo; revocar marca `revoked_at`.
+export const mcpTokens = sqliteTable("mcp_tokens", {
+  id: text("id").primaryKey().notNull(),
+  userId: text("user_id").notNull(),
+  email: text("email").notNull().default(""),
+  label: text("label").notNull().default(""),
+  tokenHash: text("token_hash").notNull(),
+  salt: text("salt").notNull(),
+  lastUsedAt: integer("last_used_at"),
+  createdAt: integer("created_at").notNull(),
+  revokedAt: integer("revoked_at"),
+}, (table) => [index("mcp_tokens_user").on(table.userId, table.revokedAt, table.createdAt)]);
+
 export const projectMembers = sqliteTable("project_members", {
   id: text("id").primaryKey().notNull(),
   projectId: text("project_id").notNull(),

@@ -2,6 +2,7 @@
 
 import { LogOut } from "lucide-react";
 import type { Project } from "../shared/model";
+import SettingsTokens from "./settings-tokens";
 
 const roleNames = { owner: "Propietario", admin: "Administrador", teacher: "Profesor", student: "Alumno", guest: "Invitado" } as const;
 
@@ -28,6 +29,7 @@ export default function SettingsAccount({ user, projectsLoaded, owner, admin, ac
         <div><dt>Rol en el proyecto</dt><dd>{!projectsLoaded ? "Consultando…" : activeProject ? roleNames[activeProject.role] : "Sin acceso a un proyecto activo"}</dd></div>
       </dl>
       <p className="settings-note">Los permisos de esta aplicación son independientes de la propiedad del Site en Sites.</p>
+      <SettingsTokens />
       <a className="secondary settings-signout" href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
     </section>
   );

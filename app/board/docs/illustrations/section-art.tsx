@@ -197,6 +197,37 @@ function PulseRing() {
  * Ayuda: salvavidas que aparece y emite un pulso suave mientras se ve.
  * @returns El SVG de la sección.
  */
+/**
+ * Servidor MCP: robot con antena y cable que conecta con el tablero.
+ * @returns El SVG de la sección.
+ */
+export function McpArt() {
+  return (
+    <ArtFrame label="Robot conectado al tablero">
+      <Appear order={1}>
+        <rect x="70" y="64" width="120" height="82" rx="22" className="a-white" />
+        <rect x="70" y="64" width="120" height="82" rx="22" fill="none" className="s-violet" strokeWidth="3" />
+        <path d="M130 64v-16" className="s-violet" strokeWidth="4" strokeLinecap="round" />
+        <circle cx="130" cy="42" r="7" className="a-amber" />
+        <circle cx="108" cy="100" r="9" className="a-violet" />
+        <circle cx="152" cy="100" r="9" className="a-violet" />
+        <path d="M112 126q18 12 36 0" fill="none" className="s-violet-dark" strokeWidth="4" strokeLinecap="round" />
+      </Appear>
+      <Appear order={2}>
+        <path d="M70 105H42M218 105h28" className="s-violet" strokeWidth="4" strokeLinecap="round" strokeDasharray="1 8" />
+      </Appear>
+      <Appear order={3}>
+        <rect x="24" y="92" width="18" height="26" rx="6" className="a-violet" />
+        <rect x="218" y="92" width="18" height="26" rx="6" className="a-violet" />
+      </Appear>
+    </ArtFrame>
+  );
+}
+
+/**
+ * Ayuda: salvavidas que aparece con el aro y las aspas.
+ * @returns El SVG de la sección.
+ */
 export function HelpArt() {
   return (
     <ArtFrame label="Salvavidas de ayuda">

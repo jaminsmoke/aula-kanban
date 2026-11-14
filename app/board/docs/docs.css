@@ -159,6 +159,10 @@
 .doc-note--warning { border-color: #f3c8c8; background: #fff5f5; color: #6a1d1d; }
 .doc-note--warning svg { color: #c03a3a; }
 
+/* Bloque de código: configuración del cliente MCP. */
+.doc-code { margin: 0; padding: 14px 16px; overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: #221f33; color: #ece9ff; font-size: 13px; line-height: 1.7; }
+.doc-code code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; white-space: pre; }
+
 /* --- Ilustraciones ---------------------------------------------------------
    Tamaño fijado por aspect-ratio del viewBox: reservan su hueco antes de
    pintar, así ni el reveal ni la carga mueven el layout. Colores = tokens. */

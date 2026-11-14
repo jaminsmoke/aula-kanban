@@ -4,24 +4,71 @@ Cada instancia mantiene sus propios proyectos y datos en D1. La propiedad de alo
 
 ## Propiedad y checklist de remix
 
-La propiedad se inicializa con `OWNER_EMAIL`, que debe coincidir con el correo de la cuenta de ChatGPT del propietario. En el primer acceso de esa cuenta se guarda su identificador estable en `instance_owner`; a partir de ahí la propiedad se comprueba por identidad y el correo solo se actualiza como dato de contacto. Si la instancia aún no tiene propietario persistido, `OWNER_EMAIL` sigue actuando como bootstrap.
+En un remix, el propietario es quien da la orden: el agente de ChatGPT publica la copia en la cuenta de la persona que le pide el cambio, y esa cuenta queda ligada a la instancia. La propiedad se inicializa con `OWNER_EMAIL`, que debe coincidir con el correo de la cuenta de ChatGPT del propietario. En el primer acceso de esa cuenta se guarda su identificador estable en `instance_owner`; a partir de ahí la propiedad se comprueba por identidad y el correo solo se actualiza como dato de contacto. Si la instancia aún no tiene propietario persistido, `OWNER_EMAIL` sigue actuando como bootstrap.
 
 **Checklist para un remix:**
 
-1. Crea el remix en Sites. La base de datos, los proyectos, las fichas y las variables de entorno no se copian.
-2. Antes de compartir la copia, configura `OWNER_EMAIL` en el nuevo Site con el correo de ChatGPT del propietario y vuelve a publicar.
-3. Entra con esa cuenta: el primer acceso guarda la identidad estable del propietario. Comprueba que aparecen las acciones de propietario.
-4. Crea el primer proyecto y añade administradores si hacen falta.
-5. No importes datos de otra instancia; una copia nueva debe empezar vacía.
-6. Si la copia no tiene propietario, corrige `OWNER_EMAIL` y vuelve a publicar antes de compartirla.
+1. Pide la copia con el botón «Haz tu Site de Aula Kanban» y entrega el mensaje a tu agente de ChatGPT. El propietario es **quien da la orden**: el agente publica la copia en tu cuenta de ChatGPT.
+2. La copia no hereda base de datos, proyectos, fichas, administradores ni variables de entorno. No importes datos de otra instancia: una copia nueva debe empezar vacía.
+3. Antes de compartirla, comprueba que `OWNER_EMAIL` es el correo de esa misma cuenta de ChatGPT y vuelve a publicar.
+4. Entra con esa cuenta: el primer acceso guarda la identidad estable del propietario. Comprueba que aparecen las acciones de propietario.
+5. Crea el primer proyecto y añade administradores si hacen falta.
+6. Si la copia no tiene propietario, corrige `OWNER_EMAIL` y vuelve a publicar antes de compartirla. No se espera que un tercero reclame la instancia.
+7. Si quieres que la portada y la documentación se vean sin sesión, comparte el Site como público y sigue «Visibilidad del Site en Sites».
 
 El propietario y los administradores pueden crear o eliminar proyectos y administrar la lista de administradores.
+
+## Visibilidad del Site en Sites
+
+La visibilidad del Site (privado o «cualquiera con el enlace») es un ajuste de la plataforma, no del repositorio: `.openai/hosting.json` solo declara los bindings (`d1`, `r2`) y el `project_id`. En un Site **privado**, Sites exige sesión a todo el mundo antes de llegar a la aplicación, aunque la ruta no llame a `requireChatGPTUser`. En un Site **público**, los visitantes anónimos llegan a las rutas que no importan ese helper: en esta instancia, la portada (`/`) y la documentación (`/documentacion`). El tablero, las API y el socket siguen exigiendo sesión en ambos casos.
+
+**Cómo comprobar que el Site es público:**
+
+1. Abre la URL del Site en una ventana privada, sin sesión de ChatGPT iniciada.
+2. Si aparece la portada de Aula Kanban en `/` y la documentación en `/documentacion`, el Site es público y la parte anónima funciona.
+3. Si antes de la aplicación aparece la pantalla de acceso de la plataforma, el Site sigue privado: cambia la compartición en Sites antes de esperar la portada en producción.
+
+Sin navegador, esta petición solo confirma que la aplicación sirve la portada; no sustituye a revisar el ajuste de la plataforma:
+
+```sh
+curl -s https://<tu-site>/ | grep -o "Tablero colaborativo para el grupo de clase"
+```
+
+Si devuelve el texto, la aplicación responde con la portada a un visitante sin cabeceras de identidad. Si la plataforma exige login, la respuesta será su pantalla de acceso aunque el código sea correcto.
+
+En desarrollo, `npm run dev` simula la sesión al visitar `/signin-with-chatgpt`, así que la portada anónima hay que probarla sin esa cookie (por ejemplo, en una ventana privada).
 
 ## Mi espacio y Aula Store
 
 La cabecera organiza el trabajo en **Clase**, **Alumnos**, **Profesores** y **Documentación**; **Mi espacio** se abre desde el icono de aplicaciones y el engranaje abre los **ajustes generales**, con Cuenta y Administradores. Incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, Herramientas de aula, Programación por bloques y Diagramas. Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Mi espacio no elimina las pizarras de las tareas ni sus datos.
+Dentro de **Clase**, **Tareas** y **Calendario** comparten el mismo tablero: el calendario coloca cada tarea en su fecha de vencimiento, abre la tarea al pulsar su evento y solo se descarga al entrar en la sección.
 
 La lista de aplicaciones integradas, candidatas y descartadas, con licencias y versiones comprobadas, está en [`docs/aplicaciones-nativas.md`](docs/aplicaciones-nativas.md). El índice de documentación y el flujo de roadmap, backlog y changelog están en [`docs/README.md`](docs/README.md).
+
+## Servidor MCP
+
+El Site expone un servidor **MCP remoto y alojado en el propio Site** en `/api/mcp` (transporte HTTP Streamable web-standard, sin sesiones). La producción es remota: no se entrega ningún proceso local como producto; lo local es solo para probar.
+
+- **Autenticación:** cada cuenta crea su propio token personal (`ak_mcp_…`) en **Ajustes > Cuenta > Tokens del MCP**. El secreto se muestra una sola vez al crearlo y solo se guarda su hash (SHA-256 con sal) en la tabla `mcp_tokens`. Sin token o con un token revocado, el endpoint responde `401`. Cada token tiene un límite de 120 peticiones por minuto.
+- **Permisos:** el token actúa con los permisos de tu rol en el proyecto: las cuentas invitadas solo pueden consultar, y un alumno solo puede crear o editar sus propias tareas (o reclamar una sin responsable), igual que en la web.
+- **Herramientas:** `listar_proyectos`, `listar_tareas` (con filtros y paginación), `obtener_tarea`, `listar_alumnos`, `listar_profesores`, `crear_tarea`, `actualizar_tarea` y `eliminar_tarea`. El contrato completo está en `lib/server/mcp/tools.ts`; las respuestas incluyen enlaces al tablero y a la sección de Calendario.
+
+Instalación en un cliente MCP (sustituye la URL por la de tu Site y tu token):
+
+```json
+{
+  "mcpServers": {
+    "aula-kanban": {
+      "url": "https://TU-SITE/api/mcp",
+      "headers": { "Authorization": "Bearer TU-TOKEN" }
+    }
+  }
+}
+```
+
+Los clientes modernos con soporte HTTP remoto (Cursor, VS Code con extensión MCP, Claude en web u otros) se conectan directamente a esa URL. Los clientes clásicos que solo hablan stdio (p. ej. Claude Desktop) necesitan un puente local que reenvíe la URL remota junto con la cabecera `Authorization`: hay puentes de terceros como `mcp-remote`, pero no se publica ninguno con este proyecto.
+
+La documentación de instalación también está en la vista de usuario en `/documentacion` (sección «Servidor MCP») y junto a los tokens en Ajustes > Cuenta. Revoca el token en el mismo panel en cuanto dejes de usarlo.
 
 ## Desarrollo
 

@@ -1,16 +1,21 @@
 "use client";
 
+import { Suspense, lazy } from "react";
 import type { ComponentProps } from "react";
-import { Columns3 } from "lucide-react";
+import { CalendarDays, Columns3 } from "lucide-react";
 import WorkspaceLayout, { type WorkspaceItem } from "../layout/workspace-layout";
 import KanbanView from "../tasks/kanban-view";
 import "./class.css";
 
+// El calendario solo se descarga al abrir su sección.
+const CalendarView = lazy(() => import("./calendar/calendar-view"));
+
 /** Secciones disponibles dentro de Clase. */
-export type ClassSection = "tareas";
+export type ClassSection = "tareas" | "calendario";
 
 const SECTIONS: WorkspaceItem<ClassSection>[] = [
   { id: "tareas", label: "Tareas", icon: Columns3 },
+  { id: "calendario", label: "Calendario", icon: CalendarDays },
 ];
 
 /**
@@ -26,7 +31,18 @@ export default function ClassView({ section, onSection, kanban }: {
   return (
     <WorkspaceLayout title="Clase" label="Secciones de clase" items={SECTIONS} active={section} onSelect={onSection}>
       <div className="class-content">
-        {section === "tareas" ? <KanbanView {...kanban} /> : null}
+        {section === "tareas" ? (
+          <KanbanView {...kanban} />
+        ) : (
+          <Suspense fallback={<div className="class-section-loading" role="status">Cargando el calendario…</div>}>
+            <CalendarView
+              tasks={kanban.tasks}
+              loadError={kanban.loadError}
+              onRetry={kanban.onRetry}
+              onOpenTask={(task) => kanban.onOpenEditor(task.status, task)}
+            />
+          </Suspense>
+        )}
       </div>
     </WorkspaceLayout>
   );

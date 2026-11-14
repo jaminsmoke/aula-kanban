@@ -73,8 +73,21 @@ describe("DocumentationView", () => {
 
     const roles = screen.getByRole("region", { name: "Roles y permisos" });
     expect(within(roles).getByText("Profesor").tagName).toBe("DT");
-    expect(screen.getByRole("note", { name: "Importante" }).textContent).toMatch(/contraseñas/);
+    const warnings = screen.getAllByRole("note", { name: "Importante" });
+    expect(warnings.length).toBeGreaterThan(1);
+    expect(warnings.some((note) => note.textContent?.match(/contraseñas/))).toBe(true);
     expect(screen.getAllByRole("note", { name: "Consejo" })).toHaveLength(1);
+  });
+});
+
+describe("sección Servidor MCP", () => {
+  it("muestra el bloque JSON de configuración del cliente", () => {
+    render(<DocumentationView onBack={vi.fn()} />);
+
+    const section = screen.getByRole("region", { name: "Servidor MCP" });
+    expect(within(section).getByText(/también escucha a herramientas de inteligencia artificial/)).toBeTruthy();
+    const code = within(section).getByText(/"mcpServers"/, { exact: false });
+    expect(code.textContent).toContain("Authorization");
   });
 });
 

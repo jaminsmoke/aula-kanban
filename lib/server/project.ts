@@ -99,7 +99,7 @@ export async function isAdministrator(user: ChatGPTUser) {
  * @param user - Cuenta autenticada.
  * @returns El acceso con rol y ficha vinculada, o `null` sin acceso.
  */
-async function projectAccessForUser(projectId: string, user: ChatGPTUser): Promise<Access | null> {
+export async function projectAccessForUser(projectId: string, user: ChatGPTUser): Promise<Access | null> {
   if (await isOwner(user)) return { user, role: "owner", studentSection: null, teacherId: null };
   if (await isAdministrator(user)) return { user, role: "admin", studentSection: null, teacherId: null };
   const [member] = await getDb().select().from(projectMembers).where(and(
@@ -123,7 +123,12 @@ export async function projectAccess(projectId: string): Promise<Access | null> {
   return user ? projectAccessForUser(projectId, user) : null;
 }
 
-async function findProject(projectId: string): Promise<ProjectRow | null> {
+/**
+ * Busca un proyecto por su identificador.
+ * @param projectId - Identificador del proyecto.
+ * @returns La fila del proyecto o `null`.
+ */
+export async function findProject(projectId: string): Promise<ProjectRow | null> {
   const [project] = await getDb().select().from(projects).where(eq(projects.id, projectId));
   return project ?? null;
 }

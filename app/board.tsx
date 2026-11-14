@@ -2,8 +2,8 @@
 
 import { FolderKanban, Plus, X } from "lucide-react";
 import { Suspense, lazy, useState } from "react";
-import BoardHeader, { type BoardView } from "./board/layout/header";
-import ClassView, { type ClassSection } from "./board/class/class-view";
+import BoardHeader from "./board/layout/header";
+import ClassView from "./board/class/class-view";
 // Las vistas secundarias solo se descargan al abrirlas.
 const TeachersView = lazy(() => import("./board/people/teachers/teachers-view"));
 const StudentsView = lazy(() => import("./board/people/students/students-view"));
@@ -20,21 +20,22 @@ import { useBoardData } from "./board/shared/use-board-data";
 import { useProjectActions } from "./board/projects/use-project-actions";
 import { useTasks } from "./board/tasks/use-tasks";
 import { useStudents } from "./board/people/students/use-students";
+import { useBoardUrlState } from "./board/shared/use-board-url";
+import type { BoardUrlState } from "./board/shared/board-url";
 
 const invitationRoleNames = { teacher: "Profesor", student: "Alumno", guest: "Invitado", admin: "Administrador" } as const;
 
 /**
  * Tablero principal: cabecera, invitaciones y la vista activa.
- * @param props - Cuenta autenticada de ChatGPT.
+ * @param props - Cuenta autenticada de ChatGPT y estado inicial de la URL.
  * @returns La aplicación completa del tablero.
  */
-export default function Board({ user }: { user: { displayName: string; email: string } }) {
+export default function Board({ user, initial }: { user: { displayName: string; email: string }; initial?: BoardUrlState }) {
   const projectState = useProjects();
   const invitations = useInvitations();
   const data = useBoardData(projectState.activeProject);
   const actions = useProjectActions({ projects: projectState.projects, projectId: projectState.projectId });
-  const [view, setView] = useState<BoardView>("clase");
-  const [classSection, setClassSection] = useState<ClassSection>("tareas");
+  const { view, setView, classSection, setClassSection, settingsSection, setSettingsSection } = useBoardUrlState(initial);
   const [studentName, setStudentName] = useState<string | null>(null);
   const [studentLayout, setStudentLayout] = useState<"grid" | "list">("grid");
   const [notice, setNotice] = useState("");
@@ -61,6 +62,8 @@ export default function Board({ user }: { user: { displayName: string; email: st
         projects={projectState.projects}
         projectId={projectState.projectId}
         view={view}
+        classSection={classSection}
+        settingsSection={settingsSection}
         onView={(next) => { setView(next); setNotice(""); if (next === "alumnos") setStudentName(null); }}
         owner={projectState.owner}
         admin={projectState.admin}
@@ -93,6 +96,8 @@ export default function Board({ user }: { user: { displayName: string; email: st
               admin={projectState.admin}
               activeProject={activeProject}
               onProjectsChanged={() => void projectState.refreshProjects()}
+              section={settingsSection}
+              onSection={setSettingsSection}
             />
           </Suspense>
         ) : !activeProject ? !accessReady ? <div className="access-loading" role="status">Comprobando tu acceso…</div> : accessCheckError ? (

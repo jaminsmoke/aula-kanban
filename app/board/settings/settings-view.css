@@ -33,6 +33,17 @@
 .admin-confirm > div { display:flex; justify-content:flex-end; gap:8px; }
 .admin-error { color:var(--danger); }
 
+/* Tokens del MCP (dentro de Cuenta) */
+.token-panel { display:grid; gap:14px; padding-top:6px; border-top:1px solid var(--line); }
+.token-panel h2 { display:flex; align-items:center; gap:9px; margin:0; font-size:20px; letter-spacing:-.03em; }
+.token-panel > p { color:var(--muted); line-height:1.55; }
+.token-created { display:grid; gap:9px; padding:13px 14px; border:1px solid var(--line-violet); border-radius:var(--radius-md); background:var(--violet-pale); }
+.token-created strong { color:var(--ink-deep); font-size:13.5px; }
+.token-created code { overflow-wrap:anywhere; padding:8px 10px; border:1px solid var(--line-violet); border-radius:var(--radius-sm); background:var(--white); color:var(--violet-dark); font-size:12.5px; }
+.token-created > button { justify-self:start; }
+.token-state { color:var(--muted); font-size:13px; }
+.token-panel .admin-form > div .primary { white-space:nowrap; }
+
 @media (max-width: 1050px) {
   .settings-content { padding-inline:24px; }
 }

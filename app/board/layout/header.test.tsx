@@ -46,6 +46,14 @@ describe("BoardHeader", () => {
     expect(within(nav).getByRole("button", { name: "Clase" }).getAttribute("aria-current")).toBe("page");
   });
 
+  it("conserva vista y sección en los enlaces de proyecto", () => {
+    const { rerender } = render(<BoardHeader {...props} view="alumnos" />);
+    expect(screen.getByRole("link", { name: /Pruebas/ }).getAttribute("href")).toBe("/?project=p1&view=alumnos");
+
+    rerender(<BoardHeader {...props} view="ajustes" settingsSection="administradores" />);
+    expect(screen.getByRole("link", { name: /Pruebas/ }).getAttribute("href")).toBe("/?project=p1&view=ajustes&section=administradores");
+  });
+
   it("abre Mi espacio, Documentación y Ajustes y marca sus acciones como activas", () => {
     const onView = vi.fn();
     const onSettings = vi.fn();

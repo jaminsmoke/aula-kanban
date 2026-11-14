@@ -87,9 +87,15 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap de medición de chunks completado:** inventario, decisión de no dividir librerías lazy y fuentes latinas de Excalidraw autohospedadas. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de sesión de whiteboard completado:** pizarra agrupada y sesión separada en persistencia, conflicto y presencia. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de extracción de Medir completado:** hook y componente propios, shell de 90 líneas y comportamiento conservado. Resumen en [`changelog.md`](changelog.md).
-- **Roadmap activo:** sin fase activa. La próxima entrada se elegirá del backlog.
-- **Backlog pendiente:** sin entradas.
-- **Próximo paso:** decidir la próxima entrada; no hay trabajo aparcado.
+- **Roadmap de URLs por vista y sección completado:** esquema query canónico con `board-url.ts`/`use-board-url.ts`, enlaces de proyecto y `returnTo` completos, y Documentación pública en `/documentacion`. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de portada pública y mensaje de remix completado:** portada anónima en `/` con `getChatGPTUser()`, tablero/API/socket protegidos, mensaje de remix con «quien da la orden» y README con la sección «Visibilidad del Site en Sites». Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de Calendario en Clase completado:** `react-big-calendar` 1.20.0 (MIT) con localizer de `date-fns` en carga diferida, sección `calendario` con las tareas por `dueDate`, `section=calendario` en la URL, estilos con tokens, pruebas y avisos de licencia. Resumen en [`changelog.md`](changelog.md).
+- **Site público confirmado** por el propietario el 2026-11-14: la portada anónima de `/` y `/documentacion` son visibles sin sesión. La entrada del backlog queda cerrada.
+- **Roadmap de Servidor MCP completado:** servidor MCP remoto en `/api/mcp` con 8 herramientas, tokens personales en Ajustes > Cuenta, límite básico por token y documentación de instalación en README y `/documentacion`. Resumen en [`changelog.md`](changelog.md).
+- **Backlog pendiente:** 3 entradas (OAuth 2.1 para clientes externos, GPT con Actions y recortes de rendimiento de chunks).
+- **Roadmap de hidratación en `view=ajustes` completado:** el estado inicial de vista/sección pasa de la página (servidor) al hook, y la primera pintura ya coincide. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap activo:** Repositorio público en GitHub, licencia MIT y CI (4 fases: respaldo y reescritura de autores, licencia/Excalidraw/CI, publicación con comprobaciones, documentación tras el push). Extraído del backlog el 2026-11-14.
+- **Próximo paso:** ejecutar la Fase 1 del roadmap activo (respaldo y reescritura de autores).
 
 ## Documentación relacionada
 

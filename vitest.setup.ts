@@ -14,6 +14,13 @@ if (typeof globalThis.crypto?.randomUUID !== "function") {
   });
 }
 
+/* Los tokens del MCP usan WebCrypto (como en Cloudflare Workers); jsdom no
+   expone `crypto.subtle`, así que se toma el de Node cuando falta. */
+import { webcrypto } from "node:crypto";
+if (typeof (globalThis.crypto as Crypto | undefined) === "undefined" || !("subtle" in globalThis.crypto)) {
+  Object.defineProperty(globalThis, "crypto", { configurable: true, writable: true, value: webcrypto });
+}
+
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();

@@ -1,0 +1,1 @@
+ALTER TABLE `mcp_tokens` ADD `email` text DEFAULT '' NOT NULL;

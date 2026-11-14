@@ -16,15 +16,19 @@ export type SettingsSection = "cuenta" | "administradores";
  * @param props - Cuenta, permisos, proyecto activo y recarga de proyectos.
  * @returns La página de ajustes.
  */
-export default function SettingsView({ user, projectsLoaded, owner, admin, activeProject, onProjectsChanged }: {
+export default function SettingsView({ user, projectsLoaded, owner, admin, activeProject, onProjectsChanged, section: controlledSection, onSection }: {
   user: { displayName: string; email: string };
   projectsLoaded: boolean;
   owner: boolean;
   admin: boolean;
   activeProject?: Project;
   onProjectsChanged: () => void;
+  section?: SettingsSection;
+  onSection?: (section: SettingsSection) => void;
 }) {
-  const [section, setSection] = useState<SettingsSection>("cuenta");
+  const [innerSection, setInnerSection] = useState<SettingsSection>("cuenta");
+  const section = controlledSection ?? innerSection;
+  const setSection = onSection ?? setInnerSection;
   const privileged = owner || admin;
   const sections: WorkspaceItem<SettingsSection>[] = [
     { id: "cuenta", label: "Cuenta", icon: UserRound },

@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
-import { AppWindow, Columns3, LifeBuoy, ListTodo, PenTool, Users, type LucideIcon } from "lucide-react";
+import { AppWindow, Columns3, LifeBuoy, ListTodo, PenTool, Plug, Users, type LucideIcon } from "lucide-react";
 import type { DocSectionId } from "./content";
-import { BoardArt, HelpArt, RolesArt, SpaceArt, TasksArt, WhiteboardArt } from "./illustrations";
+import { BoardArt, HelpArt, McpArt, RolesArt, SpaceArt, TasksArt, WhiteboardArt } from "./illustrations";
 
 /** Presentación de una sección: icono del índice/cabecera e ilustración. */
 export type SectionVisual = { icon: LucideIcon; Illustration: ComponentType };
@@ -16,5 +16,6 @@ export const sectionVisuals = {
   tareas: { icon: ListTodo, Illustration: TasksArt },
   pizarras: { icon: PenTool, Illustration: WhiteboardArt },
   espacio: { icon: AppWindow, Illustration: SpaceArt },
+  mcp: { icon: Plug, Illustration: McpArt },
   ayuda: { icon: LifeBuoy, Illustration: HelpArt },
 } satisfies Record<DocSectionId, SectionVisual>;

@@ -12,7 +12,7 @@ const noteLabels: Record<DocNoteTone, string> = { info: "Nota", tip: "Consejo", 
  * Bloque de contenido del cuerpo de una sección. Cada bloque entra con el
  * escalonado de su sección (variants heredadas del contenedor).
  * @param props - Bloque a renderizar.
- * @returns El bloque con su semántica: párrafo, lista ordenada, definiciones o nota.
+ * @returns El bloque con su semántica: párrafo, lista ordenada, definiciones, nota o código.
  */
 export function DocBlockView({ block }: { block: DocBlock }) {
   switch (block.type) {
@@ -42,6 +42,12 @@ export function DocBlockView({ block }: { block: DocBlock }) {
         </m.div>
       );
     }
+    case "code":
+      return (
+        <m.pre className="doc-code" variants={revealItem}>
+          <code className={`language-${block.language}`}>{block.text}</code>
+        </m.pre>
+      );
     default:
       return <m.p className="doc-paragraph" variants={revealItem}>{block.text}</m.p>;
   }

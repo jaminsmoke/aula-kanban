@@ -5,7 +5,7 @@
  */
 
 /** Identificadores de sección: forman las anclas `#docs-<id>` del índice. */
-export const docSectionIds = ["que-es", "roles", "tareas", "pizarras", "espacio", "ayuda"] as const;
+export const docSectionIds = ["que-es", "roles", "tareas", "pizarras", "espacio", "mcp", "ayuda"] as const;
 
 /** Identificador de una sección de la documentación. */
 export type DocSectionId = (typeof docSectionIds)[number];
@@ -13,12 +13,13 @@ export type DocSectionId = (typeof docSectionIds)[number];
 /** Tono de una nota: información, consejo o advertencia. */
 export type DocNoteTone = "info" | "tip" | "warning";
 
-/** Bloque de contenido: párrafo, pasos ordenados, definiciones o nota. */
+/** Bloque de contenido: párrafo, pasos ordenados, definiciones, nota o código. */
 export type DocBlock =
   | { type: "paragraph"; text: string }
   | { type: "steps"; items: string[] }
   | { type: "definitions"; items: { term: string; text: string }[] }
-  | { type: "note"; tone: DocNoteTone; text: string };
+  | { type: "note"; tone: DocNoteTone; text: string }
+  | { type: "code"; language: string; text: string };
 
 /** Sección de la documentación: entradilla (junto a la ilustración) y cuerpo. */
 export type DocSection = {
@@ -116,6 +117,39 @@ export const docSections: DocSection[] = [
           "Abre Aula Store para ver el catálogo e instalar o desinstalar aplicaciones.",
         ],
       },
+    ],
+  },
+  {
+    id: "mcp",
+    title: "Servidor MCP",
+    lead: "Aula Kanban también escucha a herramientas de inteligencia artificial (Claude, ChatGPT y otros clientes compatibles con MCP) gracias a un servidor remoto alojado en el propio Site. Tu asistente ve y mueve el mismo tablero que tú.",
+    blocks: [
+      { type: "paragraph", text: "El servidor vive en `/api/mcp` de este Site y se autentica con un token personal, no con tu sesión de ChatGPT. Cada token obedece los permisos de tu rol en el proyecto: las cuentas invitadas solo pueden consultar, y un alumno solo puede crear o editar sus propias tareas, igual que en la web." },
+      {
+        type: "steps",
+        items: [
+          "Abre Ajustes > Cuenta y, en «Tokens del MCP», crea un token con la etiqueta del cliente que vayas a usar (por ejemplo, «Claude» o «ChatGPT»).",
+          "Copia el token en ese momento: solo se muestra una vez y no se puede recuperar.",
+          "En el cliente MCP, introduce la URL del Site y el token como cabecera `Authorization: Bearer …`, como en el bloque de abajo.",
+          "Prueba `listar_proyectos` y `listar_tareas`: si el cliente responde, la conexión está lista; si devuelve 401, el token falta o ha sido revocado.",
+        ],
+      },
+      {
+        type: "code",
+        language: "json",
+        text: [
+          "{",
+          '  "mcpServers": {',
+          '    "aula-kanban": {',
+          '      "url": "https://TU-SITE/api/mcp",',
+          '      "headers": { "Authorization": "Bearer TU-TOKEN" }',
+          "    }",
+          "  }",
+          "}",
+        ].join("\n"),
+      },
+      { type: "note", tone: "warning", text: "El token es como una contraseña: quien lo tenga actúa con tus permisos en el proyecto. Revócalo en Ajustes > Cuenta en cuanto dejes de usarlo y nunca lo pegues en un chat." },
+      { type: "note", tone: "info", text: "Algunos clientes clásicos solo hablan con procesos locales (stdio). Esos necesitan un puente que reenvíe la URL remota con la cabecera de autorización; los clientes modernos con soporte HTTP remoto se conectan directamente. En cada peticion cada token tiene un límite básico de 120 peticiones por minuto." },
     ],
   },
   {

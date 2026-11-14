@@ -218,6 +218,20 @@
       "when": 1794657849514,
       "tag": "0030_smooth_harpoon",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "6",
+      "when": 1794685988409,
+      "tag": "0031_slow_sebastian_shaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "6",
+      "when": 1794686408000,
+      "tag": "0032_naive_zaladane",
+      "breakpoints": true
     }
   ]
 }

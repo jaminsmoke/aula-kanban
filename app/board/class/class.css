@@ -5,6 +5,17 @@
 .class-content { padding:24px clamp(24px, 3.5vw, 56px) 32px; }
 .class-content .hero { margin-top:0; }
 
+/* Fallback de la sección en carga diferida; el CSS del calendario aún no está. */
+.class-section-loading {
+  padding:48px 20px;
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  background:var(--white);
+  color:var(--muted);
+  font-size:14px;
+  text-align:center;
+}
+
 @media (max-width: 1050px) {
   .class-content { padding-inline:24px; }
 }

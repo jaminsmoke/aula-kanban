@@ -21,10 +21,12 @@ export function useProjects() {
   const [projectId, setProjectId] = useState("default");
 
   const applyProjects = useCallback((next: ProjectsResponse) => {
-    const explicit = new URLSearchParams(window.location.search).get("project");
+    const params = new URLSearchParams(window.location.search);
+    const explicit = params.get("project");
     const currentId = explicit || "default";
     if (!explicit && next.projects.length && !next.projects.some((item) => item.id === currentId)) {
-      window.location.replace("/?project=" + encodeURIComponent(next.projects[0].id));
+      params.set("project", next.projects[0].id);
+      window.location.replace(`/?${params.toString()}`);
       return;
     }
     setProjects(next.projects);

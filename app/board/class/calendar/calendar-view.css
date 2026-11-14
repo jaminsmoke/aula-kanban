@@ -1,0 +1,394 @@
+/* ==========================================================================
+   Calendario de Clase
+   Contenedor propio y adaptación del CSS de react-big-calendar a los tokens.
+   La hoja de la librería se importa en `calendar-view.tsx` (dentro del chunk
+   diferido), así que nada de esto entra en la carga inicial del tablero.
+   ========================================================================== */
+
+.class-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 20px 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+}
+
+.class-calendar-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink);
+  font-size: 19px;
+  letter-spacing: -.02em;
+}
+
+.class-calendar-head p {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.class-calendar-note {
+  padding: 12px 14px;
+  border: 1px solid var(--line-violet);
+  border-radius: var(--radius-md);
+  background: var(--violet-pale);
+  color: var(--ink-deep);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.class-calendar-empty {
+  padding: 48px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* --- Rejilla ------------------------------------------------------------- */
+
+.class-calendar .rbc-calendar {
+  min-height: 560px;
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+}
+
+/* Sin `min-width:0` un título largo fija el ancho mínimo de su columna y el
+   mes entero se desborda en pantallas estrechas. */
+.class-calendar .rbc-month-header .rbc-header,
+.class-calendar .rbc-row-content,
+.class-calendar .rbc-row-segment,
+.class-calendar .rbc-event,
+.class-calendar .rbc-event-content {
+  min-width: 0;
+}
+
+.class-calendar .rbc-month-view,
+.class-calendar .rbc-time-view,
+.class-calendar .rbc-agenda-view table.rbc-agenda-table {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--white);
+}
+
+.class-calendar .rbc-month-row,
+.class-calendar .rbc-month-row + .rbc-month-row,
+.class-calendar .rbc-day-bg + .rbc-day-bg,
+.class-calendar .rbc-time-header-content,
+.class-calendar .rbc-time-content,
+.class-calendar .rbc-timeslot-group,
+.class-calendar .rbc-time-header.rbc-overflowing,
+.class-calendar .rbc-header + .rbc-header {
+  border-color: var(--line);
+}
+
+/* Cabecera de días: etiqueta pequeña, no un titular. */
+.class-calendar .rbc-header {
+  padding: 9px 6px;
+  border-color: var(--line);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.class-calendar .rbc-header a,
+.class-calendar .rbc-header a:visited {
+  color: inherit;
+}
+
+.class-calendar .rbc-date-cell {
+  padding: 6px 8px;
+  color: var(--ink-soft);
+  font-size: 12.5px;
+  text-align: right;
+}
+
+.class-calendar .rbc-date-cell > a,
+.class-calendar .rbc-date-cell > a:active,
+.class-calendar .rbc-date-cell > a:visited {
+  color: inherit;
+}
+
+.class-calendar .rbc-date-cell.rbc-now {
+  color: var(--violet);
+  font-weight: 700;
+}
+
+.class-calendar .rbc-today {
+  background: var(--violet-pale);
+}
+
+.class-calendar .rbc-off-range-bg {
+  background: var(--surface-faint);
+}
+
+.class-calendar .rbc-off-range {
+  color: var(--muted);
+  opacity: .7;
+}
+
+.class-calendar .rbc-show-more {
+  margin-top: 2px;
+  padding: 1px 4px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--violet-dark);
+  font-size: 11.5px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.class-calendar .rbc-show-more:hover {
+  background: var(--surface-hover);
+}
+
+.class-calendar .rbc-show-more:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* --- Barra de vistas ----------------------------------------------------- */
+
+.class-calendar .rbc-toolbar {
+  gap: 8px;
+  margin-bottom: 2px;
+  font-size: 13px;
+}
+
+.class-calendar .rbc-toolbar-label {
+  padding: 0 12px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -.02em;
+  text-transform: capitalize;
+}
+
+.class-calendar .rbc-toolbar .rbc-btn-group {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.class-calendar .rbc-toolbar button {
+  padding: 6px 12px;
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+
+.class-calendar .rbc-toolbar button:first-child,
+.class-calendar .rbc-toolbar button:last-child {
+  border-radius: var(--radius-pill);
+}
+
+.class-calendar .rbc-toolbar button:hover {
+  border-color: var(--line-violet);
+  background: var(--surface-hover);
+  color: var(--ink);
+}
+
+.class-calendar .rbc-toolbar button.rbc-active,
+.class-calendar .rbc-toolbar button:active {
+  border-color: var(--violet);
+  background: var(--violet-pale);
+  color: var(--violet-dark);
+  box-shadow: none;
+}
+
+.class-calendar .rbc-toolbar button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* --- Eventos ------------------------------------------------------------- */
+
+.class-calendar .rbc-event,
+.class-calendar .rbc-day-slot .rbc-event {
+  padding: 2px 7px;
+  border: none;
+  border-left: 3px solid var(--violet);
+  border-radius: 6px;
+  background: var(--violet-pale);
+  color: var(--violet-dark);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.class-calendar .rbc-event.rbc-selected,
+.class-calendar .rbc-event:hover {
+  background: var(--surface-tint);
+}
+
+.class-calendar .rbc-event:focus-visible,
+.class-calendar .rbc-event:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.class-calendar .rbc-event-content {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Color por estado: el mismo código que usan las columnas del tablero. */
+.class-calendar .rbc-event.status-active {
+  border-left-color: var(--info-ink);
+  background: var(--info-soft);
+  color: #274a85;
+}
+
+.class-calendar .rbc-event.status-review {
+  border-left-color: var(--warning-ink);
+  background: var(--warning-soft);
+  color: var(--warning-deep);
+}
+
+.class-calendar .rbc-event.status-done {
+  border-left-color: var(--success);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+/* --- Agenda y semana ----------------------------------------------------- */
+
+.class-calendar .rbc-agenda-view table.rbc-agenda-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.class-calendar .rbc-agenda-view table.rbc-agenda-table thead > tr > th {
+  padding: 9px 12px;
+  border-color: var(--line);
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.class-calendar .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+  padding: 8px 12px;
+  border-color: var(--line);
+  font-size: 13px;
+}
+
+.class-calendar .rbc-agenda-view table.rbc-agenda-table tbody > tr + tr > td {
+  border-top: 1px solid var(--line);
+}
+
+.class-calendar .rbc-agenda-date-cell,
+.class-calendar .rbc-agenda-time-cell {
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.class-calendar .rbc-agenda-event-cell {
+  color: var(--ink);
+}
+
+.class-calendar .rbc-time-header .rbc-header {
+  border-color: var(--line);
+}
+
+.class-calendar .rbc-label,
+.class-calendar .rbc-time-gutter .rbc-label {
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.class-calendar .rbc-current-time-indicator {
+  background: var(--violet);
+}
+
+.class-calendar .rbc-slot-selection {
+  background: var(--violet-pale);
+  color: var(--violet-dark);
+  font-size: 12px;
+}
+
+/* --- Accesibilidad y movimiento ----------------------------------------- */
+
+.class-calendar .rbc-calendar *:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .class-calendar .rbc-toolbar button,
+  .class-calendar .rbc-event,
+  .class-calendar .rbc-show-more {
+    transition: none;
+  }
+}
+
+/* --- Responsive ---------------------------------------------------------- */
+
+@media (max-width: 860px) {
+  .class-calendar {
+    padding: 16px 14px 18px;
+  }
+
+  .class-calendar .rbc-calendar {
+    min-height: 480px;
+  }
+
+  .class-calendar .rbc-toolbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .class-calendar .rbc-toolbar-label {
+    order: -1;
+    padding: 0;
+    font-size: 16px;
+  }
+
+  .class-calendar .rbc-toolbar button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .class-calendar .rbc-header {
+    padding: 7px 2px;
+    font-size: 10px;
+    letter-spacing: .04em;
+  }
+
+  .class-calendar .rbc-date-cell {
+    padding: 4px 5px;
+    font-size: 11.5px;
+  }
+
+  .class-calendar .rbc-event {
+    padding: 1px 4px;
+    border-left-width: 2px;
+    font-size: 11px;
+  }
+
+  /* En móvil el mes pierde altura fija y se adapta al contenido. */
+  .class-calendar .rbc-month-view {
+    min-height: 0;
+  }
+}
