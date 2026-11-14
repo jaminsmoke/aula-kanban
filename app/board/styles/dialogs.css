@@ -10,7 +10,7 @@ dialog { transition: width var(--duration-base) var(--ease-out); animation: pop-
 .task-form, .share-content { display: grid; gap: 15px; padding: 20px 21px; }
 .task-form label, .share-content label { display: block; font-size: 13px; font-weight: 700; min-width: 0; }
 .task-form label span { color: var(--muted); font-weight: 450; }
-.task-form input, .task-form textarea, .task-form select, .share-content input { display: block; width: 100%; min-width: 0; min-height: 41px; margin-top: 6px; padding: 8px 10px; border: 1px solid #ded9ea; border-radius: var(--radius-sm); background: var(--white); color: var(--ink); font-size: 14px; font-weight: 450; }
+.task-form input, .task-form textarea, .task-form select, .share-content input { display: block; width: 100%; min-width: 0; min-height: 41px; margin-top: 6px; padding: 8px 10px; border: 1px solid var(--line-control); border-radius: var(--radius-sm); background: var(--white); color: var(--ink); font-size: 14px; font-weight: 450; }
 
 .task-form textarea { resize: vertical; min-height: 68px; }
 .form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -19,7 +19,7 @@ dialog { transition: width var(--duration-base) var(--ease-out); animation: pop-
 .delete-prompt { color: #8e2742; font-size: 14px; }
 .share-content p { color: var(--muted); line-height: 1.5; font-size: 14px; }
 .share-content .primary { justify-self: end; }
-.alert { color: #842746; border: 1px solid #f2cdd9; background: var(--danger-soft); padding: 9px 12px; border-radius: 9px; font-size: 14px; }
+.alert { color: var(--danger-deep); border: 1px solid #f2cdd9; background: var(--danger-soft); padding: 9px 12px; border-radius: 9px; font-size: 14px; }
 .workspace > .alert { margin-bottom: 13px; }
 .text-button { background: transparent; border: 0; color: inherit; text-decoration: underline; font-weight: 680; }
 .toast { position: fixed; z-index: 2; right: 18px; bottom: 18px; display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 36px); padding: 7px 10px 7px 14px; border-radius: 10px; background: var(--ink-deep); color: var(--white); font-size: 14px; box-shadow: 0 5px 20px #30225530; animation: fade-slide-in var(--duration-base) var(--ease-out); }

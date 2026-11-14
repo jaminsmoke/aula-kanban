@@ -32,13 +32,20 @@ app  →  lib  →  db
 
 La fuente única es `app/globals.css`. Los tokens se agrupan por intención:
 
-- **Superficies y texto:** `--canvas`, `--white`, `--ink`, `--ink-soft`, `--ink-deep`, `--muted`, `--line`, `--line-strong`, `--line-subtle`, `--surface-muted`, `--surface-hover`.
-- **Marca y foco:** `--violet`, `--violet-dark`, `--violet-pale`, `--focus`, `--focus-on-dark`.
-- **Estados:** `--danger`, `--danger-ink`, `--danger-soft`, `--success`, `--success-soft`, `--warning-ink`, `--warning-soft`, `--info-ink`, `--info-soft`.
+- **Superficies y texto:** `--canvas`, `--white`, `--ink`, `--ink-soft`, `--ink-deep`, `--muted`, `--line`, `--line-strong`, `--line-subtle`, `--line-control`, `--line-soft`, `--line-violet`, `--surface-muted`, `--surface-hover`, `--surface-sunken`, `--surface-tint`, `--surface-faint`, `--surface-pale`.
+- **Marca y foco:** `--violet`, `--violet-dark`, `--violet-pale`, `--violet-bright`, `--focus`, `--focus-on-dark`.
+- **Estados:** `--danger`, `--danger-ink`, `--danger-soft`, `--danger-deep`, `--success`, `--success-soft`, `--warning-ink`, `--warning-soft`, `--warning-pale`, `--warning-deep`, `--info-ink`, `--info-soft`.
 - **Forma:** `--radius`, `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-pill`.
-- **Tipografía:** `--font-body`, `--font-display`, `--font-mono`.
+- **Tipografía:** `--font-body`, `--font-display`.
 
 Regla: un token debe representar un patrón compartido o una intención; no se tokeniza cada valor aislado, cada sombra ni cada tamaño de letra.
+
+### CSS compartido y CSS específico
+
+- `globals.css` contiene los tokens, la base, las animaciones y las reglas compartidas por más de un componente o usadas más de una vez.
+- Cada feature mantiene su CSS junto al código y solo incluye las especificidades que usa una vez.
+- Si un valor o selector empieza a repetirse en otro componente, o se repite dos veces en el mismo, se promociona a token o regla compartida en `globals.css`.
+- `globals.css` no se elimina ni se carga desde una vista lazy. Los estilos compartidos de `layout.tsx` (`buttons`, `access`, `dialogs`) tampoco se mueven a una vista lazy.
 
 ## Flujo de trabajo
 
@@ -70,8 +77,9 @@ Regla: un token debe representar un patrón compartido o una intención; no se t
 - **Roadmap de propiedad completado:** identidad estable en `instance_owner`, migración `0028`, helper común y checklist de remix. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de `compute-engine` completado:** motor mantenido, carga selectiva en Científica/Ecuaciones y estado de cálculo. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de documentos completado:** Blockly y Mermaid usan `app_documents`; las dos tablas históricas se retiraron tras la auditoría y respaldo.
-- **Backlog pendiente:** detalles de rendimiento.
-- **Próximo paso:** elegir una entrada del backlog.
+- **Roadmap activo:** detalles de rendimiento y acabado; fases 1 y 2 completadas.
+- **Backlog pendiente:** sin entradas.
+- **Próximo paso:** fase 3 del roadmap activo, fuentes, verificación final y cierre.
 
 ## Documentación relacionada
 

@@ -15,11 +15,19 @@
   --line-subtle: #00000014;
   --surface-muted: #eeecf5;
   --surface-hover: #f5f2fb;
+  --surface-sunken: #eceaf2;
+  --surface-tint: #ece8f6;
+  --surface-faint: #f7f5fd;
+  --surface-pale: #fbfaff;
+  --line-control: #ded9ea;
+  --line-soft: #e4e0ed;
+  --line-violet: #ddd6ee;
 
   /* Marca y foco */
   --violet: #5839be;
   --violet-dark: #42299c;
   --violet-pale: #eeebfb;
+  --violet-bright: #7859d8;
   --focus: #7656dd;
   --focus-on-dark: #cdb4ff;
 
@@ -27,10 +35,13 @@
   --danger: #a52545;
   --danger-ink: #8f1d2c;
   --danger-soft: #fff1f6;
+  --danger-deep: #842746;
   --success: #176a50;
   --success-soft: #daf1e8;
   --warning-ink: #936013;
   --warning-soft: #fff1d9;
+  --warning-pale: #fff8e6;
+  --warning-deep: #7a5b00;
   --info-ink: #315a9f;
   --info-soft: #e6eefc;
 
@@ -42,7 +53,6 @@
   --radius-pill: 999px;
   --font-body: "Instrument Sans", system-ui, sans-serif;
   --font-display: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Animación: una sola fuente para duraciones y curvas de toda la app. */
   --ease-out: cubic-bezier(.22, 1, .36, 1);

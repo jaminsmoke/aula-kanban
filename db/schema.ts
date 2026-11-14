@@ -6,11 +6,6 @@ export const projects = sqliteTable("projects", {
   createdAt: integer("created_at").notNull(),
 });
 
-export const transitionState = sqliteTable("transition_state", {
-  id: text("id").primaryKey().notNull(),
-  status: text("status").notNull(),
-});
-
 // Una sola fila con id "owner" guarda la identidad estable del propietario.
 export const instanceOwner = sqliteTable("instance_owner", {
   id: text("id").primaryKey().notNull(),
@@ -18,18 +13,6 @@ export const instanceOwner = sqliteTable("instance_owner", {
   email: text("email").notNull().default(""),
   claimedAt: integer("claimed_at").notNull(),
 });
-
-export const legacyAdministrators = sqliteTable("administrators", {
-  id: text("id").primaryKey().notNull(),
-  email: text("email").notNull(),
-  userId: text("user_id"),
-  profileId: text("profile_id"),
-  createdAt: integer("created_at").notNull(),
-}, (table) => [
-  uniqueIndex("administrator_email").on(table.email),
-  uniqueIndex("administrator_user_id").on(table.userId),
-  uniqueIndex("administrator_profile").on(table.profileId),
-]);
 
 export const administrators = sqliteTable("administrators_unified", {
   id: text("id").primaryKey().notNull(),
@@ -43,14 +26,6 @@ export const administrators = sqliteTable("administrators_unified", {
   uniqueIndex("unified_administrator_email").on(table.email),
   uniqueIndex("unified_administrator_user_id").on(table.userId),
 ]);
-
-// Global administrator profiles may exist without an account or invitation.
-export const administratorProfiles = sqliteTable("administrator_profiles", {
-  id: text("id").primaryKey().notNull(),
-  displayName: text("display_name").notNull().default(""),
-  revision: integer("revision").notNull().default(1),
-  mutationToken: text("mutation_token"),
-});
 
 export const userIdentities = sqliteTable("user_identities", {
   id: text("id").primaryKey().notNull(),
@@ -160,21 +135,6 @@ export const instanceApps = sqliteTable("instance_apps", {
   updatedAt: integer("updated_at").notNull(),
 }, (table) => [
   uniqueIndex("instance_app_app").on(table.appId),
-]);
-
-// Histórica: el estado por proyecto anterior a la instalación por instancia.
-// Se conserva para no perder datos ni forzar una migración destructiva.
-export const spaceApps = sqliteTable("space_apps", {
-  id: text("id").primaryKey().notNull(),
-  projectId: text("project_id").notNull(),
-  appId: text("app_id").notNull(),
-  installed: integer("installed").notNull().default(0),
-  version: text("version"),
-  installedByUserId: text("installed_by_user_id"),
-  updatedAt: integer("updated_at").notNull(),
-}, (table) => [
-  uniqueIndex("space_app_project_app").on(table.projectId, table.appId),
-  index("space_apps_project").on(table.projectId),
 ]);
 
 // Documentos de las apps nativas: un estado JSON por proyecto y app. Es la

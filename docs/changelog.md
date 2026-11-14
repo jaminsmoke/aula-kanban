@@ -6,6 +6,16 @@
 
 ---
 
+## 2026-11-14 — Limpieza de tablas históricas de administración y aplicaciones
+
+**Versión:** 1.1.21
+
+- La migración `0030` retira las tablas anteriores `administrators`, `administrator_profiles`, `space_apps` y `transition_state`; la aplicación usa `administrators_unified`, `instance_owner` e `instance_apps`.
+- Se eliminaron del esquema los exports correspondientes y un trigger histórico con referencias cruzadas. Se conservan las tablas activas, los historiales de fichas y sus purgas.
+- En producción las tres tablas de datos antiguas estaban vacías y el único estado de transición indicaba que la migración de administradores había terminado.
+- Se verificó una copia íntegra de la base local en `work/private-backups/aula-antes-0030-20261114-130605.sqlite`. Sus dos filas históricas de aplicaciones representaban estados anteriores; la configuración vigente estaba en `instance_apps`. Tras la migración, se compararon las 15 tablas activas con la copia sin encontrar cambios.
+- Esta publicación incluye también los cambios locales de acabado de la tienda y CSS. El roadmap de rendimiento mantiene pendiente su fase de fuentes y cierre.
+
 ## 2026-11-14 — Retirada de tablas históricas de documentos
 
 **Versión:** 1.1.20

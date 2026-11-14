@@ -11,5 +11,5 @@
 .member-row strong,.member-row small { display:block; overflow-wrap:anywhere; }
 .member-row strong { font-size:13px; }
 .member-row small { color:var(--muted); margin-top:4px; }
-.member-confirm { display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:12px; border-radius:9px; background:var(--danger-soft); color:#842746; font-size:13px; }
+.member-confirm { display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:12px; border-radius:9px; background:var(--danger-soft); color:var(--danger-deep); font-size:13px; }
 .member-confirm p { flex-basis:100%; }

@@ -38,7 +38,7 @@
 .profile-delete { display:grid; place-items:center; width:42px; height:42px; border:1px solid #ebc9d4; border-radius:11px; background:var(--white); color:var(--danger); }
 .profile-delete:hover { background:#fff0f4; border-color:#d790a6; }
 .student-profile-header { display:flex; align-items:center; gap:18px; margin:22px 0 26px; padding:23px; border-radius:var(--radius); background:#f1edfb; }
-.no-email-note { margin:0 0 22px; padding:10px 12px; border:1px solid #ead9a8; border-radius:10px; background:#fff8e6; color:#7a5b00; font-size:13px; line-height:1.45; }
+.no-email-note { margin:0 0 22px; padding:10px 12px; border:1px solid #ead9a8; border-radius:10px; background:var(--warning-pale); color:var(--warning-deep); font-size:13px; line-height:1.45; }
 .student-profile-avatar { display:grid; place-items:center; flex:0 0 64px; height:64px; border-radius:var(--radius-lg); background:#5b3ac9; color:var(--white); font-family: var(--font-display); font-size:22px; font-weight:750; }
 .student-identity { min-width:0; flex:1; }
 .student-kicker { color:#674d9e; font-size:11px; font-weight:750; text-transform:uppercase; letter-spacing:.06em; }

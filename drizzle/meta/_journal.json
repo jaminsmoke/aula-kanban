@@ -211,6 +211,13 @@
       "when": 1794655097706,
       "tag": "0029_careless_kabuki",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "6",
+      "when": 1794657849514,
+      "tag": "0030_smooth_harpoon",
+      "breakpoints": true
     }
   ]
 }
