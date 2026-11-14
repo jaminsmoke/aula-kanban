@@ -14,7 +14,7 @@ vi.mock("./board/projects/use-invitations", () => ({
 vi.mock("./board/shared/use-board-data", () => ({ useBoardData: () => ({}) }));
 vi.mock("./board/projects/use-project-actions", () => ({ useProjectActions: () => ({}) }));
 vi.mock("./board/tasks/use-tasks", () => ({ useTasks: () => ({}) }));
-vi.mock("./board/people/use-students", () => ({ useStudents: () => ({}) }));
+vi.mock("./board/people/students/use-students", () => ({ useStudents: () => ({}) }));
 vi.mock("./board/docs/docs-view", () => ({ default: () => <h1>Documentación de prueba</h1> }));
 
 describe("navegación sin proyecto", () => {

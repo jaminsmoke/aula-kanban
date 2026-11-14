@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
-import type { Student } from "../../../lib/domain/student";
-import { request } from "../shared/api";
-import type { BoardData } from "../shared/use-board-data";
+import type { Student } from "../../../../lib/domain/student";
+import { request } from "../../shared/api";
+import type { BoardData } from "../../shared/use-board-data";
 
 /**
  * Formularios de crear, editar y eliminar fichas de alumno.

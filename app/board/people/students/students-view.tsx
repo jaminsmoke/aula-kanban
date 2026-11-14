@@ -1,13 +1,13 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import type { Task } from "../../../lib/domain/task";
-import type { Student } from "../../../lib/domain/student";
-import { taskBelongsTo } from "../../../lib/domain/assignments";
-import LayoutToggle from "../layout/layout-toggle";
-import ProfileCard from "./profile-card";
-import ProfileDetail from "./profile-detail";
-import "./people.css";
+import type { Task } from "../../../../lib/domain/task";
+import type { Student } from "../../../../lib/domain/student";
+import { taskBelongsTo } from "../../../../lib/domain/assignments";
+import LayoutToggle from "../../layout/layout-toggle";
+import ProfileCard from "../profile-card";
+import ProfileDetail from "../profile-detail";
+import "../people.css";
 
 /**
  * Vista de alumnos con su rejilla o lista y el detalle de la ficha.

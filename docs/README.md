@@ -40,7 +40,7 @@ La fuente única es `app/globals.css`. Los tokens se agrupan por intención:
 
 Regla: un token debe representar un patrón compartido o una intención; no se tokeniza cada valor aislado, cada sombra ni cada tamaño de letra.
 
-Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fonts`, con sus licencias OFL. `public/_headers` fija caché inmutable de un año para los archivos de fuente; no se depende de Google Fonts en producción.
+Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fonts`, con sus licencias OFL. `public/_headers` fija caché inmutable de un año para los archivos de fuente; no se depende de Google Fonts en producción. Las fuentes latinas de Excalidraw se sirven desde `public/excalidraw/fonts`; Xiaolai queda fuera por tamaño.
 
 ### CSS compartido y CSS específico
 
@@ -74,7 +74,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap de componentes completado:** Aula Store, calculadora, Mermaid, diálogo de tarea, Blockly y Whiteboard divididos; verificación final correcta. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de reintento de pizarra completado:** el error de carga se limpia cuando la pizarra vuelve a cargar; regresión de hook y vista añadida. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de carga por pestañas de `edu-tools` completado:** tabla periódica, medición, lectura y ecuaciones se cargan bajo demanda; datos periódicos en JSON. Resumen en [`changelog.md`](changelog.md).
-- **Versión:** 1.1.22. Los últimos hitos están en [`changelog.md`](changelog.md).
+- **Versión:** 1.1.23. Los últimos hitos están en [`changelog.md`](changelog.md).
 - **Roadmap de respuestas sin sesión completado:** contrato 401/403/404/400 aplicado a las 12 rutas y contrato del socket documentado. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de propiedad completado:** identidad estable en `instance_owner`, migración `0028`, helper común y checklist de remix. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de `compute-engine` completado:** motor mantenido, carga selectiva en Científica/Ecuaciones y estado de cálculo. Resumen en [`changelog.md`](changelog.md).
@@ -83,9 +83,13 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap de versiones de Aula Store completado:** versiones propias por app, versión de la tienda y ficha técnica con upstream y ampliaciones. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de navegación de Clase completado:** Clase como vista principal, sidebar de pantalla partida, Tareas, header de cuatro vistas y Mi espacio como icono. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de ajustes generales completado:** vista con sidebar, Cuenta, Administradores y engranaje de cabecera. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de jerarquía de personas completado:** alumnos en `people/students/`, profesores en `people/teachers/` y compartidos en `people/`. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de medición de chunks completado:** inventario, decisión de no dividir librerías lazy y fuentes latinas de Excalidraw autohospedadas. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de sesión de whiteboard completado:** pizarra agrupada y sesión separada en persistencia, conflicto y presencia. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de extracción de Medir completado:** hook y componente propios, shell de 90 líneas y comportamiento conservado. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap activo:** sin fase activa. La próxima entrada se elegirá del backlog.
-- **Backlog pendiente:** 3 entradas: whiteboard, jerarquía de personas y herramienta Medir.
-- **Próximo paso:** decidir qué entrada del backlog pasa al roadmap.
+- **Backlog pendiente:** sin entradas.
+- **Próximo paso:** decidir la próxima entrada; no hay trabajo aparcado.
 
 ## Documentación relacionada
 

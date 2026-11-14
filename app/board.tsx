@@ -6,20 +6,20 @@ import BoardHeader, { type BoardView } from "./board/layout/header";
 import ClassView, { type ClassSection } from "./board/class/class-view";
 // Las vistas secundarias solo se descargan al abrirlas.
 const TeachersView = lazy(() => import("./board/people/teachers/teachers-view"));
-const StudentsView = lazy(() => import("./board/people/students-view"));
+const StudentsView = lazy(() => import("./board/people/students/students-view"));
 const SpaceView = lazy(() => import("./board/space/space-view"));
 const DocumentationView = lazy(() => import("./board/docs/docs-view"));
 const SettingsView = lazy(() => import("./board/settings/settings-view"));
 import TaskDialog from "./board/tasks/task-dialog";
 import MemberDialog from "./board/projects/member-dialog";
 import { DeleteProjectDialog, NewProjectDialog, RemixDialog, ShareDialog } from "./board/projects/project-dialogs";
-import { StudentDeleteDialog, StudentFormDialog } from "./board/people/student-dialogs";
+import { StudentDeleteDialog, StudentFormDialog } from "./board/people/students/student-dialogs";
 import { useProjects } from "./board/projects/use-projects";
 import { useInvitations } from "./board/projects/use-invitations";
 import { useBoardData } from "./board/shared/use-board-data";
 import { useProjectActions } from "./board/projects/use-project-actions";
 import { useTasks } from "./board/tasks/use-tasks";
-import { useStudents } from "./board/people/use-students";
+import { useStudents } from "./board/people/students/use-students";
 
 const invitationRoleNames = { teacher: "Profesor", student: "Alumno", guest: "Invitado", admin: "Administrador" } as const;
 

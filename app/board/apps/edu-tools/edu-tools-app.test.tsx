@@ -130,6 +130,31 @@ describe("Herramientas de aula", () => {
     expect(screen.getAllByText(/2\.6 cm/).length).toBeGreaterThan(0);
   });
 
+  it("conserva la medición de la regla al cambiar de pestaña", () => {
+    const { container } = render(<EduToolsApp />);
+    fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
+    const ruler = container.querySelector(".edu-ruler");
+    fireEvent.pointerDown(ruler as Element, { clientX: 100, clientY: 50, pointerId: 1 });
+    fireEvent.pointerMove(ruler as Element, { clientX: 200, clientY: 50, pointerId: 1 });
+    fireEvent.pointerUp(ruler as Element, { clientX: 200, clientY: 50, pointerId: 1 });
+    expect(screen.getAllByText(/2\.6 cm/).length).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByRole("tab", { name: "Calculadora" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
+    expect(screen.getAllByText(/2\.6 cm/).length).toBeGreaterThan(0);
+  });
+
+  it("cambia de vista con Alt+1…4", () => {
+    render(<EduToolsApp />);
+    fireEvent.keyDown(window, { key: "3", altKey: true });
+    expect(screen.getByRole("tab", { name: "Medir" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("group", { name: "Instrumento de medida" })).toBeTruthy();
+
+    fireEvent.keyDown(window, { key: "1", altKey: true });
+    expect(screen.getByRole("tab", { name: "Calculadora" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("button", { name: "7" })).toBeTruthy();
+  });
+
   it("busca en español y muestra la ficha del elemento", async () => {
     render(<EduToolsApp />);
     fireEvent.click(screen.getByRole("tab", { name: "Ciencias" }));

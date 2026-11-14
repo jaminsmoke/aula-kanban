@@ -6,6 +6,89 @@
 
 ---
 
+## 2026-11-14 — Roadmap de extracción de Medir cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- `edu-tools-app.tsx` pasa de 274 a 90 líneas y queda como shell de pestañas y vistas lazy.
+- Nuevo `use-measure-tools.ts` con estado, medición, rotación, punteros, tamaño y atajos.
+- Nuevo `measure-tools.tsx` con el marcado de regla y transportador y sus imports diferidos.
+- El hook se mantiene en el shell para conservar ángulo y medición al cambiar de pestaña.
+- Se mantienen `PX_PER_CM`, `PX_PER_INCH`, Shift ±1°, flechas ±5°, Home y Alt+1…4.
+- Añadidos tests de persistencia de la medición y atajos de vista.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (50 archivos / 193 tests) y `npm run build` correctos.
+- Smoke real en EduTools: 22 comprobaciones correctas, sin excepciones ni errores de consola.
+- Chunk de EduTools: 17,6 → 18,2 KB brutos; 5,5 → 5,8 KB gzip. Aumento mínimo por la separación de módulos; la app sigue cargándose bajo demanda.
+- La versión publicada sigue siendo **1.1.23**; este hito queda pendiente de publicación.
+- Roadmap cerrado tras completar sus dos fases; se reinicia desde la plantilla.
+
+## 2026-11-14 — Roadmap de sesión de whiteboard cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- La pizarra se agrupa en `app/board/shared/whiteboard/`, con `index.ts` como fachada compatible.
+- `use-whiteboard.ts` baja de 307 a 233 líneas.
+- Nueva `whiteboard-persistence.ts` para carga, guardado, adjuntos y merge de conflicto.
+- Nueva `whiteboard-presence.ts` para socket, reconexión y mensajes de presencia.
+- La combinación de escenas en directo conserva la prioridad de los archivos recibidos; en los conflictos de guardado se mantienen los archivos locales pendientes. Añadida prueba de regresión.
+- Se mantienen API, permisos, UI, debounces y polling.
+- Añadidos tests de persistencia, conflicto y presencia.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (50 archivos / 191 tests) y `npm run build` correctos.
+- Dos sesiones conectadas a la vez, reconexión tras pérdida de red y guardado real con PUT correctos.
+- Chunk de pizarra: 1.108,6 → 1.108,9 KB brutos; 350,7 → 351 KB gzip. Sin cambio significativo.
+- La versión publicada sigue siendo **1.1.23**; este hito queda pendiente de publicación.
+- Roadmap cerrado tras completar sus tres fases; se reinicia desde la plantilla.
+
+## 2026-11-14 — Roadmap de medición de chunks cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- Inventariados los chunks iniciales, las vistas lazy y las dependencias pesadas.
+- Confirmado que `compute-engine`, Blockly y Mermaid solo se cargan al usar sus funciones; no se dividieron.
+- Detectados duplicados de `katex`, Mermaid y cuatro pares de archivos; se dejan como están por riesgo y bajo impacto real.
+- Copiadas 8 familias latinas de Excalidraw a `public/excalidraw/fonts`.
+- Configurado `window.EXCALIDRAW_ASSET_PATH = "/excalidraw/"` para evitar el fallback de fuentes a `esm.sh`.
+- Xiaolai (12,3 MB) queda fuera del flujo normal.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (48 archivos / 186 tests) y `npm run build` correctos.
+- La entrada al tablero sigue en 149,7 KB gzip.
+- Smoke de pizarra: Excalifont se carga desde `/excalidraw/fonts` y no hay peticiones a `esm.sh`.
+- La versión publicada sigue siendo **1.1.23**; este hito queda pendiente de publicación.
+- Roadmap cerrado tras completar sus tres fases; se reinicia desde la plantilla.
+
+## 2026-11-14 — Roadmap de jerarquía de personas cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- Los archivos exclusivos de alumnos se movieron a `people/students/`.
+- `profile-card`, `profile-detail` y `people.css` permanecen como compartidos en `people/`.
+- Imports y mocks actualizados en `Board`, tests y vistas relacionadas.
+- `people/teachers/` no cambia.
+- Sin cambios de comportamiento, datos, permisos ni API.
+
+### Verificación
+
+- `npm run lint`, `npx tsc --noEmit`, `npm test` (48 archivos / 186 tests) y `npm run build` correctos.
+- Smoke de Alumnos, Profesores y vuelta a Alumnos correcto.
+- La versión publicada sigue siendo **1.1.23**; este hito queda pendiente de publicación.
+- Roadmap cerrado tras completar sus dos fases; se reinicia desde la plantilla.
+
 ## 2026-11-14 — Roadmap de ajustes generales cerrado
 
 **Estado:** Completada · Pendiente de publicación

@@ -2,7 +2,7 @@
 
 import { lazy, Suspense, useState } from "react";
 import { Maximize2, Minimize2 } from "lucide-react";
-import "../shared/whiteboard.css";
+import "../shared/whiteboard/whiteboard.css";
 
 const Whiteboard = lazy(() => import("../shared/whiteboard"));
 

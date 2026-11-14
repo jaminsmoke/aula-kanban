@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { StudentDeleteDialog, StudentFormDialog } from "./student-dialogs";
-import type { Student } from "../../../lib/domain/student";
+import type { Student } from "../../../../lib/domain/student";
 
 const student: Student = {
   section: "s1",

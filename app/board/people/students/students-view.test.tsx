@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import StudentsView from "./students-view";
-import type { Student } from "../../../lib/domain/student";
-import type { Task } from "../../../lib/domain/task";
+import type { Student } from "../../../../lib/domain/student";
+import type { Task } from "../../../../lib/domain/task";
 
 const student: Student = {
   section: "s1",

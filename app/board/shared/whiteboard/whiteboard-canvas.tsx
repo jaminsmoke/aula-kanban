@@ -5,6 +5,17 @@ import { Excalidraw } from "@excalidraw/excalidraw";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import type { BoardElement, BoardFile, BoardSnapshot } from "./whiteboard-model";
 
+declare global {
+  interface Window {
+    EXCALIDRAW_ASSET_PATH?: string;
+  }
+}
+
+if (typeof window !== "undefined") {
+  // Evita el fallback de fuentes de Excalidraw a esm.sh.
+  window.EXCALIDRAW_ASSET_PATH = "/excalidraw/";
+}
+
 /**
  * Lienzo de Excalidraw con la escena inicial y los avisos de sincronización.
  * @param props - Escena inicial, modo de lectura, API y handlers de cambios.

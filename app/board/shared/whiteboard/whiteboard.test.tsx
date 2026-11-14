@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { jsonResponse } from "../../../vitest.setup";
+import { jsonResponse } from "../../../../vitest.setup";
 
 const board = {
   ownerType: "space",

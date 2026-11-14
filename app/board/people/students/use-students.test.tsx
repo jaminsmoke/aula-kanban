@@ -2,8 +2,8 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import type { FormEvent } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { useStudents } from "./use-students";
-import type { BoardData } from "../shared/use-board-data";
-import { jsonResponse } from "../../../vitest.setup";
+import type { BoardData } from "../../shared/use-board-data";
+import { jsonResponse } from "../../../../vitest.setup";
 
 const student = {
   section: "s1",

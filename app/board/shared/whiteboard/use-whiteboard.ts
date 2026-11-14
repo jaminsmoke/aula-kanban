@@ -2,23 +2,21 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
-import { RequestError, request } from "./api";
+import { RequestError } from "../api";
 import {
   BROADCAST_DEBOUNCE_MS,
   EMPTY_SNAPSHOT,
   POLL_MS,
-  RECONNECT_MS,
   SAVE_DEBOUNCE_MS,
   colorForUser,
-  mergeElements,
   parseSnapshot,
   sceneSignature,
-  uploadBlob,
   type BoardElement,
   type BoardFile,
-  type BoardResponse,
   type BoardSnapshot,
 } from "./whiteboard-model";
+import { fetchBoardSnapshot, mergeConflictSnapshot, mergeIncomingSnapshot, saveBoardSnapshot, uploadBoardFiles } from "./whiteboard-persistence";
+import { createWhiteboardPresence, type WhiteboardPresence } from "./whiteboard-presence";
 
 /**
  * Sincroniza una pizarra con la API y el socket de presencia.
@@ -45,18 +43,10 @@ export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: strin
   const uploadingRef = useRef(new Set<string>());
   const dirtyRef = useRef(false);
   const signatureRef = useRef("");
-  const socketRef = useRef<WebSocket | null>(null);
-  const socketOpenRef = useRef(false);
-  const presenceRef = useRef(new Map<string, { email: string; pointer: { x: number; y: number } | null }>());
+  const presence = useRef<WhiteboardPresence | null>(null);
+  const presenceUsers = useRef(new Map<string, { email: string; pointer: { x: number; y: number } | null }>());
 
-  const fetchBoard = useCallback(async (): Promise<BoardResponse> => {
-    const projectId = new URLSearchParams(window.location.search).get("project") || "default";
-    const query = new URLSearchParams({ project: projectId, ownerType, ownerId: boardId });
-    const response = await fetch(`/api/boards?${query}`, { cache: "no-store" });
-    const data = await response.json().catch(() => null);
-    if (!response.ok || data === null) throw new Error("pizarra");
-    return data as BoardResponse;
-  }, [boardId, ownerType]);
+  const loadBoard = useCallback(() => fetchBoardSnapshot(boardId, ownerType), [boardId, ownerType]);
 
   const [previousBoardId, setPreviousBoardId] = useState(boardId);
   if (previousBoardId !== boardId) {
@@ -67,7 +57,7 @@ export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: strin
 
   useEffect(() => {
     let active = true;
-    fetchBoard().then(
+    loadBoard().then(
       (board) => {
         if (!active) return;
         const parsed = parseSnapshot(board.snapshot);
@@ -90,7 +80,7 @@ export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: strin
       },
     );
     return () => { active = false; };
-  }, [fetchBoard, retry, boardId]);
+  }, [loadBoard, retry, boardId]);
 
   const persist = useCallback(async (): Promise<void> => {
     if (readOnly || !dirtyRef.current || savingRef.current) return;
@@ -98,33 +88,13 @@ export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: strin
     const sequence = editSequenceRef.current;
     let retryAfterConflict = false;
     const next = snapshotRef.current;
-    const files = { ...(next.files ?? {}) };
     try {
-    for (const [fileId, file] of Object.entries(files)) {
-      if (file?.dataURL?.startsWith("data:") && uploadedRef.current.has(fileId)) {
-        files[fileId] = { ...file, dataURL: uploadedRef.current.get(fileId), status: "saved" };
-      } else if (file?.dataURL?.startsWith("data:") && !uploadingRef.current.has(fileId)) {
-        uploadingRef.current.add(fileId);
-        try {
-          const url = await uploadBlob(file.dataURL, file.mimeType || "");
-          if (url) {
-            uploadedRef.current.set(fileId, url);
-            files[fileId] = { ...file, dataURL: url, status: "saved" };
-          } else {
-            throw new Error("No se pudo subir una imagen de la pizarra.");
-          }
-        } finally {
-          uploadingRef.current.delete(fileId);
-        }
-      }
-    }
-    const snap = JSON.stringify({ ...next, appState: EMPTY_SNAPSHOT.appState, files });
-      const saved = await request<BoardResponse>("PUT", { ownerType, ownerId: boardId, snapshot: snap, revision: revisionRef.current }, "/api/boards");
+      const files = await uploadBoardFiles(next.files ?? {}, uploadedRef.current, uploadingRef.current);
+      const snap = JSON.stringify({ ...next, appState: EMPTY_SNAPSHOT.appState, files });
+      const saved = await saveBoardSnapshot(boardId, ownerType, snap, revisionRef.current);
       revisionRef.current = saved.revision;
       updatedAtRef.current = saved.updatedAt;
-      if (socketOpenRef.current && socketRef.current) {
-        socketRef.current.send(JSON.stringify({ type: "scene", snapshot: snap }));
-      }
+      presence.current?.send({ type: "scene", snapshot: snap });
       if (sequence === editSequenceRef.current) {
         snapshotRef.current = { ...next, files };
         signatureRef.current = sceneSignature(next.elements ?? [], files);
@@ -137,16 +107,13 @@ export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: strin
     } catch (error) {
       if (error instanceof RequestError && error.status === 409) {
         try {
-          const remote = await fetchBoard();
-          const parsed = parseSnapshot(remote.snapshot);
-          const current = snapshotRef.current;
-          const merged = mergeElements(current.elements ?? [], parsed.elements ?? []);
-          const mergedFiles = { ...(parsed.files ?? {}), ...(current.files ?? {}) };
-          snapshotRef.current = { ...current, elements: merged, files: mergedFiles };
-          signatureRef.current = sceneSignature(merged, mergedFiles);
+          const remote = await loadBoard();
+          const merged = mergeConflictSnapshot(snapshotRef.current, parseSnapshot(remote.snapshot));
+          snapshotRef.current = merged;
+          signatureRef.current = sceneSignature(merged.elements ?? [], merged.files ?? {});
           revisionRef.current = remote.revision;
           updatedAtRef.current = remote.updatedAt;
-          apiRef.current?.updateScene({ elements: merged as never, captureUpdate: "NEVER" });
+          apiRef.current?.updateScene({ elements: merged.elements as never, captureUpdate: "NEVER" });
           dirtyRef.current = true;
           retryAfterConflict = true;
           setStatus("Combinando cambios de otra sesión…");
@@ -164,7 +131,7 @@ export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: strin
         saveTimer.current = window.setTimeout(() => { void persistRef.current?.(); }, SAVE_DEBOUNCE_MS);
       }
     }
-  }, [fetchBoard, readOnly, boardId, ownerType]);
+  }, [loadBoard, readOnly, boardId, ownerType]);
 
   useEffect(() => {
     persistRef.current = persist;
@@ -179,79 +146,50 @@ export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: strin
 
   const applyScene = useCallback((raw: string) => {
     const parsed = parseSnapshot(raw);
-    const current = snapshotRef.current;
-    const merged = mergeElements(current.elements ?? [], parsed.elements ?? []);
-    const files = { ...(current.files ?? {}), ...(parsed.files ?? {}) };
-    snapshotRef.current = { ...current, elements: merged, files };
+    const merged = mergeIncomingSnapshot(snapshotRef.current, parsed);
+    snapshotRef.current = merged;
     if (dirtyRef.current || savingRef.current) editSequenceRef.current++;
-    signatureRef.current = sceneSignature(merged, files);
-    const fileList = Object.values(files);
+    signatureRef.current = sceneSignature(merged.elements ?? [], merged.files ?? {});
+    const fileList = Object.values(merged.files ?? {});
     if (fileList.length) apiRef.current?.addFiles(fileList as never);
-    apiRef.current?.updateScene({ elements: merged as never, captureUpdate: "NEVER" });
+    apiRef.current?.updateScene({ elements: merged.elements as never, captureUpdate: "NEVER" });
   }, []);
 
   const pushPresence = useCallback(() => {
     const collaborators = new Map<string, unknown>();
-    for (const [userId, presence] of presenceRef.current) {
-      collaborators.set(userId, { id: userId, button: "down", username: presence.email, pointer: presence.pointer, selectedElements: {}, color: colorForUser(userId) });
+    for (const [userId, user] of presenceUsers.current) {
+      collaborators.set(userId, { id: userId, button: "down", username: user.email, pointer: user.pointer, selectedElements: {}, color: colorForUser(userId) });
     }
     apiRef.current?.updateScene({ appState: { collaborators: collaborators as never }, captureUpdate: "NEVER" });
   }, []);
 
   useEffect(() => {
     if (!initial) return;
-    let active = true;
-    let socket: WebSocket | null = null;
-    let reconnectTimer: number | undefined;
-    const connect = () => {
-      if (!active) return;
-      const projectId = new URLSearchParams(window.location.search).get("project") || "default";
-      const query = new URLSearchParams({ project: projectId, ownerType, ownerId: boardId });
-      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      socket = new WebSocket(`${protocol}//${window.location.host}/api/board-socket?${query}`);
-      socketRef.current = socket;
-      socket.onopen = () => {
-        socketOpenRef.current = true;
-        socket?.send(JSON.stringify({ type: "presence", pointer: null }));
-      };
-      socket.onmessage = (event: MessageEvent) => {
-        let data: { type?: string; snapshot?: string; userId?: string; email?: string; pointer?: { x: number; y: number } | null };
-        try {
-          data = JSON.parse(event.data) as typeof data;
-        } catch {
-          return;
-        }
-        if (data.type === "scene" && typeof data.snapshot === "string") applyScene(data.snapshot);
-        else if (data.type === "presence" && data.userId) {
-          presenceRef.current.set(data.userId, { email: data.email || data.userId, pointer: data.pointer ?? null });
-          pushPresence();
-        } else if (data.type === "leave" && data.userId) {
-          presenceRef.current.delete(data.userId);
-          pushPresence();
-        }
-      };
-      const giveUp = () => {
-        if (!active) return;
-        socketOpenRef.current = false;
-        socketRef.current = null;
-        reconnectTimer = window.setTimeout(connect, RECONNECT_MS);
-      };
-      socket.onclose = giveUp;
-      socket.onerror = () => socket?.close();
-    };
-    connect();
+    const connection = createWhiteboardPresence({
+      boardId,
+      ownerType,
+      onScene: applyScene,
+      onPresence: (userId, user) => {
+        presenceUsers.current.set(userId, user);
+        pushPresence();
+      },
+      onLeave: (userId) => {
+        presenceUsers.current.delete(userId);
+        pushPresence();
+      },
+    });
+    presence.current = connection;
+    connection.start();
     return () => {
-      active = false;
-      if (reconnectTimer) window.clearTimeout(reconnectTimer);
-      socketOpenRef.current = false;
-      try { socket?.close(); } catch { /* el socket ya está cerrado */ }
+      connection.stop();
+      if (presence.current === connection) presence.current = null;
     };
   }, [applyScene, pushPresence, initial, boardId, ownerType]);
 
   useEffect(() => {
     const tick = () => {
-      if (!document.hidden && !dirtyRef.current && !socketOpenRef.current) {
-        fetchBoard().then((board) => {
+      if (!document.hidden && !dirtyRef.current && !presence.current?.isOpen()) {
+        loadBoard().then((board) => {
           if (board.updatedAt > updatedAtRef.current && board.snapshot && board.snapshot.length > 0) {
             const parsed = parseSnapshot(board.snapshot);
             snapshotRef.current = parsed;
@@ -265,7 +203,7 @@ export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: strin
     };
     const timer = Number(window.setInterval(tick, POLL_MS));
     return () => window.clearInterval(timer);
-  }, [fetchBoard]);
+  }, [loadBoard]);
 
   const handleChange = useCallback((elements: readonly BoardElement[], appState: Record<string, unknown>, files: Record<string, BoardFile>) => {
     if (readOnly) return;
@@ -280,10 +218,8 @@ export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: strin
     saveTimer.current = window.setTimeout(() => { void persist(); }, SAVE_DEBOUNCE_MS);
     if (broadcastTimer.current) window.clearTimeout(broadcastTimer.current);
     broadcastTimer.current = window.setTimeout(() => {
-      const socket = socketRef.current;
-      if (!socketOpenRef.current || !socket) return;
       const sharedFiles = Object.fromEntries(Object.entries(snapshotRef.current.files ?? {}).filter(([, file]) => !file?.dataURL?.startsWith("data:")));
-      socket.send(JSON.stringify({ type: "scene", snapshot: JSON.stringify({ ...EMPTY_SNAPSHOT, elements: snapshotRef.current.elements, appState: {}, files: sharedFiles }) }));
+      presence.current?.send({ type: "scene", snapshot: JSON.stringify({ ...EMPTY_SNAPSHOT, elements: snapshotRef.current.elements, appState: {}, files: sharedFiles }) });
     }, BROADCAST_DEBOUNCE_MS);
   }, [persist, readOnly]);
 
@@ -294,8 +230,7 @@ export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: strin
     if (presenceTimer.current) return;
     presenceTimer.current = window.setTimeout(() => {
       presenceTimer.current = undefined;
-      const socket = socketRef.current;
-      if (socketOpenRef.current && socket) socket.send(JSON.stringify({ type: "presence", pointer: lastPointer.current }));
+      presence.current?.send({ type: "presence", pointer: lastPointer.current });
     }, 50);
   }, []);
 

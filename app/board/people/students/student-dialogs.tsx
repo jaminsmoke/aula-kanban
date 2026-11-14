@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import type { Student } from "../../../lib/domain/student";
-import Modal from "../../modal";
-import { accountLabel } from "../shared/model";
+import type { Student } from "../../../../lib/domain/student";
+import Modal from "../../../modal";
+import { accountLabel } from "../../shared/model";
 
 /**
  * Diálogo para crear o editar una ficha de alumno.
