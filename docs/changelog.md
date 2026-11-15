@@ -13,6 +13,31 @@
 - Publicadas las mejoras locales de navegación, Administración, Tienda, Documentación, estados vacíos y tablero. No hay migraciones nuevas.
 - Verificación: lint, tipos, 1.026 pruebas y compilación correctos; la revisión visual y de enlaces previos está detallada en los roadmaps UI-07 y UI-08.
 
+## 2026-11-15 — Roadmap APP-01 · Matriz de herramientas, roles y alcance
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Inventario completo de las cuatro vistas de EduTools, Excalidraw, Blockly y Diagramas, con datos, estado local, permisos actuales y cobertura MCP.
+- Matriz aprobable en [`matriz-herramientas.md`](matriz-herramientas.md): por defecto se deniega, la visibilidad no otorga permisos y las reglas se evalúan por proyecto.
+- Regla de instalación global: solo owner y admin de instancia pueden instalar o desinstalar apps; el rol de profesor por sí solo no concede gestión global.
+- No se crean herramientas exclusivas de profesor ni se separan las herramientas de EduTools. La mochila/maletín sigue en el backlog hasta tener permisos definidos.
+- UI-09 se retira del backlog: las tarjetas y la ficha ya aplican la regla de instalación del servidor.
+- Sin migraciones, sin cambio de versión y sin cambios de código de permisos en APP-01.
+
+### Verificación
+
+- Revisión de código y documentación; inventario y matriz coherentes con `visibleTools`, `app_documents`, `instance_apps`, la autorización de pizarras y la cobertura MCP.
+- `git diff --check` en verde. Sin suite de código porque APP-01 no introduce cambios de comportamiento.
+- Commits: `ff5f591` (apertura), `10b14a8` (inventario), `e2ee722` (matriz); el cierre queda en el commit de documentación.
+
+### Seguimiento
+
+- **PERM-01** pasa a roadmap activo.
+- **APP-02** sigue aparcada.
+- **APP-03** queda en backlog hasta que PERM-01 defina los permisos.
+
 ## 2026-11-15 — Roadmap UI-08 · Tienda en Administración y Clase en la cabecera
 
 **Estado:** Completada · Sin publicación

@@ -1,4 +1,4 @@
-# Roadmap — APP-01 · Matriz de herramientas, roles y alcance
+# Roadmap — PERM-01 · Matriz y delegación de permisos
 
 > **Estado:** Activo · En curso
 > **Backlog:** [`backlog.md`](backlog.md)
@@ -8,79 +8,64 @@
 
 ## 1. Objetivo
 
-- [ ] Definir una matriz aprobable de herramientas, audiencia, alcance de datos, colaboración y acciones.
-- [ ] Criterio de éxito: documentar los valores por defecto y las reglas para alumno, profesor, ambos e invitado, sin inferir privilegios ni herramientas de profesor no definidas.
+- [ ] Implementar permisos explícitos y delegables con ámbito, sujeto, vigencia, revocación y auditoría.
+- [ ] Criterio de éxito: la autorización se evalúa en el servidor para UI, HTTP, MCP y sockets, sin privilegios cruzados entre proyectos.
 
 ## 2. Alcance
 
 **Dentro:**
-- Inventario de EduTools como capacidades —calculadora/ecuaciones, tabla periódica, medición y lectura— sin separarlas todavía.
-- Inventario de Excalidraw, Blockly y Diagramas, incluida su cobertura MCP actual.
-- Matriz por herramienta: audiencia, alcance de datos (dispositivo, usuario, proyecto o instancia), posibilidad de colaboración y acciones (ver, usar, crear, editar, instalar y desinstalar).
-- Casos de persona con varios roles en un proyecto, varios proyectos, invitado y ausencia de proyecto.
-- Regla de instalación global: solo el dueño y los administradores de instancia instalan o desinstalan apps.
+- Inventario de los puntos de autorización actuales: instalación de apps, documentos de apps, pizarras, archivos, tareas, miembros y MCP.
+- Modelo central de capacidades con ámbito (instancia, proyecto, app y sujeto), roles predeterminados y concesiones individuales revocables.
+- Gestión de permisos por proyecto en Administración y permisos de instancia en Ajustes, previa validación de estructura y alcance.
+- Migración reversible sin otorgar permisos nuevos accidentalmente.
+- Auditoría con actor, ámbito y cambio.
+- Pruebas negativas para acceso directo, API, MCP y sockets.
 
 **Fuera de alcance:**
+- Mochila del alumnado / maletín docente (APP-03).
 - Separar EduTools (APP-02 queda aparcada).
-- Implementar mochila del alumnado / maletín docente (APP-03) o delegación de permisos (PERM-01).
-- Cambiar la autorización de instalación global o los permisos actuales.
-- UI-09: el código actual ya oculta “Instalar” a roles no autorizados y muestra el aviso en la ficha; su cierre documental puede hacerse sin cambiar APP-01.
+- Delegar la instalación o desinstalación global de apps a profesor por concesión individual.
+- Titularidad de Sites.
 
 ## 3. Decisiones de arquitectura
 
 | Decisión | Alternativa descartada | Motivo |
 |---|---|---|
-| Matriz primero, sin cambiar apps | Definir permisos al hacer APP-03/PERM-01 | Evita inferir privilegios y permite diseñar mochila, maletín y delegación sobre reglas explícitas. |
-| EduTools como capacidades compartibles | Duplicar herramientas por rol | El rol no debe decidir el nombre ni la existencia de una herramienta; la audiencia y el uso se definen por capacidad. |
-| Instalación solo para owner/administradores de instancia | Delegar a profesor por concesión individual | Una profesor de un proyecto no debe afectar la instalación de toda la instancia. |
-| Inventario MCP incluido | Revisar solo la web | La matriz debe cubrir también las acciones expuestas por el servidor MCP. |
+| Instalación global solo para owner y administradores de instancia | Delegar a profesores por concesión | Evita que un profesor de un proyecto afecte a toda la instancia. |
+| Denegar por defecto | Permisos inferidos por rol | La matriz es la fuente de verdad; lo no concedido no se concede. |
+| Servidor autoritativo | Confiar en botones ocultos o `roles` del catálogo | La autorización debe funcionar también para acceso directo, API, MCP y sockets. |
+| Ámbito por proyecto | Permisos personales globales | Un usuario puede tener roles distintos en proyectos distintos; no deben acumularse entre proyectos. |
+| Migración reversible | Sustituir permisos en masa | Permite revisar el impacto y deshacer la migración sin perder el control del dueño. |
 
 ## 4. Fases
 
-### Fase 1: Inventario
+### Fase 1: Modelo y migración
 
-- [x] Listar cada herramienta, su vista actual, sus datos, su estado local y su cobertura MCP.
-- [x] Revisar la regla actual de `visibleTools`, documentos por proyecto e instalación por instancia.
-- **Criterios de aceptación:** inventario completo sin cambios de permisos ni de catálogo.
+- [ ] Diseñar capacidades, ámbito, sujeto, duración, revocación y conflictos.
+- [ ] Definir el modelo de datos, la migración reversible y la auditoría.
+- **Criterios de aceptación:** diseño aprobado sin cambios de permisos efectivos.
 
-**Inventario de Fase 1**
+### Fase 2: Enforcement
 
-| Herramienta | Vista y audiencia actual | Datos y persistencia | Estado local | Cobertura MCP |
-|---|---|---|---|---|
-| Calculadora y ecuaciones | Vista «Calculadora» de EduTools: básica, científica y ecuaciones. visible para owner, admin, teacher, student y guest cuando EduTools está instalada. | No guarda documento en servidor. | Historial en `localStorage` (`aula.calc.history`); memoria y sesión no compartidas. | Sin herramienta; solo interactivo. |
-| Tabla periódica | Vista «Ciencias»: búsqueda, filtros, ficha, descripción, historia y modelo atómico. Visible para los cinco roles si EduTools está instalada. | Datos locales del paquete; no hay documento de proyecto. | Estado de búsqueda y selección en el navegador. | `consultar_elemento`: cualquier cuenta autenticada, incluso sin proyecto, si EduTools está instalada. |
-| Medición | Vista «Medir»: regla y transportador. Visible para los cinco roles si EduTools está instalada. | Sin persistencia de trabajo. | Medidas y giro en React, sin documento. | Sin herramienta; solo interactivo. |
-| Lectura en voz alta | Vista «Lectura»: texto, voz y lectura con la voz del sistema. Visible para los cinco roles si EduTools está instalada. | No envía el texto fuera del navegador; sin persistencia. | Texto y voz seleccionada en memoria. | Sin herramienta; solo interactivo. |
-| Excalidraw | Ventana de Tienda dentro de «Pizarra del proyecto». Visible para los cinco roles si está instalada; en Tienda es de solo lectura para student y guest, y editable para owner, admin y teacher. | Snapshot por proyecto persistido y sincronización en vivo (`BoardRoom`). | Geometría de ventana efímera; la escena no se guarda en `localStorage`. | `leer_pizarra` (cualquier miembro), `guardar_pizarra` y `anadir_a_pizarra` (sin student ni guest en Tienda; revisión y límites actuales). |
-| Programación por bloques | Ventana de Blockly con ejemplo, código y ejecución. Visible para los cinco roles; guest queda en solo lectura en la UI. | `app_documents` por proyectos (`app=blockly`); se guarda el estado de bloques. | Respaldo en `localStorage` (`aula.blockly.<projectId>`) y salida local de ejecución. | `leer_programa_bloques` (cualquier miembro), `guardar_programa_bloques` (sin guest; último guardado gana). |
-| Diagramas | Editor de Mermaid con plantillas, vista previa y exportación SVG. Visible para los cinco roles; el servidor deniega el guardado a guest. | `app_documents` por proyecto (`app=mermaid`) con `{ code }`; plantillas compartidas en `lib/domain/mermaid/templates.ts`. | Respaldo en `localStorage` (`aula.mermaid.<projectId>`); la UI intenta guardar y, si el servidor responde 403, queda el respaldo local. | `leer_diagrama` (cualquier miembro), `guardar_diagrama` (sin guest) y `listar_plantillas_diagrama` (cualquier autenticada si la app está instalada, sin proyecto). |
-| Instalación y ventana | Aula Store decide por instancia con `instance_apps`; Tienda actúa como escritorio de ventanas. `visibleTools(role)` hoy devuelve todas las herramientas de `storeTools`, porque cada ficha incluye los cinco roles. | Instalación global; sin selección personal ni por proyecto. | Geometría y selección de ventanas en React, sin persistencia. La sala en vivo es por proyecto y pestaña, sin datos retenidos. | Comunes: `listar_apps`, `obtener_app`, `instalar_app`, `desinstalar_app`, `abrir_app`, `listar_ventanas`, `cerrar_app`, `minimizar_app`, `restaurar_app` y `ampliar_app`. |
+- [ ] Centralizar la evaluación para HTTP, MCP, sockets y UI.
+- [ ] Aplicar la matriz por proyecto e instancia, con revocación inmediata y pruebas negativas.
+- **Criterios de aceptación:** sin privilegios cruzados; profesor no administrador denegado para gestión global.
 
-**Resultados:** no se cambian permisos ni catálogo. La audiencia actual es amplia —toda herramienta instalada es visible para los cinco roles—, y la diferencia real está en el modo de escritura de cada app y en la instalación global. Esto debe corregirse con la matriz de la fase 2, no asumiendo que el escritorio decide los permisos.
+### Fase 3: Gestión y revisión
 
-### Fase 2: Matriz aprobable
-
-- [x] Definir audiencia y alcance de cada capacidad, con valores por defecto y excepciones justificadas.
-- [x] Incluir alumno, profesor, ambos e invitado; varios roles por proyecto; varios proyectos; y sin proyecto.
-- [x] Dejar explícito que el rol de profesor por sí solo no concede instalación global.
-- **Criterios de aceptación:** matriz revisable y lista para decidir APP-03 y PERM-01.
-
-**Matriz documentada en [`matriz-herramientas.md`](matriz-herramientas.md).** Define los valores por defecto, las excepciones por rol y sin proyecto, la denegación por defecto y la regla de que la visibilidad no otorga permisos. No crea herramientas de profesor ni cambia el código actual.
-
-### Fase 3: Cierre documental
-
-- [ ] Actualizar documentación de producto y decidir si APP-03 y PERM-01 salen a roadmap.
-- [ ] Retirar las entradas cerradas del backlog y registrar el resumen en el changelog al completar el roadmap.
-- **Criterios de aceptación:** el backlog no contiene trabajo duplicado y el departamento de producto puede priorizar la siguiente fase.
+- [ ] Añadir la gestión por proyecto, permisos de instancia y auditoría.
+- [ ] Completar migración, revisión de seguridad y documentación.
+- **Criterios de aceptación:** responsable y ámbito auditables; casos directo/API/MCP cubiertos por pruebas.
 
 ## 5. Riesgos y bloqueos
 
 | Riesgo | Impacto | Mitigación |
 |---|---|---|
-| Confundir audiencia con privilegios | Un alumno o invitado podría obtener una acción no definida. | Separar ver/usar/crear/editar de instalar/desinstalar y aplicar denegación por defecto. |
-| Tomar APP-02 como prerrequisito | Retrasar mochila, maletín y permisos. | Mantener APP-02 aparcada y diseñar la matriz sobre las capacidades actuales de EduTools. |
-| Inventar herramientas de profesor | El diseño se adelanta a necesidades no confirmadas. | Solo incluir capacidades definidas o marcar explícitamente las propuestas sin conceder acceso. |
+| Acumular privilegios entre proyectos | Un rol en un proyecto otorga acciones en otro. | Evaluar siempre el proyecto activo y denegar por defecto. |
+| Permisos de UI sin enforcement | Acceso directo o MCP bypasea la regla. | Tests negativos para HTTP, MCP y socket, no solo para el botón. |
+| Migración que concede permisos nuevos | Acceso accidental o pérdida del control del dueño. | Migración reversible, validación explícita y revisión de seguridad. |
+| Delegación superior a los poderes propios | Un administrador puede crear privilegios que no posee. | No permitir delegar más poderes que los que se poseen ni retirar el control del dueño. |
 
 ## 6. Notas de sesión
 
-- UI-09 ya está corregida en el código actual: la tarjeta no muestra “Instalar” a roles no autorizados y la ficha informa que solo el propietario o un administrador puede instalar.
+- La matriz de APP-01 es el punto de partida; esta fase no implementa todavía los permisos.
