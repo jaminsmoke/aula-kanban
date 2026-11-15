@@ -164,6 +164,20 @@ function measureExpression(scenarios, runs) {
         started = performance.now();
         const smallBitmap = await createImageBitmap(derivative);
         const decodeDerivativeMs = performance.now() - started;
+        const referencePixels = smallContext.getImageData(0, 0, width, height).data;
+        const decodedCanvas = new OffscreenCanvas(width, height);
+        const decodedContext = decodedCanvas.getContext("2d");
+        decodedContext.drawImage(smallBitmap, 0, 0);
+        const decodedPixels = decodedContext.getImageData(0, 0, width, height).data;
+        let squaredError = 0;
+        for (let index = 0; index < referencePixels.length; index += 4) {
+          for (let channel = 0; channel < 3; channel += 1) {
+            const delta = referencePixels[index + channel] - decodedPixels[index + channel];
+            squaredError += delta * delta;
+          }
+        }
+        const mse = squaredError / ((referencePixels.length / 4) * 3);
+        const psnrDb = mse === 0 ? 99 : 10 * Math.log10((255 * 255) / mse);
         smallBitmap.close();
         bitmap.close();
 
@@ -178,6 +192,7 @@ function measureExpression(scenarios, runs) {
           resizeMs,
           encodeDerivativeMs,
           decodeDerivativeMs,
+          psnrDb,
         });
       }
       results.push({ id: scenario.id, label: scenario.label, samples });
@@ -199,12 +214,12 @@ function markdown(result) {
     `- Navegador: ${result.browser}`,
     `- Red de referencia para la transferencia: ${result.network.label}`,
     "",
-    "| Escenario | Original | Derivado 800 px WebP | Reducción | Transferencia Fast 3G | Decodificación | Memoria decodificada |",
-    "|---|---:|---:|---:|---:|---:|---:|",
+    "| Escenario | Original | Derivado 800 px WebP | Reducción | Transferencia Fast 3G | Decodificación | Calidad (PSNR) | Memoria decodificada |",
+    "|---|---:|---:|---:|---:|---:|---:|---:|",
   ];
   for (const scenario of result.scenarios) {
     const row = summarize(scenario.samples);
-    lines.push(`| ${scenario.label} | ${bytes(row.originalBytes)} | ${bytes(row.derivativeBytes)} | ${percent(row.originalBytes, row.derivativeBytes)} | ${ms(transfer(row.originalBytes))} → ${ms(transfer(row.derivativeBytes))} | ${ms(row.decodeOriginalMs)} → ${ms(row.decodeDerivativeMs)} (codificar ${ms(row.encodeDerivativeMs)}) | ${bytes(row.decodedBytes)} → ${bytes(row.width * row.height * 4)} |`);
+    lines.push(`| ${scenario.label} | ${bytes(row.originalBytes)} | ${bytes(row.derivativeBytes)} | ${percent(row.originalBytes, row.derivativeBytes)} | ${ms(transfer(row.originalBytes))} → ${ms(transfer(row.derivativeBytes))} | ${ms(row.decodeOriginalMs)} → ${ms(row.decodeDerivativeMs)} (codificar ${ms(row.encodeDerivativeMs)}) | ${db(row.psnrDb)} | ${bytes(row.decodedBytes)} → ${bytes(row.width * row.height * 4)} |`);
   }
   return `${lines.join("\n")}\n`;
 }
@@ -249,6 +264,11 @@ function ms(value) {
 /** Porcentaje de reducción entre dos tamaños. */
 function percent(original, derivative) {
   return `${Math.round((1 - derivative / original) * 100)} %`;
+}
+
+/** Formatea la relación señal-ruido en decibelios. */
+function db(value) {
+  return `${value.toFixed(1).replace(".", ",")} dB`;
 }
 
 /** Lee argumentos `--clave valor`. */

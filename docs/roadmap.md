@@ -28,7 +28,7 @@
 | Decisión | Alternativa descartada | Motivo |
 |---|---|---|
 | Medir en Chrome headless con imágenes sintéticas y decodificación real | Medir sobre producción | No hay sesión de producción y el tablero no se puede sembrar con fotos reales desde esta sesión. |
-| Mantener el original como fuente de verdad | Sustituir el original por el derivado | PER-02 pide conservar el original y evita pérdida de calidad o de animación. |
+| Sustituir el original por el derivado en las subidas nuevas (recomendado en fase 2) | Guardar original y derivado | La tarjeta y el detalle no pasan de 220 px; conservar ambos exige una referencia nueva, cambios en la purga y en el inventario, y duplica el almacenamiento. |
 | El derivado, si se implementa, se genera en el cliente | Transformación al vuelo en cada lectura | El binding de imágenes no está confirmado en Sites; generarlo una vez evita coste por visita. Se compara en la fase 2. |
 | La decisión se toma tras medir, no antes | Implementar directamente | El propio backlog pide evaluar si merece la complejidad. |
 
@@ -43,18 +43,20 @@
 
 ### Fase 2 — Prototipo y comparación
 
-- [ ] Extraer una función pura de dimensiones (ancho máximo, proporción, sin ampliar) con pruebas.
-- [ ] Prototipar el derivado en cliente con `createImageBitmap` y canvas, respetando la orientación y sin metadatos, y medir calidad y CPU.
-- [ ] Comparar con el binding de imágenes de Cloudflare (si Sites lo expone) y con no hacer nada, incluyendo el coste de almacenar y limpiar derivados.
-- [ ] Recomendar una opción con su coste de integración.
-- **Criterios de aceptación:** tabla comparativa con las tres opciones, prueba del cálculo de dimensiones y una recomendación explícita.
+- [x] Extraer una función pura de dimensiones (ancho máximo, proporción, sin ampliar) con pruebas: `lib/domain/uploads/thumbnail.ts` y 7 pruebas.
+- [x] Prototipar el derivado en cliente con `createImageBitmap` y canvas, respetando la orientación y sin metadatos, y medir calidad y CPU: `app/board/shared/image-thumbnail.ts` y PSNR en `perf:images`.
+- [x] Comparar con el binding de imágenes de Cloudflare y con no hacer nada, incluyendo el coste de almacenar y limpiar derivados. El Site no declara el binding `IMAGES` (solo `BUCKET` y `DB`), así que se descarta.
+- [x] Recomendar una opción con su coste de integración: derivado en cliente que sustituye al original, con respaldo, en [`miniaturas.md`](miniaturas.md).
+- **Criterios de aceptación:** cumplidos; la tabla compara las cuatro alternativas (incluida la variante que conserva el original) y la recomendación es explícita.
 
-### Fase 3 — Decisión e integración (condicionada)
+### Fase 3 — Decisión e integración (pendiente de aprobación)
 
-- [ ] Si la recomendación es implementar: integrar en la subida de tareas conservando el original, referenciar el derivado para que la purga no lo trate como huérfano y actualizar README y ayuda.
-- [ ] Si la recomendación es no implementar: registrar el motivo, devolver PER-02 al backlog y cerrar el roadmap sin tocar código de producto.
+- [ ] Confirmar la recomendación de la fase 2: derivado en cliente que sustituye al original en subidas nuevas, con respaldo al original si falla.
+- [ ] Integrar en `handleUpload`: generar el derivado, subirlo como `task-image`, dejar los GIF intactos y no tocar las imágenes ya guardadas.
+- [ ] Probar el camino feliz, el respaldo cuando el generador devuelve `null` y el GIF sin transformar.
+- [ ] Documentar en el README la pérdida del original en subidas nuevas, la asimetría con el MCP y el límite de 5 MB.
 - [ ] Pasar lint, tipos, pruebas y build sobre el resultado.
-- **Criterios de aceptación:** decisión escrita con evidencia, sin cambios de esquema ni de versión, y checks verdes.
+- **Criterios de aceptación:** decisión escrita con evidencia, sin cambios de esquema ni de versión, y checks verdes. Si no se aprueba, se documenta el motivo y se cierra sin tocar código de producto.
 
 ## 5. Riesgos y bloqueos
 
@@ -70,4 +72,4 @@
 ## 6. Notas de sesión
 
 - 2026-11-15: PER-02 sale del backlog y entra al roadmap tras publicar `1.1.28`. Fase 1 completada con una foto sintética de 12 MP: 3,9 MB, 46,5 MB decodificados y ~20 s en Fast 3G frente a 61 KB, 1,8 MB y ~0,3 s del derivado de 800 px.
-- Queda pendiente decidir si el derivado se genera en cliente o se descarta por complejidad; la fase 2 no ha empezado.
+- 2026-11-15: fase 2 completada. El derivado de 800 px WebP 0,8 obtiene 35,7 dB de PSNR y cuesta 27–35 ms de codificación en escritorio. El binding `IMAGES` no está disponible en el Site. Se recomienda el derivado en cliente que sustituye al original, con respaldo; conservar ambos se descarta por esquema, purga e inventario. La fase 3 queda pendiente de aprobación.
