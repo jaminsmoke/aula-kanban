@@ -6,7 +6,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](roadmap.md) | Roadmap activo (sin trabajo iniciado) | Secuencia de ejecución |
+| [`roadmap.md`](roadmap.md) | Roadmap PER-01B activo | Secuencia de ejecución |
 | [`backlog.md`](backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`mcp-apps.md`](mcp-apps.md) | Cobertura MCP, permisos y límites de las apps nativas | Temático |
@@ -71,6 +71,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
+- **Roadmap PER-01B activo:** inventario paginado y de solo lectura de R2, cotejo exacto con `uploads` y documentación de objetos sin fila o copias antiguas, con revisión desde Ajustes > Almacenamiento. Detalle en [`roadmap.md`](roadmap.md).
 - **Roadmap PER-03 completado:** inventario de referencias en tareas, pizarras y documentos, purga idempotente de R2 y `uploads` con 7 días de gracia, simulación previa y control en Ajustes > Almacenamiento. Sin migraciones ni cambio de versión; resumen en [`changelog.md`](changelog.md).
 - **Roadmap MCP-05E completado:** lectura, guardado y plantillas de la app Diagramas desde MCP sobre `app_documents`, con la lista de plantillas compartida, límite de 200 KB y bloqueo de invitados. Catálogo `0.26.0` con 59 herramientas; resumen en [`changelog.md`](changelog.md) y cobertura en [`mcp-apps.md`](mcp-apps.md).
 - **Roadmap MCP-05D completado:** lectura y guardado del programa de Blockly desde MCP sobre `app_documents`, con límite compartido de 200 KB, validación de `blocks.blocks[]` y bloqueo de invitados. Catálogo `0.25.0` con 56 herramientas; resumen en [`changelog.md`](changelog.md) y cobertura en [`mcp-apps.md`](mcp-apps.md).
@@ -103,7 +104,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap de Servidor MCP completado:** servidor MCP remoto en `/api/mcp` con 8 herramientas, tokens personales en Ajustes > Cuenta, límite básico por token y documentación de instalación en README y `/documentacion`. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap MCP-05B completado:** lectura, guardado y adición de pizarras de Excalidraw desde MCP, con publicación en `BoardRoom` y catálogo `0.24.0` con 54 herramientas. Resumen en [`changelog.md`](changelog.md) y cobertura en [`mcp-apps.md`](mcp-apps.md).
 - **Roadmap MCP-05A + MCP-05C completado:** contrato común de MCP para apps y primer piloto `consultar_elemento` de Herramientas de aula. Catálogo `0.22.0` con 51 herramientas; resumen en [`changelog.md`](changelog.md) y cobertura en [`mcp-apps.md`](mcp-apps.md).
-- **Backlog:** PER-01B, PER-02 y SYNC-01 (3 entradas). MCP-04, MCP-03, MCP-01 y MCP-02 están cerrados; el plugin de Sites sustituye la entrada «GPT con Actions».
+- **Backlog:** PER-02 y SYNC-01 (2 entradas). MCP-04, MCP-03, MCP-01 y MCP-02 están cerrados; el plugin de Sites sustituye la entrada «GPT con Actions».
 - **Roadmap de hidratación en `view=ajustes` completado:** el estado inicial de vista/sección pasa de la página (servidor) al hook, y la primera pintura ya coincide. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de repositorio público en GitHub completado:** `jaminsmoke/aula-kanban` con licencia MIT, textos de licencia de Excalidraw, CI en verde, segundo push con instrucciones de clonado y mensaje de remix con git. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de OAuth 2.1 para MCP y GPT completado:** servidor de autorización en el Site (RFC 7591, PKCE S256, consentimiento SIWC), MCP como resource server con alcances `mcp:read`/`mcp:write` y documentación de conexión para clientes y GPT. Resumen en [`changelog.md`](changelog.md).

@@ -2,17 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** PER-01B activo · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** PER-03 se completó. La cobertura MCP está en [`mcp-apps.md`](mcp-apps.md). MCP-05E se completó; UI-03 se completó; UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; PER-01 sigue archivado con su trabajo pendiente abajo; SYNC-01 se queda aquí como norma operativa.
+> **Nota:** PER-01B está en el roadmap activo. La cobertura MCP está en [`mcp-apps.md`](mcp-apps.md). PER-03 se completó; MCP-05E se completó; UI-03 se completó; UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; PER-01 sigue archivado con su trabajo pendiente abajo; SYNC-01 se queda aquí como norma operativa.
 
 ---
-
-## 2026-11-15 — PER-01B · Inventario de R2 y copias antiguas
-
-- Contexto: el 2026-11-15 la subida web y la lectura después de recargar funcionaron en producción; la prueba temporal se retiró y el panel mostraba 0 filas en `uploads`. El diagnóstico solo confirma que R2 responde, no que el bucket esté vacío.
-- Qué falta: enumerar los objetos de R2 de forma paginada y protegida para administración, cotejarlos con D1, comprobar si existe alguna copia de archivos antiguos y documentar el destino de cada posible huérfano. No borrar objetos desconocidos sin identificarlos.
-- El roadmap anterior se conserva íntegro en [`historial/roadmap-per-01.md`](historial/roadmap-per-01.md), incluidos el alcance y los criterios aún pendientes.
 
 ## 2026-11-15 — PER-02 · Evaluar miniaturas derivadas
 
