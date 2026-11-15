@@ -24,6 +24,7 @@
 - Build servida en `8791` con identidad local: 1366×900, 1024×768, 900×700, 620×800 y 390×844 sin desborde horizontal; Tienda ocupa 1127/801/677/605/390 px de ancho y el dock queda dentro del escritorio. A 390 la ventana abierta cabe (366×560) y el maximizado de 1366 ocupa exactamente el contenido (1127×822), sin tapar cabecera ni sidebar.
 - Alias `view=espacio&app=excalidraw` canoniza a `view=administracion&section=tienda&app=excalidraw` y abre Excalidraw; el catálogo de Aula Store abre y vuelve al escritorio; Clase vuelve a Tareas desde su botón de icono, también desde Alumnos. Cero excepciones de consola.
 - La revisión encontró y corrigió una regresión del renombrado: el fetch de apps apuntaba a `/api/store-apps`; vuelve a `/api/space-apps` y la prueba de la vista lo cubre.
+- La revisión posterior detectó que el escritorio y Aula Store compartían `.store-view`; al cargar el catálogo, su CSS fijaba el escritorio al viewport. El catálogo pasa a `.store-catalog` y su prueba comprueba que no reutiliza la clase del escritorio.
 - Suite completa: 125 archivos / 1.026 pruebas; `tsc`, lint, build, `git diff --check` y `perf:budget` en verde.
 - Capturas y métricas en `outputs/ui08-*.png` y `outputs/ui08-metrics.json` (ignorados por git).
 - Commits: `0082fcf` (roadmap), `5740160` (fase 1), `b08cd46` (corrección de cabecera/dock), `6ac70c6` (fase 2); el cierre queda en el commit de documentación. Sin `release:prepare`, push ni publicación.

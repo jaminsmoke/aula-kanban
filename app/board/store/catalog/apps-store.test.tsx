@@ -10,7 +10,9 @@ const props = { apps: native, error: "", onManage: vi.fn(), onOpen: noop, onRefr
 describe("Aula Store", () => {
   it("permite al administrador desinstalar Excalidraw", () => {
     const manage = vi.fn();
-    render(<AppsStore {...props} role="owner" onManage={manage} />);
+    const { container } = render(<AppsStore {...props} role="owner" onManage={manage} />);
+    expect(container.querySelector(".store-catalog")).toBeTruthy();
+    expect(container.querySelector(".store-view")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: /Desinstalar/ }));
     expect(manage).toHaveBeenCalledWith("excalidraw", "uninstall");
     expect(screen.getByText(`v${AULA_STORE_VERSION}`)).toBeTruthy();

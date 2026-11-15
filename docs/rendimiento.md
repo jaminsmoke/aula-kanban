@@ -36,17 +36,17 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 
 | Flujo | Bruto | Gzip | Presupuesto vigente | Archivos |
 |---|---:|---:|---:|---:|
-| Tablero | 550,6 KiB | 164,2 KiB (168.132 B) | 175.656 B | 27 |
-| Herramientas de aula · abrir Básica | 498,9 KiB | 140,4 KiB (143.773 B) | 150.827 B | 15 |
-| Herramientas de aula · primer `=` en Básica | 498,9 KiB | 140,4 KiB (143.773 B) | 150.827 B | 15 |
-| Herramientas de aula · Científica/Ecuaciones | 6.665,3 KiB | 1.925,3 KiB (1.971.518 B) | 2.069.960 B | 17 |
-| Diagramas · flujo inicial | 1.137,0 KiB | 308,9 KiB (316.274 B) | 331.923 B | 42 |
+| Tablero | 550,6 KiB | 164,2 KiB (168.137 B) | 175.656 B | 27 |
+| Herramientas de aula · abrir Básica | 498,9 KiB | 140,4 KiB (143.772 B) | 150.827 B | 15 |
+| Herramientas de aula · primer `=` en Básica | 498,9 KiB | 140,4 KiB (143.772 B) | 150.827 B | 15 |
+| Herramientas de aula · Científica/Ecuaciones | 6.665,3 KiB | 1.925,3 KiB (1.971.516 B) | 2.069.960 B | 17 |
+| Diagramas · flujo inicial | 1.137,0 KiB | 308,9 KiB (316.270 B) | 331.923 B | 42 |
 | Diagramas · con ELK | 2.575,6 KiB | 750,0 KiB (768.014 B) | 806.262 B | 40 |
 | Tienda · abrir | 518,6 KiB | 162,5 KiB (166.436 B) | 174.779 B | 18 |
-| Pizarra · abrir | 3.434,2 KiB | 1.213,1 KiB (1.242.198 B) | 1.348.890 B | 21 |
-| Pizarra · conversión Mermaid | 4.198,1 KiB | 1.410,4 KiB (1.444.212 B) | 1.560.999 B | 48 |
-| Blockly · abrir | 1.147,4 KiB | 321,6 KiB (329.303 B) | 345.631 B | 17 |
-| Blockly · panel de código | 1.281,6 KiB | 356,6 KiB (365.155 B) | 383.275 B | 20 |
+| Pizarra · abrir | 3.434,2 KiB | 1.213,1 KiB (1.242.184 B) | 1.348.890 B | 21 |
+| Pizarra · conversión Mermaid | 4.198,1 KiB | 1.410,4 KiB (1.444.185 B) | 1.560.999 B | 48 |
+| Blockly · abrir | 1.147,4 KiB | 321,6 KiB (329.306 B) | 345.631 B | 17 |
+| Blockly · panel de código | 1.281,6 KiB | 356,6 KiB (365.158 B) | 383.275 B | 20 |
 
 Línea base regenerada el 2026-11-15 con la build de la fase 2 de UI-08. La raíz del flujo de Tienda es `app/board/store/store-desktop.tsx`; las secciones «Cambio de fase 2» y «Cambio de fase 3» conservan las cifras históricas de sus mediciones.
 

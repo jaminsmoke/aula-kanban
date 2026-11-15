@@ -3,7 +3,7 @@
    ========================================================================== */
 
 /* Aula Store: catálogo con portadas, categorías y ficha de detalle. */
-.store-view { position:absolute; inset:0; z-index:40; display:flex; flex-direction:column; overflow-y:auto; padding:20px 24px 28px; background:var(--ui-surface-page); animation:fade-in var(--duration-base) var(--ease-out); }
+.store-catalog { position:absolute; inset:0; z-index:40; display:flex; flex-direction:column; overflow-y:auto; padding:20px 24px 28px; background:var(--ui-surface-page); animation:fade-in var(--duration-base) var(--ease-out); }
 /* Cabecera ligera: integrada en el fondo, sin bloque que separe la tienda. */
 .store-header { display:flex; flex-direction:column; gap:12px; margin-bottom:18px; }
 .store-header-main { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }

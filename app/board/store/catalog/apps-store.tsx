@@ -103,7 +103,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
   return (
     <MotionConfig reducedMotion="user">
     <LazyMotion features={domAnimation}>
-    <div className="store-view" role="region" aria-label="Aula Store">
+    <div className="store-catalog" role="region" aria-label="Aula Store">
       <header className="store-header">
         <div className="store-header-main">
           <button type="button" className="store-back" onClick={onClose}><ArrowLeft size={16} aria-hidden /> Escritorio</button>
