@@ -55,13 +55,13 @@ afterEach(() => {
 });
 
 describe("SettingsView", () => {
-  it("muestra las cinco secciones y separa Tokens de Cuenta", async () => {
+  it("muestra las seis secciones y separa Tokens de Cuenta", async () => {
     const calls = mockRequests();
 
     render(<SettingsView {...props} />);
 
     const navigation = screen.getByRole("navigation", { name: "Secciones de ajustes" });
-    for (const name of ["Cuenta", "Apariencia", "Tokens MCP", "Administradores", "Almacenamiento"]) {
+    for (const name of ["Cuenta", "Apariencia", "Documentación", "Tokens MCP", "Administradores", "Almacenamiento"]) {
       expect(within(navigation).getByRole("button", { name })).toBeTruthy();
     }
     expect(screen.getByRole("button", { name: "Cuenta" }).getAttribute("aria-current")).toBe("page");
@@ -89,6 +89,15 @@ describe("SettingsView", () => {
     expect(screen.queryByRole("button", { name: "Almacenamiento" })).toBeNull();
     expect(screen.getByRole("button", { name: "Tokens MCP" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Cuenta" }).getAttribute("aria-current")).toBe("page");
+  });
+
+  it("abre la documentación sin el botón de vuelta al tablero", async () => {
+    mockRequests();
+    render(<SettingsView {...props} section="documentacion" />);
+
+    expect(screen.getByRole("button", { name: "Documentación" }).getAttribute("aria-current")).toBe("page");
+    expect(await screen.findByRole("heading", { level: 1, name: "Documentación de Aula Kanban" }, { timeout: 5000 })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Volver a Clase/ })).toBeNull();
   });
 
   it("vuelve a Cuenta si una sección restringida se abre sin permiso", async () => {

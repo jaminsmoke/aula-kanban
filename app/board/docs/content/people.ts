@@ -58,7 +58,7 @@ export const peopleSections: DocSection[] = [
   {
     id: "proyectos",
     title: "Proyectos y ajustes",
-    lead: "El menú del proyecto reúne crear, compartir, gestionar miembros y eliminar. El engranaje de la cabecera abre los Ajustes de tu cuenta: Cuenta con sus tokens del MCP y, si te corresponde, Administradores.",
+    lead: "El menú del proyecto reúne crear, compartir, gestionar miembros y eliminar. El engranaje de la cabecera abre Ajustes: Cuenta, Apariencia, Documentación, Tokens MCP y, si te corresponde, Administradores y Almacenamiento.",
     blocks: [
       { type: "image", src: "/capturas/ajustes.webp", alt: "Ajustes de Cuenta con el permiso en la aplicación, el proyecto activo y el rol", caption: "Ajustes > Cuenta: permiso en la aplicación, proyecto activo y rol, con los datos ficticios de la demostración." },
       { type: "paragraph", text: "La cabecera muestra el proyecto activo en «Seleccionar proyecto»: al desplegarlo ves la lista «Proyectos» con una marca en el actual y las acciones de abajo. Cambiar de proyecto cambia de tablero: tareas, fichas y aplicaciones son las de ese proyecto." },
@@ -76,7 +76,7 @@ export const peopleSections: DocSection[] = [
       {
         type: "steps",
         items: [
-          "Abre el engranaje de la cabecera. La barra lateral de Ajustes tiene «Cuenta» y, si eres propietario o administrador, «Administradores».",
+          "Abre el engranaje de la cabecera. La barra lateral de Ajustes tiene «Cuenta», «Apariencia», «Documentación» y «Tokens MCP» y, si eres propietario o administrador, «Administradores» y «Almacenamiento».",
           "En «Cuenta» ves tu «Cuenta de ChatGPT» con nombre y correo, tu «Permiso en la aplicación», el «Proyecto activo» y tu «Rol en el proyecto» (Propietario, Administrador, Profesor, Alumno o Invitado).",
           "El mismo panel avisa de que los permisos de la aplicación son independientes de la propiedad del Site en Sites, y ofrece «Cerrar sesión».",
         ],

@@ -77,6 +77,19 @@
 .token-state { color:var(--ui-text-muted); font-size: var(--text-base); }
 .token-panel .admin-form > div .primary { white-space:nowrap; }
 
+/* Documentación dentro de Ajustes: sin la vuelta al tablero y con un ancho
+   de rejilla adaptado al workspace, no al viewport de la página pública. */
+.settings-content, .settings-docs, .settings-docs .docs-view { min-width: 0; }
+.settings-docs .docs-view { padding-block: 0 24px; }
+.settings-docs .docs-layout { grid-template-columns: 204px minmax(0, 1fr); gap: 20px; }
+.settings-docs .docs-hero { padding: 24px 26px; }
+.settings-docs-loading { padding: 24px 0; color: var(--ui-text-muted); }
+
+@media (max-width: 1180px) {
+  .settings-docs .docs-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .settings-docs .docs-index { display: none; }
+}
+
 @media (max-width: 1050px) {
   .settings-content { padding-inline:24px; }
 }

@@ -4,18 +4,20 @@
  * - `project`: id del proyecto activo. Lo sigue leyendo `use-projects`; aquí
  *   solo se conserva, nunca se reescribe.
  * - `view`: una de `clase | administracion | espacio | ajustes |
- *   documentacion`. Por defecto `clase`.
+ *   documentacion`. Por defecto `clase`. `documentacion` es un alias
+ *   antiguo de Ajustes > Documentación y se reescribe a su forma canónica.
  * - `section`: sección dentro de la vista. En `clase` es `tareas` (por
  *   defecto) o `calendario`; en `administracion` es `alumnos` (por defecto) o
- *   `profesores`; en `ajustes` es `cuenta | apariencia | tokens |
- *   administradores | almacenamiento` (por defecto `cuenta`). En el resto de
- *   vistas no tiene significado y se omite.
+ *   `profesores`; en `ajustes` es `cuenta | apariencia | documentacion |
+ *   tokens | administradores | almacenamiento` (por defecto `cuenta`). En el
+ *   resto de vistas no tiene significado y se omite.
  *
  * La forma canónica omite los valores por defecto: `/?project=p1` ya es
  * Clase > Tareas, `/?project=p1&view=administracion` ya es Administración >
  * Alumnos y `/?project=p1&view=ajustes` ya es Ajustes > Cuenta.
  * `view=alumnos` y `view=profesores` son alias antiguos que se leen como
- * Administración y se reescriben a su forma canónica.
+ * Administración, y `view=documentacion` como Ajustes > Documentación; todos
+ * se reescriben a su forma canónica.
  * Los valores inválidos caen al defecto de su vista. Los parámetros
  * desconocidos y el hash (`#docs-…`) se conservan tal cual.
  *
@@ -34,7 +36,7 @@ export type AdministracionSection = "alumnos" | "profesores";
 export type ClassSection = "tareas" | "calendario";
 
 /** Secciones válidas dentro de Ajustes. */
-export type SettingsSection = "cuenta" | "apariencia" | "tokens" | "administradores" | "almacenamiento";
+export type SettingsSection = "cuenta" | "apariencia" | "documentacion" | "tokens" | "administradores" | "almacenamiento";
 
 /** Vistas válidas del tablero. */
 export const BOARD_VIEWS: readonly BoardView[] = [
@@ -58,6 +60,7 @@ export const CLASS_SECTIONS: readonly ClassSection[] = ["tareas", "calendario"];
 export const SETTINGS_SECTIONS: readonly SettingsSection[] = [
   "cuenta",
   "apariencia",
+  "documentacion",
   "tokens",
   "administradores",
   "almacenamiento",
@@ -93,11 +96,14 @@ export function parseBoardUrl(search: string): BoardUrlState {
   const legacySection = LEGACY_PEOPLE_VIEWS.includes(rawView as (typeof LEGACY_PEOPLE_VIEWS)[number])
     ? (rawView as AdministracionSection)
     : null;
-  const view: BoardView = BOARD_VIEWS.includes(rawView as BoardView)
-    ? (rawView as BoardView)
-    : legacySection
-      ? "administracion"
-      : DEFAULT_STATE.view;
+  const legacyDocumentation = rawView === "documentacion";
+  const view: BoardView = legacyDocumentation
+    ? "ajustes"
+    : BOARD_VIEWS.includes(rawView as BoardView)
+      ? (rawView as BoardView)
+      : legacySection
+        ? "administracion"
+        : DEFAULT_STATE.view;
   const rawSection = params.get("section");
 
   const administracionSection: AdministracionSection = legacySection
@@ -105,9 +111,11 @@ export function parseBoardUrl(search: string): BoardUrlState {
   const classSection: ClassSection = CLASS_SECTIONS.includes(rawSection as ClassSection)
     ? (rawSection as ClassSection)
     : DEFAULT_STATE.classSection;
-  const settingsSection: SettingsSection = SETTINGS_SECTIONS.includes(rawSection as SettingsSection)
-    ? (rawSection as SettingsSection)
-    : DEFAULT_STATE.settingsSection;
+  const settingsSection: SettingsSection = legacyDocumentation
+    ? "documentacion"
+    : SETTINGS_SECTIONS.includes(rawSection as SettingsSection)
+      ? (rawSection as SettingsSection)
+      : DEFAULT_STATE.settingsSection;
 
   const app = view === "espacio" ? params.get("app") : null;
   return { view, classSection, settingsSection, administracionSection, app };
@@ -122,19 +130,23 @@ export function parseBoardUrl(search: string): BoardUrlState {
  */
 export function buildBoardUrl(search: string, state: BoardUrlState): string {
   const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+  // La documentación del tablero vive en Ajustes: la vista antigua se
+  // escribe siempre como `view=ajustes&section=documentacion`.
+  const view = state.view === "documentacion" ? "ajustes" : state.view;
+  const settingsSection = state.view === "documentacion" ? "documentacion" : state.settingsSection;
 
-  if (state.view === DEFAULT_STATE.view) params.delete("view");
-  else params.set("view", state.view);
+  if (view === DEFAULT_STATE.view) params.delete("view");
+  else params.set("view", view);
 
-  if (state.view === "clase") {
+  if (view === "clase") {
     if (state.classSection === DEFAULT_STATE.classSection) params.delete("section");
     else params.set("section", state.classSection);
-  } else if (state.view === "administracion") {
+  } else if (view === "administracion") {
     if (state.administracionSection === DEFAULT_STATE.administracionSection) params.delete("section");
     else params.set("section", state.administracionSection);
-  } else if (state.view === "ajustes") {
-    if (state.settingsSection === DEFAULT_STATE.settingsSection) params.delete("section");
-    else params.set("section", state.settingsSection);
+  } else if (view === "ajustes") {
+    if (settingsSection === DEFAULT_STATE.settingsSection) params.delete("section");
+    else params.set("section", settingsSection);
   } else {
     params.delete("section");
   }

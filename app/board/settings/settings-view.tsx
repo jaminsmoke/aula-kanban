@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { HardDrive, KeyRound, Palette, ShieldCheck, UserRound } from "lucide-react";
+import { Suspense, lazy, useEffect, useState } from "react";
+import { BookOpen, HardDrive, KeyRound, Palette, ShieldCheck, UserRound } from "lucide-react";
 import WorkspaceLayout, { type WorkspaceItem } from "../layout/workspace-layout";
 import type { Project } from "../shared/model";
 import SettingsAccount from "./settings-account";
@@ -10,6 +10,9 @@ import SettingsAppearance from "./settings-appearance";
 import SettingsStorage from "./settings-storage";
 import SettingsTokens from "./settings-tokens";
 import "./settings-view.css";
+
+// La ayuda solo se descarga al abrir su sección.
+const DocumentationView = lazy(() => import("../docs/docs-view"));
 
 /** Secciones disponibles dentro de Ajustes (tipo canónico en `lib/domain/board-url`). */
 export type { SettingsSection } from "../../../lib/domain/board-url";
@@ -38,6 +41,7 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, activ
   const sections: WorkspaceItem<SettingsSection>[] = [
     { id: "cuenta", label: "Cuenta", icon: UserRound },
     { id: "apariencia", label: "Apariencia", icon: Palette },
+    { id: "documentacion", label: "Documentación", icon: BookOpen },
     { id: "tokens", label: "Tokens MCP", icon: KeyRound },
     ...(privileged ? [
       { id: "administradores" as const, label: "Administradores", icon: ShieldCheck },
@@ -64,6 +68,10 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, activ
           <SettingsAccount user={user} projectsLoaded={projectsLoaded} owner={owner} admin={admin} activeProject={activeProject} />
         ) : active === "apariencia" ? (
           <SettingsAppearance />
+        ) : active === "documentacion" ? (
+          <Suspense fallback={<div className="settings-docs-loading" role="status">Cargando la documentación…</div>}>
+            <div className="settings-docs"><DocumentationView /></div>
+          </Suspense>
         ) : active === "tokens" ? (
           <SettingsTokens />
         ) : active === "administradores" ? (

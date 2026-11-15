@@ -42,7 +42,7 @@ describe("BoardHeader", () => {
     expect(within(nav).queryByRole("button", { name: "Profesores" })).toBeNull();
     expect(within(nav).queryByRole("button", { name: "Documentación" })).toBeNull();
     expect(within(nav).queryByText("Mi espacio")).toBeNull();
-    expect(screen.getByRole("button", { name: "Documentación" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Documentación" })).toBeNull();
     expect(screen.getByRole("button", { name: "Ajustes" })).toBeTruthy();
     expect(screen.queryByText("Ajustes de la cuenta")).toBeNull();
     expect(within(nav).getByRole("button", { name: "Clase" }).getAttribute("aria-current")).toBe("page");
@@ -59,7 +59,7 @@ describe("BoardHeader", () => {
     expect(screen.getByRole("link", { name: /Pruebas/ }).getAttribute("href")).toBe("/?project=p1&view=ajustes&section=administradores");
   });
 
-  it("abre Administración, Mi espacio, Documentación y Ajustes y marca sus acciones como activas", () => {
+  it("abre Administración, Mi espacio y Ajustes y marca sus acciones como activas", () => {
     const onView = vi.fn();
     const onSettings = vi.fn();
     const { rerender } = render(<BoardHeader {...props} onView={onView} onSettings={onSettings} />);
@@ -70,9 +70,6 @@ describe("BoardHeader", () => {
     fireEvent.click(screen.getByRole("button", { name: "Mi espacio" }));
     expect(onView).toHaveBeenCalledWith("espacio");
 
-    fireEvent.click(screen.getByRole("button", { name: "Documentación" }));
-    expect(onView).toHaveBeenCalledWith("documentacion");
-
     fireEvent.click(screen.getByRole("button", { name: "Ajustes" }));
     expect(onSettings).toHaveBeenCalled();
 
@@ -81,9 +78,6 @@ describe("BoardHeader", () => {
 
     rerender(<BoardHeader {...props} view="espacio" onView={onView} onSettings={onSettings} />);
     expect(screen.getByRole("button", { name: "Mi espacio" }).getAttribute("aria-current")).toBe("page");
-
-    rerender(<BoardHeader {...props} view="documentacion" onView={onView} onSettings={onSettings} />);
-    expect(screen.getByRole("button", { name: "Documentación" }).getAttribute("aria-current")).toBe("page");
 
     rerender(<BoardHeader {...props} view="ajustes" onView={onView} onSettings={onSettings} />);
     expect(screen.getByRole("button", { name: "Ajustes" }).getAttribute("aria-current")).toBe("page");

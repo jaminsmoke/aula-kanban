@@ -21,7 +21,8 @@ describe("parseBoardUrl", () => {
     expect(parseBoardUrl("?project=p1&view=ajustes&section=apariencia")).toEqual({ ...defaults, view: "ajustes", settingsSection: "apariencia", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=tokens")).toEqual({ ...defaults, view: "ajustes", settingsSection: "tokens", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=almacenamiento")).toEqual({ ...defaults, view: "ajustes", settingsSection: "almacenamiento", app: null });
-    expect(parseBoardUrl("?project=p1&view=documentacion")).toEqual({ ...defaults, view: "documentacion", app: null });
+    expect(parseBoardUrl("?project=p1&view=documentacion")).toEqual({ ...defaults, view: "ajustes", settingsSection: "documentacion", app: null });
+    expect(parseBoardUrl("?project=p1&view=ajustes&section=documentacion")).toEqual({ ...defaults, view: "ajustes", settingsSection: "documentacion", app: null });
   });
 
   it("lee las URLs antiguas de alumnado y profesorado como Administración", () => {
@@ -61,6 +62,8 @@ describe("buildBoardUrl", () => {
     expect(buildBoardUrl("?project=p1&view=ajustes&section=apariencia", { ...defaults, view: "ajustes", settingsSection: "apariencia" })).toBe("?project=p1&view=ajustes&section=apariencia");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=tokens", { ...defaults, view: "ajustes", settingsSection: "tokens" })).toBe("?project=p1&view=ajustes&section=tokens");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=almacenamiento", { ...defaults, view: "ajustes", settingsSection: "almacenamiento" })).toBe("?project=p1&view=ajustes&section=almacenamiento");
+    expect(buildBoardUrl("?project=p1&view=ajustes&section=documentacion", { ...defaults, view: "ajustes", settingsSection: "documentacion" })).toBe("?project=p1&view=ajustes&section=documentacion");
+    expect(buildBoardUrl("?project=p1&view=documentacion", { ...defaults, view: "documentacion" })).toBe("?project=p1&view=ajustes&section=documentacion");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=administradores", { ...defaults, view: "administracion" })).toBe("?project=p1&view=administracion");
   });
 

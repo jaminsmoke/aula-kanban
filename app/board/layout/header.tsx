@@ -1,7 +1,7 @@
 "use client";
 
 import type { MouseEvent } from "react";
-import { BookOpen, Check, ChevronDown, Columns3, FolderKanban, LayoutGrid, Link2, LogOut, Plus, Settings, Trash2, Users } from "lucide-react";
+import { Check, ChevronDown, Columns3, FolderKanban, LayoutGrid, Link2, LogOut, Plus, Settings, Trash2, Users } from "lucide-react";
 import appPackage from "../../../package.json";
 import type { Project } from "../shared/model";
 import { buildBoardUrl } from "../shared/board-url";
@@ -80,10 +80,6 @@ export default function BoardHeader({
             </div>
           </div>
         </details>}
-        <button type="button" className="header-docs" aria-current={view === "documentacion" ? "page" : undefined} onClick={() => onView("documentacion")} aria-label="Documentación" title="Documentación">
-          <BookOpen size={18} aria-hidden />
-          <span className="header-docs-label">Documentación</span>
-        </button>
         <button type="button" className="header-settings" aria-current={view === "ajustes" ? "page" : undefined} onClick={onSettings} aria-label="Ajustes" title="Ajustes">
           <Settings size={18} aria-hidden />
         </button>

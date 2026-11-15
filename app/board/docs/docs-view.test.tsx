@@ -21,6 +21,12 @@ describe("DocumentationView", () => {
     expect(onBack).toHaveBeenCalled();
   });
 
+  it("no muestra el botón de vuelta cuando se integra en Ajustes", () => {
+    render(<DocumentationView />);
+
+    expect(screen.queryByRole("button", { name: /Volver a Clase/ })).toBeNull();
+  });
+
   it("muestra el índice con anclas a cada sección y marca la activa", () => {
     render(<DocumentationView onBack={vi.fn()} />);
 

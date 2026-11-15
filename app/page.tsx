@@ -8,8 +8,9 @@ export const dynamic = "force-dynamic";
 
 /**
  * Página principal: sin sesión muestra la portada pública; con sesión,
- * el tablero. Documentación (`?view=documentacion`) se abre sin sesión
- * en `/documentacion`; el resto de vistas del tablero sigue protegido.
+ * el tablero. La documentación del tablero vive en Ajustes; el alias
+ * `?view=documentacion` sigue llevando a `/documentacion` sin sesión, y el
+ * resto de vistas del tablero sigue protegido.
  * @param props - Parámetros de la URL con proyecto, vista y sección opcionales.
  * @returns La portada anónima o el tablero para la cuenta autenticada.
  */
@@ -25,7 +26,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
 
   const user = await getChatGPTUser();
   if (!user) {
-    if (state.view === "documentacion") redirect("/documentacion");
+    if (params.view === "documentacion" || state.view === "documentacion") redirect("/documentacion");
     return <Portada signInHref={chatGPTSignInPath(returnTo)} />;
   }
 

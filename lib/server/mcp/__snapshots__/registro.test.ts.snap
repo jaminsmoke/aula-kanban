@@ -2084,6 +2084,7 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
                 "calendario",
                 "cuenta",
                 "apariencia",
+                "documentacion",
                 "tokens",
                 "administradores",
                 "almacenamiento",

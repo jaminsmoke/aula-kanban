@@ -11,7 +11,7 @@
 .brand-text { display: flex; flex-direction: column; line-height: var(--leading-tight); white-space: nowrap; }
 .brand-meta { margin-top: 4px; color: var(--ui-text-muted); font-family: var(--font-body); font-size: var(--text-2xs); font-weight: var(--weight-semibold); line-height: var(--leading-snug); letter-spacing: var(--tracking-wide); }
 
-.project-menu { position:relative; margin-left:24px; min-width:0; }
+.project-menu { position:relative; margin-left:auto; min-width:0; }
 .project-menu summary { display:flex; align-items:center; gap:9px; min-height:40px; max-width:300px; padding:0 13px; border:var(--border-width-hairline) solid var(--ui-border-default); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-primary); font-size: var(--text-base); font-weight: var(--weight-bold); cursor:pointer; list-style:none; transition:background var(--duration-fast) var(--ease-out); }
 .project-menu summary::-webkit-details-marker { display:none; }
 .project-menu summary:hover { background:var(--ui-surface-hover); }
@@ -53,10 +53,7 @@
 .main-nav .space-action { display:grid; place-items:center; width:40px; height:40px; margin-left:5px; padding:0; border:var(--border-width-hairline) solid var(--ui-border-default); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-muted); }
 .main-nav .space-action:hover { background:var(--ui-surface-hover); color:var(--ui-action-text); }
 .main-nav .space-action[aria-current="page"] { border-color:var(--ui-action-text); background:var(--ui-action-primary); color:var(--ui-text-inverse); }
-.main-nav button:focus-visible, .header-docs:focus-visible, .header-settings:focus-visible { outline-color:var(--ui-focus-ring); }
-.header-docs { display:inline-flex; align-items:center; gap:7px; margin-left:auto; padding:9px 12px; border:0; border-radius: var(--radius-sm); background:transparent; color:var(--ui-text-muted); font:inherit; font-size: var(--text-base); font-weight: var(--weight-bold); cursor:pointer; transition:background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
-.header-docs:hover { background:var(--ui-surface-hover); color:var(--ui-text-primary); }
-.header-docs[aria-current="page"] { background:var(--ui-action-primary); color:var(--ui-text-inverse); }
+.main-nav button:focus-visible, .header-settings:focus-visible { outline-color:var(--ui-focus-ring); }
 .header-settings { display:grid; place-items:center; width:40px; height:40px; margin-left:4px; padding:0; border:0; border-radius: var(--radius-sm); background:transparent; color:var(--ui-text-muted); cursor:pointer; transition:background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
 .header-settings:hover { background:var(--ui-surface-hover); color:var(--ui-text-primary); }
 .header-settings[aria-current="page"] { background:var(--ui-action-primary); color:var(--ui-text-inverse); }
@@ -76,8 +73,6 @@
 }
 @media (max-width: 900px) {
   .account-name { display: none; }
-  .header-docs-label { display: none; }
-  .header-docs { width: 40px; height: 40px; justify-content: center; padding: 0; }
 }
 @media (max-width: 620px) {
   .shell { width: calc(100% - 30px); }
@@ -86,11 +81,10 @@
   .main-nav .space-action { margin-left: 0; }
   .account-menu { margin-left: auto; }
   .header-settings { margin-left: 0; }
-  .project-menu { margin-left: 8px; }
+  .project-menu { margin-left: auto; }
   .project-menu summary { max-width: 120px; padding: 0 8px; gap: 6px; }
   .project-menu summary > svg:last-child { display: none; }
   .project-menu summary span { min-width: 0; }
-  .header-docs { margin-left: 0; }
   .brand-meta { display: none; }
   .wordmark { gap: 8px; font-size: var(--text-2xl); }
   .brand-icon { width: 34px; height: 34px; border-radius: var(--radius-sm); }
@@ -102,5 +96,5 @@
   .wordmark { gap: 0; }
   .project-menu { flex: 1 1 0; min-width: 0; margin-left: 6px; }
   .project-menu summary { max-width: none; padding: 0 8px; }
-  .header-docs, .header-settings { width: 36px; height: 36px; }
+  .header-settings { width: 36px; height: 36px; }
 }

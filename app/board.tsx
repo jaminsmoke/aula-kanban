@@ -7,7 +7,6 @@ import ClassView from "./board/class/class-view";
 // Las vistas secundarias solo se descargan al abrirlas.
 const AdministrationView = lazy(() => import("./board/people/administration/administration-view"));
 const SpaceView = lazy(() => import("./board/space/space-view"));
-const DocumentationView = lazy(() => import("./board/docs/docs-view"));
 const SettingsView = lazy(() => import("./board/settings/settings-view"));
 import TaskDialog from "./board/tasks/dialog/task-dialog";
 import MemberDialog from "./board/projects/member-dialog";
@@ -96,11 +95,7 @@ export default function Board({ user, initial }: { user: { displayName: string; 
         {activeProject && invitations.invitationLoadError && <div className="alert project-alert" role="alert">No se pudieron consultar las invitaciones. <button type="button" className="text-button" onClick={() => void invitations.refreshInvitations()}>Reintentar</button></div>}
         {activeProject && invitations.invitationError && <div className="alert" role="alert">{invitations.invitationError}</div>}
         {activeProject && actions.projectError && !actions.newProject && !actions.projectDeleting && <div role="alert" className="alert project-alert">{actions.projectError} <button type="button" className="text-button" onClick={() => void projectState.refreshProjects()}>Reintentar</button></div>}
-        {view === "documentacion" ? (
-          <Suspense fallback={<div className="access-loading" role="status">Cargando la documentación…</div>}>
-            <DocumentationView onBack={() => setView("clase")} />
-          </Suspense>
-        ) : view === "ajustes" ? (
+        {view === "ajustes" ? (
           <Suspense fallback={<div className="access-loading" role="status">Cargando ajustes…</div>}>
             <SettingsView
               user={user}
