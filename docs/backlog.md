@@ -2,22 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** MCP-05E activo · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** MCP-05D se completó; MCP-05E sigue aquí. La cobertura está en [`mcp-apps.md`](mcp-apps.md). UI-03 se completó; UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; PER-01 sigue archivado con su trabajo pendiente abajo; SYNC-01 se queda aquí como norma operativa.
+> **Nota:** MCP-05E está en el roadmap activo. La cobertura está en [`mcp-apps.md`](mcp-apps.md). UI-03 se completó; UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; PER-01 sigue archivado con su trabajo pendiente abajo; SYNC-01 se queda aquí como norma operativa.
 
 ---
-
-## 2026-11-15 — MCP-05E · Diagramas por MCP
-
-- Contexto: la app Diagramas guarda `{ code }` en `app_documents` (máximo 200 KB, invitados 403) y ofrece plantillas definidas en `mermaid-templates.ts`. La vista previa y la validación de sintaxis se quedan en el navegador; el servidor no renderiza Mermaid.
-- Qué falta:
-  - [ ] `leer_diagrama` (`proyectoId`) devuelve `{ codigo, actualizado }` o `null` si no hay diagrama guardado.
-  - [ ] `guardar_diagrama` (`proyectoId`, `codigo` de hasta 200 KB) guarda `{ code }`, rechaza invitados y aplica `not_found` si la app está desinstalada.
-  - [ ] `listar_plantillas_diagrama` devuelve las plantillas actuales (flujo, secuencia, Gantt, clases, estados y línea de tiempo) desde una ubicación compartida, no desde un módulo cliente.
-  - [ ] Documentar que no se valida sintaxis, no se renderiza SVG y no se exporta desde MCP en esta fase.
-- Criterios mínimos: el código guardado por la web se lee por MCP y viceversa; las plantillas coinciden con las de la app; el límite de 200 KB se respeta; no hay migración ni render en el Worker.
-- Notas técnicas: mover `MERMAID_TEMPLATES` a `lib/` o a una carpeta compartida de la app y hacer que la UI y MCP importen la misma lista. Reutilizar el contrato común de MCP-05A y el mismo helper de `app_documents` que Blockly.
 
 ## 2026-11-15 — PER-03 · Purga segura de archivos sin uso
 
