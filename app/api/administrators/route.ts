@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { ADMINISTRADORES_FORBIDDEN, actualizarAdministrador, crearAdministrador, eliminarAdministrador, listarAdministradores, puedeGestionarAdministradores } from "../../../lib/server/administradores";
 import { getChatGPTUser } from "../../../lib/server/auth";
-import { projectFailureResponse } from "../../../lib/server/project-access";
+import { projectFailureResponse } from "../../../lib/server/project-http";
 import { json } from "../../../lib/server/http";
 import { withJsonMutation } from "../../../lib/server/route-helpers";
 

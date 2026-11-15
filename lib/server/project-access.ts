@@ -3,7 +3,6 @@ import { and, eq } from "drizzle-orm";
 import { getD1, getDb } from "../../db";
 import { administrators, projectMembers, projects } from "../../db/schema";
 import { getChatGPTUser, type ChatGPTUser } from "./auth";
-import { json } from "./http";
 import { ensureInstanceOwner, isBootstrapOwnerEmail, isInstanceOwner, readInstanceOwner } from "./owner";
 import { canonicalProjectId } from "./project-rekey";
 
@@ -15,23 +14,6 @@ export type ProjectFailure = "unauthenticated" | "invalid" | "not_found" | "forb
 export type ProjectResolution =
   | { status: "ok"; project: ProjectWithAccess }
   | { status: ProjectFailure };
-
-export const PROJECT_FAILURE_RESPONSES: Record<ProjectFailure, { status: number; message: string }> = {
-  unauthenticated: { status: 401, message: "Inicia sesión para continuar." },
-  invalid: { status: 400, message: "Proyecto no válido." },
-  not_found: { status: 404, message: "No se encuentra el proyecto." },
-  forbidden: { status: 403, message: "No tienes acceso a este proyecto." },
-};
-
-/**
- * Construye la respuesta HTTP común de un fallo al resolver el proyecto.
- * @param failure - Motivo tipado del fallo.
- * @returns Respuesta JSON con el estado y mensaje del contrato.
- */
-export function projectFailureResponse(failure: ProjectFailure): Response {
-  const response = PROJECT_FAILURE_RESPONSES[failure];
-  return json({ message: response.message }, response.status);
-}
 
 /**
  * Indica si un correo es el configurado para el bootstrap del propietario.

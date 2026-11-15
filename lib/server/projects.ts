@@ -3,7 +3,8 @@ import { z } from "zod";
 import { getDb } from "../../db";
 import { appDocuments, boards, deletedStudents, deletedTeachers, projectMembers, projects, students, taskAssignees, tasks, teachers, uploads } from "../../db/schema";
 import type { ChatGPTUser } from "./auth";
-import { globalRoleForUser, isAdministrator, isOwner, memberAccess, PROJECT_FAILURE_RESPONSES, type Access, type ProjectRow } from "./project-access";
+import { globalRoleForUser, isAdministrator, isOwner, memberAccess, type Access, type ProjectRow } from "./project-access";
+import { PROJECT_FAILURE_MESSAGES } from "./project-contract";
 import { deleteProjectUploads } from "./storage";
 
 /**
@@ -78,7 +79,7 @@ export async function projectDeletionInfo(user: ChatGPTUser, projectId: string):
   }
   const db = getDb();
   const [proyecto] = await db.select().from(projects).where(eq(projects.id, projectId));
-  if (!proyecto) return { ok: false, status: 404, message: PROJECT_FAILURE_RESPONSES.not_found.message };
+  if (!proyecto) return { ok: false, status: 404, message: PROJECT_FAILURE_MESSAGES.not_found };
   const [tareas, alumnos, profesores, miembros, pizarras, documentos, archivos] = await Promise.all([
     db.select({ value: count() }).from(tasks).where(eq(tasks.projectId, projectId)),
     db.select({ value: count() }).from(students).where(eq(students.projectId, projectId)),

@@ -5,7 +5,8 @@ import { getDb } from "../../../db";
 import { projectMembers, students } from "../../../db/schema";
 import { isJsonRequest, isSameOrigin, json } from "../http";
 import { updateProfile } from "../profile-update";
-import { projectFailureResponse, resolveProject, type Access, type ProjectWithAccess } from "../project-access";
+import { projectFailureResponse } from "../project-http";
+import { resolveProject, type Access, type ProjectWithAccess } from "../project-access";
 import { accountEmail, maySeeStudentEmail, studentReference, type BajaResult, type FichaResult } from "./campos";
 
 /**

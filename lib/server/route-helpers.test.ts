@@ -8,9 +8,6 @@ vi.mock("./project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? { status: "ok", project: { id: "p1", access: { user: { userId: "u1" }, role: "student" } } }
     : { status: mocks.status },
-  projectFailureResponse: (status: string) => new Response(status, {
-    status: status === "unauthenticated" ? 401 : status === "forbidden" ? 403 : status === "not_found" ? 404 : 400,
-  }),
 }));
 
 import { withJsonMutation, withProjectRoute } from "./route-helpers";

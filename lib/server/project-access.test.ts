@@ -1,12 +1,9 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import type { ChatGPTUser } from "./auth";
-import {
-  PROJECT_FAILURE_RESPONSES,
-  projectFailureResponse,
-  resolveProject,
-  type Access,
-  type ProjectRow,
-} from "./project-access";
+import { PROJECT_FAILURE_RESPONSES, projectFailureResponse } from "./project-http";
+import { resolveProject, type Access, type ProjectRow } from "./project-access";
 
 const user: ChatGPTUser = { userId: "u1", displayName: "Docente", email: "docente@example.com", fullName: null };
 const project: ProjectRow = { id: "p1", name: "Proyecto", createdAt: 1 };
@@ -27,6 +24,13 @@ function dependencies(overrides: Partial<{
 }
 
 describe("resolución de proyecto", () => {
+  it("mantiene el acceso y los servicios fuera del transporte HTTP", () => {
+    const access = readFileSync(resolve("lib/server/project-access.ts"), "utf8");
+    const projects = readFileSync(resolve("lib/server/projects.ts"), "utf8");
+    expect(access).not.toContain('from "./http"');
+    expect(projects).not.toContain('from "./project-http"');
+  });
+
   it("define el estado y el mensaje de cada fallo", async () => {
     for (const [failure, expected] of Object.entries(PROJECT_FAILURE_RESPONSES)) {
       const response = projectFailureResponse(failure as keyof typeof PROJECT_FAILURE_RESPONSES);

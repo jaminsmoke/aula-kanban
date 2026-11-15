@@ -1,5 +1,6 @@
 import type { ChatGPTUser } from "../auth";
-import { findProject, projectAccessForUser, PROJECT_FAILURE_RESPONSES, type Access, type ProjectFailure, type ProjectRow } from "../project-access";
+import { findProject, projectAccessForUser, type Access, type ProjectFailure, type ProjectRow } from "../project-access";
+import { PROJECT_FAILURE_MESSAGES } from "../project-contract";
 
 /**
  * Contexto compartido de las herramientas MCP: cuenta llamante, resolución
@@ -116,9 +117,9 @@ export type Resolved = { ok: true; project: ProjectRow; access: Access } | { ok:
  */
 export async function resolve(user: ChatGPTUser, projectId: string): Promise<Resolved> {
   const project = await findProject(projectId);
-  if (!project) return { ok: false, codigo: "not_found", mensaje: PROJECT_FAILURE_RESPONSES.not_found.message };
+  if (!project) return { ok: false, codigo: "not_found", mensaje: PROJECT_FAILURE_MESSAGES.not_found };
   const access = await projectAccessForUser(projectId, user);
-  if (!access) return { ok: false, codigo: "forbidden", mensaje: PROJECT_FAILURE_RESPONSES.forbidden.message };
+  if (!access) return { ok: false, codigo: "forbidden", mensaje: PROJECT_FAILURE_MESSAGES.forbidden };
   return { ok: true, project, access };
 }
 

@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { projectFailureResponse, resolveProject } from "../../../lib/server/project-access";
+import { projectFailureResponse } from "../../../lib/server/project-http";
+import { resolveProject } from "../../../lib/server/project-access";
 import { StorageUnavailableError, storeUpload, uploadPurposes, validateUpload } from "../../../lib/server/storage";
 import { isSameOrigin, json } from "../../../lib/server/http";
 

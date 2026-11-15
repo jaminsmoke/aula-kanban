@@ -51,10 +51,11 @@
 
 ### Fase 2 — Acceso separado de HTTP
 
-- [ ] Crear `lib/server/project-http.ts` con `PROJECT_FAILURE_RESPONSES` y `projectFailureResponse`.
-- [ ] Dejar `project-access.ts` sin imports de `json` ni construcción de respuestas.
-- [ ] Retirar de `projects.ts` y de los servicios la dependencia de mensajes de transporte.
-- [ ] Actualizar imports y pruebas de acceso sin cambiar los mensajes públicos.
+- [x] Crear `lib/server/project-http.ts` con `PROJECT_FAILURE_RESPONSES` y `projectFailureResponse`.
+- [x] Dejar `project-access.ts` sin imports de `json` ni construcción de respuestas.
+- [x] Mover los mensajes públicos a `project-contract.ts` para que `projects.ts` y `mcp/contexto.ts` no importen transporte.
+- [x] Actualizar imports y pruebas de acceso sin cambiar los mensajes públicos.
+- [x] Añadir una prueba de frontera que impide devolver HTTP al acceso o a los servicios.
 - **Criterios de aceptación:** `project-access.ts` no importa `http.ts`; los servicios no conocen códigos HTTP; el contrato de errores sigue idéntico.
 
 ### Fase 3 — Arranque de proyectos
@@ -89,6 +90,7 @@
 - `project-access.ts` importa `json` y contiene `PROJECT_FAILURE_RESPONSES`; `projects.ts` importa `PROJECT_FAILURE_RESPONSES`.
 - `/api/projects` ejecuta en el `GET` la migración de UUID, la actualización de identidad y la limpieza de huérfanos.
 - Fase 1 completada el 2026-11-15: `lib/server/route-helpers.ts` concentra `withJsonMutation` y `withProjectRoute`; la composición mantiene origen/JSON antes de resolver el proyecto.
+- Fase 2 completada el 2026-11-15: `project-http.ts` construye las respuestas y `project-contract.ts` conserva solo los mensajes públicos; `project-access.ts` ya no importa `http.ts`.
 - Quedan sin helper por su orden propio `uploads` (solo origen), `files` (lee R2 antes de resolver), `mcp/tokens` (autentica antes de origen) y las mutaciones de alumnado/profesorado, que viven en sus servicios; se decidirán en las fases siguientes.
 - Cada fase se cierra con su propio commit local, incluidas las fases de solo documentación; no se hace push hasta cerrar el roadmap.
 - No se cambia la versión ni se publica en Sites durante este roadmap.

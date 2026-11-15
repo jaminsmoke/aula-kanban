@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { getChatGPTUser } from "../../../lib/server/auth";
-import { isAdministrator, isOwner, projectFailureResponse, resolveProject } from "../../../lib/server/project-access";
+import { isAdministrator, isOwner, resolveProject } from "../../../lib/server/project-access";
+import { projectFailureResponse } from "../../../lib/server/project-http";
 import { NATIVE_APP_IDS } from "../../../lib/native-apps";
 import { listInstalledApps, setAppInstalled, MANAGE_APPS_FORBIDDEN } from "../../../lib/server/apps";
 import { json } from "../../../lib/server/http";

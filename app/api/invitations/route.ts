@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { getChatGPTUser } from "../../../lib/server/auth";
 import { acceptInvitation, listPendingInvitations } from "../../../lib/server/invitaciones";
-import { projectFailureResponse } from "../../../lib/server/project-access";
+import { projectFailureResponse } from "../../../lib/server/project-http";
 import { json } from "../../../lib/server/http";
 import { withJsonMutation } from "../../../lib/server/route-helpers";
 
