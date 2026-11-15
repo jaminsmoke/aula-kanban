@@ -56,11 +56,23 @@
 - **Revocación de acceso:** sin membresía activa en el proyecto, la mochila/maletín de ese proyecto deja de ser accesible (el servidor exige la membresía, como en el resto de rutas). Las preferencias se conservan, igual que las fichas de `deleted_students`/`deleted_teachers`; no se borran datos al retirar un acceso.
 - **Sin código en esta fase:** la Fase 1 es solo definición. El modelo de datos y el acceso desde Aula se diseñan en la Fase 2; PERM-01 sigue siendo prerequisito para cualquier capacidad nueva de autorización, aunque organizar los propios favoritos no necesita más permiso que el acceso ya vigente al proyecto.
 
-### Fase 2: Acceso y catálogo personal
+### Fase 2: Acceso y catálogo personal — completada
 
-- [ ] Diseñar el acceso desde Aula y la separación entre catálogo global, herramientas disponibles e instaladas y elegidas personalmente.
-- [ ] Incluir App-01 y PERM-01 como dependencias para cualquier implementación de permisos.
+- [x] Diseñar el acceso desde Aula y la separación entre catálogo global, herramientas disponibles e instaladas y elegidas personalmente.
+- [x] Incluir App-01 y PERM-01 como dependencias para cualquier implementación de permisos.
 - **Criterios de aceptación:** alumnado, profesorado e invitados ven solo herramientas autorizadas y un acceso accesible.
+
+**Diseño (registrado el 2026-11-15, sin código: la implementación es la Fase 3):**
+
+- **Punto de acceso:** un botón de icono en la cabecera, junto al de Clase, que abre **una sección nueva de la vista Clase** (`view=clase&section=mochila`, etiqueta «Mi mochila» para alumnado e invitados y «Maletín» para profesorado). Dentro de Clase el contexto es el proyecto activo, que es justo el alcance decidido en la Fase 1: sin proyecto no hay entrada. Esto separa el espacio personal del catálogo global, que sigue en Administración > Tienda con su botón de Aula Store, sin tocar la URL canónica de Tienda ni el alias `view=espacio`.
+- **Separación en tres capas, en orden de lectura:**
+  1. **Catálogo global (Aula Store):** el estado de instalación por instancia (`instance_apps`). Sin cambios: solo owner/admin instalan y desinstalan; se sigue gestionando desde el escritorio de Tienda.
+  2. **Herramientas disponibles:** las apps instaladas que el rol del usuario **en el proyecto activo** puede abrir, según la matriz de APP-01 (ver/usar; Excalidraw de Tienda en solo lectura para alumnado e invitados). La autoridad es el servidor, no la lista `roles` de la interfaz: la capa personal no otorga acceso a una app no disponible.
+  3. **Elegidas personalmente:** favoritos y orden de presentación dentro de las disponibles. Es una capa de organización: nunca instala, nunca concede permiso y nunca cambia el catálogo global.
+- **Modelo de datos propuesto (Fase 3):** una fila por usuario, proyecto y app con favorito y posición —p. ej. `app_preferences(project_id, user_id, app_id, favorite, position, updated_at)` con clave primaria en las tres primeras—. La ausencia de fila equivale a «no favorita» y sin posición, con el orden del catálogo como defecto. Los favoritos de apps no instaladas se conservan pero no se muestran, como se decidió en la Fase 1; al perder la membresía activa el usuario deja de poder leer o escribir sus preferencias de ese proyecto.
+- **Contrato de API propuesto (Fase 3):** una ruta nueva (p. ej. `/api/personal-apps?project=…`), separada de `/api/space-apps` para no romper su contrato: lectura con comprobación de membresía activa y escritura idempotente que solo acepta apps instaladas y nunca las instala. Los anexos de ventana, enlazado profundo (`view=…&app=…`) y controles MCP (`abrir_app`, `listar_ventanas`…) no cambian: una selección personal no reinstala una app desinstalada globalmente.
+- **Dependencias de permisos:** la matriz de APP-01 define qué puede ver/usar cada rol; el espacio personal usa esa columna como puerta de entrada. PERM-01 sigue siendo prerequisito para cualquier capacidad nueva (p. ej. decidir quién puede cambiar la selección de otro): organizar los propios favoritos no necesita más permiso que el acceso ya vigente al proyecto, pero el servidor debe aplicar la membresía activa igual que en el resto de rutas. Ninguna capacidad de gestión global se delega desde la capa personal.
+- **Accesibilidad:** el acceso de la cabecera es un botón real con `aria-label` y texto visible en la sección, foco visible con los tokens de `globals.css` y orden de tabulación igual al visual; la sección se revisa en 390 px igual que el resto de vistas.
 
 ### Fase 3: Implementación y compatibilidad
 
