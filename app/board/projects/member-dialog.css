@@ -3,13 +3,13 @@
    ========================================================================== */
 
 .member-content { display:grid; gap:14px; padding:20px 21px; }
-.member-content > p { color:var(--muted); font-size:14px; line-height:1.5; }
+.member-content > p { color:var(--muted); font-size: var(--text-md); line-height: var(--leading-normal); }
 .member-form { padding:0 0 16px; border-bottom:1px solid var(--line); }
 .member-form .primary { justify-self:end; }
 .member-row { display:flex; gap:8px; align-items:center; padding:8px 0; border-bottom:1px solid var(--line); }
 .member-row > div { flex:1; min-width:0; }
 .member-row strong,.member-row small { display:block; overflow-wrap:anywhere; }
-.member-row strong { font-size:13px; }
+.member-row strong { font-size: var(--text-base); }
 .member-row small { color:var(--muted); margin-top:4px; }
-.member-confirm { display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:12px; border-radius:9px; background:var(--danger-soft); color:var(--danger-deep); font-size:13px; }
+.member-confirm { display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:12px; border-radius:9px; background:var(--danger-soft); color:var(--danger-deep); font-size: var(--text-base); }
 .member-confirm p { flex-basis:100%; }

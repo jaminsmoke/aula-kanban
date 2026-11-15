@@ -1,6 +1,6 @@
 # Sistema visual
 
-> **Estado:** Fases 1-3 completadas (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
+> **Estado:** Fases 1-4 completadas (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
 > **Fuente de verdad:** [`../app/globals.css`](../app/globals.css)
 
 ---
@@ -17,13 +17,13 @@ La auditoría de la fase 1 midió todo el CSS propio del repositorio, sin contar
 
 Los 36 hexadecimales de `globals.css` ya son la base central. La deuda está en los **266 usos y 208 colores distintos** repartidos por los CSS de feature.
 
-Tras la fase 3, las pantallas de Ajustes, Documentación, Mi espacio y Aula Store, y los shells compartidos, no conservan ningún hexadecimal propio:
+Tras la fase 3 y el ajuste de marco 3.1, las pantallas de Ajustes, Documentación, Mi espacio y Aula Store, y los shells compartidos, no conservan ningún hexadecimal propio:
 
 | Ámbito actual | Archivos | Líneas | Usos de hex | Hex distintos |
 |---|---:|---:|---:|---:|
-| Toda la aplicación | 23 | 2.345 | 152 | 130 |
-| `app/globals.css` | 1 | 259 | 72 | 72 |
-| CSS de feature | 22 | 2.086 | 80 | 58 |
+| Toda la aplicación | 23 | 2.396 | 153 | 131 |
+| `app/globals.css` | 1 | 303 | 73 | 73 |
+| CSS de feature | 22 | 2.093 | 80 | 58 |
 
 Los CSS de `kanban.css`, `task-dialog.css`, `calendar-view.css`, `class.css`, `buttons.css`, `dialogs.css`, `settings-view.css`, `header.css`, `workspace-layout.css`, `docs.css`, `space.css` y `store.css` quedan a cero. Los 80 usos restantes están en apps, personas y accesibilidad, fuera del alcance de esta fase.
 
@@ -48,7 +48,7 @@ Los otros 16 CSS de feature —incluidos los seis migrados en fase 2 y los seis 
 | Compatibilidad | nombres existentes (`--canvas`, `--ink`, `--line`…) | Mantienen los valores actuales mientras se migran los CSS. No se usan en código nuevo. |
 | Semántica de UI | `--ui-*` | Capa estable para el CSS de feature y para los componentes nuevos. |
 
-La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes siguen resolviendo al mismo color, ahora a través de una primitiva. La fase 3 deja 54 primitivas y 68 tokens `--ui-*`; los 36 nombres de compatibilidad se conservan intactos.
+La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes siguen resolviendo al mismo color, ahora a través de una primitiva. La fase 4 deja 55 primitivas y 69 tokens `--ui-*`; los 36 nombres de compatibilidad se conservan intactos. `--ui-surface-frame` separa el chrome del contenido y podrá invertirse en el tema oscuro sin tocar los componentes.
 
 ## 3. Mapa semántico
 
@@ -65,6 +65,7 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `--ui-surface-faint` | `--surface-faint` | `#f7f5fd` |
 | `--ui-surface-pale` | `--surface-pale` | `#fbfaff` |
 | `--ui-surface-inverse` | `--ink-deep` | `#302255` |
+| `--ui-surface-frame` | primitiva propia | `#f2eef9` |
 | `--ui-surface-on-dark-subtle` | primitiva propia | `#ffffff1f` |
 | `--ui-surface-on-dark-hover` | primitiva propia | `#ffffff33` |
 
@@ -145,6 +146,18 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `--ui-info-ink` | `--info-ink` | `#315a9f` |
 | `--ui-info-soft` | `--info-soft` | `#e6eefc` |
 
+### Tipografía
+
+| Grupo | Tokens | Uso |
+|---|---|---|
+| Familias | `--font-display`, `--font-body`, `--font-mono` | Títulos, interfaz y código/datos. |
+| Escala | `--text-2xs` a `--text-8xl` y cuatro `--text-display-*` | De 10 a 48 px; las variantes display usan `clamp()`. |
+| Interlineado | `--leading-none` a `--leading-relaxed` | De 1 a 1,65 según la densidad del texto. |
+| Tracking | `--tracking-tighter` a `--tracking-caps` | Títulos, cuerpo, metadatos y etiquetas en mayúsculas. |
+| Pesos | `--weight-regular` a `--weight-extrabold` | 400, 500, 600, 700 y 800. |
+
+La fase 4 mantiene dos familias —Bricolage Grotesque para display e Instrument Sans para UI— y añade una pila mono para código y datos. El CSS propio usa solo estos tokens; las apps internas (`edu-tools`, `periodic-table`, `blockly` y `mermaid`) conservan su escala compacta como excepción documentada.
+
 ## 4. Tokens locales pendientes
 
 | Archivo | Tokens locales | Tratamiento |
@@ -152,10 +165,14 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `edu-tools.css` | `--background`, `--card`, `--surface`, `--border`, `--rule`, `--calc-*` y equivalentes de la librería | Mapear a `--ui-*` al migrar la app; conservar los nombres que exija `@smst/edu-tools`. |
 | `docs.css` | `--docs-radius-lg`, `--docs-radius`, `--docs-radius-sm`, `--docs-gap`, `--docs-index-width`, `--docs-art-width` y `--docs-sticky-top` | Solo medidas y radios; los colores ya pasan a `--ui-*`. |
 | `kanban.css` | `--accent` y `--accent-bg` por carril | Se conservan como variables locales, pero ya derivan de `--ui-*`; no queda ningún hexadecimal. |
+| Apps internas | Escala compacta de `edu-tools`, `periodic-table`, `blockly` y `mermaid` | Excepción de fase 4: sus controles densos conservan medidas propias; los envoltorios usan tokens. |
 
 ## 5. Reglas de uso
 
 - El CSS de feature consume `--ui-*`; no introduce hexadecimales ni usa `--primitive-*`.
+- El chrome (header/sidebar) usa `--ui-surface-frame`; no reutiliza `--ui-surface-inverse`, reservada a superficies de contenido oscuras.
+- El tema oscuro cambiará valores de tokens, no selectores ni variantes de componente.
+- La tipografía usa `--text-*`, `--leading-*`, `--tracking-*`, `--weight-*` y las familias de `globals.css`; no se añaden tamaños ni pesos sueltos.
 - Las primitivas solo se declaran en `app/globals.css`.
 - Los nombres de compatibilidad se mantienen hasta completar la migración; no se añaden usos nuevos.
 - Los estados usan los tokens `--ui-danger-*`, `--ui-success-*`, `--ui-warning-*` e `--ui-info-*`.
@@ -169,7 +186,12 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | 1 | Inventario, primitivas y tokens `--ui-*` | Completada. |
 | 2 | Tareas y Calendario | Completada; sin hexadecimales propios y con contraste AA verificado. |
 | 3 | Ajustes, Documentación, Mi espacio y Aula Store | Completada; sin hexadecimales propios, gradientes solo en Mi espacio y Aula Store y contraste AA verificado numéricamente. |
-| 4 | Limpieza de hexadecimales y guarda | Pendiente. |
+| 3.1 | Marco claro y superficies de chrome | Completada; `--ui-surface-frame` `#f2eef9`, activos violeta y contraste AA. |
+| 4 | Tipografía y jerarquía | Completada; 18 tokens de tamaño, 5 de interlineado, 6 de tracking y 5 pesos; sin medidas sueltas en el CSS propio. |
+| 5 | Iconografía y densidad | Pendiente. |
+| 6 | Color, estados y acentos | Pendiente. |
+| 7 | Temas claro y oscuro | Pendiente. |
+| 8 | Limpieza, guarda y cierre | Pendiente. |
 
 ### Contraste de la fase 2
 
@@ -201,4 +223,12 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | Blanco / acción brillante | 4,98:1 |
 | Texto atenuado / superficie faint | 5,88:1 |
 
-No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; la barra de progreso es un elemento gráfico y supera el mínimo de 3:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2 y 3.
+### Contraste del marco claro
+
+| Pareja | Ratio |
+|---|---:|
+| Texto principal / marco | 14,41:1 |
+| Texto atenuado / marco | 5,56:1 |
+| Blanco / acción primaria | 7,65:1 |
+
+No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; en el marco, el mínimo es 5,56:1 para texto atenuado. La barra de progreso es un elemento gráfico y supera el mínimo de 3:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2-4.

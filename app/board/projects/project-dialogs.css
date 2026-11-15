@@ -2,6 +2,6 @@
    Diálogos de proyecto
    ========================================================================== */
 
-.share-content .remix-prompt { display:block; width:100%; min-height:95px; margin-top:6px; padding:10px; border:1px solid var(--line); border-radius:var(--radius-sm); resize:vertical; color:var(--ink); font:inherit; font-weight:400; }
+.share-content .remix-prompt { display:block; width:100%; min-height:95px; margin-top:6px; padding:10px; border:1px solid var(--line); border-radius:var(--radius-sm); resize:vertical; color:var(--ink); font:inherit; font-weight: var(--weight-regular); }
 .remix-controls { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; }
 .remix-controls a { text-decoration:none; }
