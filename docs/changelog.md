@@ -6,6 +6,29 @@
 
 ---
 
+## 2026-11-15 — Roadmap PER-05 · Caché inmutable para `/api/files/[id]`
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- `/api/files/[id]` responde `Cache-Control: private, max-age=31536000, immutable`, y los objetos nuevos de R2 se guardan con el mismo valor.
+- Se descartó el `ETag` con 304: `storeUpload` crea un UUID y una clave por subida, el objeto no se reemplaza y el traslado del proyecto heredado solo cambia `project_id`, así que el contenido de un id nunca cambia.
+- `private` mantiene la caché en el navegador: el archivo sigue exigiendo sesión y acceso al proyecto.
+- Prueba de contrato ampliada con la cabecera; `miniaturas.md` y `docs/README.md` actualizados. Sin migraciones y sin cambio de versión (`1.1.28`).
+
+### Verificación
+
+- 3 pruebas de `app/api/files/[id]/route.test.ts` en verde.
+- `npx tsc --noEmit` y `npm run lint`, correctos.
+- `git diff --check` limpio.
+- Commit `1410628`; el cierre queda en el commit de documentación.
+- Sin publicación en Sites ni `release:prepare`; no se probó en un navegador real con la caché llena.
+
+### Seguimiento en backlog
+
+PER-06, PER-07 y PER-08 quedan en [`backlog.md`](backlog.md); PER-05 sale del backlog.
+
 ## 2026-11-15 — Roadmap PER-04 · Derivado de 2048 px para las imágenes de pizarra
 
 **Estado:** Completada · Sin publicación
