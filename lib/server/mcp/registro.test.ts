@@ -65,6 +65,7 @@ describe("contrato del catálogo MCP", () => {
       "obtener_app",
       "instalar_app",
       "desinstalar_app",
+      "consultar_elemento",
       "listar_ventanas",
       "cerrar_app",
       "minimizar_app",

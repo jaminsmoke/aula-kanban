@@ -7,8 +7,8 @@
 
 ## 1. Objetivo
 
-- [ ] Dejar un contrato MCP común para las apps nativas y probarlo con la primera herramienta de contenido de una app.
-- [ ] Criterio de éxito: una app instalada puede consultarse por MCP sin repetir permisos ni comprobaciones; una app desinstalada responde `not_found`; el catálogo sigue teniendo una sola fuente.
+- [x] Dejar un contrato MCP común para las apps nativas y probarlo con la primera herramienta de contenido de una app.
+- [x] Criterio de éxito: una app instalada puede consultarse por MCP sin repetir permisos ni comprobaciones; una app desinstalada responde `not_found`; el catálogo sigue teniendo una sola fuente.
 
 ## 2. Alcance
 
@@ -49,12 +49,13 @@
 
 ### Fase 2: Piloto de Herramientas de aula
 
-- [ ] Mover `periodic-elements.json` y `PeriodicElement` a `lib/domain/edu-tools/`, dejando un reexport o import compartido en la tabla.
-- [ ] Implementar `consultar_elemento` con `simbolo` o `numero` como alternativas excluyentes, búsqueda insensible a mayúsculas y `not_found` si no existe.
-- [ ] Declarar la herramienta en `APP_MCP_DECLARACIONES` y retirar su `pendiente`.
-- [ ] Añadir la entrada al catálogo público, ejemplo de argumentos y regla de rol; subir el catálogo a `0.22.0` con 51 herramientas.
-- [ ] Actualizar snapshot, matriz de roles y pruebas de la herramienta y del dato compartido.
+- [x] Mover `periodic-elements.json` y `PeriodicElement` a `lib/domain/edu-tools/`, dejando un reexport o import compartido en la tabla.
+- [x] Implementar `consultar_elemento` con `simbolo` o `numero` como alternativas excluyentes, búsqueda insensible a mayúsculas y `not_found` si no existe.
+- [x] Declarar la herramienta en `APP_MCP_DECLARACIONES` y retirar su `pendiente`.
+- [x] Añadir la entrada al catálogo público, ejemplo de argumentos y regla de rol; subir el catálogo a `0.22.0` con 51 herramientas.
+- [x] Actualizar snapshot, matriz de roles y pruebas de la herramienta y del dato compartido.
 - **Criterios de aceptación:** `consultar_elemento` funciona por símbolo y por número; la app desinstalada responde `not_found`; no se introduce cálculo en el servidor; la web y MCP leen la misma lista.
+- **Estado:** Completada el 2026-11-15.
 
 ### Fase 3: Cobertura y cierre
 
@@ -80,3 +81,4 @@
 - La fase 1 no añade herramientas ni sube la versión del catálogo; la fase 2 es la que cambia el contrato público.
 - `MCP-05C` se usa como piloto porque es la app con menor superficie: un dato de solo lectura y sin estado de proyecto.
 - Fase 1 completada: contrato, manifiesto y tests; 21 tests focalizados, `tsc`, lint y `git diff --check` en verde. El catálogo sigue en 50 herramientas y `0.21.0`.
+- Fase 2 completada: datos periódicos en `lib/domain/edu-tools/`, `consultar_elemento` por símbolo o número, catálogo `0.22.0` con 51 herramientas, snapshot y matriz ampliada. 399 tests focalizados, `tsc`, lint y `git diff --check` en verde.

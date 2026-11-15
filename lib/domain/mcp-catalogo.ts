@@ -5,13 +5,13 @@
  */
 
 /** Dominios públicos del catálogo, en el orden en que se agrupan. */
-export const MCP_DOMINIOS = ["Proyectos", "Archivos", "Tareas", "Personas", "Contexto", "Invitaciones", "Aula Store", "Ventanas", "Administración"] as const;
+export const MCP_DOMINIOS = ["Proyectos", "Archivos", "Tareas", "Personas", "Contexto", "Invitaciones", "Aula Store", "Apps", "Ventanas", "Administración"] as const;
 
 /** Dominio de una herramienta. */
 export type McpDominio = (typeof MCP_DOMINIOS)[number];
 
 /** Versión del contrato de herramientas. */
-export const MCP_CATALOG_VERSION = "0.21.0";
+export const MCP_CATALOG_VERSION = "0.22.0";
 
 /** Metadatos de una herramienta del catálogo. */
 export type McpCatalogoEntry = {
@@ -328,6 +328,14 @@ export const MCP_CATALOGO: McpCatalogoEntry[] = [
     description: "Desinstala una app de toda la instancia. Destructiva para el escritorio: sin `confirmar: true` avisa primero. Solo el propietario o un administrador; el resto recibe 403. Los documentos guardados se conservan.",
     scope: "mcp:write",
     annotations: {"readOnlyHint":false,"destructiveHint":true,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Apps",
+    name: "consultar_elemento",
+    title: "Consultar elemento",
+    description: "Devuelve la ficha de un elemento de la tabla periódica por símbolo o número atómico. Requiere que Herramientas de aula esté instalada; no necesita proyecto.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
   },
   {
     domain: "Ventanas",

@@ -1,5 +1,6 @@
 import type { NativeAppId } from "../../../native-apps";
 import type { McpToolDefinicion } from "../dominios/tipos";
+import { herramientasEduTools } from "./edu-tools";
 
 /**
  * Manifiesto MCP de las apps nativas (MCP-05A).
@@ -24,8 +25,7 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
   },
   "edu-tools": {
     appId: "edu-tools",
-    herramientas: [],
-    pendiente: "MCP-05C (fase 2 del roadmap activo)",
+    herramientas: herramientasEduTools,
   },
   blockly: {
     appId: "blockly",

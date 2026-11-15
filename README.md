@@ -70,7 +70,7 @@ El **plugin de Aula Kanban para Sites** es la vía recomendada para ChatGPT y Co
 La lista siguiente se genera desde `lib/domain/mcp-catalogo.ts`; las dos puertas publican las mismas herramientas y cada descripción incluye un ejemplo de argumentos y su regla de rol.
 
 <!-- inicio catálogo MCP: generado desde lib/domain/mcp-catalogo.ts -->
-**50 herramientas · catálogo `0.21.0`:** 21 de lectura y 29 de escritura; 8 destructivas.
+**51 herramientas · catálogo `0.22.0`:** 22 de lectura y 29 de escritura; 8 destructivas.
 
 **Proyectos**
 
@@ -130,6 +130,10 @@ La lista siguiente se genera desde `lib/domain/mcp-catalogo.ts`; las dos puertas
 - **`obtener_app`** — Obtener app. Cualquier cuenta autenticada.
 - **`instalar_app`** — Instalar app. Solo el propietario o un administrador del sitio.
 - **`desinstalar_app`** — Desinstalar app. Solo el propietario o un administrador del sitio. Exige confirmación; los documentos guardados se conservan.
+
+**Apps**
+
+- **`consultar_elemento`** — Consultar elemento. Cualquier cuenta autenticada; la app Herramientas de aula debe estar instalada. No requiere proyecto.
 
 **Ventanas**
 

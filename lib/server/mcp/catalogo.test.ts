@@ -3,6 +3,7 @@ import { MCP_CATALOGO, metaDeHerramienta } from "../../domain/mcp-catalogo";
 import { MCP_EJEMPLOS, MCP_ROLES, descripcionConEjemplo } from "../../domain/mcp-descripciones";
 import { herramientasAdministracion } from "./dominios/administracion";
 import { herramientasArchivos } from "./dominios/archivos";
+import { herramientasDeApps } from "./apps/registro";
 import { herramientasApps } from "./dominios/apps";
 import { herramientasContexto } from "./dominios/contexto";
 import { herramientasInvitaciones } from "./dominios/invitaciones";
@@ -20,6 +21,7 @@ const DEFINICIONES = [
   ...herramientasContexto,
   ...herramientasInvitaciones,
   ...herramientasApps,
+  ...herramientasDeApps,
   ...herramientasVentanas,
   ...herramientasAdministracion,
 ];

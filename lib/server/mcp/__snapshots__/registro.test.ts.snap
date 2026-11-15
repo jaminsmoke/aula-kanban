@@ -2537,6 +2537,50 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
       "$schema": "http://json-schema.org/draft-07/schema#",
       "additionalProperties": false,
       "properties": {
+        "numero": {
+          "description": "Número atómico, por ejemplo 11",
+          "maximum": 118,
+          "minimum": 1,
+          "type": "integer",
+        },
+        "simbolo": {
+          "description": "Símbolo químico, por ejemplo Na",
+          "maxLength": 3,
+          "minLength": 1,
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "name": "consultar_elemento",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "elemento": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "elemento",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Consultar elemento",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
         "proyectoId": {
           "description": "Id del proyecto de Aula Kanban",
           "format": "uuid",
