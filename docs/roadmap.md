@@ -44,11 +44,12 @@
 
 ### Fase 1: Inventario de referencias y candidatos
 
-- [ ] Crear un extractor puro en `lib/domain/uploads/references.ts` que obtenga los ids de las URLs `/api/files/{id}` de un texto y de un JSON, ignore URLs externas y deduplique.
-- [ ] Reunir por proyecto las referencias de `tasks.image_url`, `boards.snapshot` y `app_documents.state`, sin interpretar el contenido de las apps.
-- [ ] Calcular candidatos con modo simulación: filas del proyecto sin referencia y con antigüedad mayor que el periodo de gracia, con tope por lote.
-- [ ] Confirmar si Sites ofrece tareas periódicas y registrar la conclusión antes de elegir el disparador definitivo.
+- [x] Crear un extractor puro en `lib/domain/uploads/references.ts` que obtenga los ids de las URLs `/api/files/{id}` de un texto y de un JSON, ignore URLs externas y deduplique.
+- [x] Reunir por proyecto las referencias de `tasks.image_url`, `boards.snapshot` y `app_documents.state`, sin interpretar el contenido de las apps.
+- [x] Calcular candidatos con modo simulación: filas del proyecto sin referencia y con antigüedad mayor que el periodo de gracia, con tope por lote.
+- [x] Confirmar si Sites ofrece tareas periódicas y registrar la conclusión antes de elegir el disparador definitivo.
 - **Criterios de aceptación:** una referencia en cualquiera de los tres orígenes protege el archivo; una URL externa no cuenta; un JSON corrupto bloquea la purga de ese proyecto en vez de asumir que no hay referencias; los candidatos se listan sin tocar R2 ni D1.
+- **Estado:** Completada el 2026-11-15. `lib/domain/uploads/references.ts` extrae los ids, ignora URLs externas, deduplica y falla cerrado; `lib/server/uploads/usage.ts` reúne referencias de tareas, pizarras y documentos y devuelve candidatos acotados con 7 días de gracia, sin borrar nada. 11 tests focalizados, suite de 945 tests, `tsc` y lint en verde. Sites no ofrece cron de Worker en este proyecto, así que la fase 3 mantiene la ejecución manual.
 
 ### Fase 2: Purga idempotente y reintentable
 
@@ -83,5 +84,6 @@
 - `uploads` guarda `purpose` y URL, pero no referencias; `/api/files/{id}` sirve solo a miembros del proyecto de la fila.
 - La subida ocurre al elegir la imagen de una tarea o al guardar una escena de pizarra; cancelar o sustituir deja huérfanos sin referencia.
 - `cleanupOrphanUploads` ya limpia archivos de proyectos eliminados y se reintenta al listar proyectos; esta purga cubre los huérfanos dentro de un proyecto vivo.
+- Comprobación de Sites (2026-11-15): el Worker no exporta `scheduled`, `hosting.json` solo declara `d1`, `r2` y la capacidad `mcp`, y las tareas programadas de ChatGPT son sesiones del agente, no un disparador del Worker. La purga se activará con el endpoint manual de la fase 3.
 - No se cambia la versión del Site (`1.1.27`) ni se publica en Sites durante el roadmap.
 - El push a GitHub se decide al cerrar, según SYNC-01 y la autorización del usuario.
