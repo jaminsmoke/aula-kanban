@@ -1,10 +1,37 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** PER-03 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-15 — Roadmap PER-03 · Purga segura de archivos sin uso cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fase 1 — Inventario de referencias:** `lib/domain/uploads/references.ts` extrae los ids de las URLs `/api/files/{id}`, ignora URLs externas, deduplica y falla cerrado con un JSON ilegible; `lib/server/uploads/usage.ts` reúne las referencias de `tasks.image_url`, `boards.snapshot` y `app_documents.state` y devuelve candidatos con 7 días de gracia y tope por lote, sin borrar nada.
+- **Fase 2 — Purga y endpoint:** `lib/server/uploads/purge.ts` relee las referencias antes de cada borrado, elimina primero el objeto de R2 y después la fila, conserva la fila si R2 falla para reintentar y simula por defecto; `purgeAllUnusedUploads` recorre todos los proyectos. `POST /api/storage/purge` exige propietario o administración, mismo origen y JSON, con `simulacion: true` por defecto y `limite` de 1 a 100.
+- **Fase 3 — Control y cierre:** Ajustes > Almacenamiento ofrece simulación, confirmación explícita y recuentos de borrados, omitidos, fallos, bytes y proyectos ilegibles; el README documenta la gracia de 7 días, el tope por ejecución, la relectura y la ausencia de limpieza programada.
+- Sin migraciones ni cambio de versión; `package.json` sigue en `1.1.27`.
+- Roadmap cerrado y `docs/roadmap.md` reiniciado desde la plantilla. El backlog conserva 3 entradas.
+
+### Verificación
+
+- `npm run lint` limpio.
+- `npx tsc --noEmit` limpio.
+- `npm test`: **115 archivos / 964 tests**.
+- `npm run build` correcto, sin errores.
+- `git diff --check` limpio.
+- Commits de fase: `0f3222b` (inventario) y `96969fb` (purga); el cierre queda en el commit de documentación.
+- La purga se prueba con SQLite en memoria y dobles de R2; no se ejecutó contra un bucket real ni con inspección visual en navegador.
+- Sin push a GitHub ni publicación en Sites; la versión visible no cambia.
+
+### Seguimiento en backlog
+
+PER-01B, PER-02 y SYNC-01 siguen en [`backlog.md`](backlog.md); no se añaden entradas nuevas.
 
 ## 2026-11-15 — Roadmap MCP-05E · Diagramas Mermaid por MCP cerrado
 

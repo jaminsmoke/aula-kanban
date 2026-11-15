@@ -6,7 +6,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](roadmap.md) | Roadmap PER-03 activo | Secuencia de ejecución |
+| [`roadmap.md`](roadmap.md) | Roadmap activo (sin trabajo iniciado) | Secuencia de ejecución |
 | [`backlog.md`](backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`mcp-apps.md`](mcp-apps.md) | Cobertura MCP, permisos y límites de las apps nativas | Temático |
@@ -71,7 +71,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
-- **Roadmap PER-03 activo:** inventario de referencias de archivos en tareas, pizarras y documentos, cálculo de huérfanos con periodo de gracia y purga idempotente de R2 y `uploads` con simulación previa. Detalle en [`roadmap.md`](roadmap.md).
+- **Roadmap PER-03 completado:** inventario de referencias en tareas, pizarras y documentos, purga idempotente de R2 y `uploads` con 7 días de gracia, simulación previa y control en Ajustes > Almacenamiento. Sin migraciones ni cambio de versión; resumen en [`changelog.md`](changelog.md).
 - **Roadmap MCP-05E completado:** lectura, guardado y plantillas de la app Diagramas desde MCP sobre `app_documents`, con la lista de plantillas compartida, límite de 200 KB y bloqueo de invitados. Catálogo `0.26.0` con 59 herramientas; resumen en [`changelog.md`](changelog.md) y cobertura en [`mcp-apps.md`](mcp-apps.md).
 - **Roadmap MCP-05D completado:** lectura y guardado del programa de Blockly desde MCP sobre `app_documents`, con límite compartido de 200 KB, validación de `blocks.blocks[]` y bloqueo de invitados. Catálogo `0.25.0` con 56 herramientas; resumen en [`changelog.md`](changelog.md) y cobertura en [`mcp-apps.md`](mcp-apps.md).
 - **Roadmap HIER-01 completado:** documentación en `app/board/docs/content/`; `edu-tools` en `calculator/`, `periodic-table/` y `tools/`; diálogo de tareas en `tasks/dialog/`; `modal` en `shared/`; y `project-access` en lugar de `project`. Resumen en [`changelog.md`](changelog.md).

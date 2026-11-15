@@ -44,6 +44,12 @@
 .storage-status strong { font-size: var(--text-base); }
 .storage-status p { margin:0; color:var(--ui-text-muted); line-height: var(--leading-normal); }
 .storage-status ul { display:grid; gap:3px; margin:2px 0 0; padding-left:18px; color:var(--ui-text-muted); font-size: var(--text-sm); }
+.storage-purge { display:grid; gap:10px; }
+.storage-purge h3 { margin:0; font-size: var(--text-base); font-weight: var(--weight-bold); }
+.storage-purge > p { margin:0; color:var(--ui-text-muted); line-height: var(--leading-normal); font-size: var(--text-base); }
+.storage-purge-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.storage-purge-result { display:grid; gap:4px; padding:11px 13px; border:var(--border-width-hairline) solid var(--ui-border-accent); border-radius: var(--radius-sm); background:var(--ui-action-soft); }
+.storage-purge-result p { margin:0; color:var(--ui-text-muted); line-height: var(--leading-normal); font-size: var(--text-sm); }
 
 /* Tokens del MCP */
 .token-panel { gap:14px; }

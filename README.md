@@ -361,7 +361,9 @@ La migración `0023` añade `instance_apps`, que guarda qué aplicaciones nativa
 
 La aplicación no usa un VPS ni un volumen: D1 guarda los metadatos de `uploads` y R2 guarda los bytes con el binding `BUCKET`. `.openai/hosting.json` declara `"r2": "BUCKET"`; Sites inyecta ese binding en el Worker y `vite.config.ts` lo simula en local. El código nunca escribe archivos en el filesystem del servidor.
 
-El propietario o un administrador puede comprobar el estado en **Ajustes > Administradores > Almacenamiento de archivos** o con `GET /api/storage/status`. El diagnóstico devuelve si D1 existe, si el binding `BUCKET` está presente, si el bucket responde a una lectura mínima y cuántas filas hay en `uploads`; no lista objetos ni expone secretos.
+El propietario o un administrador puede comprobar el estado en **Ajustes > Almacenamiento** o con `GET /api/storage/status`. El diagnóstico devuelve si D1 existe, si el binding `BUCKET` está presente, si el bucket responde a una lectura mínima y cuántas filas hay en `uploads`; no lista objetos ni expone secretos.
+
+El mismo panel permite **simular y ejecutar la limpieza de archivos sin uso**, también disponible en `POST /api/storage/purge` con `simulacion: true` por defecto. Un archivo solo se borra si ningún documento del proyecto lo referencia, han pasado 7 días desde su subida y la comprobación se repite justo antes del borrado; el objeto de R2 se elimina antes que la fila y un fallo se reintenta en la siguiente ejecución. Cada llamada procesa hasta 100 archivos por proyecto y no hay limpieza programada: Sites no expone un cron de Worker, así que la ejecución es manual.
 
 Si falta R2, `/api/uploads` responde 503 y `/api/files/[id]` responde 503 cuando el archivo tiene metadatos. Un identificador inexistente sigue siendo 404. Para publicar una instancia con archivos:
 
