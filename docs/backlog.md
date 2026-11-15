@@ -2,17 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** PER-01B activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** PER-02 activo · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** PER-01B está en el roadmap activo. La cobertura MCP está en [`mcp-apps.md`](mcp-apps.md). PER-03 se completó; MCP-05E se completó; UI-03 se completó; UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; PER-01 sigue archivado con su trabajo pendiente abajo; SYNC-01 se queda aquí como norma operativa.
+> **Nota:** PER-02 está en el roadmap activo con su línea base en [`miniaturas.md`](miniaturas.md). La cobertura MCP está en [`mcp-apps.md`](mcp-apps.md). PER-01B se completó y publicó en `1.1.28`; PER-03, MCP-05E, UI-03, UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; SYNC-01 se queda aquí como norma operativa.
 
 ---
-
-## 2026-11-15 — PER-02 · Evaluar miniaturas derivadas
-
-- Contexto: PER-01 ha verificado la subida y lectura de imágenes originales en producción. Por ahora se conservan los originales para mantener simple la persistencia; no se ha incorporado un generador de miniaturas.
-- Qué falta antes de retomarlo: medir el impacto real de imágenes grandes en el tablero, comparar procesamiento en cliente con un binding de imágenes disponible y decidir si merece la complejidad.
-- Notas técnicas: respetar permisos, conservar el original y diseñar la limpieza de derivados sin afectar archivos existentes.
 
 ## 2026-11-15 — SYNC-01 · Sincronizar el repositorio al cerrar cada roadmap
 
