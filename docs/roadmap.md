@@ -51,11 +51,12 @@
 
 ### Fase 2: Cotejo con D1 y endpoint
 
-- [ ] Cruzar cada página con `uploads` por `storage_key` exacta y detectar además las filas de la instancia que no tienen objeto.
-- [ ] Exponer `GET /api/storage/inventory?cursor=&limit=` para propietario o administración, con mismo origen de lectura, 401/403/503 y sin cuerpos.
-- [ ] Devolver recuentos, metadatos de cada clave y una marca de revisión para las claves fuera del formato `proyecto/finalidad/id.ext`.
-- [ ] Cubrir permisos, paginación encadenada, claves desconocidas, filas sin objeto y R2 ausente.
+- [x] Cruzar cada página con `uploads` por `storage_key` exacta y detectar además las filas de la instancia que no tienen objeto.
+- [x] Exponer `GET /api/storage/inventory?cursor=&limit=` para propietario o administración, con mismo origen de lectura, 401/403/503 y sin cuerpos.
+- [x] Devolver recuentos, metadatos de cada clave y una marca de revisión para las claves fuera del formato `proyecto/finalidad/id.ext`.
+- [x] Cubrir permisos, paginación encadenada, claves desconocidas, filas sin objeto y R2 ausente.
 - **Criterios de aceptación:** una clave antigua no se presenta como borrable; el endpoint no devuelve contenido ni URLs firmadas; el cotejo es exacto y repetible.
+- **Estado:** Completada el 2026-11-15. `lib/server/uploads/inventory.ts` coteja el rango de cada página y las filas sobrantes de la última con `uploads`; `GET /api/storage/inventory` pagina con cursor y límite de 1 a 100, solo para propietario o administración y sin cuerpos. 10 pruebas nuevas, suite de 983 tests, `tsc` y lint en verde.
 
 ### Fase 3: Panel, hallazgos y cierre
 
