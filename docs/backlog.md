@@ -4,7 +4,7 @@
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01, CI-01, UI-02, CI-02, ARCH-01 y ARCH-02 se completaron, y SYNC-01 se queda aquí como norma operativa.
+> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01, CI-01, UI-02, CI-02, ARCH-01 y ARCH-02 se completaron, la entrada de rendimiento pasó al roadmap como PERF-01 y SYNC-01 se queda aquí como norma operativa.
 
 ---
 
@@ -61,13 +61,3 @@
   - [ ] Que todas las herramientas de una app respondan `not_found` («La aplicación no está instalada») si la app está desinstalada en la instancia.
 - Decisión (2026-11-14): descartado el cálculo en el servidor (calculadora, ecuaciones, generar código de Bloques, validar sintaxis Mermaid). Motivo: `@cortex-js/compute-engine` pesa 6,3 MB y, con Blockly y Mermaid, engordaría el Worker. Se quedan en el navegador.
 - Notas técnicas: una app nueva del catálogo debe declarar sus herramientas MCP en su carpeta, igual que se registra en `app/board/apps/registry.tsx`.
-
-## 2026-11-14 — Recortes de rendimiento de los chunks pesados
-
-- Contexto: la entrada del tablero ya está en torno a 150 KB gzip y las librerías grandes van en chunks lazy. Siguen existiendo descargas muy pesadas la primera vez que se usa cada función. Medición sobre el `dist/client` actual, sin rebuild: `@cortex-js/compute-engine` 6,3 MB (1,83 MB gzip) al entrar en Científica o Ecuaciones; chunk Emscripten `chunk-EIO257PC` de `@excalidraw/excalidraw` 1,82 MB (741 KB gzip) al abrir una pizarra, junto al chunk `whiteboard` de 1,14 MB (360 KB gzip); ELK 1,50 MB (460 KB gzip) y Cytoscape 443 KB (138 KB gzip) al usar ciertos diagramas Mermaid; Blockly 629 KB (175 KB gzip); dos copias de KaTeX de 259 KB (76 KB gzip cada una). Las dos KaTeX no son un fallo de empaquetado accidental: la app usa `mermaid` 12.3.0 con `katex` 0.18.10, y `@excalidraw/mermaid-to-excalidraw` trae `mermaid` 11.17.2 con `katex` 0.16.47. El roadmap de medición de chunks ya decidió no dividir esas librerías; esta entrada recoge recortes concretos posteriores.
-- Qué falta antes de retomarlo:
-  - [ ] `compute-engine`: es el mayor ahorro posible (~1,83 MB gzip si se evitaria del todo). Ya se descartó `mathjs` porque no cubre LaTeX nativo ni la exactitud simbólica actual. Antes de sustituirlo, medir el tiempo de la primera evaluación en red lenta y valorar si el aula puede vivir con un evaluador más pequeño en Básica, dejando el motor solo en Científica/Ecuaciones (hoy ya se precarga así).
-  - [ ] KaTeX y Mermaid duplicados: unificar versiones sería ~76 KB gzip en KaTeX y, si también se comparte el parser de Mermaid, en el orden de 100–140 KB gzip más. El riesgo es alto porque 11.17 y 12.3 no coinciden; no forzar un `alias` sin una prueba de Diagramas y de «Mermaid a Excalidraw».
-  - [ ] Pizarra: el wasm de 741 KB gzip es un chunk de producción de Excalidraw, no código nuestro. No hay un recorte limpio sin cambiar de librería; se deja como coste de abrir la pizarra.
-  - [ ] ELK y Blockly ya son bajo demanda y no conviene dividirlos. No cargarlos desde la entrada del tablero (hoy no se cargan).
-- Notas técnicas: no ejecutar un rebuild solo para remedir; el inventario anterior basta como línea base. Cualquier unificación de dependencias se verifica con `npm test`, una prueba de Diagramas y una de pizarra.
