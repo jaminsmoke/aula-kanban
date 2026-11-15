@@ -6,6 +6,13 @@
 
 ---
 
+## 2026-11-15 — Publicación 1.1.31
+
+**Estado:** Publicada en Sites.
+
+- Publicadas las mejoras locales de navegación, Administración, Tienda, Documentación, estados vacíos y tablero. No hay migraciones nuevas.
+- Verificación: lint, tipos, 1.026 pruebas y compilación correctos; la revisión visual y de enlaces previos está detallada en los roadmaps UI-07 y UI-08.
+
 ## 2026-11-15 — Roadmap UI-08 · Tienda en Administración y Clase en la cabecera
 
 **Estado:** Completada · Sin publicación
