@@ -60,11 +60,12 @@
 
 ### Fase 3: Panel, hallazgos y cierre
 
-- [ ] Añadir al panel de Almacenamiento la revisión paginada con recuentos y aviso de solo lectura, sin botones de borrado.
-- [ ] Documentar en el README el uso, el tope de página, la clasificación y que cada huérfano requiere revisión manual.
+- [x] Añadir al panel de Almacenamiento la revisión paginada con recuentos y aviso de solo lectura, sin botones de borrado.
+- [x] Documentar en el README el uso, el tope de página, la clasificación y que cada huérfano requiere revisión manual.
 - [ ] Registrar en el changelog el resultado real de la revisión —objetos, filas y copias antiguas— o «no hay objetos» si el bucket está vacío, sin inventar claves.
 - [ ] Ejecutar lint, `tsc`, tests y build; cerrar el roadmap y reiniciar `docs/roadmap.md`.
 - **Criterios de aceptación:** el panel no borra nada; la revisión queda documentada con evidencia; la suite y el build están en verde; no se añaden entradas al backlog.
+- **Estado:** En curso. Panel, estilos y README completados el 2026-11-15. Falta ejecutar la revisión real contra el bucket del Site con sesión de propietario o administración, registrar el resultado en el changelog y cerrar el roadmap; en esta sesión no se consultó R2 y no se registran objetos ni claves.
 
 ## 5. Riesgos y bloqueos
 

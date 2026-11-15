@@ -94,4 +94,66 @@ describe("SettingsStorage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Limpiar archivos" }));
     expect(await screen.findByText("1 proyecto con documentos ilegibles; no se tocaron.")).toBeTruthy();
   });
+
+  it("revisa el inventario y avisa de que es solo lectura", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(status))
+      .mockResolvedValueOnce(jsonResponse({
+        entries: [
+          { status: "con_fila", key: "p/task-image/a.png", size: 10, uploaded: 0, etag: "e1", uploadId: "a", projectId: "p" },
+          { status: "objeto_sin_fila", key: "p/task-image/b.png", size: 2048, uploaded: 0, etag: "e2", uploadId: null, projectId: null },
+          { status: "clave_revisar", key: "default/original", size: 5, uploaded: 0, etag: "e3", uploadId: null, projectId: null },
+          { status: "fila_sin_objeto", id: "d", projectId: "p", storageKey: "p/task-image/d.png" },
+        ],
+        counts: { objects: 3, withRow: 1, orphanObjects: 1, missingObjects: 1, reviewKeys: 1 },
+        truncated: false, cursor: null, range: null,
+      }));
+    vi.stubGlobal("fetch", fetchMock);
+    render(<SettingsStorage />);
+    fireEvent.click(await screen.findByRole("button", { name: "Revisar inventario" }));
+
+    expect(await screen.findByText("Objetos: 3 · con fila: 1 · sin fila: 1 · filas sin objeto: 1 · claves a revisar: 1")).toBeTruthy();
+    expect(screen.getByText("Objeto sin fila")).toBeTruthy();
+    expect(screen.getByText("Revisar clave")).toBeTruthy();
+    expect(screen.getByText("p/task-image/b.png")).toBeTruthy();
+    expect(screen.getByText("2.0 KB · 1970-01-01")).toBeTruthy();
+    expect(screen.getByText("Fin del inventario: no quedan páginas.")).toBeTruthy();
+    expect(fetchMock).toHaveBeenLastCalledWith("/api/storage/inventory");
+    expect(screen.queryByRole("button", { name: /borrar/i })).toBeNull();
+  });
+
+  it("carga la página siguiente con el cursor y acumula los recuentos", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(status))
+      .mockResolvedValueOnce(jsonResponse({
+        entries: [{ status: "objeto_sin_fila", key: "p/task-image/a.png", size: 1, uploaded: 0, etag: "e", uploadId: null, projectId: null }],
+        counts: { objects: 1, withRow: 0, orphanObjects: 1, missingObjects: 0, reviewKeys: 0 },
+        truncated: true, cursor: "c2", range: { from: "p/task-image/a.png", to: "p/task-image/a.png" },
+      }))
+      .mockResolvedValueOnce(jsonResponse({
+        entries: [{ status: "fila_sin_objeto", id: "d", projectId: "p", storageKey: "p/task-image/z.png" }],
+        counts: { objects: 0, withRow: 0, orphanObjects: 0, missingObjects: 1, reviewKeys: 0 },
+        truncated: false, cursor: null, range: null,
+      }));
+    vi.stubGlobal("fetch", fetchMock);
+    render(<SettingsStorage />);
+    fireEvent.click(await screen.findByRole("button", { name: "Revisar inventario" }));
+    expect(await screen.findByText("Hay más páginas; usa «Cargar más» hasta llegar al final.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Cargar más" }));
+
+    expect(await screen.findByText("Objetos: 1 · con fila: 0 · sin fila: 1 · filas sin objeto: 1 · claves a revisar: 0")).toBeTruthy();
+    expect(fetchMock).toHaveBeenLastCalledWith("/api/storage/inventory?cursor=c2");
+  });
+
+  it("muestra el error del inventario sin perder el diagnóstico", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(status))
+      .mockResolvedValueOnce(jsonResponse({ message: "El almacenamiento de archivos no está configurado en este despliegue." }, false, 503));
+    vi.stubGlobal("fetch", fetchMock);
+    render(<SettingsStorage />);
+    fireEvent.click(await screen.findByRole("button", { name: "Revisar inventario" }));
+
+    expect((await screen.findByRole("alert")).textContent).toContain("no está configurado");
+    expect(screen.getByText("Disponible")).toBeTruthy();
+  });
 });

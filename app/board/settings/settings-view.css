@@ -48,8 +48,23 @@
 .storage-purge h3 { margin:0; font-size: var(--text-base); font-weight: var(--weight-bold); }
 .storage-purge > p { margin:0; color:var(--ui-text-muted); line-height: var(--leading-normal); font-size: var(--text-base); }
 .storage-purge-actions { display:flex; flex-wrap:wrap; gap:8px; }
-.storage-purge-result { display:grid; gap:4px; padding:11px 13px; border:var(--border-width-hairline) solid var(--ui-border-accent); border-radius: var(--radius-sm); background:var(--ui-action-soft); }
-.storage-purge-result p { margin:0; color:var(--ui-text-muted); line-height: var(--leading-normal); font-size: var(--text-sm); }
+.storage-purge-result { display:grid; gap:4px; padding:11px 13px; border:var(--border-width-hairline) solid var(--ui-border-accent); border-radius: var(--radius-sm); background:var(--ui-action-soft); }.storage-purge-result p { margin:0; color:var(--ui-text-muted); line-height:var(--leading-normal); font-size: var(--text-sm); }
+.storage-inventory { display:grid; gap:10px; }
+.storage-inventory h3 { margin:0; font-size: var(--text-base); font-weight: var(--weight-bold); }
+.storage-inventory > p { margin:0; color:var(--ui-text-muted); line-height: var(--leading-normal); font-size: var(--text-base); }
+.storage-inventory-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.storage-inventory-result { display:grid; gap:4px; padding:11px 13px; border:var(--border-width-hairline) solid var(--ui-border-default); border-radius: var(--radius-sm); background:var(--ui-surface-muted); }
+.storage-inventory-result p { margin:0; color:var(--ui-text-muted); line-height: var(--leading-normal); font-size: var(--text-sm); }
+.storage-inventory-list { display:grid; gap:0; max-height:420px; margin:0; padding:0; overflow:auto; list-style:none; border:var(--border-width-hairline) solid var(--ui-border-default); border-radius: var(--radius-sm); }
+.storage-inventory-list li { display:grid; gap:2px; padding:9px 11px; border-bottom:var(--border-width-hairline) solid var(--ui-border-default); }
+.storage-inventory-list li:last-child { border-bottom:0; }
+.storage-inventory-list code { font-family: var(--font-mono); font-size: var(--text-sm); overflow-wrap:anywhere; }
+.storage-inventory-list small { color:var(--ui-text-muted); font-size: var(--text-2xs); }
+.storage-inventory-status { justify-self:start; padding:1px 7px; border-radius: var(--radius-pill); background:var(--ui-surface-muted); color:var(--ui-text-muted); font-size: var(--text-2xs); font-weight: var(--weight-semibold); }
+.storage-inventory-status.con_fila { background:var(--ui-success-soft); color:var(--ui-success); }
+.storage-inventory-status.objeto_sin_fila { background:var(--ui-warning-soft); color:var(--ui-warning-deep); }
+.storage-inventory-status.fila_sin_objeto { background:var(--ui-danger-soft); color:var(--ui-danger-text); }
+.storage-inventory-status.clave_revisar { background:var(--ui-info-soft); color:var(--ui-info-ink); }
 
 /* Tokens del MCP */
 .token-panel { gap:14px; }

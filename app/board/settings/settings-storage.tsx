@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { InventoryEntry, InventoryStatus } from "../../../lib/domain/uploads/inventory";
 
 type StorageStatus = {
   database: boolean;
@@ -20,6 +21,20 @@ type PurgeReport = {
   bytes: number;
   hasMore: boolean;
   problems: Array<{ projectId: string; reason: string }>;
+};
+
+type InventoryPage = {
+  entries: InventoryEntry[];
+  truncated: boolean;
+  cursor: string | null;
+};
+
+/** Etiqueta legible de cada estado del inventario. */
+const ESTADOS: Record<InventoryStatus, string> = {
+  con_fila: "Con fila",
+  objeto_sin_fila: "Objeto sin fila",
+  fila_sin_objeto: "Fila sin objeto",
+  clave_revisar: "Revisar clave",
 };
 
 /**
@@ -44,6 +59,15 @@ function plural(cantidad: number, singular: string, plural: string): string {
 }
 
 /**
+ * Da formato a la fecha de subida de un objeto.
+ * @param ms - Milisegundos desde la época.
+ * @returns La fecha en formato ISO corto.
+ */
+function fecha(ms: number): string {
+  return new Date(ms).toISOString().slice(0, 10);
+}
+
+/**
  * Estado del almacenamiento de archivos para propietario y administración,
  * con simulación y limpieza de los huérfanos.
  * @returns El panel de diagnóstico y limpieza de D1 y R2.
@@ -54,6 +78,10 @@ export default function SettingsStorage() {
   const [purge, setPurge] = useState<PurgeReport | null>(null);
   const [purgeError, setPurgeError] = useState("");
   const [working, setWorking] = useState<"simular" | "limpiar" | null>(null);
+  const [inventoryEntries, setInventoryEntries] = useState<InventoryEntry[]>([]);
+  const [inventory, setInventory] = useState<{ truncated: boolean; cursor: string | null } | null>(null);
+  const [inventoryError, setInventoryError] = useState("");
+  const [inventoryWorking, setInventoryWorking] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -95,6 +123,36 @@ export default function SettingsStorage() {
       setWorking(null);
     }
   }
+
+  /**
+   * Revisa una página del inventario de R2. Solo lectura: no borra nada.
+   * @param cursor - Cursor opaco de la página siguiente, si la hay.
+   */
+  async function loadInventory(cursor?: string) {
+    setInventoryWorking(true);
+    setInventoryError("");
+    try {
+      const response = await fetch(cursor ? `/api/storage/inventory?cursor=${encodeURIComponent(cursor)}` : "/api/storage/inventory");
+      const data = await response.json().catch(() => null) as InventoryPage & { message?: unknown } | null;
+      if (!response.ok || !data || !Array.isArray(data.entries) || typeof data.truncated !== "boolean") {
+        throw new Error(data && typeof data.message === "string" ? data.message : "No se pudo revisar el inventario.");
+      }
+      setInventoryEntries((previous) => cursor ? [...previous, ...data.entries] : data.entries);
+      setInventory({ truncated: data.truncated, cursor: data.cursor });
+    } catch (caught) {
+      setInventoryError(caught instanceof Error ? caught.message : "No se pudo revisar el inventario.");
+    } finally {
+      setInventoryWorking(false);
+    }
+  }
+
+  const inventario = {
+    objetos: inventoryEntries.filter((entry) => entry.status !== "fila_sin_objeto").length,
+    conFila: inventoryEntries.filter((entry) => entry.status === "con_fila").length,
+    sinFila: inventoryEntries.filter((entry) => entry.status === "objeto_sin_fila").length,
+    filasSinObjeto: inventoryEntries.filter((entry) => entry.status === "fila_sin_objeto").length,
+    revisar: inventoryEntries.filter((entry) => entry.status === "clave_revisar").length,
+  };
 
   return (
     <section className="settings-section" aria-labelledby="settings-storage-title">
@@ -148,6 +206,50 @@ export default function SettingsStorage() {
                   <p>{plural(purge.problems.length, "proyecto", "proyectos")} con documentos ilegibles; no se tocaron.</p>
                 ) : null}
               </div>
+            ) : null}
+          </div>
+
+          <div className="storage-inventory">
+            <h3>Inventario de R2</h3>
+            <p>
+              Recorre el bucket por páginas de hasta 100 objetos y lo coteja con los metadatos. Es una revisión de solo
+              lectura: no se borra ni se modifica ningún objeto ni fila. Los objetos sin fila y las claves fuera del
+              formato requieren revisión manual; este panel no permite eliminarlos.
+            </p>
+            <div className="storage-inventory-actions">
+              <button type="button" onClick={() => void loadInventory()} disabled={inventoryWorking}>
+                {inventoryWorking && !inventory ? "Revisando…" : inventory ? "Revisar de nuevo" : "Revisar inventario"}
+              </button>
+              {inventory?.truncated && inventory.cursor ? (
+                <button type="button" onClick={() => void loadInventory(inventory.cursor ?? undefined)} disabled={inventoryWorking}>
+                  {inventoryWorking ? "Cargando…" : "Cargar más"}
+                </button>
+              ) : null}
+            </div>
+            {inventoryError ? <p role="alert" className="admin-error">{inventoryError}</p> : null}
+            {inventory ? (
+              <>
+                <div className="storage-inventory-result" role="status">
+                  <p>{`Objetos: ${inventario.objetos} · con fila: ${inventario.conFila} · sin fila: ${inventario.sinFila} · filas sin objeto: ${inventario.filasSinObjeto} · claves a revisar: ${inventario.revisar}`}</p>
+                  {inventario.objetos === 0 ? (
+                    <p>{inventario.filasSinObjeto
+                      ? `El bucket no tiene objetos; ${plural(inventario.filasSinObjeto, "fila sin objeto", "filas sin objeto")} en los metadatos.`
+                      : "El bucket no tiene objetos ni filas que revisar."}</p>
+                  ) : null}
+                  <p>{inventory.truncated ? "Hay más páginas; usa «Cargar más» hasta llegar al final." : "Fin del inventario: no quedan páginas."}</p>
+                </div>
+                {inventoryEntries.length ? (
+                  <ul className="storage-inventory-list">
+                    {inventoryEntries.map((entry) => (
+                      <li key={entry.status === "fila_sin_objeto" ? `fila-${entry.id}` : `objeto-${entry.key}`}>
+                        <span className={`storage-inventory-status ${entry.status}`}>{ESTADOS[entry.status]}</span>
+                        <code>{entry.status === "fila_sin_objeto" ? entry.storageKey : entry.key}</code>
+                        <small>{entry.status === "fila_sin_objeto" ? `Fila ${entry.id}` : `${peso(entry.size)} · ${fecha(entry.uploaded)}`}</small>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </>
             ) : null}
           </div>
         </>
