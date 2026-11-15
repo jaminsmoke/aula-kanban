@@ -6,6 +6,29 @@
 
 ---
 
+## 2026-11-15 — Roadmap UI-02 · Encuadre de miniaturas en las tarjetas cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- `.card-image` en `app/board/tasks/kanban.css` usa ahora un marco estable de 130 px, `object-fit: contain`, `object-position: center` y fondo `var(--surface-muted)`.
+- La tarjeta conserva ancho completo, radios, fallback de imagen rota y el contrato de almacenamiento; no se tocaron subida, URLs ni miniaturas derivadas.
+- Sin cambios de versión; `package.json` sigue en `1.1.26`.
+
+### Verificación
+
+- `npx tsc --noEmit` limpio.
+- `npx vitest run app/board/tasks/task-card.test.tsx`: **5 tests** en verde.
+- `npm run build` en verde, con el aviso existente de chunks superiores a 500 kB.
+- `git diff --check` limpio.
+- GitHub Actions del commit `b238a0d` en verde.
+- La comprobación visual en navegador se hará con la próxima publicación en Sites; el arreglo se acepta por ahora y la verificación queda registrada como diferida.
+
+### Seguimiento en backlog
+
+Quedan CI-02, PER-03, PER-01B, PER-02, UI-01, ARCH-01, ARCH-02, SYNC-01, MCP-05 y recortes de rendimiento (10 entradas). Roadmap vacío. SYNC-01 se conserva como norma operativa.
+
 ## 2026-11-15 — Roadmap CI-01 · Build en GitHub Actions cerrado
 
 **Estado:** Completada · Sin publicación
