@@ -52,11 +52,12 @@
 
 ### Fase 2: Lectura y guardado por MCP
 
-- [ ] Implementar `leer_pizarra` con `proyectoId`, `tipo` y `duenoId`; devuelve `{ snapshot, revision, updatedAt }` y una pizarra vacía con revisión 0 si aún no existe.
-- [ ] Implementar `guardar_pizarra` con el mismo contexto, `snapshot` de hasta 2 MB y `revision`; valida JSON con `elements[]`, usa el servicio común y devuelve `conflict` con `revisionActual` si otra sesión guardó antes.
-- [ ] Declarar las dos herramientas en `APP_MCP_DECLARACIONES`, actualizar catálogo a `0.23.0` con 53 herramientas (23 de lectura, 30 de escritura y 8 destructivas), snapshot, matriz y ayuda.
-- [ ] Añadir pruebas de app desinstalada, proyecto inexistente, sin acceso, invitado, alumnado fuera de sus tareas, tamaño excesivo, JSON inválido y conflicto.
+- [x] Implementar `leer_pizarra` con `proyectoId`, `tipo` y `duenoId`; devuelve `{ snapshot, revision, updatedAt }` y una pizarra vacía con revisión 0 si aún no existe.
+- [x] Implementar `guardar_pizarra` con el mismo contexto, `snapshot` de hasta 2 MB y `revision`; valida JSON con `elements[]`, usa el servicio común y devuelve `conflict` con `revisionActual` si otra sesión guardó antes.
+- [x] Declarar las dos herramientas en `APP_MCP_DECLARACIONES`, actualizar catálogo a `0.23.0` con 53 herramientas (23 de lectura, 30 de escritura y 8 destructivas), snapshot, matriz y ayuda.
+- [x] Añadir pruebas de app desinstalada, proyecto inexistente, sin acceso, invitado, alumnado fuera de sus tareas, tamaño excesivo, JSON inválido y conflicto.
 - **Criterios de aceptación:** una pizarra vacía se puede crear con revisión 0; una pizarra existente se lee y se guarda sin perder campos; el 409 devuelve la revisión actual; no se puede escribir una pizarra ajena; la app desinstalada responde `not_found`.
+- **Estado:** Completada el 2026-11-15. `leer_pizarra` y `guardar_pizarra` usan el servicio de la fase 1; catálogo `0.23.0` con 53 herramientas (23 de lectura, 30 de escritura y 8 destructivas).
 
 ### Fase 3: Añadir elementos y sala en vivo
 
@@ -93,5 +94,6 @@
 - La app ya escribe en `boards` con `ownerType` `task | project | space`, revisión optimista y sincronización en vivo; no se cambia su interfaz.
 - El snapshot puede llegar a 2 MB; la escena que viaja por `BoardRoom` sigue limitada a 1 MB.
 - Fase 1 completada: `lib/server/boards.ts` concentra dueño, permisos, lectura y guardado optimista; `app/api/boards` queda como envoltorio y conserva sus mensajes. La suite completa queda en 102 archivos / 829 tests.
+- Fase 2 completada: `lib/server/mcp/apps/excalidraw.ts` expone `leer_pizarra` y `guardar_pizarra`; el catálogo sube a `0.23.0` con 53 herramientas. La app desinstalada responde `not_found` y el conflicto conserva `revisionActual`.
 - No se cambia la versión del Site (`1.1.27`) ni se publica en Sites durante el roadmap.
 - El cierre deja los commits locales; el push a GitHub se decide al cerrar, según SYNC-01 y la autorización del usuario.

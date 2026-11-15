@@ -1,6 +1,7 @@
 import type { NativeAppId } from "../../../native-apps";
 import type { McpToolDefinicion } from "../dominios/tipos";
 import { herramientasEduTools } from "./edu-tools";
+import { herramientasExcalidraw } from "./excalidraw";
 
 /**
  * Manifiesto MCP de las apps nativas (MCP-05A).
@@ -20,8 +21,7 @@ export type AppMcpDeclaracion = {
 export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
   excalidraw: {
     appId: "excalidraw",
-    herramientas: [],
-    pendiente: "MCP-05B",
+    herramientas: herramientasExcalidraw,
   },
   "edu-tools": {
     appId: "edu-tools",

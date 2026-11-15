@@ -96,7 +96,7 @@ vi.mock("../../../db", () => ({
           { id: "m-t1", projectId, userId: "u-teacher", email: "teacher@example.com", role: "teacher", studentSection: null, teacherId: "t1", status: "active" },
           { id: "m-t2", projectId, userId: "u-other", email: "otro@example.com", role: "teacher", studentSection: null, teacherId: "t2", status: "pending" },
         ]);
-        if (table === instanceAppsTable) return chain([{ appId: "mermaid", installed: 1, version: "1.0.0" }, { appId: "edu-tools", installed: 1, version: "1.0.0" }]);
+        if (table === instanceAppsTable) return chain([{ appId: "excalidraw", installed: 1, version: "1.0.0" }, { appId: "mermaid", installed: 1, version: "1.0.0" }, { appId: "edu-tools", installed: 1, version: "1.0.0" }]);
         if (table === administratorsTable) return chain([administratorRow]);
         return chain([]);
       },
@@ -110,7 +110,7 @@ vi.mock("../../../db", () => ({
         onConflictDoNothing: () => ({ returning: () => Promise.resolve([{ id: "t1", projectId, name: "Ada", createdAt: 1 }]) }),
       }),
     }),
-    update: () => ({ set: () => ({ where: () => ({ returning: () => Promise.resolve([{ projectId }]) }) }) }),
+    update: () => ({ set: () => ({ where: () => ({ returning: () => Promise.resolve([{ projectId, ownerType: "space", ownerId: projectId, snapshot: '{"elements":[]}', revision: 3, updatedAt: 1 }]) }) }) }),
   }),
 }));
 
@@ -229,6 +229,8 @@ const args: Record<string, Record<string, unknown>> = {
   obtener_app: { appId: "mermaid" },
   instalar_app: { appId: "mermaid" },
   desinstalar_app: { appId: "mermaid", confirmar: true },
+  leer_pizarra: { proyectoId: projectId, tipo: "space", duenoId: projectId },
+  guardar_pizarra: { proyectoId: projectId, tipo: "space", duenoId: projectId, snapshot: '{"elements":[]}', revision: 2 },
   consultar_elemento: { simbolo: "Na" },
   listar_ventanas: { proyectoId: projectId },
   cerrar_app: { proyectoId: projectId, appId: "mermaid" },
@@ -284,6 +286,8 @@ const matriz: Record<string, Partial<Record<Rol | "inexistente", Esperado>>> = {
   obtener_app: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "ok" },
   instalar_app: { owner: "ok", admin: "ok", teacher: "forbidden", student: "forbidden", guest: "forbidden", sin_acceso: "forbidden" },
   desinstalar_app: { owner: "ok", admin: "ok", teacher: "forbidden", student: "forbidden", guest: "forbidden", sin_acceso: "forbidden" },
+  leer_pizarra: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "forbidden", inexistente: "not_found" },
+  guardar_pizarra: { owner: "ok", admin: "ok", teacher: "ok", student: "forbidden", guest: "forbidden", sin_acceso: "forbidden", inexistente: "not_found" },
   consultar_elemento: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "ok" },
   listar_ventanas: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "forbidden", inexistente: "not_found" },
   cerrar_app: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "forbidden", inexistente: "not_found" },

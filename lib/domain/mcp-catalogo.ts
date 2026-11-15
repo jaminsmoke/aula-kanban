@@ -11,7 +11,7 @@ export const MCP_DOMINIOS = ["Proyectos", "Archivos", "Tareas", "Personas", "Con
 export type McpDominio = (typeof MCP_DOMINIOS)[number];
 
 /** Versión del contrato de herramientas. */
-export const MCP_CATALOG_VERSION = "0.22.0";
+export const MCP_CATALOG_VERSION = "0.23.0";
 
 /** Metadatos de una herramienta del catálogo. */
 export type McpCatalogoEntry = {
@@ -328,6 +328,22 @@ export const MCP_CATALOGO: McpCatalogoEntry[] = [
     description: "Desinstala una app de toda la instancia. Destructiva para el escritorio: sin `confirmar: true` avisa primero. Solo el propietario o un administrador; el resto recibe 403. Los documentos guardados se conservan.",
     scope: "mcp:write",
     annotations: {"readOnlyHint":false,"destructiveHint":true,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Apps",
+    name: "leer_pizarra",
+    title: "Leer pizarra",
+    description: "Lee el snapshot, la revisión y la fecha de una pizarra de Excalidraw de tarea, proyecto o Mi espacio. Requiere que Excalidraw esté instalada y acceso al proyecto.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Apps",
+    name: "guardar_pizarra",
+    title: "Guardar pizarra",
+    description: "Guarda el snapshot de una pizarra de Excalidraw con la revisión leída. Falla con conflict y la revisión actual si otra sesión guardó antes. Requiere permiso de escritura; invitados no escriben y el alumnado solo en sus tareas.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false},
   },
   {
     domain: "Apps",

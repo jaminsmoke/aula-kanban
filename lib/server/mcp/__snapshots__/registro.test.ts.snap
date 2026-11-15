@@ -2537,6 +2537,146 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
       "$schema": "http://json-schema.org/draft-07/schema#",
       "additionalProperties": false,
       "properties": {
+        "duenoId": {
+          "description": "Id de la tarea o del proyecto dueño de la pizarra",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "tipo": {
+          "description": "Tipo de pizarra: task, project o space",
+          "enum": [
+            "task",
+            "project",
+            "space",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "tipo",
+        "duenoId",
+      ],
+      "type": "object",
+    },
+    "name": "leer_pizarra",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "revision": {
+          "minimum": 0,
+          "type": "integer",
+        },
+        "snapshot": {
+          "type": "string",
+        },
+        "updatedAt": {
+          "minimum": 0,
+          "type": "integer",
+        },
+      },
+      "required": [
+        "snapshot",
+        "revision",
+        "updatedAt",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Leer pizarra",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "duenoId": {
+          "description": "Id de la tarea o del proyecto dueño de la pizarra",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "revision": {
+          "description": "Revisión leída antes de guardar",
+          "minimum": 0,
+          "type": "integer",
+        },
+        "snapshot": {
+          "description": "Snapshot JSON de Excalidraw con elements[]",
+          "maxLength": 2097152,
+          "type": "string",
+        },
+        "tipo": {
+          "description": "Tipo de pizarra: task, project o space",
+          "enum": [
+            "task",
+            "project",
+            "space",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "tipo",
+        "duenoId",
+        "snapshot",
+        "revision",
+      ],
+      "type": "object",
+    },
+    "name": "guardar_pizarra",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "revision": {
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+        "updatedAt": {
+          "minimum": 0,
+          "type": "integer",
+        },
+      },
+      "required": [
+        "revision",
+        "updatedAt",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Guardar pizarra",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
         "numero": {
           "description": "Número atómico, por ejemplo 11",
           "maximum": 118,
