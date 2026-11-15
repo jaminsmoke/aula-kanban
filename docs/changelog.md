@@ -6,6 +6,28 @@
 
 ---
 
+## 2026-11-15 — Roadmap APP-03 · Mochila del alumnado y maletín docente
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Fase 1: definición de espacios y datos — la mochila y el maletín son una única capa de organización personal (favoritos y orden) sobre las apps instaladas, con alcance por usuario y proyecto activo; la presentación la decide el rol en el proyecto activo, sin prometer aislamiento de los documentos compartidos.
+- Fase 2: diseño del acceso y el catálogo personal — entrada desde la cabecera junto a Clase como sección nueva de Clase; tres capas (instalación de instancia, herramientas disponibles según APP-01, selección personal) con ruta propia separada de `/api/space-apps`.
+- Fase 3: implementación — migración 0037 crea `app_preferences` (proyecto, usuario, app, favorito, posición); ruta `/api/personal-apps` (GET/PUT) con membresía activa exigida y rechazo de apps no instaladas, para que una selección personal nunca reinstale; sección `view=clase&section=mochila` con favorito y orden accesibles y aviso de que los documentos se comparten con el proyecto.
+- La instalación global sigue siendo exclusiva de owner y administradores; Aula Store, `SpaceRoom`/`space-control`, `/api/space-socket`, la URL canónica de Tienda y su alias no cambian. No hay herramientas MCP nuevas y el catálogo queda en 0.27.0 (59 herramientas).
+
+### Verificación
+
+- Suite completa: 128 archivos / 1.042 pruebas; `tsc --noEmit`, ESLint, build y `perf:budget` en verde.
+- Commits: `bd3038f` (apertura), `4f058fa` (Fase 1), `bff24ba` (Fase 2), `b08bda7` (Fase 3); el cierre queda en el commit de documentación.
+
+### Seguimiento
+
+- **PERM-01** sigue en el backlog: prerrequisito para cualquier capacidad nueva de autorización.
+- **APP-02** sigue aparcada.
+- La migración 0037 en remoto y la publicación en Sites las realiza Codex.
+
 ## 2026-11-15 — Publicación 1.1.31
 
 **Estado:** Publicada en Sites.
