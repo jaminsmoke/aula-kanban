@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import type { Student } from "../../../lib/domain/student";
-import Modal from "../../modal";
+import Modal from "../shared/modal";
 import type { Member } from "../shared/model";
 import { request } from "../shared/api";
 import "./member-dialog.css";

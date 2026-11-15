@@ -23,7 +23,7 @@ vi.mock("../../db", () => ({
     },
   }),
 }));
-vi.mock("./project", () => ({
+vi.mock("./project-access", () => ({
   isOwner: async (user: ChatGPTUser) => user.userId === "u-owner",
   isAdministrator: async (user: ChatGPTUser) => user.userId === "u-admin",
   isOwnerContactEmail: async () => false,

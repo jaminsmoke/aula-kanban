@@ -51,7 +51,7 @@ function query(rows: unknown[]) {
   return chain;
 }
 
-vi.mock("../project", () => ({
+vi.mock("../project-access", () => ({
   findProject: async (id: string) => (id === "11111111-1111-4111-8111-111111111111" ? projectRow : null),
   PROJECT_FAILURE_RESPONSES: {
     unauthenticated: { status: 401, message: "Inicia sesión para continuar." },

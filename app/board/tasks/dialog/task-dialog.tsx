@@ -3,9 +3,9 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { ArrowRight, Trash2 } from "lucide-react";
-import type { Task, TaskFields } from "../../../lib/domain/task";
-import type { Student } from "../../../lib/domain/student";
-import Modal from "../../modal";
+import type { Task, TaskFields } from "../../../../lib/domain/task";
+import type { Student } from "../../../../lib/domain/student";
+import Modal from "../../shared/modal";
 import AssigneeFields from "./assignee-fields";
 import TaskDetail from "./task-detail";
 import TaskForm from "./task-form";

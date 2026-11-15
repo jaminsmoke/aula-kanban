@@ -93,7 +93,7 @@ vi.mock("../../../db", () => ({
 /** Filas que devuelve el UPDATE de aceptación (`[]` = invitación ajena). */
 let retornoAceptar: unknown[] = [];
 
-vi.mock("../project", () => ({
+vi.mock("../project-access", () => ({
   isOwner: async (user: { userId: string }) => user.userId === "u-owner",
   isAdministrator: async () => false,
   PROJECT_FAILURE_RESPONSES: {

@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import TaskDialog from "./task-dialog";
-import { blank } from "../shared/model";
-import type { Task } from "../../../lib/domain/task";
+import { blank } from "../../shared/model";
+import type { Task } from "../../../../lib/domain/task";
 
 const task: Task = {
   id: "t1",

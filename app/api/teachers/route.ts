@@ -1,5 +1,5 @@
 import { json } from "../../../lib/server/http";
-import { projectFailureResponse, resolveProject } from "../../../lib/server/project";
+import { projectFailureResponse, resolveProject } from "../../../lib/server/project-access";
 import { listTeachers, mutateTeacher } from "../../../lib/server/people/teachers";
 
 export const dynamic = "force-dynamic";

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Check, Link2 } from "lucide-react";
-import Modal from "../../modal";
+import Modal from "../shared/modal";
 import type { Project } from "../shared/model";
 import "./project-dialogs.css";
 

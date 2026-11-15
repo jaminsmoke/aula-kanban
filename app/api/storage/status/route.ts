@@ -1,5 +1,5 @@
 import { getChatGPTUser } from "../../../../lib/server/auth";
-import { isAdministrator, isOwner } from "../../../../lib/server/project";
+import { isAdministrator, isOwner } from "../../../../lib/server/project-access";
 import { json } from "../../../../lib/server/http";
 import { storageStatus } from "../../../../lib/server/storage";
 

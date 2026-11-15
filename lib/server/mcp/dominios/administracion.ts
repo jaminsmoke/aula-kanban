@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { getD1 } from "../../../../db";
 import { actualizarAdministrador, crearAdministrador, eliminarAdministrador, listarAdministradores } from "../../administradores";
-import { isAdministrator, isOwner } from "../../project";
+import { isAdministrator, isOwner } from "../../project-access";
 import { consultarAuditoria } from "../auditoria";
 import { listMcpTokens, revokeMcpToken } from "../tokens";
 import { errorHerramienta, payloadResult, toChatGPTUser, type McpCaller } from "../contexto";

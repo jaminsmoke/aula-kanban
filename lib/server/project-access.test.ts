@@ -6,7 +6,7 @@ import {
   resolveProject,
   type Access,
   type ProjectRow,
-} from "./project";
+} from "./project-access";
 
 const user: ChatGPTUser = { userId: "u1", displayName: "Docente", email: "docente@example.com", fullName: null };
 const project: ProjectRow = { id: "p1", name: "Proyecto", createdAt: 1 };

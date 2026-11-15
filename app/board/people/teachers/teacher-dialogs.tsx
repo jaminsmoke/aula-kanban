@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import Modal from "../../../modal";
+import Modal from "../../shared/modal";
 import { accountLabel } from "../../shared/model";
 import type { Teacher } from "./model";
 

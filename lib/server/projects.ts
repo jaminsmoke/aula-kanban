@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getDb } from "../../db";
 import { appDocuments, boards, deletedStudents, deletedTeachers, projectMembers, projects, students, taskAssignees, tasks, teachers, uploads } from "../../db/schema";
 import type { ChatGPTUser } from "./auth";
-import { globalRoleForUser, isAdministrator, isOwner, memberAccess, PROJECT_FAILURE_RESPONSES, type Access, type ProjectRow } from "./project";
+import { globalRoleForUser, isAdministrator, isOwner, memberAccess, PROJECT_FAILURE_RESPONSES, type Access, type ProjectRow } from "./project-access";
 import { deleteProjectUploads } from "./storage";
 
 /**

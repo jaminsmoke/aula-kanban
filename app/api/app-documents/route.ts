@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { projectFailureResponse, resolveProject } from "../../../lib/server/project";
+import { projectFailureResponse, resolveProject } from "../../../lib/server/project-access";
 import { boundedJson } from "../../../lib/server/bounded-json";
 import { NATIVE_APP_IDS } from "../../../lib/native-apps";
 import { readAppDocument, saveAppDocument } from "../../../lib/server/app-documents";

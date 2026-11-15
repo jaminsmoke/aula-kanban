@@ -62,7 +62,7 @@ vi.mock("../../../db", () => ({
   }),
 }));
 
-vi.mock("../../../lib/server/project", () => ({
+vi.mock("../../../lib/server/project-access", () => ({
   isOwner: async (user: Usuario) => user.userId === "u-owner",
   isAdministrator: async (user: Usuario) => user.userId === "u-admin",
   isOwnerContactEmail: async (email: string) => email.trim().toLowerCase() === "owner@example.com",
@@ -72,7 +72,7 @@ vi.mock("../../../lib/server/project", () => ({
     not_found: { status: 404, message: "No se encuentra el proyecto." },
     forbidden: { status: 403, message: "No tienes acceso a este proyecto." },
   },
-  projectFailureResponse: (status: keyof typeof import("../../../lib/server/project").PROJECT_FAILURE_RESPONSES) =>
+  projectFailureResponse: (status: keyof typeof import("../../../lib/server/project-access").PROJECT_FAILURE_RESPONSES) =>
     Response.json({ message: status }, { status: 401 }),
   findProject: async () => null,
   projectAccessForUser: async () => null,

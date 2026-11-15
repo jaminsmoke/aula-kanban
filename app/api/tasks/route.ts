@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getDb } from "../../../db";
 import { tasks } from "../../../db/schema";
 import { priorities, statuses } from "../../../lib/domain/task";
-import { projectFailureResponse, resolveProject } from "../../../lib/server/project";
+import { projectFailureResponse, resolveProject } from "../../../lib/server/project-access";
 import { purgeDeletedProfiles } from "../../../lib/server/deleted-profiles";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 import { createTaskPermissions, taskAuthGuard, unassigned, validateRefs } from "../../../lib/server/tasks/permissions";

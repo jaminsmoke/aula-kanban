@@ -68,7 +68,7 @@ vi.mock("../../db", () => ({
   }),
 }));
 
-vi.mock("../../lib/server/project", () => ({
+vi.mock("../../lib/server/project-access", () => ({
   isOwner: async (user: { userId: string }) => user.userId === "u-owner",
   isAdministrator: async () => false,
   PROJECT_FAILURE_RESPONSES: {

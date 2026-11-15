@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element -- Las imágenes son URLs externas puestas por el usuario; next/image no puede optimizar dominios arbitrarios */
 "use client";
 
-import { priorities, priorityNames, statuses } from "../../../lib/domain/task";
-import type { TaskFields } from "../../../lib/domain/task";
-import { columns, formatDate } from "../shared/model";
+import { priorities, priorityNames, statuses } from "../../../../lib/domain/task";
+import type { TaskFields } from "../../../../lib/domain/task";
+import { columns, formatDate } from "../../shared/model";
 import { dateValue } from "./task-dialog-utils";
 
 /**

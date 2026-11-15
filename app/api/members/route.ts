@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { inviteMember, listMembers, removeMember } from "../../../lib/server/members";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
-import { projectFailureResponse, resolveProject } from "../../../lib/server/project";
+import { projectFailureResponse, resolveProject } from "../../../lib/server/project-access";
 
 export const dynamic = "force-dynamic";
 

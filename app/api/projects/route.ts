@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getD1, getDb } from "../../../db";
 import { projectMembers, projects, userIdentities } from "../../../db/schema";
 import { getChatGPTUser } from "../../../lib/server/auth";
-import { isAdministrator, isOwner, projectFailureResponse } from "../../../lib/server/project";
+import { isAdministrator, isOwner, projectFailureResponse } from "../../../lib/server/project-access";
 import { createProject, deleteProject } from "../../../lib/server/projects";
 import { cleanupOrphanUploads } from "../../../lib/server/storage";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";

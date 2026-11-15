@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({
   save: vi.fn(),
   read: vi.fn(),
 }));
-vi.mock("../../../lib/server/project", () => ({
+vi.mock("../../../lib/server/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? { status: "ok", project: { id: "project1", access: { user: { userId: "user1", displayName: "Alumno", email: "alumno@example.com", fullName: null }, role: mocks.role } } }
     : { status: mocks.status },

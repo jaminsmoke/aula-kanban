@@ -10,7 +10,7 @@ const StudentsView = lazy(() => import("./board/people/students/students-view"))
 const SpaceView = lazy(() => import("./board/space/space-view"));
 const DocumentationView = lazy(() => import("./board/docs/docs-view"));
 const SettingsView = lazy(() => import("./board/settings/settings-view"));
-import TaskDialog from "./board/tasks/task-dialog";
+import TaskDialog from "./board/tasks/dialog/task-dialog";
 import MemberDialog from "./board/projects/member-dialog";
 import { DeleteProjectDialog, NewProjectDialog, RemixDialog, ShareDialog } from "./board/projects/project-dialogs";
 import { StudentDeleteDialog, StudentFormDialog } from "./board/people/students/student-dialogs";

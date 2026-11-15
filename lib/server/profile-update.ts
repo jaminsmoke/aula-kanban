@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import type { ProjectWithAccess } from "./project";
+import type { ProjectWithAccess } from "./project-access";
 
 type Project = ProjectWithAccess;
 type ProfileInput = { name: string; displayName: string; role: string; activities: string; aiHelp: string };

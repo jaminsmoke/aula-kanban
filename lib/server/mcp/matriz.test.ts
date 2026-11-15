@@ -114,7 +114,7 @@ vi.mock("../../../db", () => ({
   }),
 }));
 
-vi.mock("../project", () => ({
+vi.mock("../project-access", () => ({
   isOwner: async (user: { userId: string }) => user.userId === "u-owner",
   isAdministrator: async (user: { userId: string }) => user.userId === "u-admin",
   isOwnerContactEmail: async () => false,

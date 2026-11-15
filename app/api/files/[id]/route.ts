@@ -1,5 +1,5 @@
 import { getChatGPTUser } from "../../../../lib/server/auth";
-import { projectFailureResponse, resolveProject } from "../../../../lib/server/project";
+import { projectFailureResponse, resolveProject } from "../../../../lib/server/project-access";
 import { readUpload } from "../../../../lib/server/storage";
 import { json } from "../../../../lib/server/http";
 

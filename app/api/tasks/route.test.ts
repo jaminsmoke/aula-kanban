@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   decorate: vi.fn(),
 }));
 
-vi.mock("../../../lib/server/project", () => ({
+vi.mock("../../../lib/server/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? { status: "ok", project: { id: "p1", access: { user: { userId: "u1", displayName: "Admin", email: "admin@example.com", fullName: null }, role: mocks.role, studentSection: mocks.studentSection, teacherId: null } } }
     : { status: mocks.status },

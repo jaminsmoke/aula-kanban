@@ -2,9 +2,9 @@
 "use client";
 
 import { CalendarDays, Flag } from "lucide-react";
-import { priorityNames } from "../../../lib/domain/task";
-import type { Task } from "../../../lib/domain/task";
-import { columns, formatDate, initials } from "../shared/model";
+import { priorityNames } from "../../../../lib/domain/task";
+import type { Task } from "../../../../lib/domain/task";
+import { columns, formatDate, initials } from "../../shared/model";
 
 /**
  * Detalle de una tarea en solo lectura.

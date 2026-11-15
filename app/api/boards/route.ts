@@ -2,7 +2,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../db";
 import { boards, taskAssignees, tasks } from "../../../db/schema";
-import { projectFailureResponse, resolveProject, type Access } from "../../../lib/server/project";
+import { projectFailureResponse, resolveProject, type Access } from "../../../lib/server/project-access";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";

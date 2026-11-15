@@ -68,6 +68,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits y push siempre al repo personal `jaminsmoke/aula-kanban`; despliegue y verificación en Sites, siempre por Codex de OpenAI.
+- **Roadmap HIER-01 completado:** documentación en `app/board/docs/content/`; `edu-tools` en `calculator/`, `periodic-table/` y `tools/`; diálogo de tareas en `tasks/dialog/`; `modal` en `shared/`; y `project-access` en lugar de `project`. Resumen en [`changelog.md`](changelog.md).
 - **Fase 1 completada:** reorganización de `app/board` por dominios, módulos compartidos y estilos.
 - **Roadmap CSS completado:** tokens, CSS por feature, limpieza y verificación final. Resumen en [`changelog.md`](changelog.md); la auditoría temporal ya se eliminó.
 - **Roadmap de dominio/auth completado:** `lib/domain/`, `lib/server/auth.ts`, regla de frontera y documentación. Resumen en [`changelog.md`](changelog.md).
@@ -110,7 +111,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap DOC-07 + MCP-11 completado:** catálogo público en `lib/domain/mcp-catalogo.ts`, instrucciones y prompts compartidos por `/mcp` y `/api/mcp`, guía del plugin en la ayuda y README generada desde el catálogo. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-09 completado:** administración de la instancia, tokens propios y auditoría por MCP (7 herramientas, catálogo `0.19.0`), con matriz, snapshot, paridad y pruebas SQLite. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-10 completado:** archivos del proyecto por MCP con `subir_archivo` y `obtener_archivo`, límites compartidos con la web, matriz ampliada y 50 herramientas (`0.20.0`). Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05 y recortes de chunks (2 entradas).
-- **Roadmap activo:** HIER-01 — Reorganización mínima de la jerarquía. Fases 1 y 2 completadas: la documentación vive en `app/board/docs/content/` y `edu-tools` está dividido en `calculator/`, `periodic-table/` y `tools/`. Queda la Fase 3: diálogo de tareas, modal y `project-access`; SYNC-01 permanece en el backlog como norma operativa. La verificación de subida en producción y el archivo de PER-01 están en el changelog; el inventario queda en PER-01B y la purga en PER-03. El roadmap anterior se conserva en [`historial/roadmap-per-01.md`](historial/roadmap-per-01.md).
+- **Roadmap activo:** sin fase activa; plantilla reiniciada. HIER-01 se completó y su resumen está en el changelog; SYNC-01 permanece en el backlog como norma operativa. La verificación de subida en producción y el archivo de PER-01 están en el changelog; el inventario queda en PER-01B y la purga en PER-03. El roadmap anterior de PER-01 se conserva en [`historial/roadmap-per-01.md`](historial/roadmap-per-01.md).
 
 ## Documentación relacionada
 

@@ -17,8 +17,8 @@ const currentUser: ChatGPTUser = {
 };
 
 vi.mock("../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user }));
-vi.mock("../../lib/server/project", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../lib/server/project")>();
+vi.mock("../../lib/server/project-access", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../lib/server/project-access")>();
   return {
     ...actual,
     resolveProject: async () => mocks.status === "ok"

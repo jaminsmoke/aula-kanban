@@ -2,7 +2,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../db";
 import { projectMembers, students, teachers } from "../../db/schema";
-import type { Access, ProjectWithAccess } from "./project";
+import type { Access, ProjectWithAccess } from "./project-access";
 
 /**
  * Miembros e invitaciones de un proyecto: listar, invitar y retirar cuentas.

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isOwner } from "../../project";
+import { isOwner } from "../../project-access";
 import { createProject, deleteProject, listVisibleProjects, projectDeletionInfo } from "../../projects";
 import { calendarUrl, projectUrl } from "../enlaces";
 import { errorHerramienta, payloadResult, toChatGPTUser, type McpCaller } from "../contexto";

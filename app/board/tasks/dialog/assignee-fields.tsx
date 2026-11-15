@@ -1,7 +1,7 @@
 "use client";
 
-import type { TaskFields } from "../../../lib/domain/task";
-import type { Student } from "../../../lib/domain/student";
+import type { TaskFields } from "../../../../lib/domain/task";
+import type { Student } from "../../../../lib/domain/student";
 import { personValue } from "./task-dialog-utils";
 
 /**

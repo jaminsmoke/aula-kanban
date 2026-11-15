@@ -6,7 +6,7 @@ import { BOARD_VIEWS, type BoardView, type ClassSection, type SettingsSection } 
 import { NATIVE_APP_IDS } from "../../../native-apps";
 import { listInstalledApps } from "../../apps";
 import { comandarVentana } from "../../space-control";
-import { isAdministrator, isOwner } from "../../project";
+import { isAdministrator, isOwner } from "../../project-access";
 import { listVisibleProjects } from "../../projects";
 import { decorate, projectData } from "../../tasks/queries";
 import { errorHerramienta, falloResolucion, payloadResult, resolve, toChatGPTUser, type McpCaller } from "../contexto";

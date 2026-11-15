@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("../../../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user }));
-vi.mock("../../../../lib/server/project", () => ({
+vi.mock("../../../../lib/server/project-access", () => ({
   isOwner: async () => mocks.owner,
   isAdministrator: async () => mocks.admin,
 }));

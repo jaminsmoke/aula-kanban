@@ -6,6 +6,29 @@
 
 ---
 
+## 2026-11-15 — Roadmap HIER-01 · Reorganización mínima de la jerarquía cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fase 1 — Documentación:** `content.ts` (541 líneas) se dividió en `app/board/docs/content/` (`types`, `intro`, `people`, `tasks`, `workspace`, `help` e `index`), conservando las 14 secciones y los exports públicos.
+- **Fase 2 — Herramientas de aula:** `edu-tools` quedó en `calculator/`, `periodic-table/` y `tools/`; se actualizaron el contenedor y los imports y se conservaron las cargas diferidas.
+- **Fase 3 — Diálogo y acceso:** el diálogo de tareas se agrupó en `app/board/tasks/dialog/`; `app/modal.tsx` pasó a `app/board/shared/modal.tsx`; `lib/server/project.ts` pasó a `project-access.ts` con todos sus imports.
+- Sin cambios funcionales, de contrato ni de versión; `package.json` sigue en `1.1.26`.
+
+### Verificación
+
+- `npx tsc --noEmit` limpio.
+- `npm test`: **90 archivos / 751 tests**.
+- `npm run build` en verde, con el aviso existente de chunks superiores a 500 kB.
+- `git diff --check` limpio.
+- Publicación en Sites pendiente de Codex; no se ha desplegado.
+
+### Seguimiento en backlog
+
+Quedan UI-02, PER-03, PER-01B, PER-02, UI-01, ARCH-01, ARCH-02, CI-01, SYNC-01, MCP-05 y recortes de rendimiento (11 entradas). SYNC-01 se conserva como norma operativa.
+
 ## 2026-11-15 — Verificación de persistencia y archivo de PER-01
 
 **Estado:** subida verificada · inventario y purga pendientes en backlog

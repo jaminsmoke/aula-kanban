@@ -7,7 +7,7 @@ import { createTask, deleteTask, updateTask } from "../../tasks/mutations";
 import { createTaskPermissions, taskAuthGuard, unassigned, validateRefs } from "../../tasks/permissions";
 import { decorate, projectData } from "../../tasks/queries";
 import type { ProjectData, TaskRef, TaskRow, TaskWriteFields } from "../../tasks/types";
-import type { Access } from "../../project";
+import type { Access } from "../../project-access";
 import { errorHerramienta, falloResolucion, payloadResult, resolve, toChatGPTUser, CODIGO_ESTADO, type McpCaller } from "../contexto";
 import { calendarUrl, projectUrl } from "../enlaces";
 import { listVisibleProjects } from "../../projects";

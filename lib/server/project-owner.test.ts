@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { env } from "cloudflare:workers";
 import type { ChatGPTUser } from "./auth";
-import { isOwner } from "./project";
+import { isOwner } from "./project-access";
 
 class FakeD1 {
   owner: { userId: string; email: string; claimedAt: number } | null = null;

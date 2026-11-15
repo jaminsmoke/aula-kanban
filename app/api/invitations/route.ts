@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { getChatGPTUser } from "../../../lib/server/auth";
 import { acceptInvitation, listPendingInvitations } from "../../../lib/server/invitaciones";
-import { projectFailureResponse } from "../../../lib/server/project";
+import { projectFailureResponse } from "../../../lib/server/project-access";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";

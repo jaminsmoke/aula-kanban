@@ -3,7 +3,7 @@ import { asc, eq } from "drizzle-orm";
 import { getDb } from "../../db";
 import { administrators } from "../../db/schema";
 import type { ChatGPTUser } from "./auth";
-import { isAdministrator, isOwner, isOwnerContactEmail } from "./project";
+import { isAdministrator, isOwner, isOwnerContactEmail } from "./project-access";
 
 /**
  * Administradores de la instancia.
