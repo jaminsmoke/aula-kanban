@@ -1,6 +1,6 @@
 # Sistema visual
 
-> **Estado:** Fases 1-7.1 completadas; fase 8 pendiente (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
+> **Estado:** Fases 1-8 completadas; roadmap UI-01 cerrado (2026-11-15) · Resumen: [`changelog.md`](changelog.md)
 > **Fuente de verdad:** [`../app/globals.css`](../app/globals.css)
 
 ---
@@ -17,89 +17,90 @@ La auditoría de la fase 1 midió todo el CSS propio del repositorio, sin contar
 
 Los 36 hexadecimales de `globals.css` ya son la base central. La deuda está en los **266 usos y 208 colores distintos** repartidos por los CSS de feature.
 
-Tras la fase 7, las pantallas de Ajustes, Documentación, Mi espacio y Aula Store, y los shells compartidos, no conservan ningún hexadecimal propio:
+Tras la fase 8, las pantallas de Ajustes, Documentación, Mi espacio y Aula Store, y los shells compartidos, no conservan ningún hexadecimal propio:
 
 | Ámbito actual | Archivos | Líneas | Usos de hex | Hex distintos |
 |---|---:|---:|---:|---:|
-| Toda la aplicación | 23 | 2.514 | 189 | 161 |
-| `app/globals.css` | 1 | 438 | 189 | 161 |
-| CSS de feature | 22 | 2.076 | 0 | 0 |
+| Toda la aplicación | 23 | 2.486 | 189 | 161 |
+| `app/globals.css` | 1 | 405 | 189 | 161 |
+| CSS de feature | 22 | 2.081 | 0 | 0 |
 
 Los 22 CSS de feature quedan a cero hexadecimales. Los 189 usos restantes viven en `app/globals.css`, la única fuente de color crudo; los valores del tema oscuro se añaden al mismo archivo.
 
-La fase 7.1 no altera el inventario de color: mantiene 23 archivos, 2.514 líneas, 189 usos de hex y 161 colores distintos, todos en `globals.css`. Añade tres tokens de grosor y tres radios, y sustituye 127 grosores de borde, 28 contornos de foco y 107 radios por tokens.
+La fase 8 retira los 36 alias de compatibilidad y deja 70 primitivas y 93 tokens `--ui-*`; los 189 usos de hex y los 161 colores siguen en `globals.css`. La guarda `app/styles.test.ts` cubre los CSS de feature y la tarjeta OAuth usa `--ui-shadow-float`.
 
 ### Hexadecimales fuera de globals.css
 
-No queda ninguno en los CSS de feature. Las únicas excepciones son colores de configuración que no pasan por CSS: categorías de Blockly (`blockly-toolbox.ts`), tema de Mermaid (`mermaid-render.ts`), paleta de presencia de Excalidraw (`whiteboard-model.ts`), rejilla de Blockly (`use-blockly.ts`) y el HTML aislado del recurso MCP (`lib/server/mcp/ui-apertura.ts`). Se revisarán si esas librerías permiten consumir tokens.
+No queda ninguno en los CSS de feature. La guarda `app/styles.test.ts` falla ante un hexadecimal, una función de color o un alias retirado en cualquier CSS distinto de `globals.css`.
+
+Quedan fuera de la guarda, por ser configuración de librerías o de documentos aislados, los colores de: categorías y rejilla de Blockly (`blockly-toolbox.ts`, `use-blockly.ts`), tema de Mermaid (`mermaid-render.ts`), paleta de presencia de Excalidraw (`whiteboard-model.ts`) y HTML del recurso MCP (`lib/server/mcp/ui-apertura.ts`). Se revisaron en la fase 8: no consumen tokens del documento anfitrión y se mantienen como excepciones documentadas.
 
 ## 2. Capas de tokens
 
 | Capa | Prefijo | Uso |
 |---|---|---|
 | Primitivas | `--primitive-*` | Valores crudos. Solo se declaran en `app/globals.css`; no se consumen en features. |
-| Compatibilidad | nombres existentes (`--canvas`, `--ink`, `--line`…) | Mantienen los valores actuales mientras se migran los CSS. No se usan en código nuevo. |
 | Semántica de UI | `--ui-*` | Capa estable para el CSS de feature y para los componentes nuevos. |
 
-La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes siguen resolviendo al mismo color, ahora a través de una primitiva. La fase 7 deja 70 primitivas, 93 tokens `--ui-*` y 36 nombres de compatibilidad. 92 tokens se redefinen en `[data-theme="dark"]`; `--ui-opacity-disabled` es el único que se comparte. `--ui-surface-frame` separa el chrome del contenido y se invierte en el tema oscuro sin tocar los componentes.
+La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes siguen resolviendo al mismo color, ahora a través de una primitiva. La fase 8 deja 70 primitivas y 93 tokens `--ui-*`; los 36 nombres de compatibilidad se retiraron. 92 tokens se redefinen en `[data-theme="dark"]`; `--ui-opacity-disabled` es el único que se comparte. `--ui-surface-frame` separa el chrome del contenido y se invierte en el tema oscuro sin tocar los componentes.
 
 ## 3. Mapa semántico
 
 ### Superficies
 
-| Token de UI | Compatibilidad | Valor |
+| Token de UI | Primitiva | Valor |
 |---|---|---|
-| `--ui-surface-page` | `--canvas` | `#f7f8fc` |
-| `--ui-surface-raised` | `--white` | `#fff` |
-| `--ui-surface-recessed` | `--surface-sunken` | `#eceaf2` |
-| `--ui-surface-muted` | `--surface-muted` | `#eeecf5` |
-| `--ui-surface-hover` | `--surface-hover` | `#f5f2fb` |
-| `--ui-surface-tint` | `--surface-tint` | `#ece8f6` |
-| `--ui-surface-faint` | `--surface-faint` | `#f7f5fd` |
-| `--ui-surface-pale` | `--surface-pale` | `#fbfaff` |
-| `--ui-surface-inverse` | `--ink-deep` | `#302255` |
+| `--ui-surface-page` | `--primitive-canvas` | `#f7f8fc` |
+| `--ui-surface-raised` | `--primitive-white` | `#fff` |
+| `--ui-surface-recessed` | `--primitive-surface-sunken` | `#eceaf2` |
+| `--ui-surface-muted` | `--primitive-surface-muted` | `#eeecf5` |
+| `--ui-surface-hover` | `--primitive-surface-hover` | `#f5f2fb` |
+| `--ui-surface-tint` | `--primitive-surface-tint` | `#ece8f6` |
+| `--ui-surface-faint` | `--primitive-surface-faint` | `#f7f5fd` |
+| `--ui-surface-pale` | `--primitive-surface-pale` | `#fbfaff` |
+| `--ui-surface-inverse` | `--primitive-ink-deep` | `#302255` |
 | `--ui-surface-frame` | primitiva propia | `#f2eef9` |
 | `--ui-surface-on-dark-subtle` | primitiva propia | `#ffffff1f` |
 | `--ui-surface-on-dark-hover` | primitiva propia | `#ffffff33` |
 
 ### Texto y bordes
 
-| Token de UI | Compatibilidad | Valor |
+| Token de UI | Primitiva | Valor |
 |---|---|---|
-| `--ui-text-primary` | `--ink` | `#211b36` |
-| `--ui-text-secondary` | `--ink-soft` | `#4a4458` |
-| `--ui-text-muted` | `--muted` | `#625c74` |
-| `--ui-text-strong` | `--ink-deep` | `#302255` |
-| `--ui-text-inverse` | `--white` | `#fff` |
+| `--ui-text-primary` | `--primitive-ink` | `#211b36` |
+| `--ui-text-secondary` | `--primitive-ink-soft` | `#4a4458` |
+| `--ui-text-muted` | `--primitive-muted` | `#625c74` |
+| `--ui-text-strong` | `--primitive-ink-deep` | `#302255` |
+| `--ui-text-inverse` | `--primitive-white` | `#fff` |
 | `--ui-text-on-dark-muted` | primitiva propia | `#e9defd` |
 | `--ui-text-on-dark-strong` | primitiva propia | `#cfbcff` |
 | `--ui-icon-on-dark` | primitiva propia | `#c4aaff` |
-| `--ui-border-subtle` | `--line-subtle` | `#00000014` |
+| `--ui-border-subtle` | `--primitive-line-subtle` | `#00000014` |
 | `--ui-border-on-dark` | primitiva propia | `#ffffff12` |
 | `--ui-border-warning` | primitiva propia | `#f0d9a8` |
 | `--ui-border-danger` | primitiva propia | `#f2cdd9` |
 | `--ui-border-success` | primitiva propia | `#b9dfcf` |
-| `--ui-border-default` | `--line` | `#e7e4ef` |
-| `--ui-border-strong` | `--line-strong` | `#e0daef` |
-| `--ui-border-control` | `--line-control` | `#ded9ea` |
-| `--ui-border-soft` | `--line-soft` | `#e4e0ed` |
-| `--ui-border-accent` | `--line-violet` | `#ddd6ee` |
+| `--ui-border-default` | `--primitive-line` | `#e7e4ef` |
+| `--ui-border-strong` | `--primitive-line-strong` | `#e0daef` |
+| `--ui-border-control` | `--primitive-line-control` | `#ded9ea` |
+| `--ui-border-soft` | `--primitive-line-soft` | `#e4e0ed` |
+| `--ui-border-accent` | `--primitive-line-violet` | `#ddd6ee` |
 | `--ui-border-accent-strong` | primitiva propia | `#bca7e9` |
 | `--ui-border-predicted` | primitiva propia | `#8f7bbd` |
 
 ### Acción y foco
 
-| Token de UI | Compatibilidad | Valor |
+| Token de UI | Primitiva | Valor |
 |---|---|---|
-| `--ui-action-primary` | `--violet` | `#5839be` |
-| `--ui-action-primary-hover` | `--violet-dark` | `#42299c` |
+| `--ui-action-primary` | `--primitive-violet` | `#5839be` |
+| `--ui-action-primary-hover` | `--primitive-violet-dark` | `#42299c` |
 | `--ui-action-pressed` | primitiva propia | `#352080` |
-| `--ui-action-text` | `--violet` | `#5839be` |
-| `--ui-action-text-hover` | `--violet-dark` | `#42299c` |
-| `--ui-action-soft` | `--violet-pale` | `#eeebfb` |
-| `--ui-action-bright` | `--violet-bright` | `#7859d8` |
-| `--ui-focus-ring` | `--focus` | `#7656dd` |
-| `--ui-focus-on-dark` | `--focus-on-dark` | `#cdb4ff` |
+| `--ui-action-text` | `--primitive-violet` | `#5839be` |
+| `--ui-action-text-hover` | `--primitive-violet-dark` | `#42299c` |
+| `--ui-action-soft` | `--primitive-violet-pale` | `#eeebfb` |
+| `--ui-action-bright` | `--primitive-violet-bright` | `#7859d8` |
+| `--ui-focus-ring` | `--primitive-focus` | `#7656dd` |
+| `--ui-focus-on-dark` | `--primitive-focus-on-dark` | `#cdb4ff` |
 | `--ui-action-on-dark-hover` | primitiva propia | `#493668` |
 | `--ui-progress-track` | primitiva propia | `#584777` |
 | `--ui-accent-amber` | primitiva propia | `#febc2e` |
@@ -140,27 +141,27 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | Radio de superficie | `--radius-md` (12 px), `--radius` (14 px), `--radius-lg` (18 px), `--radius-xl` (22 px) | Tarjetas, carriles, paneles, fichas y héroe. |
 | Píldora | `--radius-pill` (999 px) | Controles y barras totalmente redondeados. |
 
-Los 127 bordes de 1, 2 y 3 px del CSS propio usan estos tokens; no queda ningún grosor literal. Los 107 radios se normalizan en los 22 CSS de feature, incluidas las apps internas, que conservan su densidad compacta; `50%` se reserva a círculos. El separador sidebar/contenido usa `--ui-border-accent`; el héroe de Tareas usa 2 px de `--ui-border-accent-strong` y `--ui-shadow-hero`; tarjetas y carriles usan 1 px de `--ui-border-default` o `--ui-border-soft`.
+Los 127 bordes de 1, 2 y 3 px del CSS propio usan estos tokens; no queda ningún grosor literal. Los 107 radios se normalizan en los 22 CSS de feature, incluidas las apps internas, que conservan su densidad compacta; `50%` se reserva a círculos. El chrome usa 2 px de `--ui-border-accent-strong` en el borde inferior del header y en el lateral del sidebar; el héroe de Tareas usa 2 px y `--ui-shadow-hero`; tarjetas y carriles usan 1 px de `--ui-border-default` o `--ui-border-soft`.
 
 ### Estados
 
-| Token de UI | Compatibilidad | Valor |
+| Token de UI | Primitiva | Valor |
 |---|---|---|
-| `--ui-danger` | `--danger` | `#a52545` |
-| `--ui-danger-text` | `--danger` | `#a52545` |
-| `--ui-danger-solid` | `--danger` | `#a52545` |
-| `--ui-danger-solid-hover` | `--danger-deep` | `#842746` |
-| `--ui-danger-ink` | `--danger-ink` | `#8f1d2c` |
-| `--ui-danger-soft` | `--danger-soft` | `#fff1f6` |
-| `--ui-danger-deep` | `--danger-deep` | `#842746` |
-| `--ui-success` | `--success` | `#176a50` |
-| `--ui-success-soft` | `--success-soft` | `#daf1e8` |
-| `--ui-warning-ink` | `--warning-ink` | `#936013` |
-| `--ui-warning-soft` | `--warning-soft` | `#fff1d9` |
-| `--ui-warning-pale` | `--warning-pale` | `#fff8e6` |
-| `--ui-warning-deep` | `--warning-deep` | `#7a5b00` |
-| `--ui-info-ink` | `--info-ink` | `#315a9f` |
-| `--ui-info-soft` | `--info-soft` | `#e6eefc` |
+| `--ui-danger` | `--primitive-danger` | `#a52545` |
+| `--ui-danger-text` | `--primitive-danger` | `#a52545` |
+| `--ui-danger-solid` | `--primitive-danger` | `#a52545` |
+| `--ui-danger-solid-hover` | `--primitive-danger-deep` | `#842746` |
+| `--ui-danger-ink` | `--primitive-danger-ink` | `#8f1d2c` |
+| `--ui-danger-soft` | `--primitive-danger-soft` | `#fff1f6` |
+| `--ui-danger-deep` | `--primitive-danger-deep` | `#842746` |
+| `--ui-success` | `--primitive-success` | `#176a50` |
+| `--ui-success-soft` | `--primitive-success-soft` | `#daf1e8` |
+| `--ui-warning-ink` | `--primitive-warning-ink` | `#936013` |
+| `--ui-warning-soft` | `--primitive-warning-soft` | `#fff1d9` |
+| `--ui-warning-pale` | `--primitive-warning-pale` | `#fff8e6` |
+| `--ui-warning-deep` | `--primitive-warning-deep` | `#7a5b00` |
+| `--ui-info-ink` | `--primitive-info-ink` | `#315a9f` |
+| `--ui-info-soft` | `--primitive-info-soft` | `#e6eefc` |
 | `--ui-opacity-disabled` | — | `.55` |
 
 ### Acentos por función
@@ -239,17 +240,27 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 - La tipografía usa `--text-*`, `--leading-*`, `--tracking-*`, `--weight-*` y las familias de `globals.css`; no se añaden tamaños ni pesos sueltos.
 - La iconografía usa 12, 16, 18, 20, 24 y 28 px con trazo 2; la marca usa 2,4. No se añaden tamaños ni trazos sueltos; las ilustraciones SVG y las apps internas son la excepción.
 - Los bordes usan `--border-width-hairline`, `--border-width-strong` o `--border-width-accent`; no se escriben grosores sueltos. Los radios usan la escala `--radius-*`; `50%` solo se usa para círculos.
-- El separador sidebar/contenido usa `--ui-border-accent`; el héroe de Tareas usa 2 px de `--ui-border-accent-strong`; las tarjetas y los carriles usan 1 px de `--ui-border-default` o `--ui-border-soft`.
+- El chrome usa 2 px de `--ui-border-accent-strong` en el header y el sidebar; el héroe de Tareas usa 2 px; las tarjetas y los carriles usan 1 px de `--ui-border-default` o `--ui-border-soft`.
 - Un icono solo dentro de un botón exige `aria-label` y un área mínima de 36 × 36 px. Un icono junto a texto se oculta con `aria-hidden`; el texto sigue siendo la etiqueta. Un icono decorativo se oculta y no recibe foco.
 - Los acentos por función usan la familia `--ui-action-*`, los estados semánticos y `--ui-category-*` solo para las categorías de la tabla periódica. No se crean acentos por pantalla.
 - Todo control interactivo comparte hover, active, focus y disabled; los colores de estado no se escriben en el CSS de feature.
 - Las primitivas solo se declaran en `app/globals.css`.
-- Los nombres de compatibilidad se mantienen hasta completar la migración; no se añaden usos nuevos.
+- Los nombres de compatibilidad se retiraron en la fase 8; no se reintroducen. La guarda de `app/styles.test.ts` falla ante un hexadecimal, una función de color o un alias retirado en un CSS distinto de `globals.css`; las excepciones de configuración de librerías no son CSS y quedan documentadas.
 - Los estados usan los tokens `--ui-danger-*`, `--ui-success-*`, `--ui-warning-*` e `--ui-info-*`.
 - Los estilos de terceros se adaptan desde el envoltorio; no se reescriben sus CSS internos.
 - Cualquier color nuevo debe entrar primero como primitiva y después como token semántico si tiene un uso de UI.
 
-## 6. Estado de migración
+## 6. Cómo añadir un token
+
+1. Añade el valor crudo como `--primitive-*` en `:root` de `app/globals.css`; las primitivas no se consumen fuera de ese archivo.
+2. Crea un token semántico `--ui-*` que describa la intención, no el color ni la pantalla.
+3. Si el token debe adaptarse al tema oscuro, redefine solo el token `--ui-*` en `[data-theme="dark"]`.
+4. Consume el token desde el CSS de feature; no escribas hexadecimales, funciones de color, grosores ni radios sueltos.
+5. Ejecuta `npm test -- app/styles.test.ts`; la guarda falla ante colores crudos o alias retirados en el CSS de feature.
+
+Las sombras se agrupan por intención en tokens `--ui-shadow-*`. Los colores de configuración de Blockly, Mermaid, Excalidraw y del HTML aislado del MCP son la excepción documentada: no pasan por CSS del Site.
+
+## 7. Estado de migración
 
 | Fase | Ámbito | Estado |
 |---|---|---|
@@ -262,7 +273,7 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 | 6 | Color, estados y acentos | Completada; cero hexadecimales en CSS de feature, 11 categorías y estados compartidos. |
 | 7 | Temas claro y oscuro | Completada; preferencia del sistema, cambio manual, persistencia, 92 tokens invertidos y selector en Ajustes > Apariencia. |
 | 7.1 | Bordes, radios y separadores | Completada; 3 grosores, 8 radios, 127 bordes, 28 contornos y 107 radios migrados; sidebar con acento, héroe con 2 px y sombra, sin cambios de layout. |
-| 8 | Limpieza, guarda y cierre | Pendiente. |
+| 8 | Limpieza, guarda y cierre | Completada; 36 alias retirados, guarda de color/alias, chrome y héroe con 2 px y roadmap cerrado. |
 
 ### Contraste de la fase 2
 
@@ -326,4 +337,4 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 | Blanco / acción brillante (icono) | 3,79:1 |
 | Texto principal / categoría más oscura | 9,41:1 |
 
-No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; en el marco, el mínimo es 5,56:1 para texto atenuado. La barra de progreso es un elemento gráfico y supera el mínimo de 3:1. En el tema oscuro, el mínimo de texto es 5,72:1, el borde de control 3,17:1 y el foco 7,49:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2-7.1.
+No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; en el marco, el mínimo es 5,56:1 para texto atenuado. La barra de progreso es un elemento gráfico y supera el mínimo de 3:1. En el tema oscuro, el mínimo de texto es 5,72:1, el borde de control 3,17:1 y el foco 7,49:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2-8.
