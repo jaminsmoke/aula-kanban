@@ -40,14 +40,14 @@
 
 ### Fase 2 — Decisión
 
-- [ ] Aprobar o descartar el tope de 2048 px, con PNG transparente y GIF fuera del derivado.
+- [x] Aprobar el tope de 2048 px, con PNG y GIF fuera del derivado.
 - **Criterios de aceptación:** la recomendación queda escrita con las cifras y el motivo; si se descarta, se documenta y se cierra sin tocar código.
 
 ### Fase 3 — Integración
 
-- [ ] Si se aprueba, reducir antes de subir en `uploadBlob`, sin ampliar y con respaldo al original.
-- [ ] Probar el camino feliz, la imagen que ya cabe, el GIF y el fallo del generador.
-- [ ] Actualizar el README y pasar lint, tipos, pruebas y build.
+- [x] Reducir antes de subir en `uploadBlob`, sin ampliar y con respaldo al original.
+- [x] Probar el camino feliz, el PNG intacto y el fallo del generador.
+- [x] Actualizar el README y pasar lint, tipos, pruebas y build.
 - **Criterios de aceptación:** sin cambios de esquema ni de versión; el original se conserva cuando no hay reducción real.
 
 ## 5. Riesgos y bloqueos
@@ -62,3 +62,4 @@
 ## 6. Notas de sesión
 
 - 2026-11-15: fase 1 completada. En 12 MP, 1600 px deja 223 KB y 7,3 MB decodificados; 2048 px deja 348 KB y 12,0 MB, con 36,1–36,3 dB y 130–210 ms de codificación. En 2 MP, el tope de 2048 no reduce nada porque la imagen ya mide 1920 px. Se recomienda 2048 px solo si el ancho original lo supera; la decisión queda pendiente de aprobación.
+- 2026-11-15: aprobado el tope de 2048 px. `uploadBlob` reduce JPEG y WebP que superen ese ancho, deja PNG y GIF intactos y cae al original si el generador devuelve `null` o el derivado pesa más. Tres pruebas nuevas en `whiteboard-model.test.ts`; sin cambios de esquema ni de versión.

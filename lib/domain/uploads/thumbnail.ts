@@ -8,6 +8,9 @@
 /** Ancho máximo por defecto de la miniatura. */
 export const MINIATURA_MAX_WIDTH = 800;
 
+/** Ancho máximo del derivado de las imágenes de pizarra (PER-04). */
+export const MINIATURA_PIZARRA_MAX_WIDTH = 2048;
+
 /** Dimensiones calculadas de la miniatura. */
 export type MiniaturaSize = {
   width: number;

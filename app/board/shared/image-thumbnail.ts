@@ -24,12 +24,12 @@ export type Miniatura = {
  * metadatos. Si el navegador no puede decodificar, codificar o no tiene
  * `OffscreenCanvas`, devuelve `null`.
  * @param file - Imagen original elegida por la persona.
- * @param options - Ancho máximo, tipo de salida y calidad.
+ * @param options - Ancho máximo, tipo de salida, calidad y si solo se genera al reducir.
  * @returns La miniatura o `null` si no se pudo generar.
  */
 export async function crearMiniaturaDeArchivo(
   file: File,
-  options: { maxWidth?: number; type?: string; quality?: number } = {},
+  options: { maxWidth?: number; type?: string; quality?: number; onlyWhenResized?: boolean } = {},
 ): Promise<Miniatura | null> {
   if (!(MINIATURA_TIPOS as readonly string[]).includes(file.type)) return null;
   if (typeof createImageBitmap !== "function" || typeof OffscreenCanvas !== "function") return null;
@@ -41,6 +41,9 @@ export async function crearMiniaturaDeArchivo(
     try {
       const size = calcularDimensionesMiniatura({ width: bitmap.width, height: bitmap.height, maxWidth });
       if (!size) return null;
+      // En la pizarra solo interesa el derivado si reduce dimensiones: reescribir
+      // una imagen que ya cabe no ahorra memoria y empeora la decodificación.
+      if (options.onlyWhenResized && size.scale >= 1) return null;
       const canvas = new OffscreenCanvas(size.width, size.height);
       const context = canvas.getContext("2d");
       if (!context) return null;

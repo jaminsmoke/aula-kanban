@@ -369,6 +369,8 @@ El mismo panel incluye una **revisión paginada del inventario de R2**, también
 
 Las imágenes de tarea subidas desde el diálogo se reducen en el navegador: se guarda un WebP de 800 px de ancho como máximo (calidad 0,8) en lugar del original, porque la tarjeta y el detalle no pasan de 220 px. Si el navegador no puede generarlo o el derivado pesa más, se sube el archivo original; los GIF se envían intactos para no perder la animación. El límite de 5 MB se valida sobre el archivo enviado y el contrato de `/api/uploads` no cambia. `subir_archivo` del MCP no pasa por el navegador y sigue guardando el original.
 
+Las imágenes insertadas en la pizarra se reducen también en el navegador cuando superan 2048 px de ancho: se guarda un WebP de calidad 0,8 y se descarta el original. Las que ya caben en 2048 px, los PNG (por la transparencia) y los GIF se suben intactos; el MCP sigue guardando el original.
+
 Si falta R2, `/api/uploads` responde 503 y `/api/files/[id]` responde 503 cuando el archivo tiene metadatos. Un identificador inexistente sigue siendo 404. Para publicar una instancia con archivos:
 
 1. Confirma que el Site tiene R2 habilitado y que el binding se llama `BUCKET`.
@@ -376,7 +378,7 @@ Si falta R2, `/api/uploads` responde 503 y `/api/files/[id]` responde 503 cuando
 3. Revisa el diagnóstico de Ajustes si aparece «Imagen no disponible».
 4. Si vienes de un volumen antiguo, conserva la copia hasta migrar los objetos a R2 con la misma `storage_key`; sin copia, esos bytes no se pueden recuperar y hay que volver a subirlos.
 
-Las imágenes de tarea se muestran completas: todavía no se genera una miniatura derivada. La persistencia base debe funcionar antes de añadir optimización de miniaturas.
+Las imágenes de tarea y las de pizarra se reducen en el navegador antes de subirse; el original solo se envía cuando no hay una reducción real o el navegador no puede generarla.
 
 ## Diagnostic Commands
 

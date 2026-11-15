@@ -1,3 +1,6 @@
+import { MINIATURA_PIZARRA_MAX_WIDTH } from "../../../../lib/domain/uploads/thumbnail";
+import { crearMiniaturaDeArchivo } from "../image-thumbnail";
+
 export type BoardElement = { id: string; version: number; versionNonce?: number; isDeleted?: boolean; [key: string]: unknown };
 export type BoardFile = { mimeType?: string; id?: string; dataURL?: string; status?: string; error?: unknown; created?: number };
 export type BoardSnapshot = { type?: string; version?: number; source?: string; elements?: BoardElement[]; appState?: Record<string, unknown>; files?: Record<string, BoardFile> };
@@ -68,8 +71,19 @@ export async function uploadBlob(dataUrl: string, mimeType: string) {
   try {
     const projectId = new URLSearchParams(window.location.search).get("project") || "default";
     const blob = await (await fetch(dataUrl)).blob();
+    const type = mimeType || blob.type || "image/png";
+    const original = new File([blob], "board-image", { type });
+    // La pizarra permite ampliar, así que el tope es 2048 px y solo se reduce
+    // lo que lo supera. PNG y GIF se suben intactos.
+    const reducible = type === "image/jpeg" || type === "image/webp";
+    const miniatura = reducible
+      ? await crearMiniaturaDeArchivo(original, { maxWidth: MINIATURA_PIZARRA_MAX_WIDTH, onlyWhenResized: true })
+      : null;
+    const derivado = miniatura && miniatura.blob.size > 0 && miniatura.blob.size < original.size
+      ? new File([miniatura.blob], "board-image.webp", { type: miniatura.blob.type || "image/webp" })
+      : original;
     const body = new FormData();
-    body.append("file", new File([blob], "board-image", { type: mimeType || blob.type || "image/png" }));
+    body.append("file", derivado);
     body.append("purpose", "board-asset");
     const response = await fetch(`/api/uploads?project=${encodeURIComponent(projectId)}`, { method: "POST", body });
     const data = await response.json().catch(() => null) as { url?: unknown } | null;

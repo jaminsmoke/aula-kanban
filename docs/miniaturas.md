@@ -53,7 +53,7 @@ Lectura:
 - En 2 MP, pedir 2048 px no reduce dimensiones: el derivado pesa 408 KB frente a 704 KB, pero la memoria decodificada es la misma y la decodificación pasa de 8 a 20 ms. **Si la imagen ya cabe en el tope, no hay que generar derivado.**
 - El ahorro depende del zoom: 2048 px cubre hasta unos 2,3 aumentos en un lienzo de 900 px; 1600 px, hasta unos 1,8. La nitidez real del zoom no se puede validar en esta sesión.
 
-Recomendación (pendiente de aprobación): tope de **2048 px** para fotos opacas de pizarra, WebP 0,8, solo si el ancho original supera 2048; PNG con transparencia y GIF intactos en esta fase. Coste medido: 210 ms de codificación en escritorio en una foto de 12 MP, sin contar la subida.
+Aprobado e integrado el 2026-11-15: tope de **2048 px** para fotos JPEG y WebP de pizarra, WebP 0,8, solo si el ancho original supera 2048; PNG y GIF intactos. Coste medido: 210 ms de codificación en escritorio en una foto de 12 MP, sin contar la subida.
 
 ## Comparación de alternativas
 
@@ -94,4 +94,4 @@ El detalle de tarea muestra la imagen a un máximo de 220 px de alto y la tarjet
 
 ## Integración
 
-La fase 3 está integrada: `handleUpload` genera la miniatura, envía el WebP si pesa menos que el original y cae al original en cualquier otro caso. Los GIF no se transforman y el MCP mantiene su propio camino.
+La fase 3 está integrada: `handleUpload` genera la miniatura, envía el WebP si pesa menos que el original y cae al original en cualquier otro caso. Los GIF no se transforman y el MCP mantiene su propio camino. En la pizarra, `uploadBlob` reduce a 2048 px solo las fotos JPEG y WebP que superan ese ancho; PNG y GIF se suben intactos.
