@@ -50,10 +50,10 @@
 
 ### Fase 2 — Personas MCP
 
-- [ ] Crear `lib/server/mcp/dominios/personas/` con `comun.ts`, `alumnado.ts`, `profesorado.ts`, `invitaciones.ts` e `index.ts`.
-- [ ] Separar las fichas de alumnado, profesorado y la gestión de miembros/invitaciones.
-- [ ] Mantener `herramientasPersonas` en `index.ts` con el mismo orden y exports.
-- [ ] Ejecutar los tests de personas, miembros, catálogo, paridad y snapshots.
+- [x] Crear `lib/server/mcp/dominios/personas/` con `comun.ts`, `alumnado.ts`, `profesorado.ts`, `invitaciones.ts` e `index.ts`.
+- [x] Separar las fichas de alumnado, profesorado y la gestión de miembros/invitaciones.
+- [x] Mantener `herramientasPersonas` en `index.ts` con el mismo orden y exports.
+- [x] Ejecutar los tests de personas, miembros, catálogo, paridad y snapshots.
 - **Criterios de aceptación:** los contratos de alumnado, profesorado e invitaciones no cambian; no quedan helpers duplicados; los tests pasan.
 
 ### Fase 3 — OAuth
@@ -84,6 +84,7 @@
 - ARCH-02 sale del backlog el 2026-11-15. La parte de `content.ts` ya se completó en HIER-01 y se retiró del alcance.
 - Tamaños de partida: `tareas.ts` 700 líneas, `personas.ts` 523 y `oauth/service.ts` 499.
 - Fase 1 completada el 2026-11-15: el dominio queda en `comun.ts` (102), `filtros.ts` (89), `lectura.ts` (89), `escritura.ts` (276) e `index.ts` (181); `herramientasTareas` conserva nombres y orden.
+- Fase 2 completada el 2026-11-15: personas queda en `comun.ts` (102), `alumnado.ts` (121), `profesorado.ts` (120), `invitaciones.ts` (68) e `index.ts` (205); `herramientasPersonas` conserva nombres y orden.
 - Verificación local: `npm run lint`, `npx tsc --noEmit`, `npm test` (90 archivos / 751 tests) y `npm run build` en verde.
 - Existen pruebas de MCP (`catalogo`, `matriz`, `paridad`, `reads`, `writes`) y de OAuth (`service.test.ts`) que sirven de red de seguridad.
 - No se cambia la versión ni se publica en Sites durante este roadmap.
