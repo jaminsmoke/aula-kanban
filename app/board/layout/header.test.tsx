@@ -31,21 +31,22 @@ const props = {
 };
 
 describe("BoardHeader", () => {
-  it("reúne alumnado y profesorado en una sola entrada", () => {
+  it("deja Administración como única vista de la cabecera", () => {
     render(<BoardHeader {...props} />);
 
     const nav = screen.getByRole("navigation", { name: "Vistas" });
-    for (const name of ["Clase", "Administración", "Mi espacio"]) {
-      expect(within(nav).getByRole("button", { name })).toBeTruthy();
-    }
+    expect(within(nav).getAllByRole("button")).toHaveLength(1);
+    expect(within(nav).getByRole("button", { name: "Administración" })).toBeTruthy();
+    expect(within(nav).queryByRole("button", { name: "Clase" })).toBeNull();
     expect(within(nav).queryByRole("button", { name: "Alumnos" })).toBeNull();
     expect(within(nav).queryByRole("button", { name: "Profesores" })).toBeNull();
-    expect(within(nav).queryByRole("button", { name: "Documentación" })).toBeNull();
-    expect(within(nav).queryByText("Mi espacio")).toBeNull();
+    expect(within(nav).queryByRole("button", { name: "Tienda" })).toBeNull();
+    expect(within(nav).queryByRole("button", { name: "Mi espacio" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Clase" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Mi espacio" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Documentación" })).toBeNull();
     expect(screen.getByRole("button", { name: "Ajustes" })).toBeTruthy();
     expect(screen.queryByText("Ajustes de la cuenta")).toBeNull();
-    expect(within(nav).getByRole("button", { name: "Clase" }).getAttribute("aria-current")).toBe("page");
   });
 
   it("conserva vista y sección en los enlaces de proyecto", () => {
@@ -55,11 +56,14 @@ describe("BoardHeader", () => {
     rerender(<BoardHeader {...props} view="administracion" administracionSection="profesores" />);
     expect(screen.getByRole("link", { name: /Pruebas/ }).getAttribute("href")).toBe("/?project=p1&view=administracion&section=profesores");
 
+    rerender(<BoardHeader {...props} view="administracion" administracionSection="tienda" />);
+    expect(screen.getByRole("link", { name: /Pruebas/ }).getAttribute("href")).toBe("/?project=p1&view=administracion&section=tienda");
+
     rerender(<BoardHeader {...props} view="ajustes" settingsSection="administradores" />);
     expect(screen.getByRole("link", { name: /Pruebas/ }).getAttribute("href")).toBe("/?project=p1&view=ajustes&section=administradores");
   });
 
-  it("abre Administración, Mi espacio y Ajustes y marca sus acciones como activas", () => {
+  it("abre Administración y Ajustes y marca sus acciones como activas", () => {
     const onView = vi.fn();
     const onSettings = vi.fn();
     const { rerender } = render(<BoardHeader {...props} onView={onView} onSettings={onSettings} />);
@@ -67,17 +71,11 @@ describe("BoardHeader", () => {
     fireEvent.click(screen.getByRole("button", { name: "Administración" }));
     expect(onView).toHaveBeenCalledWith("administracion");
 
-    fireEvent.click(screen.getByRole("button", { name: "Mi espacio" }));
-    expect(onView).toHaveBeenCalledWith("espacio");
-
     fireEvent.click(screen.getByRole("button", { name: "Ajustes" }));
     expect(onSettings).toHaveBeenCalled();
 
     rerender(<BoardHeader {...props} view="administracion" onView={onView} onSettings={onSettings} />);
     expect(screen.getByRole("button", { name: "Administración" }).getAttribute("aria-current")).toBe("page");
-
-    rerender(<BoardHeader {...props} view="espacio" onView={onView} onSettings={onSettings} />);
-    expect(screen.getByRole("button", { name: "Mi espacio" }).getAttribute("aria-current")).toBe("page");
 
     rerender(<BoardHeader {...props} view="ajustes" onView={onView} onSettings={onSettings} />);
     expect(screen.getByRole("button", { name: "Ajustes" }).getAttribute("aria-current")).toBe("page");

@@ -1,7 +1,7 @@
 "use client";
 
 import type { MouseEvent } from "react";
-import { Check, ChevronDown, Columns3, FolderKanban, LayoutGrid, Link2, LogOut, Plus, Settings, Trash2, Users } from "lucide-react";
+import { Check, ChevronDown, Columns3, FolderKanban, Link2, LogOut, Plus, Settings, Trash2, Users } from "lucide-react";
 import appPackage from "../../../package.json";
 import type { Project } from "../shared/model";
 import { buildBoardUrl } from "../shared/board-url";
@@ -62,9 +62,7 @@ export default function BoardHeader({
       <div className={`shell topbar-inner${activeProject ? "" : " no-project"}`}>
         <span className="wordmark"><span className="brand-icon" aria-hidden><Columns3 size={24} strokeWidth={2.4} /></span><span className="brand-text"><span>Aula Kanban</span><small className="brand-meta">v{appVersion} - {appAuthor}</small></span></span>
         {activeProject && <nav className="main-nav" aria-label="Vistas">
-          <button type="button" aria-current={view === "clase" ? "page" : undefined} onClick={() => onView("clase")}>Clase</button>
           <button type="button" aria-current={view === "administracion" ? "page" : undefined} onClick={() => onView("administracion")}>Administración</button>
-          <button type="button" className="space-action" aria-label="Mi espacio" title="Mi espacio" aria-current={view === "espacio" ? "page" : undefined} onClick={() => onView("espacio")}><LayoutGrid size={18} aria-hidden /></button>
         </nav>}
         {activeProject && <details className="project-menu">
           <summary aria-label="Seleccionar proyecto"><FolderKanban size={18} /><span>{activeProject.name}</span><ChevronDown size={16} /></summary>

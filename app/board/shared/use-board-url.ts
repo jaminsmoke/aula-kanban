@@ -11,7 +11,8 @@ import { buildBoardUrl, parseBoardUrl } from "./board-url";
  * cliente sean idénticas; en el cliente se escucha `popstate`
  * (atrás/adelante) y cada cambio se escribe con `pushState`, sin
  * recargar. La primera escritura corrige con `replaceState` una URL
- * antigua (`view=alumnos`, `view=profesores`) sin añadir historial.
+ * antigua (`view=alumnos`, `view=profesores`, `view=espacio`) sin añadir
+ * historial.
  * Ver `board-url.ts` para el esquema de claves, defectos y valores
  * inválidos.
  * @param initial - Estado inicial de vista y sección de la URL.
@@ -22,6 +23,7 @@ export function useBoardUrlState(initial?: BoardUrlState) {
   const [classSection, setClassSection] = useState(initial?.classSection ?? "tareas");
   const [settingsSection, setSettingsSection] = useState(initial?.settingsSection ?? "cuenta");
   const [administracionSection, setAdministracionSection] = useState(initial?.administracionSection ?? "alumnos");
+  const [app, setApp] = useState(initial?.app ?? null);
   const canonized = useRef(false);
 
   useEffect(() => {
@@ -31,13 +33,14 @@ export function useBoardUrlState(initial?: BoardUrlState) {
       setClassSection(next.classSection);
       setSettingsSection(next.settingsSection);
       setAdministracionSection(next.administracionSection);
+      setApp(next.app ?? null);
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
   useEffect(() => {
-    const nextSearch = buildBoardUrl(window.location.search, { view, classSection, settingsSection, administracionSection });
+    const nextSearch = buildBoardUrl(window.location.search, { view, classSection, settingsSection, administracionSection, app });
     const next = `${window.location.pathname}${nextSearch}${window.location.hash}`;
     const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     if (next !== current) {
@@ -45,12 +48,13 @@ export function useBoardUrlState(initial?: BoardUrlState) {
       else window.history.replaceState(null, "", next);
     }
     canonized.current = true;
-  }, [view, classSection, settingsSection, administracionSection]);
+  }, [view, classSection, settingsSection, administracionSection, app]);
 
   return {
     view, setView,
     classSection, setClassSection,
     settingsSection, setSettingsSection,
     administracionSection, setAdministracionSection,
+    app, setApp,
   };
 }

@@ -48,6 +48,15 @@ describe("useBoardUrlState", () => {
     expect(window.location.search).toBe("?project=p1&view=administracion");
   });
 
+  it("conserva la app al canonizar el alias de Tienda", async () => {
+    window.history.replaceState({}, "", "/?project=p1&view=espacio&app=excalidraw");
+    const { result } = renderHook(() => useBoardUrlState(parseBoardUrl("?view=espacio&app=excalidraw")));
+    expect(result.current.view).toBe("administracion");
+    expect(result.current.administracionSection).toBe("tienda");
+    expect(result.current.app).toBe("excalidraw");
+    expect(window.location.search).toBe("?project=p1&view=administracion&section=tienda&app=excalidraw");
+  });
+
   it("guarda y restaura la sección Calendario de Clase", async () => {
     window.history.replaceState({}, "", "/?project=p1");
     const { result } = renderHook(() => useBoardUrlState(parseBoardUrl("")));

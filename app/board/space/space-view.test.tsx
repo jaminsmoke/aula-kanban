@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import SpaceView from "./space-view";
 import { jsonResponse } from "../../../vitest.setup";
 
-describe("Mi espacio", () => {
+describe("Tienda", () => {
   it("muestra Excalidraw instalada y abre la tienda sin referencias al VPS", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ apps: [{ id: "excalidraw", status: "installed", url: null }] })));
     render(<SpaceView role="owner" projectId="default" onExit={() => {}} />);
@@ -12,6 +12,15 @@ describe("Mi espacio", () => {
     expect(await screen.findByRole("region", { name: "Aula Store" })).toBeTruthy();
     expect(screen.queryByText(/VPS/)).toBeNull();
   });
+  it("vuelve a Clase desde el dock", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ apps: [{ id: "excalidraw", status: "installed", url: null }] })));
+    const onExit = vi.fn();
+    render(<SpaceView role="owner" projectId="default" onExit={onExit} />);
+    expect(await screen.findByRole("region", { name: "Tienda" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Clase" }));
+    expect(onExit).toHaveBeenCalledTimes(1);
+  });
+
   it("oculta las herramientas no instaladas", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ apps: [{ id: "excalidraw", status: "not_installed", url: null }] })));
     render(<SpaceView role="owner" projectId="default" onExit={() => {}} />);

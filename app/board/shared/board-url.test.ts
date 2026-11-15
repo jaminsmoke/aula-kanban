@@ -17,6 +17,7 @@ describe("parseBoardUrl", () => {
   it("lee vista y sección de la URL sin tocar el proyecto", () => {
     expect(parseBoardUrl("?project=p1&view=administracion")).toEqual({ ...defaults, view: "administracion", app: null });
     expect(parseBoardUrl("?project=p1&view=administracion&section=profesores")).toEqual({ ...defaults, view: "administracion", administracionSection: "profesores", app: null });
+    expect(parseBoardUrl("?project=p1&view=administracion&section=tienda")).toEqual({ ...defaults, view: "administracion", administracionSection: "tienda", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=administradores")).toEqual({ ...defaults, view: "ajustes", settingsSection: "administradores", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=apariencia")).toEqual({ ...defaults, view: "ajustes", settingsSection: "apariencia", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=tokens")).toEqual({ ...defaults, view: "ajustes", settingsSection: "tokens", app: null });
@@ -36,8 +37,10 @@ describe("parseBoardUrl", () => {
     expect(parseBoardUrl("?section=diario")).toEqual({ ...defaults, app: null });
   });
 
-  it("lee la app a abrir en Mi espacio y la ignora fuera de esa vista", () => {
-    expect(parseBoardUrl("?project=p1&view=espacio&app=mermaid")).toEqual({ ...defaults, view: "espacio", app: "mermaid" });
+  it("lee la app a abrir en Tienda y la ignora fuera de esa sección", () => {
+    expect(parseBoardUrl("?project=p1&view=espacio&app=mermaid")).toEqual({ ...defaults, view: "administracion", administracionSection: "tienda", app: "mermaid" });
+    expect(parseBoardUrl("?project=p1&view=administracion&section=tienda&app=mermaid")).toEqual({ ...defaults, view: "administracion", administracionSection: "tienda", app: "mermaid" });
+    expect(parseBoardUrl("?project=p1&view=administracion&section=profesores&app=mermaid")).toEqual({ ...defaults, view: "administracion", administracionSection: "profesores", app: null });
     expect(parseBoardUrl("?project=p1&view=clase&app=mermaid")).toEqual({ ...defaults, app: null });
   });
 
@@ -58,6 +61,7 @@ describe("buildBoardUrl", () => {
   it("escribe vista y sección no por defecto y limpia la sección al cambiar de vista", () => {
     expect(buildBoardUrl("?project=p1", { ...defaults, view: "administracion" })).toBe("?project=p1&view=administracion");
     expect(buildBoardUrl("?project=p1", { ...defaults, view: "administracion", administracionSection: "profesores" })).toBe("?project=p1&view=administracion&section=profesores");
+    expect(buildBoardUrl("?project=p1", { ...defaults, view: "administracion", administracionSection: "tienda" })).toBe("?project=p1&view=administracion&section=tienda");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=administradores", { ...defaults, view: "ajustes", settingsSection: "administradores" })).toBe("?project=p1&view=ajustes&section=administradores");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=apariencia", { ...defaults, view: "ajustes", settingsSection: "apariencia" })).toBe("?project=p1&view=ajustes&section=apariencia");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=tokens", { ...defaults, view: "ajustes", settingsSection: "tokens" })).toBe("?project=p1&view=ajustes&section=tokens");
@@ -80,18 +84,22 @@ describe("buildBoardUrl", () => {
     expect(buildBoardUrl("?section=calendario", { ...defaults, view: "administracion", classSection: "calendario" })).toBe("?view=administracion");
   });
 
-  it("escribe app solo en Mi espacio y la limpia al cambiar de vista", () => {
-    expect(buildBoardUrl("?project=p1", { ...defaults, view: "espacio", app: "mermaid" })).toBe("?project=p1&view=espacio&app=mermaid");
-    expect(buildBoardUrl("?project=p1&view=espacio&app=mermaid", { ...defaults, view: "espacio" })).toBe("?project=p1&view=espacio");
+  it("canoniza Mi espacio como Tienda y escribe app solo en esa sección", () => {
+    expect(buildBoardUrl("?project=p1", { ...defaults, view: "espacio", app: "mermaid" })).toBe("?project=p1&view=administracion&section=tienda&app=mermaid");
+    expect(buildBoardUrl("?project=p1&view=espacio&app=mermaid", { ...defaults, view: "espacio" })).toBe("?project=p1&view=administracion&section=tienda");
     expect(buildBoardUrl("?project=p1&view=espacio&app=mermaid", { ...defaults, app: "mermaid" })).toBe("?project=p1");
+    expect(buildBoardUrl("?project=p1&view=administracion&section=tienda&app=mermaid", { ...defaults, view: "administracion", administracionSection: "tienda", app: "mermaid" })).toBe("?project=p1&view=administracion&section=tienda&app=mermaid");
+    expect(buildBoardUrl("?project=p1&view=administracion&section=tienda&app=mermaid", { ...defaults, view: "administracion", administracionSection: "profesores" })).toBe("?project=p1&view=administracion&section=profesores");
   });
 
   it("conserva parámetros desconocidos", () => {
     expect(buildBoardUrl("?project=p1&origen=correo", { ...defaults, view: "administracion", administracionSection: "profesores" })).toBe("?project=p1&origen=correo&view=administracion&section=profesores");
   });
 
-  it("hace roundtrip con parseBoardUrl", () => {
+  it("hace roundtrip con parseBoardUrl, incluido el alias de Tienda", () => {
     const state = parseBoardUrl("?project=p1&view=ajustes&section=almacenamiento");
     expect(parseBoardUrl(buildBoardUrl("?project=p1", state))).toEqual(state);
+    const tienda = parseBoardUrl("?project=p1&view=espacio&app=mermaid");
+    expect(parseBoardUrl(buildBoardUrl("?project=p1", tienda))).toEqual(tienda);
   });
 });

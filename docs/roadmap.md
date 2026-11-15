@@ -1,6 +1,6 @@
 # Roadmap UI-08 · Tienda en Administración y Clase en el dock
 
-> **Estado:** Activo
+> **Estado:** Activo · Fase 1 completada (2026-11-15)
 > **Origen:** entrada del backlog del 2026-11-15, segunda parte del replanteo de navegación.
 > **Cierre:** al completar las tres fases, el resumen pasa arriba de `docs/changelog.md`, este documento se reinicia desde la plantilla y se hace el push único del roadmap. Sin publicación en Sites.
 
@@ -53,15 +53,15 @@ Llevar el escritorio de aplicaciones a **Administración > Tienda**, retirar **M
 
 ### Fase 1 — Integración en Administración y URLs
 
-- [ ] Añadir `tienda` a `AdministracionSection` y `ADMINISTRACION_SECTIONS`, con la sección en `AdministrationView` y carga diferida del escritorio.
-- [ ] Pasar rol, proyecto y salida a Clase a la sección Tienda; mantener el catálogo lazy y el refresco de apps cada 10 s.
-- [ ] Quitar `.space-topbar` y el botón de vuelta del escritorio; hacer que `.store-view` llene el contenido del workspace en vez de ser un `position:fixed` de viewport.
-- [ ] Medir el contenedor del escritorio para abrir, maximizar, arrastrar y redimensionar ventanas dentro del contenido, también al cambiar el tamaño y en móvil.
-- [ ] Cambiar el dock a dos acciones: **Clase** como principal y **Aula Store** como catálogo; conservar el estado minimizado y el canal en vivo.
-- [ ] Retirar «Clase» y «Mi espacio» de `nav.main-nav`; dejar Administración como única entrada de vistas y limpiar `space-action`, su import y su CSS.
-- [ ] Añadir a `WorkspaceLayout` una salida opcional a Clase y usarla en las tres secciones de Administración.
-- [ ] Canonizar `view=espacio` a `view=administracion&section=tienda` en `parseBoardUrl`/`buildBoardUrl`, conservar `app` solo en Tienda y actualizar `use-board-url`, cabecera y enlaces MCP de contexto.
-- [ ] Actualizar pruebas de URL, cabecera, Administración y escritorio; añadir la comprobación del alias y del enlace profundo.
+- [x] Añadir `tienda` a `AdministracionSection` y `ADMINISTRACION_SECTIONS`, con la sección en `AdministrationView` y carga diferida del escritorio.
+- [x] Pasar rol, proyecto y salida a Clase a la sección Tienda; mantener el catálogo lazy y el refresco de apps cada 10 s.
+- [x] Quitar `.space-topbar` y el botón de vuelta del escritorio; hacer que `.store-view` llene el contenido del workspace en vez de ser un `position:fixed` de viewport.
+- [x] Medir el contenedor del escritorio para abrir, maximizar, arrastrar y redimensionar ventanas dentro del contenido, también al cambiar el tamaño y en móvil.
+- [x] Cambiar el dock a dos acciones: **Clase** como principal y **Aula Store** como catálogo; conservar el estado minimizado y el canal en vivo.
+- [x] Retirar «Clase» y «Mi espacio» de `nav.main-nav`; dejar Administración como única entrada de vistas y limpiar `space-action`, su import y su CSS.
+- [x] Añadir a `WorkspaceLayout` una salida opcional a Clase y usarla en las secciones que no tienen dock.
+- [x] Canonizar `view=espacio` a `view=administracion&section=tienda` en `parseBoardUrl`/`buildBoardUrl`, conservar `app` solo en Tienda y actualizar `use-board-url`, `page`, cabecera y enlaces MCP de contexto.
+- [x] Actualizar pruebas de URL, cabecera, Administración y escritorio; añadir la comprobación del alias y del enlace profundo.
 
 **Criterios de aceptación:**
 
@@ -120,6 +120,9 @@ Llevar el escritorio de aplicaciones a **Administración > Tienda**, retirar **M
 
 ## 6. Notas de sesión
 
+- Fase 1 verificada en la build servida: Tienda ocupa el contenido en 1366, 1024, 900, 620 y 390, sin desbordes; el alias `view=espacio&app=excalidraw` se canoniza y abre la ventana; las salidas a Clase vuelven a Tareas.
+- La salida lateral a Clase se omite dentro de Tienda para no duplicar el dock; en Alumnos y Profesores sí aparece. El título del sidebar se oculta solo en Administración y por debajo de 430 px para que las tres secciones quepan.
+- `app/page.tsx` conserva `app` al construir el estado inicial; sin eso, la canonización del alias perdía el enlace profundo antes de hidratar.
 - Versión del Site: `1.1.30`; sin migraciones ni `release:prepare`. El renombrado no cambia datos.
 - El protocolo en vivo de ventanas se conserva: `SpaceRoom`, `space-control`, `/api/space-socket` y las herramientas `listar_ventanas`, `cerrar_app`, `minimizar_app`, `restaurar_app` y `ampliar_app`.
 - Aula Store mantiene su versión propia (`AULA_STORE_VERSION`); no se toca por este roadmap.

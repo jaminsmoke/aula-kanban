@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { Columns3 } from "lucide-react";
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
 import SpaceWindow from "./space-window";
@@ -26,10 +26,10 @@ type OpenWindow = {
 };
 
 /**
- * Hub «Mi espacio»: un escritorio con iconos que abren ventanas estilo
- * macOS (arrastrables, minimizables a un dock) según el rol.
- * @param props - Rol del usuario, proyecto activo y salida al tablero.
- * @returns El escritorio a pantalla completa con sus ventanas y barra superior.
+ * Tienda: un escritorio con iconos que abren ventanas estilo macOS
+ * (arrastrables, minimizables a un dock) según el rol.
+ * @param props - Rol del usuario, proyecto activo y salida a Clase.
+ * @returns El escritorio dentro del contenido de Administración.
  */
 export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole; projectId: string; onExit: () => void }) {
   const tools = visibleTools(role);
@@ -52,7 +52,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
   }, [projectId]);
   useEffect(() => { const first = window.setTimeout(() => { void refresh(); }, 0); const timer = window.setInterval(() => { void refresh(); }, 10000); return () => { window.clearTimeout(first); window.clearInterval(timer); }; }, [refresh]);
   const manage = async (id: string, action: StoreAction) => {
-    if (action === "uninstall" && !window.confirm("Se desinstalará esta aplicación de Mi espacio para todos los miembros. Las pizarras de las tareas no se ven afectadas. ¿Continuar?")) return;
+    if (action === "uninstall" && !window.confirm("Se desinstalará esta aplicación de Tienda para todos los miembros. Las pizarras de las tareas no se ven afectadas. ¿Continuar?")) return;
     try {
       const response = await fetch(`/api/space-apps?project=${encodeURIComponent(projectId)}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, action }) });
       if (!response.ok) throw new Error();
@@ -60,15 +60,27 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
     } catch { setManagerError("No se pudo actualizar la aplicación. Inténtalo de nuevo."); }
   };
   const [windows, setWindows] = useState<OpenWindow[]>([]);
+  const desktopRef = useRef<HTMLDivElement>(null);
+  const [desktopSize, setDesktopSize] = useState({ width: 0, height: 0 });
   const zCounter = useRef(10);
-  // Una ventana ampliada sigue pegada a los bordes cuando cambia el tamaño
-  // del navegador: recalcula su caja con el nuevo viewport.
+
+  // La ventana vive dentro del contenido de Administración, no en el viewport:
+  // observa su caja para mantener las ventanas ampliadas dentro del escritorio.
   useEffect(() => {
-    const onResize = () => setWindows((current) => current.map((item) => item.maximized
-      ? { ...item, position: { x: 0, y: 0 }, size: { width: window.innerWidth, height: window.innerHeight - 48 } }
-      : item));
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    const element = desktopRef.current;
+    if (!element) return;
+    const update = () => {
+      const rect = element.getBoundingClientRect();
+      setDesktopSize({ width: rect.width, height: rect.height });
+    };
+    update();
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", update);
+      return () => window.removeEventListener("resize", update);
+    }
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => observer.disconnect();
   }, []);
 
   const open = useCallback((tool: SpaceTool) => {
@@ -79,9 +91,12 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
         return current.map((item) => (item.tool.id === tool.id ? { ...item, minimized: false, zIndex: zCounter.current } : item));
       }
       const preferred = toolWindow(tool.id);
-      const width = Math.min(preferred.width, window.innerWidth - 24);
-      const height = Math.min(preferred.height, window.innerHeight - 72);
-      const offset = Math.max(12, Math.min(150 + current.length * 30, window.innerWidth - width - 12));
+      const rect = desktopRef.current?.getBoundingClientRect();
+      const areaWidth = Math.max(280, rect?.width ?? window.innerWidth);
+      const areaHeight = Math.max(240, rect?.height ?? window.innerHeight);
+      const width = Math.min(preferred.width, Math.max(240, areaWidth - 24));
+      const height = Math.min(preferred.height, Math.max(200, areaHeight - 24));
+      const offset = Math.max(12, Math.min(150 + current.length * 30, areaWidth - width - 12));
       const position = { x: offset, y: 12 };
       const size = { width, height };
       return [...current, { tool, minimized: false, position, size, maximized: false, zIndex: zCounter.current }];
@@ -99,7 +114,14 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
   const zoom = (id: string) => setWindows((current) => current.map((item) => {
     if (item.tool.id !== id) return item;
     if (item.maximized && item.saved) return { ...item, maximized: false, position: item.saved.position, size: item.saved.size, saved: undefined };
-    return { ...item, maximized: true, saved: { position: item.position, size: item.size }, position: { x: 0, y: 0 }, size: { width: window.innerWidth, height: window.innerHeight - 48 } };
+    const rect = desktopRef.current?.getBoundingClientRect();
+    return {
+      ...item,
+      maximized: true,
+      saved: { position: item.position, size: item.size },
+      position: { x: 0, y: 0 },
+      size: { width: rect?.width ?? window.innerWidth, height: rect?.height ?? window.innerHeight },
+    };
   }));
 
   // En el escritorio solo aparecen las apps instaladas (nativas en la DB,
@@ -107,9 +129,9 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
   // instala desde Aula Store.
   const installedIds = new Set(managed.filter((app) => app.status === "installed").map((app) => app.id));
   const desktopTools = tools.filter((tool) => installedIds.has(tool.id));
-  // Paso A (MCP-04): `view=espacio&app=<appId>` abre esa ventana al cargar.
-  // Se lee una sola vez por app y solo si está instalada y visible para el
-  // rol; el parámetro queda en la URL y cerrar la ventana no lo toca.
+  // Paso A (MCP-04): `view=administracion&section=tienda&app=<appId>` abre esa
+  // ventana al cargar. Se lee una sola vez por app y solo si está instalada y
+  // visible para el rol; el parámetro queda en la URL y cerrar la ventana no lo toca.
   const openedFromUrl = useRef<string | null>(null);
   useEffect(() => {
     if (managerConfigured !== true) return;
@@ -123,7 +145,6 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
   // Si una app se desinstala, su ventana abierta desaparece (filtro en el
   // render, sin efecto): solo se muestran las de apps instaladas.
   const shownWindows = managerConfigured === null ? windows : windows.filter((item) => installedIds.has(item.tool.id));
-  const active = shownWindows.filter((item) => !item.minimized).sort((a, b) => b.zIndex - a.zIndex)[0];
   const restore = (id: string) => setWindows((current) => current.map((item) => (item.tool.id === id ? { ...item, minimized: false } : item)));
 
   // Canal en vivo del escritorio (Fase 2 de MCP-04): publica el estado de
@@ -154,22 +175,8 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
   return (
     <MotionConfig reducedMotion="user">
     <LazyMotion features={domAnimation}>
-    <section className="space-view" aria-label="Mi espacio">
-      <div className="space-topbar">
-        <button type="button" className="space-back" onClick={onExit} title="Volver a Clase"><ArrowLeft size={16} aria-hidden /> Clase</button>
-        <p className="space-topbar-title">{active ? active.tool.name : "Mi espacio"}</p>
-        <nav className="space-taskbar" aria-label="Ventanas minimizadas">
-          {shownWindows.filter((item) => item.minimized).map((item) => {
-            const Icon = item.tool.icon;
-            return (
-              <button key={item.tool.id} type="button" className="space-minimized-icon" title={`${item.tool.name} (minimizada)`} aria-label={`Restaurar ${item.tool.name}`} onClick={() => restore(item.tool.id)}>
-                <Icon size={18} strokeWidth={2} />
-              </button>
-            );
-          })}
-        </nav>
-      </div>
-      <div className="space-desktop" aria-label="Escritorio de herramientas">
+    <section className="space-view" aria-label="Tienda">
+      <div className="space-desktop" ref={desktopRef} aria-label="Escritorio de aplicaciones">
         {managerError && <p role="alert" className="space-empty">{managerError}</p>}
         {managerConfigured === null ? (
           <p className="space-empty">Cargando aplicaciones…</p>
@@ -189,12 +196,24 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
             );
           })}
         </div>
-        <div className="space-dock">
+        <nav className="space-dock" aria-label="Accesos de Tienda">
+          <button type="button" className="space-dock-class" onClick={onExit} title="Volver a Clase">
+            <span className="space-dock-tile" aria-hidden><Columns3 size={24} /></span>
+            <span className="space-dock-name">Clase</span>
+          </button>
+          {shownWindows.filter((item) => item.minimized).map((item) => {
+            const Icon = item.tool.icon;
+            return (
+              <button key={item.tool.id} type="button" className="space-minimized-icon" title={`${item.tool.name} (minimizada)`} aria-label={`Restaurar ${item.tool.name}`} onClick={() => restore(item.tool.id)}>
+                <Icon size={18} strokeWidth={2} />
+              </button>
+            );
+          })}
           <button type="button" className="space-dock-store" onClick={() => setStoreOpen(true)} title="Aula Store: instala o desinstala aplicaciones del catálogo">
             <span className="space-dock-tile" aria-hidden><AulaStoreIcon size={24} /></span>
             <span className="space-dock-name">Aula Store</span>
           </button>
-        </div>
+        </nav>
         <AnimatePresence>
         {shownWindows.map((item) => {
           const App = toolApps[item.tool.id];
@@ -202,8 +221,9 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
             <SpaceWindow
               key={item.tool.id}
               title={item.tool.name}
-              position={item.position}
-              size={item.size}
+              position={item.maximized ? { x: 0, y: 0 } : item.position}
+              size={item.maximized && desktopSize.width && desktopSize.height ? desktopSize : item.size}
+              bounds={desktopSize}
               zIndex={item.zIndex}
               maximized={item.maximized}
               minimized={item.minimized}

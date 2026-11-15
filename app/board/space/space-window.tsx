@@ -7,15 +7,16 @@ import { m } from "motion/react";
  * Ventana estilo macOS: barra de título con botones de cerrar,
  * minimizar y ampliar (semáforo), arrastrable y redimensionable
  * desde la esquina inferior derecha, con foco al pulsar.
- * @param props - Título, posición, tamaño, orden y acciones de la ventana.
+ * @param props - Título, posición, tamaño, límites y acciones de la ventana.
  * @returns La ventana con su contenido.
  */
 export default function SpaceWindow({
-  title, position, size, zIndex, maximized, minimized, onMove, onResize, onFocus, onClose, onMinimize, onZoom, children,
+  title, position, size, bounds, zIndex, maximized, minimized, onMove, onResize, onFocus, onClose, onMinimize, onZoom, children,
 }: {
   title: string;
   position: { x: number; y: number };
   size: { width: number; height: number };
+  bounds: { width: number; height: number };
   zIndex: number;
   maximized: boolean;
   minimized: boolean;
@@ -36,9 +37,11 @@ export default function SpaceWindow({
     onFocus();
     const move = (moveEvent: globalThis.PointerEvent) => {
       if (!drag.current) return;
+      const width = bounds.width || window.innerWidth;
+      const height = bounds.height || window.innerHeight;
       onMove({
-        x: Math.max(-size.width + 120, Math.min(moveEvent.clientX - drag.current.dx, window.innerWidth - 120)),
-        y: Math.max(0, moveEvent.clientY - drag.current.dy),
+        x: Math.max(-size.width + 120, Math.min(moveEvent.clientX - drag.current.dx, width - 120)),
+        y: Math.max(0, Math.min(moveEvent.clientY - drag.current.dy, height - 40)),
       });
     };
     const up = () => {
@@ -56,9 +59,13 @@ export default function SpaceWindow({
     onFocus();
     const start = { x: event.clientX, y: event.clientY, width: size.width, height: size.height };
     const move = (moveEvent: globalThis.PointerEvent) => {
+      const widthLimit = bounds.width || window.innerWidth;
+      const heightLimit = bounds.height || window.innerHeight;
+      const maxWidth = Math.max(180, widthLimit - position.x);
+      const maxHeight = Math.max(140, heightLimit - position.y);
       onResize({
-        width: Math.max(560, Math.min(start.width + moveEvent.clientX - start.x, window.innerWidth - position.x)),
-        height: Math.max(380, Math.min(start.height + moveEvent.clientY - start.y, window.innerHeight - position.y)),
+        width: Math.max(Math.min(560, maxWidth), Math.min(start.width + moveEvent.clientX - start.x, maxWidth)),
+        height: Math.max(Math.min(380, maxHeight), Math.min(start.height + moveEvent.clientY - start.y, maxHeight)),
       });
     };
     const up = () => {

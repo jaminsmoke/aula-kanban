@@ -5,19 +5,21 @@
  *   solo se conserva, nunca se reescribe.
  * - `view`: una de `clase | administracion | espacio | ajustes |
  *   documentacion`. Por defecto `clase`. `documentacion` es un alias
- *   antiguo de Ajustes > Documentación y se reescribe a su forma canónica.
+ *   antiguo de Ajustes > Documentación y `espacio` de Administración >
+ *   Tienda; ambos se reescriben a su forma canónica.
  * - `section`: sección dentro de la vista. En `clase` es `tareas` (por
- *   defecto) o `calendario`; en `administracion` es `alumnos` (por defecto) o
- *   `profesores`; en `ajustes` es `cuenta | apariencia | documentacion |
- *   tokens | administradores | almacenamiento` (por defecto `cuenta`). En el
- *   resto de vistas no tiene significado y se omite.
+ *   defecto) o `calendario`; en `administracion` es `alumnos` (por defecto),
+ *   `profesores` o `tienda`; en `ajustes` es `cuenta | apariencia |
+ *   documentacion | tokens | administradores | almacenamiento` (por defecto
+ *   `cuenta`). En el resto de vistas no tiene significado y se omite.
  *
  * La forma canónica omite los valores por defecto: `/?project=p1` ya es
  * Clase > Tareas, `/?project=p1&view=administracion` ya es Administración >
  * Alumnos y `/?project=p1&view=ajustes` ya es Ajustes > Cuenta.
  * `view=alumnos` y `view=profesores` son alias antiguos que se leen como
- * Administración, y `view=documentacion` como Ajustes > Documentación; todos
- * se reescriben a su forma canónica.
+ * Administración, `view=documentacion` como Ajustes > Documentación y
+ * `view=espacio` como Administración > Tienda; todos se reescriben a su forma
+ * canónica.
  * Los valores inválidos caen al defecto de su vista. Los parámetros
  * desconocidos y el hash (`#docs-…`) se conservan tal cual.
  *
@@ -30,7 +32,7 @@
 export type BoardView = "clase" | "administracion" | "espacio" | "ajustes" | "documentacion";
 
 /** Secciones válidas dentro de Administración. */
-export type AdministracionSection = "alumnos" | "profesores";
+export type AdministracionSection = "alumnos" | "profesores" | "tienda";
 
 /** Secciones válidas dentro de Clase. */
 export type ClassSection = "tareas" | "calendario";
@@ -51,7 +53,7 @@ export const BOARD_VIEWS: readonly BoardView[] = [
 const LEGACY_PEOPLE_VIEWS = ["alumnos", "profesores"] as const;
 
 /** Secciones válidas dentro de Administración, en el orden de navegación. */
-export const ADMINISTRACION_SECTIONS: readonly AdministracionSection[] = ["alumnos", "profesores"];
+export const ADMINISTRACION_SECTIONS: readonly AdministracionSection[] = ["alumnos", "profesores", "tienda"];
 
 /** Secciones válidas dentro de Clase. */
 export const CLASS_SECTIONS: readonly ClassSection[] = ["tareas", "calendario"];
@@ -72,7 +74,7 @@ export type BoardUrlState = {
   classSection: ClassSection;
   settingsSection: SettingsSection;
   administracionSection: AdministracionSection;
-  /** Id de la app del catálogo a abrir al cargar `view=espacio` (`app=<appId>`). */
+  /** Id de la app a abrir al cargar Administración > Tienda (`app=<appId>`). */
   app?: string | null;
 };
 
@@ -85,8 +87,9 @@ const DEFAULT_STATE: BoardUrlState = {
 
 /**
  * Lee vista y sección de una query string, con defectos y valores inválidos resueltos.
- * El parámetro `app` solo tiene significado en `view=espacio` (MCP-04): fuera
- * de esa vista se ignora y se conserva como parámetro desconocido.
+ * El parámetro `app` solo tiene significado en Administración > Tienda
+ * (antes `view=espacio`, MCP-04): fuera de esa sección se ignora y se
+ * conserva como parámetro desconocido.
  * @param search - Query string, con o sin `?` inicial.
  * @returns El estado canónico de vista y sección.
  */
@@ -97,17 +100,24 @@ export function parseBoardUrl(search: string): BoardUrlState {
     ? (rawView as AdministracionSection)
     : null;
   const legacyDocumentation = rawView === "documentacion";
+  const legacySpace = rawView === "espacio";
   const view: BoardView = legacyDocumentation
     ? "ajustes"
-    : BOARD_VIEWS.includes(rawView as BoardView)
-      ? (rawView as BoardView)
-      : legacySection
-        ? "administracion"
-        : DEFAULT_STATE.view;
+    : legacySpace
+      ? "administracion"
+      : BOARD_VIEWS.includes(rawView as BoardView)
+        ? (rawView as BoardView)
+        : legacySection
+          ? "administracion"
+          : DEFAULT_STATE.view;
   const rawSection = params.get("section");
 
-  const administracionSection: AdministracionSection = legacySection
-    ?? (rawSection === "profesores" ? "profesores" : DEFAULT_STATE.administracionSection);
+  const administracionSection: AdministracionSection = legacySpace
+    ? "tienda"
+    : legacySection
+      ?? (ADMINISTRACION_SECTIONS.includes(rawSection as AdministracionSection)
+        ? (rawSection as AdministracionSection)
+        : DEFAULT_STATE.administracionSection);
   const classSection: ClassSection = CLASS_SECTIONS.includes(rawSection as ClassSection)
     ? (rawSection as ClassSection)
     : DEFAULT_STATE.classSection;
@@ -117,7 +127,7 @@ export function parseBoardUrl(search: string): BoardUrlState {
       ? (rawSection as SettingsSection)
       : DEFAULT_STATE.settingsSection;
 
-  const app = view === "espacio" ? params.get("app") : null;
+  const app = view === "administracion" && administracionSection === "tienda" ? params.get("app") : null;
   return { view, classSection, settingsSection, administracionSection, app };
 }
 
@@ -132,8 +142,9 @@ export function buildBoardUrl(search: string, state: BoardUrlState): string {
   const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
   // La documentación del tablero vive en Ajustes: la vista antigua se
   // escribe siempre como `view=ajustes&section=documentacion`.
-  const view = state.view === "documentacion" ? "ajustes" : state.view;
+  const view = state.view === "documentacion" ? "ajustes" : state.view === "espacio" ? "administracion" : state.view;
   const settingsSection = state.view === "documentacion" ? "documentacion" : state.settingsSection;
+  const administracionSection = state.view === "espacio" ? "tienda" : state.administracionSection;
 
   if (view === DEFAULT_STATE.view) params.delete("view");
   else params.set("view", view);
@@ -142,8 +153,8 @@ export function buildBoardUrl(search: string, state: BoardUrlState): string {
     if (state.classSection === DEFAULT_STATE.classSection) params.delete("section");
     else params.set("section", state.classSection);
   } else if (view === "administracion") {
-    if (state.administracionSection === DEFAULT_STATE.administracionSection) params.delete("section");
-    else params.set("section", state.administracionSection);
+    if (administracionSection === DEFAULT_STATE.administracionSection) params.delete("section");
+    else params.set("section", administracionSection);
   } else if (view === "ajustes") {
     if (settingsSection === DEFAULT_STATE.settingsSection) params.delete("section");
     else params.set("section", settingsSection);
@@ -151,9 +162,10 @@ export function buildBoardUrl(search: string, state: BoardUrlState): string {
     params.delete("section");
   }
 
-  // `app` solo pertenece a Mi espacio: fuera de esa vista se retira.
-  if (state.view === "espacio" && state.app) params.set("app", state.app);
-  else params.delete("app");
+  // `app` solo pertenece a Administración > Tienda: fuera de esa sección se
+  // retira y, dentro, se reinserta al final para mantener una query estable.
+  params.delete("app");
+  if (view === "administracion" && administracionSection === "tienda" && state.app) params.set("app", state.app);
 
   const query = params.toString();
   return query ? `?${query}` : "";

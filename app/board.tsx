@@ -6,7 +6,6 @@ import BoardHeader from "./board/layout/header";
 import ClassView from "./board/class/class-view";
 // Las vistas secundarias solo se descargan al abrirlas.
 const AdministrationView = lazy(() => import("./board/people/administration/administration-view"));
-const SpaceView = lazy(() => import("./board/space/space-view"));
 const SettingsView = lazy(() => import("./board/settings/settings-view"));
 import TaskDialog from "./board/tasks/dialog/task-dialog";
 import MemberDialog from "./board/projects/member-dialog";
@@ -121,16 +120,17 @@ export default function Board({ user, initial }: { user: { displayName: string; 
             {invitations.invitationError && <div className="alert" role="alert">{invitations.invitationError}</div>}
             <div className="access-remix"><div><strong>¿Quieres tu propio tablero?</strong><p>Solicita una copia independiente de Aula Kanban para personalizarla a tu manera.</p></div><button type="button" className={invitationWelcome ? "secondary" : "primary"} onClick={() => setRemixOpen(true)}><Plus size={18} /> Haz tu Site de Aula Kanban</button></div>
           </div></section>
-        ) : view === "espacio" ? (
-          <Suspense fallback={<div className="access-loading" role="status">Cargando Mi espacio…</div>}>
-            <SpaceView role={activeProject.role} projectId={projectState.projectId} onExit={() => setView("clase")} />
-          </Suspense>
         ) : view === "administracion" ? (
           <Suspense fallback={<div className="access-loading" role="status">Cargando administración…</div>}>
             <AdministrationView
               key={projectState.projectId}
               section={administracionSection}
               onSection={setAdministracionSection}
+              tienda={{
+                role: activeProject.role,
+                projectId: projectState.projectId,
+                onExit: () => setView("clase"),
+              }}
               students={{
                 students: data.students,
                 tasks: data.tasks,

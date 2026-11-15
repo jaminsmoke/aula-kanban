@@ -10,7 +10,7 @@ vi.mock("../lib/server/auth", () => ({
   chatGPTSignInPath: (returnTo: string) => `/signin-with-chatgpt?return_to=${encodeURIComponent(returnTo)}`,
 }));
 vi.mock("next/navigation", () => ({ redirect: (url: string) => redirectMock(url) }));
-vi.mock("./board", () => ({ default: ({ user: u }: { user: { displayName: string } }) => <div>Tablero de {u.displayName}</div> }));
+vi.mock("./board", () => ({ default: ({ user: u, initial }: { user: { displayName: string }; initial?: { app?: string | null } }) => <div>Tablero de {u.displayName}<span>{initial?.app ?? "sin-app"}</span></div> }));
 vi.mock("./portada", () => ({ default: ({ signInHref }: { signInHref: string }) => <div>Portada <a href={signInHref}>Iniciar sesión con ChatGPT</a> <a href="/documentacion">Ver documentación</a></div> }));
 
 import Page from "./page";
@@ -36,6 +36,13 @@ describe("Page: portada sin sesión y tablero con sesión", () => {
   it("con sesión muestra el tablero", async () => {
     const view = render(await Page({ searchParams: Promise.resolve({ project: "p1", view: "alumnos" }) }));
     expect(screen.getByText("Tablero de Seedy")).toBeTruthy();
+    expect(screen.getByText("sin-app")).toBeTruthy();
+    view.unmount();
+  });
+
+  it("conserva la app de Tienda al pasar el estado al tablero", async () => {
+    const view = render(await Page({ searchParams: Promise.resolve({ project: "p1", view: "espacio", app: "excalidraw" }) }));
+    expect(screen.getByText("excalidraw")).toBeTruthy();
     view.unmount();
   });
 

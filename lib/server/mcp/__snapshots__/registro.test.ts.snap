@@ -2096,6 +2096,7 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
               "enum": [
                 "alumnos",
                 "profesores",
+                "tienda",
               ],
               "type": "string",
             },

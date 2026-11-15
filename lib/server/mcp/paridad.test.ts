@@ -244,7 +244,7 @@ describe("paridad MCP ↔ HTTP", () => {
     const result = await llamar("abrir_app", identidad.owner, { proyectoId: projectId, appId: "mermaid" });
     expect(result.isError).toBeUndefined();
     const enlace = (result.structuredContent as { enlace: string }).enlace;
-    expect(enlace).toContain("view=espacio");
+    expect(enlace).toContain("view=administracion&section=tienda");
     expect(enlace).toContain("app=mermaid");
   });
 
@@ -255,7 +255,7 @@ describe("paridad MCP ↔ HTTP", () => {
     const estado = listar.structuredContent as { conectadas: boolean; ventanas: unknown[]; enlace: string };
     expect(estado.conectadas).toBe(false);
     expect(estado.ventanas).toEqual([]);
-    expect(estado.enlace).toContain("view=espacio");
+    expect(estado.enlace).toContain("view=administracion&section=tienda");
     const cerrar = await llamar("cerrar_app", identidad.owner, { proyectoId: projectId, appId: "mermaid" });
     expect(cerrar.isError).toBeUndefined();
     const control = cerrar.structuredContent as { ventana_entregada: boolean; enlace: string };
