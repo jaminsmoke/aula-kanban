@@ -15,6 +15,15 @@ type StorageStatus = {
   uploads: number | null;
   ok: boolean;
   uploadStats?: UploadStats | null;
+  boardStats?: {
+    boards: number;
+    totalChars: number;
+    maxChars: number;
+    averageChars: number;
+    over1mb: number;
+    over1_5mb: number;
+    largest: Array<{ ownerType: string; ownerId: string; chars: number; elements: number | null; deleted: number | null }>;
+  } | null;
 };
 
 type PurgeReport = {
@@ -198,6 +207,25 @@ export default function SettingsStorage() {
                   ))}
                 </ul>
               ) : <p>Todavía no hay archivos.</p>}
+            </div>
+          ) : null}
+
+          {status.boardStats ? (
+            <div className="storage-boards">
+              <h3>Snapshots de pizarra</h3>
+              <p>{status.boardStats.boards
+                ? `${plural(status.boardStats.boards, "pizarra guardada", "pizarras guardadas")} · máximo ${status.boardStats.maxChars} caracteres · media ${status.boardStats.averageChars} · ≥1 MB: ${status.boardStats.over1mb} · ≥1,5 MB: ${status.boardStats.over1_5mb}`
+                : "Todavía no hay pizarras guardadas."}</p>
+              {status.boardStats.largest.length ? (
+                <ul>
+                  {status.boardStats.largest.map((board) => (
+                    <li key={`${board.ownerType}-${board.ownerId}`}>
+                      <code>{board.ownerType}/{board.ownerId}</code>: {board.chars} caracteres · {board.elements ?? "?"} elementos · {board.deleted ?? "?"} borrados
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              <p>Los caracteres son la unidad del límite de 2 MB; los borrados son tumbas que todavía no se podan.</p>
             </div>
           ) : null}
 

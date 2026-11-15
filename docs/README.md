@@ -71,7 +71,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
-- **Roadmap PER-06 activo:** auditoría local de los snapshots de pizarra y decisión de no podar tumbas todavía; falta medir los snapshots en producción. Detalle en [`roadmap.md`](roadmap.md).
+- **Roadmap PER-06 activo:** auditoría local de los snapshots de pizarra, decisión de no podar tumbas todavía y medición añadida al diagnóstico de almacenamiento; falta ejecutarla con datos de producción. Detalle en [`roadmap.md`](roadmap.md).
 - **Roadmap PER-05 completado:** caché inmutable de un año para `/api/files/[id]`, en la respuesta y en los metadatos de R2. Sin cambios de esquema ni de versión; resumen en [`changelog.md`](changelog.md).
 - **Roadmap PER-04 completado:** derivado de 2048 px para JPEG, PNG y WebP de pizarra, con los GIF intactos; medición de fotos, PNG con alfa y capturas, más revisión visual del texto. Resumen en [`changelog.md`](changelog.md) y límite de nitidez en el backlog como PER-07.
 - **Roadmap PER-01B completado:** inventario de R2 publicado y revisado en producción. Resultado en [`changelog.md`](changelog.md).

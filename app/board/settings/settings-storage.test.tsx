@@ -31,6 +31,20 @@ describe("SettingsStorage", () => {
     expect(screen.getByText(/≥1 MB: 1 · ≥2 MB: 1/)).toBeTruthy();
   });
 
+  it("resume el tamaño de los snapshots y sus tumbas", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({
+      ...status,
+      boardStats: {
+        boards: 2, totalChars: 12_000, maxChars: 9_000, averageChars: 6_000, over1mb: 0, over1_5mb: 0,
+        largest: [{ ownerType: "task", ownerId: "t1", chars: 9_000, elements: 12, deleted: 3 }],
+      },
+    })));
+    render(<SettingsStorage />);
+
+    expect(await screen.findByText(/máximo 9000 caracteres · media 6000/)).toBeTruthy();
+    expect(screen.getByText(/12 elementos · 3 borrados/)).toBeTruthy();
+  });
+
   it("avisa cuando falta R2", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ database: true, bucket: false, bucketReachable: false, uploads: 2, ok: false })));
     render(<SettingsStorage />);

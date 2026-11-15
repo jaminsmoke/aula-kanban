@@ -46,9 +46,10 @@
 
 ### Fase 3 — Medición en producción
 
-- [ ] Añadir al diagnóstico de almacenamiento el tamaño de los snapshots: número, máximo, media y cuántos superan 1 MB y 1,5 MB.
-- [ ] Revisar la proporción de tumbas en las pizarras más grandes.
-- **Criterios de aceptación:** cifras reales de producción; solo entonces se retoma la poda.
+- [x] Añadir al diagnóstico de almacenamiento el tamaño de los snapshots: número, máximo, media y cuántos superan 1 MB y 1,5 MB.
+- [x] Revisar la proporción de tumbas en las tres pizarras más grandes.
+- [ ] Ejecutar la medición con datos de producción.
+- **Criterios de aceptación:** el instrumento está en el diagnóstico y en el panel; la poda se decide solo con cifras reales.
 
 ## 5. Riesgos y bloqueos
 
@@ -60,5 +61,6 @@
 
 ## 6. Notas de sesión
 
+- 2026-11-15: fase 3 instrumentada. `GET /api/storage/status` incluye `boardStats` (número de pizarras, máximo, media, umbrales de 1 y 1,5 MB y las tres mayores con elementos y tumbas) y el panel lo muestra. Falta ejecutarla con datos de producción.
 - 2026-11-15: fase 2 completada. No se poda: el ahorro máximo medido hoy es de 1.872 caracteres y el riesgo de resurrección no compensa. `appState` ya se guarda vacío y los ficheros son URLs. Si se retoma: ventana de 30 días sobre `element.updated` y prueba con un cliente desfasado. La siguiente fase mide los snapshots en producción.
 - 2026-11-15: PER-06 sale del backlog. Auditoría local (2 pizarras, máximo 8.544 caracteres): `appState` y `files` vacíos, elementos al 99 % y una pizarra con el 95 % del peso en 3 tumbas. Sin datos de producción y sin podar nada.

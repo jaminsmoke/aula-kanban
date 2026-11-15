@@ -3,6 +3,7 @@ import { isAdministrator, isOwner } from "../../../../lib/server/project-access"
 import { json } from "../../../../lib/server/http";
 import { storageStatus } from "../../../../lib/server/storage";
 import { uploadStats } from "../../../../lib/server/uploads/stats";
+import { boardStats } from "../../../../lib/server/board-stats";
 
 export const dynamic = "force-dynamic";
 
@@ -17,11 +18,11 @@ export async function GET() {
     return json({ message: "Solo el propietario o un administrador pueden consultar el almacenamiento." }, 403);
   }
   const status = await storageStatus();
-  if (!status.database) return json({ ...status, uploadStats: null });
-  try {
-    return json({ ...status, uploadStats: await uploadStats() });
-  } catch {
-    // La medición no debe tumbar el diagnóstico.
-    return json({ ...status, uploadStats: null });
-  }
+  if (!status.database) return json({ ...status, uploadStats: null, boardStats: null });
+  // Ninguna medición debe tumbar el diagnóstico.
+  const [uploadMeasurement, boardMeasurement] = await Promise.all([
+    uploadStats().catch(() => null),
+    boardStats().catch(() => null),
+  ]);
+  return json({ ...status, uploadStats: uploadMeasurement, boardStats: boardMeasurement });
 }
