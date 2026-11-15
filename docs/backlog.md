@@ -4,7 +4,7 @@
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; SYNC-01 se queda aquí como norma operativa. No hay roadmap activo.
+> **Nota:** UI-01 pasó al roadmap activo; PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; SYNC-01 se queda aquí como norma operativa.
 
 ---
 
@@ -26,17 +26,6 @@
 - Contexto: PER-01 ha verificado la subida y lectura de imágenes originales en producción. Por ahora se conservan los originales para mantener simple la persistencia; no se ha incorporado un generador de miniaturas.
 - Qué falta antes de retomarlo: medir el impacto real de imágenes grandes en el tablero, comparar procesamiento en cliente con un binding de imágenes disponible y decidir si merece la complejidad.
 - Notas técnicas: respetar permisos, conservar el original y diseñar la limpieza de derivados sin afectar archivos existentes.
-
-## 2026-11-15 — UI-01 · Sistema visual: superficies, contraste y gradientes
-
-- Contexto: la revisión de las capturas muestra Tareas, Calendario y Ajustes dominados por superficies blancas sobre un canvas casi blanco; Mi espacio y Aula Store ya tienen una identidad más definida. El CSS tiene 23 archivos, 2.212 líneas y 237 colores hexadecimales distintos en 302 usos, señal de deriva de tokens. No es un rediseño funcional.
-- Qué falta antes de retomarlo:
-  - [ ] Definir una escala semántica de superficies (`canvas`, `raised`, `sunken`, `tint`) y sustituir blancos puros y hexadecimales sueltos por tokens en `app/globals.css` y los CSS de cada vista.
-  - [ ] Suavizar la tinta principal y los metadatos sin bajar del contraste AA; revisar foco, estados hover y textos pequeños.
-  - [ ] Añadir un gradiente global sutil al marco y al héroe; reservar los gradientes intensos para el progreso, Mi espacio y Aula Store, sin convertir todas las tarjetas en degradados.
-  - [ ] Hacer un piloto en Clase > Tareas y extenderlo después a Calendario, Ajustes y Documentación.
-  - [ ] Revisar escritorio, tablet y móvil, además de `prefers-reduced-motion`.
-- Notas técnicas: mantener `app/globals.css` como fuente de verdad de tokens y los CSS de feature como consumidores; no duplicar paletas por pantalla. Validar contraste y no tocar lógica.
 
 ## 2026-11-15 — SYNC-01 · Sincronizar el repositorio al cerrar cada roadmap
 
