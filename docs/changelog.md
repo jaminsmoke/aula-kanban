@@ -6,6 +6,30 @@
 
 ---
 
+## 2026-11-15 — Roadmap UI-07 · Documentación en Ajustes y selector de proyecto
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Documentación pasa al sidebar de Ajustes como sexta sección, con carga diferida: Cuenta, Apariencia, Documentación, Tokens MCP, Administradores y Almacenamiento. Dentro de Ajustes no muestra «Volver a Clase»; la página pública de `/documentacion` conserva su acción.
+- URL canónica `view=ajustes&section=documentacion`. `view=documentacion` se lee como alias, se reescribe con `replaceState` y no rompe favoritos; el alias anónimo sigue redirigiendo a `/documentacion`. `obtener_enlace` admite la nueva sección y el snapshot del catálogo MCP se actualizó.
+- La cabecera retira el botón de Documentación. `details.project-menu` ocupa su zona derecha con `margin-left:auto`, antes de Ajustes y cuenta, tanto en escritorio como en móvil.
+- La ayuda explica la nueva navegación y la documentación embebida ajusta su rejilla: índice de 204 px y oculto en Ajustes por debajo de 1180 px, sin botón de vuelta. Se añadió `min-width:0` a la cadena de documentación y al workspace móvil para que los bloques de código no ensanchen la página.
+- Sin migraciones ni cambio de versión: `1.1.30`.
+
+### Verificación
+
+- Build servida en `8791` con identidad local: 1366×900 con héroe de 1016 px e índice visible; 1024×768 con héroe de 738 px e índice oculto; 390×844 con héroe de 358 px, sidebar de 390 px y sin desborde horizontal. El proyecto mide 236 px a 390 y el botón de Documentación ya no existe en el header.
+- `?view=documentacion` canoniza a `?view=ajustes&section=documentacion`; `/documentacion` sigue visible con su botón de vuelta, sin header del tablero y sin desbordes. Sin excepciones de consola.
+- Suite completa: 124 archivos / 1.023 pruebas; `tsc`, lint, build y `git diff --check` en verde.
+- Capturas y métricas en `outputs/ui07-*.png` y `outputs/ui07-metrics.json` (ignorados por git).
+- Commits: `68aaf02` (roadmap) y `c127064` (integración); el cierre queda en el commit de documentación. Sin `release:prepare`, push ni publicación.
+
+### Seguimiento en backlog
+
+UI-08 conserva Tienda dentro de Administración, la retirada de Mi espacio y Clase en el dock.
+
 ## 2026-11-15 — Roadmap UI-05 · Estados vacíos de las fichas
 
 **Estado:** Completada · Sin publicación
