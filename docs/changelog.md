@@ -1,10 +1,37 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** MCP-05E activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-15 — Roadmap MCP-05E · Diagramas Mermaid por MCP cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fase 1 — Documento y plantillas compartidos:** `MERMAID_TEMPLATES` y su tipo pasan a `lib/domain/mermaid/templates.ts`, la única lista que usan la app y MCP; `lib/domain/mermaid/document.ts` valida `{ code: string }` y conserva el resto de claves.
+- **Fase 2 — Herramientas MCP:** `leer_diagrama` devuelve `{ codigo, actualizado }` o `null` sin crear documento; `guardar_diagrama` valida `{ code }`, aplica el límite de 200.000 caracteres y guarda el objeto completo; `listar_plantillas_diagrama` devuelve `{ id, nombre, codigo }` sin exigir proyecto. La app desinstalada responde `not_found` y los invitados `forbidden`.
+- **Fase 3 — Cobertura y cierre:** `docs/mcp-apps.md` deja Diagramas sin huecos MCP; catálogo, matriz, snapshot, ayuda, README y `content-coverage` incluyen las tres herramientas. Catálogo `0.26.0` con 59 herramientas (26 de lectura, 33 de escritura y 8 destructivas).
+- Sin migraciones ni cambio de versión; `package.json` sigue en `1.1.27`.
+- Roadmap cerrado y `docs/roadmap.md` reiniciado desde la plantilla. El backlog conserva 4 entradas.
+
+### Verificación
+
+- `npm run lint` limpio.
+- `npx tsc --noEmit` limpio.
+- `npm test`: **111 archivos / 934 tests**.
+- `npm run build` correcto, sin errores.
+- `git diff --check` limpio.
+- Commits de fase: `c5d304e` (documento y plantillas) y `92b4985` (herramientas); el cierre queda en el commit de documentación.
+- Sin inspección visual en navegador; la verificación es de código y documentación.
+- Sin push a GitHub ni publicación en Sites; la versión visible no cambia.
+
+### Seguimiento en backlog
+
+PER-03, PER-01B, PER-02 y SYNC-01 siguen en [`backlog.md`](backlog.md); no se añaden entradas nuevas.
 
 ## 2026-11-15 — Roadmap MCP-05D · Programación por bloques por MCP cerrado
 
