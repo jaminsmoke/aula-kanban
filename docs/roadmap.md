@@ -43,11 +43,12 @@
 
 ### Fase 1: Servicio compartido de pizarras
 
-- [ ] Crear `lib/server/boards.ts` con los tipos `task | project | space`, el límite de 2 MB, `ownerExists`, `canWrite`, `readBoard` y `saveBoard`.
-- [ ] Hacer que `app/api/boards/route.ts` use el servicio y quede como envoltorio HTTP, conservando los mensajes y estados 400/403/404/409.
-- [ ] Cubrir dueño de tarea, pizarra de proyecto, pizarra de Mi espacio, invitado, alumnado en tarea propia y alumnado en tarea ajena.
-- [ ] Probar la creación con revisión 0, la actualización con revisión coincidente y el conflicto con revisión desactualizada.
-- **Criterios de aceptación:** la API mantiene su contrato; no hay validación duplicada; el alumnado solo escribe en sus tareas; los invitados no escriben; una revisión ajena no se sobrescribe.
+- [x] Crear `lib/server/boards.ts` con los tipos `task | project | space`, el límite de 2 MB, `ownerExists`, `canWrite`, `readBoard` y `saveBoard`.
+- [x] Hacer que `app/api/boards/route.ts` use el servicio y quede como envoltorio HTTP, conservando los mensajes y estados 400/403/404/409.
+- [x] Cubrir dueño de tarea, pizarra de proyecto, pizarra de Mi espacio, invitado, alumnado en tarea propia y alumnado en tarea ajena.
+- [x] Probar la creación con revisión 0, la actualización con revisión coincidente y el conflicto con revisión desactualizada.
+- **Criterios de aceptación:** la API mantiene su contrato; no hay permisos duplicados; el alumnado solo escribe en sus tareas; los invitados no escriben; una revisión ajena no se sobrescribe.
+- **Estado:** Completada el 2026-11-15. 13 tests focalizados, suite completa 102 archivos / 829 tests, `tsc` y lint en verde.
 
 ### Fase 2: Lectura y guardado por MCP
 
@@ -91,5 +92,6 @@
 - `MCP-05B` sale del backlog al entrar en este roadmap. Quedan MCP-05D, MCP-05E, PER-03, PER-01B, PER-02 y SYNC-01.
 - La app ya escribe en `boards` con `ownerType` `task | project | space`, revisión optimista y sincronización en vivo; no se cambia su interfaz.
 - El snapshot puede llegar a 2 MB; la escena que viaja por `BoardRoom` sigue limitada a 1 MB.
+- Fase 1 completada: `lib/server/boards.ts` concentra dueño, permisos, lectura y guardado optimista; `app/api/boards` queda como envoltorio y conserva sus mensajes. La suite completa queda en 102 archivos / 829 tests.
 - No se cambia la versión del Site (`1.1.27`) ni se publica en Sites durante el roadmap.
 - El cierre deja los commits locales; el push a GitHub se decide al cerrar, según SYNC-01 y la autorización del usuario.
