@@ -1,15 +1,10 @@
-import { asc, eq } from "drizzle-orm";
 import { z } from "zod";
-import { getD1, getDb } from "../../../db";
-import { projectMembers, projects, userIdentities } from "../../../db/schema";
 import { getChatGPTUser } from "../../../lib/server/auth";
-import { isAdministrator, isOwner } from "../../../lib/server/project-access";
 import { projectFailureResponse } from "../../../lib/server/project-http";
 import { createProject, deleteProject } from "../../../lib/server/projects";
-import { cleanupOrphanUploads } from "../../../lib/server/storage";
 import { json } from "../../../lib/server/http";
 import { withJsonMutation } from "../../../lib/server/route-helpers";
-import { canonicalProjectId, ensureLegacyProjectUuid } from "../../../lib/server/project-rekey";
+import { loadProjectsOverview } from "../../../lib/server/project-overview";
 
 export const dynamic = "force-dynamic";
 
@@ -20,25 +15,8 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const user = await getChatGPTUser();
   if (!user) return projectFailureResponse("unauthenticated");
-  const owner = await isOwner(user);
-  if (owner) {
-    try { await ensureLegacyProjectUuid(getD1()); }
-    catch { return json({ message: "No se pudo actualizar el identificador del proyecto. Vuelve a intentarlo." }, 503); }
-  }
-  await getDb().update(userIdentities).set({ displayName: user.displayName }).where(eq(userIdentities.id, user.userId));
-  const admin = !owner && await isAdministrator(user);
-  if (owner || admin) {
-    try { await cleanupOrphanUploads(); } catch { /* Se reintentará al volver a cargar proyectos. */ }
-  }
-  const all = await getDb().select().from(projects).orderBy(asc(projects.createdAt), asc(projects.id));
-  const legacyProjectId = await canonicalProjectId(getD1(), "default");
-  if (owner || admin) return json({ projects: all.map((project) => ({ ...project, role: owner ? "owner" : "admin", studentSection: null, teacherId: null })), isOwner: owner, isAdmin: admin, legacyProjectId });
-  const members = await getDb().select().from(projectMembers).where(eq(projectMembers.userId, user.userId));
-  const visible = all.flatMap((project) => {
-    const member = members.find((item) => item.projectId === project.id);
-    return member?.status === "active" ? [{ ...project, role: member.role, studentSection: member.studentSection, teacherId: member.teacherId }] : [];
-  });
-  return json({ projects: visible, isOwner: false, legacyProjectId: visible.some((project) => project.id === legacyProjectId) ? legacyProjectId : null });
+  const result = await loadProjectsOverview(user);
+  return result.ok ? json(result.data) : json({ message: result.message }, result.status);
 }
 
 /** Crea un proyecto nuevo (solo propietario o administrador). */

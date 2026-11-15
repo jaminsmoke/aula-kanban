@@ -60,10 +60,10 @@
 
 ### Fase 3 — Arranque de proyectos
 
-- [ ] Extraer de `/api/projects` la migración de UUID, la actualización de identidad y la limpieza de subidas huérfanas.
-- [ ] Encapsularlas en un servicio idempotente que conserve el 503 de la migración y el carácter best-effort de la limpieza.
-- [ ] Mantener el orden y el resultado del `GET`: proyectos visibles, rol, `isOwner`, `isAdmin` y `legacyProjectId`.
-- [ ] Probar ejecución repetida, fallo de migración y fallo de limpieza.
+- [x] Extraer de `/api/projects` la migración de UUID, la actualización de identidad y la limpieza de subidas huérfanas.
+- [x] Encapsularlas en `loadProjectsOverview` conservando el 503 de la migración y el carácter best-effort de la limpieza.
+- [x] Mantener el orden y el resultado del `GET`: proyectos visibles, rol, `isOwner`, `isAdmin` y `legacyProjectId`.
+- [x] Probar ejecución repetida, fallo de migración y fallo de limpieza.
 - **Criterios de aceptación:** el `GET` queda como envoltura del servicio; no se duplica lógica en MCP; la respuesta pública no cambia.
 
 ### Fase 4 — Contrato y cierre
@@ -91,6 +91,7 @@
 - `/api/projects` ejecuta en el `GET` la migración de UUID, la actualización de identidad y la limpieza de huérfanos.
 - Fase 1 completada el 2026-11-15: `lib/server/route-helpers.ts` concentra `withJsonMutation` y `withProjectRoute`; la composición mantiene origen/JSON antes de resolver el proyecto.
 - Fase 2 completada el 2026-11-15: `project-http.ts` construye las respuestas y `project-contract.ts` conserva solo los mensajes públicos; `project-access.ts` ya no importa `http.ts`.
+- Fase 3 completada el 2026-11-15: `project-overview.ts` concentra el arranque y el listado; `GET /api/projects` solo autentica y serializa. La migración conserva el 503 y la limpieza se mantiene best-effort.
 - Quedan sin helper por su orden propio `uploads` (solo origen), `files` (lee R2 antes de resolver), `mcp/tokens` (autentica antes de origen) y las mutaciones de alumnado/profesorado, que viven en sus servicios; se decidirán en las fases siguientes.
 - Cada fase se cierra con su propio commit local, incluidas las fases de solo documentación; no se hace push hasta cerrar el roadmap.
 - No se cambia la versión ni se publica en Sites durante este roadmap.
