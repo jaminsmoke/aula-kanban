@@ -18,10 +18,13 @@
 
 .primary { background: var(--ui-action-primary); color: var(--ui-text-inverse); }
 .primary:hover:enabled { background: var(--ui-action-primary-hover); }
+.primary:active:enabled { background: var(--ui-action-pressed); }
 .secondary { background: var(--ui-surface-raised); color: var(--ui-text-primary); border-color: var(--ui-border-default); }
 .secondary:hover:enabled { background: var(--ui-surface-hover); border-color: var(--ui-border-accent); }
+.secondary:active:enabled { background: var(--ui-surface-recessed); }
 .danger { background: var(--ui-danger); color: var(--ui-text-inverse); }
 .danger:hover:enabled { background: var(--ui-danger-deep); }
+.danger:active:enabled { background: var(--ui-danger-deep); }
 .danger-quiet { padding-inline: 4px; color: var(--ui-danger); background: transparent; }
 .danger-quiet:hover:enabled { background: var(--ui-danger-soft); }
 .share { min-height: 36px; }
@@ -41,6 +44,7 @@
 }
 
 .icon-button:hover:enabled { color: var(--ui-action-primary); background: var(--ui-action-soft); }
+.icon-button:active:enabled { background: var(--ui-surface-recessed); }
 
 .account-status {
   display: inline-flex;

@@ -69,19 +69,34 @@
   --primitive-on-dark-track: #584777;
   --primitive-border-warning: #f0d9a8;
   --primitive-border-danger: #f2cdd9;
+  --primitive-border-accent-strong: #bca7e9;
+  --primitive-border-predicted: #8f7bbd;
   --primitive-scrim: #20173575;
   --primitive-on-dark-hover: #493668;
   --primitive-accent-amber: #febc2e;
   --primitive-accent-amber-ink: #8a6100;
   --primitive-accent-lavender: #b7a8ee;
+  --primitive-category-alkali: #fecaca;
+  --primitive-category-alkaline: #fed7aa;
+  --primitive-category-transition: #fef08a;
+  --primitive-category-post: #fde68a;
+  --primitive-category-metalloid: #d9f99d;
+  --primitive-category-diatomic: #a7f3d0;
+  --primitive-category-polyatomic: #99f6e4;
+  --primitive-category-noble: #a5f3fc;
+  --primitive-category-lanthanide: #c7d2fe;
+  --primitive-category-actinide: #e9d5ff;
+  --primitive-category-unknown: #e4e4e7;
   --primitive-surface-on-dark-subtle: #ffffff1f;
   --primitive-surface-on-dark-hover: #ffffff33;
   --primitive-glow-primary: #5839be66;
   --primitive-glow-primary-soft: #5839be55;
+  --primitive-glow-primary-faint: #5839be26;
   --primitive-border-success: #b9dfcf;
   --primitive-text-shadow-dark: #0007;
   --primitive-violet: #5839be;
   --primitive-violet-dark: #42299c;
+  --primitive-action-pressed: #352080;
   --primitive-violet-pale: #eeebfb;
   --primitive-violet-bright: #7859d8;
   --primitive-focus: #7656dd;
@@ -155,6 +170,17 @@
   --ui-accent-amber: var(--primitive-accent-amber);
   --ui-accent-amber-ink: var(--primitive-accent-amber-ink);
   --ui-accent-lavender: var(--primitive-accent-lavender);
+  --ui-category-alkali: var(--primitive-category-alkali);
+  --ui-category-alkaline: var(--primitive-category-alkaline);
+  --ui-category-transition: var(--primitive-category-transition);
+  --ui-category-post: var(--primitive-category-post);
+  --ui-category-metalloid: var(--primitive-category-metalloid);
+  --ui-category-diatomic: var(--primitive-category-diatomic);
+  --ui-category-polyatomic: var(--primitive-category-polyatomic);
+  --ui-category-noble: var(--primitive-category-noble);
+  --ui-category-lanthanide: var(--primitive-category-lanthanide);
+  --ui-category-actinide: var(--primitive-category-actinide);
+  --ui-category-unknown: var(--primitive-category-unknown);
   --ui-text-primary: var(--ink);
   --ui-text-secondary: var(--ink-soft);
   --ui-text-muted: var(--muted);
@@ -173,8 +199,11 @@
   --ui-border-control: var(--line-control);
   --ui-border-soft: var(--line-soft);
   --ui-border-accent: var(--line-violet);
+  --ui-border-accent-strong: var(--primitive-border-accent-strong);
+  --ui-border-predicted: var(--primitive-border-predicted);
   --ui-action-primary: var(--violet);
   --ui-action-primary-hover: var(--violet-dark);
+  --ui-action-pressed: var(--primitive-action-pressed);
   --ui-action-soft: var(--violet-pale);
   --ui-action-bright: var(--violet-bright);
   --ui-focus-ring: var(--focus);
@@ -183,10 +212,14 @@
   --ui-action-on-dark-hover: var(--primitive-on-dark-hover);
   --ui-glow-primary: var(--primitive-glow-primary);
   --ui-glow-primary-soft: var(--primitive-glow-primary-soft);
+  --ui-glow-primary-faint: var(--primitive-glow-primary-faint);
   --ui-text-shadow-dark: 0 1px 4px var(--primitive-text-shadow-dark);
   --ui-scrim: var(--primitive-scrim);
   --ui-shadow-card: 0 2px 3px #29213a08;
   --ui-shadow-card-hover: 0 3px 8px #29213a13;
+  --ui-shadow-float: 0 16px 48px #3022550d;
+  --ui-shadow-control: 0 1px 3px #30225520;
+  --ui-shadow-inset: inset 0 1px 3px #30225514;
   --ui-shadow-dialog: 0 18px 70px #20154030;
   --ui-shadow-toast: 0 5px 20px #30225530;
   --ui-shadow-popover: 0 12px 35px #30225526;
@@ -209,6 +242,7 @@
   --ui-warning-deep: var(--warning-deep);
   --ui-info-ink: var(--info-ink);
   --ui-info-soft: var(--info-soft);
+  --ui-opacity-disabled: .55;
 
   /* Radios */
   --radius: 14px;
@@ -274,7 +308,7 @@ html { background: var(--canvas); }
 html body { margin: 0; min-width: 280px; background: var(--canvas); color: var(--ink); font-size: var(--text-xl); line-height: var(--leading-normal); }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
-button:disabled { cursor: default; opacity: .6; }
+button:disabled { cursor: not-allowed; opacity: var(--ui-opacity-disabled); }
 button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 3px;

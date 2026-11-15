@@ -1,6 +1,6 @@
 # Sistema visual
 
-> **Estado:** Fases 1-5 completadas (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
+> **Estado:** Fases 1-6 completadas (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
 > **Fuente de verdad:** [`../app/globals.css`](../app/globals.css)
 
 ---
@@ -21,24 +21,15 @@ Tras la fase 3 y el ajuste de marco 3.1, las pantallas de Ajustes, Documentació
 
 | Ámbito actual | Archivos | Líneas | Usos de hex | Hex distintos |
 |---|---:|---:|---:|---:|
-| Toda la aplicación | 23 | 2.396 | 153 | 131 |
-| `app/globals.css` | 1 | 303 | 73 | 73 |
-| CSS de feature | 22 | 2.093 | 80 | 58 |
+| Toda la aplicación | 23 | 2.430 | 91 | 91 |
+| `app/globals.css` | 1 | 337 | 91 | 91 |
+| CSS de feature | 22 | 2.093 | 0 | 0 |
 
-Los CSS de `kanban.css`, `task-dialog.css`, `calendar-view.css`, `class.css`, `buttons.css`, `dialogs.css`, `settings-view.css`, `header.css`, `workspace-layout.css`, `docs.css`, `space.css` y `store.css` quedan a cero. Los 80 usos restantes están en apps, personas y accesibilidad, fuera del alcance de esta fase.
+Los 22 CSS de feature quedan a cero hexadecimales. Los 91 usos restantes viven en `app/globals.css`, la única fuente de color crudo.
 
-### Archivos con hexadecimales
+### Hexadecimales fuera de globals.css
 
-| Archivo | Líneas | Usos | Distintos |
-|---|---:|---:|---:|
-| `app/board/apps/edu-tools/edu-tools.css` | 341 | 24 | 18 |
-| `app/board/apps/edu-tools/periodic-table/periodic-table-es.css` | 136 | 23 | 22 |
-| `app/board/people/people.css` | 75 | 16 | 15 |
-| `app/board/styles/access.css` | 37 | 8 | 7 |
-| `app/board/apps/blockly/blockly.css` | 77 | 6 | 5 |
-| `app/board/apps/mermaid/mermaid.css` | 51 | 3 | 3 |
-
-Los otros 16 CSS de feature —incluidos los seis migrados en fase 2 y los seis de fase 3— no contienen hexadecimales.
+No queda ninguno en los CSS de feature. Las únicas excepciones son colores de configuración que no pasan por CSS: categorías de Blockly (`blockly-toolbox.ts`), tema de Mermaid (`mermaid-render.ts`), paleta de presencia de Excalidraw (`whiteboard-model.ts`), rejilla de Blockly (`use-blockly.ts`) y el HTML aislado del recurso MCP (`lib/server/mcp/ui-apertura.ts`). Se revisarán si esas librerías permiten consumir tokens.
 
 ## 2. Capas de tokens
 
@@ -48,7 +39,7 @@ Los otros 16 CSS de feature —incluidos los seis migrados en fase 2 y los seis 
 | Compatibilidad | nombres existentes (`--canvas`, `--ink`, `--line`…) | Mantienen los valores actuales mientras se migran los CSS. No se usan en código nuevo. |
 | Semántica de UI | `--ui-*` | Capa estable para el CSS de feature y para los componentes nuevos. |
 
-La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes siguen resolviendo al mismo color, ahora a través de una primitiva. La fase 4 deja 55 primitivas y 69 tokens `--ui-*`; los 36 nombres de compatibilidad se conservan intactos. `--ui-surface-frame` separa el chrome del contenido y podrá invertirse en el tema oscuro sin tocar los componentes.
+La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes siguen resolviendo al mismo color, ahora a través de una primitiva. La fase 6 deja 70 primitivas y 88 tokens `--ui-*`; los 36 nombres de compatibilidad se conservan intactos. `--ui-surface-frame` separa el chrome del contenido y podrá invertirse en el tema oscuro sin tocar los componentes.
 
 ## 3. Mapa semántico
 
@@ -91,6 +82,8 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `--ui-border-control` | `--line-control` | `#ded9ea` |
 | `--ui-border-soft` | `--line-soft` | `#e4e0ed` |
 | `--ui-border-accent` | `--line-violet` | `#ddd6ee` |
+| `--ui-border-accent-strong` | primitiva propia | `#bca7e9` |
+| `--ui-border-predicted` | primitiva propia | `#8f7bbd` |
 
 ### Acción y foco
 
@@ -98,6 +91,7 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 |---|---|---|
 | `--ui-action-primary` | `--violet` | `#5839be` |
 | `--ui-action-primary-hover` | `--violet-dark` | `#42299c` |
+| `--ui-action-pressed` | primitiva propia | `#352080` |
 | `--ui-action-soft` | `--violet-pale` | `#eeebfb` |
 | `--ui-action-bright` | `--violet-bright` | `#7859d8` |
 | `--ui-focus-ring` | `--focus` | `#7656dd` |
@@ -109,6 +103,7 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `--ui-accent-lavender` | primitiva propia | `#b7a8ee` |
 | `--ui-glow-primary` | primitiva propia | `#5839be66` |
 | `--ui-glow-primary-soft` | primitiva propia | `#5839be55` |
+| `--ui-glow-primary-faint` | primitiva propia | `#5839be26` |
 | `--ui-text-shadow-dark` | primitiva propia | `0 1px 4px #0007` |
 
 ### Composición
@@ -118,6 +113,9 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `--ui-scrim` | `#20173575` |
 | `--ui-shadow-card` | `0 2px 3px #29213a08` |
 | `--ui-shadow-card-hover` | `0 3px 8px #29213a13` |
+| `--ui-shadow-float` | `0 16px 48px #3022550d` |
+| `--ui-shadow-control` | `0 1px 3px #30225520` |
+| `--ui-shadow-inset` | `inset 0 1px 3px #30225514` |
 | `--ui-shadow-dialog` | `0 18px 70px #20154030` |
 | `--ui-shadow-toast` | `0 5px 20px #30225530` |
 | `--ui-shadow-popover` | `0 12px 35px #30225526` |
@@ -145,6 +143,19 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `--ui-warning-deep` | `--warning-deep` | `#7a5b00` |
 | `--ui-info-ink` | `--info-ink` | `#315a9f` |
 | `--ui-info-soft` | `--info-soft` | `#e6eefc` |
+| `--ui-opacity-disabled` | — | `.55` |
+
+### Acentos por función
+
+| Función | Tokens |
+|---|---|
+| Acción | `--ui-action-primary`, `--ui-action-primary-hover`, `--ui-action-pressed`, `--ui-action-soft` |
+| Información | `--ui-info-ink`, `--ui-info-soft` |
+| Éxito | `--ui-success`, `--ui-success-soft` |
+| Aviso | `--ui-warning-ink`, `--ui-warning-soft`, `--ui-warning-pale`, `--ui-warning-deep` |
+| Peligro | `--ui-danger`, `--ui-danger-ink`, `--ui-danger-soft`, `--ui-danger-deep` |
+
+Los estados usan `--ui-surface-hover` y `--ui-action-primary-hover` para hover; `--ui-action-pressed` y `--ui-surface-recessed` para active; `--ui-focus-ring` para foco; y `--ui-opacity-disabled` para deshabilitado. La tabla periódica tiene 11 tintes categóricos, de `--ui-category-alkali` a `--ui-category-unknown`; el texto principal mantiene al menos 11,04:1 sobre ellos.
 
 ### Tipografía
 
@@ -178,7 +189,7 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 | `edu-tools.css` | `--background`, `--card`, `--surface`, `--border`, `--rule`, `--calc-*` y equivalentes de la librería | Mapear a `--ui-*` al migrar la app; conservar los nombres que exija `@smst/edu-tools`. |
 | `docs.css` | `--docs-radius-lg`, `--docs-radius`, `--docs-radius-sm`, `--docs-gap`, `--docs-index-width`, `--docs-art-width` y `--docs-sticky-top` | Solo medidas y radios; los colores ya pasan a `--ui-*`. |
 | `kanban.css` | `--accent` y `--accent-bg` por carril | Se conservan como variables locales, pero ya derivan de `--ui-*`; no queda ningún hexadecimal. |
-| Apps internas | Escala compacta de `edu-tools`, `periodic-table`, `blockly` y `mermaid` | Excepción de fase 4: sus controles densos conservan medidas propias; los envoltorios usan tokens. |
+| Apps internas | Escala compacta de `edu-tools`, `periodic-table`, `blockly` y `mermaid` | Excepción de fase 4: sus controles densos conservan medidas propias; desde la fase 6 todos sus colores usan tokens. |
 
 ## 5. Reglas de uso
 
@@ -188,6 +199,8 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 - La tipografía usa `--text-*`, `--leading-*`, `--tracking-*`, `--weight-*` y las familias de `globals.css`; no se añaden tamaños ni pesos sueltos.
 - La iconografía usa 12, 16, 18, 20, 24 y 28 px con trazo 2; la marca usa 2,4. No se añaden tamaños ni trazos sueltos; las ilustraciones SVG y las apps internas son la excepción.
 - Un icono solo dentro de un botón exige `aria-label` y un área mínima de 36 × 36 px. Un icono junto a texto se oculta con `aria-hidden`; el texto sigue siendo la etiqueta. Un icono decorativo se oculta y no recibe foco.
+- Los acentos por función usan la familia `--ui-action-*`, los estados semánticos y `--ui-category-*` solo para las categorías de la tabla periódica. No se crean acentos por pantalla.
+- Todo control interactivo comparte hover, active, focus y disabled; los colores de estado no se escriben en el CSS de feature.
 - Las primitivas solo se declaran en `app/globals.css`.
 - Los nombres de compatibilidad se mantienen hasta completar la migración; no se añaden usos nuevos.
 - Los estados usan los tokens `--ui-danger-*`, `--ui-success-*`, `--ui-warning-*` e `--ui-info-*`.
@@ -204,7 +217,7 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 | 3.1 | Marco claro y superficies de chrome | Completada; `--ui-surface-frame` `#f2eef9`, activos violeta y contraste AA. |
 | 4 | Tipografía y jerarquía | Completada; 18 tokens de tamaño, 5 de interlineado, 6 de tracking y 5 pesos; sin medidas sueltas en el CSS propio. |
 | 5 | Iconografía y densidad | Completada; seis tamaños, trazo 2 (marca 2,4) y áreas táctiles de 36 px. |
-| 6 | Color, estados y acentos | Pendiente. |
+| 6 | Color, estados y acentos | Completada; cero hexadecimales en CSS de feature, 11 categorías y estados compartidos. |
 | 7 | Temas claro y oscuro | Pendiente. |
 | 8 | Limpieza, guarda y cierre | Pendiente. |
 
@@ -246,4 +259,11 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 | Texto atenuado / marco | 5,56:1 |
 | Blanco / acción primaria | 7,65:1 |
 
-No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; en el marco, el mínimo es 5,56:1 para texto atenuado. La barra de progreso es un elemento gráfico y supera el mínimo de 3:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2-5.
+### Contraste de la fase 6
+
+| Pareja | Ratio |
+|---|---:|
+| Texto principal / categoría de lantánidos | 11,04:1 |
+| Blanco / acción pulsada | 12,58:1 |
+
+No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; en el marco, el mínimo es 5,56:1 para texto atenuado. La barra de progreso es un elemento gráfico y supera el mínimo de 3:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2-6.

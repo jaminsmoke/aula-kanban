@@ -102,10 +102,11 @@
 
 ### Fase 6: Color, estados y acentos
 
-- [ ] Retirar los 80 usos de hex restantes en apps, personas y accesibilidad.
-- [ ] Definir acentos por función y estados hover/active/focus/disabled.
-- [ ] Revisar gráficos, progreso, tablas, avisos y estados vacíos.
+- [x] Retirar los 80 usos de hex restantes en apps, personas y accesibilidad.
+- [x] Definir acentos por función y estados hover/active/focus/disabled.
+- [x] Revisar gráficos, progreso, tablas, avisos y estados vacíos.
 - **Criterios de aceptación:** cero hexadecimales fuera de `globals.css`; estados consistentes; matriz de contraste AA.
+- **Completada el 2026-11-15:** los 80 hexadecimales de los CSS de feature bajan a 0; los 91 restantes viven en `globals.css`. Se añaden 11 tintes categóricos, tokens de borde, sombra y opacidad, y `:active` compartido. El contraste mínimo de texto sobre categorías es 11,04:1 y blanco sobre acción pulsada 12,58:1. Quedan colores de configuración en TS (Blockly, Mermaid, Excalidraw y HTML del MCP) como excepciones no CSS. La inspección visual en navegador sigue pendiente.
 
 ### Fase 7: Temas claro y oscuro
 
@@ -116,7 +117,7 @@
 
 ### Fase 8: Limpieza, guarda y cierre
 
-- [ ] Retirar los hexadecimales restantes de los CSS de feature, salvo los casos justificados de terceros.
+- [ ] Retirar los alias de compatibilidad restantes y revisar los colores de configuración de terceros.
 - [ ] Añadir una comprobación que impida reintroducir colores sueltos fuera de `app/globals.css`.
 - [ ] Documentar el sistema y cerrar el roadmap en el changelog, reiniciando `roadmap.md`.
 - **Criterios de aceptación:** la guarda falla ante un nuevo hexadecimal de feature; la documentación explica cómo añadir un token; suite, typecheck, lint y build pasan; se sigue el flujo de commits por fase y push único al cerrar.
@@ -146,4 +147,5 @@
 - Fase 3.1 completada el 2026-11-15: el primer pase de marco oscuro se descarta. El tema claro usa `--ui-surface-frame` (`#f2eef9`) para header y sidebar, con activos violeta y contenido claro; el tema oscuro se resolverá invirtiendo tokens en la fase 7.
 - Fase 4 completada el 2026-11-15: 29 medidas de `font-size` quedan reducidas a 18 tokens; el CSS propio no conserva tamaños, interlineados, trackings ni pesos sueltos. Se mantienen las dos familias actuales, se añade `--font-mono` y se documenta la excepción de las apps internas.
 - Fase 5 completada el 2026-11-15: 13 tamaños de icono quedan reducidos a 6; lucide usa trazo 2 y la marca 2,4. Los botones de icono tienen un área mínima de 36 px y los iconos con texto quedan ocultos a lectores. La inspección visual en navegador sigue pendiente.
-- Auditoría para la siguiente fase: 80 usos y 58 colores distintos fuera de `globals.css`; los iconos ya están normalizados.
+- Fase 6 completada el 2026-11-15: los 80 hexadecimales de los CSS de feature bajan a 0; los 91 restantes están en `globals.css`. La tabla periódica estrena 11 tintes categóricos; hover, active, focus y disabled comparten tokens. La inspección visual en navegador sigue pendiente.
+- Auditoría para la siguiente fase: cero hexadecimales en CSS de feature; 91 en `globals.css`; 70 primitivas y 88 tokens `--ui-*`. La fase 7 debe invertir tokens, no componentes.
