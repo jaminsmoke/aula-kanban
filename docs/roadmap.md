@@ -119,10 +119,11 @@
 
 ### Fase 7.1: Bordes, radios y separadores
 
-- [ ] Revisar grosores, radios y separadores del marco, el héroe de Tareas, las tarjetas y los controles.
-- [ ] Unificar la escala de bordes (1 px/2 px), radios y líneas divisorias; sustituir los valores sueltos que se repitan por tokens.
-- [ ] Ajustar el borde sidebar/contenido y el contorno del héroe para que acompañen la jerarquía sin competir con el contenido.
+- [x] Revisar grosores, radios y separadores del marco, el héroe de Tareas, las tarjetas y los controles.
+- [x] Unificar la escala de bordes (1 px/2 px/3 px), radios y líneas divisorias; sustituir los valores sueltos que se repitan por tokens.
+- [x] Ajustar el borde sidebar/contenido y el contorno del héroe para que acompañen la jerarquía sin competir con el contenido.
 - **Criterios de aceptación:** una sola escala de bordes y radios; sin cambios de layout; los separadores del marco, el héroe y las tarjetas se leen con la misma jerarquía en claro y oscuro; AA y foco visible se mantienen.
+- **Completada el 2026-11-15:** 3 tokens de grosor, 8 radios y cero grosores literales; 127 bordes, 28 contornos y 107 radios migrados, incluidas las apps internas. El borde sidebar/contenido usa `--ui-border-accent`; el héroe de Tareas usa 2 px de `--ui-border-accent-strong` con `--ui-shadow-hero`; las tarjetas y los carriles quedan a 1 px. Sin cambios de layout ni de contraste; no se hizo inspección visual en navegador.
 
 ### Fase 8: Limpieza, guarda y cierre
 
@@ -161,4 +162,5 @@
 - Fase 6 completada el 2026-11-15: los 80 hexadecimales de los CSS de feature bajan a 0; los 91 restantes están en `globals.css`. La tabla periódica estrena 11 tintes categóricos; hover, active, focus y disabled comparten tokens. La inspección visual en navegador sigue pendiente.
 - Fase 7 completada el 2026-11-15: el tema oscuro invierte 92 de los 93 tokens `--ui-*` en un solo bloque; `--ui-opacity-disabled` se comparte. La preferencia del sistema, el cambio manual y la persistencia funcionan desde Ajustes > Apariencia. El mínimo de texto es 5,72:1, el borde de control 3,17:1 y el foco 7,49:1. La inspección visual en navegador sigue pendiente.
 - El selector de tema se retiró del menú de cuenta y vive en la sección Apariencia de Ajustes. La reorganización de las demás secciones (por ejemplo, separar Almacenamiento de Administradores) queda en el backlog como UI-03; el alcance de la fase 7.1 no cambia.
-- Siguiente fase: 7.1 revisará bordes, radios y separadores (incluidos el borde sidebar/contenido y el contorno del héroe de Tareas). Después queda la limpieza y la guarda de la fase 8.
+- Fase 7.1 completada el 2026-11-15: la escala queda en 1/2/3 px de grosor y 5/6/8/12/14/18/22 px más píldora de radio. El borde sidebar/contenido usa `--ui-border-accent`, el héroe de Tareas 2 px de `--ui-border-accent-strong` y sombra, y tarjetas/carriles 1 px. La migración incluye las apps internas y no deja grosores literales. La inspección visual en navegador sigue pendiente.
+- Siguiente fase: 8, limpieza, guarda y cierre del roadmap.

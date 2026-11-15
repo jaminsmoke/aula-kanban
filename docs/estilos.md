@@ -1,6 +1,6 @@
 # Sistema visual
 
-> **Estado:** Fases 1-7 completadas; fase 7.1 pendiente (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
+> **Estado:** Fases 1-7.1 completadas; fase 8 pendiente (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
 > **Fuente de verdad:** [`../app/globals.css`](../app/globals.css)
 
 ---
@@ -26,6 +26,8 @@ Tras la fase 7, las pantallas de Ajustes, Documentación, Mi espacio y Aula Stor
 | CSS de feature | 22 | 2.076 | 0 | 0 |
 
 Los 22 CSS de feature quedan a cero hexadecimales. Los 189 usos restantes viven en `app/globals.css`, la única fuente de color crudo; los valores del tema oscuro se añaden al mismo archivo.
+
+La fase 7.1 no altera el inventario de color: mantiene 23 archivos, 2.514 líneas, 189 usos de hex y 161 colores distintos, todos en `globals.css`. Añade tres tokens de grosor y tres radios, y sustituye 127 grosores de borde, 28 contornos de foco y 107 radios por tokens.
 
 ### Hexadecimales fuera de globals.css
 
@@ -129,6 +131,17 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `--ui-shadow-detail` | `0 30px 80px #00000066` |
 | `--ui-shadow-mark` | `0 6px 14px #5839be33` |
 
+### Bordes y radios
+
+| Grupo | Tokens | Uso |
+|---|---|---|
+| Grosor | `--border-width-hairline` (1 px), `--border-width-strong` (2 px), `--border-width-accent` (3 px) | Bordes, separadores y contornos de foco. |
+| Radio compacto | `--radius-2xs` (5 px), `--radius-xs` (6 px), `--radius-sm` (8 px) | Chips, metadatos y controles pequeños. |
+| Radio de superficie | `--radius-md` (12 px), `--radius` (14 px), `--radius-lg` (18 px), `--radius-xl` (22 px) | Tarjetas, carriles, paneles, fichas y héroe. |
+| Píldora | `--radius-pill` (999 px) | Controles y barras totalmente redondeados. |
+
+Los 127 bordes de 1, 2 y 3 px del CSS propio usan estos tokens; no queda ningún grosor literal. Los 107 radios se normalizan en los 22 CSS de feature, incluidas las apps internas, que conservan su densidad compacta; `50%` se reserva a círculos. El separador sidebar/contenido usa `--ui-border-accent`; el héroe de Tareas usa 2 px de `--ui-border-accent-strong` y `--ui-shadow-hero`; tarjetas y carriles usan 1 px de `--ui-border-default` o `--ui-border-soft`.
+
 ### Estados
 
 | Token de UI | Compatibilidad | Valor |
@@ -213,9 +226,9 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 | Archivo | Tokens locales | Tratamiento |
 |---|---|---|
 | `edu-tools.css` | `--background`, `--card`, `--surface`, `--border`, `--rule`, `--calc-*` y equivalentes de la librería | Mapear a `--ui-*` al migrar la app; conservar los nombres que exija `@smst/edu-tools`. |
-| `docs.css` | `--docs-radius-lg`, `--docs-radius`, `--docs-radius-sm`, `--docs-gap`, `--docs-index-width`, `--docs-art-width` y `--docs-sticky-top` | Solo medidas y radios; los colores ya pasan a `--ui-*`. |
+| `docs.css` | `--docs-radius-lg`, `--docs-radius`, `--docs-radius-sm`, `--docs-gap`, `--docs-index-width`, `--docs-art-width` y `--docs-sticky-top` | Solo medidas; los radios ya derivan de `--radius-*` y los colores pasan a `--ui-*`. |
 | `kanban.css` | `--accent` y `--accent-bg` por carril | Se conservan como variables locales, pero ya derivan de `--ui-*`; no queda ningún hexadecimal. |
-| Apps internas | Escala compacta de `edu-tools`, `periodic-table`, `blockly` y `mermaid` | Excepción de fase 4: sus controles densos conservan medidas propias; desde la fase 6 todos sus colores usan tokens. |
+| Apps internas | Escala compacta de `edu-tools`, `periodic-table`, `blockly` y `mermaid` | Excepción de fase 4: sus controles densos conservan medidas propias; desde la fase 7.1 sus bordes y radios usan la escala global y desde la fase 6 todos sus colores usan tokens. |
 
 ## 5. Reglas de uso
 
@@ -225,6 +238,8 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 - Usa `--ui-action-text` para texto, enlaces e iconos; `--ui-action-primary` se reserva para fondos sólidos. Para peligro, usa `--ui-danger-solid` en fondos y `--ui-danger-text` en texto.
 - La tipografía usa `--text-*`, `--leading-*`, `--tracking-*`, `--weight-*` y las familias de `globals.css`; no se añaden tamaños ni pesos sueltos.
 - La iconografía usa 12, 16, 18, 20, 24 y 28 px con trazo 2; la marca usa 2,4. No se añaden tamaños ni trazos sueltos; las ilustraciones SVG y las apps internas son la excepción.
+- Los bordes usan `--border-width-hairline`, `--border-width-strong` o `--border-width-accent`; no se escriben grosores sueltos. Los radios usan la escala `--radius-*`; `50%` solo se usa para círculos.
+- El separador sidebar/contenido usa `--ui-border-accent`; el héroe de Tareas usa 2 px de `--ui-border-accent-strong`; las tarjetas y los carriles usan 1 px de `--ui-border-default` o `--ui-border-soft`.
 - Un icono solo dentro de un botón exige `aria-label` y un área mínima de 36 × 36 px. Un icono junto a texto se oculta con `aria-hidden`; el texto sigue siendo la etiqueta. Un icono decorativo se oculta y no recibe foco.
 - Los acentos por función usan la familia `--ui-action-*`, los estados semánticos y `--ui-category-*` solo para las categorías de la tabla periódica. No se crean acentos por pantalla.
 - Todo control interactivo comparte hover, active, focus y disabled; los colores de estado no se escriben en el CSS de feature.
@@ -246,7 +261,7 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 | 5 | Iconografía y densidad | Completada; seis tamaños, trazo 2 (marca 2,4) y áreas táctiles de 36 px. |
 | 6 | Color, estados y acentos | Completada; cero hexadecimales en CSS de feature, 11 categorías y estados compartidos. |
 | 7 | Temas claro y oscuro | Completada; preferencia del sistema, cambio manual, persistencia, 92 tokens invertidos y selector en Ajustes > Apariencia. |
-| 7.1 | Bordes, radios y separadores | Pendiente; revisará grosores, radios y los separadores del marco y el héroe. |
+| 7.1 | Bordes, radios y separadores | Completada; 3 grosores, 8 radios, 127 bordes, 28 contornos y 107 radios migrados; sidebar con acento, héroe con 2 px y sombra, sin cambios de layout. |
 | 8 | Limpieza, guarda y cierre | Pendiente. |
 
 ### Contraste de la fase 2
@@ -311,4 +326,4 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 | Blanco / acción brillante (icono) | 3,79:1 |
 | Texto principal / categoría más oscura | 9,41:1 |
 
-No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; en el marco, el mínimo es 5,56:1 para texto atenuado. La barra de progreso es un elemento gráfico y supera el mínimo de 3:1. En el tema oscuro, el mínimo de texto es 5,72:1, el borde de control 3,17:1 y el foco 7,49:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2-7.
+No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; en el marco, el mínimo es 5,56:1 para texto atenuado. La barra de progreso es un elemento gráfico y supera el mínimo de 3:1. En el tema oscuro, el mínimo de texto es 5,72:1, el borde de control 3,17:1 y el foco 7,49:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2-7.1.

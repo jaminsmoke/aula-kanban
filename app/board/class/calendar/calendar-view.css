@@ -12,7 +12,7 @@
   min-width: 0;
   max-width: 100%;
   padding: 20px 22px 24px;
-  border: 1px solid var(--ui-border-default);
+  border: var(--border-width-hairline) solid var(--ui-border-default);
   border-radius: var(--radius-lg);
   background: var(--ui-surface-raised);
 }
@@ -35,7 +35,7 @@
 
 .class-calendar-note {
   padding: 12px 14px;
-  border: 1px solid var(--ui-border-accent);
+  border: var(--border-width-hairline) solid var(--ui-border-accent);
   border-radius: var(--radius-md);
   background: var(--ui-action-soft);
   color: var(--ui-text-strong);
@@ -45,7 +45,7 @@
 
 .class-calendar-empty {
   padding: 48px 20px;
-  border: 1px solid var(--ui-border-default);
+  border: var(--border-width-hairline) solid var(--ui-border-default);
   border-radius: var(--radius-lg);
   background: var(--ui-surface-raised);
   color: var(--ui-text-muted);
@@ -75,7 +75,7 @@
 .class-calendar .rbc-month-view,
 .class-calendar .rbc-time-view,
 .class-calendar .rbc-agenda-view table.rbc-agenda-table {
-  border: 1px solid var(--ui-border-default);
+  border: var(--border-width-hairline) solid var(--ui-border-default);
   border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--ui-surface-raised);
@@ -154,7 +154,7 @@
 }
 
 .class-calendar .rbc-show-more:focus-visible {
-  outline: 2px solid var(--ui-focus-ring);
+  outline: var(--border-width-strong) solid var(--ui-focus-ring);
   outline-offset: 2px;
 }
 
@@ -183,7 +183,7 @@
 
 .class-calendar .rbc-toolbar button {
   padding: 6px 12px;
-  border: 1px solid var(--ui-border-control);
+  border: var(--border-width-hairline) solid var(--ui-border-control);
   border-radius: var(--radius-pill);
   background: var(--ui-surface-raised);
   color: var(--ui-text-secondary);
@@ -214,7 +214,7 @@
 }
 
 .class-calendar .rbc-toolbar button:focus-visible {
-  outline: 2px solid var(--ui-focus-ring);
+  outline: var(--border-width-strong) solid var(--ui-focus-ring);
   outline-offset: 2px;
 }
 
@@ -224,8 +224,8 @@
 .class-calendar .rbc-day-slot .rbc-event {
   padding: 2px 7px;
   border: none;
-  border-left:3px solid var(--ui-action-text);
-  border-radius: 6px;
+  border-left:var(--border-width-accent) solid var(--ui-action-text);
+  border-radius: var(--radius-xs);
   background: var(--ui-action-soft);
   color:var(--ui-action-text-hover);
   font-size: var(--text-sm);
@@ -240,7 +240,7 @@
 
 .class-calendar .rbc-event:focus-visible,
 .class-calendar .rbc-event:focus {
-  outline: 2px solid var(--ui-focus-ring);
+  outline: var(--border-width-strong) solid var(--ui-focus-ring);
   outline-offset: 2px;
 }
 
@@ -294,7 +294,7 @@
 }
 
 .class-calendar .rbc-agenda-view table.rbc-agenda-table tbody > tr + tr > td {
-  border-top: 1px solid var(--ui-border-default);
+  border-top: var(--border-width-hairline) solid var(--ui-border-default);
 }
 
 .class-calendar .rbc-agenda-date-cell,
@@ -330,7 +330,7 @@
 /* --- Accesibilidad y movimiento ----------------------------------------- */
 
 .class-calendar .rbc-calendar *:focus-visible {
-  outline: 2px solid var(--ui-focus-ring);
+  outline: var(--border-width-strong) solid var(--ui-focus-ring);
   outline-offset: 2px;
 }
 

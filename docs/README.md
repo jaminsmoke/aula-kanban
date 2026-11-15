@@ -35,7 +35,7 @@ La fuente única es `app/globals.css`. Los tokens se agrupan por intención:
 - **Superficies y texto:** `--canvas`, `--white`, `--ink`, `--ink-soft`, `--ink-deep`, `--muted`, `--line`, `--line-strong`, `--line-subtle`, `--line-control`, `--line-soft`, `--line-violet`, `--surface-muted`, `--surface-hover`, `--surface-sunken`, `--surface-tint`, `--surface-faint`, `--surface-pale`.
 - **Marca y foco:** `--violet`, `--violet-dark`, `--violet-pale`, `--violet-bright`, `--focus`, `--focus-on-dark`.
 - **Estados:** `--danger`, `--danger-ink`, `--danger-soft`, `--danger-deep`, `--success`, `--success-soft`, `--warning-ink`, `--warning-soft`, `--warning-pale`, `--warning-deep`, `--info-ink`, `--info-soft`.
-- **Forma:** `--radius`, `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-pill`.
+- **Forma:** `--border-width-hairline`, `--border-width-strong`, `--border-width-accent`, `--radius-2xs`, `--radius-xs`, `--radius-sm`, `--radius-md`, `--radius`, `--radius-lg`, `--radius-xl`, `--radius-pill`.
 - **Temas:** `[data-theme="dark"]` redefine las superficies, la tinta, los bordes, la acción, el peligro, el foco y las sombras; la preferencia `system | light | dark` se guarda en `aula-kanban-theme` y el script inicial evita el destello.
 - **Tipografía:** `--font-body`, `--font-display`, `--font-mono` y la escala `--text-*`.
 
@@ -112,7 +112,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap DOC-07 + MCP-11 completado:** catálogo público en `lib/domain/mcp-catalogo.ts`, instrucciones y prompts compartidos por `/mcp` y `/api/mcp`, guía del plugin en la ayuda y README generada desde el catálogo. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-09 completado:** administración de la instancia, tokens propios y auditoría por MCP (7 herramientas, catálogo `0.19.0`), con matriz, snapshot, paridad y pruebas SQLite. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-10 completado:** archivos del proyecto por MCP con `subir_archivo` y `obtener_archivo`, límites compartidos con la web, matriz ampliada y 50 herramientas (`0.20.0`). Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05 y recortes de chunks (2 entradas).
-- **Roadmap activo:** UI-01 — sistema visual: superficies semánticas, contraste AA, tipografía, iconografía y temas claro/oscuro; fases 1-7 completadas. Quedan bordes/radios (7.1) y limpieza/guarda (8). Backlog: 6 entradas (UI-03, PER-03, PER-01B, PER-02, SYNC-01 y MCP-05). SYNC-01 permanece como norma operativa; PERF-01 y los roadmaps anteriores están en [`changelog.md`](changelog.md), y el roadmap anterior de PER-01 sigue en [`historial/roadmap-per-01.md`](historial/roadmap-per-01.md). La inspección visual en navegador de UI-01 queda pendiente.
+- **Roadmap activo:** UI-01 — sistema visual: superficies semánticas, contraste AA, tipografía, iconografía y temas claro/oscuro; fases 1-7.1 completadas. Queda limpieza/guarda (8). Backlog: 6 entradas (UI-03, PER-03, PER-01B, PER-02, SYNC-01 y MCP-05). SYNC-01 permanece como norma operativa; PERF-01 y los roadmaps anteriores están en [`changelog.md`](changelog.md), y el roadmap anterior de PER-01 sigue en [`historial/roadmap-per-01.md`](historial/roadmap-per-01.md). La inspección visual en navegador de UI-01 queda pendiente.
 
 ## Documentación relacionada
 

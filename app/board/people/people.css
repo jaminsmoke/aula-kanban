@@ -6,51 +6,51 @@
 
 .students-view h1 { margin:0; }
 .students-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; margin-top:30px; }
-.student-card { display:flex; align-items:center; gap:12px; min-width:0; padding:18px; text-align:left; border:1px solid var(--ui-border-default); border-radius:var(--radius); background:var(--ui-surface-raised); color:var(--ui-text-primary); }
+.student-card { display:flex; align-items:center; gap:12px; min-width:0; padding:18px; text-align:left; border:var(--border-width-hairline) solid var(--ui-border-default); border-radius: var(--radius); background:var(--ui-surface-raised); color:var(--ui-text-primary); }
 .student-card:hover { border-color:var(--ui-border-accent-strong); box-shadow:var(--ui-shadow-card-hover); }
 .student-card > span:nth-child(2) { flex:1; min-width:0; }
 .student-card strong,.student-card small { display:block; overflow-wrap:anywhere; }
 .student-card small { color:var(--ui-text-muted); margin-top:6px; line-height: var(--leading-snug); }
-.student-avatar { display:grid; place-items:center; flex:0 0 42px; height:42px; border-radius:var(--radius-md); background:var(--ui-action-soft); color:var(--ui-action-text-hover); font-weight: var(--weight-bold); }
+.student-avatar { display:grid; place-items:center; flex:0 0 42px; height:42px; border-radius: var(--radius-md); background:var(--ui-action-soft); color:var(--ui-action-text-hover); font-weight: var(--weight-bold); }
 .student-card > svg { color:var(--ui-action-text); }
-.student-detail { background:var(--ui-surface-raised); border:1px solid var(--ui-border-default); border-radius:16px; padding:28px; margin-top:28px; box-shadow:var(--ui-shadow-float); }
+.student-detail { background:var(--ui-surface-raised); border:var(--border-width-hairline) solid var(--ui-border-default); border-radius: var(--radius-lg); padding:28px; margin-top:28px; box-shadow:var(--ui-shadow-float); }
 .student-detail h2 { font-size: var(--text-5xl); margin:16px 0; }
 .student-detail h3 { font-size: var(--text-2xl); margin:28px 0 12px; }
 .student-detail h3 span { color:var(--ui-text-muted); }
 .student-info { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; color:var(--ui-text-muted); line-height: var(--leading-normal); }
 .back-link { padding:0; color:var(--ui-action-text); }
-.student-task { width:100%; display:flex; gap:12px; justify-content:space-between; align-items:center; text-align:left; padding:14px; margin-top:8px; border:1px solid var(--ui-border-default); border-radius:10px; background:var(--ui-surface-raised); color:var(--ui-text-primary); }
+.student-task { width:100%; display:flex; gap:12px; justify-content:space-between; align-items:center; text-align:left; padding:14px; margin-top:8px; border:var(--border-width-hairline) solid var(--ui-border-default); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-primary); }
 .student-task > span:first-child { min-width:0; overflow-wrap:anywhere; }
 .student-task:hover { border-color:var(--ui-border-accent-strong); }
 .student-task small { display:block; color:var(--ui-text-muted); margin-top:5px; }
-.student-status { flex:none; background:var(--ui-action-soft); color:var(--ui-action-text-hover); border-radius:6px; padding:5px 8px; font-size: var(--text-sm); font-weight: var(--weight-bold); }
+.student-status { flex:none; background:var(--ui-action-soft); color:var(--ui-action-text-hover); border-radius: var(--radius-xs); padding:5px 8px; font-size: var(--text-sm); font-weight: var(--weight-bold); }
 .student-status.done { background:var(--ui-success-soft); color:var(--ui-success); }
 .students-heading { margin-top:8px; }
 .students-title-row { display:flex; align-items:center; gap:12px; }
-.students-title-row .add-student { flex:none; width:40px; min-height:40px; padding:0; border-radius:10px; }
+.students-title-row .add-student { flex:none; width:40px; min-height:40px; padding:0; border-radius: var(--radius-sm); }
 .students-view-options { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:28px; color:var(--ui-text-muted); font-size: var(--text-base); font-weight: var(--weight-semibold); }
-.layout-toggle { display:flex; gap:3px; padding:4px; background:var(--ui-surface-muted); border-radius:10px; }
-.layout-toggle button { display:grid; place-items:center; width:36px; height:36px; border:0; border-radius:7px; color:var(--ui-text-muted); background:transparent; }
+.layout-toggle { display:flex; gap:3px; padding:4px; background:var(--ui-surface-muted); border-radius: var(--radius-sm); }
+.layout-toggle button { display:grid; place-items:center; width:36px; height:36px; border:0; border-radius: var(--radius-xs); color:var(--ui-text-muted); background:transparent; }
 .layout-toggle button[aria-pressed="true"] { color:var(--ui-action-text); background:var(--ui-surface-raised); box-shadow:var(--ui-shadow-control); }
 .students-view-options + .students-grid { margin-top:14px; }
 .students-list { grid-template-columns:1fr; gap:8px; }
 .students-list .student-card { padding:12px 16px; }
-.profile-delete { display:grid; place-items:center; width:42px; height:42px; border:1px solid var(--ui-border-danger); border-radius:11px; background:var(--ui-surface-raised); color:var(--ui-danger-text); }
+.profile-delete { display:grid; place-items:center; width:42px; height:42px; border:var(--border-width-hairline) solid var(--ui-border-danger); border-radius: var(--radius-md); background:var(--ui-surface-raised); color:var(--ui-danger-text); }
 .profile-delete:hover { background:var(--ui-danger-soft); border-color:var(--ui-danger-ink); }
-.student-profile-header { display:flex; align-items:center; gap:18px; margin:22px 0 26px; padding:23px; border-radius:var(--radius); background:var(--ui-action-soft); }
-.no-email-note { margin:0 0 22px; padding:10px 12px; border:1px solid var(--ui-border-warning); border-radius:10px; background:var(--ui-warning-pale); color:var(--ui-warning-deep); font-size: var(--text-base); line-height: var(--leading-snug); }
-.student-profile-avatar { display:grid; place-items:center; flex:0 0 64px; height:64px; border-radius:var(--radius-lg); background:var(--ui-action-primary); color:var(--ui-text-inverse); font-family: var(--font-display); font-size: var(--text-4xl); font-weight: var(--weight-bold); }
+.student-profile-header { display:flex; align-items:center; gap:18px; margin:22px 0 26px; padding:23px; border-radius: var(--radius); background:var(--ui-action-soft); }
+.no-email-note { margin:0 0 22px; padding:10px 12px; border:var(--border-width-hairline) solid var(--ui-border-warning); border-radius: var(--radius-sm); background:var(--ui-warning-pale); color:var(--ui-warning-deep); font-size: var(--text-base); line-height: var(--leading-snug); }
+.student-profile-avatar { display:grid; place-items:center; flex:0 0 64px; height:64px; border-radius: var(--radius-lg); background:var(--ui-action-primary); color:var(--ui-text-inverse); font-family: var(--font-display); font-size: var(--text-4xl); font-weight: var(--weight-bold); }
 .student-identity { min-width:0; flex:1; }
 .student-kicker { color:var(--ui-action-text); font-size: var(--text-xs); font-weight: var(--weight-bold); text-transform:uppercase; letter-spacing: var(--tracking-caps); }
 .student-detail .student-identity h2 { margin:4px 0; font-size: var(--text-display-xs); overflow-wrap:anywhere; }
 .student-identity p { color:var(--ui-text-muted); font-size: var(--text-md); line-height: var(--leading-snug); overflow-wrap:anywhere; }
 .profile-edit-wrap { position:relative; align-self:flex-start; }
-.profile-edit { display:grid; place-items:center; width:42px; height:42px; border:0; border-radius:11px; background:var(--ui-action-primary); color:var(--ui-text-inverse); }
+.profile-edit { display:grid; place-items:center; width:42px; height:42px; border:0; border-radius: var(--radius-md); background:var(--ui-action-primary); color:var(--ui-text-inverse); }
 .profile-edit:hover { background:var(--ui-action-primary-hover); }
-.profile-tooltip { position:absolute; z-index:2; top:calc(100% + 9px); right:0; width:max-content; padding:7px 10px; border-radius:7px; color:var(--ui-text-inverse); background:var(--ui-surface-inverse); font-size: var(--text-sm); font-weight: var(--weight-semibold); opacity:0; visibility:hidden; pointer-events:none; transition:opacity .15s ease; }
+.profile-tooltip { position:absolute; z-index:2; top:calc(100% + 9px); right:0; width:max-content; padding:7px 10px; border-radius: var(--radius-xs); color:var(--ui-text-inverse); background:var(--ui-surface-inverse); font-size: var(--text-sm); font-weight: var(--weight-semibold); opacity:0; visibility:hidden; pointer-events:none; transition:opacity .15s ease; }
 .profile-edit-wrap:hover .profile-tooltip,.profile-edit-wrap:focus-within .profile-tooltip { opacity:1; visibility:visible; }
-.student-info-card { display:flex; align-items:flex-start; gap:12px; min-width:0; padding:16px; border:1px solid var(--ui-border-soft); border-radius:var(--radius-md); background:var(--ui-surface-pale); }
-.info-icon { display:grid; place-items:center; flex:0 0 36px; height:36px; border-radius:10px; background:var(--ui-action-soft); color:var(--ui-action-text); }
+.student-info-card { display:flex; align-items:flex-start; gap:12px; min-width:0; padding:16px; border:var(--border-width-hairline) solid var(--ui-border-soft); border-radius: var(--radius-md); background:var(--ui-surface-pale); }
+.info-icon { display:grid; place-items:center; flex:0 0 36px; height:36px; border-radius: var(--radius-sm); background:var(--ui-action-soft); color:var(--ui-action-text); }
 .info-icon.activities { background:var(--ui-info-soft); color:var(--ui-info-ink); }
 .info-icon.ai { background:var(--ui-warning-soft); color:var(--ui-warning-ink); }
 .student-info-card > div { min-width:0; }
@@ -69,6 +69,6 @@
 @media (max-width: 480px) {
   .student-detail { padding:18px; }
   .student-profile-header { padding:16px; gap:12px; align-items:flex-start; }
-  .student-profile-avatar { flex-basis:48px; height:48px; border-radius:13px; font-size: var(--text-2xl); }
+  .student-profile-avatar { flex-basis:48px; height:48px; border-radius: var(--radius-md); font-size: var(--text-2xl); }
   .student-detail .student-identity h2 { font-size: var(--text-4xl); }
 }

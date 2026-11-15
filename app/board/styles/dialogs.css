@@ -2,15 +2,15 @@
    Diálogos, formularios y avisos compartidos
    ========================================================================== */
 
-dialog { width: min(510px, calc(100vw - 26px)); max-height: calc(100dvh - 30px); overflow: auto; padding: 0; color: var(--ui-text-primary); border: 1px solid var(--ui-border-default); border-radius: 16px; box-shadow: var(--ui-shadow-dialog); }
+dialog { width: min(510px, calc(100vw - 26px)); max-height: calc(100dvh - 30px); overflow: auto; padding: 0; color: var(--ui-text-primary); border: var(--border-width-hairline) solid var(--ui-border-default); border-radius: var(--radius-lg); box-shadow: var(--ui-shadow-dialog); }
 dialog::backdrop { background: var(--ui-scrim); animation: fade-in var(--duration-base) var(--ease-out); }
 dialog { transition: width var(--duration-base) var(--ease-out); animation: pop-in var(--duration-base) var(--ease-out); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 17px 21px; border-bottom: 1px solid var(--ui-border-default); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 17px 21px; border-bottom: var(--border-width-hairline) solid var(--ui-border-default); }
 .modal-header h2 { font-weight: var(--weight-extrabold); letter-spacing: var(--tracking-tight); font-size: var(--text-4xl); }
 .task-form, .share-content { display: grid; gap: 15px; padding: 20px 21px; }
 .task-form label, .share-content label { display: block; font-size: var(--text-base); font-weight: var(--weight-bold); min-width: 0; }
 .task-form label span { color: var(--ui-text-muted); font-weight: var(--weight-regular); }
-.task-form input, .task-form textarea, .task-form select, .share-content input { display: block; width: 100%; min-width: 0; min-height: 41px; margin-top: 6px; padding: 8px 10px; border: 1px solid var(--ui-border-control); border-radius: var(--radius-sm); background: var(--ui-surface-raised); color: var(--ui-text-primary); font-size: var(--text-md); font-weight: var(--weight-regular); }
+.task-form input, .task-form textarea, .task-form select, .share-content input { display: block; width: 100%; min-width: 0; min-height: 41px; margin-top: 6px; padding: 8px 10px; border: var(--border-width-hairline) solid var(--ui-border-control); border-radius: var(--radius-sm); background: var(--ui-surface-raised); color: var(--ui-text-primary); font-size: var(--text-md); font-weight: var(--weight-regular); }
 
 .task-form textarea { resize: vertical; min-height: 68px; }
 .form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -19,10 +19,10 @@ dialog { transition: width var(--duration-base) var(--ease-out); animation: pop-
 .delete-prompt { color: var(--ui-danger-deep); font-size: var(--text-md); }
 .share-content p { color: var(--ui-text-muted); line-height: var(--leading-normal); font-size: var(--text-md); }
 .share-content .primary { justify-self: end; }
-.alert { color: var(--ui-danger-deep); border: 1px solid var(--ui-border-danger); background: var(--ui-danger-soft); padding: 9px 12px; border-radius: 9px; font-size: var(--text-md); }
+.alert { color: var(--ui-danger-deep); border: var(--border-width-hairline) solid var(--ui-border-danger); background: var(--ui-danger-soft); padding: 9px 12px; border-radius: var(--radius-sm); font-size: var(--text-md); }
 .workspace > .alert { margin-bottom: 13px; }
 .text-button { background: transparent; border: 0; color: inherit; text-decoration: underline; font-weight: var(--weight-bold); }
-.toast { position: fixed; z-index: 2; right: 18px; bottom: 18px; display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 36px); padding: 7px 10px 7px 14px; border-radius: 10px; background: var(--ui-surface-inverse); color: var(--ui-text-inverse); font-size: var(--text-md); box-shadow: var(--ui-shadow-toast); animation: fade-slide-in var(--duration-base) var(--ease-out); }
+.toast { position: fixed; z-index: 2; right: 18px; bottom: 18px; display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 36px); padding: 7px 10px 7px 14px; border-radius: var(--radius-sm); background: var(--ui-surface-inverse); color: var(--ui-text-inverse); font-size: var(--text-md); box-shadow: var(--ui-shadow-toast); animation: fade-slide-in var(--duration-base) var(--ease-out); }
 .toast .icon-button { color: var(--ui-text-on-dark-muted); }
 .toast .icon-button:hover { background: var(--ui-action-on-dark-hover); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

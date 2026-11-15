@@ -36,15 +36,15 @@
   --calc-func-foreground:var(--ui-text-strong);
 }
 
-.edu-app-tabs { display:flex; flex:none; gap:4px; padding:8px 10px; overflow-x:auto; background:var(--ui-surface-recessed); border-bottom:1px solid var(--ui-border-subtle); }
+.edu-app-tabs { display:flex; flex:none; gap:4px; padding:8px 10px; overflow-x:auto; background:var(--ui-surface-recessed); border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle); }
 
-.edu-app-tab { flex:none; padding:7px 13px; border:0; border-radius:8px; background:transparent; color:var(--ui-text-secondary); font:inherit; font-size:12.5px; font-weight:650; cursor:pointer; white-space:nowrap; transition:background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.edu-app-tab { flex:none; padding:7px 13px; border:0; border-radius: var(--radius-sm); background:transparent; color:var(--ui-text-secondary); font:inherit; font-size:12.5px; font-weight:650; cursor:pointer; white-space:nowrap; transition:background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
 
 .edu-app-tab:hover { background:color-mix(in srgb, var(--ui-surface-raised) 70%, transparent); }
 
 .edu-app-tab[aria-selected="true"] { background:var(--ui-surface-raised); color:var(--ui-action-text); box-shadow:var(--ui-shadow-control); }
 
-.edu-app-tab:focus-visible { outline:2px solid var(--ui-focus-ring); outline-offset:2px; }
+.edu-app-tab:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
 
 .edu-app-body { flex:1 1 auto; min-height:0; display:flex; }
 
@@ -52,7 +52,7 @@
 
 .edu-view--fill { align-items:stretch; }
 
-.edu-card { display:flex; flex-direction:column; gap:10px; min-width:0; padding:16px 18px; border:1px solid var(--ui-border-soft); border-radius:14px; background:var(--ui-surface-raised); box-shadow:var(--ui-shadow-card-hover); }
+.edu-card { display:flex; flex-direction:column; gap:10px; min-width:0; padding:16px 18px; border:var(--border-width-hairline) solid var(--ui-border-soft); border-radius: var(--radius); background:var(--ui-surface-raised); box-shadow:var(--ui-shadow-card-hover); }
 
 .edu-card-title { margin:0; font-size:13px; font-weight:750; letter-spacing:.01em; color:var(--ui-text-secondary); }
 
@@ -76,7 +76,7 @@
 
 .edu-ruler-overlay circle { fill:var(--ui-text-inverse); stroke:var(--ui-action-text); stroke-width:2; }
 
-.edu-ruler-readout { position:absolute; transform:translate(-50%,-150%); padding:3px 8px; border-radius:7px; background:var(--ui-surface-inverse); color:var(--ui-text-inverse); font-size:11.5px; font-weight:700; white-space:nowrap; pointer-events:none; }
+.edu-ruler-readout { position:absolute; transform:translate(-50%,-150%); padding:3px 8px; border-radius: var(--radius-xs); background:var(--ui-surface-inverse); color:var(--ui-text-inverse); font-size:11.5px; font-weight:700; white-space:nowrap; pointer-events:none; }
 
 .edu-card--tts { flex:1 1 auto; min-height:0; }
 
@@ -85,13 +85,13 @@
 .edu-tts > * { flex:1 1 auto; min-height:0; }
 
 /* Conmutador interno de «Medir»: cada instrumento ocupa la tarjeta completa. */
-.edu-segmented { display:inline-flex; flex:none; align-self:flex-start; gap:4px; padding:4px; border-radius:10px; background:var(--ui-surface-recessed); }
+.edu-segmented { display:inline-flex; flex:none; align-self:flex-start; gap:4px; padding:4px; border-radius: var(--radius-sm); background:var(--ui-surface-recessed); }
 
-.edu-segmented button { padding:6px 12px; border:0; border-radius:7px; background:transparent; color:var(--ui-text-secondary); font:inherit; font-size:12px; font-weight:650; cursor:pointer; }
+.edu-segmented button { padding:6px 12px; border:0; border-radius: var(--radius-xs); background:transparent; color:var(--ui-text-secondary); font:inherit; font-size:12px; font-weight:650; cursor:pointer; }
 
 .edu-segmented button[aria-pressed="true"] { background:var(--ui-surface-raised); color:var(--ui-action-text); box-shadow:var(--ui-shadow-control); }
 
-.edu-segmented button:focus-visible { outline:2px solid var(--ui-focus-ring); outline-offset:2px; }
+.edu-segmented button:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
 
 .edu-card-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 
@@ -99,7 +99,7 @@
 
 .edu-turn-info > span { min-width:3.5ch; text-align:right; color:var(--ui-action-text); font-size:14px; font-weight:750; font-variant-numeric:tabular-nums; }
 
-.edu-turn-info button { padding:5px 10px; border:1px solid var(--ui-border-strong); border-radius:8px; background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:11.5px; font-weight:650; cursor:pointer; }
+.edu-turn-info button { padding:5px 10px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:11.5px; font-weight:650; cursor:pointer; }
 
 .edu-turn-info button:hover { background:var(--ui-surface-hover); }
 
@@ -111,28 +111,28 @@
 .edu-protractor-rig { position:relative; flex:none; }
 
 /* Guía del campo de giro: convierte el espacio reservado en parte del diseño. */
-.edu-protractor-guide { position:absolute; inset:0; border:1px dashed var(--ui-border-accent); border-radius:50%; }
+.edu-protractor-guide { position:absolute; inset:0; border:var(--border-width-hairline) dashed var(--ui-border-accent); border-radius:50%; }
 
 .edu-protractor-guide::after { content:""; position:absolute; left:50%; top:50%; width:7px; height:7px; margin:-3.5px 0 0 -3.5px; border-radius:50%; background:var(--ui-border-control); }
 
 .edu-protractor-turn { position:absolute; left:50%; bottom:50%; width:calc(100% - 40px); transform-origin:50% 100%; }
 
-.edu-protractor-knob { position:absolute; top:-13px; left:50%; width:22px; height:22px; margin-left:-11px; padding:0; border:2px solid var(--ui-text-inverse); border-radius:50%; background:var(--ui-action-primary); box-shadow:var(--ui-shadow-mark); cursor:grab; touch-action:none; }
+.edu-protractor-knob { position:absolute; top:-13px; left:50%; width:22px; height:22px; margin-left:-11px; padding:0; border:var(--border-width-strong) solid var(--ui-text-inverse); border-radius:50%; background:var(--ui-action-primary); box-shadow:var(--ui-shadow-mark); cursor:grab; touch-action:none; }
 
 .edu-protractor-knob:hover { background:var(--ui-action-primary-hover); }
 
-.edu-protractor-knob:focus-visible { outline:2px solid var(--ui-focus-ring); outline-offset:3px; }
+.edu-protractor-knob:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:3px; }
 
 .edu-protractor-knob.is-dragging { cursor:grabbing; background:var(--ui-action-primary-hover); }
 
 /* Calculadora: una sola vista con teclado ampliable. */
 .calc { width:100%; display:flex; flex-direction:column; gap:8px; }
 
-.calc-screen { display:flex; flex-direction:column; gap:4px; padding:8px 12px 10px; border:1px solid var(--ui-border-control); border-radius:14px; background:var(--ui-surface-raised); box-shadow:var(--ui-shadow-inset); }
+.calc-screen { display:flex; flex-direction:column; gap:4px; padding:8px 12px 10px; border:var(--border-width-hairline) solid var(--ui-border-control); border-radius: var(--radius); background:var(--ui-surface-raised); box-shadow:var(--ui-shadow-inset); }
 
 .calc-screen-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
 
-.calc-back { margin-left:auto; width:28px; height:26px; padding:0; border:0; border-radius:8px; background:transparent; color:var(--ui-text-muted); font-size:15px; cursor:pointer; }
+.calc-back { margin-left:auto; width:28px; height:26px; padding:0; border:0; border-radius: var(--radius-sm); background:transparent; color:var(--ui-text-muted); font-size:15px; cursor:pointer; }
 
 .calc-back:hover { background:var(--ui-surface-hover); color:var(--ui-text-primary); }
 
@@ -157,13 +157,13 @@
 
 .calc-extra { display:flex; flex-direction:column; gap:4px; }
 
-.calc-key { min-height:35px; padding:0 8px; border:1px solid var(--ui-border-strong); border-radius:10px; background:var(--ui-surface-faint); color:var(--ui-text-primary); font:inherit; font-size:16px; font-weight:650; cursor:pointer; transition:background var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out); }
+.calc-key { min-height:35px; padding:0 8px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-faint); color:var(--ui-text-primary); font:inherit; font-size:16px; font-weight:650; cursor:pointer; transition:background var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out); }
 
 .calc-key:hover { background:var(--ui-action-soft); }
 
 .calc-key:active { transform:scale(.97); }
 
-.calc-key:focus-visible { outline:2px solid var(--ui-focus-ring); outline-offset:2px; }
+.calc-key:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
 
 .calc-key--function { min-height:28px; font-size:11.5px; font-weight:700; }
 
@@ -184,7 +184,7 @@
 
 .calc-modes { display:flex; flex-wrap:wrap; gap:4px; margin-top:2px; }
 
-.calc-modes button { flex:1 1 auto; min-height:26px; padding:0 7px; border:1px solid var(--ui-border-strong); border-radius:999px; background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:10.5px; font-weight:700; cursor:pointer; }
+.calc-modes button { flex:1 1 auto; min-height:26px; padding:0 7px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-pill); background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:10.5px; font-weight:700; cursor:pointer; }
 
 .calc-modes button:hover { background:var(--ui-surface-hover); }
 
@@ -194,17 +194,17 @@
 
 .calc-pager { display:flex; justify-content:flex-end; gap:4px; }
 
-.calc-pager button { width:26px; height:20px; padding:0; border:1px solid var(--ui-border-strong); border-radius:6px; background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:10.5px; font-weight:700; cursor:pointer; }
+.calc-pager button { width:26px; height:20px; padding:0; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-xs); background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:10.5px; font-weight:700; cursor:pointer; }
 
 .calc-pager button[aria-pressed="true"] { border-color:var(--ui-action-text); background:var(--ui-action-primary); color:var(--ui-text-inverse); }
 
 .calc-equations { flex:0 1 380px; max-height:100%; overflow:auto; }
 
-.calc-memory { padding:2px 8px; border-radius:999px; background:var(--ui-action-soft); color:var(--ui-action-text); font-size:11px; font-weight:750; }
+.calc-memory { padding:2px 8px; border-radius: var(--radius-pill); background:var(--ui-action-soft); color:var(--ui-action-text); font-size:11px; font-weight:750; }
 
 .calc-tools { display:flex; flex-wrap:wrap; gap:5px; margin-top:2px; }
 
-.calc-tools button { flex:1 1 auto; min-height:26px; padding:0 8px; border:1px solid var(--ui-border-strong); border-radius:8px; background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:11px; font-weight:700; cursor:pointer; }
+.calc-tools button { flex:1 1 auto; min-height:26px; padding:0 8px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:11px; font-weight:700; cursor:pointer; }
 
 .calc-tools button:hover:not(:disabled) { background:var(--ui-surface-hover); }
 
@@ -215,11 +215,11 @@
 
 .calc-history-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
 
-.calc-history-head button { padding:4px 8px; border:1px solid var(--ui-border-strong); border-radius:7px; background:var(--ui-surface-raised); color:var(--ui-danger-ink); font:inherit; font-size:10.5px; font-weight:650; cursor:pointer; }
+.calc-history-head button { padding:4px 8px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-xs); background:var(--ui-surface-raised); color:var(--ui-danger-ink); font:inherit; font-size:10.5px; font-weight:650; cursor:pointer; }
 
 .calc-history-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
 
-.calc-history-list button { display:flex; flex-direction:column; gap:2px; width:100%; padding:7px 9px; border:1px solid var(--ui-surface-tint); border-radius:8px; background:var(--ui-surface-pale); text-align:left; cursor:pointer; }
+.calc-history-list button { display:flex; flex-direction:column; gap:2px; width:100%; padding:7px 9px; border:var(--border-width-hairline) solid var(--ui-surface-tint); border-radius: var(--radius-sm); background:var(--ui-surface-pale); text-align:left; cursor:pointer; }
 
 .calc-history-list button:hover { background:var(--ui-surface-hover); }
 
@@ -232,7 +232,7 @@
 
 .multi-eq-pad-row { display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:5px; }
 
-.multi-eq-key { min-height:30px; padding:0 6px; border:1px solid var(--ui-border-strong); border-radius:8px; background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; }
+.multi-eq-key { min-height:30px; padding:0 6px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; }
 
 .multi-eq-key:hover { background:var(--ui-surface-hover); }
 
@@ -250,21 +250,21 @@
 
 .multi-eq-index { color:var(--ui-text-muted); font-size:11px; font-weight:700; text-align:right; font-variant-numeric:tabular-nums; }
 
-.multi-eq-input { width:100%; padding:9px 12px; border:1px solid var(--ui-border-strong); border-radius:9px; background:var(--ui-surface-raised); color:var(--ui-text-primary); font:14px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.multi-eq-input { width:100%; padding:9px 12px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-primary); font:14px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
-.multi-eq-input:focus-visible { outline:2px solid var(--ui-focus-ring); outline-offset:1px; }
+.multi-eq-input:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:1px; }
 
 .multi-eq-result { color:var(--ui-action-text); font-size:13px; font-weight:750; font-variant-numeric:tabular-nums; white-space:nowrap; }
 
 .multi-eq-result.is-error { color:var(--ui-danger-ink); font-weight:600; font-size:11.5px; white-space:normal; }
 
-.multi-eq-remove { width:24px; height:24px; padding:0; border:0; border-radius:6px; background:transparent; color:var(--ui-text-muted); font-size:16px; line-height:1; cursor:pointer; }
+.multi-eq-remove { width:24px; height:24px; padding:0; border:0; border-radius: var(--radius-xs); background:transparent; color:var(--ui-text-muted); font-size:16px; line-height:1; cursor:pointer; }
 
 .multi-eq-remove:hover { background:var(--ui-surface-hover); color:var(--ui-danger-ink); }
 
 .multi-eq-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
 
-.multi-eq-actions button { padding:7px 12px; border:1px solid var(--ui-border-strong); border-radius:8px; background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:12px; font-weight:650; cursor:pointer; }
+.multi-eq-actions button { padding:7px 12px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:12px; font-weight:650; cursor:pointer; }
 
 .multi-eq-actions button:hover:not(:disabled) { background:var(--ui-surface-hover); }
 
@@ -282,21 +282,21 @@
 
 .tts-label { color:var(--ui-text-muted); font-size:12px; font-weight:650; }
 
-.tts-text textarea { flex:1 1 auto; min-height:140px; padding:12px 14px; border:1px solid var(--ui-border-strong); border-radius:10px; background:var(--ui-surface-raised); color:var(--ui-text-primary); font:inherit; font-size:14px; line-height:1.55; resize:none; }
+.tts-text textarea { flex:1 1 auto; min-height:140px; padding:12px 14px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-primary); font:inherit; font-size:14px; line-height:1.55; resize:none; }
 
-.tts-text textarea:focus-visible { outline:2px solid var(--ui-focus-ring); outline-offset:1px; }
+.tts-text textarea:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:1px; }
 
 .tts-controls { display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px; }
 
 .tts-field { display:flex; flex-direction:column; gap:6px; }
 
-.tts-field select { padding:8px 10px; border:1px solid var(--ui-border-strong); border-radius:9px; background:var(--ui-surface-raised); color:var(--ui-text-primary); font:inherit; font-size:12.5px; max-width:260px; }
+.tts-field select { padding:8px 10px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-primary); font:inherit; font-size:12.5px; max-width:260px; }
 
 .tts-rate input { width:180px; accent-color:var(--ui-action-text); }
 
 .tts-actions { display:flex; gap:8px; }
 
-.tts-actions button { padding:8px 14px; border:1px solid var(--ui-border-strong); border-radius:9px; background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:12.5px; font-weight:650; cursor:pointer; }
+.tts-actions button { padding:8px 14px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:12.5px; font-weight:650; cursor:pointer; }
 
 
 .tts-actions .tts-primary { border-color:var(--ui-action-text); background:var(--ui-action-primary); color:var(--ui-text-inverse); }

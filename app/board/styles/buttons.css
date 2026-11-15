@@ -8,8 +8,8 @@
   justify-content: center;
   gap: 8px;
   min-height: 41px;
-  border: 1px solid transparent;
-  border-radius: 9px;
+  border: var(--border-width-hairline) solid transparent;
+  border-radius: var(--radius-sm);
   padding: 0 14px;
   font-size: var(--text-md);
   font-weight: var(--weight-bold);
@@ -39,8 +39,8 @@
   padding: 0;
   color: var(--ui-text-muted);
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 8px;
+  border: var(--border-width-hairline) solid transparent;
+  border-radius: var(--radius-sm);
 }
 
 .icon-button:hover:enabled { color:var(--ui-action-text); background: var(--ui-action-soft); }
@@ -51,7 +51,7 @@
   width: fit-content;
   margin-top: 7px;
   padding: 3px 7px;
-  border-radius: 7px;
+  border-radius: var(--radius-xs);
   background: var(--ui-surface-muted);
   color: var(--ui-text-muted);
   font-size: var(--text-xs);

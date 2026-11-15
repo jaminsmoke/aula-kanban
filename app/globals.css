@@ -249,11 +249,17 @@
   --ui-info-soft: var(--info-soft);
   --ui-opacity-disabled: .55;
 
-  /* Radios */
-  --radius: 14px;
+  /* Bordes y radios */
+  --border-width-hairline: 1px;
+  --border-width-strong: 2px;
+  --border-width-accent: 3px;
+  --radius-2xs: 5px;
+  --radius-xs: 6px;
   --radius-sm: 8px;
   --radius-md: 12px;
+  --radius: 14px;
   --radius-lg: 18px;
+  --radius-xl: 22px;
   --radius-pill: 999px;
 
   /* Tipografía: familias, escala, interlineado, tracking y pesos. */
@@ -412,7 +418,7 @@ button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: var(--ui-opacity-disabled); }
 button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 2px solid var(--ui-focus-ring);
+  outline: var(--border-width-strong) solid var(--ui-focus-ring);
   outline-offset: 3px;
 }
 button, input, textarea, select { -webkit-tap-highlight-color: transparent; }
