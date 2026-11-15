@@ -4,9 +4,66 @@
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** UI-03 se completó; UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; PER-01 sigue archivado con su trabajo pendiente abajo; SYNC-01 se queda aquí como norma operativa.
+> **Nota:** MCP-05 se dividió en MCP-05A a MCP-05E y no se descarta; UI-03 se completó; UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; PER-01 sigue archivado con su trabajo pendiente abajo; SYNC-01 se queda aquí como norma operativa.
 
 ---
+
+## 2026-11-15 — MCP-05A · Contrato común y cobertura MCP de las apps
+
+- Contexto: MCP-03 y MCP-04 ya cubren Aula Store, `abrir_app` y las ventanas, pero no existe una capa común para que una app exponga su trabajo guardado. Hoy las cuatro apps pueden abrirse por MCP, pero ninguna tiene herramientas propias de lectura o escritura. Además, `apps/README.md` explica cómo registrar la interfaz, no cómo declarar herramientas MCP.
+- Qué falta:
+  - [ ] Extraer un envoltorio común que resuelva proyecto y acceso, valide el `appId` contra `NATIVE_APP_IDS`, compruebe que la app está instalada y devuelva `not_found` («La aplicación no está instalada») cuando no lo esté.
+  - [ ] Definir dónde declara cada app sus herramientas (por ejemplo, `mcp.ts` en su carpeta) y agregarlas al registro sin listas duplicadas. Una app nueva debe declarar herramientas o un `sinHerramientas` explícito con motivo.
+  - [ ] Construir una matriz de cobertura por app: abrir, controlar ventana, leer, escribir, exportar, permisos y límites. Revisar también los huecos fuera de las apps: `obtener_resumen_proyecto` solo lista apps instaladas, no su contenido; `abrir_app` y los comandos de ventana ya cubren apertura y control.
+  - [ ] Añadir una prueba que falle si una app del catálogo no tiene declaración MCP, y actualizar catálogo, snapshot, matriz de roles y documentación.
+- Criterios mínimos: todas las herramientas de app comparten el mismo contrato de errores y permisos; ninguna se salta la comprobación de instalación; la matriz deja explícito qué queda fuera; una app nueva no se puede registrar sin decidir su superficie MCP.
+- Notas técnicas: reutilizar `listInstalledApps`, `resolve`, `projectAccessForUser` y los límites de `app_documents` (200 KB) y `boards` (2 MB). No duplicar `NATIVE_APP_IDS` ni la lógica de `ownerExists`/`canWrite` de `/api/boards`. Sin migraciones.
+
+## 2026-11-15 — MCP-05B · Excalidraw por MCP
+
+- Contexto: la app Excalidraw escribe en `boards` con `ownerType` `task`, `project` o `space`; `ownerId` identifica la tarea o el proyecto. El snapshot es JSON de hasta 2 MB, la escritura usa revisión optimista y `BoardRoom` sincroniza la escena en vivo. Las cuentas invitadas solo leen y el alumnado solo puede editar pizarras de sus tareas.
+- Qué falta:
+  - [ ] Extraer `ownerExists` y `canWrite` de `app/api/boards/route.ts` a `lib/server/boards.ts` para que la API y MCP compartan permisos y validación.
+  - [ ] `leer_pizarra` (`proyectoId`, `tipo` `task | project | space`, `duenoId`) devuelve `{ snapshot, revision, updatedAt }`; la pizarra de Mi espacio usa `tipo: "space"` y `duenoId` igual al proyecto.
+  - [ ] `guardar_pizarra` (mismos argumentos, `snapshot` de hasta 2 MB y `revision`) exige permiso de escritura y devuelve `conflict` 409 con la revisión actual si otra sesión guardó antes.
+  - [ ] `anadir_a_pizarra` acepta una lista acotada de elementos `texto | rectangulo | elipse | flecha` con posición y texto; el servidor construye los elementos de Excalidraw, los fusiona con la escena existente y no obliga al agente a escribir JSON interno.
+  - [ ] Tras guardar por MCP, enviar la escena al `BoardRoom` de `${proyectoId}:${tipo}:${duenoId}` para que una pestaña abierta no se quede con la escena vieja.
+  - [ ] Aplicar `not_found` si la app está desinstalada y rechazar escrituras de invitados o de alumnado fuera de sus tareas.
+- Criterios mínimos: no se pisa una revisión ajena; no se puede escribir una pizarra de otra persona; la pizarra de Mi espacio y las de tarea/proyecto usan el mismo contrato; los límites de 2 MB se respetan; la sala en vivo recibe el cambio.
+- Notas técnicas: `app/api/boards/route.ts` ya valida tamaño, dueño, permisos y revisión; no reimplementarlo. `BoardRoom` necesitará un método o mensaje interno para publicar una escena guardada por el servidor. Sin migraciones ni subida de imágenes por MCP en esta fase.
+
+## 2026-11-15 — MCP-05C · Herramientas de aula por MCP
+
+- Contexto: `edu-tools` no guarda trabajo en el servidor. El historial de la calculadora vive en `localStorage`, la memoria y las mediciones son efímeras y la tabla periódica ya tiene un JSON completo en `periodic-elements.json`. La decisión de 2026-11-14 mantiene fuera del Worker el cálculo, las ecuaciones, la generación de código y la validación de Mermaid.
+- Qué falta:
+  - [ ] `consultar_elemento` de lectura, con `simbolo` o `numero` como alternativas, sobre el catálogo de elementos; devuelve nombre, símbolo, número, masa, categoría, fase, grupo, periodo, bloque, configuración electrónica y datos de descubrimiento.
+  - [ ] Mover `periodic-elements.json` (o un selector puro) a una ubicación compartida por cliente y servidor para no importar un componente cliente desde MCP ni duplicar los 118 elementos.
+  - [ ] Aplicar la comprobación común de app instalada y el contrato de errores; un símbolo o número desconocido responde `not_found`.
+  - [ ] Documentar explícitamente que no hay herramientas de calculadora, ecuaciones, regla, transportador o lectura en voz alta porque su estado es local y el cálculo se descartó en el servidor.
+- Criterios mínimos: la consulta funciona por símbolo y por número; no requiere proyecto ni escritura; no introduce cálculo en el Worker; no hay migración ni duplicación del catálogo.
+- Notas técnicas: la tabla actual vive en `app/board/apps/edu-tools/periodic-table/periodic-elements.json`; reutilizar sus tipos y no inventar una segunda forma de los datos. Es la entrada más pequeña de la división y puede ir después del contrato común.
+
+## 2026-11-15 — MCP-05D · Programación por bloques por MCP
+
+- Contexto: la app Blockly guarda la serialización de `Blockly.serialization.workspaces` en `app_documents` (máximo 200 KB, invitados 403). El estado es un JSON por proyecto y app, sin revisión optimista. La app genera y ejecuta código en el navegador; esa capacidad no se traslada al servidor.
+- Qué falta:
+  - [ ] `leer_programa_bloques` (`proyectoId`) devuelve `{ estado, actualizado }` o `null` si no hay programa guardado.
+  - [ ] `guardar_programa_bloques` (`proyectoId`, `estado` JSON) valida la forma mínima `blocks.blocks[]`, serializa y guarda con el mismo formato que `useBlockly`.
+  - [ ] Rechazar JSON inválido, estados de más de 200 KB y escrituras de invitados; aplicar `not_found` si la app está desinstalada y resolver el acceso al proyecto antes de leer o escribir.
+  - [ ] Actualizar el contrato de herramientas, snapshot y matriz; documentar que no se genera, ejecuta ni valida código en el servidor.
+- Criterios mínimos: un estado guardado por la web se puede leer por MCP y viceversa; la forma mínima se valida antes de guardar; no se pierden campos desconocidos de la serialización; los invitados siguen en solo lectura.
+- Notas técnicas: compartir el límite de `app_documents` en una constante y reutilizar `readAppDocument`/`saveAppDocument`; no crear tabla ni endpoint nuevos.
+
+## 2026-11-15 — MCP-05E · Diagramas por MCP
+
+- Contexto: la app Diagramas guarda `{ code }` en `app_documents` (máximo 200 KB, invitados 403) y ofrece plantillas definidas en `mermaid-templates.ts`. La vista previa y la validación de sintaxis se quedan en el navegador; el servidor no renderiza Mermaid.
+- Qué falta:
+  - [ ] `leer_diagrama` (`proyectoId`) devuelve `{ codigo, actualizado }` o `null` si no hay diagrama guardado.
+  - [ ] `guardar_diagrama` (`proyectoId`, `codigo` de hasta 200 KB) guarda `{ code }`, rechaza invitados y aplica `not_found` si la app está desinstalada.
+  - [ ] `listar_plantillas_diagrama` devuelve las plantillas actuales (flujo, secuencia, Gantt, clases, estados y línea de tiempo) desde una ubicación compartida, no desde un módulo cliente.
+  - [ ] Documentar que no se valida sintaxis, no se renderiza SVG y no se exporta desde MCP en esta fase.
+- Criterios mínimos: el código guardado por la web se lee por MCP y viceversa; las plantillas coinciden con las de la app; el límite de 200 KB se respeta; no hay migración ni render en el Worker.
+- Notas técnicas: mover `MERMAID_TEMPLATES` a `lib/` o a una carpeta compartida de la app y hacer que la UI y MCP importen la misma lista. Reutilizar el contrato común de MCP-05A y el mismo helper de `app_documents` que Blockly.
 
 ## 2026-11-15 — PER-03 · Purga segura de archivos sin uso
 
@@ -37,16 +94,3 @@
   - [ ] No cambiar la versión ni ejecutar `release:prepare` solo para sincronizar GitHub; la versión la fija la publicación.
   - [ ] Comprobar que no se cuelan secretos, `.env*`, `.dev.vars*` ni datos de producción.
 - Notas técnicas: publicación y sincronización son operaciones distintas; el commit no sustituye al flujo de Sites.
-
-## 2026-11-14 — MCP-05 · Acciones de cada app: Diagramas, Bloques, Pizarras y Herramientas de aula
-
-- Contexto: «usar las aplicaciones» desde el plugin significa leer y escribir su trabajo guardado. Diagramas y Bloques guardan un documento JSON por proyecto en `app_documents` (`/api/app-documents`, máximo 200 KB, guest 403). Excalidraw guarda en `boards` (`ownerType` `task` | `project` | `space`, máximo 2 MB, revisión optimista, alumnado solo en sus tareas). Herramientas de aula no guarda nada en el servidor (historial de la calculadora en `localStorage`). Depende de MCP-03; los enlaces de MCP-04.
-- Qué falta antes de retomarlo:
-  - [ ] **Diagramas (`mermaid`):** `leer_diagrama` (`proyectoId`) devuelve `{ codigo, actualizado }`. `guardar_diagrama` (`proyectoId`, `codigo` hasta 200 KB) guarda `{ code }`, el mismo formato que `mermaid-app.tsx`. `listar_plantillas_diagrama` devuelve `MERMAID_TEMPLATES` (flujo, secuencia, Gantt…), movido a `lib/`.
-  - [ ] **Bloques (`blockly`):** `leer_programa_bloques` devuelve la serialización de `Blockly.serialization.workspaces`. `guardar_programa_bloques` (`proyectoId`, `estado` JSON) valida la forma mínima (`blocks.blocks[]`) antes de guardar.
-  - [ ] **Pizarras (Excalidraw):** `leer_pizarra` (`proyectoId`, `tipo` `task` | `project` | `space`, `duenoId`) devuelve escena y `revision`. `guardar_pizarra` (… `escena`, `revision`) aplica `canWrite` y devuelve `conflict` 409. `anadir_a_pizarra` (escritura: lista acotada de elementos `texto` | `rectangulo` | `elipse` | `flecha` con posición y texto) la construye el servidor para que el agente no tenga que generar JSON de Excalidraw a mano.
-  - [ ] **Avisar a la sala en vivo:** al guardar una pizarra por MCP, enviar la escena nueva al `BoardRoom` de `${proyectoId}:${tipo}:${duenoId}`. Si no, una pestaña abierta seguiría con la escena vieja y su siguiente guardado chocaría con 409.
-  - [ ] **Herramientas de aula (`edu-tools`):** `consultar_elemento` (lectura: `simbolo` o `numero`) sobre `periodic-elements.json`, que es un dato que ya existe.
-  - [ ] Que todas las herramientas de una app respondan `not_found` («La aplicación no está instalada») si la app está desinstalada en la instancia.
-- Decisión (2026-11-14): descartado el cálculo en el servidor (calculadora, ecuaciones, generar código de Bloques, validar sintaxis Mermaid). Motivo: `@cortex-js/compute-engine` pesa 6,3 MB y, con Blockly y Mermaid, engordaría el Worker. Se quedan en el navegador.
-- Notas técnicas: una app nueva del catálogo debe declarar sus herramientas MCP en su carpeta, igual que se registra en `app/board/apps/registry.tsx`.
