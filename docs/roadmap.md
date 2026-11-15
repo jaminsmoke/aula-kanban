@@ -41,10 +41,10 @@
 
 ### Fase 1 — Filtros y concurrencia
 
-- [ ] Añadir `paths-ignore` para `docs/**`, Markdown de documentación, `AGENTS.md` y `.freebuff/**`, sin ignorar el propio workflow ni código.
-- [ ] Añadir `concurrency` por workflow/ref con `cancel-in-progress` y `timeout-minutes` al job `checks`.
-- [ ] Medir un push solo documental y un cambio de código; comparar con la línea base de 105-157 s.
-- [ ] Confirmar que un cambio mixto ejecuta la suite y que no hay checks requeridos bloqueados.
+- [x] Añadir `paths-ignore` para `docs/**`, Markdown de documentación, `AGENTS.md` y `.freebuff/**`, sin ignorar el propio workflow ni código.
+- [x] Añadir `concurrency` por workflow/ref con `cancel-in-progress` y `timeout-minutes` al job `checks`.
+- [x] Medir un push solo documental y un cambio de código; comparar con la línea base de 105-157 s.
+- [x] Confirmar que un cambio mixto ejecuta la suite y que no hay checks requeridos bloqueados.
 - **Criterios de aceptación:** un cambio solo documental no lanza el job de código; un cambio de código sigue validando lint, tipos, tests y build; una ejecución nueva cancela la anterior; el workflow sigue siendo válido y sin secretos.
 
 ### Fase 2 — Estructura de ejecución
@@ -66,6 +66,7 @@
 ## 6. Notas de sesión
 
 - CI-02 sale del backlog el 2026-11-15. Es la siguiente entrada porque reduce el coste de todos los cambios posteriores.
-- Línea base: ejecuciones de 105-157 s; los commits solo documentales también lanzan la suite completa.
+- Línea base: ejecuciones de 105-157 s; los commits solo documentales también lanzaban la suite completa.
+- Fase 1 aplicada en el commit `f058e96`: run `43694872488` en verde, 130 s; el commit documental posterior no debe lanzar workflow.
 - No hay duplicado `push` + `pull_request` en ramas de trabajo: `push` solo escucha `main` y las ramas pasan por PR.
 - La verificación de la próxima publicación en Sites sigue siendo responsabilidad de Codex; este roadmap no despliega.
