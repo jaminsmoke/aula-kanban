@@ -1,10 +1,37 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** MCP-05D activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-15 — Roadmap MCP-05D · Programación por bloques por MCP cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fase 1 — Servicio y validación compartidos:** `MAX_APP_DOCUMENT_CHARS` pasa a `lib/server/app-documents.ts` y `/api/app-documents` lo usa; `lib/domain/blockly/serialization.ts` valida `blocks.blocks[]` y conserva los campos internos.
+- **Fase 2 — Herramientas MCP:** `leer_programa_bloques` devuelve `{ estado, actualizado }` o `null` sin crear documento; `guardar_programa_bloques` valida la forma mínima, aplica el límite de 200.000 caracteres y guarda el objeto completo. La app desinstalada responde `not_found` y los invitados `forbidden`.
+- **Fase 3 — Cobertura y cierre:** `docs/mcp-apps.md` deja Blockly sin huecos MCP; catálogo, matriz, snapshot, ayuda, README y `content-coverage` incluyen las dos herramientas. Catálogo `0.25.0` con 56 herramientas (24 de lectura, 32 de escritura y 8 destructivas).
+- Sin migraciones ni cambio de versión; `package.json` sigue en `1.1.27`.
+- Roadmap cerrado y `docs/roadmap.md` reiniciado desde la plantilla. El backlog conserva 5 entradas.
+
+### Verificación
+
+- `npm run lint` limpio.
+- `npx tsc --noEmit` limpio.
+- `npm test`: **108 archivos / 899 tests**.
+- `npm run build` correcto, con el aviso existente de chunks superiores a 500 kB.
+- `git diff --check` limpio.
+- Commits de fase: `53f178a` (servicio y validación) y `1437bb6` (herramientas); el cierre queda en el commit de documentación.
+- Sin inspección visual en navegador; la verificación es de código y documentación.
+- Sin push a GitHub ni publicación en Sites; la versión visible no cambia.
+
+### Seguimiento en backlog
+
+MCP-05E, PER-03, PER-01B, PER-02 y SYNC-01 siguen en [`backlog.md`](backlog.md); no se añaden entradas nuevas.
 
 ## 2026-11-15 — Roadmap MCP-05B · Excalidraw por MCP cerrado
 

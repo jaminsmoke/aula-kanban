@@ -4,9 +4,9 @@ Estado de la superficie MCP de las cuatro apps de Aula Store. La fuente de las
 herramientas es `lib/server/mcp/apps/registro.ts`; la instalación y los permisos
 se resuelven con `lib/server/mcp/apps/contrato.ts`.
 
-**Última revisión:** 2026-11-15 · **Catálogo:** `0.24.0` · **54 herramientas**
+**Última revisión:** 2026-11-15 · **Catálogo:** `0.25.0` · **56 herramientas**
 
-**Estado:** MCP-05B cerrado; MCP-05D está en el roadmap activo y MCP-05E sigue en el backlog.
+**Estado:** MCP-05B y MCP-05D cerrados; MCP-05E sigue en el backlog.
 
 ## Herramientas comunes
 
@@ -21,6 +21,9 @@ entrada:
   pestañas conectadas de la propia cuenta.
 - **Excalidraw (MCP-05B):** `leer_pizarra`, `guardar_pizarra` y `anadir_a_pizarra`. Leer requiere acceso al proyecto; escribir exige revisión y sigue las reglas de la pizarra.
 - **Herramientas de aula (MCP-05C):** `consultar_elemento`.
+- **Programación por bloques (MCP-05D):** `leer_programa_bloques` y
+  `guardar_programa_bloques`. Leer requiere acceso al proyecto; escribir exige
+  permiso y los invitados no escriben.
 
 `abrir_app` y `listar_ventanas` son de lectura; cerrar, minimizar, restaurar y
 ampliar son de escritura, pero no destructivas. Los invitados pueden abrir y
@@ -33,7 +36,7 @@ reglas de cada app.
 |---|---|---|---|---|---|---|---|
 | **Excalidraw** (`excalidraw`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_pizarra` | Sí, `guardar_pizarra` y `anadir_a_pizarra` | No; la ventana exporta imagen | Leer: cualquier miembro. Escribir: no invitados; el alumnado solo en pizarras de sus tareas. La ventana de Mi espacio es de solo lectura para alumnado e invitados. | Snapshot de hasta 2 MB con revisión optimista; `409` con `revisionActual` si cambió. La publicación en vivo admite hasta 1 MB; las escenas mayores se recogen por sondeo. |
 | **Herramientas de aula** (`edu-tools`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `consultar_elemento` | No | No | Cualquier cuenta autenticada, incluidas invitadas y cuentas sin proyecto, si la app está instalada. La consulta no usa proyecto. | Una ficha por llamada entre 118 elementos. No hay estado de trabajo en el servidor; calculadora, memoria, medición y voz viven en el navegador. |
-| **Programación por bloques** (`blockly`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No; la ventana descarga JSON | Lectura: cualquier miembro. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Estado JSON de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. |
+| **Programación por bloques** (`blockly`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_programa_bloques` | Sí, `guardar_programa_bloques` | No; la ventana descarga JSON | Lectura: cualquier miembro. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Estado JSON de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. |
 | **Diagramas** (`mermaid`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No; la ventana exporta SVG | Lectura: cualquier miembro. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Código de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. La validación y el render de Mermaid se quedan en el navegador. |
 
 ## Qué falta en cada app
@@ -51,15 +54,18 @@ reglas de cada app.
 - Cobertura funcional cerrada: no quedan huecos MCP para esta app. El resumen
   del roadmap está en el changelog.
 
-### Programación por bloques — MCP-05D (en roadmap)
+### Programación por bloques — MCP-05D (completado)
 
-- Leer y guardar el estado de `app_documents` con la misma serialización que la
-  app.
-- Validar la forma mínima, el límite de 200.000 caracteres y el `403` de
-  invitados.
+- Leer y guardar el estado de `app_documents` con `leer_programa_bloques` y
+  `guardar_programa_bloques`, con la misma serialización que la app.
+- Validar la forma mínima `blocks.blocks[]`, el límite de 200.000 caracteres y
+  el `403` de invitados; conservar los campos internos y no crear documento al
+  leer.
 - No se genera, ejecuta ni valida código en el servidor. La descarga JSON de la
   ventana ya queda cubierta por la lectura del estado; no necesita otra
   herramienta.
+- Cobertura funcional cerrada: no quedan huecos MCP para esta app. El resumen
+  del roadmap está en el changelog.
 
 ### Diagramas — MCP-05E
 
@@ -80,7 +86,7 @@ reglas de cada app.
 
 - **Instalación y catálogo:** cubiertos por MCP-03.
 - **Abrir y controlar ventanas:** cubiertos por MCP-04 para las cuatro apps.
-- **Lectura y escritura de contenido:** MCP-05B (completado), MCP-05D (en roadmap) y MCP-05E.
+- **Lectura y escritura de contenido:** MCP-05B (completado), MCP-05D (completado) y MCP-05E.
 - **Exportación:** no hay una herramienta dedicada. Excalidraw necesita render
   de imagen; Mermaid necesita render de SVG; Blockly descarga el mismo JSON que
   devolverá `leer_programa_bloques`. Por eso no se crea una entrada nueva: las
@@ -91,8 +97,8 @@ reglas de cada app.
 
 ## Referencias
 
-- [`roadmap.md`](roadmap.md): MCP-05D activo.
-- [`changelog.md`](changelog.md): resumen del roadmap MCP-05A + MCP-05C.
+- [`roadmap.md`](roadmap.md): sin roadmap activo; plantilla lista para el siguiente.
+- [`changelog.md`](changelog.md): resumen de los roadmaps MCP-05B y MCP-05D.
 - [`backlog.md`](backlog.md): MCP-05E.
 - [`aplicaciones-nativas.md`](aplicaciones-nativas.md): catálogo, licencias y
   versiones de las apps.
