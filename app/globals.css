@@ -42,47 +42,122 @@
 }
 
 :root {
-  /* Superficies y texto */
-  --canvas: #f7f8fc;
-  --white: #fff;
-  --ink: #211b36;
-  --ink-soft: #4a4458;
-  --ink-deep: #302255;
-  --muted: #625c74;
-  --line: #e7e4ef;
-  --line-strong: #e0daef;
-  --line-subtle: #00000014;
-  --surface-muted: #eeecf5;
-  --surface-hover: #f5f2fb;
-  --surface-sunken: #eceaf2;
-  --surface-tint: #ece8f6;
-  --surface-faint: #f7f5fd;
-  --surface-pale: #fbfaff;
-  --line-control: #ded9ea;
-  --line-soft: #e4e0ed;
-  --line-violet: #ddd6ee;
+  /* Primitivas: valores crudos. No usar directamente en CSS de feature. */
+  --primitive-white: #fff;
+  --primitive-canvas: #f7f8fc;
+  --primitive-ink: #211b36;
+  --primitive-ink-soft: #4a4458;
+  --primitive-ink-deep: #302255;
+  --primitive-muted: #625c74;
+  --primitive-line: #e7e4ef;
+  --primitive-line-strong: #e0daef;
+  --primitive-line-subtle: #00000014;
+  --primitive-surface-muted: #eeecf5;
+  --primitive-surface-hover: #f5f2fb;
+  --primitive-surface-sunken: #eceaf2;
+  --primitive-surface-tint: #ece8f6;
+  --primitive-surface-faint: #f7f5fd;
+  --primitive-surface-pale: #fbfaff;
+  --primitive-line-control: #ded9ea;
+  --primitive-line-soft: #e4e0ed;
+  --primitive-line-violet: #ddd6ee;
+  --primitive-violet: #5839be;
+  --primitive-violet-dark: #42299c;
+  --primitive-violet-pale: #eeebfb;
+  --primitive-violet-bright: #7859d8;
+  --primitive-focus: #7656dd;
+  --primitive-focus-on-dark: #cdb4ff;
+  --primitive-danger: #a52545;
+  --primitive-danger-ink: #8f1d2c;
+  --primitive-danger-soft: #fff1f6;
+  --primitive-danger-deep: #842746;
+  --primitive-success: #176a50;
+  --primitive-success-soft: #daf1e8;
+  --primitive-warning-ink: #936013;
+  --primitive-warning-soft: #fff1d9;
+  --primitive-warning-pale: #fff8e6;
+  --primitive-warning-deep: #7a5b00;
+  --primitive-info-ink: #315a9f;
+  --primitive-info-soft: #e6eefc;
 
-  /* Marca y foco */
-  --violet: #5839be;
-  --violet-dark: #42299c;
-  --violet-pale: #eeebfb;
-  --violet-bright: #7859d8;
-  --focus: #7656dd;
-  --focus-on-dark: #cdb4ff;
+  /* Compatibilidad: nombres existentes. No cambiar sus valores; migrar los
+     consumidores a la capa `--ui-*` antes de retirarlos. */
+  --canvas: var(--primitive-canvas);
+  --white: var(--primitive-white);
+  --ink: var(--primitive-ink);
+  --ink-soft: var(--primitive-ink-soft);
+  --ink-deep: var(--primitive-ink-deep);
+  --muted: var(--primitive-muted);
+  --line: var(--primitive-line);
+  --line-strong: var(--primitive-line-strong);
+  --line-subtle: var(--primitive-line-subtle);
+  --surface-muted: var(--primitive-surface-muted);
+  --surface-hover: var(--primitive-surface-hover);
+  --surface-sunken: var(--primitive-surface-sunken);
+  --surface-tint: var(--primitive-surface-tint);
+  --surface-faint: var(--primitive-surface-faint);
+  --surface-pale: var(--primitive-surface-pale);
+  --line-control: var(--primitive-line-control);
+  --line-soft: var(--primitive-line-soft);
+  --line-violet: var(--primitive-line-violet);
+  --violet: var(--primitive-violet);
+  --violet-dark: var(--primitive-violet-dark);
+  --violet-pale: var(--primitive-violet-pale);
+  --violet-bright: var(--primitive-violet-bright);
+  --focus: var(--primitive-focus);
+  --focus-on-dark: var(--primitive-focus-on-dark);
+  --danger: var(--primitive-danger);
+  --danger-ink: var(--primitive-danger-ink);
+  --danger-soft: var(--primitive-danger-soft);
+  --danger-deep: var(--primitive-danger-deep);
+  --success: var(--primitive-success);
+  --success-soft: var(--primitive-success-soft);
+  --warning-ink: var(--primitive-warning-ink);
+  --warning-soft: var(--primitive-warning-soft);
+  --warning-pale: var(--primitive-warning-pale);
+  --warning-deep: var(--primitive-warning-deep);
+  --info-ink: var(--primitive-info-ink);
+  --info-soft: var(--primitive-info-soft);
 
-  /* Estados */
-  --danger: #a52545;
-  --danger-ink: #8f1d2c;
-  --danger-soft: #fff1f6;
-  --danger-deep: #842746;
-  --success: #176a50;
-  --success-soft: #daf1e8;
-  --warning-ink: #936013;
-  --warning-soft: #fff1d9;
-  --warning-pale: #fff8e6;
-  --warning-deep: #7a5b00;
-  --info-ink: #315a9f;
-  --info-soft: #e6eefc;
+  /* Tokens semánticos de UI: capa estable para CSS nuevo. Los features deben
+     consumir estos nombres, no las primitivas ni los tokens de compatibilidad. */
+  --ui-surface-page: var(--canvas);
+  --ui-surface-raised: var(--white);
+  --ui-surface-recessed: var(--surface-sunken);
+  --ui-surface-muted: var(--surface-muted);
+  --ui-surface-hover: var(--surface-hover);
+  --ui-surface-tint: var(--surface-tint);
+  --ui-surface-faint: var(--surface-faint);
+  --ui-surface-pale: var(--surface-pale);
+  --ui-text-primary: var(--ink);
+  --ui-text-secondary: var(--ink-soft);
+  --ui-text-muted: var(--muted);
+  --ui-text-strong: var(--ink-deep);
+  --ui-text-inverse: var(--white);
+  --ui-border-subtle: var(--line-subtle);
+  --ui-border-default: var(--line);
+  --ui-border-strong: var(--line-strong);
+  --ui-border-control: var(--line-control);
+  --ui-border-soft: var(--line-soft);
+  --ui-border-accent: var(--line-violet);
+  --ui-action-primary: var(--violet);
+  --ui-action-primary-hover: var(--violet-dark);
+  --ui-action-soft: var(--violet-pale);
+  --ui-action-bright: var(--violet-bright);
+  --ui-focus-ring: var(--focus);
+  --ui-focus-on-dark: var(--focus-on-dark);
+  --ui-danger: var(--danger);
+  --ui-danger-ink: var(--danger-ink);
+  --ui-danger-soft: var(--danger-soft);
+  --ui-danger-deep: var(--danger-deep);
+  --ui-success: var(--success);
+  --ui-success-soft: var(--success-soft);
+  --ui-warning-ink: var(--warning-ink);
+  --ui-warning-soft: var(--warning-soft);
+  --ui-warning-pale: var(--warning-pale);
+  --ui-warning-deep: var(--warning-deep);
+  --ui-info-ink: var(--info-ink);
+  --ui-info-soft: var(--info-soft);
 
   /* Radios y tipografía */
   --radius: 14px;

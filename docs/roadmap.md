@@ -15,7 +15,7 @@
 
 **Dentro:**
 
-- Auditar los 23 archivos CSS, 2.212 líneas y 237 colores hexadecimales distintos en 302 usos.
+- Auditar los 23 archivos CSS, 2.230 líneas y 237 colores hexadecimales distintos en 302 usos.
 - Definir una escala semántica de superficies (`canvas`, `raised`, `sunken`, `tint`), tinta principal/secundaria, bordes y estados.
 - Suavizar el canvas y los blancos puros, manteniendo el contraste AA en texto normal, metadatos y textos pequeños.
 - Añadir un gradiente global sutil al marco y al héroe; reservar los gradientes intensos para el progreso, Mi espacio y Aula Store.
@@ -45,10 +45,11 @@
 
 ### Fase 1: Auditoría y escala de tokens
 
-- [ ] Inventariar los hexadecimales y agruparlos por superficie, tinta, borde, estado y gradiente.
-- [ ] Definir en `app/globals.css` las primitivas y los tokens semánticos, con aliases para no romper los usos actuales.
-- [ ] Documentar el mapa de tokens y los usos que quedan pendientes.
+- [x] Inventariar los hexadecimales y agruparlos por superficie, tinta, borde, estado y gradiente.
+- [x] Definir en `app/globals.css` las primitivas y los tokens semánticos, con aliases para no romper los usos actuales.
+- [x] Documentar el mapa de tokens y los usos que quedan pendientes.
 - **Criterios de aceptación:** existe una escala única y documentada; la aplicación no cambia visualmente en esta fase; lint, typecheck y build pasan.
+- **Completada el 2026-11-15:** 36 primitivas, 36 aliases de compatibilidad y 37 tokens `--ui-*`; el inventario y el mapa quedan en [`estilos.md`](estilos.md).
 
 ### Fase 2: Piloto en Tareas y Calendario
 
@@ -87,3 +88,4 @@
 - UI-01 no es un rediseño funcional: la prioridad es reducir la deriva de tokens y mejorar la jerarquía sin cambiar lo que hace cada pantalla.
 - Mantener `app/globals.css` como fuente de verdad y los CSS de feature como consumidores; no duplicar paletas por pantalla.
 - Commits locales por fase; sin push hasta cerrar el roadmap, según SYNC-01.
+- Fase 1 completada el 2026-11-15: los 36 tokens existentes conservan su valor; no se migró ningún consumidor y no hubo cambios visuales. La deuda queda en 266 usos de hex fuera de `globals.css`.
