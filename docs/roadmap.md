@@ -54,7 +54,7 @@
 ### Fase 3: Verificación y cierre
 
 - [ ] Actualizar y ejecutar las pruebas de `kanban-view`; comprobar titular, progreso, alta e invitado.
-- [ ] Medir la altura renderizada en 1366×768 y en 390 px de ancho, y comprobar que la primera tarjeta se ve sin desplazar.
+- [x] Medir la altura renderizada en 1366×768, 1024×768, 820×900 y 390 px de ancho, y comprobar que la primera tarjeta se ve sin desplazar.
 - [ ] Ejecutar tipos, lint y build; anotar el resultado en el changelog.
 - [ ] Cerrar el roadmap desde la plantilla y actualizar `docs/README.md`.
 - **Criterios de aceptación:** criterio de éxito cumplido con medición real, checks en verde y documentación de cierre.
@@ -72,4 +72,5 @@
 
 - 2026-11-15: UI-06 sale del backlog y se abre este roadmap. Fase 1 cerrada con la línea base de CSS (230 px de caja mínima, 294 px con márgenes, 76 px de cabecera) y la composición de una franja. Sin cambios de código ni de versión; `1.1.30` se mantiene.
 - 2026-11-15: fase 2 implementada. El hero es una franja de tres áreas (`title`, `progress`, `action`) con `h1`, «N de M tareas hechas», porcentaje y barra fina; se retiraron `eyebrow`, intro, panel oscuro y el `h2` «Kanban». Apilado en 820 px y en 620 px. La altura renderizada se mide en la fase 3.
+- 2026-11-15: revisión visual con la build servida en `8791` (la dev de `5173` no acepta las cabeceras de identidad locales) en 1366×768, 1024×768, 820×900 y 390×844, en tema claro y oscuro. Hero: 71 px en 1366 y 1024, 123 px a 820 y 157 px a 390; la primera tarjeta queda a 311 px en 1366; sin desbordes horizontales. Ajuste tras la revisión: a ≤820 el resumen de progreso y los filtros se anclan a la izquierda, porque el filtro de alumnado quedaba huérfano y el porcentaje se separaba 500 px del recuento. La cabecera a 1024 y 390 muestra recortes del nombre de proyecto y de la marca; es anterior a UI-06 y corresponde a UI-04.
 - El servidor local de `127.0.0.1:5173` responde, pero no hay sesión iniciada para medir el tablero autenticado; por eso la medición renderizada se traslada a la fase 3.
