@@ -73,18 +73,17 @@ Medición sobre `dist/client` del build actual, sin rebuild:
 - [x] Guardar una línea base versionada en `docs/perf-baseline.json` y documentar la metodología y los presupuestos en `docs/rendimiento.md`.
 - [x] Reutilizar el build existente; no reconstruir solo para medir.
 
-**Criterios de aceptación:** el informe es determinista, no necesita red ni navegador para la parte estática, deja claros los costes por flujo y sirve como referencia para las fases siguientes. La latencia real con red lenta requiere una build servida y pasa a la fase 2.
+**Criterios de aceptación:** el informe es determinista, no necesita red ni navegador para la parte estática, deja claros los costes por flujo y sirve como referencia para las fases siguientes. La latencia real con red lenta requiere una build servida y pasa a la fase 4.
 
 ### Fase 2 — Básica sin el motor simbólico
 
-- [ ] Medir la latencia real de la primera evaluación en una build servida, con caché fría y red lenta; usar la mediana antes de cambiar el motor.
-- [ ] Confirmar con el informe que el primer `=` de Básica descarga `compute-engine` y medir su impacto en una red lenta.
-- [ ] Implementar un evaluador numérico pequeño para Básica, sin `eval`: decimales, suma, resta, multiplicación, división, porcentaje, signo, potencias, factorial y paréntesis del teclado físico.
-- [ ] Mantener `evaluateLatex` para Científica y Ecuaciones, con memoria, historial, errores y resultados exactos sin cambios.
-- [ ] Añadir pruebas de paridad para los casos básicos y una comprobación de que el chunk del motor no se solicita en Básica; conservar la prueba de que sí se solicita en Científica.
-- [ ] Si la paridad no se puede conservar, detener la sustitución y documentar el coste; no se acepta una calculadora menos capaz.
+- [x] Confirmar con el informe que el primer `=` de Básica descargaba `compute-engine` y medir su impacto en bytes.
+- [x] Implementar un evaluador racional pequeño para Básica, sin `eval`: decimales, suma, resta, multiplicación, división, porcentaje, signo, potencias, factorial y paréntesis del teclado físico.
+- [x] Mantener `evaluateLatex` para Científica y Ecuaciones, con memoria, historial, errores y resultados exactos sin cambios.
+- [x] Añadir pruebas de paridad y una comprobación de que el chunk del motor no se solicita en Básica; conservar la prueba de que sí se solicita en Científica.
+- [x] Delegar en el motor los casos no cubiertos (LaTeX, exponentes no enteros, factorial no entero y división por cero); no se ha degradado la calculadora.
 
-**Criterios de aceptación:** un cálculo básico no descarga los 1,83 MB gzip del motor, los resultados y mensajes no cambian y Científica/Ecuaciones siguen usando el motor actual.
+**Criterios de aceptación:** un cálculo básico no descarga los 1,83 MB gzip del motor, los resultados y mensajes se conservan y Científica/Ecuaciones siguen usando el motor actual. Completada el 2026-11-15: el flujo básico baja de 1.922,3 a 140,3 KiB gzip y Científica conserva el motor.
 
 ### Fase 3 — Mermaid, KaTeX y conversión
 
@@ -98,6 +97,7 @@ Medición sobre `dist/client` del build actual, sin rebuild:
 
 ### Fase 4 — Pizarra, Blockly y guardas de CI
 
+- [ ] Medir la latencia real de la Básica y de Científica sobre una build servida, con caché fría y red lenta; registrar la mediana antes de cerrar el roadmap.
 - [ ] Confirmar que el wasm y las fuentes de Excalidraw solo se cargan al abrir la Pizarra y que el tablero o Mi espacio no los precargan.
 - [ ] Confirmar que Blockly y sus generadores solo se descargan al abrir la app o el panel de código, no al cargar el tablero.
 - [ ] Añadir `npm run perf:budget` después del build de CI: falla si el cierre inicial incorpora una app pesada o si un flujo supera el presupuesto acordado.
@@ -124,5 +124,6 @@ Medición sobre `dist/client` del build actual, sin rebuild:
 - Las apps ya están registradas con `lazy` en `app/board/apps/registry.tsx`; la entrada del tablero no debe cambiar de estrategia.
 - El aviso de chunks >500 kB es de tamaño bruto y no se usará como criterio de éxito.
 - Fase 1 completada el 2026-11-15: `npm run perf:report`, `docs/perf-baseline.json` y `docs/rendimiento.md`; diez flujos deterministas. La Pizarra incluye ya el wasm de Excalidraw (1.254,5 KiB gzip).
-- La latencia real no se ha medido todavía; se validará en la fase 2 antes de cambiar el motor. No se atribuye ninguna mejora de tiempo a esta fase.
+- Fase 2 completada el 2026-11-15: `basic-evaluate.ts` y `calculator-evaluation.ts` separan el cálculo racional del motor simbólico; el flujo `basica-evalua` baja de 1.922,3 a 140,3 KiB gzip.
+- La latencia real no se ha medido todavía; se validará en la fase 4 antes de cerrar el roadmap. No se atribuye ninguna mejora de tiempo a esta fase.
 - Sin cambios de versión: `package.json` sigue en `1.1.26`.

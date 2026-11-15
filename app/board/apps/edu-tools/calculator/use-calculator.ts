@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { evaluateBasic } from "./basic-evaluate";
 import { evaluateLatex, preloadEngine } from "./edu-evaluate";
 import { HISTORY_KEY, type HistoryEntry, type Key } from "./calculator-keys";
 
@@ -47,6 +48,14 @@ export function useCalculator() {
     });
   }, []);
 
+  const evaluate = useCallback(async (input: string) => {
+    if (keypad === "basica") {
+      const basic = evaluateBasic(input);
+      if (basic) return basic;
+    }
+    return evaluateLatex(input);
+  }, [keypad]);
+
   const remember = useCallback((entry: HistoryEntry) => {
     setHistory((current) => {
       const next = [entry, ...current.filter((item) => item.raw !== entry.raw)].slice(0, 20);
@@ -79,7 +88,7 @@ export function useCalculator() {
     const input = expression.trim();
     if (!input) return;
     setBusy(true);
-    const evaluation = await evaluateLatex(input);
+    const evaluation = await evaluate(input);
     setBusy(false);
     if (evaluation.kind === "value") {
       const display = evaluation.numeric ?? evaluation.exact;
@@ -95,7 +104,7 @@ export function useCalculator() {
       setResult(null);
       setExact(null);
     }
-  }, [expression, remember]);
+  }, [expression, evaluate, remember]);
 
   const clear = useCallback(() => {
     setExpression("");
@@ -123,7 +132,7 @@ export function useCalculator() {
   const memorize = async (direction: 1 | -1) => {
     let value = resultValue;
     if (value === null && expression.trim()) {
-      const evaluation = await evaluateLatex(expression);
+      const evaluation = await evaluate(expression);
       if (evaluation.kind === "value" && evaluation.numeric) {
         value = Number(evaluation.numeric.replace(/\./g, "").replace(",", "."));
       }

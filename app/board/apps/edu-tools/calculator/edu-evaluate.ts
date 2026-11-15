@@ -1,9 +1,7 @@
 import type { ComputeEngine } from "@cortex-js/compute-engine";
+import { formatNumber, type Evaluation } from "./calculator-evaluation";
 
-export type Evaluation =
-  | { kind: "empty" }
-  | { kind: "error"; message: string }
-  | { kind: "value"; exact: string; latex: string; numeric: string | null; isNumeric: boolean };
+export type { Evaluation } from "./calculator-evaluation";
 
 let engine: Promise<ComputeEngine> | null = null;
 
@@ -14,17 +12,6 @@ let engine: Promise<ComputeEngine> | null = null;
 function getEngine(): Promise<ComputeEngine> {
   engine ??= import("@cortex-js/compute-engine").then(({ ComputeEngine }) => new ComputeEngine());
   return engine;
-}
-
-/**
- * Formatea un número con coma decimal y sin colas infinitas.
- * @param value - Número en texto, tal como lo devuelve el motor.
- * @returns El número formateado para mostrarlo.
- */
-function formatNumber(value: string): string {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric)) return value;
-  return numeric.toLocaleString("es-ES", { maximumFractionDigits: 10 });
 }
 
 /**

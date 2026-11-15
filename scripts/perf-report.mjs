@@ -70,10 +70,7 @@ const FLOWS = [
   {
     id: "basica-evalua",
     label: "Herramientas de aula · primer = en Básica",
-    roots: [
-      "app/board/apps/edu-tools/edu-tools-app.tsx",
-      "node_modules/@cortex-js/compute-engine/dist/esm-min/compute-engine.js",
-    ],
+    roots: ["app/board/apps/edu-tools/edu-tools-app.tsx"],
   },
   {
     id: "cientifica",
@@ -187,6 +184,11 @@ for (const flow of FLOWS) {
     files: files.slice(0, 12),
     ...(missing.size ? { missing: [...missing].sort() } : {}),
   });
+}
+
+const basic = report.flows.find((flow) => flow.id === "basica-evalua");
+if (basic?.files.some((file) => file.file.includes("compute-engine"))) {
+  throw new Error("La calculadora básica ha vuelto a incluir compute-engine en su flujo.");
 }
 
 const format = (bytes) => `${(bytes / 1024).toFixed(1)} KiB`;

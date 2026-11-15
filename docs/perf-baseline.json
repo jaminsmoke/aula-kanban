@@ -9,8 +9,8 @@
         "virtual:vinext-app-browser-entry",
         "app/board.tsx"
       ],
-      "raw": 556698,
-      "gzip": 167258,
+      "raw": 556743,
+      "gzip": 167272,
       "fileCount": 25,
       "files": [
         {
@@ -19,14 +19,14 @@
           "gzip": 58976
         },
         {
-          "file": "_next/static/chunks/index-CHSAcwDb.js",
+          "file": "_next/static/chunks/index-DoMfXmt1.js",
           "raw": 193042,
-          "gzip": 53620
+          "gzip": 53618
         },
         {
-          "file": "_next/static/chunks/board-DpXRFDHy.js",
-          "raw": 113649,
-          "gzip": 33520
+          "file": "_next/static/chunks/board-B3UyAyXX.js",
+          "raw": 113694,
+          "gzip": 33535
         },
         {
           "file": "_next/static/css/board.GnlUIL1q.css",
@@ -39,9 +39,9 @@
           "gzip": 4219
         },
         {
-          "file": "_next/static/chunks/app-rsc-cache-busting-pvubzEWy.js",
+          "file": "_next/static/chunks/app-rsc-cache-busting-CLcoBfRH.js",
           "raw": 4962,
-          "gzip": 2046
+          "gzip": 2047
         },
         {
           "file": "_next/static/chunks/navigation-errors-Yrl_CwA6.js",
@@ -81,8 +81,8 @@
       "roots": [
         "app/board/apps/edu-tools/edu-tools-app.tsx"
       ],
-      "raw": 504355,
-      "gzip": 142480,
+      "raw": 507573,
+      "gzip": 143645,
       "fileCount": 15,
       "files": [
         {
@@ -91,9 +91,9 @@
           "gzip": 58976
         },
         {
-          "file": "_next/static/chunks/index-CHSAcwDb.js",
+          "file": "_next/static/chunks/index-DoMfXmt1.js",
           "raw": 193042,
-          "gzip": 53620
+          "gzip": 53618
         },
         {
           "file": "_next/static/css/edu-tools-app.Da1xEP3w.css",
@@ -101,9 +101,9 @@
           "gzip": 12350
         },
         {
-          "file": "_next/static/chunks/edu-tools-app-CH-75GlC.js",
-          "raw": 19092,
-          "gzip": 6058
+          "file": "_next/static/chunks/edu-tools-app-Cp-YMVls.js",
+          "raw": 22303,
+          "gzip": 7219
         },
         {
           "file": "_next/static/chunks/app-elements-BvplKoLa.js",
@@ -111,9 +111,9 @@
           "gzip": 4219
         },
         {
-          "file": "_next/static/chunks/app-rsc-cache-busting-pvubzEWy.js",
+          "file": "_next/static/chunks/app-rsc-cache-busting-CLcoBfRH.js",
           "raw": 4962,
-          "gzip": 2046
+          "gzip": 2047
         },
         {
           "file": "_next/static/chunks/navigation-errors-Yrl_CwA6.js",
@@ -126,9 +126,9 @@
           "gzip": 1283
         },
         {
-          "file": "_next/static/chunks/edu-evaluate-VrdzgoU5.js",
-          "raw": 1838,
-          "gzip": 790
+          "file": "_next/static/chunks/edu-evaluate-ly0jhDKq.js",
+          "raw": 1845,
+          "gzip": 795
         },
         {
           "file": "_next/static/chunks/rolldown-runtime-D8crsZiy.js",
@@ -151,27 +151,21 @@
       "id": "basica-evalua",
       "label": "Herramientas de aula · primer = en Básica",
       "roots": [
-        "app/board/apps/edu-tools/edu-tools-app.tsx",
-        "node_modules/@cortex-js/compute-engine/dist/esm-min/compute-engine.js"
+        "app/board/apps/edu-tools/edu-tools-app.tsx"
       ],
-      "raw": 6814054,
-      "gzip": 1968399,
-      "fileCount": 16,
+      "raw": 507573,
+      "gzip": 143645,
+      "fileCount": 15,
       "files": [
-        {
-          "file": "_next/static/chunks/compute-engine-e2aJHlxt.js",
-          "raw": 6309699,
-          "gzip": 1825919
-        },
         {
           "file": "_next/static/chunks/framework-BrQRF1k4.js",
           "raw": 190152,
           "gzip": 58976
         },
         {
-          "file": "_next/static/chunks/index-CHSAcwDb.js",
+          "file": "_next/static/chunks/index-DoMfXmt1.js",
           "raw": 193042,
-          "gzip": 53620
+          "gzip": 53618
         },
         {
           "file": "_next/static/css/edu-tools-app.Da1xEP3w.css",
@@ -179,9 +173,9 @@
           "gzip": 12350
         },
         {
-          "file": "_next/static/chunks/edu-tools-app-CH-75GlC.js",
-          "raw": 19092,
-          "gzip": 6058
+          "file": "_next/static/chunks/edu-tools-app-Cp-YMVls.js",
+          "raw": 22303,
+          "gzip": 7219
         },
         {
           "file": "_next/static/chunks/app-elements-BvplKoLa.js",
@@ -189,9 +183,9 @@
           "gzip": 4219
         },
         {
-          "file": "_next/static/chunks/app-rsc-cache-busting-pvubzEWy.js",
+          "file": "_next/static/chunks/app-rsc-cache-busting-CLcoBfRH.js",
           "raw": 4962,
-          "gzip": 2046
+          "gzip": 2047
         },
         {
           "file": "_next/static/chunks/navigation-errors-Yrl_CwA6.js",
@@ -204,9 +198,9 @@
           "gzip": 1283
         },
         {
-          "file": "_next/static/chunks/edu-evaluate-VrdzgoU5.js",
-          "raw": 1838,
-          "gzip": 790
+          "file": "_next/static/chunks/edu-evaluate-ly0jhDKq.js",
+          "raw": 1845,
+          "gzip": 795
         },
         {
           "file": "_next/static/chunks/rolldown-runtime-D8crsZiy.js",
@@ -217,6 +211,11 @@
           "file": "_next/static/chunks/app-rsc-render-mode-B7mTepm6.js",
           "raw": 668,
           "gzip": 343
+        },
+        {
+          "file": "_next/static/chunks/hash-Cp347hhd.js",
+          "raw": 256,
+          "gzip": 181
         }
       ]
     },
@@ -228,8 +227,8 @@
         "node_modules/@cortex-js/compute-engine/dist/esm-min/compute-engine.js",
         "app/board/apps/edu-tools/calculator/multi-equation.tsx"
       ],
-      "raw": 6818667,
-      "gzip": 1970225,
+      "raw": 6821885,
+      "gzip": 1971389,
       "fileCount": 17,
       "files": [
         {
@@ -243,9 +242,9 @@
           "gzip": 58976
         },
         {
-          "file": "_next/static/chunks/index-CHSAcwDb.js",
+          "file": "_next/static/chunks/index-DoMfXmt1.js",
           "raw": 193042,
-          "gzip": 53620
+          "gzip": 53618
         },
         {
           "file": "_next/static/css/edu-tools-app.Da1xEP3w.css",
@@ -253,9 +252,9 @@
           "gzip": 12350
         },
         {
-          "file": "_next/static/chunks/edu-tools-app-CH-75GlC.js",
-          "raw": 19092,
-          "gzip": 6058
+          "file": "_next/static/chunks/edu-tools-app-Cp-YMVls.js",
+          "raw": 22303,
+          "gzip": 7219
         },
         {
           "file": "_next/static/chunks/app-elements-BvplKoLa.js",
@@ -263,14 +262,14 @@
           "gzip": 4219
         },
         {
-          "file": "_next/static/chunks/app-rsc-cache-busting-pvubzEWy.js",
+          "file": "_next/static/chunks/app-rsc-cache-busting-CLcoBfRH.js",
           "raw": 4962,
-          "gzip": 2046
+          "gzip": 2047
         },
         {
-          "file": "_next/static/chunks/multi-equation-DNFam2Q6.js",
+          "file": "_next/static/chunks/multi-equation-BSbkKYCh.js",
           "raw": 4613,
-          "gzip": 1826
+          "gzip": 1825
         },
         {
           "file": "_next/static/chunks/navigation-errors-Yrl_CwA6.js",
@@ -283,9 +282,9 @@
           "gzip": 1283
         },
         {
-          "file": "_next/static/chunks/edu-evaluate-VrdzgoU5.js",
-          "raw": 1838,
-          "gzip": 790
+          "file": "_next/static/chunks/edu-evaluate-ly0jhDKq.js",
+          "raw": 1845,
+          "gzip": 795
         },
         {
           "file": "_next/static/chunks/rolldown-runtime-D8crsZiy.js",
@@ -303,7 +302,7 @@
         "node_modules/mermaid/dist/chunks/mermaid.core/flowDiagram-MALGAFMO.mjs"
       ],
       "raw": 1162518,
-      "gzip": 316105,
+      "gzip": 316082,
       "fileCount": 42,
       "files": [
         {
@@ -312,9 +311,9 @@
           "gzip": 58976
         },
         {
-          "file": "_next/static/chunks/index-CHSAcwDb.js",
+          "file": "_next/static/chunks/index-DoMfXmt1.js",
           "raw": 193042,
-          "gzip": 53620
+          "gzip": 53618
         },
         {
           "file": "_next/static/chunks/Middleware-DHrSLV4u.js",
@@ -322,19 +321,19 @@
           "gzip": 44876
         },
         {
-          "file": "_next/static/chunks/chunk-AXFCVDMN-DCtDxpec.js",
+          "file": "_next/static/chunks/chunk-AXFCVDMN-C3Zijcuf.js",
           "raw": 123094,
-          "gzip": 31201
+          "gzip": 31198
         },
         {
-          "file": "_next/static/chunks/chunk-BG4553SI-CzNj9pZ4.js",
+          "file": "_next/static/chunks/chunk-BG4553SI-SElAcbLu.js",
           "raw": 202333,
           "gzip": 22228
         },
         {
-          "file": "_next/static/chunks/chunk-QB3YPZ4I-Cjk1OKK4.js",
+          "file": "_next/static/chunks/chunk-QB3YPZ4I-xq1YecZg.js",
           "raw": 64570,
-          "gzip": 20575
+          "gzip": 20578
         },
         {
           "file": "_next/static/chunks/chunk-HPSUCWAI-XNWUUJ8-.js",
@@ -342,14 +341,14 @@
           "gzip": 15405
         },
         {
-          "file": "_next/static/chunks/chunk-DQASFODM-D_AnC_p8.js",
+          "file": "_next/static/chunks/chunk-DQASFODM-BkeVJGIY.js",
           "raw": 48671,
-          "gzip": 11786
+          "gzip": 11787
         },
         {
-          "file": "_next/static/chunks/mermaid.core-ouJlzhPE.js",
+          "file": "_next/static/chunks/mermaid.core-C4S_2pOd.js",
           "raw": 34300,
-          "gzip": 10614
+          "gzip": 10612
         },
         {
           "file": "_next/static/chunks/rough.esm-BxK-sXvf.js",
@@ -357,14 +356,14 @@
           "gzip": 8783
         },
         {
-          "file": "_next/static/chunks/chunk-STOXU5M4-oGgl80Kn.js",
+          "file": "_next/static/chunks/chunk-STOXU5M4-BUNdhYq3.js",
           "raw": 11872,
-          "gzip": 4722
+          "gzip": 4719
         },
         {
-          "file": "_next/static/chunks/chunk-M57EVK23-CMo7cTp1.js",
+          "file": "_next/static/chunks/chunk-M57EVK23-m6HqvdK1.js",
           "raw": 15054,
-          "gzip": 4358
+          "gzip": 4357
         }
       ]
     },
@@ -377,13 +376,13 @@
         "node_modules/mermaid/dist/chunks/mermaid.core/elk-XV6XMXQE.mjs"
       ],
       "raw": 2635713,
-      "gzip": 767844,
+      "gzip": 767826,
       "fileCount": 40,
       "files": [
         {
-          "file": "_next/static/chunks/elk-XV6XMXQE-CmMpmhWV.js",
+          "file": "_next/static/chunks/elk-XV6XMXQE-Cg6oiM_d.js",
           "raw": 1501961,
-          "gzip": 459449
+          "gzip": 459450
         },
         {
           "file": "_next/static/chunks/framework-BrQRF1k4.js",
@@ -391,9 +390,9 @@
           "gzip": 58976
         },
         {
-          "file": "_next/static/chunks/index-CHSAcwDb.js",
+          "file": "_next/static/chunks/index-DoMfXmt1.js",
           "raw": 193042,
-          "gzip": 53620
+          "gzip": 53618
         },
         {
           "file": "_next/static/chunks/Middleware-DHrSLV4u.js",
@@ -401,12 +400,12 @@
           "gzip": 44876
         },
         {
-          "file": "_next/static/chunks/chunk-AXFCVDMN-DCtDxpec.js",
+          "file": "_next/static/chunks/chunk-AXFCVDMN-C3Zijcuf.js",
           "raw": 123094,
-          "gzip": 31201
+          "gzip": 31198
         },
         {
-          "file": "_next/static/chunks/chunk-BG4553SI-CzNj9pZ4.js",
+          "file": "_next/static/chunks/chunk-BG4553SI-SElAcbLu.js",
           "raw": 202333,
           "gzip": 22228
         },
@@ -416,14 +415,14 @@
           "gzip": 15405
         },
         {
-          "file": "_next/static/chunks/chunk-DQASFODM-D_AnC_p8.js",
+          "file": "_next/static/chunks/chunk-DQASFODM-BkeVJGIY.js",
           "raw": 48671,
-          "gzip": 11786
+          "gzip": 11787
         },
         {
-          "file": "_next/static/chunks/mermaid.core-ouJlzhPE.js",
+          "file": "_next/static/chunks/mermaid.core-C4S_2pOd.js",
           "raw": 34300,
-          "gzip": 10614
+          "gzip": 10612
         },
         {
           "file": "_next/static/chunks/rough.esm-BxK-sXvf.js",
@@ -436,9 +435,9 @@
           "gzip": 8254
         },
         {
-          "file": "_next/static/chunks/chunk-STOXU5M4-oGgl80Kn.js",
+          "file": "_next/static/chunks/chunk-STOXU5M4-BUNdhYq3.js",
           "raw": 11872,
-          "gzip": 4722
+          "gzip": 4719
         }
       ]
     },
@@ -449,8 +448,8 @@
         "app/board/shared/whiteboard/index.ts",
         "_chunk-EIO257PC-BEcCMZRJ.js"
       ],
-      "raw": 3658745,
-      "gzip": 1284625,
+      "raw": 3658790,
+      "gzip": 1284638,
       "fileCount": 31,
       "files": [
         {
@@ -459,9 +458,9 @@
           "gzip": 735049
         },
         {
-          "file": "_next/static/chunks/whiteboard-DlZY4S-i.js",
+          "file": "_next/static/chunks/whiteboard-B8M0tUxZ.js",
           "raw": 1135890,
-          "gzip": 358657
+          "gzip": 358656
         },
         {
           "file": "_next/static/chunks/framework-BrQRF1k4.js",
@@ -469,14 +468,14 @@
           "gzip": 58976
         },
         {
-          "file": "_next/static/chunks/index-CHSAcwDb.js",
+          "file": "_next/static/chunks/index-DoMfXmt1.js",
           "raw": 193042,
-          "gzip": 53620
+          "gzip": 53618
         },
         {
-          "file": "_next/static/chunks/board-DpXRFDHy.js",
-          "raw": 113649,
-          "gzip": 33520
+          "file": "_next/static/chunks/board-B3UyAyXX.js",
+          "raw": 113694,
+          "gzip": 33535
         },
         {
           "file": "_next/static/css/whiteboard.BYy7_UmH.css",
@@ -494,9 +493,9 @@
           "gzip": 4219
         },
         {
-          "file": "_next/static/chunks/app-rsc-cache-busting-pvubzEWy.js",
+          "file": "_next/static/chunks/app-rsc-cache-busting-CLcoBfRH.js",
           "raw": 4962,
-          "gzip": 2046
+          "gzip": 2047
         },
         {
           "file": "_next/static/chunks/navigation-errors-Yrl_CwA6.js",
@@ -523,8 +522,8 @@
         "_chunk-EIO257PC-BEcCMZRJ.js",
         "node_modules/@excalidraw/mermaid-to-excalidraw/dist/index.js"
       ],
-      "raw": 4375641,
-      "gzip": 1464855,
+      "raw": 4375686,
+      "gzip": 1464883,
       "fileCount": 51,
       "files": [
         {
@@ -533,9 +532,9 @@
           "gzip": 735049
         },
         {
-          "file": "_next/static/chunks/whiteboard-DlZY4S-i.js",
+          "file": "_next/static/chunks/whiteboard-B8M0tUxZ.js",
           "raw": 1135890,
-          "gzip": 358657
+          "gzip": 358656
         },
         {
           "file": "_next/static/chunks/framework-BrQRF1k4.js",
@@ -543,9 +542,9 @@
           "gzip": 58976
         },
         {
-          "file": "_next/static/chunks/index-CHSAcwDb.js",
+          "file": "_next/static/chunks/index-DoMfXmt1.js",
           "raw": 193042,
-          "gzip": 53620
+          "gzip": 53618
         },
         {
           "file": "_next/static/chunks/Middleware-DHrSLV4u.js",
@@ -553,19 +552,19 @@
           "gzip": 44876
         },
         {
-          "file": "_next/static/chunks/board-DpXRFDHy.js",
-          "raw": 113649,
-          "gzip": 33520
+          "file": "_next/static/chunks/board-B3UyAyXX.js",
+          "raw": 113694,
+          "gzip": 33535
         },
         {
-          "file": "_next/static/chunks/dist-DDC79Roo.js",
+          "file": "_next/static/chunks/dist-CcSi0po4.js",
           "raw": 86253,
-          "gzip": 27011
+          "gzip": 27019
         },
         {
-          "file": "_next/static/chunks/chunk-4HAMMTFA-dYsG47CD.js",
+          "file": "_next/static/chunks/chunk-4HAMMTFA--8qZzD1F.js",
           "raw": 104914,
-          "gzip": 25296
+          "gzip": 25294
         },
         {
           "file": "_next/static/css/whiteboard.BYy7_UmH.css",
@@ -573,7 +572,7 @@
           "gzip": 22202
         },
         {
-          "file": "_next/static/chunks/chunk-DU6HZSFF-BtyyWAh5.js",
+          "file": "_next/static/chunks/chunk-DU6HZSFF-DGXsDjvS.js",
           "raw": 198658,
           "gzip": 20717
         },
@@ -597,7 +596,7 @@
         "node_modules/blockly/index.mjs"
       ],
       "raw": 1173145,
-      "gzip": 329171,
+      "gzip": 329170,
       "fileCount": 17,
       "files": [
         {
@@ -611,9 +610,9 @@
           "gzip": 58976
         },
         {
-          "file": "_next/static/chunks/index-CHSAcwDb.js",
+          "file": "_next/static/chunks/index-DoMfXmt1.js",
           "raw": 193042,
-          "gzip": 53620
+          "gzip": 53618
         },
         {
           "file": "_next/static/chunks/blockly-DbiN1QJW.js",
@@ -626,14 +625,14 @@
           "gzip": 4219
         },
         {
-          "file": "_next/static/chunks/blockly-app-d8UnkErj.js",
+          "file": "_next/static/chunks/blockly-app-Ly3UkNnP.js",
           "raw": 10230,
           "gzip": 3656
         },
         {
-          "file": "_next/static/chunks/app-rsc-cache-busting-pvubzEWy.js",
+          "file": "_next/static/chunks/app-rsc-cache-busting-CLcoBfRH.js",
           "raw": 4962,
-          "gzip": 2046
+          "gzip": 2047
         },
         {
           "file": "_next/static/chunks/navigation-errors-Yrl_CwA6.js",
@@ -673,7 +672,7 @@
         "node_modules/blockly/msg/es.mjs"
       ],
       "raw": 1310579,
-      "gzip": 365023,
+      "gzip": 365022,
       "fileCount": 20,
       "files": [
         {
@@ -687,9 +686,9 @@
           "gzip": 58976
         },
         {
-          "file": "_next/static/chunks/index-CHSAcwDb.js",
+          "file": "_next/static/chunks/index-DoMfXmt1.js",
           "raw": 193042,
-          "gzip": 53620
+          "gzip": 53618
         },
         {
           "file": "_next/static/chunks/blockly-DbiN1QJW.js",
@@ -717,14 +716,14 @@
           "gzip": 4219
         },
         {
-          "file": "_next/static/chunks/blockly-app-d8UnkErj.js",
+          "file": "_next/static/chunks/blockly-app-Ly3UkNnP.js",
           "raw": 10230,
           "gzip": 3656
         },
         {
-          "file": "_next/static/chunks/app-rsc-cache-busting-pvubzEWy.js",
+          "file": "_next/static/chunks/app-rsc-cache-busting-CLcoBfRH.js",
           "raw": 4962,
-          "gzip": 2046
+          "gzip": 2047
         },
         {
           "file": "_next/static/chunks/navigation-errors-Yrl_CwA6.js",
