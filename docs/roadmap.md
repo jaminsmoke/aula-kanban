@@ -43,11 +43,12 @@
 
 ### Fase 1 — Contenido de documentación
 
-- [ ] Crear `app/board/docs/content/`.
-- [ ] Agrupar `content.ts` por bloques cohesivos (inicio/roles, personas/proyectos, tareas/calendario, espacio/MCP, enlaces/ayuda), no un archivo por sección.
-- [ ] Mantener en `content/index.ts` los exports `docSections`, `docSectionIds`, `docsHero`, `docAnchor` y los tipos usados por la vista.
-- [ ] Conservar el orden de `docSectionIds` y el contenido exacto de cada bloque.
+- [x] Crear `app/board/docs/content/`.
+- [x] Agrupar `content.ts` por bloques cohesivos (inicio/roles, personas/proyectos, tareas/calendario, espacio/MCP, enlaces/ayuda), no un archivo por sección.
+- [x] Mantener en `content/index.ts` los exports `docSections`, `docSectionIds`, `docsHero`, `docAnchor` y los tipos usados por la vista.
+- [x] Conservar el orden de `docSectionIds` y el contenido exacto de cada bloque.
 - **Criterios de aceptación:** `docs-view`, `content-coverage` y el build pasan; la ayuda muestra las mismas secciones, anclas e ilustraciones.
+- **Completada (2026-11-15):** `content/` reúne 7 archivos y 14 secciones; 13 tests de documentación, `tsc` y build en verde. El contenido se comparó con el original.
 
 ### Fase 2 — Herramientas de aula
 
