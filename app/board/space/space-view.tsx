@@ -1,6 +1,5 @@
 "use client";
 
-import { Columns3 } from "lucide-react";
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
 import SpaceWindow from "./space-window";
@@ -28,10 +27,10 @@ type OpenWindow = {
 /**
  * Tienda: un escritorio con iconos que abren ventanas estilo macOS
  * (arrastrables, minimizables a un dock) según el rol.
- * @param props - Rol del usuario, proyecto activo y salida a Clase.
+ * @param props - Rol del usuario y proyecto activo.
  * @returns El escritorio dentro del contenido de Administración.
  */
-export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole; projectId: string; onExit: () => void }) {
+export default function SpaceView({ role, projectId }: { role: SpaceRole; projectId: string }) {
   const tools = visibleTools(role);
   const [managed, setManaged] = useState<{ id: string; status: string; url: string | null; version?: string | null }[]>([]);
   const [storeOpen, setStoreOpen] = useState(false);
@@ -197,10 +196,6 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
           })}
         </div>
         <nav className="space-dock" aria-label="Accesos de Tienda">
-          <button type="button" className="space-dock-class" onClick={onExit} title="Volver a Clase">
-            <span className="space-dock-tile" aria-hidden><Columns3 size={24} /></span>
-            <span className="space-dock-name">Clase</span>
-          </button>
           {shownWindows.filter((item) => item.minimized).map((item) => {
             const Icon = item.tool.icon;
             return (

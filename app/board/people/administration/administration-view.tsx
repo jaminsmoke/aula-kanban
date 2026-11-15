@@ -26,7 +26,7 @@ export default function AdministrationView({ section, onSection, students, teach
   onSection: (section: AdministracionSection) => void;
   students: ComponentProps<typeof StudentsView>;
   teachers: ComponentProps<typeof TeachersView>;
-  tienda: { role: SpaceRole; projectId: string; onExit: () => void };
+  tienda: { role: SpaceRole; projectId: string };
 }) {
   return (
     <WorkspaceLayout
@@ -35,8 +35,6 @@ export default function AdministrationView({ section, onSection, students, teach
       items={sections}
       active={section}
       onSelect={onSection}
-      onExit={section === "tienda" ? undefined : tienda.onExit}
-      exitLabel="Clase"
       hideMobileTitle
     >
       <div className={`administration-content${section === "tienda" ? " administration-content--store" : ""}`}>
@@ -46,7 +44,7 @@ export default function AdministrationView({ section, onSection, students, teach
           <TeachersView {...teachers} />
         ) : (
           <Suspense fallback={<div className="access-loading" role="status">Cargando Tienda…</div>}>
-            <SpaceView role={tienda.role} projectId={tienda.projectId} onExit={tienda.onExit} />
+            <SpaceView role={tienda.role} projectId={tienda.projectId} />
           </Suspense>
         )}
       </div>

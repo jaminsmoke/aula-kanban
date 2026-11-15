@@ -28,7 +28,7 @@
 
 ### Seguimiento en backlog
 
-UI-08 conserva Tienda dentro de Administración, la retirada de Mi espacio y Clase en el dock.
+UI-08 conserva Tienda dentro de Administración, la retirada de Mi espacio y Clase como botón de icono en la cabecera.
 
 ## 2026-11-15 — Roadmap UI-05 · Estados vacíos de las fichas
 

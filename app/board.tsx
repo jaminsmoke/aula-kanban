@@ -129,7 +129,6 @@ export default function Board({ user, initial }: { user: { displayName: string; 
               tienda={{
                 role: activeProject.role,
                 projectId: projectState.projectId,
-                onExit: () => setView("clase"),
               }}
               students={{
                 students: data.students,

@@ -1,7 +1,6 @@
 "use client";
 
 import type { ComponentType, ReactNode } from "react";
-import { ArrowLeft } from "lucide-react";
 import "./workspace-layout.css";
 
 /** Icono compatible con las entradas del sidebar. */
@@ -16,17 +15,15 @@ export type WorkspaceItem<T extends string> = {
 
 /**
  * Layout de pantalla partida con sidebar de secciones.
- * @param props - Título, etiqueta accesible, secciones, sección activa, salida y contenido.
+ * @param props - Título, etiqueta accesible, secciones, sección activa y contenido.
  * @returns El workspace con sidebar y contenido.
  */
-export default function WorkspaceLayout<T extends string>({ title, label, items, active, onSelect, onExit, exitLabel = "Clase", hideMobileTitle = false, children }: {
+export default function WorkspaceLayout<T extends string>({ title, label, items, active, onSelect, hideMobileTitle = false, children }: {
   title: string;
   label: string;
   items: readonly WorkspaceItem<T>[];
   active: T;
   onSelect: (id: T) => void;
-  onExit?: () => void;
-  exitLabel?: string;
   hideMobileTitle?: boolean;
   children: ReactNode;
 }) {
@@ -50,7 +47,6 @@ export default function WorkspaceLayout<T extends string>({ title, label, items,
             );
           })}
         </nav>
-        {onExit && <button type="button" className="workspace-exit" onClick={onExit}><ArrowLeft size={16} aria-hidden />{exitLabel}</button>}
       </aside>
       <div className="workspace-content">{children}</div>
     </div>

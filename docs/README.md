@@ -6,7 +6,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](roadmap.md) | UI-08 · Tienda en Administración y Clase en el dock | Secuencia de ejecución |
+| [`roadmap.md`](roadmap.md) | UI-08 · Tienda en Administración y Clase en la cabecera | Secuencia de ejecución |
 | [`backlog.md`](backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`mcp-apps.md`](mcp-apps.md) | Cobertura MCP, permisos y límites de las apps nativas | Temático |
@@ -71,7 +71,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
-- **Roadmap UI-08 activo:** Tienda como sección de Administración, retirada de Mi espacio de la cabecera y Clase en el dock, con URL canónica `view=administracion&section=tienda` y alias `view=espacio`. Plan en [`roadmap.md`](roadmap.md).
+- **Roadmap UI-08 activo:** Tienda como sección de Administración, retirada de Mi espacio y Clase como botón de icono en la cabecera, con URL canónica `view=administracion&section=tienda` y alias `view=espacio`. Plan en [`roadmap.md`](roadmap.md).
 - **Backlog:** sin entradas aparcadas; UI-08 salió al roadmap.
 - **Roadmap UI-07 completado:** Documentación como sección de Ajustes, con URL canónica `view=ajustes&section=documentacion` y alias antiguo, y selector de proyecto en el hueco derecho de la cabecera; revisado en 1366, 1024 y 390. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap UI-05 completado:** estados vacíos de alumnado y profesorado con un componente compartido, selector oculto sin fichas y alta conectada a los diálogos existentes; revisado en 1366 y 390. Resumen en [`changelog.md`](changelog.md); roadmap sin fase activa.

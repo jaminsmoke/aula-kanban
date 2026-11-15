@@ -50,6 +50,9 @@
 .main-nav button { border:0; border-radius: var(--radius-sm); padding:10px 15px; background:transparent; color:var(--ui-text-muted); font-size: var(--text-md); font-weight: var(--weight-bold); transition:background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
 .main-nav button:hover { background:var(--ui-surface-hover); color:var(--ui-text-primary); }
 .main-nav button[aria-current="page"] { background:var(--ui-action-primary); color:var(--ui-text-inverse); }
+.main-nav .class-action { display:grid; place-items:center; width:40px; height:40px; margin-left:5px; padding:0; border:var(--border-width-hairline) solid var(--ui-border-default); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-muted); }
+.main-nav .class-action:hover { background:var(--ui-surface-hover); color:var(--ui-action-text); }
+.main-nav .class-action[aria-current="page"] { border-color:var(--ui-action-text); background:var(--ui-action-primary); color:var(--ui-text-inverse); }
 .main-nav button:focus-visible, .header-settings:focus-visible { outline-color:var(--ui-focus-ring); }
 .header-settings { display:grid; place-items:center; width:40px; height:40px; margin-left:4px; padding:0; border:0; border-radius: var(--radius-sm); background:transparent; color:var(--ui-text-muted); cursor:pointer; transition:background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
 .header-settings:hover { background:var(--ui-surface-hover); color:var(--ui-text-primary); }
@@ -63,6 +66,7 @@
 @media (max-width: 1100px) {
   .topbar-inner { flex-wrap: wrap; padding-block: 10px; }
   .main-nav { order: 3; margin: 0; flex-basis: 100%; }
+  .main-nav .class-action { margin-left: 0; }
 }
 @media (max-width: 1050px) {
   .shell { width: calc(100% - 48px); }
@@ -74,6 +78,7 @@
   .shell { width: calc(100% - 30px); }
   .topbar-inner { min-height: 60px; flex-wrap: wrap; align-content: center; justify-content: flex-start; padding-block: 10px; gap: 8px; }
   .main-nav { order: 3; margin: 0; flex-basis: 100%; flex-wrap: wrap; row-gap: 2px; }
+  .main-nav .class-action { margin-left: 0; }
   .account-menu { margin-left: auto; }
   .header-settings { margin-left: 0; }
   .project-menu { margin-left: auto; }
