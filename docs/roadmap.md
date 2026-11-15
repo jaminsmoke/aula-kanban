@@ -3,7 +3,7 @@
 > **Estado:** Activo
 > **Inicio:** 2026-11-15
 > **Entrada:** PER-01 — Persistencia de archivos: R2, objetos huérfanos y miniaturas (sale del backlog).
-> **Backlog:** MCP-05, recortes de rendimiento de chunks y SYNC-01 (3 entradas).
+> **Backlog:** UI-01, ARCH-01, ARCH-02, CI-01, SYNC-01, MCP-05 y recortes de rendimiento de chunks (7 entradas).
 > **Regla:** Este documento contiene solo la fase activa. Lo que se aparca pasa al backlog; lo completado pasa al changelog cuando **todas** las fases del roadmap hayan terminado.
 > **Publicación:** `1.1.26` ya está desplegada en Sites por Codex; el repositorio personal `jaminsmoke/aula-kanban` se sincroniza aparte con commit/push desde local.
 

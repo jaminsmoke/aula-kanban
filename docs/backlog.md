@@ -4,9 +4,50 @@
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** el 2026-11-15 DOC-07 + MCP-11, MCP-09 y MCP-10 se cerraron; PER-01 pasó al roadmap y SYNC-01 entra arriba; MCP-05 y los recortes siguen aquí, en su orden.
+> **Nota:** el 2026-11-15 DOC-07 + MCP-11, MCP-09 y MCP-10 se cerraron; PER-01 pasó al roadmap y UI-01, ARCH-01, ARCH-02, CI-01 y SYNC-01 quedan aquí; MCP-05 y los recortes siguen en su orden.
 
 ---
+
+## 2026-11-15 — UI-01 · Sistema visual: superficies, contraste y gradientes
+
+- Contexto: la revisión de las capturas muestra Tareas, Calendario y Ajustes dominados por superficies blancas sobre un canvas casi blanco; Mi espacio y Aula Store ya tienen una identidad más definida. El CSS tiene 23 archivos, 2.212 líneas y 237 colores hexadecimales distintos en 302 usos, señal de deriva de tokens. No es un rediseño funcional.
+- Qué falta antes de retomarlo:
+  - [ ] Definir una escala semántica de superficies (`canvas`, `raised`, `sunken`, `tint`) y sustituir blancos puros y hexadecimales sueltos por tokens en `app/globals.css` y los CSS de cada vista.
+  - [ ] Suavizar la tinta principal y los metadatos sin bajar del contraste AA; revisar foco, estados hover y textos pequeños.
+  - [ ] Añadir un gradiente global sutil al marco y al héroe; reservar los gradientes intensos para el progreso, Mi espacio y Aula Store, sin convertir todas las tarjetas en degradados.
+  - [ ] Hacer un piloto en Clase > Tareas y extenderlo después a Calendario, Ajustes y Documentación.
+  - [ ] Revisar escritorio, tablet y móvil, además de `prefers-reduced-motion`.
+- Notas técnicas: mantener `app/globals.css` como fuente de verdad de tokens y los CSS de feature como consumidores; no duplicar paletas por pantalla. Validar contraste y no tocar lógica.
+
+## 2026-11-15 — ARCH-01 · Contratos de rutas y límites de capa
+
+- Contexto: hay 24 handlers en 15 `route.ts` de `app/api`. Se repiten `isSameOrigin`, `isJsonRequest`, `resolveProject`, `projectFailureResponse`, la comprobación de invitado y el parseo del cuerpo. `lib/server/project.ts` mezcla acceso con respuestas HTTP, `projects.ts` importa mensajes HTTP y `app/api/projects/route.ts` ejecuta migración de UUID, identidad y limpieza de huérfanos.
+- Qué falta antes de retomarlo:
+  - [ ] Extraer helpers de ruta (`withProjectRoute` y mutación JSON) sin cambiar códigos ni mensajes del contrato.
+  - [ ] Separar el acceso de proyecto (`project-access.ts`) de sus respuestas HTTP (`project-http.ts`); los servicios no deben importar mensajes de transporte.
+  - [ ] Mover la migración de UUID, la actualización de identidad y la limpieza de huérfanos de `/api/projects` a un servicio idempotente.
+  - [ ] Cubrir el refactor con el contrato de sesión, permisos, errores y paridad HTTP ↔ MCP.
+- Notas técnicas: refactor incremental; no mover carpetas; no ocultar validaciones específicas de cada ruta detrás de un helper genérico.
+
+## 2026-11-15 — ARCH-02 · Dividir los módulos de más de 500 líneas
+
+- Contexto: los mayores son `lib/server/mcp/dominios/tareas.ts` (700 líneas), `app/board/docs/content.ts` (541), `lib/server/mcp/dominios/personas.ts` (523), `lib/server/oauth/service.ts` (499) y `app/board/docs/illustrations/section-art.tsx` (415).
+- Qué falta antes de retomarlo:
+  - [ ] Dividir `tareas.ts` en lectura, escritura y filtros, conservando `herramientasTareas` como export público.
+  - [ ] Dividir `personas.ts` en alumnado, profesorado e invitaciones.
+  - [ ] Convertir `content.ts` en `content/` por secciones y mantener el ensamblado de `docSections`.
+  - [ ] Dividir `oauth/service.ts` en clientes, códigos, tokens y utilidades criptográficas, compartiendo la interfaz `Db`.
+  - [ ] Agrupar las ilustraciones de `section-art.tsx` por familias.
+  - [ ] Conservar exports públicos, snapshots y pruebas; no dividir `mcp-catalogo.ts` ni `mcp-descripciones.ts`, que son fuentes de verdad/generadas.
+- Notas técnicas: división mecánica y verificable; no partir archivos solo por número de líneas si la cohesión es mayor que el coste.
+
+## 2026-11-15 — CI-01 · Añadir el build al workflow de CI
+
+- Contexto: `.github/workflows/ci.yml` ejecuta `npm ci`, lint, `tsc --noEmit` y `npm test`, pero no `npm run build`; un fallo de compilación de vinext o de rutas solo se detecta al publicar o en local.
+- Qué falta antes de retomarlo:
+  - [ ] Añadir `npm run build` después de los tests en el job de checks.
+  - [ ] Medir el tiempo añadido y confirmar que no necesita secretos ni bindings reales.
+- Notas técnicas: CI solo verifica; no despliega ni sustituye al flujo de Codex/Sites.
 
 ## 2026-11-15 — SYNC-01 · Sincronizar el repositorio tras cada publicación
 
