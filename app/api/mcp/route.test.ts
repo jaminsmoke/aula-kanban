@@ -6,7 +6,7 @@ vi.mock("../../../lib/server/mcp/registro", () => ({ registerTools: (server: { r
   for (const name of ["listar_proyectos", "listar_tareas", "obtener_tarea", "crear_tarea", "actualizar_tarea", "eliminar_tarea", "listar_alumnos", "listar_profesores"]) {
     server.registerTool(name, { title: name, description: name, inputSchema: {}, annotations: {} }, async () => ({ content: [{ type: "text", text: JSON.stringify(reads.includes(name) ? { proyectos: [] } : { tarea: {} }) }] }));
   }
-}, registrarRecursosUi: () => {}, MCP_CATALOG_VERSION: "0.24.0" }));
+}, registrarRecursosUi: () => {}, MCP_CATALOG_VERSION: "0.25.0" }));
 vi.mock("../../../lib/server/mcp/auth", () => {
   const READ = new Set(["listar_proyectos", "listar_tareas", "obtener_tarea", "listar_alumnos", "listar_profesores"]);
   const WRITE = new Set(["crear_tarea", "actualizar_tarea", "eliminar_tarea"]);
@@ -125,7 +125,7 @@ describe("endpoint MCP", () => {
     expect(init.status).toBe(200);
     expect(init.headers.get("mcp-session-id")).toBeNull();
     const initBody = (await init.json()) as { result: { serverInfo: { name: string; version: string }; capabilities: Record<string, unknown>; instructions: string } };
-    expect(initBody.result.serverInfo).toEqual({ name: "aula-kanban", version: "0.24.0" });
+    expect(initBody.result.serverInfo).toEqual({ name: "aula-kanban", version: "0.25.0" });
     expect(initBody.result.capabilities).toHaveProperty("prompts");
     expect(initBody.result.instructions).toBe(MCP_INSTRUCTIONS);
 

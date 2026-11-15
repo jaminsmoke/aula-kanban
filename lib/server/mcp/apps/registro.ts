@@ -1,5 +1,6 @@
 import type { NativeAppId } from "../../../native-apps";
 import type { McpToolDefinicion } from "../dominios/tipos";
+import { herramientasBlockly } from "./blockly";
 import { herramientasEduTools } from "./edu-tools";
 import { herramientasExcalidraw } from "./excalidraw";
 
@@ -29,8 +30,7 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
   },
   blockly: {
     appId: "blockly",
-    herramientas: [],
-    pendiente: "MCP-05D",
+    herramientas: herramientasBlockly,
   },
   mermaid: {
     appId: "mermaid",

@@ -3004,6 +3004,111 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
       ],
       "type": "object",
     },
+    "name": "leer_programa_bloques",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "actualizado": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "estado": {
+          "anyOf": [
+            {
+              "additionalProperties": {},
+              "type": "object",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+      },
+      "required": [
+        "estado",
+        "actualizado",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Leer programa de bloques",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "estado": {
+          "additionalProperties": {},
+          "description": "Serialización de Blockly.serialization.workspaces.save",
+          "type": "object",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "estado",
+      ],
+      "type": "object",
+    },
+    "name": "guardar_programa_bloques",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "actualizado": {
+          "minimum": 0,
+          "type": "integer",
+        },
+      },
+      "required": [
+        "actualizado",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Guardar programa de bloques",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+      ],
+      "type": "object",
+    },
     "name": "listar_ventanas",
     "outputSchema": {
       "$schema": "http://json-schema.org/draft-07/schema#",

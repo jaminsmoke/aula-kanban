@@ -11,7 +11,7 @@ export const MCP_DOMINIOS = ["Proyectos", "Archivos", "Tareas", "Personas", "Con
 export type McpDominio = (typeof MCP_DOMINIOS)[number];
 
 /** Versión del contrato de herramientas. */
-export const MCP_CATALOG_VERSION = "0.24.0";
+export const MCP_CATALOG_VERSION = "0.25.0";
 
 /** Metadatos de una herramienta del catálogo. */
 export type McpCatalogoEntry = {
@@ -360,6 +360,22 @@ export const MCP_CATALOGO: McpCatalogoEntry[] = [
     description: "Devuelve la ficha de un elemento de la tabla periódica por símbolo o número atómico. Requiere que Herramientas de aula esté instalada; no necesita proyecto.",
     scope: "mcp:read",
     annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Apps",
+    name: "leer_programa_bloques",
+    title: "Leer programa de bloques",
+    description: "Lee la serialización del programa de Blockly del proyecto y su fecha de actualización; estado y actualizado son null si aún no hay programa. Requiere que Blockly esté instalada y acceso al proyecto.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Apps",
+    name: "guardar_programa_bloques",
+    title: "Guardar programa de bloques",
+    description: "Guarda la serialización completa de Blockly con blocks.blocks[], conserva los campos internos y rechaza estados de más de 200.000 caracteres. No genera ni ejecuta código. Requiere permiso de escritura; los invitados no escriben y la última escritura gana.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false},
   },
   {
     domain: "Ventanas",

@@ -50,12 +50,13 @@
 
 ### Fase 2: Herramientas MCP
 
-- [ ] Crear `lib/server/mcp/apps/blockly.ts` con `leer_programa_bloques` y `guardar_programa_bloques`.
-- [ ] Hacer que la lectura resuelva el proyecto y la app instalada, y devuelva `{ estado, actualizado }` o `null` si no hay programa.
-- [ ] Validar en la escritura la forma mínima, el límite de 200 KB y el JSON; guardar con `saveAppDocument` y devolver la fecha.
-- [ ] Declarar las dos herramientas en `APP_MCP_DECLARACIONES` y actualizar el catálogo a `0.25.0` con 56 herramientas (24 de lectura, 32 de escritura y 8 destructivas).
-- [ ] Añadir pruebas de app desinstalada, proyecto inexistente, sin acceso, invitado, estado inválido, exceso de tamaño y round-trip con la web.
+- [x] Crear `lib/server/mcp/apps/blockly.ts` con `leer_programa_bloques` y `guardar_programa_bloques`.
+- [x] Hacer que la lectura resuelva el proyecto y la app instalada, y devuelva `{ estado, actualizado }` o `null` si no hay programa.
+- [x] Validar en la escritura la forma mínima, el límite de 200 KB y el JSON; guardar con `saveAppDocument` y devolver la fecha.
+- [x] Declarar las dos herramientas en `APP_MCP_DECLARACIONES` y actualizar el catálogo a `0.25.0` con 56 herramientas (24 de lectura, 32 de escritura y 8 destructivas).
+- [x] Añadir pruebas de app desinstalada, proyecto inexistente, sin acceso, invitado, estado inválido, exceso de tamaño y round-trip con la web.
 - **Criterios de aceptación:** el alumnado y el profesorado pueden leer y guardar según su acceso; los invitados reciben 403; la app desinstalada responde `not_found`; no se pierden campos desconocidos.
+- **Estado:** Completada el 2026-11-15. Catálogo `0.25.0` con 56 herramientas; matriz de 377 casos y snapshot regenerado.
 
 ### Fase 3: Cobertura, verificación y cierre
 

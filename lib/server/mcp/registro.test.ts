@@ -69,6 +69,8 @@ describe("contrato del catálogo MCP", () => {
       "guardar_pizarra",
       "anadir_a_pizarra",
       "consultar_elemento",
+      "leer_programa_bloques",
+      "guardar_programa_bloques",
       "listar_ventanas",
       "cerrar_app",
       "minimizar_app",

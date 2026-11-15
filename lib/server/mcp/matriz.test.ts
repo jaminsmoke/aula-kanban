@@ -90,6 +90,7 @@ vi.mock("../../../db", () => ({
         if (table === projectsTable) return chain(proyectosMock);
         if (table === taskRowsTable) return chain([taskRow]);
         if (table === boardsTable) return chain([{ id: "board1", projectId, ownerType: "space", ownerId: projectId, snapshot: '{"elements":[]}', revision: 2, updatedAt: 1 }]);
+        if (table === appDocumentsTable) return chain([{ projectId, appId: "blockly", state: '{"blocks":{"languageVersion":0,"blocks":[]}}', updatedAt: 5, updatedByUserId: "u-owner" }]);
         if (table === studentsTable) return chain([{ section: "s1", projectId, name: "Ada", displayName: "Ada", activities: "lectura", deleted: 0 }]);
         if (table === teachersTable) return chain([{ id: "t1", projectId, name: "Profe", displayName: "Profe" }]);
         if (table === projectMembersTable) return chain([
@@ -97,7 +98,7 @@ vi.mock("../../../db", () => ({
           { id: "m-t1", projectId, userId: "u-teacher", email: "teacher@example.com", role: "teacher", studentSection: null, teacherId: "t1", status: "active" },
           { id: "m-t2", projectId, userId: "u-other", email: "otro@example.com", role: "teacher", studentSection: null, teacherId: "t2", status: "pending" },
         ]);
-        if (table === instanceAppsTable) return chain([{ appId: "excalidraw", installed: 1, version: "1.0.0" }, { appId: "mermaid", installed: 1, version: "1.0.0" }, { appId: "edu-tools", installed: 1, version: "1.0.0" }]);
+        if (table === instanceAppsTable) return chain([{ appId: "excalidraw", installed: 1, version: "1.0.0" }, { appId: "mermaid", installed: 1, version: "1.0.0" }, { appId: "edu-tools", installed: 1, version: "1.0.0" }, { appId: "blockly", installed: 1, version: "1.0.0" }]);
         if (table === administratorsTable) return chain([administratorRow]);
         return chain([]);
       },
@@ -186,7 +187,7 @@ vi.mock("../tasks/mutations", () => ({
   deleteTask: async () => ({ ok: true as const, value: { id: taskId } }),
 }));
 
-import { administrators as administratorsTable, boards as boardsTable, instanceApps as instanceAppsTable, projectMembers as projectMembersTable, projects as projectsTable, students as studentsTable, tasks as taskRowsTable, teachers as teachersTable } from "../../../db/schema";
+import { administrators as administratorsTable, appDocuments as appDocumentsTable, boards as boardsTable, instanceApps as instanceAppsTable, projectMembers as projectMembersTable, projects as projectsTable, students as studentsTable, tasks as taskRowsTable, teachers as teachersTable } from "../../../db/schema";
 import { registerTools } from "./registro";
 
 type Esperado = "ok" | "forbidden" | "not_found";
@@ -234,6 +235,8 @@ const args: Record<string, Record<string, unknown>> = {
   guardar_pizarra: { proyectoId: projectId, tipo: "space", duenoId: projectId, snapshot: '{"elements":[]}', revision: 2 },
   anadir_a_pizarra: { proyectoId: projectId, tipo: "space", duenoId: projectId, revision: 2, elementos: [{ tipo: "rectangulo", x: 0, y: 0, ancho: 10, alto: 10 }] },
   consultar_elemento: { simbolo: "Na" },
+  leer_programa_bloques: { proyectoId: projectId },
+  guardar_programa_bloques: { proyectoId: projectId, estado: { blocks: { languageVersion: 0, blocks: [] } } },
   listar_ventanas: { proyectoId: projectId },
   cerrar_app: { proyectoId: projectId, appId: "mermaid" },
   minimizar_app: { proyectoId: projectId, appId: "mermaid" },
@@ -292,6 +295,8 @@ const matriz: Record<string, Partial<Record<Rol | "inexistente", Esperado>>> = {
   guardar_pizarra: { owner: "ok", admin: "ok", teacher: "ok", student: "forbidden", guest: "forbidden", sin_acceso: "forbidden", inexistente: "not_found" },
   anadir_a_pizarra: { owner: "ok", admin: "ok", teacher: "ok", student: "forbidden", guest: "forbidden", sin_acceso: "forbidden", inexistente: "not_found" },
   consultar_elemento: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "ok" },
+  leer_programa_bloques: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "forbidden", inexistente: "not_found" },
+  guardar_programa_bloques: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "forbidden", sin_acceso: "forbidden", inexistente: "not_found" },
   listar_ventanas: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "forbidden", inexistente: "not_found" },
   cerrar_app: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "forbidden", inexistente: "not_found" },
   minimizar_app: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "forbidden", inexistente: "not_found" },
