@@ -74,7 +74,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
 - **Roadmap UI-08 completado:** Tienda en Administración, Clase como botón de icono en la cabecera, URL canónica `view=administracion&section=tienda` y alias `view=espacio`; revisado en 1366, 1024, 900, 620 y 390. Catálogo MCP `0.27.0`. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap APP-01 completado:** inventario y matriz de herramientas, roles y alcance en [`matriz-herramientas.md`](matriz-herramientas.md). Resumen en [`changelog.md`](changelog.md).
-- **Roadmap APP-03 activo:** mochila del alumnado y maletín docente. Plan en [`roadmap.md`](roadmap.md).
+- **Roadmap APP-03 activo:** mochila del alumnado y maletín docente. Fase 1 completada (definición de espacios y datos); plan en [`roadmap.md`](roadmap.md).
 - **Backlog:** APP-02 y PERM-01 (2 entradas); PERM-01 queda como prerequisito pendiente de APP-03.
 - **Roadmap UI-07 completado:** Documentación como sección de Ajustes, con URL canónica `view=ajustes&section=documentacion` y alias antiguo, y selector de proyecto en el hueco derecho de la cabecera; revisado en 1366, 1024 y 390. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap UI-05 completado:** estados vacíos de alumnado y profesorado con un componente compartido, selector oculto sin fichas y alta conectada a los diálogos existentes; revisado en 1366 y 390. Resumen en [`changelog.md`](changelog.md); roadmap sin fase activa.

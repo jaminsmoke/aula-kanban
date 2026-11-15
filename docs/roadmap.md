@@ -38,11 +38,23 @@
 
 ## 4. Fases
 
-### Fase 1: Definición de espacios y datos
+### Fase 1: Definición de espacios y datos — completada
 
-- [ ] Decidir alcance, contexto, favoritos y disposición para alumnado y profesorado.
-- [ ] Definir la presentación de dueño/administrador y de usuarios con varios roles.
+- [x] Decidir alcance, contexto, favoritos y disposición para alumnado y profesorado.
+- [x] Definir la presentación de dueño/administrador y de usuarios con varios roles.
 - **Criterios de aceptación:** diseño aprobado sin prometer aislamiento donde el dato es compartido.
+
+**Definición (registrada el 2026-11-15):**
+
+- **Alcance:** la selección de herramientas, los favoritos y el orden de presentación se guardan **por usuario y por proyecto activo**. No hay preferencias de instancia ni globales. Cambiar de proyecto cambia de contexto (el selector de la cabecera ya existe); nunca se acumulan herramientas ni datos de varios proyectos. Sin proyecto activo no hay mochila ni maletín, igual que `abrir_app` exige acceso al proyecto y la matriz de APP-01 solo permite dos consultas públicas sin proyecto.
+- **Mochila y maletín son la misma capa:** dos presentaciones de una única organización personal sobre las apps **instaladas** (favoritos y orden). La mochila es la presentación de alumnado e invitados; el maletín es la del profesorado, que fija su conjunto de trabajo habitual. Ninguna de las dos instala ni desinstala nada: la instalación global sigue siendo exclusiva de owner y administradores (`POST /api/space-apps`).
+- **Owner / administrador:** su superficie principal sigue siendo el catálogo global de Aula Store (Administración > Tienda). Pueden organizar su vista personal igual que el resto, pero eso no les concede ni les quita el rol global: la gestión de instalación se evalúa por rol de instancia, como hoy.
+- **Usuarios con varios roles:** la presentación se decide por el rol **del proyecto activo**, tal y como lo evalúa `projectAccessForUser` (rol global primero, si no, membresía activa). Un profesor que es alumno en otro proyecto ve el maletín en el suyo y la mochila en el de alumno. Un administrador que es profesor ve las superficies globales y, dentro de cada proyecto, el rol que tenga en él.
+- **Invitado:** puede organizar su vista de las herramientas que tiene permitidas ver/usar; no puede crear ni editar documentos compartidos, como ya marca APP-01. Su organización solo afecta a su propia vista.
+- **Documentos compartidos:** Blockly, Diagramas y las pizarras siguen guardando por proyecto (`app_documents` y `boards`). La mochila y el maletín **no aíslan** el trabajo del usuario: lo que edita en un documento compartido del proyecto sigue siendo visible para el resto del proyecto. La copy de la interfaz deberá decirlo expresamente (Fase 2).
+- **Desinstalación global:** una app desinstalada desaparece de todas las mochilas y maletines, porque la organización personal solo referencia apps instaladas; una selección personal nunca reinstala una app. Las entradas de favoritos de apps no instaladas se conservan en el almacenamiento pero no se muestran mientras la app no esté instalada.
+- **Revocación de acceso:** sin membresía activa en el proyecto, la mochila/maletín de ese proyecto deja de ser accesible (el servidor exige la membresía, como en el resto de rutas). Las preferencias se conservan, igual que las fichas de `deleted_students`/`deleted_teachers`; no se borran datos al retirar un acceso.
+- **Sin código en esta fase:** la Fase 1 es solo definición. El modelo de datos y el acceso desde Aula se diseñan en la Fase 2; PERM-01 sigue siendo prerequisito para cualquier capacidad nueva de autorización, aunque organizar los propios favoritos no necesita más permiso que el acceso ya vigente al proyecto.
 
 ### Fase 2: Acceso y catálogo personal
 
