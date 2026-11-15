@@ -2,6 +2,9 @@ import { and, eq } from "drizzle-orm";
 import { getDb } from "../../db";
 import { appDocuments } from "../../db/schema";
 
+/** Límite del estado serializado de un documento de app (200 KB). */
+export const MAX_APP_DOCUMENT_CHARS = 200_000;
+
 /** Documento guardado de una app en un proyecto. */
 export type AppDocument = { state: unknown; updatedAt: number };
 

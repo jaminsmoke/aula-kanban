@@ -1,12 +1,11 @@
 import { z } from "zod";
 import { boundedJson } from "../../../lib/server/bounded-json";
 import { NATIVE_APP_IDS } from "../../../lib/native-apps";
-import { readAppDocument, saveAppDocument } from "../../../lib/server/app-documents";
+import { MAX_APP_DOCUMENT_CHARS, readAppDocument, saveAppDocument } from "../../../lib/server/app-documents";
 import { json } from "../../../lib/server/http";
 import { withJsonMutation, withProjectRoute } from "../../../lib/server/route-helpers";
 
 export const dynamic = "force-dynamic";
-const MAX_STATE = 200_000;
 const nativeApp = z.enum(NATIVE_APP_IDS);
 
 /**
@@ -41,12 +40,12 @@ export const POST = withJsonMutation(withProjectRoute(async (request, project) =
   if (!appId) return json({ message: "Aplicación no válida." }, 400);
 
   let body: unknown;
-  try { body = await boundedJson(request, MAX_STATE); } catch { return json({ message: "Documento no válido o demasiado grande." }, 413); }
+  try { body = await boundedJson(request, MAX_APP_DOCUMENT_CHARS); } catch { return json({ message: "Documento no válido o demasiado grande." }, 413); }
   const parsed = z.object({ state: z.unknown() }).strict().safeParse(body);
   if (!parsed.success || parsed.data.state === undefined) return json({ message: "Documento no válido." }, 400);
 
   const serialized = JSON.stringify(parsed.data.state);
-  if (serialized.length > MAX_STATE) return json({ message: "El documento es demasiado grande." }, 413);
+  if (serialized.length > MAX_APP_DOCUMENT_CHARS) return json({ message: "El documento es demasiado grande." }, 413);
 
   try {
     const updatedAt = await saveAppDocument({

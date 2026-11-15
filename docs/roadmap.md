@@ -42,10 +42,11 @@
 
 ### Fase 1: Servicio y validación compartidos
 
-- [ ] Exportar `MAX_APP_DOCUMENT_CHARS` desde `lib/server/app-documents.ts` y usarlo en `app/api/app-documents/route.ts`.
-- [ ] Crear un validador puro en `lib/domain/blockly/serialization.ts` para comprobar que el estado es un objeto con `blocks.blocks[]` y conservar el resto de claves.
-- [ ] Cubrir el límite compartido, la forma mínima y la conservación de campos desconocidos con pruebas.
+- [x] Exportar `MAX_APP_DOCUMENT_CHARS` desde `lib/server/app-documents.ts` y usarlo en `app/api/app-documents/route.ts`.
+- [x] Crear un validador puro en `lib/domain/blockly/serialization.ts` para comprobar que el estado es un objeto con `blocks.blocks[]` y conservar el resto de claves.
+- [x] Cubrir el límite compartido, la forma mínima y la conservación de campos desconocidos con pruebas.
 - **Criterios de aceptación:** API y MCP comparten el límite; un estado válido de `Blockly.serialization.workspaces` se acepta; un JSON sin `blocks.blocks[]` se rechaza sin tocar la base de datos.
+- **Estado:** Completada el 2026-11-15. 18 tests focalizados, suite completa 107 archivos / 878 tests, `tsc` y lint en verde. `MAX_APP_DOCUMENT_CHARS` es la fuente única del límite y `lib/domain/blockly/serialization.ts` valida y conserva el estado.
 
 ### Fase 2: Herramientas MCP
 

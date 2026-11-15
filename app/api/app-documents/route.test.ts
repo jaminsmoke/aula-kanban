@@ -14,8 +14,9 @@ vi.mock("../../../lib/server/project-access", () => ({
     status: status === "unauthenticated" ? 401 : status === "forbidden" ? 403 : status === "not_found" ? 404 : 400,
   }),
 }));
-vi.mock("../../../lib/server/app-documents", () => ({ saveAppDocument: mocks.save, readAppDocument: mocks.read }));
+vi.mock("../../../lib/server/app-documents", () => ({ MAX_APP_DOCUMENT_CHARS: 200_000, saveAppDocument: mocks.save, readAppDocument: mocks.read }));
 
+import { MAX_APP_DOCUMENT_CHARS } from "../../../lib/server/app-documents";
 import { GET, POST } from "./route";
 
 const endpoint = "https://site.test/api/app-documents?project=project1&app=blockly";
@@ -89,7 +90,7 @@ describe("documentos de apps", () => {
 
   it("rechaza cuerpos excesivos antes de guardarlos", async () => {
     mocks.role = "student";
-    expect((await POST(request(JSON.stringify({ state: { value: "x".repeat(200_001) } })))).status).toBe(413);
+    expect((await POST(request(JSON.stringify({ state: { value: "x".repeat(MAX_APP_DOCUMENT_CHARS + 1) } })))).status).toBe(413);
     expect(mocks.save).not.toHaveBeenCalled();
   });
 });
