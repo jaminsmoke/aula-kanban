@@ -42,10 +42,10 @@
 
 ### Fase 1 — Tareas MCP
 
-- [ ] Crear `lib/server/mcp/dominios/tareas/` con `comun.ts`, `filtros.ts`, `lectura.ts`, `escritura.ts` e `index.ts`.
-- [ ] Mover schemas, decoración, filtros y helpers sin cambiar su comportamiento.
-- [ ] Mantener `herramientasTareas` en `index.ts` con el mismo orden y los mismos nombres.
-- [ ] Ejecutar los tests focalizados de tareas, catálogo, paridad y snapshots.
+- [x] Crear `lib/server/mcp/dominios/tareas/` con `comun.ts`, `filtros.ts`, `lectura.ts`, `escritura.ts` e `index.ts`.
+- [x] Mover schemas, decoración, filtros y helpers sin cambiar su comportamiento.
+- [x] Mantener `herramientasTareas` en `index.ts` con el mismo orden y los mismos nombres.
+- [x] Ejecutar los tests focalizados de tareas, catálogo, paridad y snapshots.
 - **Criterios de aceptación:** ningún import externo cambia; el catálogo y el orden de herramientas son idénticos; los tests de MCP pasan.
 
 ### Fase 2 — Personas MCP
@@ -83,5 +83,7 @@
 
 - ARCH-02 sale del backlog el 2026-11-15. La parte de `content.ts` ya se completó en HIER-01 y se retiró del alcance.
 - Tamaños de partida: `tareas.ts` 700 líneas, `personas.ts` 523 y `oauth/service.ts` 499.
+- Fase 1 completada el 2026-11-15: el dominio queda en `comun.ts` (102), `filtros.ts` (89), `lectura.ts` (89), `escritura.ts` (276) e `index.ts` (181); `herramientasTareas` conserva nombres y orden.
+- Verificación local: `npm run lint`, `npx tsc --noEmit`, `npm test` (90 archivos / 751 tests) y `npm run build` en verde.
 - Existen pruebas de MCP (`catalogo`, `matriz`, `paridad`, `reads`, `writes`) y de OAuth (`service.test.ts`) que sirven de red de seguridad.
 - No se cambia la versión ni se publica en Sites durante este roadmap.
