@@ -35,7 +35,7 @@ reglas de cada app.
 
 ## Qué falta en cada app
 
-### Excalidraw — MCP-05B
+### Excalidraw — MCP-05B (en roadmap)
 
 - Leer y escribir pizarras de tarea, proyecto y Mi espacio.
 - Añadir elementos con una lista acotada, sin pedir al agente el JSON interno.
@@ -71,7 +71,7 @@ reglas de cada app.
 
 - **Instalación y catálogo:** cubiertos por MCP-03.
 - **Abrir y controlar ventanas:** cubiertos por MCP-04 para las cuatro apps.
-- **Lectura y escritura de contenido:** MCP-05B, MCP-05D y MCP-05E.
+- **Lectura y escritura de contenido:** MCP-05B (en roadmap), MCP-05D y MCP-05E.
 - **Exportación:** no hay una herramienta dedicada. Excalidraw necesita render
   de imagen; Mermaid necesita render de SVG; Blockly descarga el mismo JSON que
   devolverá `leer_programa_bloques`. Por eso no se crea una entrada nueva: las
@@ -82,8 +82,9 @@ reglas de cada app.
 
 ## Referencias
 
+- [`roadmap.md`](roadmap.md): MCP-05B activo.
 - [`changelog.md`](changelog.md): resumen del roadmap MCP-05A + MCP-05C.
-- [`backlog.md`](backlog.md): MCP-05B, MCP-05D y MCP-05E.
+- [`backlog.md`](backlog.md): MCP-05D y MCP-05E.
 - [`aplicaciones-nativas.md`](aplicaciones-nativas.md): catálogo, licencias y
   versiones de las apps.
 - [`../app/board/apps/README.md`](../app/board/apps/README.md): cómo se declara
