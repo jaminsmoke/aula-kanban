@@ -1,4 +1,4 @@
-import { buildBoardUrl, type BoardUrlState, type BoardView, type ClassSection, type SettingsSection } from "../../domain/board-url";
+import { buildBoardUrl, type AdministracionSection, type BoardUrlState, type BoardView, type ClassSection, type SettingsSection } from "../../domain/board-url";
 
 /**
  * Enlaces canónicos del Site para las respuestas MCP.
@@ -18,6 +18,7 @@ import { buildBoardUrl, type BoardUrlState, type BoardView, type ClassSection, t
  * @param classSection - Sección de Clase (`tareas` por defecto).
  * @param settingsSection - Sección de Ajustes (`cuenta` por defecto).
  * @param app - App de Mi espacio a abrir (`app=<appId>`), si se pide.
+ * @param administracionSection - Sección de Administración (`alumnos` por defecto).
  * @returns La URL canónica, absoluta o relativa.
  */
 export function enlace(
@@ -27,8 +28,9 @@ export function enlace(
   classSection: ClassSection = "tareas",
   settingsSection: SettingsSection = "cuenta",
   app?: string,
+  administracionSection: AdministracionSection = "alumnos",
 ): string {
-  const state: BoardUrlState = { view, classSection, settingsSection };
+  const state: BoardUrlState = { view, classSection, settingsSection, administracionSection };
   let query = buildBoardUrl(`?project=${encodeURIComponent(projectId)}`, state);
   if (app) {
     const params = new URLSearchParams(query.startsWith("?") ? query.slice(1) : query);

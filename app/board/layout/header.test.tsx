@@ -31,13 +31,15 @@ const props = {
 };
 
 describe("BoardHeader", () => {
-  it("separa las vistas de trabajo de la documentación", () => {
+  it("reúne alumnado y profesorado en una sola entrada", () => {
     render(<BoardHeader {...props} />);
 
     const nav = screen.getByRole("navigation", { name: "Vistas" });
-    for (const name of ["Clase", "Alumnos", "Profesores", "Mi espacio"]) {
+    for (const name of ["Clase", "Administración", "Mi espacio"]) {
       expect(within(nav).getByRole("button", { name })).toBeTruthy();
     }
+    expect(within(nav).queryByRole("button", { name: "Alumnos" })).toBeNull();
+    expect(within(nav).queryByRole("button", { name: "Profesores" })).toBeNull();
     expect(within(nav).queryByRole("button", { name: "Documentación" })).toBeNull();
     expect(within(nav).queryByText("Mi espacio")).toBeNull();
     expect(screen.getByRole("button", { name: "Documentación" })).toBeTruthy();
@@ -47,17 +49,23 @@ describe("BoardHeader", () => {
   });
 
   it("conserva vista y sección en los enlaces de proyecto", () => {
-    const { rerender } = render(<BoardHeader {...props} view="alumnos" />);
-    expect(screen.getByRole("link", { name: /Pruebas/ }).getAttribute("href")).toBe("/?project=p1&view=alumnos");
+    const { rerender } = render(<BoardHeader {...props} view="administracion" />);
+    expect(screen.getByRole("link", { name: /Pruebas/ }).getAttribute("href")).toBe("/?project=p1&view=administracion");
+
+    rerender(<BoardHeader {...props} view="administracion" administracionSection="profesores" />);
+    expect(screen.getByRole("link", { name: /Pruebas/ }).getAttribute("href")).toBe("/?project=p1&view=administracion&section=profesores");
 
     rerender(<BoardHeader {...props} view="ajustes" settingsSection="administradores" />);
     expect(screen.getByRole("link", { name: /Pruebas/ }).getAttribute("href")).toBe("/?project=p1&view=ajustes&section=administradores");
   });
 
-  it("abre Mi espacio, Documentación y Ajustes y marca sus acciones como activas", () => {
+  it("abre Administración, Mi espacio, Documentación y Ajustes y marca sus acciones como activas", () => {
     const onView = vi.fn();
     const onSettings = vi.fn();
     const { rerender } = render(<BoardHeader {...props} onView={onView} onSettings={onSettings} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Administración" }));
+    expect(onView).toHaveBeenCalledWith("administracion");
 
     fireEvent.click(screen.getByRole("button", { name: "Mi espacio" }));
     expect(onView).toHaveBeenCalledWith("espacio");
@@ -67,6 +75,9 @@ describe("BoardHeader", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Ajustes" }));
     expect(onSettings).toHaveBeenCalled();
+
+    rerender(<BoardHeader {...props} view="administracion" onView={onView} onSettings={onSettings} />);
+    expect(screen.getByRole("button", { name: "Administración" }).getAttribute("aria-current")).toBe("page");
 
     rerender(<BoardHeader {...props} view="espacio" onView={onView} onSettings={onSettings} />);
     expect(screen.getByRole("button", { name: "Mi espacio" }).getAttribute("aria-current")).toBe("page");

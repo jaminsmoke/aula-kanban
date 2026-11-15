@@ -4,7 +4,7 @@ export const helpSections: DocSection[] = [
   {
     id: "enlaces",
     title: "Enlaces, portada y tu propio Site",
-    lead: "Cada vista tiene su dirección. Puedes guardar un enlace a Clase > Calendario, a Alumnos o a Ajustes, y la portada y esta documentación se abren sin sesión.",
+    lead: "Cada vista tiene su dirección. Puedes guardar un enlace a Clase > Calendario, a Administración > Alumnos o a Ajustes, y la portada y esta documentación se abren sin sesión.",
     blocks: [
       { type: "paragraph", text: "La dirección sigue el esquema `?project=<id>&view=<vista>&section=<sección>`. Solo se escribe lo que no es el valor por defecto, así que `/?project=<id>` ya es Clase > Tareas." },
       {
@@ -12,7 +12,7 @@ export const helpSections: DocSection[] = [
         items: [
           { term: "Clase > Tareas", text: "`/?project=<id>` o `/?project=<id>&view=clase`." },
           { term: "Clase > Calendario", text: "`/?project=<id>&section=calendario`; también admite `view=clase`." },
-          { term: "Alumnos y Profesores", text: "`view=alumnos` y `view=profesores`." },
+          { term: "Administración", text: "`view=administracion` abre Alumnos; `view=administracion&section=profesores`, Profesores. `view=alumnos` y `view=profesores` siguen funcionando como enlaces antiguos." },
           { term: "Mi espacio", text: "`view=espacio`; `app=<appId>` abre una aplicación instalada, por ejemplo `view=espacio&app=mermaid`." },
           { term: "Ajustes", text: "`view=ajustes`, con `section=cuenta` (por defecto), `apariencia`, `tokens`, `administradores` o `almacenamiento`; las dos últimas solo con permiso." },
           { term: "Documentación", text: "`/documentacion` sin sesión; dentro del tablero, `view=documentacion`." },

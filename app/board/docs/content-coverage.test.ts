@@ -31,8 +31,7 @@ const ayuda = docSections.map(textoDe).join("\n");
 /** Nombre con el que la ayuda llama a cada vista del tablero. */
 const nombreDeVista: Record<BoardView, string> = {
   clase: "Clase",
-  alumnos: "Alumnos",
-  profesores: "Profesores",
+  administracion: "Administración",
   espacio: "Mi espacio",
   ajustes: "Ajustes",
   documentacion: "Documentación",

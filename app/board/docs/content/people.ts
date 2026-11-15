@@ -4,9 +4,9 @@ export const peopleSections: DocSection[] = [
   {
     id: "personas",
     title: "Personas, miembros e invitaciones",
-    lead: "Alumnos y Profesores reúnen las fichas del grupo y sus tareas asignadas. Gestionar miembros decide qué cuenta de ChatGPT entra al proyecto y con qué rol.",
+    lead: "Administración reúne Alumnos y Profesores, con las fichas del grupo y sus tareas asignadas. Gestionar miembros decide qué cuenta de ChatGPT entra al proyecto y con qué rol.",
     blocks: [
-      { type: "paragraph", text: "Las dos vistas se abren desde la cabecera y comparten aspecto: un contador («n alumnos» o «n profesores»), dos disposiciones («Vista mosaico» y «Vista lista») y una tarjeta por ficha con su nombre, su puesto y el estado de su cuenta. Al abrir una tarjeta ves la ficha completa." },
+      { type: "paragraph", text: "Las dos secciones se abren desde «Administración», en la cabecera, con el sidebar de la vista. Comparten aspecto: un contador («n alumnos» o «n profesores»), dos disposiciones («Vista mosaico» y «Vista lista») y una tarjeta por ficha con su nombre, su puesto y el estado de su cuenta. Al abrir una tarjeta ves la ficha completa; si eres alumno, tu propia ficha se abre directamente al entrar en Alumnos." },
       {
         type: "definitions",
         items: [

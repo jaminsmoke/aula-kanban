@@ -40,13 +40,11 @@ export default function StudentsView({
   const student = studentName ? students?.find((item) => item.section === studentName) : undefined;
   return (
     <section className="students-view">
-      <p className="eyebrow"><span /> Grupo de clase</p>
       <div className="students-heading">
         <div className="students-title-row">
-          <h1>Alumnos</h1>
+          <h2>Alumnos</h2>
           {canManage && <button type="button" className="primary add-student" aria-label="Añadir alumno" title="Añadir alumno" onClick={onCreate}><Plus size={20} aria-hidden /></button>}
         </div>
-        <p className="intro">Fichas del grupo y tareas asignadas.</p>
       </div>
       {loadError && <div role="alert" className="alert">{loadError} <button type="button" className="text-button" onClick={onRetryTasks}>Reintentar</button></div>}
       {studentError && <div role="alert" className="alert">{studentError} <button type="button" className="text-button" onClick={onRetryStudents}>Reintentar</button></div>}

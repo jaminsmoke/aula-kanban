@@ -3,15 +3,19 @@
  *
  * - `project`: id del proyecto activo. Lo sigue leyendo `use-projects`; aquí
  *   solo se conserva, nunca se reescribe.
- * - `view`: una de `clase | alumnos | profesores | espacio | ajustes |
+ * - `view`: una de `clase | administracion | espacio | ajustes |
  *   documentacion`. Por defecto `clase`.
  * - `section`: sección dentro de la vista. En `clase` es `tareas` (por
- *   defecto) o `calendario`; en `ajustes` es `cuenta | apariencia | tokens |
+ *   defecto) o `calendario`; en `administracion` es `alumnos` (por defecto) o
+ *   `profesores`; en `ajustes` es `cuenta | apariencia | tokens |
  *   administradores | almacenamiento` (por defecto `cuenta`). En el resto de
  *   vistas no tiene significado y se omite.
  *
  * La forma canónica omite los valores por defecto: `/?project=p1` ya es
- * Clase > Tareas y `/?project=p1&view=ajustes` ya es Ajustes > Cuenta.
+ * Clase > Tareas, `/?project=p1&view=administracion` ya es Administración >
+ * Alumnos y `/?project=p1&view=ajustes` ya es Ajustes > Cuenta.
+ * `view=alumnos` y `view=profesores` son alias antiguos que se leen como
+ * Administración y se reescriben a su forma canónica.
  * Los valores inválidos caen al defecto de su vista. Los parámetros
  * desconocidos y el hash (`#docs-…`) se conservan tal cual.
  *
@@ -21,7 +25,10 @@
  */
 
 /** Vistas válidas del tablero. */
-export type BoardView = "clase" | "alumnos" | "profesores" | "espacio" | "ajustes" | "documentacion";
+export type BoardView = "clase" | "administracion" | "espacio" | "ajustes" | "documentacion";
+
+/** Secciones válidas dentro de Administración. */
+export type AdministracionSection = "alumnos" | "profesores";
 
 /** Secciones válidas dentro de Clase. */
 export type ClassSection = "tareas" | "calendario";
@@ -32,12 +39,17 @@ export type SettingsSection = "cuenta" | "apariencia" | "tokens" | "administrado
 /** Vistas válidas del tablero. */
 export const BOARD_VIEWS: readonly BoardView[] = [
   "clase",
-  "alumnos",
-  "profesores",
+  "administracion",
   "espacio",
   "ajustes",
   "documentacion",
 ];
+
+/** Vistas antiguas que se leen como Administración. */
+const LEGACY_PEOPLE_VIEWS = ["alumnos", "profesores"] as const;
+
+/** Secciones válidas dentro de Administración, en el orden de navegación. */
+export const ADMINISTRACION_SECTIONS: readonly AdministracionSection[] = ["alumnos", "profesores"];
 
 /** Secciones válidas dentro de Clase. */
 export const CLASS_SECTIONS: readonly ClassSection[] = ["tareas", "calendario"];
@@ -56,6 +68,7 @@ export type BoardUrlState = {
   view: BoardView;
   classSection: ClassSection;
   settingsSection: SettingsSection;
+  administracionSection: AdministracionSection;
   /** Id de la app del catálogo a abrir al cargar `view=espacio` (`app=<appId>`). */
   app?: string | null;
 };
@@ -64,6 +77,7 @@ const DEFAULT_STATE: BoardUrlState = {
   view: "clase",
   classSection: "tareas",
   settingsSection: "cuenta",
+  administracionSection: "alumnos",
 };
 
 /**
@@ -76,11 +90,18 @@ const DEFAULT_STATE: BoardUrlState = {
 export function parseBoardUrl(search: string): BoardUrlState {
   const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
   const rawView = params.get("view");
+  const legacySection = LEGACY_PEOPLE_VIEWS.includes(rawView as (typeof LEGACY_PEOPLE_VIEWS)[number])
+    ? (rawView as AdministracionSection)
+    : null;
   const view: BoardView = BOARD_VIEWS.includes(rawView as BoardView)
     ? (rawView as BoardView)
-    : DEFAULT_STATE.view;
+    : legacySection
+      ? "administracion"
+      : DEFAULT_STATE.view;
   const rawSection = params.get("section");
 
+  const administracionSection: AdministracionSection = legacySection
+    ?? (rawSection === "profesores" ? "profesores" : DEFAULT_STATE.administracionSection);
   const classSection: ClassSection = CLASS_SECTIONS.includes(rawSection as ClassSection)
     ? (rawSection as ClassSection)
     : DEFAULT_STATE.classSection;
@@ -89,7 +110,7 @@ export function parseBoardUrl(search: string): BoardUrlState {
     : DEFAULT_STATE.settingsSection;
 
   const app = view === "espacio" ? params.get("app") : null;
-  return { view, classSection, settingsSection, app };
+  return { view, classSection, settingsSection, administracionSection, app };
 }
 
 /**
@@ -108,6 +129,9 @@ export function buildBoardUrl(search: string, state: BoardUrlState): string {
   if (state.view === "clase") {
     if (state.classSection === DEFAULT_STATE.classSection) params.delete("section");
     else params.set("section", state.classSection);
+  } else if (state.view === "administracion") {
+    if (state.administracionSection === DEFAULT_STATE.administracionSection) params.delete("section");
+    else params.set("section", state.administracionSection);
   } else if (state.view === "ajustes") {
     if (state.settingsSection === DEFAULT_STATE.settingsSection) params.delete("section");
     else params.set("section", state.settingsSection);

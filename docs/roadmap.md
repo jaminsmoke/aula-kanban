@@ -2,7 +2,7 @@
 
 > **Entrada:** UI-04 — Vista de administración para alumnado y profesorado (sale del backlog).
 > **Backlog:** UI-05 (estados vacíos de fichas).
-> **Estado:** Activo · Fases 1 a 4 pendientes.
+> **Estado:** En curso · fases 1 a 3 completadas, fase 4 pendiente.
 > **Versión:** `1.1.30` sin cambios hasta el cierre.
 
 ---
@@ -46,27 +46,27 @@
 
 ### Fase 1: Esquema de URL y alias
 
-- [ ] Añadir `administracion` a `BOARD_VIEWS` y el tipo `AdministracionSection` (`alumnos | profesores`) con su lista canónica y su defecto `alumnos`; añadir `administracionSection` a `BoardUrlState`.
-- [ ] En `parseBoardUrl`, leer `view=administracion&section=profesores` y mapear `view=alumnos`/`view=profesores` al estado nuevo; en `buildBoardUrl`, escribir la sección solo cuando sea `profesores`, omitirla en el resto de vistas y conservar `project` y parámetros desconocidos.
-- [ ] En `use-board-url.ts`, añadir la sección y su setter; canonizar la URL de entrada con `replaceState` una sola vez y sin bucle.
-- [ ] Actualizar `board-url.test.ts` y `use-board-url.test.tsx`: roundtrip, alias, atrás/adelante y URL sin sección.
+- [x] Añadir `administracion` a `BOARD_VIEWS` y el tipo `AdministracionSection` (`alumnos | profesores`) con su lista canónica y su defecto `alumnos`; añadir `administracionSection` a `BoardUrlState`.
+- [x] En `parseBoardUrl`, leer `view=administracion&section=profesores` y mapear `view=alumnos`/`view=profesores` al estado nuevo; en `buildBoardUrl`, escribir la sección solo cuando sea `profesores`, omitirla en el resto de vistas y conservar `project` y parámetros desconocidos.
+- [x] En `use-board-url.ts`, añadir la sección y su setter; canonizar la URL de entrada con `replaceState` una sola vez y sin bucle.
+- [x] Actualizar `board-url.test.ts` y `use-board-url.test.tsx`: roundtrip, alias, atrás/adelante y URL sin sección.
 - **Criterios de aceptación:** la URL canónica es única; los enlaces antiguos abren el mismo contenido; atrás/adelante no repite ni pierde entradas; pruebas de URL en verde.
 
 ### Fase 2: Cabecera y marco con sidebar
 
-- [ ] Sustituir los botones «Alumnos» y «Profesores» por una sola entrada «Administración», activa con `aria-current` cuando `view === "administracion"`; conservar Mi espacio, Documentación y Ajustes.
-- [ ] Crear `AdministrationView` sobre `WorkspaceLayout` (título «Administración», secciones Alumnos y Profesores con icono), cargarla de forma diferida en `board.tsx` y marcar también esta vista como `app-frame--viewport`.
-- [ ] Pasar sección y setter desde `board.tsx`; con rol alumno, abrir Alumnos con `ownStudent` seleccionado; conservar detalle, edición, borrado y apertura de tareas.
-- [ ] Retirar de `StudentsView` y `TeachersView` el `eyebrow`, la intro y el `h1`; dejar un `h2` de sección, el contador y la disposición, y el alta en la misma fila de herramientas (solo con permiso).
-- [ ] Ajustar `people.css` y el relleno del contenido del workspace; comprobar que a ≤720 px el sidebar pasa a fila horizontal con desplazamiento y sin desbordar.
+- [x] Sustituir los botones «Alumnos» y «Profesores» por una sola entrada «Administración», activa con `aria-current` cuando `view === "administracion"`; conservar Mi espacio, Documentación y Ajustes.
+- [x] Crear `AdministrationView` sobre `WorkspaceLayout` (título «Administración», secciones Alumnos y Profesores con icono), cargarla de forma diferida en `board.tsx` y marcar también esta vista como `app-frame--viewport`.
+- [x] Pasar sección y setter desde `board.tsx`; con rol alumno, abrir Alumnos con `ownStudent` seleccionado; conservar detalle, edición, borrado y apertura de tareas.
+- [x] Retirar de `StudentsView` y `TeachersView` el `eyebrow`, la intro y el `h1`; dejar un `h2` de sección, el contador y la disposición, y el alta en la misma fila de herramientas (solo con permiso).
+- [x] Ajustar `people.css` y el relleno del contenido del workspace; comprobar que a ≤720 px el sidebar pasa a fila horizontal con desplazamiento y sin desbordar.
 - **Criterios de aceptación:** una única entrada de navegación; sidebar con dos secciones; sin cabecera duplicada; el alta sigue disponible para quien puede gestionar; la ficha propia del alumnado se abre directamente.
 
 ### Fase 3: Enlaces MCP, documentación y pruebas
 
-- [ ] Extender `obtener_enlace` y `enlaces.ts` para aceptar `administracion` y su sección; actualizar el snapshot del catálogo y las pruebas de enlaces.
-- [ ] Actualizar `docs/content/people.ts` («Las dos vistas se abren desde la cabecera» deja de ser cierto) y el README donde describa la navegación.
-- [ ] Actualizar `header.test.tsx`, `board-url.test.ts`, `students-view.test.tsx`, `teachers-view.test.tsx` y `board.test.tsx` si depende de la navegación; cubrir alias, ficha propia y permisos de alta.
-- [ ] Ejecutar pruebas focalizadas, `npx tsc --noEmit`, `npm run lint`, `npm run build` y `git diff --check`.
+- [x] Extender `obtener_enlace` y `enlaces.ts` para aceptar `administracion` y su sección; actualizar el snapshot del catálogo y las pruebas de enlaces.
+- [x] Actualizar `docs/content/people.ts` («Las dos vistas se abren desde la cabecera» deja de ser cierto) y el README donde describa la navegación.
+- [x] Actualizar `header.test.tsx`, `board-url.test.ts`, `students-view.test.tsx`, `teachers-view.test.tsx` y `board.test.tsx` si depende de la navegación; cubrir alias, ficha propia y permisos de alta.
+- [x] Ejecutar pruebas focalizadas, `npx tsc --noEmit`, `npm run lint`, `npm run build` y `git diff --check`.
 - **Criterios de aceptación:** el enlace MCP devuelve la URL canónica; la ayuda no describe la navegación antigua; los checks están en verde.
 
 ### Fase 4: Verificación en navegador y cierre
@@ -88,4 +88,5 @@
 
 ## 6. Notas de sesión
 
+- 2026-11-15: fases 1 a 3 completadas. `administracion` es la vista canónica y `view=alumnos`/`view=profesores` se reescriben con `replaceState`; la cabecera muestra una sola entrada, `AdministrationView` agrupa Alumnos y Profesores con el sidebar y el alumnado abre su propia ficha. Suite completa: 123 archivos / 1.014 pruebas; tipos, lint, build y `git diff --check` en verde. Sin revisión en navegador ni cambio de versión (`1.1.30`).
 - 2026-11-15: UI-04 sale del backlog y se abre este roadmap. La cabecera mantiene tres botones de texto (Clase, Alumnos, Profesores) y las dos vistas de personas repiten `eyebrow`, `h1`, intro y alta; Clase y Ajustes ya comparten `WorkspaceLayout` con sidebar de 224 px (208 px a ≤1050 y fila horizontal a ≤720). Sin cambios de código ni de versión; `1.1.30` se mantiene.

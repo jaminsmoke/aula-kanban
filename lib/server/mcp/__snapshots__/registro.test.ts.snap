@@ -2076,24 +2076,36 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
           "type": "string",
         },
         "seccion": {
-          "description": "Sección dentro de la vista (clase o ajustes)",
-          "enum": [
-            "tareas",
-            "calendario",
-            "cuenta",
-            "apariencia",
-            "tokens",
-            "administradores",
-            "almacenamiento",
+          "anyOf": [
+            {
+              "description": "Sección dentro de Clase",
+              "enum": [
+                "tareas",
+                "calendario",
+                "cuenta",
+                "apariencia",
+                "tokens",
+                "administradores",
+                "almacenamiento",
+              ],
+              "type": "string",
+            },
+            {
+              "description": "Sección dentro de Administración",
+              "enum": [
+                "alumnos",
+                "profesores",
+              ],
+              "type": "string",
+            },
           ],
-          "type": "string",
+          "description": "Sección dentro de la vista (clase, administración o ajustes)",
         },
         "vista": {
           "description": "Vista pedida",
           "enum": [
             "clase",
-            "alumnos",
-            "profesores",
+            "administracion",
             "espacio",
             "ajustes",
             "documentacion",

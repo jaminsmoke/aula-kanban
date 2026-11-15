@@ -15,7 +15,7 @@ const appAuthor = typeof appPackage.author === "string" ? appPackage.author : ""
 // El tipo canónico vive en `lib/domain/board-url`; se reexporta aquí
 // para conservar el import histórico de la cabecera.
 export type { BoardView } from "../../../lib/domain/board-url";
-import type { BoardView } from "../../../lib/domain/board-url";
+import type { AdministracionSection, BoardView } from "../../../lib/domain/board-url";
 type View = BoardView;
 
 /**
@@ -26,7 +26,7 @@ type View = BoardView;
 export default function BoardHeader({
   user, activeProject, projects, projectId, view, onView, owner, admin, canManage,
   onNewProject, onShareProject, onMembers, onDeleteProject, onRemix, onSettings,
-  classSection = "tareas", settingsSection = "cuenta",
+  classSection = "tareas", settingsSection = "cuenta", administracionSection = "alumnos",
 }: {
   user: { displayName: string; email: string };
   activeProject?: Project;
@@ -36,6 +36,7 @@ export default function BoardHeader({
   onView: (view: View) => void;
   classSection?: ClassSection;
   settingsSection?: SettingsSection;
+  administracionSection?: AdministracionSection;
   owner: boolean;
   admin: boolean;
   canManage: boolean;
@@ -52,7 +53,7 @@ export default function BoardHeader({
 
   function projectHref(id: string) {
     const base = id === "default" ? "" : `?project=${encodeURIComponent(id)}`;
-    const search = buildBoardUrl(base, { view, classSection, settingsSection });
+    const search = buildBoardUrl(base, { view, classSection, settingsSection, administracionSection });
     return search ? `/${search}` : "/";
   }
 
@@ -62,8 +63,7 @@ export default function BoardHeader({
         <span className="wordmark"><span className="brand-icon" aria-hidden><Columns3 size={24} strokeWidth={2.4} /></span><span className="brand-text"><span>Aula Kanban</span><small className="brand-meta">v{appVersion} - {appAuthor}</small></span></span>
         {activeProject && <nav className="main-nav" aria-label="Vistas">
           <button type="button" aria-current={view === "clase" ? "page" : undefined} onClick={() => onView("clase")}>Clase</button>
-          <button type="button" aria-current={view === "alumnos" ? "page" : undefined} onClick={() => onView("alumnos")}>Alumnos</button>
-          <button type="button" aria-current={view === "profesores" ? "page" : undefined} onClick={() => onView("profesores")}>Profesores</button>
+          <button type="button" aria-current={view === "administracion" ? "page" : undefined} onClick={() => onView("administracion")}>Administración</button>
           <button type="button" className="space-action" aria-label="Mi espacio" title="Mi espacio" aria-current={view === "espacio" ? "page" : undefined} onClick={() => onView("espacio")}><LayoutGrid size={18} aria-hidden /></button>
         </nav>}
         {activeProject && <details className="project-menu">

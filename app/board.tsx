@@ -1,12 +1,11 @@
 "use client";
 
 import { FolderKanban, Plus, X } from "lucide-react";
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import BoardHeader from "./board/layout/header";
 import ClassView from "./board/class/class-view";
 // Las vistas secundarias solo se descargan al abrirlas.
-const TeachersView = lazy(() => import("./board/people/teachers/teachers-view"));
-const StudentsView = lazy(() => import("./board/people/students/students-view"));
+const AdministrationView = lazy(() => import("./board/people/administration/administration-view"));
 const SpaceView = lazy(() => import("./board/space/space-view"));
 const DocumentationView = lazy(() => import("./board/docs/docs-view"));
 const SettingsView = lazy(() => import("./board/settings/settings-view"));
@@ -35,7 +34,7 @@ export default function Board({ user, initial }: { user: { displayName: string; 
   const invitations = useInvitations();
   const data = useBoardData(projectState.activeProject);
   const actions = useProjectActions({ projects: projectState.projects, projectId: projectState.projectId });
-  const { view, setView, classSection, setClassSection, settingsSection, setSettingsSection } = useBoardUrlState(initial);
+  const { view, setView, classSection, setClassSection, settingsSection, setSettingsSection, administracionSection, setAdministracionSection } = useBoardUrlState(initial);
   const [studentName, setStudentName] = useState<string | null>(null);
   const [studentLayout, setStudentLayout] = useState<"grid" | "list">("grid");
   const [notice, setNotice] = useState("");
@@ -46,6 +45,19 @@ export default function Board({ user, initial }: { user: { displayName: string; 
   const isGuest = activeProject?.role === "guest";
   const board = useTasks({ data, hasProject: Boolean(activeProject), canManage, isGuest, notify: setNotice });
   const people = useStudents({ data, openStudent: setStudentName, onStudentRemoved: board.clearStudentFilter, notify: setNotice });
+  const preselectedStudent = useRef<string | null>(null);
+
+  // El alumnado entra en Administración > Alumnos con su propia ficha abierta.
+  // Se hace una vez por proyecto y ficha: volver a la lista no la reabre.
+  useEffect(() => {
+    if (view !== "administracion" || administracionSection !== "alumnos" || activeProject?.role !== "student") return;
+    const own = data.ownStudent?.section;
+    if (!own) return;
+    const key = `${activeProject.id}:${own}`;
+    if (preselectedStudent.current === key) return;
+    preselectedStudent.current = key;
+    setStudentName(own);
+  }, [view, administracionSection, activeProject, data.ownStudent]);
 
   const accessReady = projectState.projectsLoaded && invitations.invitationsLoaded;
   const accessCheckError = projectState.projectLoadError || invitations.invitationLoadError;
@@ -55,7 +67,7 @@ export default function Board({ user, initial }: { user: { displayName: string; 
   const privilegedOnboarding = (projectState.owner || projectState.admin) && !projectState.hasProjectLink && projectState.projects.length === 0 && invitations.invitations.length === 0;
 
   return (
-    <div className={`app-frame${view === "ajustes" || (activeProject && view === "clase") ? " app-frame--viewport" : ""}`}>
+    <div className={`app-frame${view === "ajustes" || view === "administracion" || (activeProject && view === "clase") ? " app-frame--viewport" : ""}`}>
       <BoardHeader
         user={user}
         activeProject={activeProject}
@@ -64,7 +76,8 @@ export default function Board({ user, initial }: { user: { displayName: string; 
         view={view}
         classSection={classSection}
         settingsSection={settingsSection}
-        onView={(next) => { setView(next); setNotice(""); if (next === "alumnos") setStudentName(null); }}
+        administracionSection={administracionSection}
+        onView={(next) => { setView(next); setNotice(""); if (next === "administracion") setStudentName(null); }}
         owner={projectState.owner}
         admin={projectState.admin}
         canManage={Boolean(canManage)}
@@ -78,7 +91,7 @@ export default function Board({ user, initial }: { user: { displayName: string; 
 
       {remixOpen && <RemixDialog onClose={() => setRemixOpen(false)} />}
 
-      <main className={view === "ajustes" || (activeProject && view === "clase") ? "workspace-main" : "shell"}>
+      <main className={view === "ajustes" || view === "administracion" || (activeProject && view === "clase") ? "workspace-main" : "shell"}>
         {activeProject && invitations.invitations.length > 0 && <section className="invitation-panel" aria-label="Invitaciones pendientes"><h2>Invitaciones pendientes</h2>{invitations.invitations.map((invitation) => <div className="invitation-row" key={invitation.id}><span><strong>{invitation.projectName}</strong> · {invitationRoleNames[invitation.role]}</span><button className="primary" disabled={invitations.invitationBusy} onClick={() => void invitations.acceptInvitation(invitation)}>Aceptar invitación</button></div>)}</section>}
         {activeProject && invitations.invitationLoadError && <div className="alert project-alert" role="alert">No se pudieron consultar las invitaciones. <button type="button" className="text-button" onClick={() => void invitations.refreshInvitations()}>Reintentar</button></div>}
         {activeProject && invitations.invitationError && <div className="alert" role="alert">{invitations.invitationError}</div>}
@@ -117,32 +130,41 @@ export default function Board({ user, initial }: { user: { displayName: string; 
           <Suspense fallback={<div className="access-loading" role="status">Cargando Mi espacio…</div>}>
             <SpaceView role={activeProject.role} projectId={projectState.projectId} onExit={() => setView("clase")} />
           </Suspense>
-        ) : view === "profesores" ? (
-          <Suspense fallback={<div className="access-loading" role="status">Cargando profesores…</div>}>
-          <TeachersView key={projectState.projectId} projectId={projectState.projectId} isAdmin={projectState.owner || projectState.admin} ownTeacherId={activeProject.teacherId} tasks={data.tasks} students={data.students} openTask={(task) => board.openEditor(task.status, task)} />
-          </Suspense>
-        ) : view === "alumnos" ? (
-          <Suspense fallback={<div className="access-loading" role="status">Cargando alumnos…</div>}>
-          <StudentsView
-            students={data.students}
-            tasks={data.tasks}
-            all={data.tasks ?? []}
-            allPeople={data.allPeople}
-            ownStudent={data.ownStudent}
-            canManage={Boolean(canManage)}
-            loadError={data.loadError}
-            studentError={data.studentError}
-            onRetryTasks={() => void data.refresh()}
-            onRetryStudents={() => void data.refreshStudents()}
-            studentName={studentName}
-            onSelectStudent={setStudentName}
-            layout={studentLayout}
-            onLayout={setStudentLayout}
-            onCreate={people.openNewStudent}
-            onEdit={people.openEditStudent}
-            onDelete={people.openRemoveStudent}
-            onOpenTask={(task) => board.openEditor(task.status, task)}
-          />
+        ) : view === "administracion" ? (
+          <Suspense fallback={<div className="access-loading" role="status">Cargando administración…</div>}>
+            <AdministrationView
+              key={projectState.projectId}
+              section={administracionSection}
+              onSection={setAdministracionSection}
+              students={{
+                students: data.students,
+                tasks: data.tasks,
+                all: data.tasks ?? [],
+                allPeople: data.allPeople,
+                ownStudent: data.ownStudent,
+                canManage: Boolean(canManage),
+                loadError: data.loadError,
+                studentError: data.studentError,
+                onRetryTasks: () => void data.refresh(),
+                onRetryStudents: () => void data.refreshStudents(),
+                studentName,
+                onSelectStudent: setStudentName,
+                layout: studentLayout,
+                onLayout: setStudentLayout,
+                onCreate: people.openNewStudent,
+                onEdit: people.openEditStudent,
+                onDelete: people.openRemoveStudent,
+                onOpenTask: (task) => board.openEditor(task.status, task),
+              }}
+              teachers={{
+                projectId: projectState.projectId,
+                isAdmin: projectState.owner || projectState.admin,
+                ownTeacherId: activeProject.teacherId,
+                tasks: data.tasks,
+                students: data.students,
+                openTask: (task) => board.openEditor(task.status, task),
+              }}
+            />
           </Suspense>
         ) : (
           <ClassView

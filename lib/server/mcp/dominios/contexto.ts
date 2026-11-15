@@ -2,7 +2,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../../db";
 import { instanceApps, students, tasks as taskRows, teachers, userIdentities } from "../../../../db/schema";
-import { BOARD_VIEWS, SETTINGS_SECTIONS, type BoardView, type ClassSection, type SettingsSection } from "../../../domain/board-url";
+import { ADMINISTRACION_SECTIONS, BOARD_VIEWS, SETTINGS_SECTIONS, type AdministracionSection, type BoardView, type ClassSection, type SettingsSection } from "../../../domain/board-url";
 import { NATIVE_APP_IDS } from "../../../native-apps";
 import { listInstalledApps } from "../../apps";
 import { comandarVentana } from "../../space-control";
@@ -26,6 +26,7 @@ const projectId = z.string().uuid().describe("Id del proyecto de Aula Kanban");
 const vistas = z.enum(BOARD_VIEWS as unknown as [BoardView, ...BoardView[]]).describe("Vista pedida");
 const seccionClase = z.enum(["tareas", "calendario"]).describe("Sección dentro de Clase");
 const seccionAjustes = z.enum(SETTINGS_SECTIONS as unknown as [SettingsSection, ...SettingsSection[]]).describe("Sección dentro de Ajustes");
+const seccionAdministracion = z.enum(ADMINISTRACION_SECTIONS as unknown as [AdministracionSection, ...AdministracionSection[]]).describe("Sección dentro de Administración");
 
 /**
  * Nombre visible de la cuenta: identidad guardada o el correo.
@@ -79,7 +80,8 @@ async function obtenerEnlace(caller: McpCaller, args: Record<string, unknown>) {
   const view = (a.vista ?? "clase") as BoardView;
   const classSection = (view === "clase" && (a.seccion === "calendario" || a.seccion === "tareas") ? a.seccion : "tareas") as ClassSection;
   const settingsSection = (view === "ajustes" && SETTINGS_SECTIONS.includes(a.seccion as SettingsSection) ? a.seccion : "cuenta") as SettingsSection;
-  return payloadResult({ enlace: enlace(caller.origen, a.proyectoId, view, classSection, settingsSection, a.app) });
+  const administracionSection = (view === "administracion" && ADMINISTRACION_SECTIONS.includes(a.seccion as AdministracionSection) ? a.seccion : "alumnos") as AdministracionSection;
+  return payloadResult({ enlace: enlace(caller.origen, a.proyectoId, view, classSection, settingsSection, a.app, administracionSection) });
 }
 
 /**
@@ -177,7 +179,7 @@ export const herramientasContexto: McpToolDefinicion[] = [
     inputSchema: {
       proyectoId: projectId,
       vista: vistas.optional(),
-      seccion: seccionClase.or(seccionAjustes).optional().describe("Sección dentro de la vista (clase o ajustes)"),
+      seccion: seccionClase.or(seccionAjustes).or(seccionAdministracion).optional().describe("Sección dentro de la vista (clase, administración o ajustes)"),
       app: z.string().min(1).max(80).optional().describe("App de Mi espacio a abrir en la vista espacio"),
     },
     outputSchema: { enlace: z.string() },
