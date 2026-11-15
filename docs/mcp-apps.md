@@ -110,7 +110,7 @@ reglas de cada app.
 - [`roadmap.md`](roadmap.md): plantilla del próximo roadmap.
 - [`changelog.md`](changelog.md): resumen de los roadmaps MCP-05B, MCP-05D y
   MCP-05E.
-- [`backlog.md`](backlog.md): PER-03, PER-01B, PER-02 y SYNC-01.
+- [`backlog.md`](backlog.md): PER-01B, PER-02 y SYNC-01.
 - [`aplicaciones-nativas.md`](aplicaciones-nativas.md): catálogo, licencias y
   versiones de las apps.
 - [`../app/board/apps/README.md`](../app/board/apps/README.md): cómo se declara
