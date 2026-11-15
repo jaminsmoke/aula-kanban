@@ -52,7 +52,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Flujo de trabajo
 
 1. **Entra una idea o una revisión.** Si se va a hacer ahora, se convierte en la fase activa de `roadmap.md`. Si se aparca, se añade arriba de `backlog.md`.
-2. **Se ejecuta el roadmap.** El roadmap contiene solo la fase activa y sus subfases; no es una lista de deseos.
+2. **Se ejecuta el roadmap.** El roadmap contiene solo la fase activa y sus subfases; no es una lista de deseos. Cada bloque verificado se confirma y se sube al repo personal `jaminsmoke/aula-kanban` (`git push github main`). Ese push no publica en Sites: la publicación y la verificación en producción las realiza Codex de OpenAI.
 3. **Se cierra el roadmap.** Solo cuando **todas** sus fases están completadas, incluida la verificación final, su resumen pasa arriba de `changelog.md` y `roadmap.md` se reinicia desde `roadmap-template.md`.
 4. **Lo aparcado no se pierde.** Permanece en `backlog.md` hasta que se convierte en roadmap o se descarta con una nota.
 5. **Las plantillas no se usan para trabajo real.** Se copian para reiniciar un documento y se quedan limpias.
@@ -66,6 +66,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 
 ## Estado actual
 
+- **Reparto de trabajo:** commits y push siempre al repo personal `jaminsmoke/aula-kanban`; despliegue y verificación en Sites, siempre por Codex de OpenAI.
 - **Fase 1 completada:** reorganización de `app/board` por dominios, módulos compartidos y estilos.
 - **Roadmap CSS completado:** tokens, CSS por feature, limpieza y verificación final. Resumen en [`changelog.md`](changelog.md); la auditoría temporal ya se eliminó.
 - **Roadmap de dominio/auth completado:** `lib/domain/`, `lib/server/auth.ts`, regla de frontera y documentación. Resumen en [`changelog.md`](changelog.md).
@@ -92,7 +93,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap de Calendario en Clase completado:** `react-big-calendar` 1.20.0 (MIT) con localizer de `date-fns` en carga diferida, sección `calendario` con las tareas por `dueDate`, `section=calendario` en la URL, estilos con tokens, pruebas y avisos de licencia. Resumen en [`changelog.md`](changelog.md).
 - **Site público confirmado** por el propietario el 2026-11-14: la portada anónima de `/` y `/documentacion` son visibles sin sesión. La entrada del backlog queda cerrada.
 - **Roadmap de Servidor MCP completado:** servidor MCP remoto en `/api/mcp` con 8 herramientas, tokens personales en Ajustes > Cuenta, límite básico por token y documentación de instalación en README y `/documentacion`. Resumen en [`changelog.md`](changelog.md).
-- **Backlog:** UI-01, ARCH-01, ARCH-02, CI-01, SYNC-01, MCP-05 y recortes de rendimiento (7 entradas). MCP-04, MCP-03, MCP-01 y MCP-02 están cerrados; el plugin de Sites sustituye la entrada «GPT con Actions».
+- **Backlog:** UI-02, PER-03, PER-01B, PER-02, HIER-01, UI-01, ARCH-01, ARCH-02, CI-01, SYNC-01, MCP-05 y recortes de rendimiento (12 entradas). MCP-04, MCP-03, MCP-01 y MCP-02 están cerrados; el plugin de Sites sustituye la entrada «GPT con Actions».
 - **Roadmap de hidratación en `view=ajustes` completado:** el estado inicial de vista/sección pasa de la página (servidor) al hook, y la primera pintura ya coincide. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de repositorio público en GitHub completado:** `jaminsmoke/aula-kanban` con licencia MIT, textos de licencia de Excalidraw, CI en verde, segundo push con instrucciones de clonado y mensaje de remix con git. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de OAuth 2.1 para MCP y GPT completado:** servidor de autorización en el Site (RFC 7591, PKCE S256, consentimiento SIWC), MCP como resource server con alcances `mcp:read`/`mcp:write` y documentación de conexión para clientes y GPT. Resumen en [`changelog.md`](changelog.md).
@@ -108,10 +109,10 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap DOC-07 + MCP-11 completado:** catálogo público en `lib/domain/mcp-catalogo.ts`, instrucciones y prompts compartidos por `/mcp` y `/api/mcp`, guía del plugin en la ayuda y README generada desde el catálogo. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-09 completado:** administración de la instancia, tokens propios y auditoría por MCP (7 herramientas, catálogo `0.19.0`), con matriz, snapshot, paridad y pruebas SQLite. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-10 completado:** archivos del proyecto por MCP con `subir_archivo` y `obtener_archivo`, límites compartidos con la web, matriz ampliada y 50 herramientas (`0.20.0`). Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05 y recortes de chunks (2 entradas).
-- **Roadmap activo:** PER-01 — Persistencia de archivos con R2. La `1.1.26` está desplegada en Sites por Codex y el repo personal está sincronizado; la subida y la lectura ya se verificaron contra D1/R2 locales (201/200, hash idéntico), pero falta repetirlo en el Site, inventariar archivos y decidir miniaturas. Backlog: UI-01, ARCH-01, ARCH-02, CI-01, SYNC-01, MCP-05 y recortes (7 entradas).
+- **Roadmap activo:** sin fase activa; plantilla reiniciada. La verificación de subida en producción se registró en el changelog; el inventario de R2 y las copias antiguas permanecen en PER-01B, y la purga segura pendiente en PER-03. El roadmap anterior se conserva en [`historial/roadmap-per-01.md`](historial/roadmap-per-01.md).
 
 ## Documentación relacionada
 
 - [`../README.md`](../README.md): instalación, desarrollo, base de datos y migraciones.
-- [`../AGENTS.md`](../AGENTS.md): reglas de publicación y trabajo del agente.
+- [`../AGENTS.md`](../AGENTS.md): reglas del repo personal, publicación por Codex y trabajo del agente.
 - [`../package.json`](../package.json): dependencias y scripts del proyecto.

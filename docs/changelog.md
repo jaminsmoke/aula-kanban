@@ -6,6 +6,15 @@
 
 ---
 
+## 2026-11-15 — Verificación de persistencia y archivo de PER-01
+
+**Estado:** subida verificada · inventario y purga pendientes en backlog
+
+- En producción se subió una imagen a un proyecto temporal, se guardó en una tarea y se comprobó su visualización después de recargar. El proyecto de prueba se eliminó y el contador de filas de archivos volvió a cero.
+- La verificación local anterior comprobó subida y lectura con contenido idéntico. Mantendremos originales; la evaluación de miniaturas derivadas queda en PER-02.
+- Se reinicia el roadmap a petición del usuario, sin dar por completada la auditoría de R2: PER-01B conserva el inventario y la búsqueda de copias antiguas; PER-03 registra la purga automática todavía no implementada. El roadmap íntegro queda en `docs/historial/roadmap-per-01.md`. UI-02 recoge el encuadre de las imágenes.
+- Sin cambios de código ni nuevo despliegue: la versión publicada sigue siendo 1.1.26.
+
 ## 2026-11-15 — UUID del proyecto y publicación 1.1.26
 
 **Estado:** Completada · Publicada
@@ -14,7 +23,7 @@
 - Se conserva la correspondencia en `project_rekeys`; las reglas de inmutabilidad solo permiten el traslado mientras la operación está en curso. Las claves de objetos R2 se conservan para no perder archivos.
 - Comparación de producción antes y después: 13 tareas, 17 alumnos, un profesor y dos membresías conservados; sin diferencias en las 11 tablas respaldadas salvo el identificador del proyecto.
 - Se comprobó el acceso de la cuenta de alumno a proyectos y tareas desde el plugin, y la redirección del enlace anterior en el navegador.
-- El diagnóstico de producción informa de D1 y R2 accesibles, con cero archivos registrados; la prueba de subida y la revisión de miniaturas pasan a PER-01, ahora en el roadmap activo.
+- El diagnóstico de producción informa de D1 y R2 accesibles, con cero archivos registrados; la prueba de subida y la revisión de miniaturas se trasladaron entonces a PER-01.
 - Validación: 751 pruebas, tipos, lint y build correctos. Respaldo privado de las filas de producción y copia de la base local verificados antes del traslado.
 - Migraciones: `0034` tenía la instantánea mal formada y la marca temporal duplicada; se corrigió antes de aplicarla en producción. En local se reconcilió su historial tras verificar la estructura existente. `0035` añade el registro de equivalencias y adapta los disparadores para el traslado atómico.
 

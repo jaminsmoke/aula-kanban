@@ -4,9 +4,45 @@
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** el 2026-11-15 DOC-07 + MCP-11, MCP-09 y MCP-10 se cerraron; PER-01 pasó al roadmap y UI-01, ARCH-01, ARCH-02, CI-01 y SYNC-01 quedan aquí; MCP-05 y los recortes siguen en su orden.
+> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; el roadmap está libre para la siguiente fase. HIER-01 queda arriba como candidata.
 
 ---
+
+## 2026-11-15 — HIER-01 · Reorganización mínima de la jerarquía
+
+- Contexto: la revisión del 2026-11-15 sobre 335 archivos de código (`app` 219/17.761 líneas; `lib` 87/10.745) confirma que la estructura feature-first y la dirección `app → lib → db` son correctas. No hace falta una mudanza global. Los focos son `app/board/docs/content.ts` (541 líneas), `app/board/apps/edu-tools/` (20 archivos sin subcarpetas), `app/board/tasks/` (16 archivos) y `app/modal.tsx`, usado solo desde el tablero.
+- Qué falta antes de retomarlo:
+  - [ ] Crear `app/board/docs/content/` y dividir `content.ts` por secciones, con un `index.ts` que mantenga `docSections`.
+  - [ ] Dividir `app/board/apps/edu-tools/` en `calculator/`, `periodic-table/` y `tools/` (TTS, medición, ecuaciones y Bohr).
+  - [ ] Valorar `app/board/tasks/dialog/` para separar diálogo, formulario, detalle y pizarra del tablero; no crearlo si la cohesión no lo justifica.
+  - [ ] Mover `app/modal.tsx` a `app/board/shared/modal.tsx`, actualizando sus imports y su test.
+  - [ ] Renombrar `lib/server/project.ts` a `project-access.ts` para distinguirlo de `projects.ts`.
+- Notas técnicas: no tocar `app/api`, `app/oauth`, `.well-known`, `db/`, `worker/`, `scripts/` ni `examples/`; sus niveles vienen impuestos o son infraestructura. No dividir `app/board/shared`, `settings` ni `projects` (8–11 archivos). Mantener comportamiento y exports; ejecutar tests, lint, tipos y build. Los movimientos se hacen en un bloque aparte, no junto a ARCH-01.
+
+## 2026-11-15 — UI-02 · Encuadre de miniaturas en las tarjetas
+
+- Contexto: algunas imágenes de tareas aparecen recortadas según su proporción o tamaño. La persistencia de la imagen ya se ha comprobado; esto es un ajuste visual independiente.
+- Qué falta: revisar el encuadre en tarjetas con imágenes horizontales, verticales y cuadradas, en escritorio y móvil; decidir un comportamiento consistente que permita ver la imagen completa cuando sea necesario, sin deformarla ni perjudicar la distribución.
+- Notas técnicas: comprobar el CSS y el componente de tarjetas, accesibilidad y posibles imágenes rotas. No modificar los archivos originales ni el contrato de almacenamiento.
+
+## 2026-11-15 — PER-03 · Purga segura de archivos sin uso
+
+- Contexto: se ha verificado la subida de archivos, pero actualmente solo se limpian los objetos al eliminar su proyecto. Cambiar una miniatura o cancelar una subida no elimina necesariamente sus objetos. **La purga automática aún no está implementada.**
+- Qué falta: inventariar cómo se referencian archivos desde tareas, pizarras, documentos y MCP; definir propiedad y referencias compartidas, subidas sin guardar y un periodo de gracia. Diseñar una limpieza reintentable que evite carreras entre creación, guardado y borrado; elegir un mecanismo de ejecución compatible con Sites. Implementar y probar antes de activar.
+- Criterios mínimos: no borrar archivos compartidos, aún editándose o usados por otras aplicaciones; conservar metadatos hasta confirmar la eliminación, tolerar fallos y evitar que una nueva referencia apunte a un objeto en proceso de borrado. Probar concurrencia y recuperación además de los casos de sustitución, cancelación y eliminación.
+- Notas técnicas: `uploads` guarda `purpose` y URL, pero no una relación completa de referencias. Hay URLs libres y estados JSON; deducir ausencia de uso solo de `tasks.image_url` o borrar inmediatamente sería inseguro. La automatización de tareas periódicas requiere soporte explícito; no prometer una purga temporal hasta verificarlo.
+
+## 2026-11-15 — PER-01B · Inventario de R2 y copias antiguas
+
+- Contexto: el 2026-11-15 la subida web y la lectura después de recargar funcionaron en producción; la prueba temporal se retiró y el panel mostraba 0 filas en `uploads`. El diagnóstico solo confirma que R2 responde, no que el bucket esté vacío.
+- Qué falta: enumerar los objetos de R2 de forma paginada y protegida para administración, cotejarlos con D1, comprobar si existe alguna copia de archivos antiguos y documentar el destino de cada posible huérfano. No borrar objetos desconocidos sin identificarlos.
+- El roadmap anterior se conserva íntegro en [`historial/roadmap-per-01.md`](historial/roadmap-per-01.md), incluidos el alcance y los criterios aún pendientes.
+
+## 2026-11-15 — PER-02 · Evaluar miniaturas derivadas
+
+- Contexto: PER-01 ha verificado la subida y lectura de imágenes originales en producción. Por ahora se conservan los originales para mantener simple la persistencia; no se ha incorporado un generador de miniaturas.
+- Qué falta antes de retomarlo: medir el impacto real de imágenes grandes en el tablero, comparar procesamiento en cliente con un binding de imágenes disponible y decidir si merece la complejidad.
+- Notas técnicas: respetar permisos, conservar el original y diseñar la limpieza de derivados sin afectar archivos existentes.
 
 ## 2026-11-15 — UI-01 · Sistema visual: superficies, contraste y gradientes
 

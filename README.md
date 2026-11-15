@@ -12,7 +12,9 @@ cd aula-kanban
 npm ci
 ```
 
-Eso basta para desarrollar en local (`npm run dev`) y para comprobar en CI (lint, `tsc --noEmit` y tests, en push y pull request a `main`). Para publicar tu propia copia como Site, decide el `project_id` de `.openai/hosting.json` con el flujo aprendido (el fichero versionado lleva un valor de ejemplo; el real para una publicación se edita en tu copia) y sigue la publicación con Sites y `npm run release:prepare -- --published-version X.Y.Z`.
+Eso basta para desarrollar en local (`npm run dev`) y para comprobar en CI (lint, `tsc --noEmit` y tests, en push y pull request a `main`). En este repositorio, los commits y el push se hacen siempre al repositorio personal `jaminsmoke/aula-kanban` (`git push github main`). La publicación y la verificación en Sites corresponden siempre a Codex de OpenAI; un push a GitHub no despliega el Site.
+
+Para publicar tu propia copia como Site, decide el `project_id` de `.openai/hosting.json` con el flujo aprendido (el fichero versionado lleva un valor de ejemplo; el real para una publicación se edita en tu copia) y sigue la publicación con Sites y `npm run release:prepare -- --published-version X.Y.Z`.
 
 ## Propiedad y checklist de remix
 
@@ -206,7 +208,7 @@ Para **ChatGPT Actions**, la entrada «GPT con Actions» del backlog queda **cer
 
 ### Versión para publicar
 
-La versión visible procede de `package.json`. Antes de preparar una publicación con Sites, consulta la versión que está realmente publicada y ejecuta `npm run release:prepare -- --published-version X.Y.Z` con ese valor. Si la versión local coincide, aumenta solo la última cifra; si ya se había preparado una versión posterior, la conserva para que un reintento no incremente dos veces. Las cifras mayor y menor se cambian manualmente, manteniendo sincronizadas las versiones raíz de `package.json` y `package-lock.json`. Después ejecuta pruebas y build y publica esa misma revisión. Esta automatización forma parte del flujo de publicación del repositorio; un despliegue hecho por otra vía que no ejecute el comando no incrementa la versión por sí solo.
+La versión visible procede de `package.json`. Antes de preparar una publicación con Sites, consulta la versión que está realmente publicada y ejecuta `npm run release:prepare -- --published-version X.Y.Z` con ese valor. Si la versión local coincide, aumenta solo la última cifra; si ya se había preparado una versión posterior, la conserva para que un reintento no incremente dos veces. Las cifras mayor y menor se cambian manualmente, manteniendo sincronizadas las versiones raíz de `package.json` y `package-lock.json`. Después ejecuta pruebas y build y publica esa misma revisión. La publicación en Sites la ejecuta Codex de OpenAI; el repo personal solo recibe commits y push. Esta automatización forma parte del flujo de publicación del repositorio; un despliegue hecho por otra vía que no ejecute el comando no incrementa la versión por sí solo.
 
 A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
 
