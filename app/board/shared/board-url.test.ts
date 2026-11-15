@@ -37,6 +37,11 @@ describe("parseBoardUrl", () => {
     expect(parseBoardUrl("?section=diario")).toEqual({ ...defaults, app: null });
   });
 
+  it("lee la sección del espacio personal dentro de Clase", () => {
+    expect(parseBoardUrl("?view=clase&section=mochila")).toEqual({ ...defaults, classSection: "mochila", app: null });
+    expect(parseBoardUrl("?project=p1&section=mochila")).toEqual({ ...defaults, classSection: "mochila", app: null });
+  });
+
   it("lee la app a abrir en Tienda y la ignora fuera de esa sección", () => {
     expect(parseBoardUrl("?project=p1&view=espacio&app=mermaid")).toEqual({ ...defaults, view: "administracion", administracionSection: "tienda", app: "mermaid" });
     expect(parseBoardUrl("?project=p1&view=administracion&section=tienda&app=mermaid")).toEqual({ ...defaults, view: "administracion", administracionSection: "tienda", app: "mermaid" });
@@ -82,6 +87,11 @@ describe("buildBoardUrl", () => {
     expect(buildBoardUrl("?project=p1", { ...defaults, classSection: "calendario" })).toBe("?project=p1&section=calendario");
     expect(buildBoardUrl("?project=p1&section=calendario", defaults)).toBe("?project=p1");
     expect(buildBoardUrl("?section=calendario", { ...defaults, view: "administracion", classSection: "calendario" })).toBe("?view=administracion");
+  });
+
+  it("escribe la sección del espacio personal y la omite al volver a Tareas", () => {
+    expect(buildBoardUrl("?project=p1", { ...defaults, classSection: "mochila" })).toBe("?project=p1&section=mochila");
+    expect(buildBoardUrl("?project=p1&section=mochila", defaults)).toBe("?project=p1");
   });
 
   it("canoniza el alias de Tienda y escribe app solo en esa sección", () => {

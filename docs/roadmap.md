@@ -74,11 +74,20 @@
 - **Dependencias de permisos:** la matriz de APP-01 define qué puede ver/usar cada rol; el espacio personal usa esa columna como puerta de entrada. PERM-01 sigue siendo prerequisito para cualquier capacidad nueva (p. ej. decidir quién puede cambiar la selección de otro): organizar los propios favoritos no necesita más permiso que el acceso ya vigente al proyecto, pero el servidor debe aplicar la membresía activa igual que en el resto de rutas. Ninguna capacidad de gestión global se delega desde la capa personal.
 - **Accesibilidad:** el acceso de la cabecera es un botón real con `aria-label` y texto visible en la sección, foco visible con los tokens de `globals.css` y orden de tabulación igual al visual; la sección se revisa en 390 px igual que el resto de vistas.
 
-### Fase 3: Implementación y compatibilidad
+### Fase 3: Implementación y compatibilidad — completada
 
-- [ ] Revisar la desinstalación global, la revocación de acceso y la pérdida de herramientas.
-- [ ] Verificar enlaces, ventanas, controles MCP y usuarios de varios proyectos.
+- [x] Revisar la desinstalación global, la revocación de acceso y la pérdida de herramientas.
+- [x] Verificar enlaces, ventanas, controles MCP y usuarios de varios proyectos.
 - **Criterios de aceptación:** sin filtración de información personal, sin cruzar proyectos y sin que una selección personal reinstale una app desinstalada globalmente.
+
+**Implementado (2026-11-15, commit local):**
+
+- **Datos:** migración `0037` crea `app_preferences(project_id, user_id, app_id, favorite, position, updated_at)` con clave primaria en las tres primeras columnas y un índice por usuario/proyecto. La ausencia de fila equivale a «no favorita» y sin posición, con el orden del catálogo como defecto.
+- **API:** `/api/personal-apps` con `GET` (lee) y `PUT` (sustituye la selección completa). Ambas rutas exigen la membresía activa en el proyecto (`withProjectRoute`), validan cada `id` y rechazan con 400 cualquier app no instalada: una selección personal nunca reinstala una app desinstalada globalmente. La lógica vive en `lib/server/personal-apps.ts` (merge de preferencias con instalación, orden favoritas > posición > catálogo). `/api/space-apps` y su `POST` de instalación no se tocan.
+- **Interfaz:** nueva sección de Clase `view=clase&section=mochila` (esquema en `lib/domain/board-url.ts`, con su test de parse/build y roundtrip) con acceso desde la cabecera junto al botón de Clase. Etiqueta «Mi mochila» para alumnado e invitados y «Maletín» para profesorado (iconos `Backpack`/`Briefcase`). La vista lista favoritas primero y luego el resto de disponibles, con abrir (deep-link a Administración > Tienda con `app=<id>`, reutilizando el mecanismo existente, sin efecto en la URL de Tienda), estrella de favorito con `aria-pressed` y botones de subir/bajar con `aria-label`, foco visible con los tokens de `globals.css` y revisión en 390 px.
+- **Aislamiento honesto:** la vista incluye el aviso de que los documentos de trabajo se comparten con el proyecto y de que la organización personal no instala ni desinstala nada; las preferencias se conservan al perder la membresía y dejan de ser accesibles porque el servidor exige la membresía activa.
+- **Compatibilidad:** el enlace profundo `view=administracion&section=tienda&app=<id>`, el canal `SpaceRoom`/`space-control` y `/api/space-socket` no cambian; las herramientas MCP no se añaden ni se retiran, por lo que no cambia la versión del catálogo MCP (0.27.0, 59 herramientas) y `abrir_app` sigue exigiendo acceso al proyecto y app instalada.
+- **Verificación:** suite completa en verde (128 archivos, 1.042 pruebas, incluidas las nuevas de lógica, ruta, vista, cabecera y URL), `tsc --noEmit`, ESLint y build correctos, y `perf:budget` dentro de presupuesto. Sin publicación en Sites: la aplicación de la migración en remoto y el despliegue los hace Codex.
 
 ## 5. Riesgos y bloqueos
 

@@ -52,7 +52,7 @@ describe("ClassView con el calendario real", () => {
   it("carga la sección Calendario y abre la tarea con el editor existente", async () => {
     const onOpenEditor = vi.fn();
     const onSection = vi.fn();
-    render(<ClassView section="calendario" onSection={onSection} kanban={{ ...kanban, onOpenEditor }} />);
+    render(<ClassView section="calendario" onSection={onSection} role="student" projectId="p1" onOpenApp={vi.fn()} kanban={{ ...kanban, onOpenEditor }} />);
 
     expect(await screen.findByRole("heading", { name: "Calendario" }, { timeout: 15000 })).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "Tablero de tareas" })).toBeNull();

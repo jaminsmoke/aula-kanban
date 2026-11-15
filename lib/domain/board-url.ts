@@ -8,7 +8,9 @@
  *   antiguo de Ajustes > Documentación y `espacio` de Administración >
  *   Tienda; ambos se reescriben a su forma canónica.
  * - `section`: sección dentro de la vista. En `clase` es `tareas` (por
- *   defecto) o `calendario`; en `administracion` es `alumnos` (por defecto),
+ *   defecto), `calendario` o `mochila` (el espacio personal de la
+ *   mochila del alumnado y el maletín docente, APP-03); en
+ *   `administracion` es `alumnos` (por defecto),
  *   `profesores` o `tienda`; en `ajustes` es `cuenta | apariencia |
  *   documentacion | tokens | administradores | almacenamiento` (por defecto
  *   `cuenta`). En el resto de vistas no tiene significado y se omite.
@@ -35,7 +37,7 @@ export type BoardView = "clase" | "administracion" | "espacio" | "ajustes" | "do
 export type AdministracionSection = "alumnos" | "profesores" | "tienda";
 
 /** Secciones válidas dentro de Clase. */
-export type ClassSection = "tareas" | "calendario";
+export type ClassSection = "tareas" | "calendario" | "mochila";
 
 /** Secciones válidas dentro de Ajustes. */
 export type SettingsSection = "cuenta" | "apariencia" | "documentacion" | "tokens" | "administradores" | "almacenamiento";
@@ -56,7 +58,7 @@ const LEGACY_PEOPLE_VIEWS = ["alumnos", "profesores"] as const;
 export const ADMINISTRACION_SECTIONS: readonly AdministracionSection[] = ["alumnos", "profesores", "tienda"];
 
 /** Secciones válidas dentro de Clase. */
-export const CLASS_SECTIONS: readonly ClassSection[] = ["tareas", "calendario"];
+export const CLASS_SECTIONS: readonly ClassSection[] = ["tareas", "calendario", "mochila"];
 
 /** Secciones válidas dentro de Ajustes, en el orden de navegación. */
 export const SETTINGS_SECTIONS: readonly SettingsSection[] = [

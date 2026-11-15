@@ -147,6 +147,23 @@ export const instanceApps = sqliteTable("instance_apps", {
   uniqueIndex("instance_app_app").on(table.appId),
 ]);
 
+// Preferencias personales de la mochila del alumnado y el maletín docente
+// (APP-03): una fila por usuario, proyecto y app con su favorito y su
+// posición de presentación. La ausencia de fila equivale a «no favorita»
+// y sin posición, con el orden del catálogo como defecto. Nunca insta-
+// lan ni desinstalan: la instalación sigue siendo de instancia.
+export const appPreferences = sqliteTable("app_preferences", {
+  projectId: text("project_id").notNull(),
+  userId: text("user_id").notNull(),
+  appId: text("app_id").notNull(),
+  favorite: integer("favorite").notNull().default(0),
+  position: integer("position"),
+  updatedAt: integer("updated_at").notNull(),
+}, (table) => [
+  primaryKey({ columns: [table.projectId, table.userId, table.appId] }),
+  index("app_preferences_user").on(table.projectId, table.userId),
+]);
+
 // Documentos de las apps nativas: un estado JSON por proyecto y app. Es la
 // forma común de guardar el trabajo de cualquier app que lo necesite.
 export const appDocuments = sqliteTable("app_documents", {

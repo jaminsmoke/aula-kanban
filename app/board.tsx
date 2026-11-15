@@ -32,7 +32,7 @@ export default function Board({ user, initial }: { user: { displayName: string; 
   const invitations = useInvitations();
   const data = useBoardData(projectState.activeProject);
   const actions = useProjectActions({ projects: projectState.projects, projectId: projectState.projectId });
-  const { view, setView, classSection, setClassSection, settingsSection, setSettingsSection, administracionSection, setAdministracionSection } = useBoardUrlState(initial);
+  const { view, setView, classSection, setClassSection, settingsSection, setSettingsSection, administracionSection, setAdministracionSection, setApp } = useBoardUrlState(initial);
   const [studentName, setStudentName] = useState<string | null>(null);
   const [studentLayout, setStudentLayout] = useState<"grid" | "list">("grid");
   const [notice, setNotice] = useState("");
@@ -85,6 +85,8 @@ export default function Board({ user, initial }: { user: { displayName: string; 
         onDeleteProject={actions.openDeleteProject}
         onRemix={() => setRemixOpen(true)}
         onSettings={() => setView("ajustes")}
+        onMochila={() => { setView("clase"); setClassSection("mochila"); setNotice(""); }}
+        mochilaLabel={activeProject?.role === "teacher" ? "Maletín" : "Mi mochila"}
       />
 
       {remixOpen && <RemixDialog onClose={() => setRemixOpen(false)} />}
@@ -164,6 +166,9 @@ export default function Board({ user, initial }: { user: { displayName: string; 
           <ClassView
             section={classSection}
             onSection={setClassSection}
+            role={activeProject.role}
+            projectId={projectState.projectId}
+            onOpenApp={(appId) => { setView("administracion"); setAdministracionSection("tienda"); setApp(appId); setNotice(""); }}
             kanban={{
               tasks: data.tasks,
               visible: board.visible,

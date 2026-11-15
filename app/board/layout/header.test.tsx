@@ -61,6 +61,21 @@ describe("BoardHeader", () => {
     expect(screen.getByRole("link", { name: /Pruebas/ }).getAttribute("href")).toBe("/?project=p1&view=ajustes&section=administradores");
   });
 
+  it("abre el espacio personal con un botón junto a Clase", () => {
+    const onMochila = vi.fn();
+    const { rerender } = render(<BoardHeader {...props} onMochila={onMochila} mochilaLabel="Maletín" />);
+
+    const nav = screen.getByRole("navigation", { name: "Vistas" });
+    expect(within(nav).getAllByRole("button")).toHaveLength(3);
+    fireEvent.click(within(nav).getByRole("button", { name: "Maletín" }));
+    expect(onMochila).toHaveBeenCalled();
+    expect(within(nav).getByRole("button", { name: "Maletín" }).getAttribute("aria-current")).toBeNull();
+
+    rerender(<BoardHeader {...props} view="clase" classSection="mochila" onMochila={onMochila} mochilaLabel="Maletín" />);
+    expect(within(nav).getByRole("button", { name: "Maletín" }).getAttribute("aria-current")).toBe("page");
+    expect(within(nav).getByRole("button", { name: "Clase" }).getAttribute("aria-current")).toBeNull();
+  });
+
   it("abre Clase, Administración y Ajustes y marca sus acciones como activas", () => {
     const onView = vi.fn();
     const onSettings = vi.fn();

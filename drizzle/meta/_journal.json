@@ -260,6 +260,13 @@
       "when": 1794763096613,
       "tag": "0036_material_pet_avengers",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "6",
+      "when": 1794782522897,
+      "tag": "0037_last_the_fallen",
+      "breakpoints": true
     }
   ]
 }

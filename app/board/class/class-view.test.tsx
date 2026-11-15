@@ -33,9 +33,11 @@ const kanban: ComponentProps<typeof KanbanView> = {
   progress: 0,
 };
 
+const mochilaProps = { role: "student" as const, projectId: "p1", onOpenApp: vi.fn() };
+
 describe("ClassView", () => {
   it("muestra Tareas como sección activa y el tablero actual", () => {
-    render(<ClassView section="tareas" onSection={vi.fn()} kanban={kanban} />);
+    render(<ClassView section="tareas" onSection={vi.fn()} kanban={kanban} {...mochilaProps} />);
 
     expect(screen.getByRole("navigation", { name: "Secciones de clase" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Tareas" }).getAttribute("aria-current")).toBe("page");
@@ -44,9 +46,15 @@ describe("ClassView", () => {
 
   it("notifica el cambio de sección", () => {
     const onSection = vi.fn();
-    render(<ClassView section="tareas" onSection={onSection} kanban={kanban} />);
+    render(<ClassView section="tareas" onSection={onSection} kanban={kanban} {...mochilaProps} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Tareas" }));
     expect(onSection).toHaveBeenCalledWith("tareas");
+  });
+
+  it("etiqueta la sección personal según el rol", () => {
+    render(<ClassView section="tareas" onSection={vi.fn()} kanban={kanban} {...mochilaProps} />);
+    expect(screen.getByRole("button", { name: "Mi mochila" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Maletín" })).toBeNull();
   });
 });
