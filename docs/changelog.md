@@ -6,6 +6,27 @@
 
 ---
 
+## 2026-11-15 — Roadmap CI-01 · Build en GitHub Actions cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Se añadió `npm run build` después de `npm test` en el job `checks` de `.github/workflows/ci.yml`.
+- El workflow sigue usando solo `actions/checkout`, `actions/setup-node`, `npm ci`, lint, `tsc`, tests y build; no declara secretos, bindings de D1/R2 ni acceso a Sites.
+- Sin cambios de código, dependencias ni versión; `package.json` sigue en `1.1.26`.
+
+### Verificación
+
+- GitHub Actions run `43691891217` (commit `990d68b`): **success**.
+- Pasos: lint 9 s, `npx tsc --noEmit` 6 s, tests 36 s y `npm run build` 30 s; job 106 s y workflow 109 s.
+- El build añade 30 s al job. El run anterior sin build midió 111 s de job, con variación de caché en `npm ci`/tests; no se atribuye una reducción al cambio.
+- `git diff --check` limpio.
+
+### Seguimiento en backlog
+
+Quedan UI-02, PER-03, PER-01B, PER-02, UI-01, ARCH-01, ARCH-02, SYNC-01, MCP-05 y recortes de rendimiento (10 entradas). Roadmap vacío. SYNC-01 se conserva como norma operativa.
+
 ## 2026-11-15 — Roadmap HIER-01 · Reorganización mínima de la jerarquía cerrado
 
 **Estado:** Completada · Sin publicación
