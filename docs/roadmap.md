@@ -1,6 +1,6 @@
 # Roadmap PERF-01 · Coste de las apps pesadas
 
-> **Estado:** Activo
+> **Estado:** Completado
 > **Origen:** entrada «Recortes de rendimiento de los chunks pesados» del backlog (2026-11-14), revisada el 2026-11-15.
 > **Backlog:** [`backlog.md`](backlog.md) · **Changelog:** [`changelog.md`](changelog.md)
 
@@ -38,6 +38,7 @@
 | No forzar alias de Mermaid ni KaTeX | Unificar versiones con `overrides` sin prueba | Mermaid 11.17 y 12.3 no son intercambiables; la conversión a Excalidraw es sensible |
 | No actualizar `mermaid-to-excalidraw` a 3.x en esta fase | Eliminar Mermaid 11 y KaTeX 0.16 del árbol | 3.x cambia el motor a Pele y el resultado visual; es una migración funcional, no un recorte de rendimiento |
 | Aceptar el wasm de Excalidraw como coste de la Pizarra | Dividirlo o cambiar de librería | Es un binario de producción de Excalidraw; no hay un recorte limpio |
+| Versionar el presupuesto en `docs/perf-budget.json` y comprobarlo en CI | Calcularlo siempre desde la línea base | Separar presupuesto y baseline obliga a revisar cualquier subida deliberada |
 | No deduplicar el `compute-engine` 0.29.1 de `mathlive` | Forzar una versión única en todo el árbol | No aparece en el bundle cliente actual; solo sería un problema de instalación |
 
 ## 4. Línea base observada
@@ -98,14 +99,14 @@ Medición sobre `dist/client` del build actual, sin rebuild:
 
 ### Fase 4 — Pizarra, Blockly y guardas de CI
 
-- [ ] Medir la latencia real de la Básica y de Científica sobre una build servida, con caché fría y red lenta; registrar la mediana antes de cerrar el roadmap.
-- [ ] Confirmar que el wasm y las fuentes de Excalidraw solo se cargan al abrir la Pizarra y que el tablero o Mi espacio no los precargan.
-- [ ] Confirmar que Blockly y sus generadores solo se descargan al abrir la app o el panel de código, no al cargar el tablero.
-- [ ] Añadir `npm run perf:budget` después del build de CI: falla si el cierre inicial incorpora una app pesada o si un flujo supera el presupuesto acordado.
-- [ ] Documentar la línea base, los costes aceptados y el procedimiento para actualizar un presupuesto con una mejora medida.
-- [ ] Cerrar con una comparación antes/después y sin cambios de versión.
+- [x] Medir la latencia real de la Básica y de Científica sobre una build servida, con caché fría y red lenta; registrar la mediana antes de cerrar el roadmap.
+- [x] Confirmar que el wasm y las fuentes de Excalidraw solo se cargan al abrir la Pizarra y que el tablero o Mi espacio no los precargan.
+- [x] Confirmar que Blockly y sus generadores solo se descargan al abrir la app o el panel de código, no al cargar el tablero.
+- [x] Añadir `npm run perf:budget` después del build de CI: falla si el cierre inicial incorpora una app pesada o si un flujo supera el presupuesto acordado.
+- [x] Documentar la línea base, los costes aceptados y el procedimiento para actualizar un presupuesto con una mejora medida.
+- [x] Cerrar con una comparación antes/después y sin cambios de versión.
 
-**Criterios de aceptación:** CI protege la entrada y los flujos críticos; el coste inevitable de Excalidraw y Blockly está documentado; no hay regresiones funcionales.
+**Criterios de aceptación:** CI protege la entrada y los flujos críticos; el coste inevitable de Excalidraw y Blockly está documentado; no hay regresiones funcionales. Completada el 2026-11-15: `perf:budget` se ejecuta tras el build, Mi espacio queda en 162,6 KiB gzip sin apps pesadas y la mediana real es 3.149,6 ms (Básica) frente a 12.753,1 ms (Científica).
 
 ## 6. Riesgos y bloqueos
 
@@ -127,5 +128,6 @@ Medición sobre `dist/client` del build actual, sin rebuild:
 - Fase 1 completada el 2026-11-15: `npm run perf:report`, `docs/perf-baseline.json` y `docs/rendimiento.md`; diez flujos deterministas. La Pizarra incluye ya el wasm de Excalidraw (1.254,5 KiB gzip).
 - Fase 2 completada el 2026-11-15: `basic-evaluate.ts` y `calculator-evaluation.ts` separan el cálculo racional del motor simbólico; el flujo `basica-evalua` baja de 1.922,3 a 140,3 KiB gzip.
 - Fase 3 completada el 2026-11-15: abrir la Pizarra sigue en 1.254,5 KiB gzip y no incluye la conversión; la conversión completa, con el flowchart de Mermaid 11, cuesta 1.451,8 KiB. Mermaid 11 y KaTeX 0.16 solo aparecen al convertir; Mermaid 12 y KaTeX 0.18 solo en Diagramas. Se añadió una prueba funcional de conversión y guardas de flujo. Se descartó `mermaid-to-excalidraw` 3.6.0 porque cambia el motor a Pele y el resultado visual.
-- La latencia real no se ha medido todavía; se validará en la fase 4 antes de cerrar el roadmap. No se atribuye ninguna mejora de tiempo a esta fase.
+- Fase 4 completada el 2026-11-15: `perf:budget` con `docs/perf-budget.json` y CI; Mi espacio se añade a la línea base con 162,6 KiB gzip; la latencia real con 5 muestras es 3.149,6 ms en Básica y 12.753,1 ms en Científica (Fast 3G, caché fría, Chrome headless). El wasm de Excalidraw y Blockly siguen fuera del tablero y de Mi espacio.
+- La latencia se midió sobre una build servida; no se atribuye una mejora de tiempo a la fase 2 sin una comparación anterior, que no existe con este método.
 - Sin cambios de versión: `package.json` sigue en `1.1.26`.

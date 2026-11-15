@@ -1,0 +1,34 @@
+{
+  "unit": "bytes",
+  "margin": 0.05,
+  "flows": {
+    "tablero": 175656,
+    "basica": 150827,
+    "basica-evalua": 150827,
+    "cientifica": 2069960,
+    "diagramas": 331923,
+    "diagramas-elk": 806262,
+    "espacio": 174779,
+    "pizarra": 1348890,
+    "pizarra-mermaid": 1560999,
+    "blockly": 345631,
+    "blockly-codigo": 383275
+  },
+  "forbidden": {
+    "tablero": ["compute-engine", "mermaid", "katex", "chunk-EIO", "blockly_compressed", "elk-", "cytoscape"],
+    "espacio": ["compute-engine", "mermaid", "katex", "chunk-EIO", "blockly_compressed", "elk-", "cytoscape"],
+    "basica": ["compute-engine"],
+    "basica-evalua": ["compute-engine"],
+    "diagramas": ["compute-engine", "chunk-EIO", "blockly_compressed", "elk-", "cytoscape"],
+    "pizarra": ["compute-engine", "blockly_compressed", "mermaid", "katex"],
+    "blockly": ["compute-engine", "chunk-EIO", "mermaid", "katex"]
+  },
+  "required": {
+    "cientifica": ["compute-engine"],
+    "pizarra": ["chunk-EIO"],
+    "diagramas": ["mermaid.core"],
+    "diagramas-elk": ["elk-"],
+    "blockly": ["blockly_compressed"],
+    "blockly-codigo": ["blockly_compressed"]
+  }
+}

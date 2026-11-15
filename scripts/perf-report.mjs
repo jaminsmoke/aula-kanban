@@ -108,6 +108,11 @@ const FLOWS = [
     ],
   },
   {
+    id: "espacio",
+    label: "Mi espacio · abrir",
+    roots: ["app/board/space/space-view.tsx"],
+  },
+  {
     id: "pizarra",
     label: "Pizarra · abrir",
     roots: [
