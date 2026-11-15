@@ -2,22 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** MCP-05A + MCP-05C activo · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** MCP-05 se dividió en MCP-05A a MCP-05E y no se descarta; UI-03 se completó; UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; PER-01 sigue archivado con su trabajo pendiente abajo; SYNC-01 se queda aquí como norma operativa.
+> **Nota:** MCP-05A y MCP-05C están en el roadmap activo; MCP-05B, MCP-05D y MCP-05E siguen aquí. UI-03 se completó; UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; PER-01 sigue archivado con su trabajo pendiente abajo; SYNC-01 se queda aquí como norma operativa.
 
 ---
-
-## 2026-11-15 — MCP-05A · Contrato común y cobertura MCP de las apps
-
-- Contexto: MCP-03 y MCP-04 ya cubren Aula Store, `abrir_app` y las ventanas, pero no existe una capa común para que una app exponga su trabajo guardado. Hoy las cuatro apps pueden abrirse por MCP, pero ninguna tiene herramientas propias de lectura o escritura. Además, `apps/README.md` explica cómo registrar la interfaz, no cómo declarar herramientas MCP.
-- Qué falta:
-  - [ ] Extraer un envoltorio común que resuelva proyecto y acceso, valide el `appId` contra `NATIVE_APP_IDS`, compruebe que la app está instalada y devuelva `not_found` («La aplicación no está instalada») cuando no lo esté.
-  - [ ] Definir dónde declara cada app sus herramientas (por ejemplo, `mcp.ts` en su carpeta) y agregarlas al registro sin listas duplicadas. Una app nueva debe declarar herramientas o un `sinHerramientas` explícito con motivo.
-  - [ ] Construir una matriz de cobertura por app: abrir, controlar ventana, leer, escribir, exportar, permisos y límites. Revisar también los huecos fuera de las apps: `obtener_resumen_proyecto` solo lista apps instaladas, no su contenido; `abrir_app` y los comandos de ventana ya cubren apertura y control.
-  - [ ] Añadir una prueba que falle si una app del catálogo no tiene declaración MCP, y actualizar catálogo, snapshot, matriz de roles y documentación.
-- Criterios mínimos: todas las herramientas de app comparten el mismo contrato de errores y permisos; ninguna se salta la comprobación de instalación; la matriz deja explícito qué queda fuera; una app nueva no se puede registrar sin decidir su superficie MCP.
-- Notas técnicas: reutilizar `listInstalledApps`, `resolve`, `projectAccessForUser` y los límites de `app_documents` (200 KB) y `boards` (2 MB). No duplicar `NATIVE_APP_IDS` ni la lógica de `ownerExists`/`canWrite` de `/api/boards`. Sin migraciones.
 
 ## 2026-11-15 — MCP-05B · Excalidraw por MCP
 
@@ -31,17 +20,6 @@
   - [ ] Aplicar `not_found` si la app está desinstalada y rechazar escrituras de invitados o de alumnado fuera de sus tareas.
 - Criterios mínimos: no se pisa una revisión ajena; no se puede escribir una pizarra de otra persona; la pizarra de Mi espacio y las de tarea/proyecto usan el mismo contrato; los límites de 2 MB se respetan; la sala en vivo recibe el cambio.
 - Notas técnicas: `app/api/boards/route.ts` ya valida tamaño, dueño, permisos y revisión; no reimplementarlo. `BoardRoom` necesitará un método o mensaje interno para publicar una escena guardada por el servidor. Sin migraciones ni subida de imágenes por MCP en esta fase.
-
-## 2026-11-15 — MCP-05C · Herramientas de aula por MCP
-
-- Contexto: `edu-tools` no guarda trabajo en el servidor. El historial de la calculadora vive en `localStorage`, la memoria y las mediciones son efímeras y la tabla periódica ya tiene un JSON completo en `periodic-elements.json`. La decisión de 2026-11-14 mantiene fuera del Worker el cálculo, las ecuaciones, la generación de código y la validación de Mermaid.
-- Qué falta:
-  - [ ] `consultar_elemento` de lectura, con `simbolo` o `numero` como alternativas, sobre el catálogo de elementos; devuelve nombre, símbolo, número, masa, categoría, fase, grupo, periodo, bloque, configuración electrónica y datos de descubrimiento.
-  - [ ] Mover `periodic-elements.json` (o un selector puro) a una ubicación compartida por cliente y servidor para no importar un componente cliente desde MCP ni duplicar los 118 elementos.
-  - [ ] Aplicar la comprobación común de app instalada y el contrato de errores; un símbolo o número desconocido responde `not_found`.
-  - [ ] Documentar explícitamente que no hay herramientas de calculadora, ecuaciones, regla, transportador o lectura en voz alta porque su estado es local y el cálculo se descartó en el servidor.
-- Criterios mínimos: la consulta funciona por símbolo y por número; no requiere proyecto ni escritura; no introduce cálculo en el Worker; no hay migración ni duplicación del catálogo.
-- Notas técnicas: la tabla actual vive en `app/board/apps/edu-tools/periodic-table/periodic-elements.json`; reutilizar sus tipos y no inventar una segunda forma de los datos. Es la entrada más pequeña de la división y puede ir después del contrato común.
 
 ## 2026-11-15 — MCP-05D · Programación por bloques por MCP
 

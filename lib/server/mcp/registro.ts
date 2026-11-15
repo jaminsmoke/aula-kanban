@@ -5,6 +5,7 @@ import { registrarAuditoria } from "./auditoria";
 import { checkMcpRateLimit, MCP_WRITE_RATE_MAX } from "./rate-limit";
 import { herramientasAdministracion } from "./dominios/administracion";
 import { herramientasApps } from "./dominios/apps";
+import { herramientasDeApps } from "./apps/registro";
 import { herramientasContexto } from "./dominios/contexto";
 import { herramientasVentanas } from "./dominios/ventanas";
 import { herramientasInvitaciones } from "./dominios/invitaciones";
@@ -37,6 +38,7 @@ const DEFINICIONES: McpToolDefinicion[] = [
   ...herramientasContexto,
   ...herramientasInvitaciones,
   ...herramientasApps,
+  ...herramientasDeApps,
   ...herramientasVentanas,
   ...herramientasAdministracion,
 ];

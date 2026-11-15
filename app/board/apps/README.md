@@ -28,10 +28,23 @@ La API no debe tener su propia lista de ids: usa `NATIVE_APP_IDS`.
 4. Si guarda un documento, usa `useAppDocument(projectId, appId)` y
    `/api/app-documents`: un estado JSON por proyecto y app. No crees una tabla
    ni una ruta nuevas salvo que el dato no encaje en ese modelo.
+5. Declara su superficie MCP en `lib/server/mcp/apps/registro.ts`. No pongas
+   herramientas MCP en `app/board/apps/<id>/`: `lib` no puede importar desde
+   `app` y la frontera está bloqueada por ESLint.
 
 La carpeta se carga en diferido: su código solo se descarga al abrir la
 ventana. El estado instalado/desinstalado es común a todas las apps y vive en
 `instance_apps`; no hace falta implementarlo de nuevo.
+
+## MCP
+
+Las herramientas MCP de una app viven en `lib/server/mcp/apps/`. Cada app
+declara una entrada en `APP_MCP_DECLARACIONES`; si todavía no tiene
+herramientas, indica un `pendiente` y el test de cobertura lo exige. Para
+resolver instalación y permisos, usa `resolverAppInstalada` (consultas de app
+sin proyecto) o `resolverAppEnProyecto` (con proyecto y escritura opcional) de
+`contrato.ts`. No dupliques la comprobación de instalación ni el mensaje de
+`not_found`.
 
 ## Versiones
 
