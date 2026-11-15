@@ -42,9 +42,14 @@
 
 El diagnóstico D1/R2, los errores 503/404, el panel de Ajustes, el aviso de imagen rota y su documentación están implementados y desplegados. El diagnóstico de producción confirmó D1 y R2 accesibles, con cero archivos registrados; no se repiten aquí como tareas abiertas.
 
-### Fase activa: subida real y recuperación
+### Verificación local completada (2026-11-15)
 
-- [ ] Subir una imagen real, recargar el tablero y comprobar que `/api/files/[id]` la sirve.
+- `POST /api/uploads` devolvió **201** con un PNG de 68 bytes; `GET /api/files/[id]` devolvió **200**, `image/png` y el mismo SHA-256 (`431ced…`).
+- `/api/storage/status` devolvió `database: true`, `bucket: true`, `bucketReachable: true` y `uploads: 1` en el entorno local con el binding `BUCKET`.
+
+### Fase activa: verificación en el Site y recuperación
+
+- [ ] Repetir la subida y la lectura en el Site publicado; requiere acceso a Sites o que Codex lo verifique.
 - [ ] Inventariar filas de `uploads` y objetos de R2; decidir qué huérfanos se limpian.
 - [ ] Si existe copia del almacenamiento antiguo, migrarla a R2 conservando `storage_key`; si no, pedir nuevas subidas.
 - [ ] Decidir si se añaden miniaturas derivadas (canvas en cliente o binding `IMAGES`) después de estabilizar R2.
@@ -62,4 +67,5 @@ El diagnóstico D1/R2, los errores 503/404, el panel de Ajustes, el aviso de ima
 
 - El código actual no usa filesystem ni VPS: `lib/server/storage.ts` solo accede a `env.DB` y `env.BUCKET`.
 - `.openai/hosting.json` declara `"r2": "BUCKET"`; `vite.config.ts` simula el binding en local.
-- La publicación `1.1.26` ya está hecha por Codex. El repo personal está sincronizado y no se debe cerrar PER-01 hasta probar una subida real y revisar los archivos existentes.
+- La publicación `1.1.26` ya está hecha por Codex. El repo personal está sincronizado. La subida y la lectura ya se probaron contra D1/R2 locales; no se debe cerrar PER-01 hasta repetirlo en el Site y revisar los archivos existentes.
+- No hay URL ni credenciales del Site en el repositorio; la comprobación de producción queda para Codex o para quien tenga acceso a Sites.
