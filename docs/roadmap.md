@@ -39,9 +39,24 @@
 
 ### Fase 1: Inventario
 
-- [ ] Listar cada herramienta, su vista actual, sus datos, su estado local y su cobertura MCP.
-- [ ] Revisar la regla actual de `visibleTools`, documentos por proyecto e instalación por instancia.
+- [x] Listar cada herramienta, su vista actual, sus datos, su estado local y su cobertura MCP.
+- [x] Revisar la regla actual de `visibleTools`, documentos por proyecto e instalación por instancia.
 - **Criterios de aceptación:** inventario completo sin cambios de permisos ni de catálogo.
+
+**Inventario de Fase 1**
+
+| Herramienta | Vista y audiencia actual | Datos y persistencia | Estado local | Cobertura MCP |
+|---|---|---|---|---|
+| Calculadora y ecuaciones | Vista «Calculadora» de EduTools: básica, científica y ecuaciones. visible para owner, admin, teacher, student y guest cuando EduTools está instalada. | No guarda documento en servidor. | Historial en `localStorage` (`aula.calc.history`); memoria y sesión no compartidas. | Sin herramienta; solo interactivo. |
+| Tabla periódica | Vista «Ciencias»: búsqueda, filtros, ficha, descripción, historia y modelo atómico. Visible para los cinco roles si EduTools está instalada. | Datos locales del paquete; no hay documento de proyecto. | Estado de búsqueda y selección en el navegador. | `consultar_elemento`: cualquier cuenta autenticada, incluso sin proyecto, si EduTools está instalada. |
+| Medición | Vista «Medir»: regla y transportador. Visible para los cinco roles si EduTools está instalada. | Sin persistencia de trabajo. | Medidas y giro en React, sin documento. | Sin herramienta; solo interactivo. |
+| Lectura en voz alta | Vista «Lectura»: texto, voz y lectura con la voz del sistema. Visible para los cinco roles si EduTools está instalada. | No envía el texto fuera del navegador; sin persistencia. | Texto y voz seleccionada en memoria. | Sin herramienta; solo interactivo. |
+| Excalidraw | Ventana de Tienda dentro de «Pizarra del proyecto». Visible para los cinco roles si está instalada; en Tienda es de solo lectura para student y guest, y editable para owner, admin y teacher. | Snapshot por proyecto persistido y sincronización en vivo (`BoardRoom`). | Geometría de ventana efímera; la escena no se guarda en `localStorage`. | `leer_pizarra` (cualquier miembro), `guardar_pizarra` y `anadir_a_pizarra` (sin student ni guest en Tienda; revisión y límites actuales). |
+| Programación por bloques | Ventana de Blockly con ejemplo, código y ejecución. Visible para los cinco roles; guest queda en solo lectura en la UI. | `app_documents` por proyectos (`app=blockly`); se guarda el estado de bloques. | Respaldo en `localStorage` (`aula.blockly.<projectId>`) y salida local de ejecución. | `leer_programa_bloques` (cualquier miembro), `guardar_programa_bloques` (sin guest; último guardado gana). |
+| Diagramas | Editor de Mermaid con plantillas, vista previa y exportación SVG. Visible para los cinco roles; el servidor deniega el guardado a guest. | `app_documents` por proyecto (`app=mermaid`) con `{ code }`; plantillas compartidas en `lib/domain/mermaid/templates.ts`. | Respaldo en `localStorage` (`aula.mermaid.<projectId>`); la UI intenta guardar y, si el servidor responde 403, queda el respaldo local. | `leer_diagrama` (cualquier miembro), `guardar_diagrama` (sin guest) y `listar_plantillas_diagrama` (cualquier autenticada si la app está instalada, sin proyecto). |
+| Instalación y ventana | Aula Store decide por instancia con `instance_apps`; Tienda actúa como escritorio de ventanas. `visibleTools(role)` hoy devuelve todas las herramientas de `storeTools`, porque cada ficha incluye los cinco roles. | Instalación global; sin selección personal ni por proyecto. | Geometría y selección de ventanas en React, sin persistencia. La sala en vivo es por proyecto y pestaña, sin datos retenidos. | Comunes: `listar_apps`, `obtener_app`, `instalar_app`, `desinstalar_app`, `abrir_app`, `listar_ventanas`, `cerrar_app`, `minimizar_app`, `restaurar_app` y `ampliar_app`. |
+
+**Resultados:** no se cambian permisos ni catálogo. La audiencia actual es amplia —toda herramienta instalada es visible para los cinco roles—, y la diferencia real está en el modo de escritura de cada app y en la instalación global. Esto debe corregirse con la matriz de la fase 2, no asumiendo que el escritorio decide los permisos.
 
 ### Fase 2: Matriz aprobable
 
