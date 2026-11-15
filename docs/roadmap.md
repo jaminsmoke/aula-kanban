@@ -61,10 +61,11 @@
 
 ### Fase 3: Extensión al resto de la aplicación
 
-- [ ] Extender el sistema a Ajustes y Documentación.
-- [ ] Alinear Mi espacio y Aula Store conservando su identidad, sin paletas duplicadas.
-- [ ] Unificar header, sidebar, tarjetas, tablas, avisos y estados vacíos; retirar los gradientes que no aporten jerarquía.
+- [x] Extender el sistema a Ajustes y Documentación.
+- [x] Alinear Mi espacio y Aula Store conservando su identidad, sin paletas duplicadas.
+- [x] Unificar header, sidebar, tarjetas, tablas, avisos y estados vacíos; retirar los gradientes que no aporten jerarquía.
 - **Criterios de aceptación:** las seis superficies comparten tokens y estados; no hay una paleta por vista; las capturas de las pantallas clave son coherentes; build y pruebas siguen en verde.
+- **Completada el 2026-11-15:** `settings-view.css`, `header.css`, `workspace-layout.css`, `docs.css`, `space.css` y `store.css` consumen `--ui-*` y quedan a cero hexadecimales. Documentación usa un héroe inverso sólido; los gradientes se reservan a Mi espacio y Aula Store. Quedan 80 usos de hex en apps, personas y accesibilidad. Contraste mínimo de texto 4,98:1, comprobado numéricamente. La inspección visual en navegador queda pendiente para la revisión solicitada.
 
 ### Fase 4: Limpieza, guarda y cierre
 
@@ -91,3 +92,4 @@
 - Commits locales por fase; sin push hasta cerrar el roadmap, según SYNC-01.
 - Fase 1 completada el 2026-11-15: los 36 tokens existentes conservan su valor; no se migró ningún consumidor y no hubo cambios visuales. La deuda queda en 266 usos de hex fuera de `globals.css`.
 - Fase 2 completada el 2026-11-15: Tareas y Calendario usan `--ui-*`; sus seis CSS quedan a cero hexadecimales, el contraste de texto pasa AA y los controles compartidos conservan los mismos nombres públicos. Quedan 187 usos de hex fuera del piloto. La inspección visual en navegador queda pendiente.
+- Fase 3 completada el 2026-11-15: Ajustes, Documentación, Mi espacio, Aula Store, header y sidebar consumen los mismos tokens; los seis CSS de la fase quedan a cero hexadecimales y el héroe de Documentación pierde su gradiente múltiple. El inventario baja a 80 usos y 58 colores distintos fuera de `globals.css`; el mínimo de contraste de texto es 4,98:1. La revisión visual en navegador sigue pendiente.

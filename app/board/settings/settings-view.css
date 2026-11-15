@@ -5,49 +5,49 @@
 .settings-content { padding:24px clamp(24px, 3.5vw, 56px) 32px; }
 .settings-section { display:grid; gap:18px; max-width:960px; font-size:14px; }
 .settings-section h2 { margin:0; font-size:24px; letter-spacing:-.035em; }
-.settings-section > p { color:var(--muted); line-height:1.5; }
+.settings-section > p { color:var(--ui-text-muted); line-height:1.5; }
 .settings-section dl { display:grid; gap:0; margin:0; }
-.settings-section dl > div { display:flex; justify-content:space-between; gap:20px; padding:12px 0; border-bottom:1px solid var(--line); }
-.settings-section dt { color:var(--muted); }
+.settings-section dl > div { display:flex; justify-content:space-between; gap:20px; padding:12px 0; border-bottom:1px solid var(--ui-border-default); }
+.settings-section dt { color:var(--ui-text-muted); }
 .settings-section dd { margin:0; text-align:right; font-weight:700; overflow-wrap:anywhere; }
-.settings-section dd span { color:var(--muted); font-weight:400; }
+.settings-section dd span { color:var(--ui-text-muted); font-weight:400; }
 .settings-note { font-size:12px; }
 .settings-signout { justify-self:start; text-decoration:none; }
 
 .settings-section > div > h2 { margin:0; font-size:24px; letter-spacing:-.035em; }
-.settings-section > div > p { margin-top:6px; color:var(--muted); line-height:1.5; font-size:13px; }
+.settings-section > div > p { margin-top:6px; color:var(--ui-text-muted); line-height:1.5; font-size:13px; }
 .admin-form { display:grid; gap:7px; }
 .admin-form label { font-size:13px; font-weight:700; }
 .admin-form > div { display:flex; gap:8px; }
-.admin-form input { width:100%; min-width:0; min-height:41px; padding:8px 10px; border:1px solid var(--line-control); border-radius:var(--radius-sm); }
+.admin-form input { width:100%; min-width:0; min-height:41px; padding:8px 10px; border:1px solid var(--ui-border-control); border-radius:var(--radius-sm); }
 .admin-form .text-button { justify-self:start; }
 .admin-list { list-style:none; margin:0; padding:0; }
-.admin-list li { display:flex; align-items:center; gap:5px; padding:10px 0; border-bottom:1px solid var(--line); }
+.admin-list li { display:flex; align-items:center; gap:5px; padding:10px 0; border-bottom:1px solid var(--ui-border-default); }
 .admin-list li > div { flex:1; min-width:0; }
 .admin-list strong,.admin-list small { display:block; overflow-wrap:anywhere; }
-.admin-list small { margin-top:3px; color:var(--muted); }
-.admin-list small.admin-no-email { color:#8a5a00; font-weight:650; }
-.admin-note { padding:9px 11px; border:1px solid #f0dcb0; border-radius:9px; background:#fff8ea; color:#7a5000; }
-.admin-remove { color:var(--danger); }
-.admin-confirm { display:grid; gap:10px; padding:12px; border-radius:9px; background:var(--danger-soft); }
-.admin-confirm > div { display:flex; justify-content:flex-end; gap:8px; }.admin-error { color: var(--danger); }
-.storage-section { margin-top: 26px; padding-top: 24px; border-top: 1px solid var(--line); }
-.storage-status { display:grid; gap:7px; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--surface-muted); }
-.storage-status.ok { border-color:#b9dfcf; background:#f1faf6; }
-.storage-status.error { border-color:#f2cdd9; background:var(--danger-soft); }
+.admin-list small { margin-top:3px; color:var(--ui-text-muted); }
+.admin-list small.admin-no-email { color:var(--ui-warning-deep); font-weight:650; }
+.admin-note { padding:9px 11px; border:1px solid var(--ui-border-warning); border-radius:9px; background:var(--ui-warning-pale); color:var(--ui-warning-deep); }
+.admin-remove { color:var(--ui-danger); }
+.admin-confirm { display:grid; gap:10px; padding:12px; border-radius:9px; background:var(--ui-danger-soft); }
+.admin-confirm > div { display:flex; justify-content:flex-end; gap:8px; }.admin-error { color: var(--ui-danger); }
+.storage-section { margin-top: 26px; padding-top: 24px; border-top: 1px solid var(--ui-border-default); }
+.storage-status { display:grid; gap:7px; padding:12px 14px; border:1px solid var(--ui-border-default); border-radius:var(--radius-sm); background:var(--ui-surface-muted); }
+.storage-status.ok { border-color:var(--ui-border-success); background:var(--ui-success-soft); }
+.storage-status.error { border-color:var(--ui-border-danger); background:var(--ui-danger-soft); }
 .storage-status strong { font-size:13px; }
-.storage-status p { margin:0; color:var(--muted); line-height:1.5; }
-.storage-status ul { display:grid; gap:3px; margin:2px 0 0; padding-left:18px; color:var(--muted); font-size:12px; }
+.storage-status p { margin:0; color:var(--ui-text-muted); line-height:1.5; }
+.storage-status ul { display:grid; gap:3px; margin:2px 0 0; padding-left:18px; color:var(--ui-text-muted); font-size:12px; }
 
 /* Tokens del MCP (dentro de Cuenta) */
-.token-panel { display:grid; gap:14px; padding-top:6px; border-top:1px solid var(--line); }
+.token-panel { display:grid; gap:14px; padding-top:6px; border-top:1px solid var(--ui-border-default); }
 .token-panel h2 { display:flex; align-items:center; gap:9px; margin:0; font-size:20px; letter-spacing:-.03em; }
-.token-panel > p { color:var(--muted); line-height:1.55; }
-.token-created { display:grid; gap:9px; padding:13px 14px; border:1px solid var(--line-violet); border-radius:var(--radius-md); background:var(--violet-pale); }
-.token-created strong { color:var(--ink-deep); font-size:13.5px; }
-.token-created code { overflow-wrap:anywhere; padding:8px 10px; border:1px solid var(--line-violet); border-radius:var(--radius-sm); background:var(--white); color:var(--violet-dark); font-size:12.5px; }
+.token-panel > p { color:var(--ui-text-muted); line-height:1.55; }
+.token-created { display:grid; gap:9px; padding:13px 14px; border:1px solid var(--ui-border-accent); border-radius:var(--radius-md); background:var(--ui-action-soft); }
+.token-created strong { color:var(--ui-text-strong); font-size:13.5px; }
+.token-created code { overflow-wrap:anywhere; padding:8px 10px; border:1px solid var(--ui-border-accent); border-radius:var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-action-primary-hover); font-size:12.5px; }
 .token-created > button { justify-self:start; }
-.token-state { color:var(--muted); font-size:13px; }
+.token-state { color:var(--ui-text-muted); font-size:13px; }
 .token-panel .admin-form > div .primary { white-space:nowrap; }
 
 @media (max-width: 1050px) {

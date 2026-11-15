@@ -1,6 +1,6 @@
 # Sistema visual
 
-> **Estado:** Fases 1-2 completadas (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
+> **Estado:** Fases 1-3 completadas (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
 > **Fuente de verdad:** [`../app/globals.css`](../app/globals.css)
 
 ---
@@ -17,38 +17,28 @@ La auditoría de la fase 1 midió todo el CSS propio del repositorio, sin contar
 
 Los 36 hexadecimales de `globals.css` ya son la base central. La deuda está en los **266 usos y 208 colores distintos** repartidos por los CSS de feature.
 
-Tras la fase 2, el piloto de Tareas y Calendario no conserva ningún hexadecimal propio:
+Tras la fase 3, las pantallas de Ajustes, Documentación, Mi espacio y Aula Store, y los shells compartidos, no conservan ningún hexadecimal propio:
 
 | Ámbito actual | Archivos | Líneas | Usos de hex | Hex distintos |
 |---|---:|---:|---:|---:|
-| Toda la aplicación | 23 | 2.327 | 236 | 186 |
-| `app/globals.css` | 1 | 233 | 49 | 49 |
-| CSS de feature | 22 | 2.094 | 187 | 145 |
+| Toda la aplicación | 23 | 2.345 | 152 | 130 |
+| `app/globals.css` | 1 | 259 | 72 | 72 |
+| CSS de feature | 22 | 2.086 | 80 | 58 |
 
-Los CSS de `kanban.css`, `task-dialog.css`, `calendar-view.css`, `class.css`, `buttons.css` y `dialogs.css` quedan a cero. Los 187 usos restantes están en las pantallas de la fase 3.
+Los CSS de `kanban.css`, `task-dialog.css`, `calendar-view.css`, `class.css`, `buttons.css`, `dialogs.css`, `settings-view.css`, `header.css`, `workspace-layout.css`, `docs.css`, `space.css` y `store.css` quedan a cero. Los 80 usos restantes están en apps, personas y accesibilidad, fuera del alcance de esta fase.
 
 ### Archivos con hexadecimales
 
 | Archivo | Líneas | Usos | Distintos |
 |---|---:|---:|---:|
-| `app/board/tasks/kanban.css` | 158 | 46 | 42 |
-| `app/board/space/space.css` | 59 | 35 | 30 |
-| `app/board/docs/docs.css` | 225 | 30 | 29 |
-| `app/board/space/store/store.css` | 109 | 30 | 24 |
 | `app/board/apps/edu-tools/edu-tools.css` | 341 | 24 | 18 |
 | `app/board/apps/edu-tools/periodic-table/periodic-table-es.css` | 136 | 23 | 22 |
 | `app/board/people/people.css` | 75 | 16 | 15 |
-| `app/board/tasks/dialog/task-dialog.css` | 74 | 16 | 16 |
-| `app/board/styles/buttons.css` | 59 | 9 | 9 |
 | `app/board/styles/access.css` | 37 | 8 | 7 |
-| `app/board/settings/settings-view.css` | 62 | 7 | 7 |
-| `app/board/styles/dialogs.css` | 34 | 7 | 7 |
 | `app/board/apps/blockly/blockly.css` | 77 | 6 | 5 |
-| `app/board/layout/header.css` | 98 | 5 | 4 |
 | `app/board/apps/mermaid/mermaid.css` | 51 | 3 | 3 |
-| `app/board/class/calendar/calendar-view.css` | 395 | 1 | 1 |
 
-Los otros seis CSS —`class.css`, `workspace-layout.css`, `member-dialog.css`, `project-dialogs.css`, `whiteboard.css` y `authorize.css`— no contienen hexadecimales.
+Los otros 16 CSS de feature —incluidos los seis migrados en fase 2 y los seis de fase 3— no contienen hexadecimales.
 
 ## 2. Capas de tokens
 
@@ -58,7 +48,7 @@ Los otros seis CSS —`class.css`, `workspace-layout.css`, `member-dialog.css`, 
 | Compatibilidad | nombres existentes (`--canvas`, `--ink`, `--line`…) | Mantienen los valores actuales mientras se migran los CSS. No se usan en código nuevo. |
 | Semántica de UI | `--ui-*` | Capa estable para el CSS de feature y para los componentes nuevos. |
 
-La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes siguen resolviendo al mismo color, ahora a través de una primitiva. La fase 2 deja 45 primitivas y 51 tokens `--ui-*`; los 36 nombres de compatibilidad se conservan intactos.
+La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes siguen resolviendo al mismo color, ahora a través de una primitiva. La fase 3 deja 54 primitivas y 68 tokens `--ui-*`; los 36 nombres de compatibilidad se conservan intactos.
 
 ## 3. Mapa semántico
 
@@ -75,6 +65,8 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `--ui-surface-faint` | `--surface-faint` | `#f7f5fd` |
 | `--ui-surface-pale` | `--surface-pale` | `#fbfaff` |
 | `--ui-surface-inverse` | `--ink-deep` | `#302255` |
+| `--ui-surface-on-dark-subtle` | primitiva propia | `#ffffff1f` |
+| `--ui-surface-on-dark-hover` | primitiva propia | `#ffffff33` |
 
 ### Texto y bordes
 
@@ -92,6 +84,7 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `--ui-border-on-dark` | primitiva propia | `#ffffff12` |
 | `--ui-border-warning` | primitiva propia | `#f0d9a8` |
 | `--ui-border-danger` | primitiva propia | `#f2cdd9` |
+| `--ui-border-success` | primitiva propia | `#b9dfcf` |
 | `--ui-border-default` | `--line` | `#e7e4ef` |
 | `--ui-border-strong` | `--line-strong` | `#e0daef` |
 | `--ui-border-control` | `--line-control` | `#ded9ea` |
@@ -110,6 +103,12 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `--ui-focus-on-dark` | `--focus-on-dark` | `#cdb4ff` |
 | `--ui-action-on-dark-hover` | primitiva propia | `#493668` |
 | `--ui-progress-track` | primitiva propia | `#584777` |
+| `--ui-accent-amber` | primitiva propia | `#febc2e` |
+| `--ui-accent-amber-ink` | primitiva propia | `#8a6100` |
+| `--ui-accent-lavender` | primitiva propia | `#b7a8ee` |
+| `--ui-glow-primary` | primitiva propia | `#5839be66` |
+| `--ui-glow-primary-soft` | primitiva propia | `#5839be55` |
+| `--ui-text-shadow-dark` | primitiva propia | `0 1px 4px #0007` |
 
 ### Composición
 
@@ -120,6 +119,14 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `--ui-shadow-card-hover` | `0 3px 8px #29213a13` |
 | `--ui-shadow-dialog` | `0 18px 70px #20154030` |
 | `--ui-shadow-toast` | `0 5px 20px #30225530` |
+| `--ui-shadow-popover` | `0 12px 35px #30225526` |
+| `--ui-shadow-hero` | `0 10px 28px #30225533` |
+| `--ui-shadow-window` | `0 24px 60px #00000055, 0 0 0 1px #00000022` |
+| `--ui-shadow-tool` | `0 6px 16px #00000038, inset 0 1px #ffffff59` |
+| `--ui-shadow-dock` | `0 14px 32px -12px #3a1d86a6, 0 2px 8px #00000024, inset 0 1px 0 #ffffff4d` |
+| `--ui-shadow-dock-hover` | `0 22px 44px -14px #5b34c9b8, 0 3px 10px #00000026, inset 0 1px 0 #ffffff73` |
+| `--ui-shadow-detail` | `0 30px 80px #00000066` |
+| `--ui-shadow-mark` | `0 6px 14px #5839be33` |
 
 ### Estados
 
@@ -143,7 +150,7 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | Archivo | Tokens locales | Tratamiento |
 |---|---|---|
 | `edu-tools.css` | `--background`, `--card`, `--surface`, `--border`, `--rule`, `--calc-*` y equivalentes de la librería | Mapear a `--ui-*` al migrar la app; conservar los nombres que exija `@smst/edu-tools`. |
-| `docs.css` | `--docs-amber`, `--docs-amber-ink`, `--docs-lavender`, `--docs-surface`, `--docs-surface-soft`, radios y medidas | Mantener solo los tokens propios de la página; superficies y tinta pasan a `--ui-*`. |
+| `docs.css` | `--docs-radius-lg`, `--docs-radius`, `--docs-radius-sm`, `--docs-gap`, `--docs-index-width`, `--docs-art-width` y `--docs-sticky-top` | Solo medidas y radios; los colores ya pasan a `--ui-*`. |
 | `kanban.css` | `--accent` y `--accent-bg` por carril | Se conservan como variables locales, pero ya derivan de `--ui-*`; no queda ningún hexadecimal. |
 
 ## 5. Reglas de uso
@@ -161,7 +168,7 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 |---|---|---|
 | 1 | Inventario, primitivas y tokens `--ui-*` | Completada. |
 | 2 | Tareas y Calendario | Completada; sin hexadecimales propios y con contraste AA verificado. |
-| 3 | Ajustes, Documentación, Mi espacio y Aula Store | Pendiente. |
+| 3 | Ajustes, Documentación, Mi espacio y Aula Store | Completada; sin hexadecimales propios, gradientes solo en Mi espacio y Aula Store y contraste AA verificado numéricamente. |
 | 4 | Limpieza de hexadecimales y guarda | Pendiente. |
 
 ### Contraste de la fase 2
@@ -180,4 +187,18 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | Texto atenuado / superficie inversa | 10,99:1 |
 | Progreso / pista oscura (gráfico) | 4,48:1 (>3:1) |
 
-No hay fallos AA en texto normal o pequeño. La barra de progreso es un elemento gráfico y supera el mínimo de 3:1. La comprobación es numérica; no se hizo una inspección visual en navegador en esta fase.
+### Contraste de la fase 3
+
+| Pareja | Ratio |
+|---|---:|
+| Texto atenuado / superficie elevada | 6,36:1 |
+| Texto atenuado / página | 5,99:1 |
+| Texto fuerte / acción suave | 12,06:1 |
+| Acción hover / acción suave | 8,83:1 |
+| Ámbar / superficie inversa | 8,38:1 |
+| Ámbar tinta / aviso pálido | 5,23:1 |
+| Peligro profundo / peligro suave | 8,12:1 |
+| Blanco / acción brillante | 4,98:1 |
+| Texto atenuado / superficie faint | 5,88:1 |
+
+No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; la barra de progreso es un elemento gráfico y supera el mínimo de 3:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2 y 3.
