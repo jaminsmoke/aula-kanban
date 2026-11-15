@@ -14,9 +14,10 @@
 - Oportunidad: pedir al cliente MCP que envíe la imagen ya reducida, o redimensionar en el Worker con WASM; de paso, las capturas guardadas como documento podrían tener miniatura.
 - Limitación: el Site solo declara `BUCKET` y `DB`, así que el binding `IMAGES` no está disponible, y `sharp` no encaja en el Worker.
 - Decisión (2026-11-15): las imágenes con `finalidad=document` **no necesitan miniatura**. Ninguna vista las lista ni las previsualiza; su único uso previsible es pegar su enlace en el campo de imagen de una tarea, y entonces se sirve el original. Una miniatura exigiría un redimensionador en el Worker, el mismo que falta para el resto del derivado por MCP.
+- Evaluación WASM (2026-11-15): **viable, pero se aplaza**. `@jsquash` (Apache-2.0) cubre JPEG, PNG, WebP y `resize` con ~1,9 MB sin comprimir; `@cf-wasm/photon` pesa 6,3 MB, `@standardagents/sip` 807 KB pero solo emite JPEG y `wasm-vips` 13 MB. Desde 2026-09 el Worker admite 64 MiB sin comprimir, así que el tamaño ya no es el límite; sí lo son los 128 MB por isolate (una foto de 12 MP decodifica a ~48 MB) y la CPU (10 ms en Free).
 - Qué falta:
   - [ ] Medir cuántas subidas por MCP llegan y con qué peso; sin datos de producción no hay cifras.
-  - [ ] Evaluar un redimensionador WASM frente a documentar la asimetría como aceptada.
+  - [x] Evaluar un redimensionador WASM frente a documentar la asimetría como aceptada: viable con `@jsquash`, aplazado hasta tener volumen real; mientras tanto se documenta la recomendación de enviar la imagen ya reducida.
   - [x] Decidir si las imágenes con `finalidad=document` necesitan miniatura: no, se quedan solo con el enlace.
 
 ## 2026-11-15 — PER-07 · Nitidez del texto al ampliar el derivado de pizarra

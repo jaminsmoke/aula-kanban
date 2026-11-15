@@ -115,3 +115,22 @@ El detalle de tarea muestra la imagen a un máximo de 220 px de alto y la tarjet
 ## Integración
 
 La fase 3 está integrada: `handleUpload` genera la miniatura, envía el WebP si pesa menos que el original y cae al original en cualquier otro caso. Los GIF no se transforman y el MCP mantiene su propio camino. En la pizarra, `uploadBlob` reduce a 2048 px las imágenes JPEG, PNG y WebP que superan ese ancho; los GIF se suben intactos y el WebP conserva el canal alfa de los PNG.
+
+## Derivado en el servidor (MCP)
+
+`subir_archivo` no pasa por el navegador, así que hoy guarda el original (hasta 5 MB de imagen). Evaluación del 2026-11-15 de las alternativas WASM para el Worker:
+
+| Opción | Tamaño sin comprimir | Licencia | Cobertura | Veredicto |
+|---|---:|---|---|---|
+| `@jsquash/jpeg` + `png` + `webp` + `resize` | ~1,9 MB | Apache-2.0 | JPEG, PNG y WebP; sin GIF animado | Única candidata razonable |
+| `@cf-wasm/photon` | 6,3 MB | Apache-2.0 | JPEG, PNG y WebP | Sobredimensionada |
+| `@standardagents/sip` | 807 KB | MIT | JPEG/PNG de entrada y solo JPEG de salida | No cubre WebP ni texto con alfa |
+| `wasm-vips` | 13 MB | MIT | Amplia | Descartada por tamaño y memoria |
+
+Lectura:
+
+- El límite del Worker ya no es 3/10 MB comprimidos: desde 2026-09 solo cuenta el tamaño sin comprimir, 64 MiB en todos los planes, así que 1,9 MB de wasm cabe.
+- Los límites reales son la memoria (128 MB por isolate: una foto de 12 MP decodifica a ~48 MB y el redimensionado puede duplicarla) y la CPU (10 ms en Free; el plan de pago permite minutos).
+- Habría que leer las dimensiones antes de decodificar, saltar los GIF para no perder la animación y empaquetar el `.wasm` en el build, porque el Worker no puede descargarlo en tiempo de ejecución.
+- Ahorro potencial: el tope de 5 MB bajaría a ~350 KB con 2048 px y calidad 0,8, según la medición de pizarra.
+- Decisión: no implementarlo todavía. Sin datos del volumen de subidas MCP, el coste en memoria, CPU y pruebas supera al beneficio; se documenta la recomendación de enviar la imagen ya reducida y se retoma si el volumen lo justifica.
