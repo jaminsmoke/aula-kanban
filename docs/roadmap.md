@@ -43,10 +43,11 @@
 
 ### Fase 1: Listado paginado del bucket
 
-- [ ] Crear un clasificador puro en `lib/domain/uploads/inventory.ts` que reciba objetos y filas y devuelva `con_fila`, `objeto_sin_fila`, `fila_sin_objeto` y `clave_revisar`, con recuentos.
-- [ ] Implementar `listBucketPage({ cursor, limit })` en `lib/server/storage.ts` sobre `env.BUCKET.list`, con tope de 100 y devolución de `truncated`/`cursor`.
-- [ ] Cubrir página completa, última página, bucket vacío y R2 ausente con dobles.
+- [x] Crear un clasificador puro en `lib/domain/uploads/inventory.ts` que reciba objetos y filas y devuelva `con_fila`, `objeto_sin_fila`, `fila_sin_objeto` y `clave_revisar`, con recuentos.
+- [x] Implementar `listBucketPage({ cursor, limit })` en `lib/server/storage.ts` sobre `env.BUCKET.list`, con tope de 100 y devolución de `truncated`/`cursor`.
+- [x] Cubrir página completa, última página, bucket vacío y R2 ausente con dobles.
 - **Criterios de aceptación:** el listado no modifica R2 ni D1; una clave repetida o una fila sin objeto no se confunden; el cursor solo se devuelve cuando R2 indica que hay más.
+- **Estado:** Completada el 2026-11-15. `lib/domain/uploads/inventory.ts` clasifica objetos con fila, huérfanos, filas sin objeto y claves a revisar, con recuentos; `listBucketPage` pagina R2 con tope de 100, adapta los metadatos y solo devuelve cursor si hay más. 9 pruebas nuevas (5 del clasificador y 4 del listado), `tsc` y lint en verde.
 
 ### Fase 2: Cotejo con D1 y endpoint
 

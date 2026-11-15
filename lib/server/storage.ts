@@ -174,3 +174,37 @@ export async function readUpload(id: string): Promise<UploadReadResult> {
   if (!object) return { status: "object_missing" };
   return { status: "ok", row, object };
 }
+
+/** Tope de objetos que devuelve una página del inventario. */
+export const MAX_BUCKET_PAGE = 100;
+
+/** Página del inventario de R2. */
+export type BucketPage = {
+  objects: Array<{ key: string; size: number; uploaded: number; etag: string }>;
+  truncated: boolean;
+  cursor: string | null;
+};
+
+/**
+ * Lista una página de objetos del bucket, sin descargar su contenido.
+ * @param input - Cursor opaco y tope de la página.
+ * @returns Los metadatos mínimos y el cursor para la página siguiente.
+ */
+export async function listBucketPage(input: { cursor?: string; limit?: number } = {}): Promise<BucketPage> {
+  if (!env.BUCKET) throw new StorageUnavailableError();
+  const limite = Math.min(Math.max(Math.trunc(input.limit ?? MAX_BUCKET_PAGE) || MAX_BUCKET_PAGE, 1), MAX_BUCKET_PAGE);
+  const page = await env.BUCKET.list({
+    limit: limite,
+    ...(input.cursor ? { cursor: input.cursor } : {}),
+  });
+  return {
+    objects: page.objects.map((object) => ({
+      key: object.key,
+      size: object.size,
+      uploaded: object.uploaded.getTime(),
+      etag: object.etag,
+    })),
+    truncated: page.truncated,
+    cursor: page.truncated ? page.cursor ?? null : null,
+  };
+}
