@@ -1,10 +1,39 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-15 — Roadmap UI-01 · Sistema visual cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fases 1-3.1 — Base y superficies:** 70 primitivas y 93 tokens `--ui-*`; Tareas, Calendario, Ajustes, Documentación, Mi espacio, Aula Store, header y sidebar comparten superficies, texto, bordes y estados. El marco usa `--ui-surface-frame` y los 22 CSS de feature quedan a cero hexadecimales.
+- **Fases 4-5 — Tipografía e iconografía:** 18 tamaños, 5 interlineados, 6 trackings y 5 pesos; iconos de 12, 16, 18, 20, 24 y 28 px con trazo 2 y áreas táctiles mínimas de 36 px.
+- **Fases 6-7 — Color y temas:** 11 tintes categóricos, estados compartidos y tema claro/oscuro con `system | light | dark`, persistencia en `aula-kanban-theme`, 92 tokens invertidos y selector en Ajustes > Apariencia.
+- **Fase 7.1 — Bordes y radios:** escala de 1/2/3 px y 5/6/8/12/14/18/22 px más píldora; 127 bordes, 28 contornos y 107 radios migrados, incluidas las apps internas.
+- **Fase 8 — Limpieza y guarda:** retirados los 36 alias de compatibilidad; los 93 tokens consumen primitivas directamente. `app/styles.test.ts` bloquea hexadecimales, funciones de color y alias retirados en CSS de feature; la última sombra cruda de OAuth pasa a `--ui-shadow-float`. El header y el sidebar usan 2 px de `--ui-border-accent-strong`; las tarjetas y carriles siguen a 1 px.
+- Revisadas las excepciones de color de Blockly, Mermaid, Excalidraw y del HTML aislado del MCP; quedan documentadas y fuera de la guarda CSS. El snapshot del catálogo MCP se alinea con la sección Apariencia que ya expone la fase 7.
+- Sin cambios de versión; `package.json` sigue en `1.1.26`.
+
+### Verificación
+
+- `npm run lint` limpio.
+- `npx tsc --noEmit` limpio.
+- Suite completa: **96 archivos / 790 tests**.
+- `npm run build` en verde, con el aviso existente de chunks superiores a 500 kB.
+- Guarda de estilos: **2 pruebas**; detecta un hexadecimal y una función de color en una hoja de feature.
+- `git diff --check` limpio.
+- Commits de fase: `b9481ee`, `306bac2`, `6743b76` y `d5f17cd`.
+- Sin inspección visual en navegador; la revisión visual del nuevo grosor de 2 px del chrome queda pendiente.
+
+### Seguimiento en backlog
+
+Roadmap vacío. Backlog: 6 entradas (UI-03, PER-03, PER-01B, PER-02, SYNC-01 y MCP-05). SYNC-01 se conserva como norma operativa.
 
 ## 2026-11-15 — Roadmap PERF-01 · Coste de las apps pesadas cerrado
 

@@ -2,7 +2,7 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
 > **Nota:** UI-01 pasó al roadmap activo; PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; SYNC-01 se queda aquí como norma operativa.
 
