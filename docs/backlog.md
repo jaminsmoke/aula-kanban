@@ -4,7 +4,7 @@
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01, CI-01, UI-02 y CI-02 se completaron y SYNC-01 se queda aquí como norma operativa.
+> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01, CI-01, UI-02 y CI-02 se completaron, ARCH-02 pasó al roadmap y SYNC-01 se queda aquí como norma operativa.
 
 ---
 
@@ -47,17 +47,6 @@
   - [ ] Mover la migración de UUID, la actualización de identidad y la limpieza de huérfanos de `/api/projects` a un servicio idempotente.
   - [ ] Cubrir el refactor con el contrato de sesión, permisos, errores y paridad HTTP ↔ MCP.
 - Notas técnicas: refactor incremental; no mover carpetas; no ocultar validaciones específicas de cada ruta detrás de un helper genérico.
-
-## 2026-11-15 — ARCH-02 · Dividir los módulos grandes restantes
-
-- Contexto: los mayores pendientes son `lib/server/mcp/dominios/tareas.ts` (700 líneas), `lib/server/mcp/dominios/personas.ts` (523) y `lib/server/oauth/service.ts` (499). `app/board/docs/content.ts` ya se dividió en HIER-01; `section-art.tsx` (415) queda como agrupación opcional, no por el umbral de 500.
-- Qué falta antes de retomarlo:
-  - [ ] Dividir `tareas.ts` en lectura, escritura y filtros, conservando `herramientasTareas` como export público.
-  - [ ] Dividir `personas.ts` en alumnado, profesorado e invitaciones.
-  - [ ] Dividir `oauth/service.ts` en clientes, códigos, tokens y utilidades criptográficas, compartiendo la interfaz `Db`.
-  - [ ] Agrupar las ilustraciones de `section-art.tsx` por familias (opcional).
-  - [ ] Conservar exports públicos, snapshots y pruebas; no dividir `mcp-catalogo.ts` ni `mcp-descripciones.ts`, que son fuentes de verdad/generadas.
-- Notas técnicas: división mecánica y verificable; no partir archivos solo por número de líneas si la cohesión es mayor que el coste.
 
 ## 2026-11-15 — SYNC-01 · Sincronizar el repositorio tras cada publicación
 
