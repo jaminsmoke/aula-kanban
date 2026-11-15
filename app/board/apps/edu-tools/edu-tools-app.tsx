@@ -2,13 +2,13 @@
 
 import "@smst/edu-tools/styles";
 import { lazy, Suspense, useEffect, useState } from "react";
-import CalculatorPanel from "./calculator-panel";
-import MeasureTools from "./measure-tools";
-import { useMeasureTools } from "./use-measure-tools";
+import CalculatorPanel from "./calculator/calculator-panel";
+import MeasureTools from "./tools/measure-tools";
+import { useMeasureTools } from "./tools/use-measure-tools";
 import "./edu-tools.css";
 
-const PeriodicTableEs = lazy(() => import("./periodic-table-es"));
-const TtsEs = lazy(() => import("./edu-tts"));
+const PeriodicTableEs = lazy(() => import("./periodic-table/periodic-table-es"));
+const TtsEs = lazy(() => import("./tools/edu-tts"));
 
 type ToolView = "calculadora" | "ciencias" | "medir" | "lectura";
 

@@ -52,11 +52,12 @@
 
 ### Fase 2 — Herramientas de aula
 
-- [ ] Crear `calculator/` y mover calculadora, historial, teclado, panel, ecuaciones y evaluación.
-- [ ] Crear `periodic-table/` y mover tabla, datos, estilos, tipos y modelo de Bohr.
-- [ ] Crear `tools/` y mover lectura en voz alta y medición con su hook.
-- [ ] Actualizar imports, `lazy()` y el test de la app; no convertir cargas diferidas en eager.
+- [x] Crear `calculator/` y mover calculadora, historial, teclado, panel, ecuaciones y evaluación.
+- [x] Crear `periodic-table/` y mover tabla, datos, estilos, tipos y modelo de Bohr.
+- [x] Crear `tools/` y mover lectura en voz alta y medición con su hook.
+- [x] Actualizar imports, `lazy()` y el test de la app; no convertir cargas diferidas en eager.
 - **Criterios de aceptación:** las cuatro pestañas funcionan, los tests pasan y el build no incorpora las librerías pesadas al chunk de entrada.
+- **Completada (2026-11-15):** 21 tests de `edu-tools`, `tsc` y build en verde; se conservaron las cargas diferidas de tabla, lector y ecuaciones.
 
 ### Fase 3 — Diálogo, modal y acceso a proyecto
 
