@@ -11,7 +11,7 @@ export const MCP_DOMINIOS = ["Proyectos", "Archivos", "Tareas", "Personas", "Con
 export type McpDominio = (typeof MCP_DOMINIOS)[number];
 
 /** Versión del contrato de herramientas. */
-export const MCP_CATALOG_VERSION = "0.25.0";
+export const MCP_CATALOG_VERSION = "0.26.0";
 
 /** Metadatos de una herramienta del catálogo. */
 export type McpCatalogoEntry = {
@@ -376,6 +376,30 @@ export const MCP_CATALOGO: McpCatalogoEntry[] = [
     description: "Guarda la serialización completa de Blockly con blocks.blocks[], conserva los campos internos y rechaza estados de más de 200.000 caracteres. No genera ni ejecuta código. Requiere permiso de escritura; los invitados no escriben y la última escritura gana.",
     scope: "mcp:write",
     annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false},
+  },
+  {
+    domain: "Apps",
+    name: "leer_diagrama",
+    title: "Leer diagrama",
+    description: "Lee el código Mermaid guardado en el proyecto y su fecha de actualización; codigo y actualizado son null si aún no hay diagrama. Requiere que Diagramas esté instalada y acceso al proyecto.",
+    scope: "mcp:read",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    domain: "Apps",
+    name: "guardar_diagrama",
+    title: "Guardar diagrama",
+    description: "Guarda el documento del diagrama con code textual, conserva las claves internas y rechaza documentos de más de 200.000 caracteres. No valida la sintaxis ni renderiza el SVG. Requiere permiso de escritura; los invitados no escriben y la última escritura gana.",
+    scope: "mcp:write",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  },
+  {
+    domain: "Apps",
+    name: "listar_plantillas_diagrama",
+    title: "Listar plantillas de diagrama",
+    description: "Devuelve las plantillas de Diagramas con su identificador, nombre y código, las mismas que ofrece la app. Requiere que Diagramas esté instalada; no necesita proyecto.",
+    scope: "mcp:read",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   },
   {
     domain: "Ventanas",

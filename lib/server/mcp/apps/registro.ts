@@ -3,6 +3,7 @@ import type { McpToolDefinicion } from "../dominios/tipos";
 import { herramientasBlockly } from "./blockly";
 import { herramientasEduTools } from "./edu-tools";
 import { herramientasExcalidraw } from "./excalidraw";
+import { herramientasMermaid } from "./mermaid";
 
 /**
  * Manifiesto MCP de las apps nativas (MCP-05A).
@@ -34,8 +35,7 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
   },
   mermaid: {
     appId: "mermaid",
-    herramientas: [],
-    pendiente: "MCP-05E",
+    herramientas: herramientasMermaid,
   },
 };
 

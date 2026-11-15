@@ -70,7 +70,7 @@ El **plugin de Aula Kanban para Sites** es la vía recomendada para ChatGPT y Co
 La lista siguiente se genera desde `lib/domain/mcp-catalogo.ts`; las dos puertas publican las mismas herramientas y cada descripción incluye un ejemplo de argumentos y su regla de rol.
 
 <!-- inicio catálogo MCP: generado desde lib/domain/mcp-catalogo.ts -->
-**56 herramientas · catálogo `0.25.0`:** 24 de lectura y 32 de escritura; 8 destructivas.
+**59 herramientas · catálogo `0.26.0`:** 26 de lectura y 33 de escritura; 8 destructivas.
 
 **Proyectos**
 
@@ -139,6 +139,9 @@ La lista siguiente se genera desde `lib/domain/mcp-catalogo.ts`; las dos puertas
 - **`consultar_elemento`** — Consultar elemento. Cualquier cuenta autenticada; la app Herramientas de aula debe estar instalada. No requiere proyecto.
 - **`leer_programa_bloques`** — Leer programa de bloques. Cualquier miembro con acceso al proyecto; la app Blockly debe estar instalada.
 - **`guardar_programa_bloques`** — Guardar programa de bloques. Cualquier miembro con acceso al proyecto; las cuentas invitadas no escriben. No hay revisión optimista: la última escritura gana.
+- **`leer_diagrama`** — Leer diagrama. Cualquier miembro con acceso al proyecto; la app Diagramas debe estar instalada.
+- **`guardar_diagrama`** — Guardar diagrama. Cualquier miembro con acceso al proyecto; las cuentas invitadas no escriben. No hay revisión optimista: la última escritura gana.
+- **`listar_plantillas_diagrama`** — Listar plantillas de diagrama. Cualquier cuenta autenticada; la app Diagramas debe estar instalada. No requiere proyecto.
 
 **Ventanas**
 

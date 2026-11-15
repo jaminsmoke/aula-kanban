@@ -12,7 +12,7 @@ describe("guía MCP generada", () => {
     expect(herramientas.map((herramienta) => herramienta.name)).toEqual(MCP_CATALOGO.map((entrada) => entrada.name));
     expect(new Set(herramientas.map((herramienta) => herramienta.name)).size).toBe(MCP_CATALOGO.length);
     for (const herramienta of herramientas) expect(herramienta.role).not.toBe("");
-    expect(mcpResumen()).toMatchObject({ total: 56, lectura: 24, escritura: 32, destructivas: 8, version: "0.25.0" });
+    expect(mcpResumen()).toMatchObject({ total: 59, lectura: 26, escritura: 33, destructivas: 8, version: "0.26.0" });
   });
 
   it("el bloque del README coincide exactamente con el catálogo", () => {

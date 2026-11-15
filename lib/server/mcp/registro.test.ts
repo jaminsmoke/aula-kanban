@@ -71,6 +71,9 @@ describe("contrato del catálogo MCP", () => {
       "consultar_elemento",
       "leer_programa_bloques",
       "guardar_programa_bloques",
+      "leer_diagrama",
+      "guardar_diagrama",
+      "listar_plantillas_diagrama",
       "listar_ventanas",
       "cerrar_app",
       "minimizar_app",
@@ -183,7 +186,7 @@ describe("contrato del catálogo MCP", () => {
     for (const entry of entries) {
       expect(entry.annotations.openWorldHint).toBe(false);
       // Sin argumentos: `quien_soy`, invitaciones y el listado de administradores no los tienen.
-      if (entry.name !== "quien_soy" && entry.name !== "listar_invitaciones_pendientes" && entry.name !== "listar_administradores" && entry.name !== "listar_tokens_mcp") {
+      if (entry.name !== "quien_soy" && entry.name !== "listar_invitaciones_pendientes" && entry.name !== "listar_administradores" && entry.name !== "listar_tokens_mcp" && entry.name !== "listar_plantillas_diagrama") {
         expect(Object.keys(entry.inputSchema)).not.toHaveLength(0);
       }
       expect(Object.keys(entry.outputSchema)).not.toHaveLength(0);

@@ -50,13 +50,14 @@
 
 ### Fase 2: Herramientas MCP
 
-- [ ] Crear `lib/server/mcp/apps/mermaid.ts` con `leer_diagrama`, `guardar_diagrama` y `listar_plantillas_diagrama`.
-- [ ] Hacer que la lectura resuelva el proyecto y la app instalada, y devuelva `{ codigo, actualizado }` o `null` si no hay diagrama.
-- [ ] Validar en la escritura `{ code }`, el límite de 200.000 caracteres y los invitados; guardar con `saveAppDocument` y devolver la fecha.
-- [ ] Devolver las plantillas con `{ id, nombre, codigo }` sin exigir proyecto y con la app instalada.
-- [ ] Declarar las tres herramientas en `APP_MCP_DECLARACIONES` y actualizar el catálogo a `0.26.0` con 59 herramientas (26 de lectura, 33 de escritura y 8 destructivas).
-- [ ] Añadir pruebas de app desinstalada, proyecto inexistente, sin acceso, invitado, documento inválido, exceso de tamaño, plantillas y round-trip con la web.
+- [x] Crear `lib/server/mcp/apps/mermaid.ts` con `leer_diagrama`, `guardar_diagrama` y `listar_plantillas_diagrama`.
+- [x] Hacer que la lectura resuelva el proyecto y la app instalada, y devuelva `{ codigo, actualizado }` o `null` si no hay diagrama.
+- [x] Validar en la escritura `{ code }`, el límite de 200.000 caracteres y los invitados; guardar con `saveAppDocument` y devolver la fecha.
+- [x] Devolver las plantillas con `{ id, nombre, codigo }` sin exigir proyecto y con la app instalada.
+- [x] Declarar las tres herramientas en `APP_MCP_DECLARACIONES` y actualizar el catálogo a `0.26.0` con 59 herramientas (26 de lectura, 33 de escritura y 8 destructivas).
+- [x] Añadir pruebas de app desinstalada, proyecto inexistente, sin acceso, invitado, documento inválido, exceso de tamaño, plantillas y round-trip con la web.
 - **Criterios de aceptación:** cualquier miembro con acceso lee y guarda; los invitados reciben 403; la app desinstalada responde `not_found`; un documento inválido responde `invalid`; las plantillas coinciden con la app y no requieren proyecto.
+- **Estado:** Completada el 2026-11-15. Catálogo `0.26.0` con 59 herramientas; 9 pruebas de las tres herramientas, matriz de 397 casos y snapshot regenerado. `APP_MCP_DECLARACIONES` ya no marca Mermaid como pendiente.
 
 ### Fase 3: Cobertura, verificación y cierre
 
