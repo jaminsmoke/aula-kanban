@@ -4,20 +4,9 @@
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; el roadmap está libre para la siguiente fase. HIER-01 queda arriba como candidata.
+> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01 pasó al roadmap y SYNC-01 se queda aquí como norma operativa.
 
 ---
-
-## 2026-11-15 — HIER-01 · Reorganización mínima de la jerarquía
-
-- Contexto: la revisión del 2026-11-15 sobre 335 archivos de código (`app` 219/17.761 líneas; `lib` 87/10.745) confirma que la estructura feature-first y la dirección `app → lib → db` son correctas. No hace falta una mudanza global. Los focos son `app/board/docs/content.ts` (541 líneas), `app/board/apps/edu-tools/` (20 archivos sin subcarpetas), `app/board/tasks/` (16 archivos) y `app/modal.tsx`, usado solo desde el tablero.
-- Qué falta antes de retomarlo:
-  - [ ] Crear `app/board/docs/content/` y dividir `content.ts` por secciones, con un `index.ts` que mantenga `docSections`.
-  - [ ] Dividir `app/board/apps/edu-tools/` en `calculator/`, `periodic-table/` y `tools/` (TTS, medición, ecuaciones y Bohr).
-  - [ ] Valorar `app/board/tasks/dialog/` para separar diálogo, formulario, detalle y pizarra del tablero; no crearlo si la cohesión no lo justifica.
-  - [ ] Mover `app/modal.tsx` a `app/board/shared/modal.tsx`, actualizando sus imports y su test.
-  - [ ] Renombrar `lib/server/project.ts` a `project-access.ts` para distinguirlo de `projects.ts`.
-- Notas técnicas: no tocar `app/api`, `app/oauth`, `.well-known`, `db/`, `worker/`, `scripts/` ni `examples/`; sus niveles vienen impuestos o son infraestructura. No dividir `app/board/shared`, `settings` ni `projects` (8–11 archivos). Mantener comportamiento y exports; ejecutar tests, lint, tipos y build. Los movimientos se hacen en un bloque aparte, no junto a ARCH-01.
 
 ## 2026-11-15 — UI-02 · Encuadre de miniaturas en las tarjetas
 
@@ -88,6 +77,7 @@
 ## 2026-11-15 — SYNC-01 · Sincronizar el repositorio tras cada publicación
 
 - Contexto: hay dos destinos distintos. El deploy en Sites lo hace Codex; el repositorio personal `jaminsmoke/aula-kanban` (usuario JaminSmoke) se actualiza con commit y push desde local. El push a GitHub no despliega en Sites.
+- Decisión (2026-11-15): no pasa al roadmap; se ejecuta tras cada bloque y se conserva aquí como norma operativa.
 - Qué falta antes de retomarlo:
   - [ ] Repetir la rutina tras cada bloque verificado: `git status`, checks, commit y `git push github main`.
   - [ ] No cambiar la versión ni ejecutar `release:prepare` solo para sincronizar GitHub; la versión la fija la publicación.

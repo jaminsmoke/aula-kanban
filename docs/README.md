@@ -62,6 +62,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Changelog y backlog:** lo más reciente va siempre arriba; lo más antiguo queda al final.
 - El orden indica **recencia**, no prioridad.
 - No se borran entradas antiguas del changelog; se añaden hitos nuevos encima.
+- Nada detectado se elimina: o pasa al roadmap, o se ejecuta y queda registrado en el changelog, o permanece en el backlog.
 - En el backlog, cada entrada debe explicar contexto, qué falta antes de retomarla y notas técnicas.
 
 ## Estado actual
@@ -93,7 +94,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap de Calendario en Clase completado:** `react-big-calendar` 1.20.0 (MIT) con localizer de `date-fns` en carga diferida, sección `calendario` con las tareas por `dueDate`, `section=calendario` en la URL, estilos con tokens, pruebas y avisos de licencia. Resumen en [`changelog.md`](changelog.md).
 - **Site público confirmado** por el propietario el 2026-11-14: la portada anónima de `/` y `/documentacion` son visibles sin sesión. La entrada del backlog queda cerrada.
 - **Roadmap de Servidor MCP completado:** servidor MCP remoto en `/api/mcp` con 8 herramientas, tokens personales en Ajustes > Cuenta, límite básico por token y documentación de instalación en README y `/documentacion`. Resumen en [`changelog.md`](changelog.md).
-- **Backlog:** UI-02, PER-03, PER-01B, PER-02, HIER-01, UI-01, ARCH-01, ARCH-02, CI-01, SYNC-01, MCP-05 y recortes de rendimiento (12 entradas). MCP-04, MCP-03, MCP-01 y MCP-02 están cerrados; el plugin de Sites sustituye la entrada «GPT con Actions».
+- **Backlog:** UI-02, PER-03, PER-01B, PER-02, UI-01, ARCH-01, ARCH-02, CI-01, SYNC-01, MCP-05 y recortes de rendimiento (11 entradas). MCP-04, MCP-03, MCP-01 y MCP-02 están cerrados; el plugin de Sites sustituye la entrada «GPT con Actions».
 - **Roadmap de hidratación en `view=ajustes` completado:** el estado inicial de vista/sección pasa de la página (servidor) al hook, y la primera pintura ya coincide. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de repositorio público en GitHub completado:** `jaminsmoke/aula-kanban` con licencia MIT, textos de licencia de Excalidraw, CI en verde, segundo push con instrucciones de clonado y mensaje de remix con git. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de OAuth 2.1 para MCP y GPT completado:** servidor de autorización en el Site (RFC 7591, PKCE S256, consentimiento SIWC), MCP como resource server con alcances `mcp:read`/`mcp:write` y documentación de conexión para clientes y GPT. Resumen en [`changelog.md`](changelog.md).
@@ -109,7 +110,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap DOC-07 + MCP-11 completado:** catálogo público en `lib/domain/mcp-catalogo.ts`, instrucciones y prompts compartidos por `/mcp` y `/api/mcp`, guía del plugin en la ayuda y README generada desde el catálogo. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-09 completado:** administración de la instancia, tokens propios y auditoría por MCP (7 herramientas, catálogo `0.19.0`), con matriz, snapshot, paridad y pruebas SQLite. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-10 completado:** archivos del proyecto por MCP con `subir_archivo` y `obtener_archivo`, límites compartidos con la web, matriz ampliada y 50 herramientas (`0.20.0`). Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05 y recortes de chunks (2 entradas).
-- **Roadmap activo:** sin fase activa; plantilla reiniciada. La verificación de subida en producción se registró en el changelog; el inventario de R2 y las copias antiguas permanecen en PER-01B, y la purga segura pendiente en PER-03. El roadmap anterior se conserva en [`historial/roadmap-per-01.md`](historial/roadmap-per-01.md).
+- **Roadmap activo:** HIER-01 — Reorganización mínima de la jerarquía. Agrupa contenido, `edu-tools`, diálogo de tareas, modal y `project-access`; SYNC-01 permanece en el backlog como norma operativa. La verificación de subida en producción y el archivo de PER-01 están en el changelog; el inventario queda en PER-01B y la purga en PER-03. El roadmap anterior se conserva en [`historial/roadmap-per-01.md`](historial/roadmap-per-01.md).
 
 ## Documentación relacionada
 
