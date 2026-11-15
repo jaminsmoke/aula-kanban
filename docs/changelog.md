@@ -1,10 +1,35 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** PER-02 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** vacío · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-15 — Roadmap PER-02 · Miniaturas derivadas de las imágenes de tareas
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fase 1 — Línea base:** `scripts/image-baseline.mjs` y `npm run perf:images` miden con Chrome headless el peso, la transferencia estimada, la decodificación, la memoria, la codificación y el PSNR de fotos sintéticas; el método y los límites quedan en [`miniaturas.md`](miniaturas.md).
+- **Fase 2 — Prototipo y comparación:** `calcularDimensionesMiniatura` (7 pruebas) y `crearMiniaturaDeArchivo` generan un WebP de 800 px con orientación EXIF y sin metadatos. Una foto de 12 MP baja de 3,9 MB a 61 KB y de 46,5 MB decodificados a 1,8 MB, con 35,7 dB de PSNR. El Site solo declara `BUCKET` y `DB`, así que se descarta el binding `IMAGES`.
+- **Fase 3 — Integración:** la subida de tareas envía el derivado como `task-image` solo si pesa menos que el original; si el generador devuelve `null`, se sube el archivo tal cual. GIF y tipos no admitidos no se transforman. Seis pruebas nuevas (tres del generador y tres del diálogo).
+- Sin migraciones y sin cambios en `/api/uploads`, en la purga ni en el inventario; la versión sigue en `1.1.28`.
+- Roadmap cerrado y `docs/roadmap.md` reiniciado desde la plantilla. El backlog conserva SYNC-01 como norma operativa.
+
+### Verificación
+
+- `npm run lint` limpio.
+- `npx tsc --noEmit` limpio.
+- Suite completa de Vitest en verde; `npm run build` correcto.
+- `git diff --check` limpio.
+- Commits: `2392083` (línea base), `d229469` (prototipo y comparación) y `69811c3` (integración); el cierre queda en el commit de documentación.
+- Sin publicación en Sites ni `release:prepare`. La revisión visual en un navegador real y las fotos de producción siguen pendientes.
+
+### Seguimiento en backlog
+
+SYNC-01 se queda en [`backlog.md`](backlog.md) como norma operativa; no se añaden entradas nuevas.
 
 ## 2026-11-15 — Roadmap PER-01B · Inventario de R2 y publicación 1.1.28
 

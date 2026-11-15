@@ -2,9 +2,9 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** PER-02 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** vacío · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** PER-02 está en el roadmap activo con su línea base en [`miniaturas.md`](miniaturas.md). La cobertura MCP está en [`mcp-apps.md`](mcp-apps.md). PER-01B se completó y publicó en `1.1.28`; PER-03, MCP-05E, UI-03, UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; SYNC-01 se queda aquí como norma operativa.
+> **Nota:** PER-02 se completó sin publicación con su línea base en [`miniaturas.md`](miniaturas.md). La cobertura MCP está en [`mcp-apps.md`](mcp-apps.md). PER-01B se completó y publicó en `1.1.28`; PER-03, MCP-05E, UI-03, UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; SYNC-01 se queda aquí como norma operativa.
 
 ---
 
