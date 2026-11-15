@@ -108,7 +108,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap DOC-07 + MCP-11 completado:** catálogo público en `lib/domain/mcp-catalogo.ts`, instrucciones y prompts compartidos por `/mcp` y `/api/mcp`, guía del plugin en la ayuda y README generada desde el catálogo. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-09 completado:** administración de la instancia, tokens propios y auditoría por MCP (7 herramientas, catálogo `0.19.0`), con matriz, snapshot, paridad y pruebas SQLite. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-10 completado:** archivos del proyecto por MCP con `subir_archivo` y `obtener_archivo`, límites compartidos con la web, matriz ampliada y 50 herramientas (`0.20.0`). Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05 y recortes de chunks (2 entradas).
-- **Roadmap activo:** PER-01 — Persistencia de archivos con R2. La `1.1.26` está publicada en Sites; quedan la prueba de subida real, el inventario de archivos y la revisión de miniaturas. Backlog: MCP-05, recortes de rendimiento y SYNC-01 (3 entradas).
+- **Roadmap activo:** PER-01 — Persistencia de archivos con R2. La `1.1.26` está desplegada en Sites por Codex y el repo personal `jaminsmoke/aula-kanban` está sincronizado; quedan la prueba de subida real, el inventario de archivos y la revisión de miniaturas. Backlog: MCP-05, recortes de rendimiento y SYNC-01 (3 entradas).
 
 ## Documentación relacionada
 

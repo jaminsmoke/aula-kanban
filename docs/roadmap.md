@@ -5,7 +5,7 @@
 > **Entrada:** PER-01 — Persistencia de archivos: R2, objetos huérfanos y miniaturas (sale del backlog).
 > **Backlog:** MCP-05, recortes de rendimiento de chunks y SYNC-01 (3 entradas).
 > **Regla:** Este documento contiene solo la fase activa. Lo que se aparca pasa al backlog; lo completado pasa al changelog cuando **todas** las fases del roadmap hayan terminado.
-> **Publicación:** `1.1.26` ya está publicada en Sites; este roadmap distingue esa publicación del cierre real de la persistencia.
+> **Publicación:** `1.1.26` ya está desplegada en Sites por Codex; el repositorio personal `jaminsmoke/aula-kanban` se sincroniza aparte con commit/push desde local.
 
 ---
 

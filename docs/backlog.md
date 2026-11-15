@@ -10,7 +10,7 @@
 
 ## 2026-11-15 — SYNC-01 · Sincronizar el repositorio tras cada publicación
 
-- Contexto: la versión `1.1.26` ya está publicada en Sites (solo Codex puede publicar); el repositorio público se actualiza desde local con commit y push. El push a GitHub no publica en Sites.
+- Contexto: hay dos destinos distintos. El deploy en Sites lo hace Codex; el repositorio personal `jaminsmoke/aula-kanban` (usuario JaminSmoke) se actualiza con commit y push desde local. El push a GitHub no despliega en Sites.
 - Qué falta antes de retomarlo:
   - [ ] Repetir la rutina tras cada bloque verificado: `git status`, checks, commit y `git push github main`.
   - [ ] No cambiar la versión ni ejecutar `release:prepare` solo para sincronizar GitHub; la versión la fija la publicación.
