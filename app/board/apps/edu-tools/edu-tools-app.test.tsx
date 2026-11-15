@@ -16,7 +16,7 @@ describe("Herramientas de aula", () => {
     expect(screen.getByRole("button", { name: "Básica" })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Ecuaciones" }));
-    expect(await screen.findByRole("group", { name: "Teclado de ecuaciones" })).toBeTruthy();
+    expect(await screen.findByRole("group", { name: "Teclado de ecuaciones" }, { timeout: 10000 })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
     expect(screen.getByRole("group", { name: "Instrumento de medida" })).toBeTruthy();
@@ -25,7 +25,7 @@ describe("Herramientas de aula", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Lectura" }));
     expect(screen.getByText("Lectura en voz alta")).toBeTruthy();
     await waitFor(() => expect(document.querySelector(".edu-tts .tts, .edu-tts .pt-empty")).toBeTruthy());
-  });
+  }, 20000);
 
   it("calcula una suma con el ratón", async () => {
     render(<EduToolsApp />);

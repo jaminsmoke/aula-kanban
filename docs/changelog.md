@@ -6,6 +6,14 @@
 
 ---
 
+## 2026-11-15 — Publicación 1.1.27
+
+**Estado:** Publicada en Sites.
+
+- Se publican los cambios locales de arquitectura, rendimiento, miniaturas y sistema visual, con temas claro y oscuro. Sin migraciones nuevas de base de datos.
+- Validación: lint, tipos, 790 pruebas, build y presupuesto de rendimiento correctos. Se amplió la espera de la prueba de carga diferida de ecuaciones para evitar fallos por tiempo en la suite.
+- Permanece el aviso de chunks grandes y queda pendiente la revisión visual de los cambios de interfaz.
+
 ## 2026-11-15 — Roadmap UI-01 · Sistema visual cerrado
 
 **Estado:** Completada · Sin publicación
