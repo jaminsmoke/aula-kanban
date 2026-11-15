@@ -9,6 +9,7 @@
 | [`roadmap.md`](roadmap.md) | APP-01 · Matriz de herramientas, roles y alcance | Secuencia de ejecución |
 | [`backlog.md`](backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
+| [`matriz-herramientas.md`](matriz-herramientas.md) | Matriz de APP-01: audiencia, alcance, colaboración y acciones | Temático |
 | [`mcp-apps.md`](mcp-apps.md) | Cobertura MCP, permisos y límites de las apps nativas | Temático |
 | [`aplicaciones-nativas.md`](aplicaciones-nativas.md) | Catálogo de apps nativas, licencias y estado | Temático |
 | [`roadmap-template.md`](roadmap-template.md) | Plantilla para reiniciar el roadmap | — |

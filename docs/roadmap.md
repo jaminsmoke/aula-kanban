@@ -60,10 +60,12 @@
 
 ### Fase 2: Matriz aprobable
 
-- [ ] Definir audiencia y alcance de cada capacidad, con valores por defecto y excepciones justificadas.
-- [ ] Incluir alumno, profesor, ambos e invitado; varios roles por proyecto; varios proyectos; y sin proyecto.
-- [ ] Dejar explícito que el rol de profesor por sí solo no concede instalación global.
+- [x] Definir audiencia y alcance de cada capacidad, con valores por defecto y excepciones justificadas.
+- [x] Incluir alumno, profesor, ambos e invitado; varios roles por proyecto; varios proyectos; y sin proyecto.
+- [x] Dejar explícito que el rol de profesor por sí solo no concede instalación global.
 - **Criterios de aceptación:** matriz revisable y lista para decidir APP-03 y PERM-01.
+
+**Matriz documentada en [`matriz-herramientas.md`](matriz-herramientas.md).** Define los valores por defecto, las excepciones por rol y sin proyecto, la denegación por defecto y la regla de que la visibilidad no otorga permisos. No crea herramientas de profesor ni cambia el código actual.
 
 ### Fase 3: Cierre documental
 
