@@ -1,10 +1,32 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** UI-05 · Estados vacíos de fichas · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-15 — Roadmap UI-05 · Estados vacíos de las fichas
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- `PeopleEmptyState` reúne icono, título, explicación y una acción opcional; se usa en Alumnos y Profesores con estilos por tokens en `people.css`.
+- Con 0 alumnos aparece «Aún no hay alumnos» y, si hay permiso, «Añadir alumno» abre el diálogo existente; sin permiso solo queda la explicación. Lo mismo en Profesores con «Aún no hay profesores» y `blankTeacher()`.
+- El selector de disposición se oculta cuando la lista está cargada y vacía. Con error de carga se mantiene la alerta con «Reintentar» y no se muestra el vacío; durante la carga sigue el texto correspondiente.
+- Sin migraciones ni cambio de versión: `1.1.30`.
+
+### Verificación
+
+- Build servida en `8791` con un proyecto temporal sin fichas: 1366×900 en Alumnos y Profesores y 390×844 en Alumnos. El bloque mide 248 px a 1366 y 249 px a 390, sin desbordes; no aparece el selector.
+- «Añadir alumno» y «Añadir profesor» abren los diálogos existentes. El proyecto temporal se eliminó después (`deleted: true`), sin dejar datos de prueba.
+- Suite completa: 124 archivos / 1.021 pruebas; `tsc`, lint, build y `git diff --check` en verde. Sin excepciones de consola.
+- Commits: `577faa3` (fase 1) y el cierre queda en el commit de documentación. Sin `release:prepare` ni publicación.
+
+### Seguimiento en backlog
+
+Sin entradas.
 
 ## 2026-11-15 — Roadmap UI-04 · Vista de administración
 

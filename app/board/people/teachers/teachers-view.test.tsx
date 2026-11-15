@@ -15,8 +15,8 @@ const teacher: Teacher = {
   revision: 1,
 };
 
-function renderTeachers(overrides: Partial<Parameters<typeof TeachersView>[0]> = {}) {
-  vi.stubGlobal("fetch", vi.fn(async () => jsonResponse([teacher])));
+function renderTeachers(overrides: Partial<Parameters<typeof TeachersView>[0]> = {}, list: Teacher[] = [teacher]) {
+  vi.stubGlobal("fetch", vi.fn(async () => jsonResponse(list)));
   const props = {
     projectId: "p1",
     isAdmin: true,
@@ -49,6 +49,25 @@ describe("TeachersView", () => {
 
     renderTeachers({ isAdmin: false });
     await screen.findByText("Marta");
+    expect(screen.queryByRole("button", { name: "Añadir profesor" })).toBeNull();
+  });
+
+  it("explica el vacío y abre el alta con permiso", async () => {
+    renderTeachers({}, []);
+
+    expect(await screen.findByRole("heading", { name: "Aún no hay profesores" })).toBeTruthy();
+    expect(screen.getByText("Añade la primera ficha del equipo docente.")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Vista mosaico" })).toBeNull();
+
+    const actions = screen.getAllByRole("button", { name: "Añadir profesor" });
+    fireEvent.click(actions[actions.length - 1]);
+    expect(screen.getByRole("dialog", { name: "Añadir profesor" })).toBeTruthy();
+  });
+
+  it("no ofrece alta sin permiso", async () => {
+    renderTeachers({ isAdmin: false }, []);
+
+    expect(await screen.findByText("Cuando la administración añada la primera ficha, aparecerá aquí.")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Añadir profesor" })).toBeNull();
   });
 });

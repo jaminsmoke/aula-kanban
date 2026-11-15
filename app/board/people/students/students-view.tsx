@@ -39,7 +39,7 @@ export default function StudentsView({
   onOpenTask: (task: Task) => void;
 }) {
   const student = studentName ? students?.find((item) => item.section === studentName) : undefined;
-  const isEmpty = students !== null && students.length === 0 && !studentError;
+  const isEmpty = students !== null && students.length === 0;
   return (
     <section className="students-view">
       <div className="students-heading">
@@ -66,7 +66,7 @@ export default function StudentsView({
           onOpenTask={onOpenTask}
         />;
       })() : isEmpty ? (
-        <PeopleEmptyState
+        studentError ? null : <PeopleEmptyState
           icon={Users}
           title="Aún no hay alumnos"
           description={canManage ? "Crea la primera ficha para empezar a asignarle tareas." : "Cuando el profesorado cree la primera ficha, aparecerá aquí."}

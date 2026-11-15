@@ -89,4 +89,32 @@ describe("StudentsView", () => {
 
     expect(screen.getByText("Esta ficha ya no está disponible.")).toBeTruthy();
   });
+
+  it("explica el vacío y ofrece el alta con permiso", () => {
+    const { props } = renderStudents({ students: [], tasks: [], all: [], allPeople: [] });
+
+    expect(screen.getByRole("heading", { name: "Aún no hay alumnos" })).toBeTruthy();
+    expect(screen.getByText("Crea la primera ficha para empezar a asignarle tareas.")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Vista mosaico" })).toBeNull();
+
+    const actions = screen.getAllByRole("button", { name: "Añadir alumno" });
+    fireEvent.click(actions[actions.length - 1]);
+    expect(props.onCreate).toHaveBeenCalledTimes(1);
+  });
+
+  it("no ofrece alta sin permiso", () => {
+    renderStudents({ students: [], tasks: [], all: [], allPeople: [], canManage: false });
+
+    expect(screen.getByText("Cuando el profesorado cree la primera ficha, aparecerá aquí.")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Añadir alumno" })).toBeNull();
+  });
+
+  it("conserva el aviso de error en vez del vacío", () => {
+    renderStudents({ students: [], tasks: [], all: [], allPeople: [], studentError: "No se pudieron cargar" });
+
+    expect(screen.queryByText("Aún no hay alumnos")).toBeNull();
+    expect(screen.getByRole("alert")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Reintentar" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Vista mosaico" })).toBeNull();
+  });
 });

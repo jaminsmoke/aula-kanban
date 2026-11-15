@@ -69,7 +69,7 @@ export default function TeachersView({ projectId, isAdmin, ownTeacherId, tasks, 
   const teacherAsStudent = allPeople.find((person) => person.section === teacher?.id);
   const assigned = teacherAsStudent && students !== null ? (tasks ?? []).filter(task => task.assignees?.length ? task.assignees.some(person => person.kind === "teacher" && person.profileId === teacher?.id) : taskBelongsTo(task, teacherAsStudent, allPeople)) : [];
 
-  const isEmpty = teachers !== null && teachers.length === 0 && !error;
+  const isEmpty = teachers !== null && teachers.length === 0;
 
   return <section className="students-view">
     <div className="students-heading"><div className="students-title-row"><h2>Profesores</h2>{isAdmin && <button className="primary add-student" type="button" title="Añadir profesor" aria-label="Añadir profesor" onClick={() => { setError(""); setForm(blankTeacher()); }}><Plus size={20} /></button>}</div></div>
@@ -86,7 +86,7 @@ export default function TeachersView({ projectId, isAdmin, ownTeacherId, tasks, 
       loading={tasks === null || students === null}
       onOpenTask={openTask}
     /> : <div className="student-detail"><p>Esta ficha ya no está disponible.</p><button className="text-button back-link" onClick={() => setSelected(null)}>← Todos los profesores</button></div> : isEmpty ? (
-      <PeopleEmptyState
+      error ? null : <PeopleEmptyState
         icon={GraduationCap}
         title="Aún no hay profesores"
         description={isAdmin ? "Añade la primera ficha del equipo docente." : "Cuando la administración añada la primera ficha, aparecerá aquí."}
