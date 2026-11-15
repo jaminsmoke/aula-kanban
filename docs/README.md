@@ -6,7 +6,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](roadmap.md) | Roadmap UI-03 activo: secciones de Ajustes | Secuencia de ejecución |
+| [`roadmap.md`](roadmap.md) | Plantilla reiniciada; no hay roadmap activo | Secuencia de ejecución |
 | [`backlog.md`](backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`aplicaciones-nativas.md`](aplicaciones-nativas.md) | Catálogo de apps nativas, licencias y estado | Temático |
@@ -113,7 +113,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap DOC-07 + MCP-11 completado:** catálogo público en `lib/domain/mcp-catalogo.ts`, instrucciones y prompts compartidos por `/mcp` y `/api/mcp`, guía del plugin en la ayuda y README generada desde el catálogo. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-09 completado:** administración de la instancia, tokens propios y auditoría por MCP (7 herramientas, catálogo `0.19.0`), con matriz, snapshot, paridad y pruebas SQLite. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-10 completado:** archivos del proyecto por MCP con `subir_archivo` y `obtener_archivo`, límites compartidos con la web, matriz ampliada y 50 herramientas (`0.20.0`). Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05 y recortes de chunks (2 entradas).
-- **Roadmap UI-03 activo:** separación de Ajustes en Cuenta, Apariencia, Tokens MCP, Administradores y Almacenamiento, con URLs compatibles y permisos por sección. Resumen pendiente en [`changelog.md`](changelog.md) al cerrar. Backlog: 5 entradas (PER-03, PER-01B, PER-02, SYNC-01 y MCP-05).
+- **Roadmap UI-03 completado:** Ajustes separado en Cuenta, Apariencia, Tokens MCP, Administradores y Almacenamiento, con URLs compatibles, permisos por sección y enlaces MCP actualizados. Sin migraciones; resumen en [`changelog.md`](changelog.md). No hay roadmap activo: `roadmap.md` queda como plantilla. Backlog: 5 entradas (PER-03, PER-01B, PER-02, SYNC-01 y MCP-05). La inspección visual de UI-03 queda pendiente.
 - **Roadmap UI-01 completado:** sistema visual con superficies semánticas, contraste AA, tipografía, iconografía, temas claro/oscuro, bordes/radios, guarda de color y cierre documental. Fases 1-8 completadas; resumen en [`changelog.md`](changelog.md). SYNC-01 permanece como norma operativa; PERF-01 y los roadmaps anteriores están en [`changelog.md`](changelog.md), y el roadmap anterior de PER-01 sigue en [`historial/roadmap-per-01.md`](historial/roadmap-per-01.md). La inspección visual en navegador de UI-01 queda pendiente.
 
 ## Documentación relacionada

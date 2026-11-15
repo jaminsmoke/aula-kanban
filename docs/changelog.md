@@ -1,10 +1,38 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-15 — Roadmap UI-03 · Secciones de Ajustes cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Ajustes queda dividido en cinco secciones: Cuenta, Apariencia, Tokens MCP, Administradores y Almacenamiento. Los tokens dejan de estar dentro de Cuenta y el diagnóstico de almacenamiento deja de estar dentro de Administradores.
+- `section` admite `cuenta | apariencia | tokens | administradores | almacenamiento`. Las URLs antiguas conservan su significado y `tokens` y `almacenamiento` son enlaces directos nuevos.
+- Administradores y Almacenamiento solo aparecen para propietario o administración. Si una cuenta sin permiso abre una de esas secciones, la vista vuelve a Cuenta y la URL se corrige con `replaceState` para no romper atrás/adelante.
+- El sidebar móvil permite desplazar las cinco secciones sin desbordar; el título no encoge y la navegación conserva su ancho.
+- `obtener_enlace` del MCP deriva las secciones de la lista canónica; catálogo `0.21.0` y snapshot actualizado.
+- Ayuda, README y textos de documentación actualizados. Sin migraciones ni cambios de API.
+- Versión local `1.1.27` sin cambios.
+
+### Verificación
+
+- Suite completa: **96 archivos / 791 tests**.
+- `npm run lint` limpio.
+- `npx tsc --noEmit` limpio.
+- `npm run build` correcto; solo el aviso existente de chunks superiores a 500 kB.
+- `git diff --check` limpio.
+- Commit: `a39f0e6`.
+- Sin inspección visual en navegador; el comportamiento móvil se revisó por CSS y pruebas de estructura, no con captura.
+
+### Seguimiento en backlog
+
+Backlog: 5 entradas (PER-03, PER-01B, PER-02, SYNC-01 y MCP-05). MCP-05 se mantiene a la espera de definir su alcance. SYNC-01 sigue como norma operativa.
 
 ## 2026-11-15 — Publicación 1.1.27
 
