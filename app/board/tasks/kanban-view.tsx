@@ -3,7 +3,7 @@
 import { DndContext, KeyboardSensor, PointerSensor, closestCorners, useDroppable, useSensor, useSensors } from "@dnd-kit/core";
 import type { DragEndEvent, DragOverEvent, DragStartEvent } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { ArrowDown, ClipboardList, Columns3, Flag, GripVertical, ListFilter, Plus, Search, Users } from "lucide-react";
+import { ArrowDown, ClipboardList, Flag, GripVertical, ListFilter, Plus, Search, Users } from "lucide-react";
 import { priorities, priorityNames, statuses } from "../../../lib/domain/task";
 import type { Task, TaskFields } from "../../../lib/domain/task";
 import type { Student } from "../../../lib/domain/student";
@@ -99,21 +99,18 @@ export default function KanbanView({
   return (
     <>
       <section className="hero" aria-labelledby="board-title">
-        <div className="hero-content">
-          <p className="eyebrow"><span /> Grupo de clase</p>
-          <h1 id="board-title">Tablero de tareas</h1>
-          <p className="intro">Organizad el trabajo y seguid el avance de cada tarea.</p>
-          {!isGuest && <button className="primary" type="button" disabled={saving || tasks === null} onClick={() => onOpenEditor("pending")}><Plus size={18} /> Nueva tarea</button>}
-        </div>
-        <div className="progress-panel">
-          <span className="progress-label"><Flag size={16} /> Progreso del grupo</span>
-          <div className="progress-value"><strong>{progress}<span>%</span></strong><span>{finished} de {total} {total === 1 ? "tarea hecha" : "tareas hechas"}</span></div>
+        <h1 id="board-title">Tablero de tareas</h1>
+        <div className="hero-progress">
+          <span className="hero-progress-meta">
+            <strong><Flag size={16} aria-hidden /> {progress} %</strong>
+            <span>{finished} de {total} {total === 1 ? "tarea hecha" : "tareas hechas"}</span>
+          </span>
           <progress aria-label="Progreso del grupo" max={100} value={progress} />
         </div>
+        {!isGuest && <button className="primary" type="button" disabled={saving || tasks === null} onClick={() => onOpenEditor("pending")}><Plus size={18} /> Nueva tarea</button>}
       </section>
       <section className="workspace" aria-label="Columnas del tablero">
         <div className="toolbar">
-          <h2><Columns3 size={18} /> Kanban</h2>
           <div className="controls">
             <label className="search"><Search size={16} /><input type="search" aria-label="Buscar tareas" placeholder="Buscar tareas…" value={search} onChange={(event) => onSearch(event.target.value)} /></label>
             <label className="filter"><ListFilter size={16} /><select value={filter} aria-label="Filtrar por prioridad" onChange={(event) => onFilter(event.target.value)}>

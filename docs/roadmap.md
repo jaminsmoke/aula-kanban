@@ -45,11 +45,11 @@
 
 ### Fase 2: Implementación del hero compacto
 
-- [ ] Reescribir el hero como franja con `h1`, resumen de progreso y botón; retirar `eyebrow`, intro y panel oscuro.
-- [ ] Retirar el `h2` «Kanban» y realinear los filtros de la barra de herramientas.
-- [ ] Ajustar `kanban.css`: alto, relleno, márgenes, barra de progreso y responsive de 620 y 430 px.
-- [ ] Mantener el estado de invitado sin botón de alta y el `progress` con `aria-label="Progreso del grupo"`.
-- **Criterios de aceptación:** el hero mide 120 px o menos de caja en escritorio; el progreso y el alta siguen funcionando; sin desbordes en móvil.
+- [x] Reescribir el hero como franja con `h1`, resumen de progreso y botón; retirar `eyebrow`, intro y panel oscuro.
+- [x] Retirar el `h2` «Kanban» y realinear los filtros de la barra de herramientas.
+- [x] Ajustar `kanban.css`: alto, relleno, márgenes, barra de progreso y responsive de 620 y 430 px.
+- [x] Mantener el estado de invitado sin botón de alta y el `progress` con `aria-label="Progreso del grupo"`.
+- **Criterios de aceptación:** el hero mide 120 px o menos de caja en escritorio; el progreso y el alta siguen funcionando; sin desbordes en móvil. La medición renderizada queda en la fase 3.
 
 ### Fase 3: Verificación y cierre
 
@@ -71,4 +71,5 @@
 ## 6. Notas de sesión
 
 - 2026-11-15: UI-06 sale del backlog y se abre este roadmap. Fase 1 cerrada con la línea base de CSS (230 px de caja mínima, 294 px con márgenes, 76 px de cabecera) y la composición de una franja. Sin cambios de código ni de versión; `1.1.30` se mantiene.
+- 2026-11-15: fase 2 implementada. El hero es una franja de tres áreas (`title`, `progress`, `action`) con `h1`, «N de M tareas hechas», porcentaje y barra fina; se retiraron `eyebrow`, intro, panel oscuro y el `h2` «Kanban». Apilado en 820 px y en 620 px. La altura renderizada se mide en la fase 3.
 - El servidor local de `127.0.0.1:5173` responde, pero no hay sesión iniciada para medir el tablero autenticado; por eso la medición renderizada se traslada a la fase 3.
