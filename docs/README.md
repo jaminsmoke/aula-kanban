@@ -71,7 +71,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
-- **Roadmap UI-06 activo:** hero del tablero compacto; fases 1 y 2 cerradas (composición e implementación), fase 3 pendiente de medición y cierre. Detalle en [`roadmap.md`](roadmap.md). Backlog: UI-04 y UI-05.
+- **Roadmap UI-06 completado:** hero del tablero en franja de 71 px con progreso en línea, medido en 1366, 1024, 820 y 390. Resumen en [`changelog.md`](changelog.md); roadmap sin fase activa y backlog con UI-04 y UI-05.
 - **Roadmap PER-05 completado:** caché inmutable de un año para `/api/files/[id]`, en la respuesta y en los metadatos de R2. Sin cambios de esquema ni de versión; resumen en [`changelog.md`](changelog.md).
 - **Roadmap PER-04 completado:** derivado de 2048 px para JPEG, PNG y WebP de pizarra, con los GIF intactos; medición de fotos, PNG con alfa y capturas, más revisión visual del texto. Resumen en [`changelog.md`](changelog.md) y límite de nitidez en el backlog como PER-07.
 - **Roadmap PER-01B completado:** inventario de R2 publicado y revisado en producción. Resultado en [`changelog.md`](changelog.md).

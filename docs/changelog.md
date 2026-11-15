@@ -6,6 +6,29 @@
 
 ---
 
+## 2026-11-15 — Roadmap UI-06 · Hero compacto del tablero
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- El hero de Tareas pasa de una caja de 230 px mínimos, panel oscuro y márgenes de 32 px a una franja de 71 px en escritorio con `h1`, «N de M tareas hechas», porcentaje y barra fina; se retiraron el `eyebrow`, el intro y el `h2` «Kanban» de la barra de herramientas.
+- El progreso conserva el nombre accesible «Progreso del grupo» y la frase «N de M tareas hechas»; el alta y el estado de invitado no cambian.
+- A ≤820 el progreso y los filtros se anclan a la izquierda para evitar el filtro huérfano y un resumen estirado; a ≤620 la franja se apila en título, progreso y acción.
+- Sin migraciones ni cambio de versión: `1.1.30` se mantiene.
+
+### Verificación
+
+- Revisión con la build servida en `8791` (la dev de `5173` no acepta las cabeceras de identidad locales): 1366×768 en claro y oscuro, 1024×768, 820×900 y 390×844.
+- Hero de 71 px en 1366 y 1024, 123 px a 820 y 157 px a 390; primera tarjeta a 311 px en 1366; sin desbordes horizontales.
+- 6 pruebas de `kanban-view`, `tsc`, lint y `git diff --check` correctos; build correcta.
+- Commits: `58fbf2c` (franja) y `0e85b43` (ajuste a 820). Sin `release:prepare` ni publicación.
+- La cabecera a 1024 y 390 se revisó aparte y se corrigió como parte de UI-04.
+
+### Seguimiento en backlog
+
+UI-04 (vista de administración) y UI-05 (estados vacíos de fichas) siguen en [`backlog.md`](backlog.md).
+
 ## 2026-11-15 — PER-06, PER-07 y PER-08 · Prueba de extremo a extremo
 
 **Estado:** Cerrado con pruebas controladas; publicado en 1.1.30.
