@@ -6,6 +6,8 @@ se resuelven con `lib/server/mcp/apps/contrato.ts`.
 
 **Última revisión:** 2026-11-15 · **Catálogo:** `0.24.0` · **54 herramientas**
 
+**Estado:** MCP-05B cerrado; MCP-05D y MCP-05E siguen en el backlog.
+
 ## Herramientas comunes
 
 Estas herramientas no pertenecen a una app concreta, pero son su punto de
@@ -36,7 +38,7 @@ reglas de cada app.
 
 ## Qué falta en cada app
 
-### Excalidraw — MCP-05B (fases 2 y 3 completadas)
+### Excalidraw — MCP-05B (completado)
 
 - Leer, escribir y añadir elementos en pizarras de tarea, proyecto y Mi espacio
   con `leer_pizarra`, `guardar_pizarra` y `anadir_a_pizarra`.
@@ -46,7 +48,8 @@ reglas de cada app.
 - Mantener la revisión optimista, los permisos de pizarra y la publicación en
   `BoardRoom`; las escenas mayores de 1 MB se recogen por sondeo.
 - No se exporta la imagen desde MCP: el render pertenece a la ventana.
-- Queda el cierre de la fase 4: build, ayuda y revisión final de la matriz.
+- Cobertura funcional cerrada: no quedan huecos MCP para esta app. El resumen
+  del roadmap está en el changelog.
 
 ### Programación por bloques — MCP-05D
 
@@ -77,7 +80,7 @@ reglas de cada app.
 
 - **Instalación y catálogo:** cubiertos por MCP-03.
 - **Abrir y controlar ventanas:** cubiertos por MCP-04 para las cuatro apps.
-- **Lectura y escritura de contenido:** MCP-05B (fases 2 y 3 completadas), MCP-05D y MCP-05E.
+- **Lectura y escritura de contenido:** MCP-05B (completado), MCP-05D y MCP-05E.
 - **Exportación:** no hay una herramienta dedicada. Excalidraw necesita render
   de imagen; Mermaid necesita render de SVG; Blockly descarga el mismo JSON que
   devolverá `leer_programa_bloques`. Por eso no se crea una entrada nueva: las
@@ -88,7 +91,7 @@ reglas de cada app.
 
 ## Referencias
 
-- [`roadmap.md`](roadmap.md): MCP-05B en curso (fase 3 completada).
+- [`roadmap.md`](roadmap.md): sin roadmap activo; plantilla lista para el siguiente.
 - [`changelog.md`](changelog.md): resumen del roadmap MCP-05A + MCP-05C.
 - [`backlog.md`](backlog.md): MCP-05D y MCP-05E.
 - [`aplicaciones-nativas.md`](aplicaciones-nativas.md): catálogo, licencias y

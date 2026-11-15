@@ -6,7 +6,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](roadmap.md) | Roadmap MCP-05B activo | Secuencia de ejecución |
+| [`roadmap.md`](roadmap.md) | Roadmap activo (sin trabajo iniciado) | Secuencia de ejecución |
 | [`backlog.md`](backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`mcp-apps.md`](mcp-apps.md) | Cobertura MCP, permisos y límites de las apps nativas | Temático |
@@ -98,7 +98,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap de Calendario en Clase completado:** `react-big-calendar` 1.20.0 (MIT) con localizer de `date-fns` en carga diferida, sección `calendario` con las tareas por `dueDate`, `section=calendario` en la URL, estilos con tokens, pruebas y avisos de licencia. Resumen en [`changelog.md`](changelog.md).
 - **Site público confirmado** por el propietario el 2026-11-14: la portada anónima de `/` y `/documentacion` son visibles sin sesión. La entrada del backlog queda cerrada.
 - **Roadmap de Servidor MCP completado:** servidor MCP remoto en `/api/mcp` con 8 herramientas, tokens personales en Ajustes > Cuenta, límite básico por token y documentación de instalación en README y `/documentacion`. Resumen en [`changelog.md`](changelog.md).
-- **Roadmap MCP-05B activo:** lectura, guardado y adición de pizarras de Excalidraw desde MCP completados, con publicación en `BoardRoom` (catálogo `0.24.0` con 54 herramientas); queda el cierre de la fase 4. Detalle en [`roadmap.md`](roadmap.md).
+- **Roadmap MCP-05B completado:** lectura, guardado y adición de pizarras de Excalidraw desde MCP, con publicación en `BoardRoom` y catálogo `0.24.0` con 54 herramientas. Resumen en [`changelog.md`](changelog.md) y cobertura en [`mcp-apps.md`](mcp-apps.md).
 - **Roadmap MCP-05A + MCP-05C completado:** contrato común de MCP para apps y primer piloto `consultar_elemento` de Herramientas de aula. Catálogo `0.22.0` con 51 herramientas; resumen en [`changelog.md`](changelog.md) y cobertura en [`mcp-apps.md`](mcp-apps.md).
 - **Backlog:** PER-03, PER-01B, PER-02, SYNC-01, MCP-05D y MCP-05E (6 entradas). MCP-04, MCP-03, MCP-01 y MCP-02 están cerrados; el plugin de Sites sustituye la entrada «GPT con Actions».
 - **Roadmap de hidratación en `view=ajustes` completado:** el estado inicial de vista/sección pasa de la página (servidor) al hook, y la primera pintura ya coincide. Resumen en [`changelog.md`](changelog.md).

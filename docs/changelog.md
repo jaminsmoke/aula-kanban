@@ -1,10 +1,38 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** MCP-05B activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-15 — Roadmap MCP-05B · Excalidraw por MCP cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fase 1 — Servicio compartido:** `lib/server/boards.ts` centraliza dueño, permisos, límites y revisión optimista; `/api/boards` queda como envoltorio HTTP.
+- **Fase 2 — Lectura y guardado:** `leer_pizarra` y `guardar_pizarra` exponen el snapshot y guardan con `revision`; la app desinstalada responde `not_found` y el conflicto devuelve `revisionActual`.
+- **Fase 3 — Adición y sala en vivo:** `anadir_a_pizarra` construye texto, rectángulos, elipses y flechas, conserva `appState`, `files` y los campos desconocidos, y publica en `BoardRoom` solo después de guardar. Sin pestañas o por encima de 1 MB devuelve `sincronizada: false`; la web usa el sondeo.
+- **Fase 4 — Cobertura y cierre:** `docs/mcp-apps.md` deja Excalidraw sin huecos MCP; catálogo, matriz, snapshot, ayuda, README y `content-coverage` incluyen las tres herramientas. Catálogo `0.24.0` con 54 herramientas (23 de lectura, 31 de escritura y 8 destructivas).
+- Sin migraciones ni cambio de versión; `package.json` sigue en `1.1.27`.
+- Roadmap cerrado y `docs/roadmap.md` reiniciado desde la plantilla. El backlog conserva 6 entradas.
+
+### Verificación
+
+- `npm run lint` limpio.
+- `npx tsc --noEmit` limpio.
+- `npm test`: **106 archivos / 874 tests**.
+- `npm run build` correcto, con el aviso existente de chunks superiores a 500 kB.
+- `git diff --check` limpio.
+- Commits de fase: `dd1f045` (servicio), `8d302d1` (lectura y guardado) y `c796f52` (adición y sala en vivo); el cierre queda en el commit de documentación.
+- Sin inspección visual en navegador; la verificación es de código y documentación.
+- Sin push a GitHub ni publicación en Sites; la versión visible no cambia.
+
+### Seguimiento en backlog
+
+MCP-05D, MCP-05E, PER-03, PER-01B, PER-02 y SYNC-01 siguen en [`backlog.md`](backlog.md); no se añaden entradas nuevas.
 
 ## 2026-11-15 — Roadmap MCP-05A + MCP-05C · Contrato MCP de apps y piloto cerrado
 
