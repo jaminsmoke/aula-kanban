@@ -6,7 +6,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](roadmap.md) | Sin roadmap activo | Secuencia de ejecución |
+| [`roadmap.md`](roadmap.md) | Roadmap UI-05 activo | Secuencia de ejecución |
 | [`backlog.md`](backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`mcp-apps.md`](mcp-apps.md) | Cobertura MCP, permisos y límites de las apps nativas | Temático |
@@ -71,7 +71,8 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
-- **Roadmap UI-04 completado:** Alumnos y Profesores en una sola vista de administración con sidebar, URL canónica `view=administracion` y alias antiguos, revisada en 1366, 1024 y 390. Resumen en [`changelog.md`](changelog.md); roadmap sin fase activa y backlog con UI-05.
+- **Roadmap UI-05 activo:** estados vacíos de alumnado y profesorado, con un componente compartido, dos fases pendientes. Detalle en [`roadmap.md`](roadmap.md). Backlog sin entradas.
+- **Roadmap UI-04 completado:** Alumnos y Profesores en una sola vista de administración con sidebar, URL canónica `view=administracion` y alias antiguos, revisada en 1366, 1024 y 390. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap UI-06 completado:** hero del tablero en franja de 71 px con progreso en línea, medido en 1366, 1024, 820 y 390. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap PER-05 completado:** caché inmutable de un año para `/api/files/[id]`, en la respuesta y en los metadatos de R2. Sin cambios de esquema ni de versión; resumen en [`changelog.md`](changelog.md).
 - **Roadmap PER-04 completado:** derivado de 2048 px para JPEG, PNG y WebP de pizarra, con los GIF intactos; medición de fotos, PNG con alfa y capturas, más revisión visual del texto. Resumen en [`changelog.md`](changelog.md) y límite de nitidez en el backlog como PER-07.

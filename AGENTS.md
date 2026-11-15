@@ -6,6 +6,11 @@
 - El único publicador en Sites es Codex de OpenAI. Cualquier otro agente se limita a commits locales y al push de cierre al repositorio personal; no despliega, no publica ni aplica migraciones remotas.
 - Un push a GitHub no publica en Sites. Distingue siempre «sincronizado en GitHub» de «publicado y verificado en Sites»; una tarea no está publicada hasta que Codex lo confirma.
 
+## Roadmaps y fases
+
+- Un roadmap se divide en las fases que necesite el trabajo, no en un número fijo: puede tener una sola fase o varias.
+- Cada fase agrupa un bloque verificable con sus criterios de aceptación. No se añaden fases de relleno ni se fusionan bloques que se revisan y confirman por separado.
+
 ## Commits, push y CI
 
 - Haz un commit local por fase o bloque verificado; no hace falta esperar al final para confirmar el trabajo.
