@@ -1,10 +1,19 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** PER-01B activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-15 — Roadmap PER-01B · Inventario de R2 y publicación 1.1.28
+
+**Estado:** Completado · Publicado en Sites
+
+- Inventario paginado y protegido para propietario o administración en Ajustes > Almacenamiento; cotejo exacto con D1 en modo de solo lectura.
+- Se corrigió el cotejo de filas anteriores al primer objeto y entre páginas; la continuación conserva el límite anterior. Las pruebas incluyen esos casos.
+- Revisión real de producción, 15/11/2026: una página, 1 objeto (209,2 KB) con su fila, 0 objetos sin fila, 0 filas sin objeto y 0 claves que requieran revisión. No se borraron ni modificaron objetos o filas. No se localizaron copias antiguas en el bucket; la inspección no determina si existen copias externas.
+- Verificación: lint, tipos, 987 pruebas y build correctos. La plataforma confirmó el despliegue de la versión 1.1.28; no se añadieron migraciones.
 
 ## 2026-11-15 — Roadmap PER-03 · Purga segura de archivos sin uso cerrado
 

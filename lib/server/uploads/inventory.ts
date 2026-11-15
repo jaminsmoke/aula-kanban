@@ -49,7 +49,14 @@ async function queryRows(where: string, params: Array<string | number> = []): Pr
  * @returns Las entradas, los recuentos y el cursor siguiente.
  */
 export async function auditInventoryPage(input: { cursor?: string; limit?: number } = {}): Promise<InventoryPageReport> {
-  const page = await listBucketPage(input);
+  let bucketCursor: string | undefined;
+  let previousKey: string | undefined;
+  if (input.cursor) {
+    const decoded: unknown = JSON.parse(decodeURIComponent(input.cursor));
+    if (!Array.isArray(decoded) || decoded.length !== 2 || typeof decoded[0] !== "string" || typeof decoded[1] !== "string") throw new Error("invalid_cursor");
+    [bucketCursor, previousKey] = decoded as [string, string];
+  }
+  const page = await listBucketPage({ cursor: bucketCursor, limit: input.limit });
   const objects = page.objects;
   const rows: UploadRowRef[] = [];
   let range: { from: string; to: string } | null = null;
@@ -58,17 +65,18 @@ export async function auditInventoryPage(input: { cursor?: string; limit?: numbe
     const from = objects[0].key;
     const to = objects[objects.length - 1].key;
     range = { from, to };
-    rows.push(...await queryRows("WHERE storage_key >= ? AND storage_key <= ?", [from, to]));
+    rows.push(...await queryRows(previousKey === undefined ? "WHERE storage_key <= ?" : "WHERE storage_key > ? AND storage_key <= ?", previousKey === undefined ? [to] : [previousKey, to]));
   }
 
   if (!page.truncated) {
     const remaining = objects.length
       ? await queryRows("WHERE storage_key > ?", [objects[objects.length - 1].key])
-      : await queryRows("");
+      : await queryRows(previousKey === undefined ? "" : "WHERE storage_key > ?", previousKey === undefined ? [] : [previousKey]);
     rows.push(...remaining);
   }
 
-  const unique = [...new Map(rows.map((row) => [row.storageKey, row])).values()];
-  const report = clasificarInventario(objects, unique);
-  return { ...report, truncated: page.truncated, cursor: page.cursor, range };
+  const report = clasificarInventario(objects, rows);
+  if (page.truncated && (!page.cursor || !objects.length)) throw new Error("invalid_bucket_page");
+  const cursor = page.truncated ? encodeURIComponent(JSON.stringify([page.cursor, objects[objects.length - 1].key])) : null;
+  return { ...report, truncated: page.truncated, cursor, range };
 }

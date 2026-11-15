@@ -7,7 +7,7 @@ import { auditInventoryPage } from "../../../../lib/server/uploads/inventory";
 export const dynamic = "force-dynamic";
 
 /** Longitud máxima aceptada para el cursor opaco de R2. */
-const MAX_CURSOR_LENGTH = 512;
+const MAX_CURSOR_LENGTH = 8192;
 
 /**
  * Revisa una página del inventario de R2 y la coteja con `uploads`.

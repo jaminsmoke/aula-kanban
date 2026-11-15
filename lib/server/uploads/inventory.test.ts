@@ -83,7 +83,7 @@ describe("cotejo del inventario por página", () => {
     expect(report.counts).toEqual({ objects: 3, withRow: 1, orphanObjects: 1, missingObjects: 0, reviewKeys: 1 });
     expect(report.entries.map((entry) => entry.status)).toEqual(["con_fila", "objeto_sin_fila", "clave_revisar"]);
     expect(report.truncated).toBe(true);
-    expect(report.cursor).toBe("c2");
+    expect(JSON.parse(decodeURIComponent(report.cursor!))).toEqual(["c2", "default/original"]);
     expect(report.range).toEqual({ from: conFila, to: "default/original" });
     expect(mocks.bucket.list).toHaveBeenCalledWith({ limit: 10 });
   });
@@ -135,9 +135,19 @@ describe("cotejo del inventario por página", () => {
       list: vi.fn(async () => ({ objects: [object(uno)], truncated: true, cursor: "c2" })),
     };
 
-    const report = await auditInventoryPage({ cursor: "c1", limit: 500 });
+    const report = await auditInventoryPage({ cursor: encodeURIComponent(JSON.stringify(["c1", "000"])), limit: 500 });
     expect(mocks.bucket.list).toHaveBeenCalledWith({ limit: 100, cursor: "c1" });
     expect(report.counts).toEqual({ objects: 1, withRow: 0, orphanObjects: 1, missingObjects: 0, reviewKeys: 0 });
+  });
+
+  it("detecta filas anteriores al primer objeto y entre páginas", async () => {
+    upload("antes", "a"); upload("hueco", "c"); upload("despues", "z");
+    mocks.bucket = { list: vi.fn(async (args: { cursor?: string }) => args.cursor
+      ? { objects: [object("d")], truncated: false }
+      : { objects: [object("b")], truncated: true, cursor: "next" }) };
+    const primera = await auditInventoryPage();
+    const segunda = await auditInventoryPage({ cursor: primera.cursor! });
+    expect([...primera.entries, ...segunda.entries].filter(e => e.status === "fila_sin_objeto").map(e => e.storageKey)).toEqual(["a", "c", "z"]);
   });
 
   it("falla con storage no disponible si no hay binding", async () => {

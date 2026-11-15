@@ -67,7 +67,7 @@ describe("ruta de inventario de R2", () => {
   });
 
   it("rechaza un límite o un cursor inválidos antes de consultar R2", async () => {
-    for (const query of ["limit=0", "limit=101", "limit=abc", "limit=1.5", "cursor=", `cursor=${"x".repeat(513)}`]) {
+    for (const query of ["limit=0", "limit=101", "limit=abc", "limit=1.5", "cursor=", `cursor=${"x".repeat(8193)}`]) {
       expect((await GET(url(query))).status, query).toBe(400);
     }
     expect(mocks.audit).not.toHaveBeenCalled();
