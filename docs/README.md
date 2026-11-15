@@ -6,7 +6,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](roadmap.md) | Roadmap activo (sin trabajo iniciado) | Secuencia de ejecución |
+| [`roadmap.md`](roadmap.md) | Roadmap MCP-05D activo | Secuencia de ejecución |
 | [`backlog.md`](backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`mcp-apps.md`](mcp-apps.md) | Cobertura MCP, permisos y límites de las apps nativas | Temático |
@@ -71,6 +71,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
+- **Roadmap MCP-05D activo:** lectura y guardado del programa de Blockly desde MCP sobre `app_documents`, con límite compartido de 200 KB, validación de `blocks.blocks[]` y bloqueo de invitados. Detalle en [`roadmap.md`](roadmap.md).
 - **Roadmap HIER-01 completado:** documentación en `app/board/docs/content/`; `edu-tools` en `calculator/`, `periodic-table/` y `tools/`; diálogo de tareas en `tasks/dialog/`; `modal` en `shared/`; y `project-access` en lugar de `project`. Resumen en [`changelog.md`](changelog.md).
 - **Fase 1 completada:** reorganización de `app/board` por dominios, módulos compartidos y estilos.
 - **Roadmap CSS completado:** tokens, CSS por feature, limpieza y verificación final. Resumen en [`changelog.md`](changelog.md); la auditoría temporal ya se eliminó.
@@ -100,7 +101,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap de Servidor MCP completado:** servidor MCP remoto en `/api/mcp` con 8 herramientas, tokens personales en Ajustes > Cuenta, límite básico por token y documentación de instalación en README y `/documentacion`. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap MCP-05B completado:** lectura, guardado y adición de pizarras de Excalidraw desde MCP, con publicación en `BoardRoom` y catálogo `0.24.0` con 54 herramientas. Resumen en [`changelog.md`](changelog.md) y cobertura en [`mcp-apps.md`](mcp-apps.md).
 - **Roadmap MCP-05A + MCP-05C completado:** contrato común de MCP para apps y primer piloto `consultar_elemento` de Herramientas de aula. Catálogo `0.22.0` con 51 herramientas; resumen en [`changelog.md`](changelog.md) y cobertura en [`mcp-apps.md`](mcp-apps.md).
-- **Backlog:** PER-03, PER-01B, PER-02, SYNC-01, MCP-05D y MCP-05E (6 entradas). MCP-04, MCP-03, MCP-01 y MCP-02 están cerrados; el plugin de Sites sustituye la entrada «GPT con Actions».
+- **Backlog:** PER-03, PER-01B, PER-02, SYNC-01 y MCP-05E (5 entradas). MCP-04, MCP-03, MCP-01 y MCP-02 están cerrados; el plugin de Sites sustituye la entrada «GPT con Actions».
 - **Roadmap de hidratación en `view=ajustes` completado:** el estado inicial de vista/sección pasa de la página (servidor) al hook, y la primera pintura ya coincide. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de repositorio público en GitHub completado:** `jaminsmoke/aula-kanban` con licencia MIT, textos de licencia de Excalidraw, CI en verde, segundo push con instrucciones de clonado y mensaje de remix con git. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de OAuth 2.1 para MCP y GPT completado:** servidor de autorización en el Site (RFC 7591, PKCE S256, consentimiento SIWC), MCP como resource server con alcances `mcp:read`/`mcp:write` y documentación de conexión para clientes y GPT. Resumen en [`changelog.md`](changelog.md).

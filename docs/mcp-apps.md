@@ -6,7 +6,7 @@ se resuelven con `lib/server/mcp/apps/contrato.ts`.
 
 **Última revisión:** 2026-11-15 · **Catálogo:** `0.24.0` · **54 herramientas**
 
-**Estado:** MCP-05B cerrado; MCP-05D y MCP-05E siguen en el backlog.
+**Estado:** MCP-05B cerrado; MCP-05D está en el roadmap activo y MCP-05E sigue en el backlog.
 
 ## Herramientas comunes
 
@@ -51,7 +51,7 @@ reglas de cada app.
 - Cobertura funcional cerrada: no quedan huecos MCP para esta app. El resumen
   del roadmap está en el changelog.
 
-### Programación por bloques — MCP-05D
+### Programación por bloques — MCP-05D (en roadmap)
 
 - Leer y guardar el estado de `app_documents` con la misma serialización que la
   app.
@@ -80,7 +80,7 @@ reglas de cada app.
 
 - **Instalación y catálogo:** cubiertos por MCP-03.
 - **Abrir y controlar ventanas:** cubiertos por MCP-04 para las cuatro apps.
-- **Lectura y escritura de contenido:** MCP-05B (completado), MCP-05D y MCP-05E.
+- **Lectura y escritura de contenido:** MCP-05B (completado), MCP-05D (en roadmap) y MCP-05E.
 - **Exportación:** no hay una herramienta dedicada. Excalidraw necesita render
   de imagen; Mermaid necesita render de SVG; Blockly descarga el mismo JSON que
   devolverá `leer_programa_bloques`. Por eso no se crea una entrada nueva: las
@@ -91,9 +91,9 @@ reglas de cada app.
 
 ## Referencias
 
-- [`roadmap.md`](roadmap.md): sin roadmap activo; plantilla lista para el siguiente.
+- [`roadmap.md`](roadmap.md): MCP-05D activo.
 - [`changelog.md`](changelog.md): resumen del roadmap MCP-05A + MCP-05C.
-- [`backlog.md`](backlog.md): MCP-05D y MCP-05E.
+- [`backlog.md`](backlog.md): MCP-05E.
 - [`aplicaciones-nativas.md`](aplicaciones-nativas.md): catálogo, licencias y
   versiones de las apps.
 - [`../app/board/apps/README.md`](../app/board/apps/README.md): cómo se declara

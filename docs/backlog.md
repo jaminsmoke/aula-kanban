@@ -2,22 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** MCP-05D activo · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** MCP-05B se completó; MCP-05D y MCP-05E siguen aquí. La cobertura está en [`mcp-apps.md`](mcp-apps.md). UI-03 se completó; UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; PER-01 sigue archivado con su trabajo pendiente abajo; SYNC-01 se queda aquí como norma operativa.
+> **Nota:** MCP-05D está en el roadmap activo; MCP-05E sigue aquí. La cobertura está en [`mcp-apps.md`](mcp-apps.md). UI-03 se completó; UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; PER-01 sigue archivado con su trabajo pendiente abajo; SYNC-01 se queda aquí como norma operativa.
 
 ---
-
-## 2026-11-15 — MCP-05D · Programación por bloques por MCP
-
-- Contexto: la app Blockly guarda la serialización de `Blockly.serialization.workspaces` en `app_documents` (máximo 200 KB, invitados 403). El estado es un JSON por proyecto y app, sin revisión optimista. La app genera y ejecuta código en el navegador; esa capacidad no se traslada al servidor.
-- Qué falta:
-  - [ ] `leer_programa_bloques` (`proyectoId`) devuelve `{ estado, actualizado }` o `null` si no hay programa guardado.
-  - [ ] `guardar_programa_bloques` (`proyectoId`, `estado` JSON) valida la forma mínima `blocks.blocks[]`, serializa y guarda con el mismo formato que `useBlockly`.
-  - [ ] Rechazar JSON inválido, estados de más de 200 KB y escrituras de invitados; aplicar `not_found` si la app está desinstalada y resolver el acceso al proyecto antes de leer o escribir.
-  - [ ] Actualizar el contrato de herramientas, snapshot y matriz; documentar que no se genera, ejecuta ni valida código en el servidor.
-- Criterios mínimos: un estado guardado por la web se puede leer por MCP y viceversa; la forma mínima se valida antes de guardar; no se pierden campos desconocidos de la serialización; los invitados siguen en solo lectura.
-- Notas técnicas: compartir el límite de `app_documents` en una constante y reutilizar `readAppDocument`/`saveAppDocument`; no crear tabla ni endpoint nuevos.
 
 ## 2026-11-15 — MCP-05E · Diagramas por MCP
 
