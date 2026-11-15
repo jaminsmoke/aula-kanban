@@ -6,6 +6,32 @@
 
 ---
 
+## 2026-11-15 — Roadmap ARCH-02 · Dividir los módulos grandes restantes cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fase 1 — Tareas MCP:** `lib/server/mcp/dominios/tareas.ts` (700 líneas) queda en `tareas/{comun,filtros,lectura,escritura,index}.ts`; `herramientasTareas` conserva nombres, orden y contrato.
+- **Fase 2 — Personas MCP:** `personas.ts` (523 líneas) queda en `personas/{comun,alumnado,profesorado,invitaciones,index}.ts`; `herramientasPersonas` conserva nombres, orden y contrato.
+- **Fase 3 — OAuth:** `lib/server/oauth/service.ts` (499 líneas) se divide en `types.ts` (53), `cripto.ts` (143), `clientes.ts` (70), `codigos.ts` (72), `tokens.ts` (169) y un `service.ts` (48) reexportador. Se conservan firmas, SQL, transacciones, TTL, PKCE, errores y la actualización de `last_used_at`; la superficie pública mantiene los mismos tipos, constantes y funciones.
+- **Fase 4 — Ilustraciones:** revisado `app/board/docs/illustrations/section-art.tsx` (415 líneas); se decide no dividirlo. Cada ilustración es independiente, los helpers de animación compartidos ya están aislados y no hay duplicación; separarlo añadiría archivos e indirección sin ganancia de cohesión.
+- Sin cambios funcionales ni de versión; `package.json` sigue en `1.1.26`.
+
+### Verificación
+
+- `npm run lint` limpio.
+- `npx tsc --noEmit` limpio.
+- `npm test`: **90 archivos / 751 tests**.
+- `npm run build` en verde, con el aviso existente de chunks superiores a 500 kB.
+- `git diff --check` limpio.
+- Fase 3 en el commit local `c47e371`.
+- La política de commits locales se publicó aparte en `fad0986`; Actions registró 0 ejecuciones para ese commit solo documental. El push de cierre acumula los commits de este roadmap.
+
+### Seguimiento en backlog
+
+Roadmap vacío. Quedan PER-03, PER-01B, PER-02, UI-01, ARCH-01, SYNC-01, MCP-05 y recortes de rendimiento (8 entradas). SYNC-01 se conserva como norma operativa.
+
 ## 2026-11-15 — Roadmap CI-02 · Optimización de workflows cerrado
 
 **Estado:** Completada · Sin publicación
