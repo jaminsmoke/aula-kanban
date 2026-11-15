@@ -2,9 +2,17 @@
 
 ## Repositorios y publicación
 
-- El repositorio personal `jaminsmoke/aula-kanban` es el único destino de commits y pushes de este proyecto. Sincroniza siempre con `git push github main`.
-- El único publicador en Sites es Codex de OpenAI. Cualquier otro agente se limita a commits y push al repositorio personal; no despliega, no publica ni aplica migraciones remotas.
+- El repositorio personal `jaminsmoke/aula-kanban` es el único destino de commits y pushes de este proyecto. Los commits se acumulan en local durante el roadmap; el push se reserva para su cierre.
+- El único publicador en Sites es Codex de OpenAI. Cualquier otro agente se limita a commits locales y al push de cierre al repositorio personal; no despliega, no publica ni aplica migraciones remotas.
 - Un push a GitHub no publica en Sites. Distingue siempre «sincronizado en GitHub» de «publicado y verificado en Sites»; una tarea no está publicada hasta que Codex lo confirma.
+
+## Commits, push y CI
+
+- Haz un commit local por fase o bloque verificado; no hace falta esperar al final para confirmar el trabajo.
+- No hagas push por cada bloque ni para «probar» CI. Un push dispara workflows y consume cuota.
+- Haz el push a `github main` solo cuando el roadmap esté completo, su resumen esté arriba de `docs/changelog.md` y `docs/roadmap.md` se haya reiniciado.
+- Antes de ese push, ejecuta los checks y el build sobre el estado final; el push debe ser único y suficiente.
+- Los cambios de política o documentación que deban quedar registrados en el remoto pueden publicarse una vez, siempre que no disparen CI (por ejemplo, `docs/**` o `AGENTS.md`).
 
 ## Publicación de Aula Kanban
 

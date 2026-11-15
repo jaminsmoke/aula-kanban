@@ -52,8 +52,8 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Flujo de trabajo
 
 1. **Entra una idea o una revisión.** Si se va a hacer ahora, se convierte en la fase activa de `roadmap.md`. Si se aparca, se añade arriba de `backlog.md`.
-2. **Se ejecuta el roadmap.** El roadmap contiene solo la fase activa y sus subfases; no es una lista de deseos. Cada bloque verificado se confirma y se sube al repo personal `jaminsmoke/aula-kanban` (`git push github main`). Ese push no publica en Sites: la publicación y la verificación en producción las realiza Codex de OpenAI.
-3. **Se cierra el roadmap.** Solo cuando **todas** sus fases están completadas, incluida la verificación final, su resumen pasa arriba de `changelog.md` y `roadmap.md` se reinicia desde `roadmap-template.md`.
+2. **Se ejecuta el roadmap.** El roadmap contiene solo la fase activa y sus subfases; no es una lista de deseos. Cada bloque verificado se confirma con un commit local; no se hace push por bloque. El push a `jaminsmoke/aula-kanban` (`git push github main`) se reserva para cerrar el roadmap completo. Ese push no publica en Sites: la publicación y la verificación en producción las realiza Codex de OpenAI.
+3. **Se cierra el roadmap.** Solo cuando **todas** sus fases están completadas, incluida la verificación final, su resumen pasa arriba de `changelog.md`, `roadmap.md` se reinicia desde `roadmap-template.md` y se hace un único push con los commits acumulados.
 4. **Lo aparcado no se pierde.** Permanece en `backlog.md` hasta que se convierte en roadmap o se descarta con una nota.
 5. **Las plantillas no se usan para trabajo real.** Se copian para reiniciar un documento y se quedan limpias.
 
@@ -67,7 +67,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 
 ## Estado actual
 
-- **Reparto de trabajo:** commits y push siempre al repo personal `jaminsmoke/aula-kanban`; despliegue y verificación en Sites, siempre por Codex de OpenAI.
+- **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
 - **Roadmap HIER-01 completado:** documentación en `app/board/docs/content/`; `edu-tools` en `calculator/`, `periodic-table/` y `tools/`; diálogo de tareas en `tasks/dialog/`; `modal` en `shared/`; y `project-access` en lugar de `project`. Resumen en [`changelog.md`](changelog.md).
 - **Fase 1 completada:** reorganización de `app/board` por dominios, módulos compartidos y estilos.
 - **Roadmap CSS completado:** tokens, CSS por feature, limpieza y verificación final. Resumen en [`changelog.md`](changelog.md); la auditoría temporal ya se eliminó.

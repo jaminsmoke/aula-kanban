@@ -5,7 +5,7 @@
 > **Entrada:** ARCH-02 — Dividir los módulos grandes restantes (sale del backlog).
 > **Backlog:** PER-03, PER-01B, PER-02, UI-01, ARCH-01, SYNC-01, MCP-05 y recortes de rendimiento (8 entradas). SYNC-01 se queda como norma operativa.
 > **Regla:** Este documento contiene solo la fase activa. Lo que se aparca pasa al backlog; lo completado pasa al changelog cuando **todas** las fases del roadmap hayan terminado.
-> **Publicación:** los commits y el push van al repo personal `jaminsmoke/aula-kanban`; Sites lo publica y verifica Codex de OpenAI. Un push no es una publicación.
+> **Publicación:** los commits se acumulan en local durante el roadmap; el push al repo personal `jaminsmoke/aula-kanban` se hace al cerrarlo y registrar su resumen en el changelog. Sites lo publica y verifica Codex de OpenAI. Un push no es una publicación.
 
 ---
 

@@ -12,7 +12,7 @@ cd aula-kanban
 npm ci
 ```
 
-Eso basta para desarrollar en local (`npm run dev`) y para comprobar en CI (lint, `tsc --noEmit` y tests, en push y pull request a `main`). En este repositorio, los commits y el push se hacen siempre al repositorio personal `jaminsmoke/aula-kanban` (`git push github main`). La publicación y la verificación en Sites corresponden siempre a Codex de OpenAI; un push a GitHub no despliega el Site.
+Eso basta para desarrollar en local (`npm run dev`) y para comprobar en CI (lint, `tsc --noEmit`, tests y build, en push y pull request a `main`). En este repositorio, los commits se acumulan en local durante el roadmap y el push se hace al cerrarlo, al repositorio personal `jaminsmoke/aula-kanban` (`git push github main`). La publicación y la verificación en Sites corresponden siempre a Codex de OpenAI; un push a GitHub no despliega el Site.
 
 Para publicar tu propia copia como Site, decide el `project_id` de `.openai/hosting.json` con el flujo aprendido (el fichero versionado lleva un valor de ejemplo; el real para una publicación se edita en tu copia) y sigue la publicación con Sites y `npm run release:prepare -- --published-version X.Y.Z`.
 

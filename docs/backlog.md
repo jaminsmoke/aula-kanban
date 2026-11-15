@@ -48,12 +48,13 @@
   - [ ] Cubrir el refactor con el contrato de sesión, permisos, errores y paridad HTTP ↔ MCP.
 - Notas técnicas: refactor incremental; no mover carpetas; no ocultar validaciones específicas de cada ruta detrás de un helper genérico.
 
-## 2026-11-15 — SYNC-01 · Sincronizar el repositorio tras cada publicación
+## 2026-11-15 — SYNC-01 · Sincronizar el repositorio al cerrar cada roadmap
 
-- Contexto: hay dos destinos distintos. El deploy en Sites lo hace Codex; el repositorio personal `jaminsmoke/aula-kanban` (usuario JaminSmoke) se actualiza con commit y push desde local. El push a GitHub no despliega en Sites.
-- Decisión (2026-11-15): no pasa al roadmap; se ejecuta tras cada bloque y se conserva aquí como norma operativa.
+- Contexto: hay dos destinos distintos. El deploy en Sites lo hace Codex; el repositorio personal `jaminsmoke/aula-kanban` (usuario JaminSmoke) se actualiza con commits locales y un push al cerrar el roadmap. El push a GitHub no despliega en Sites.
+- Decisión (2026-11-15): no pasa al roadmap; se ejecuta al cerrar cada roadmap y se conserva aquí como norma operativa. Los pushes intermedios consumen CI y cuota, así que no se usan para probar.
 - Qué falta antes de retomarlo:
-  - [ ] Repetir la rutina tras cada bloque verificado: `git status`, checks, commit y `git push github main`.
+  - [ ] Tras cada bloque verificado: `git status`, checks y commit local; no hacer push.
+  - [ ] Al cerrar el roadmap: actualizar `docs/changelog.md`, reiniciar `docs/roadmap.md` y hacer un único `git push github main`.
   - [ ] No cambiar la versión ni ejecutar `release:prepare` solo para sincronizar GitHub; la versión la fija la publicación.
   - [ ] Comprobar que no se cuelan secretos, `.env*`, `.dev.vars*` ni datos de producción.
 - Notas técnicas: publicación y sincronización son operaciones distintas; el commit no sustituye al flujo de Sites.
