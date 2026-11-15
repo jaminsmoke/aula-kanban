@@ -42,7 +42,7 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 | Herramientas de aula · Científica/Ecuaciones | 6.665,3 KiB | 1.925,3 KiB (1.971.518 B) | 2.069.960 B | 17 |
 | Diagramas · flujo inicial | 1.137,0 KiB | 308,9 KiB (316.274 B) | 331.923 B | 42 |
 | Diagramas · con ELK | 2.575,6 KiB | 750,0 KiB (768.014 B) | 806.262 B | 40 |
-| Tienda · abrir | 518,6 KiB | 162,5 KiB (166.438 B) | 174.779 B | 18 |
+| Tienda · abrir | 518,6 KiB | 162,5 KiB (166.436 B) | 174.779 B | 18 |
 | Pizarra · abrir | 3.434,2 KiB | 1.213,1 KiB (1.242.198 B) | 1.348.890 B | 21 |
 | Pizarra · conversión Mermaid | 4.198,1 KiB | 1.410,4 KiB (1.444.212 B) | 1.560.999 B | 48 |
 | Blockly · abrir | 1.147,4 KiB | 321,6 KiB (329.303 B) | 345.631 B | 17 |

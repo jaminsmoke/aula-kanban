@@ -38,7 +38,7 @@ export default function StoreDesktop({ role, projectId }: { role: StoreRole; pro
   const [managerError, setManagerError] = useState("");
   const refresh = useCallback(async () => {
     try {
-      const response = await fetch(`/api/store-apps?project=${encodeURIComponent(projectId)}`, { cache: "no-store" });
+      const response = await fetch(`/api/space-apps?project=${encodeURIComponent(projectId)}`, { cache: "no-store" });
       if (!response.ok) throw new Error();
       const data = await response.json() as { apps: typeof managed };
       setManaged(data.apps); setManagerConfigured(true);
@@ -53,7 +53,7 @@ export default function StoreDesktop({ role, projectId }: { role: StoreRole; pro
   const manage = async (id: string, action: StoreAction) => {
     if (action === "uninstall" && !window.confirm("Se desinstalará esta aplicación de Tienda para todos los miembros. Las pizarras de las tareas no se ven afectadas. ¿Continuar?")) return;
     try {
-      const response = await fetch(`/api/store-apps?project=${encodeURIComponent(projectId)}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, action }) });
+      const response = await fetch(`/api/space-apps?project=${encodeURIComponent(projectId)}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, action }) });
       if (!response.ok) throw new Error();
       await refresh();
     } catch { setManagerError("No se pudo actualizar la aplicación. Inténtalo de nuevo."); }

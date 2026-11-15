@@ -6,6 +6,32 @@
 
 ---
 
+## 2026-11-15 — Roadmap UI-08 · Tienda en Administración y Clase en la cabecera
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Tienda pasa a Administración como tercera sección, con URL canónica `view=administracion&section=tienda`, alias `view=espacio` y `app=<appId>`. La cabecera conserva Administración y recupera Clase como botón de icono; se retiran Mi espacio, la salida lateral y el botón duplicado del dock.
+- El escritorio de apps se integra en el contenido del workspace: mide su caja con `ResizeObserver`, las ventanas abren, arrastran, redimensionan y maximizan dentro del área, y el dock solo conserva Aula Store y las ventanas minimizadas. El enlace profundo y el alias canonizan sin perder `app`.
+- La vista se renombra a `app/board/store/`: `StoreDesktop`, `store-window`, `store-desktop.css`, catálogo en `store/catalog/` y tipos `StoreRole`/`StoreTool`/`StoreCategory`. Se conserva el protocolo `SpaceRoom`, `space-control` y `/api/space-socket`.
+- MCP sube a `0.27.0` con 59 herramientas y enlaces canónicos de Tienda; `abrir_app`, `listar_ventanas`, `leer_pizarra` y los prompts hablan de Tienda. Snapshot, matriz y paridad actualizados.
+- Ayuda, README, `docs/mcp-apps.md`, referencias de producto y documentación de la vista se actualizan. La etiqueta y la raíz de rendimiento pasan a «Tienda · abrir»/`store-desktop.tsx`, y la línea base se regenera (162,5 KiB gzip).
+- Sin migraciones ni cambio de versión: `1.1.30`.
+
+### Verificación
+
+- Build servida en `8791` con identidad local: 1366×900, 1024×768, 900×700, 620×800 y 390×844 sin desborde horizontal; Tienda ocupa 1127/801/677/605/390 px de ancho y el dock queda dentro del escritorio. A 390 la ventana abierta cabe (366×560) y el maximizado de 1366 ocupa exactamente el contenido (1127×822), sin tapar cabecera ni sidebar.
+- Alias `view=espacio&app=excalidraw` canoniza a `view=administracion&section=tienda&app=excalidraw` y abre Excalidraw; el catálogo de Aula Store abre y vuelve al escritorio; Clase vuelve a Tareas desde su botón de icono, también desde Alumnos. Cero excepciones de consola.
+- La revisión encontró y corrigió una regresión del renombrado: el fetch de apps apuntaba a `/api/store-apps`; vuelve a `/api/space-apps` y la prueba de la vista lo cubre.
+- Suite completa: 125 archivos / 1.026 pruebas; `tsc`, lint, build, `git diff --check` y `perf:budget` en verde.
+- Capturas y métricas en `outputs/ui08-*.png` y `outputs/ui08-metrics.json` (ignorados por git).
+- Commits: `0082fcf` (roadmap), `5740160` (fase 1), `b08cd46` (corrección de cabecera/dock), `6ac70c6` (fase 2); el cierre queda en el commit de documentación. Sin `release:prepare`, push ni publicación.
+
+### Seguimiento
+
+Sin entradas de seguimiento; el roadmap se reinicia desde la plantilla.
+
 ## 2026-11-15 — Roadmap UI-07 · Documentación en Ajustes y selector de proyecto
 
 **Estado:** Completada · Sin publicación

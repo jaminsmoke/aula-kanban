@@ -5,9 +5,11 @@ import { jsonResponse } from "../../../vitest.setup";
 
 describe("Tienda", () => {
   it("muestra Excalidraw instalada y abre la tienda sin referencias al VPS", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ apps: [{ id: "excalidraw", status: "installed", url: null }] })));
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ apps: [{ id: "excalidraw", status: "installed", url: null }] }));
+    vi.stubGlobal("fetch", fetchMock);
     render(<StoreDesktop role="owner" projectId="default" />);
     expect(await screen.findByRole("button", { name: /Excalidraw/ })).toBeTruthy();
+    expect(fetchMock).toHaveBeenCalledWith("/api/space-apps?project=default", { cache: "no-store" });
     fireEvent.click(screen.getByRole("button", { name: /Aula Store/ }));
     expect(await screen.findByRole("region", { name: "Aula Store" })).toBeTruthy();
     expect(screen.queryByText(/VPS/)).toBeNull();
