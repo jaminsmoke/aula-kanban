@@ -10,8 +10,9 @@ import "./class.css";
 // El calendario solo se descarga al abrir su sección.
 const CalendarView = lazy(() => import("./calendar/calendar-view"));
 
-/** Secciones disponibles dentro de Clase. */
-export type ClassSection = "tareas" | "calendario";
+/** Secciones disponibles dentro de Clase (tipo canónico en `lib/domain/board-url`). */
+export type { ClassSection } from "../../../lib/domain/board-url";
+import type { ClassSection } from "../../../lib/domain/board-url";
 
 const SECTIONS: WorkspaceItem<ClassSection>[] = [
   { id: "tareas", label: "Tareas", icon: Columns3 },

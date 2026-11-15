@@ -50,10 +50,15 @@ describe("DocumentationView", () => {
     render(<DocumentationView onBack={vi.fn()} />);
 
     const images = screen.getAllByRole("img");
-    expect(images).toHaveLength(docSections.length + 1);
-    const names = images.map((image) => image.getAttribute("aria-labelledby") && document.getElementById(image.getAttribute("aria-labelledby")!)?.textContent);
+    const illustrations = images.filter((image) => image.getAttribute("aria-labelledby"));
+    expect(illustrations).toHaveLength(docSections.length + 1);
+    const names = illustrations.map((image) => document.getElementById(image.getAttribute("aria-labelledby")!)?.textContent);
     expect(names.every(Boolean)).toBe(true);
     expect(new Set(names).size).toBe(names.length);
+
+    const screenshots = images.filter((image) => !image.getAttribute("aria-labelledby"));
+    expect(screenshots.length).toBeGreaterThan(0);
+    for (const screenshot of screenshots) expect(screenshot.getAttribute("alt")?.length).toBeGreaterThan(20);
   });
 
   it("renderiza todas las secciones con su título, entradilla y bloques", () => {
@@ -76,7 +81,9 @@ describe("DocumentationView", () => {
     const warnings = screen.getAllByRole("note", { name: "Importante" });
     expect(warnings.length).toBeGreaterThan(1);
     expect(warnings.some((note) => note.textContent?.match(/contraseñas/))).toBe(true);
-    expect(screen.getAllByRole("note", { name: "Consejo" })).toHaveLength(1);
+    const tips = screen.getAllByRole("note", { name: "Consejo" });
+    expect(tips.length).toBeGreaterThan(0);
+    expect(tips.some((note) => note.textContent?.match(/Tab hasta el asa/))).toBe(true);
   });
 });
 
@@ -88,6 +95,19 @@ describe("sección Servidor MCP", () => {
     expect(within(section).getByText(/también escucha a herramientas de inteligencia artificial/)).toBeTruthy();
     const code = within(section).getByText(/"mcpServers"/, { exact: false });
     expect(code.textContent).toContain("Authorization");
+  });
+});
+
+describe("sección Autorización OAuth", () => {
+  it("muestra el bloque JSON de conexión y los alcances", () => {
+    render(<DocumentationView onBack={vi.fn()} />);
+
+    const section = screen.getByRole("region", { name: "Autorización OAuth" });
+    expect(within(section).getByText(/desactivada en producción/)).toBeTruthy();
+    const code = within(section).getByText(/"authorization_url"/, { exact: false });
+    expect(code.textContent).toContain("/oauth/authorize");
+    expect(code.textContent).toContain("mcp:read mcp:write");
+    expect(within(section).getByText(/tokens personales del MCP siguen funcionando/)).toBeTruthy();
   });
 });
 

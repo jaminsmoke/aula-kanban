@@ -1,10 +1,11 @@
 import { env } from "cloudflare:workers";
 import { and, eq } from "drizzle-orm";
-import { getDb } from "../../db";
+import { getD1, getDb } from "../../db";
 import { administrators, projectMembers, projects } from "../../db/schema";
 import { getChatGPTUser, type ChatGPTUser } from "./auth";
 import { json } from "./http";
 import { ensureInstanceOwner, isBootstrapOwnerEmail, isInstanceOwner, readInstanceOwner } from "./owner";
+import { canonicalProjectId } from "./project-rekey";
 
 export const defaultProjectId = "default";
 export type Access = { user: ChatGPTUser; role: "owner" | "admin" | "teacher" | "student" | "guest"; studentSection: string | null; teacherId: string | null };
@@ -94,14 +95,24 @@ export async function isAdministrator(user: ChatGPTUser) {
 }
 
 /**
- * Resuelve el acceso de una cuenta concreta a un proyecto.
+ * Rol global de la cuenta en la instancia, sin proyecto concreto.
+ * Dirime una sola vez por petición cuando se listan muchos proyectos.
+ * @param user - Cuenta autenticada.
+ * @returns `owner`, `admin` o `null` si la cuenta no tiene rol global.
+ */
+export async function globalRoleForUser(user: ChatGPTUser): Promise<"owner" | "admin" | null> {
+  if (await isOwner(user)) return "owner";
+  if (await isAdministrator(user)) return "admin";
+  return null;
+}
+
+/**
+ * Acceso por membresía de la cuenta a un proyecto, sin el rol global.
  * @param projectId - Identificador del proyecto.
  * @param user - Cuenta autenticada.
- * @returns El acceso con rol y ficha vinculada, o `null` sin acceso.
+ * @returns El acceso con rol de miembro y ficha vinculada, o `null` sin acceso.
  */
-export async function projectAccessForUser(projectId: string, user: ChatGPTUser): Promise<Access | null> {
-  if (await isOwner(user)) return { user, role: "owner", studentSection: null, teacherId: null };
-  if (await isAdministrator(user)) return { user, role: "admin", studentSection: null, teacherId: null };
+export async function memberAccess(projectId: string, user: ChatGPTUser): Promise<Access | null> {
   const [member] = await getDb().select().from(projectMembers).where(and(
     eq(projectMembers.projectId, projectId), eq(projectMembers.userId, user.userId), eq(projectMembers.status, "active"),
   ));
@@ -111,6 +122,18 @@ export async function projectAccessForUser(projectId: string, user: ChatGPTUser)
     try { await getDb().update(projectMembers).set({ email: currentEmail }).where(and(eq(projectMembers.id, member.id), eq(projectMembers.userId, user.userId), eq(projectMembers.status, "active"))); } catch { /* retain the previous contact if another membership uses this email */ }
   }
   return { user, role: member.role, studentSection: member.studentSection, teacherId: member.teacherId };
+}
+
+/**
+ * Resuelve el acceso de una cuenta concreta a un proyecto.
+ * @param projectId - Identificador del proyecto.
+ * @param user - Cuenta autenticada.
+ * @returns El acceso con rol y ficha vinculada, o `null` sin acceso.
+ */
+export async function projectAccessForUser(projectId: string, user: ChatGPTUser): Promise<Access | null> {
+  const globalRole = await globalRoleForUser(user);
+  if (globalRole) return { user, role: globalRole, studentSection: null, teacherId: null };
+  return memberAccess(projectId, user);
 }
 
 /**
@@ -129,7 +152,8 @@ export async function projectAccess(projectId: string): Promise<Access | null> {
  * @returns La fila del proyecto o `null`.
  */
 export async function findProject(projectId: string): Promise<ProjectRow | null> {
-  const [project] = await getDb().select().from(projects).where(eq(projects.id, projectId));
+  const canonical = projectId === "default" ? (await canonicalProjectId(getD1(), projectId)) ?? projectId : projectId;
+  const [project] = await getDb().select().from(projects).where(eq(projects.id, canonical));
   return project ?? null;
 }
 
@@ -156,7 +180,7 @@ export async function resolveProject(request: Request, dependencies: ProjectReso
   if (id.length > 80) return { status: "invalid" };
   const project = await dependencies.findProject(id);
   if (!project) return { status: "not_found" };
-  const access = await dependencies.accessForUser(id, user);
+  const access = await dependencies.accessForUser(project.id, user);
   if (!access) return { status: "forbidden" };
   return { status: "ok", project: { ...project, access } };
 }

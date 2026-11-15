@@ -232,6 +232,27 @@
       "when": 1794686408000,
       "tag": "0032_naive_zaladane",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "6",
+      "when": 1794690012322,
+      "tag": "0033_adorable_trish_tilby",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "6",
+      "when": 1794690012323,
+      "tag": "0034_mcp_audit_log",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "6",
+      "when": 1794724846432,
+      "tag": "0035_strange_magdalene",
+      "breakpoints": true
     }
   ]
 }

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { Project } from "../shared/model";
 import { request } from "../shared/api";
 
-type ProjectsResponse = { projects: Project[]; isOwner: boolean; isAdmin?: boolean };
+type ProjectsResponse = { projects: Project[]; isOwner: boolean; isAdmin?: boolean; legacyProjectId?: string | null };
 const requestProjects = () => request<ProjectsResponse>("GET", undefined, "/api/projects");
 
 /**
@@ -23,6 +23,11 @@ export function useProjects() {
   const applyProjects = useCallback((next: ProjectsResponse) => {
     const params = new URLSearchParams(window.location.search);
     const explicit = params.get("project");
+    if (explicit === "default" && next.legacyProjectId && next.projects.some((project) => project.id === next.legacyProjectId)) {
+      params.set("project", next.legacyProjectId);
+      window.location.replace(`/?${params.toString()}`);
+      return;
+    }
     const currentId = explicit || "default";
     if (!explicit && next.projects.length && !next.projects.some((item) => item.id === currentId)) {
       params.set("project", next.projects[0].id);

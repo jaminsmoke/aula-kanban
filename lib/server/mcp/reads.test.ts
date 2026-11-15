@@ -31,7 +31,10 @@ vi.mock("../../../db", () => ({
       from: (table: object) => {
         if (table === projectsTable) return query([projectRow]);
         if (table === taskRowsTable) return query([taskRow]);
-        if (table === studentsTable) return query([{ section: "s1", projectId: "11111111-1111-4111-8111-111111111111", name: "Ada", displayName: "Ada", role: "", activities: "lectura", aiHelp: "", deleted: 0, revision: 1, mutationToken: null }]);
+        if (table === studentsTable) return query([
+          { section: "s1", projectId: "11111111-1111-4111-8111-111111111111", name: "Ada", displayName: "Ada", role: "", activities: "lectura", aiHelp: "", deleted: 0, revision: 1, mutationToken: null },
+          { section: "s2", projectId: "11111111-1111-4111-8111-111111111111", name: "Grace", displayName: "Grace", role: "", activities: "", aiHelp: "", deleted: 0, revision: 2, mutationToken: null },
+        ]);
         if (table === teachersTable) return query([{ id: "tch", projectId: "11111111-1111-4111-8111-111111111111", name: "Profe", displayName: "Profe", role: "teacher", activities: "", aiHelp: "", revision: 1, mutationToken: null }]);
         return query([]);
       },
@@ -50,7 +53,20 @@ function query(rows: unknown[]) {
 
 vi.mock("../project", () => ({
   findProject: async (id: string) => (id === "11111111-1111-4111-8111-111111111111" ? projectRow : null),
+  PROJECT_FAILURE_RESPONSES: {
+    unauthenticated: { status: 401, message: "Inicia sesión para continuar." },
+    invalid: { status: 400, message: "Proyecto no válido." },
+    not_found: { status: 404, message: "No se encuentra el proyecto." },
+    forbidden: { status: 403, message: "No tienes acceso a este proyecto." },
+  },
   projectAccessForUser: async (id: string, user: { userId: string }) => {
+    if (id !== "11111111-1111-4111-8111-111111111111") return null;
+    if (user.userId === "u1") return { user, role: "owner", studentSection: null, teacherId: null };
+    if (user.userId === "u2") return { user, role: "student", studentSection: "s1", teacherId: null };
+    return null;
+  },
+  globalRoleForUser: async (user: { userId: string }) => (user.userId === "u1" ? "owner" : null),
+  memberAccess: async (id: string, user: { userId: string }) => {
     if (id !== "11111111-1111-4111-8111-111111111111") return null;
     if (user.userId === "u1") return { user, role: "owner", studentSection: null, teacherId: null };
     if (user.userId === "u2") return { user, role: "student", studentSection: "s1", teacherId: null };
@@ -123,7 +139,7 @@ describe("herramientas de lectura del MCP", () => {
     });
     await withClient({ userId: "u9", email: "fuera@example.com", displayName: "", fullName: null }, async (client) => {
       const result = await client.callTool({ name: "listar_proyectos", arguments: {} });
-      expect(textOf(result)).toEqual({ proyectos: [] });
+      expect(textOf(result)).toEqual({ proyectos: [], total: 0, pagina: 1, porPagina: 50 });
     });
   });
 
@@ -160,12 +176,48 @@ describe("herramientas de lectura del MCP", () => {
     });
   });
 
-  it("lista alumnado y profesorado activos del proyecto", async () => {
+  it("lista alumnado y profesorado activos con rol, revisión y estado de cuenta", async () => {
     await withClient(owner, async (client) => {
       const students = await client.callTool({ name: "listar_alumnos", arguments: { proyectoId: "11111111-1111-4111-8111-111111111111" } });
-      expect(textOf(students)).toEqual({ alumnos: [{ seccion: "s1", nombre: "Ada", actividad: "lectura" }] });
+      expect(textOf(students)).toEqual({
+        alumnos: [
+          { seccion: "s1", nombre: "Ada", nombreVisible: "Ada", rol: "", actividad: "lectura", ayudaIA: "", revision: 1, estadoCuenta: "unlinked", correoCuenta: "" },
+          { seccion: "s2", nombre: "Grace", nombreVisible: "Grace", rol: "", actividad: "", ayudaIA: "", revision: 2, estadoCuenta: "unlinked", correoCuenta: "" },
+        ],
+        total: 2,
+        pagina: 1,
+        porPagina: 50,
+      });
       const teachers = await client.callTool({ name: "listar_profesores", arguments: { proyectoId: "11111111-1111-4111-8111-111111111111" } });
-      expect(textOf(teachers)).toEqual({ profesores: [{ id: "tch", nombre: "Profe" }] });
+      expect(textOf(teachers)).toEqual({
+        profesores: [{ id: "tch", nombre: "Profe", nombreVisible: "Profe", rol: "teacher", actividad: "", ayudaIA: "", revision: 1, estadoCuenta: "unlinked", correoCuenta: "" }],
+        total: 1,
+        pagina: 1,
+        porPagina: 50,
+      });
+    });
+  });
+
+  it("oculta el correo de las fichas ajenas al alumnado", async () => {
+    await withClient(student, async (client) => {
+      const result = await client.callTool({ name: "listar_alumnos", arguments: { proyectoId: "11111111-1111-4111-8111-111111111111" } });
+      const alumnos = (textOf(result) as { alumnos: Array<Record<string, unknown>> }).alumnos;
+      expect(alumnos[0]).toHaveProperty("correoCuenta", "");
+      expect(alumnos[1]).not.toHaveProperty("correoCuenta");
+    });
+  });
+
+  it("obtiene una ficha concreta y responde 404 si no existe", async () => {
+    await withClient(owner, async (client) => {
+      const alumno = await client.callTool({ name: "obtener_alumno", arguments: { proyectoId: "11111111-1111-4111-8111-111111111111", seccion: "s2" } });
+      expect(textOf(alumno)).toEqual({ alumno: { seccion: "s2", nombre: "Grace", nombreVisible: "Grace", rol: "", actividad: "", ayudaIA: "", revision: 2, estadoCuenta: "unlinked", correoCuenta: "" } });
+
+      const profesor = await client.callTool({ name: "obtener_profesor", arguments: { proyectoId: "11111111-1111-4111-8111-111111111111", profesorId: "tch" } });
+      expect(textOf(profesor)).toEqual({ profesor: { id: "tch", nombre: "Profe", nombreVisible: "Profe", rol: "teacher", actividad: "", ayudaIA: "", revision: 1, estadoCuenta: "unlinked", correoCuenta: "" } });
+
+      const missing = await client.callTool({ name: "obtener_alumno", arguments: { proyectoId: "11111111-1111-4111-8111-111111111111", seccion: "s9" } });
+      expect(missing.isError).toBe(true);
+      expect((missing.content as Array<{ type: string; text?: string }>)[0].text).toBe("No se encuentra la ficha en este proyecto.");
     });
   });
 });

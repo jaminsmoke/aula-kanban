@@ -95,6 +95,89 @@ export function TasksArt() {
   );
 }
 
+/**
+ * Calendario: rejilla del mes con un día resaltado y una tarea marcada.
+ * @returns El SVG de la sección.
+ */
+export function CalendarArt() {
+  const days = [0, 1, 2, 3, 4, 5, 6];
+  const weeks = [0, 1, 2, 3];
+  return (
+    <ArtFrame label="Calendario del mes con una tarea marcada en su fecha de entrega">
+      <rect x="26" y="20" width="208" height="160" rx="14" className="a-white s-line" strokeWidth="2" />
+      <path d="M40 20h180a14 14 0 0 1 14 14v16H26V34a14 14 0 0 1 14-14z" className="a-violet" />
+      <rect x="47" y="31" width="64" height="9" rx="4.5" className="a-white" opacity="0.85" />
+      {days.map((day) => <rect key={day} x={42 + day * 26} y="66" width="10" height="6" rx="3" className="a-line" />)}
+      {weeks.map((week) => days.map((day) => (
+        <rect
+          key={`${week}-${day}`}
+          x={42 + day * 26} y={84 + week * 22} width="14" height="14" rx="4"
+          className={week === 1 && day === 3 ? "a-amber" : "a-pale"}
+        />
+      )))}
+      <Appear order={2}>
+        <circle cx="127" cy="113" r="11" className="s-violet" strokeWidth="2.5" fill="none" />
+      </Appear>
+    </ArtFrame>
+  );
+}
+
+/**
+ * Proyectos: lista de proyectos con uno marcado y un engranaje de ajustes.
+ * @returns El SVG de la sección.
+ */
+export function ProjectsArt() {
+  const rows = [52, 90, 128];
+  return (
+    <ArtFrame label="Lista de proyectos con uno activo y un engranaje de ajustes">
+      <rect x="18" y="16" width="224" height="168" rx="14" className="a-pale" opacity="0.6" />
+      {rows.map((y, i) => (
+        <Appear key={y} order={i}>
+          <rect x="36" y={y} width="132" height="30" rx="8" className={i === 1 ? "a-white" : "a-pale"} />
+          <rect x="48" y={y + 11} width="10" height="8" rx="2" className={i === 1 ? "a-violet" : "a-line"} />
+          <rect x="66" y={y + 10} width={[60, 74, 52][i]} height="9" rx="4.5" className="a-line" />
+          {i === 1 && <path d="M140 62l4 4 8-8" fill="none" className="s-violet" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />}
+        </Appear>
+      ))}
+      <Appear order={3} from={0.5}>
+        <circle cx="196" cy="132" r="24" className="a-amber" />
+        <circle cx="196" cy="132" r="8" fill="none" className="s-white" strokeWidth="5" />
+        <path d="M196 100v9M196 155v9M164 132h9M219 132h9" className="s-white" strokeWidth="6" strokeLinecap="round" />
+      </Appear>
+    </ArtFrame>
+  );
+}
+
+/**
+ * Personas: tres fichas con su avatar y un sobre de invitación que aparece.
+ * @returns El SVG de la sección.
+ */
+export function PeopleArt() {
+  const cards = [40, 100, 160];
+  return (
+    <ArtFrame label="Fichas de personas del proyecto y una invitación por correo">
+      <rect x="18" y="16" width="224" height="168" rx="14" className="a-pale" opacity="0.6" />
+      {cards.map((x, i) => (
+        <Appear key={x} order={i}>
+          <rect x={x} y="40" width="52" height="76" rx="10" className="a-white" />
+          <circle cx={x + 26} cy="62" r="12" className="a-violet" />
+          <circle cx={x + 26} cy="58" r="4" className="a-white" />
+          <path d={`M${x + 18} 70a8 7 0 0 1 16 0z`} className="a-white" />
+          <rect x={x + 11} y="84" width="30" height="6" rx="3" className="a-line" />
+          <rect x={x + 11} y="96" width="20" height="6" rx="3" className="a-pale" />
+        </Appear>
+      ))}
+      <Appear order={3} from={0.5}>
+        <rect x="82" y="124" width="96" height="48" rx="10" className="a-white" />
+        <rect x="82" y="124" width="96" height="48" rx="10" fill="none" className="s-amber" strokeWidth="3" />
+        <path d="M84 132l46 26 46-26" fill="none" className="s-amber" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="180" cy="124" r="12" className="a-violet" />
+        <path d="M174 124l4 4 7-8" fill="none" className="s-white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      </Appear>
+    </ArtFrame>
+  );
+}
+
 const SKETCH_PATH = "M40 150c18-30 26-58 56-58s38 26 60 12 44-34 64-20";
 
 /**
@@ -219,6 +302,95 @@ export function McpArt() {
       <Appear order={3}>
         <rect x="24" y="92" width="18" height="26" rx="6" className="a-violet" />
         <rect x="218" y="92" width="18" height="26" rx="6" className="a-violet" />
+      </Appear>
+    </ArtFrame>
+  );
+}
+
+/**
+ * Autorización OAuth: llave que aparece y gira el aro de la cerradura.
+ * @returns El SVG de la sección.
+ */
+export function OAuthArt() {
+  return (
+    <ArtFrame label="Llave de autorización">
+      <Appear order={1}>
+        <circle cx="98" cy="98" r="46" fill="none" className="s-violet" strokeWidth="6" />
+        <circle cx="98" cy="98" r="14" fill="none" className="s-violet" strokeWidth="6" />
+        <Draw d="M126 126l34 34M160 160l-10 10M172 172l-12 12" className="s-amber" strokeWidth={8} order={1} seconds={0.5} />
+      </Appear>
+      <Appear order={2}>
+        <circle cx="196" cy="52" r="20" className="a-amber" />
+        <path d="M188 52l6 6 12-12" fill="none" className="s-white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      </Appear>
+    </ArtFrame>
+  );
+}
+
+/**
+ * Novedades: destello sobre una lista de notas que aparecen en orden.
+ * @returns El SVG de la sección.
+ */
+export function NewsArt() {
+  const rows = [104, 124, 144];
+  return (
+    <ArtFrame label="Destello de novedad sobre una lista de notas">
+      <rect x="18" y="16" width="224" height="168" rx="14" className="a-pale" opacity="0.6" />
+      <Appear>
+        <rect x="42" y="36" width="176" height="130" rx="12" className="a-white" />
+        <path d="M130 46l6 14 15 2-11 10 3 15-13-8-13 8 3-15-11-10 15-2z" className="a-amber" />
+      </Appear>
+      {rows.map((y, i) => (
+        <Appear key={y} order={i + 1} from={0.4}>
+          <circle cx="62" cy={y} r="4" className="a-violet" />
+          <rect x="76" y={y - 4} width={[104, 88, 96][i]} height="8" rx="4" className="a-line" />
+        </Appear>
+      ))}
+    </ArtFrame>
+  );
+}
+
+/**
+ * Enlaces: dos eslabones enganchados y una barra con la dirección de la vista.
+ * @returns El SVG de la sección.
+ */
+export function LinksArt() {
+  return (
+    <ArtFrame label="Enlaces de cada vista y copia del Site">
+      <rect x="18" y="16" width="224" height="168" rx="14" className="a-pale" opacity="0.6" />
+      <Appear>
+        <path d="M96 92a16 16 0 0 1 0 22l-14 14a16 16 0 0 1-22-22l7-7" fill="none" className="s-violet" strokeWidth="8" strokeLinecap="round" />
+        <path d="M164 108a16 16 0 0 1 0-22l14-14a16 16 0 0 1 22 22l-7 7" fill="none" className="s-amber" strokeWidth="8" strokeLinecap="round" />
+      </Appear>
+      <Appear order={1} from={0.4}>
+        <rect x="60" y="130" width="140" height="34" rx="8" className="a-white" />
+        <circle cx="78" cy="147" r="5" className="a-violet" />
+        <rect x="92" y="143" width="72" height="8" rx="4" className="a-line" />
+        <path d="M166 147h12" className="s-line" strokeWidth="3" strokeLinecap="round" />
+      </Appear>
+    </ArtFrame>
+  );
+}
+
+/**
+ * Problemas: tarjeta de aviso con un triángulo de error y una lista de
+ * soluciones que aparece después.
+ * @returns El SVG de la sección.
+ */
+export function TroubleArt() {
+  return (
+    <ArtFrame label="Aviso de error con una lista de soluciones">
+      <rect x="18" y="16" width="224" height="168" rx="14" className="a-pale" opacity="0.6" />
+      <Appear>
+        <rect x="38" y="32" width="184" height="136" rx="12" className="a-white" />
+        <path d="M130 50l30 50h-60z" className="a-amber" />
+        <path d="M130 68v16M130 92v2" className="s-white" strokeWidth="5" strokeLinecap="round" />
+      </Appear>
+      <Appear order={1} from={0.4}>
+        <rect x="62" y="114" width="124" height="9" rx="4.5" className="a-line" />
+        <rect x="62" y="131" width="94" height="9" rx="4.5" className="a-pale" />
+        <rect x="62" y="148" width="108" height="9" rx="4.5" className="a-pale" />
+        <path d="M48 118l4 5 8-9" fill="none" className="s-violet" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
       </Appear>
     </ArtFrame>
   );

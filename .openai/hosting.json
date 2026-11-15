@@ -1,5 +1,6 @@
 {
   "d1": "DB",
   "r2": "BUCKET",
+  "capabilities": ["mcp"],
   "project_id": "appgprj_00000000000000000000000000000000"
 }

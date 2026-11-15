@@ -12,7 +12,10 @@ import "./header.css";
 const appVersion = appPackage.version;
 const appAuthor = typeof appPackage.author === "string" ? appPackage.author : "";
 
-export type BoardView = "clase" | "alumnos" | "profesores" | "espacio" | "ajustes" | "documentacion";
+// El tipo canónico vive en `lib/domain/board-url`; se reexporta aquí
+// para conservar el import histórico de la cabecera.
+export type { BoardView } from "../../../lib/domain/board-url";
+import type { BoardView } from "../../../lib/domain/board-url";
 type View = BoardView;
 
 /**

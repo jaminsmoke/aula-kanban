@@ -36,9 +36,15 @@ const localBindingConfig = {
       ]
     : [],
   durable_objects: {
-    bindings: [{ name: "BOARD_ROOMS", class_name: "BoardRoom" }],
+    bindings: [
+      { name: "BOARD_ROOMS", class_name: "BoardRoom" },
+      { name: "SPACE_ROOMS", class_name: "SpaceRoom" },
+    ],
   },
-  migrations: [{ tag: "v1", new_classes: ["BoardRoom"] }],
+  migrations: [
+    { tag: "v1", new_classes: ["BoardRoom"] },
+    { tag: "v2", new_classes: ["SpaceRoom"] },
+  ],
 };
 
 export default defineConfig(async ({ command }) => {

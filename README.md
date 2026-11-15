@@ -57,13 +57,107 @@ Dentro de **Clase**, **Tareas** y **Calendario** comparten el mismo tablero: el 
 
 La lista de aplicaciones integradas, candidatas y descartadas, con licencias y versiones comprobadas, está en [`docs/aplicaciones-nativas.md`](docs/aplicaciones-nativas.md). El índice de documentación y el flujo de roadmap, backlog y changelog están en [`docs/README.md`](docs/README.md).
 
-## Servidor MCP
+## Plugin y herramientas
 
-El Site expone un servidor **MCP remoto y alojado en el propio Site** en `/api/mcp` (transporte HTTP Streamable web-standard, sin sesiones). La producción es remota: no se entrega ningún proceso local como producto; lo local es solo para probar.
+El **plugin de Aula Kanban para Sites** es la vía recomendada para ChatGPT y Codex: usa el endpoint `/mcp` y la identidad de tu sesión de Sites, así que no hay que copiar ningún token. Sites aplica los permisos de tu cuenta en cada proyecto y cada llamada queda auditada.
+
+1. En ChatGPT o Codex, busca y conecta el plugin «Aula Kanban» creado por Sites.
+2. Abre una conversación y pide un resumen de clase, o usa los prompts `resumen_de_clase`, `planificar_semana`, `alta_de_alumnado` e `instalar_apps_del_aula`.
+3. Prueba `listar_proyectos` y `listar_tareas`: si responden, el plugin está conectado.
+
+La lista siguiente se genera desde `lib/domain/mcp-catalogo.ts`; las dos puertas publican las mismas herramientas y cada descripción incluye un ejemplo de argumentos y su regla de rol.
+
+<!-- inicio catálogo MCP: generado desde lib/domain/mcp-catalogo.ts -->
+**50 herramientas · catálogo `0.20.0`:** 21 de lectura y 29 de escritura; 8 destructivas.
+
+**Proyectos**
+
+- **`listar_proyectos`** — Listar proyectos. La cuenta ve solo los proyectos en los que participa o administra.
+- **`crear_proyecto`** — Crear proyecto. Solo el propietario o un administrador del sitio.
+- **`eliminar_proyecto`** — Eliminar proyecto. Solo el propietario o un administrador del sitio; exige confirmación y el nombre exacto.
+
+**Archivos**
+
+- **`subir_archivo`** — Subir archivo. Cualquier miembro con acceso puede subir; las cuentas invitadas no escriben. Respeta los tipos y límites de la web (5 MB para imágenes y 10 MB para documentos).
+- **`obtener_archivo`** — Obtener archivo. Cualquier miembro con acceso; devuelve solo metadatos y enlace, nunca el binario.
+
+**Tareas**
+
+- **`listar_tareas`** — Listar tareas. Cualquier miembro con acceso al proyecto; sin proyectoId, solo los proyectos visibles.
+- **`obtener_tarea`** — Obtener tarea. Cualquier miembro con acceso al proyecto.
+- **`crear_tarea`** — Crear tarea. Profesorado, administración y propietario; el alumnado solo puede asignársela a sí mismo o dejarla sin asignar; las cuentas invitadas no escriben.
+- **`actualizar_tarea`** — Actualizar tarea. Quien puede editar tareas: profesorado, administración y propietario; el alumnado solo las suyas; las cuentas invitadas no escriben.
+- **`mover_tarea`** — Mover tarea. Quien puede editar tareas: profesorado, administración y propietario; el alumnado solo las suyas; las cuentas invitadas no escriben.
+- **`asignar_tarea`** — Asignar tarea. Profesorado, administración y propietario; el alumnado solo puede asignarse a sí mismo; las cuentas invitadas no escriben.
+- **`desasignar_tarea`** — Desasignar tarea. Quien puede editar la tarea; el alumnado solo puede quitarse a sí mismo; las cuentas invitadas no escriben.
+- **`reprogramar_tarea`** — Reprogramar tarea. Quien puede editar tareas: profesorado, administración y propietario; el alumnado solo las suyas; las cuentas invitadas no escriben.
+- **`listar_calendario`** — Calendario del proyecto. Cualquier miembro con acceso al proyecto.
+- **`eliminar_tarea`** — Eliminar tarea. Quien puede editar la tarea; el alumnado solo las suyas; las cuentas invitadas no escriben. Exige confirmación.
+
+**Personas**
+
+- **`listar_alumnos`** — Listar alumnado. Cualquier miembro con acceso al proyecto; el correo de la cuenta solo aparece si la web también lo mostraría.
+- **`listar_profesores`** — Listar profesorado. Cualquier miembro con acceso al proyecto; el correo de la cuenta solo aparece si la web también lo mostraría.
+- **`obtener_alumno`** — Obtener alumnado. Cualquier miembro con acceso al proyecto; el correo de la cuenta solo aparece si la web también lo mostraría.
+- **`obtener_profesor`** — Obtener profesorado. Cualquier miembro con acceso al proyecto; el correo de la cuenta solo aparece si la web también lo mostraría.
+- **`listar_miembros`** — Listar miembros. Profesorado, administración y propietario; el alumnado y las cuentas invitadas reciben 403. El profesorado solo ve alumnado y su propia ficha.
+- **`invitar_miembro`** — Invitar miembro. El propietario y la administración invitan cualquier rol; el profesorado solo alumnado; cada persona puede invitarse a sí misma. No envía correo.
+- **`retirar_miembro`** — Retirar miembro. El propietario y la administración retiran cualquier rol; el profesorado solo alumnado; cada persona puede retirarse a sí misma. Exige confirmación.
+- **`crear_alumno`** — Crear alumnado. Profesorado, administración y propietario; el alumnado y las cuentas invitadas no crean fichas.
+- **`crear_profesor`** — Crear profesorado. Solo administración y propietario.
+- **`actualizar_alumno`** — Actualizar alumnado. Profesorado, administración y propietario editan cualquier ficha; el alumnado solo la suya; las cuentas invitadas no editan.
+- **`actualizar_profesor`** — Actualizar profesorado. Administración y propietario editan cualquier ficha; el profesorado solo la suya; el alumnado y las cuentas invitadas no editan.
+- **`eliminar_alumno`** — Eliminar alumnado. Profesorado, administración y propietario; el alumnado solo la suya; las cuentas invitadas no. Exige confirmación y el nombre exacto.
+- **`eliminar_profesor`** — Eliminar profesorado. Administración y propietario cualquier ficha; el profesorado solo la suya; el alumnado y las cuentas invitadas no. Exige confirmación y el nombre exacto.
+
+**Contexto**
+
+- **`quien_soy`** — Quién soy. Cualquier cuenta autenticada.
+- **`obtener_enlace`** — Obtener enlace. Cualquier miembro con acceso al proyecto.
+- **`abrir_app`** — Abrir app. Cualquier miembro con acceso al proyecto; la app debe estar instalada.
+- **`obtener_resumen_proyecto`** — Resumen del proyecto. Cualquier miembro con acceso al proyecto.
+
+**Invitaciones**
+
+- **`listar_invitaciones_pendientes`** — Invitaciones pendientes. La propia cuenta autenticada.
+- **`aceptar_invitacion`** — Aceptar invitación. La propia cuenta autenticada; la invitación debe seguir pendiente y ser para ella.
+
+**Aula Store**
+
+- **`listar_apps`** — Listar apps. Cualquier cuenta autenticada; con proyectoId, además debe tener acceso al proyecto.
+- **`obtener_app`** — Obtener app. Cualquier cuenta autenticada.
+- **`instalar_app`** — Instalar app. Solo el propietario o un administrador del sitio.
+- **`desinstalar_app`** — Desinstalar app. Solo el propietario o un administrador del sitio. Exige confirmación; los documentos guardados se conservan.
+
+**Ventanas**
+
+- **`listar_ventanas`** — Listar ventanas. La propia cuenta y sus pestañas conectadas; requiere acceso al proyecto.
+- **`cerrar_app`** — Cerrar app. La propia cuenta y sus pestañas conectadas; requiere acceso al proyecto y la app instalada.
+- **`minimizar_app`** — Minimizar app. La propia cuenta y sus pestañas conectadas; requiere acceso al proyecto y la app instalada.
+- **`restaurar_app`** — Restaurar app. La propia cuenta y sus pestañas conectadas; requiere acceso al proyecto y la app instalada.
+- **`ampliar_app`** — Ampliar app. La propia cuenta y sus pestañas conectadas; requiere acceso al proyecto y la app instalada.
+
+**Administración**
+
+- **`listar_administradores`** — Listar administradores. Solo el propietario o un administrador de la instancia.
+- **`crear_administrador`** — Crear administrador. Solo el propietario o un administrador de la instancia.
+- **`actualizar_administrador`** — Actualizar administrador. Solo el propietario o un administrador de la instancia; cambiar el correo retira el acceso hasta que se acepte.
+- **`eliminar_administrador`** — Eliminar administrador. Solo el propietario o un administrador de la instancia; exige confirmación y el nombre o correo exacto.
+- **`listar_tokens_mcp`** — Listar tokens MCP. La propia cuenta autenticada; nunca expone el secreto, el hash ni la sal.
+- **`revocar_token_mcp`** — Revocar token MCP. La propia cuenta autenticada; exige confirmación y el token debe estar vigente. Si se revoca el token en uso, la siguiente llamada falla.
+- **`listar_actividad_mcp`** — Listar actividad MCP. La cuenta ve solo sus filas; el propietario o un administrador ven toda la instancia. Solo metadatos, sin argumentos ni contenidos.
+
+<!-- fin catálogo MCP -->
+
+Las bajas destructivas piden confirmación; las fichas y los proyectos, además, el nombre exacto. Cada llamada queda en `mcp_audit_log`; el plugin limita a 120 peticiones por minuto y 30 de escritura por cuenta, y el token personal a 120 por minuto.
+
+### Token personal (vía avanzada)
+
+El servidor **MCP remoto y alojado en el propio Site** sigue disponible en `/api/mcp` (transporte HTTP Streamable web-standard, sin sesiones) para los clientes que no usan el plugin. La producción es remota: no se entrega ningún proceso local como producto; lo local es solo para probar.
 
 - **Autenticación:** cada cuenta crea su propio token personal (`ak_mcp_…`) en **Ajustes > Cuenta > Tokens del MCP**. El secreto se muestra una sola vez al crearlo y solo se guarda su hash (SHA-256 con sal) en la tabla `mcp_tokens`. Sin token o con un token revocado, el endpoint responde `401`. Cada token tiene un límite de 120 peticiones por minuto.
 - **Permisos:** el token actúa con los permisos de tu rol en el proyecto: las cuentas invitadas solo pueden consultar, y un alumno solo puede crear o editar sus propias tareas (o reclamar una sin responsable), igual que en la web.
-- **Herramientas:** `listar_proyectos`, `listar_tareas` (con filtros y paginación), `obtener_tarea`, `listar_alumnos`, `listar_profesores`, `crear_tarea`, `actualizar_tarea` y `eliminar_tarea`. El contrato completo está en `lib/server/mcp/tools.ts`; las respuestas incluyen enlaces al tablero y a la sección de Calendario.
+- **Herramientas:** la lista y sus permisos son la sección generada de arriba, idéntica en `/mcp` y `/api/mcp`; el contrato está en `lib/domain/mcp-catalogo.ts` y los manejadores en `lib/server/mcp/dominios/`. Las respuestas incluyen enlaces al tablero y a la sección de Calendario.
 
 Instalación en un cliente MCP (sustituye la URL por la de tu Site y tu token):
 
@@ -81,6 +175,32 @@ Instalación en un cliente MCP (sustituye la URL por la de tu Site y tu token):
 Los clientes modernos con soporte HTTP remoto (Cursor, VS Code con extensión MCP, Claude en web u otros) se conectan directamente a esa URL. Los clientes clásicos que solo hablan stdio (p. ej. Claude Desktop) necesitan un puente local que reenvíe la URL remota junto con la cabecera `Authorization`: hay puentes de terceros como `mcp-remote`, pero no se publica ninguno con este proyecto.
 
 La documentación de instalación también está en la vista de usuario en `/documentacion` (sección «Servidor MCP») y junto a los tokens en Ajustes > Cuenta. Revoca el token en el mismo panel en cuanto dejes de usarlo.
+
+## Autorización OAuth experimental (clientes MCP externos)
+
+Esta vía es independiente del plugin nativo y sigue en revisión de seguridad; no debe considerarse lista para producción.
+
+Además de los tokens personales, el Site es el **servidor de autorización OAuth 2.1** para los clientes que no aceptan pegar un token a mano (clientes MCP remotos como Cursor, Claude o ChatGPT, y en su momento los GPT con Actions). Vive en el propio Site, con su base de datos D1: ni proveedores externos ni JWT. Las cuentas son las de siempre (la sesión SIWC del navegador); únicamente la página de consentimiento la usa, y mantiene la guarda de mismo origen.
+
+- **Descubrimiento:** `/.well-known/oauth-authorization-server` (el MCP indica el suyo con `/.well-known/oauth-protected-resource/mcp` en el `401`, vía `resource_metadata`). El token está ligado a su recurso (`https://TU-SITE/api/mcp`), que se comprueba en cada llamada.
+- **Registro dinámico de clientes (RFC 7591):** `POST /oauth/register` con `redirect_uris`, `scope` y `client_name`. Devuelve `client_id` y `client_secret` una sola vez; el secreto solo se guarda hasheado. La página de consentimiento se abre en `GET /oauth/authorize` (con `response_type=code`, `code_challenge` S256 obligatorio y `resource`); `POST /oauth/authorize/consent` aprueba o deniega.
+- **Token y revocación:** `POST /oauth/token` (`authorization_code` con PKCE S256 de un solo uso, y `refresh_token` con rotación) y `POST /oauth/revoke` (RFC 7009). Los tokens de acceso duran 1 hora; el de refresco, 30 días, y rota en cada uso. Como el endpoint es `Authorization`-only (sin cookie), queda fuera de la guarda de mismo origen, igual que `/api/mcp`.
+- **Alcances:** `mcp:read` permite las herramientas de lectura y `mcp:write` las de escritura, con las reglas del rol en el proyecto; para ambas se solicitan los dos. Una herramienta llamada sin su alcance devuelve `403` con `error="insufficient_scope"` y el alcance exigido. Los tokens personales (`ak_mcp_…`) siguen funcionando con la cuenta completa: **la OAuth es opcional por cliente**.
+
+Valores de conexión (sustituye `TU-SITE` por el origen publicado de tu instancia):
+
+```json
+{
+  "authorization_url": "https://TU-SITE/oauth/authorize",
+  "token_url": "https://TU-SITE/oauth/token",
+  "revocation_url": "https://TU-SITE/oauth/revoke",
+  "resource": "https://TU-SITE/api/mcp",
+  "scopes": "mcp:read mcp:write",
+  "discovery": "https://TU-SITE/.well-known/oauth-authorization-server"
+}
+```
+
+Para **ChatGPT Actions**, la entrada «GPT con Actions» del backlog queda **cerrada**: para ChatGPT y Codex, la vía es el plugin de Sites publicado (ver más arriba), que no necesita contrato OpenAPI ni compatibilidad con el editor de Actions.
 
 ## Desarrollo
 
@@ -222,6 +342,21 @@ Para un cambio nuevo:
 La aplicación usa `administrators_unified` para los administradores y `instance_owner` para la identidad del propietario. `deleted_students` y `deleted_teachers` almacenan el historial de fichas eliminadas y su purga está en `lib/server/deleted-profiles.ts`.
 
 La migración `0023` añade `instance_apps`, que guarda qué aplicaciones nativas están instaladas en la instancia (no por proyecto). Las aplicaciones comienzan desinstaladas y solo el propietario o un administrador las gestionan desde Aula Store. La `0026` añade `app_documents`, con un estado JSON por proyecto y app, y la `0027` protege sus relaciones con los proyectos. La `0029` retira las tablas históricas de documentos y la `0030` las antiguas tablas de administradores, aplicaciones por proyecto y estado de transición.
+
+## Almacenamiento de archivos (R2)
+
+La aplicación no usa un VPS ni un volumen: D1 guarda los metadatos de `uploads` y R2 guarda los bytes con el binding `BUCKET`. `.openai/hosting.json` declara `"r2": "BUCKET"`; Sites inyecta ese binding en el Worker y `vite.config.ts` lo simula en local. El código nunca escribe archivos en el filesystem del servidor.
+
+El propietario o un administrador puede comprobar el estado en **Ajustes > Administradores > Almacenamiento de archivos** o con `GET /api/storage/status`. El diagnóstico devuelve si D1 existe, si el binding `BUCKET` está presente, si el bucket responde a una lectura mínima y cuántas filas hay en `uploads`; no lista objetos ni expone secretos.
+
+Si falta R2, `/api/uploads` responde 503 y `/api/files/[id]` responde 503 cuando el archivo tiene metadatos. Un identificador inexistente sigue siendo 404. Para publicar una instancia con archivos:
+
+1. Confirma que el Site tiene R2 habilitado y que el binding se llama `BUCKET`.
+2. Sube una imagen desde una tarea y recarga el tablero; la tarjeta debe mantener la imagen.
+3. Revisa el diagnóstico de Ajustes si aparece «Imagen no disponible».
+4. Si vienes de un volumen antiguo, conserva la copia hasta migrar los objetos a R2 con la misma `storage_key`; sin copia, esos bytes no se pueden recuperar y hay que volver a subirlos.
+
+Las imágenes de tarea se muestran completas: todavía no se genera una miniatura derivada. La persistencia base debe funcionar antes de añadir optimización de miniaturas.
 
 ## Diagnostic Commands
 

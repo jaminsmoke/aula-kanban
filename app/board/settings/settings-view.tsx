@@ -6,10 +6,12 @@ import WorkspaceLayout, { type WorkspaceItem } from "../layout/workspace-layout"
 import type { Project } from "../shared/model";
 import SettingsAccount from "./settings-account";
 import SettingsAdmins from "./settings-admins";
+import SettingsStorage from "./settings-storage";
 import "./settings-view.css";
 
-/** Secciones disponibles dentro de Ajustes. */
-export type SettingsSection = "cuenta" | "administradores";
+/** Secciones disponibles dentro de Ajustes (tipo canónico en `lib/domain/board-url`). */
+export type { SettingsSection } from "../../../lib/domain/board-url";
+import type { SettingsSection } from "../../../lib/domain/board-url";
 
 /**
  * Vista de ajustes generales con sidebar y secciones.
@@ -42,7 +44,10 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, activ
         {active === "cuenta" ? (
           <SettingsAccount user={user} projectsLoaded={projectsLoaded} owner={owner} admin={admin} activeProject={activeProject} />
         ) : (
-          <SettingsAdmins onProjectsChanged={onProjectsChanged} />
+          <>
+            <SettingsAdmins onProjectsChanged={onProjectsChanged} />
+            <SettingsStorage />
+          </>
         )}
       </div>
     </WorkspaceLayout>

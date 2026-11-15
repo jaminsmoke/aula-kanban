@@ -1,0 +1,126 @@
+/**
+ * Ejemplos de argumentos y reglas de rol para las descripciones públicas del
+ * catálogo MCP. Se mantienen aparte del catálogo para no duplicar los textos
+ * base y para que la ayuda pueda mostrar el mismo ejemplo que el agente.
+ */
+
+/** Ejemplo de argumentos por herramienta, como JSON válido. */
+export const MCP_EJEMPLOS: Record<string, string> = {
+  listar_proyectos: '{"pagina": 1, "porPagina": 20}',
+  crear_proyecto: '{"nombre": "Taller de escritura"}',
+  eliminar_proyecto: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "confirmar": true, "confirmarNombre": "Taller de escritura"}',
+  subir_archivo: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "finalidad": "document", "nombre": "nota.txt", "tipoMime": "text/plain", "contenidoBase64": "aG9sYQ=="}',
+  obtener_archivo: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "archivoId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"}',
+  listar_tareas: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "estado": "pending", "orden": "vencimiento"}',
+  obtener_tarea: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "tareaId": "44444444-4444-4444-8444-444444444444"}',
+  crear_tarea: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "titulo": "Leer el capítulo 3", "prioridad": "normal", "estado": "pending", "vencimiento": "2026-11-20", "responsables": [{"kind": "student", "profileId": "S-01"}]}',
+  actualizar_tarea: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "tareaId": "44444444-4444-4444-8444-444444444444", "revision": 3, "prioridad": "high"}',
+  mover_tarea: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "tareaId": "44444444-4444-4444-8444-444444444444", "revision": 3, "estado": "active"}',
+  asignar_tarea: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "tareaId": "44444444-4444-4444-8444-444444444444", "revision": 3, "responsables": [{"kind": "student", "profileId": "S-01"}]}',
+  desasignar_tarea: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "tareaId": "44444444-4444-4444-8444-444444444444", "revision": 3, "responsables": [{"kind": "student", "profileId": "S-01"}]}',
+  reprogramar_tarea: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "tareaId": "44444444-4444-4444-8444-444444444444", "revision": 3, "vencimiento": "2026-11-27"}',
+  listar_calendario: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "desde": "2026-11-16", "hasta": "2026-11-22"}',
+  eliminar_tarea: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "tareaId": "44444444-4444-4444-8444-444444444444", "revision": 3, "confirmar": true}',
+  listar_alumnos: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "pagina": 1, "porPagina": 50}',
+  listar_profesores: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "pagina": 1, "porPagina": 50}',
+  obtener_alumno: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "seccion": "S-01"}',
+  obtener_profesor: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "profesorId": "P-01"}',
+  listar_miembros: '{"proyectoId": "11111111-1111-4111-8111-111111111111"}',
+  invitar_miembro: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "correo": "ana@ejemplo.com", "rol": "student", "seccion": "S-02"}',
+  retirar_miembro: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "miembroId": "66666666-6666-4666-8666-666666666666", "confirmar": true}',
+  crear_alumno: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "nombre": "Ana Pérez", "correoCuenta": "ana@ejemplo.com"}',
+  crear_profesor: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "nombre": "Luis Gómez", "correoCuenta": "luis@ejemplo.com"}',
+  actualizar_alumno: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "seccion": "S-01", "revision": 2, "nombreVisible": "Ana P."}',
+  actualizar_profesor: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "profesorId": "P-01", "revision": 1, "rol": "Tutoría"}',
+  eliminar_alumno: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "seccion": "S-01", "revision": 2, "confirmar": true, "nombre": "Ana Pérez"}',
+  eliminar_profesor: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "profesorId": "P-01", "revision": 1, "confirmar": true, "nombre": "Luis Gómez"}',
+  quien_soy: '{}',
+  obtener_enlace: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "vista": "clase", "seccion": "calendario"}',
+  abrir_app: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "appId": "excalidraw"}',
+  obtener_resumen_proyecto: '{"proyectoId": "11111111-1111-4111-8111-111111111111"}',
+  listar_invitaciones_pendientes: '{}',
+  aceptar_invitacion: '{"id": "77777777-7777-4777-8777-777777777777", "ambito": "project"}',
+  listar_apps: '{"proyectoId": "11111111-1111-4111-8111-111111111111"}',
+  obtener_app: '{"appId": "excalidraw"}',
+  instalar_app: '{"appId": "excalidraw"}',
+  desinstalar_app: '{"appId": "excalidraw", "confirmar": true}',
+  listar_ventanas: '{"proyectoId": "11111111-1111-4111-8111-111111111111"}',
+  cerrar_app: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "appId": "excalidraw"}',
+  minimizar_app: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "appId": "excalidraw"}',
+  restaurar_app: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "appId": "excalidraw"}',
+  ampliar_app: '{"proyectoId": "11111111-1111-4111-8111-111111111111", "appId": "excalidraw"}',
+  listar_administradores: '{}',
+  crear_administrador: '{"nombre": "Ada Lovelace", "correo": "ada@ejemplo.com"}',
+  actualizar_administrador: '{"administradorId": "99999999-9999-4999-8999-999999999999", "revision": 1, "correo": "ada@ejemplo.com"}',
+  eliminar_administrador: '{"administradorId": "99999999-9999-4999-8999-999999999999", "revision": 1, "confirmar": true, "confirmarNombre": "Ada Lovelace"}',
+  listar_tokens_mcp: '{}',
+  revocar_token_mcp: '{"tokenId": "88888888-8888-4888-8888-888888888888", "confirmar": true}',
+  listar_actividad_mcp: '{"via": "plugin", "desde": "2026-11-01", "hasta": "2026-11-30", "pagina": 1, "porPagina": 50}',
+};
+
+/** Regla de rol o permiso que aplica a cada herramienta. */
+export const MCP_ROLES: Record<string, string> = {
+  listar_proyectos: "La cuenta ve solo los proyectos en los que participa o administra.",
+  crear_proyecto: "Solo el propietario o un administrador del sitio.",
+  eliminar_proyecto: "Solo el propietario o un administrador del sitio; exige confirmación y el nombre exacto.",
+  subir_archivo: "Cualquier miembro con acceso puede subir; las cuentas invitadas no escriben. Respeta los tipos y límites de la web (5 MB para imágenes y 10 MB para documentos).",
+  obtener_archivo: "Cualquier miembro con acceso; devuelve solo metadatos y enlace, nunca el binario.",
+  listar_tareas: "Cualquier miembro con acceso al proyecto; sin proyectoId, solo los proyectos visibles.",
+  obtener_tarea: "Cualquier miembro con acceso al proyecto.",
+  crear_tarea: "Profesorado, administración y propietario; el alumnado solo puede asignársela a sí mismo o dejarla sin asignar; las cuentas invitadas no escriben.",
+  actualizar_tarea: "Quien puede editar tareas: profesorado, administración y propietario; el alumnado solo las suyas; las cuentas invitadas no escriben.",
+  mover_tarea: "Quien puede editar tareas: profesorado, administración y propietario; el alumnado solo las suyas; las cuentas invitadas no escriben.",
+  asignar_tarea: "Profesorado, administración y propietario; el alumnado solo puede asignarse a sí mismo; las cuentas invitadas no escriben.",
+  desasignar_tarea: "Quien puede editar la tarea; el alumnado solo puede quitarse a sí mismo; las cuentas invitadas no escriben.",
+  reprogramar_tarea: "Quien puede editar tareas: profesorado, administración y propietario; el alumnado solo las suyas; las cuentas invitadas no escriben.",
+  listar_calendario: "Cualquier miembro con acceso al proyecto.",
+  eliminar_tarea: "Quien puede editar la tarea; el alumnado solo las suyas; las cuentas invitadas no escriben. Exige confirmación.",
+  listar_alumnos: "Cualquier miembro con acceso al proyecto; el correo de la cuenta solo aparece si la web también lo mostraría.",
+  listar_profesores: "Cualquier miembro con acceso al proyecto; el correo de la cuenta solo aparece si la web también lo mostraría.",
+  obtener_alumno: "Cualquier miembro con acceso al proyecto; el correo de la cuenta solo aparece si la web también lo mostraría.",
+  obtener_profesor: "Cualquier miembro con acceso al proyecto; el correo de la cuenta solo aparece si la web también lo mostraría.",
+  listar_miembros: "Profesorado, administración y propietario; el alumnado y las cuentas invitadas reciben 403. El profesorado solo ve alumnado y su propia ficha.",
+  invitar_miembro: "El propietario y la administración invitan cualquier rol; el profesorado solo alumnado; cada persona puede invitarse a sí misma. No envía correo.",
+  retirar_miembro: "El propietario y la administración retiran cualquier rol; el profesorado solo alumnado; cada persona puede retirarse a sí misma. Exige confirmación.",
+  crear_alumno: "Profesorado, administración y propietario; el alumnado y las cuentas invitadas no crean fichas.",
+  crear_profesor: "Solo administración y propietario.",
+  actualizar_alumno: "Profesorado, administración y propietario editan cualquier ficha; el alumnado solo la suya; las cuentas invitadas no editan.",
+  actualizar_profesor: "Administración y propietario editan cualquier ficha; el profesorado solo la suya; el alumnado y las cuentas invitadas no editan.",
+  eliminar_alumno: "Profesorado, administración y propietario; el alumnado solo la suya; las cuentas invitadas no. Exige confirmación y el nombre exacto.",
+  eliminar_profesor: "Administración y propietario cualquier ficha; el profesorado solo la suya; el alumnado y las cuentas invitadas no. Exige confirmación y el nombre exacto.",
+  quien_soy: "Cualquier cuenta autenticada.",
+  obtener_enlace: "Cualquier miembro con acceso al proyecto.",
+  abrir_app: "Cualquier miembro con acceso al proyecto; la app debe estar instalada.",
+  obtener_resumen_proyecto: "Cualquier miembro con acceso al proyecto.",
+  listar_invitaciones_pendientes: "La propia cuenta autenticada.",
+  aceptar_invitacion: "La propia cuenta autenticada; la invitación debe seguir pendiente y ser para ella.",
+  listar_apps: "Cualquier cuenta autenticada; con proyectoId, además debe tener acceso al proyecto.",
+  obtener_app: "Cualquier cuenta autenticada.",
+  instalar_app: "Solo el propietario o un administrador del sitio.",
+  desinstalar_app: "Solo el propietario o un administrador del sitio. Exige confirmación; los documentos guardados se conservan.",
+  listar_ventanas: "La propia cuenta y sus pestañas conectadas; requiere acceso al proyecto.",
+  cerrar_app: "La propia cuenta y sus pestañas conectadas; requiere acceso al proyecto y la app instalada.",
+  minimizar_app: "La propia cuenta y sus pestañas conectadas; requiere acceso al proyecto y la app instalada.",
+  restaurar_app: "La propia cuenta y sus pestañas conectadas; requiere acceso al proyecto y la app instalada.",
+  ampliar_app: "La propia cuenta y sus pestañas conectadas; requiere acceso al proyecto y la app instalada.",
+  listar_administradores: "Solo el propietario o un administrador de la instancia.",
+  crear_administrador: "Solo el propietario o un administrador de la instancia.",
+  actualizar_administrador: "Solo el propietario o un administrador de la instancia; cambiar el correo retira el acceso hasta que se acepte.",
+  eliminar_administrador: "Solo el propietario o un administrador de la instancia; exige confirmación y el nombre o correo exacto.",
+  listar_tokens_mcp: "La propia cuenta autenticada; nunca expone el secreto, el hash ni la sal.",
+  revocar_token_mcp: "La propia cuenta autenticada; exige confirmación y el token debe estar vigente. Si se revoca el token en uso, la siguiente llamada falla.",
+  listar_actividad_mcp: "La cuenta ve solo sus filas; el propietario o un administrador ven toda la instancia. Solo metadatos, sin argumentos ni contenidos.",
+};
+
+/**
+ * Compone la descripción publicada con el ejemplo y la regla de rol.
+ * @param nombre - Nombre de la herramienta.
+ * @param descripcion - Descripción base del catálogo.
+ * @returns La descripción completa para `tools/list` y el SDK.
+ */
+export function descripcionConEjemplo(nombre: string, descripcion: string): string {
+  const ejemplo = MCP_EJEMPLOS[nombre];
+  const rol = MCP_ROLES[nombre];
+  if (!ejemplo || !rol) throw new Error(`Faltan ejemplo o rol para la herramienta ${nombre}.`);
+  return `${descripcion} Ejemplo de argumentos: \`${ejemplo}\`. Permisos: ${rol}`;
+}

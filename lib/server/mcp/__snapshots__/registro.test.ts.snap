@@ -1,0 +1,3219 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, esquemas, anotaciones y alcance) 1`] = `
+[
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "pagina": {
+          "minimum": 1,
+          "type": "integer",
+        },
+        "porPagina": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer",
+        },
+      },
+      "type": "object",
+    },
+    "name": "listar_proyectos",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "pagina": {
+          "type": "number",
+        },
+        "porPagina": {
+          "type": "number",
+        },
+        "proyectos": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "total": {
+          "type": "number",
+        },
+      },
+      "required": [
+        "proyectos",
+        "total",
+        "pagina",
+        "porPagina",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Listar proyectos",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "nombre": {
+          "description": "Nombre del proyecto",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+      },
+      "required": [
+        "nombre",
+      ],
+      "type": "object",
+    },
+    "name": "crear_proyecto",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "proyecto": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "proyecto",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Crear proyecto",
+  },
+  {
+    "annotations": {
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "confirmar": {
+          "description": "Llama con true para eliminar tras ver el aviso",
+          "type": "boolean",
+        },
+        "confirmarNombre": {
+          "description": "Nombre exacto del proyecto para confirmar",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto que se elimina",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+      ],
+      "type": "object",
+    },
+    "name": "eliminar_proyecto",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "deleted": {
+          "type": "boolean",
+        },
+        "herramienta": {
+          "type": "string",
+        },
+        "id": {
+          "type": "string",
+        },
+        "mensaje": {
+          "type": "string",
+        },
+        "necesitaConfirmacion": {
+          "type": "boolean",
+        },
+        "nombre": {
+          "type": "string",
+        },
+        "proyectoId": {
+          "type": "string",
+        },
+        "resumen": {
+          "additionalProperties": {
+            "type": "number",
+          },
+          "type": "object",
+        },
+      },
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Eliminar proyecto",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "contenidoBase64": {
+          "description": "Contenido del archivo codificado en base64",
+          "maxLength": 13981018,
+          "minLength": 1,
+          "type": "string",
+        },
+        "finalidad": {
+          "description": "Finalidad de la subida: task-image, board-asset o document",
+          "enum": [
+            "task-image",
+            "board-asset",
+            "document",
+          ],
+          "type": "string",
+        },
+        "nombre": {
+          "description": "Nombre del archivo, con su extensión",
+          "maxLength": 255,
+          "minLength": 1,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "tipoMime": {
+          "description": "Tipo MIME real del archivo",
+          "maxLength": 100,
+          "minLength": 1,
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "finalidad",
+        "nombre",
+        "tipoMime",
+        "contenidoBase64",
+      ],
+      "type": "object",
+    },
+    "name": "subir_archivo",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "archivo": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "archivo",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Subir archivo",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "archivoId": {
+          "description": "Id del archivo subido",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "archivoId",
+      ],
+      "type": "object",
+    },
+    "name": "obtener_archivo",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "archivo": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "archivo",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Obtener archivo",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "alumno": {
+          "description": "Filtra por sección de alumnado asignada",
+          "maxLength": 80,
+          "type": "string",
+        },
+        "estado": {
+          "description": "Estado de la tarea",
+          "enum": [
+            "pending",
+            "active",
+            "review",
+            "done",
+          ],
+          "type": "string",
+        },
+        "orden": {
+          "description": "Orden del listado",
+          "enum": [
+            "creacion",
+            "vencimiento",
+            "prioridad",
+          ],
+          "type": "string",
+        },
+        "pagina": {
+          "minimum": 1,
+          "type": "integer",
+        },
+        "porPagina": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer",
+        },
+        "prioridad": {
+          "description": "Prioridad de la tarea",
+          "enum": [
+            "low",
+            "normal",
+            "high",
+          ],
+          "type": "string",
+        },
+        "profesor": {
+          "description": "Filtra por profesor asignado",
+          "maxLength": 80,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "sinFecha": {
+          "description": "Solo tareas sin fecha de vencimiento",
+          "type": "boolean",
+        },
+        "texto": {
+          "description": "Busca en título y descripción",
+          "maxLength": 120,
+          "type": "string",
+        },
+        "vencidas": {
+          "description": "Solo tareas vencidas y no completadas",
+          "type": "boolean",
+        },
+        "vencimientoDesde": {
+          "description": "Vence a partir de esta fecha (YYYY-MM-DD)",
+          "format": "date",
+          "type": "string",
+        },
+        "vencimientoHasta": {
+          "description": "Vence hasta esta fecha (YYYY-MM-DD)",
+          "format": "date",
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "name": "listar_tareas",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "pagina": {
+          "type": "number",
+        },
+        "porPagina": {
+          "type": "number",
+        },
+        "tareas": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "total": {
+          "type": "number",
+        },
+      },
+      "required": [
+        "tareas",
+        "total",
+        "pagina",
+        "porPagina",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Listar tareas",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "tareaId": {
+          "description": "Id de la tarea",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "tareaId",
+      ],
+      "type": "object",
+    },
+    "name": "obtener_tarea",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "tarea": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "tarea",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Obtener tarea",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "descripcion": {
+          "maxLength": 2000,
+          "type": "string",
+        },
+        "estado": {
+          "enum": [
+            "pending",
+            "active",
+            "review",
+            "done",
+          ],
+          "type": "string",
+        },
+        "imagenUrl": {
+          "description": "URL de imagen http(s) o ruta \`/api/files/<id>\`",
+          "maxLength": 2048,
+          "type": "string",
+        },
+        "prioridad": {
+          "enum": [
+            "low",
+            "normal",
+            "high",
+          ],
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "responsable": {
+          "description": "Texto libre de responsable (mismo campo que la web)",
+          "maxLength": 5000,
+          "type": "string",
+        },
+        "responsables": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "description": "Tipo de perfil responsable",
+                "enum": [
+                  "student",
+                  "teacher",
+                ],
+                "type": "string",
+              },
+              "profileId": {
+                "description": "Id del perfil (sección de alumno o de profesor)",
+                "maxLength": 80,
+                "minLength": 1,
+                "type": "string",
+              },
+            },
+            "required": [
+              "kind",
+              "profileId",
+            ],
+            "type": "object",
+          },
+          "maxItems": 50,
+          "type": "array",
+        },
+        "titulo": {
+          "maxLength": 120,
+          "minLength": 1,
+          "type": "string",
+        },
+        "vencimiento": {
+          "anyOf": [
+            {
+              "const": "",
+              "type": "string",
+            },
+            {
+              "format": "date",
+              "type": "string",
+            },
+          ],
+          "description": "Fecha de vencimiento (YYYY-MM-DD)",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "titulo",
+        "prioridad",
+        "estado",
+      ],
+      "type": "object",
+    },
+    "name": "crear_tarea",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "tarea": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "tarea",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Crear tarea",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "descripcion": {
+          "maxLength": 2000,
+          "type": "string",
+        },
+        "estado": {
+          "enum": [
+            "pending",
+            "active",
+            "review",
+            "done",
+          ],
+          "type": "string",
+        },
+        "imagenUrl": {
+          "maxLength": 2048,
+          "type": "string",
+        },
+        "prioridad": {
+          "enum": [
+            "low",
+            "normal",
+            "high",
+          ],
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "responsable": {
+          "maxLength": 5000,
+          "type": "string",
+        },
+        "responsables": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "description": "Tipo de perfil responsable",
+                "enum": [
+                  "student",
+                  "teacher",
+                ],
+                "type": "string",
+              },
+              "profileId": {
+                "description": "Id del perfil (sección de alumno o de profesor)",
+                "maxLength": 80,
+                "minLength": 1,
+                "type": "string",
+              },
+            },
+            "required": [
+              "kind",
+              "profileId",
+            ],
+            "type": "object",
+          },
+          "maxItems": 50,
+          "type": "array",
+        },
+        "revision": {
+          "description": "Revisión conocida de la tarea; si se omite se usa la actual",
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+        "tareaId": {
+          "description": "Id de la tarea",
+          "format": "uuid",
+          "type": "string",
+        },
+        "titulo": {
+          "maxLength": 120,
+          "minLength": 1,
+          "type": "string",
+        },
+        "vencimiento": {
+          "anyOf": [
+            {
+              "const": "",
+              "type": "string",
+            },
+            {
+              "format": "date",
+              "type": "string",
+            },
+          ],
+        },
+      },
+      "required": [
+        "proyectoId",
+        "tareaId",
+      ],
+      "type": "object",
+    },
+    "name": "actualizar_tarea",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "tarea": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "tarea",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Actualizar tarea",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "estado": {
+          "description": "Nuevo estado de la tarea",
+          "enum": [
+            "pending",
+            "active",
+            "review",
+            "done",
+          ],
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "revision": {
+          "description": "Revisión conocida de la tarea; si se omite se usa la actual",
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+        "tareaId": {
+          "description": "Id de la tarea",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "tareaId",
+        "estado",
+      ],
+      "type": "object",
+    },
+    "name": "mover_tarea",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "tarea": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "tarea",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Mover tarea",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "responsables": {
+          "description": "Responsables que se añaden",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "description": "Tipo de perfil responsable",
+                "enum": [
+                  "student",
+                  "teacher",
+                ],
+                "type": "string",
+              },
+              "profileId": {
+                "description": "Id del perfil (sección de alumno o de profesor)",
+                "maxLength": 80,
+                "minLength": 1,
+                "type": "string",
+              },
+            },
+            "required": [
+              "kind",
+              "profileId",
+            ],
+            "type": "object",
+          },
+          "maxItems": 50,
+          "type": "array",
+        },
+        "revision": {
+          "description": "Revisión conocida de la tarea; si se omite se usa la actual",
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+        "tareaId": {
+          "description": "Id de la tarea",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "tareaId",
+        "responsables",
+      ],
+      "type": "object",
+    },
+    "name": "asignar_tarea",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "tarea": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "tarea",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Asignar tarea",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "responsables": {
+          "description": "Responsables que se quitan",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "description": "Tipo de perfil responsable",
+                "enum": [
+                  "student",
+                  "teacher",
+                ],
+                "type": "string",
+              },
+              "profileId": {
+                "description": "Id del perfil (sección de alumno o de profesor)",
+                "maxLength": 80,
+                "minLength": 1,
+                "type": "string",
+              },
+            },
+            "required": [
+              "kind",
+              "profileId",
+            ],
+            "type": "object",
+          },
+          "maxItems": 50,
+          "type": "array",
+        },
+        "revision": {
+          "description": "Revisión conocida de la tarea; si se omite se usa la actual",
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+        "tareaId": {
+          "description": "Id de la tarea",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "tareaId",
+        "responsables",
+      ],
+      "type": "object",
+    },
+    "name": "desasignar_tarea",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "tarea": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "tarea",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Desasignar tarea",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "revision": {
+          "description": "Revisión conocida de la tarea; si se omite se usa la actual",
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+        "tareaId": {
+          "description": "Id de la tarea",
+          "format": "uuid",
+          "type": "string",
+        },
+        "vencimiento": {
+          "anyOf": [
+            {
+              "const": "",
+              "type": "string",
+            },
+            {
+              "format": "date",
+              "type": "string",
+            },
+          ],
+          "description": "Nueva fecha de vencimiento (YYYY-MM-DD) o un valor vacío para quitarla",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "tareaId",
+        "vencimiento",
+      ],
+      "type": "object",
+    },
+    "name": "reprogramar_tarea",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "tarea": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "tarea",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Reprogramar tarea",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "desde": {
+          "description": "Inicio del rango (YYYY-MM-DD)",
+          "format": "date",
+          "type": "string",
+        },
+        "hasta": {
+          "description": "Fin del rango (YYYY-MM-DD, máximo 92 días desde \`desde\`)",
+          "format": "date",
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "desde",
+        "hasta",
+      ],
+      "type": "object",
+    },
+    "name": "listar_calendario",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "desde": {
+          "type": "string",
+        },
+        "dias": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "enlace": {
+          "type": "string",
+        },
+        "hasta": {
+          "type": "string",
+        },
+        "proyectoId": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "desde",
+        "hasta",
+        "dias",
+        "enlace",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Calendario del proyecto",
+  },
+  {
+    "annotations": {
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "confirmar": {
+          "description": "Llama con true para eliminar tras ver el aviso",
+          "type": "boolean",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "revision": {
+          "description": "Revisión conocida de la tarea; si se omite se usa la actual",
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+        "tareaId": {
+          "description": "Id de la tarea",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "tareaId",
+      ],
+      "type": "object",
+    },
+    "name": "eliminar_tarea",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "eliminada": {
+          "type": "string",
+        },
+        "herramienta": {
+          "type": "string",
+        },
+        "mensaje": {
+          "type": "string",
+        },
+        "necesitaConfirmacion": {
+          "type": "boolean",
+        },
+        "proyectoId": {
+          "type": "string",
+        },
+        "revision": {
+          "type": "number",
+        },
+        "tareaId": {
+          "type": "string",
+        },
+        "titulo": {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Eliminar tarea",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "pagina": {
+          "minimum": 1,
+          "type": "integer",
+        },
+        "porPagina": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+      ],
+      "type": "object",
+    },
+    "name": "listar_alumnos",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "alumnos": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "pagina": {
+          "type": "number",
+        },
+        "porPagina": {
+          "type": "number",
+        },
+        "total": {
+          "type": "number",
+        },
+      },
+      "required": [
+        "alumnos",
+        "total",
+        "pagina",
+        "porPagina",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Listar alumnado",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "pagina": {
+          "minimum": 1,
+          "type": "integer",
+        },
+        "porPagina": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+      ],
+      "type": "object",
+    },
+    "name": "listar_profesores",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "pagina": {
+          "type": "number",
+        },
+        "porPagina": {
+          "type": "number",
+        },
+        "profesores": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "total": {
+          "type": "number",
+        },
+      },
+      "required": [
+        "profesores",
+        "total",
+        "pagina",
+        "porPagina",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Listar profesorado",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "seccion": {
+          "description": "Sección de la ficha de alumnado",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "seccion",
+      ],
+      "type": "object",
+    },
+    "name": "obtener_alumno",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "alumno": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "alumno",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Obtener alumnado",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "profesorId": {
+          "description": "Id de la ficha de profesorado",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "profesorId",
+      ],
+      "type": "object",
+    },
+    "name": "obtener_profesor",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "profesor": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "profesor",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Obtener profesorado",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+      ],
+      "type": "object",
+    },
+    "name": "listar_miembros",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "miembros": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "required": [
+        "miembros",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Listar miembros",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "correo": {
+          "description": "Correo de la cuenta que se invita",
+          "format": "email",
+          "maxLength": 254,
+          "type": "string",
+        },
+        "profesorId": {
+          "description": "Id de la ficha de profesorado (solo rol teacher)",
+          "format": "uuid",
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "rol": {
+          "description": "Rol dentro del proyecto",
+          "enum": [
+            "teacher",
+            "student",
+            "guest",
+          ],
+          "type": "string",
+        },
+        "seccion": {
+          "description": "Sección de la ficha de alumnado (solo rol student)",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "correo",
+        "rol",
+      ],
+      "type": "object",
+    },
+    "name": "invitar_miembro",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "creada": {
+          "type": "boolean",
+        },
+        "miembro": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "miembro",
+        "creada",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Invitar miembro",
+  },
+  {
+    "annotations": {
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "confirmar": {
+          "description": "Llama con true para retirar tras ver el aviso",
+          "type": "boolean",
+        },
+        "miembroId": {
+          "description": "Id del miembro o de la invitación",
+          "format": "uuid",
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "miembroId",
+      ],
+      "type": "object",
+    },
+    "name": "retirar_miembro",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "correo": {
+          "type": "string",
+        },
+        "herramienta": {
+          "type": "string",
+        },
+        "mensaje": {
+          "type": "string",
+        },
+        "miembroId": {
+          "type": "string",
+        },
+        "necesitaConfirmacion": {
+          "type": "boolean",
+        },
+        "proyectoId": {
+          "type": "string",
+        },
+        "retirado": {
+          "type": "string",
+        },
+        "rol": {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Retirar miembro",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "actividad": {
+          "description": "Actividad de la ficha",
+          "maxLength": 2000,
+          "type": "string",
+        },
+        "ayudaIA": {
+          "description": "Ayuda de IA de la ficha",
+          "maxLength": 2000,
+          "type": "string",
+        },
+        "correoCuenta": {
+          "description": "Correo que crea la invitación pendiente",
+          "maxLength": 254,
+          "type": "string",
+        },
+        "nombre": {
+          "description": "Nombre de la ficha",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "nombreVisible": {
+          "description": "Nombre visible; por defecto, el nombre",
+          "maxLength": 80,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "rol": {
+          "description": "Rol o nota de la ficha",
+          "maxLength": 500,
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "nombre",
+      ],
+      "type": "object",
+    },
+    "name": "crear_alumno",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "alumno": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "alumno",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Crear alumnado",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "actividad": {
+          "description": "Actividad de la ficha",
+          "maxLength": 2000,
+          "type": "string",
+        },
+        "ayudaIA": {
+          "description": "Ayuda de IA de la ficha",
+          "maxLength": 2000,
+          "type": "string",
+        },
+        "correoCuenta": {
+          "description": "Correo que crea la invitación pendiente",
+          "maxLength": 254,
+          "type": "string",
+        },
+        "nombre": {
+          "description": "Nombre de la ficha",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "nombreVisible": {
+          "description": "Nombre visible; por defecto, el nombre",
+          "maxLength": 80,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "rol": {
+          "description": "Rol o nota de la ficha",
+          "maxLength": 500,
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "nombre",
+      ],
+      "type": "object",
+    },
+    "name": "crear_profesor",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "profesor": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "profesor",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Crear profesorado",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "actividad": {
+          "description": "Actividad de la ficha",
+          "maxLength": 2000,
+          "type": "string",
+        },
+        "ayudaIA": {
+          "description": "Ayuda de IA de la ficha",
+          "maxLength": 2000,
+          "type": "string",
+        },
+        "correoCuenta": {
+          "description": "Correo que crea la invitación pendiente",
+          "maxLength": 254,
+          "type": "string",
+        },
+        "nombre": {
+          "description": "Nombre de la ficha",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "nombreVisible": {
+          "description": "Nombre visible; por defecto, el nombre",
+          "maxLength": 80,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "revision": {
+          "description": "Revisión leída antes de editar",
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+        "rol": {
+          "description": "Rol o nota de la ficha",
+          "maxLength": 500,
+          "type": "string",
+        },
+        "seccion": {
+          "description": "Sección de la ficha de alumnado",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "seccion",
+        "revision",
+      ],
+      "type": "object",
+    },
+    "name": "actualizar_alumno",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "alumno": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "alumno",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Actualizar alumnado",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "actividad": {
+          "description": "Actividad de la ficha",
+          "maxLength": 2000,
+          "type": "string",
+        },
+        "ayudaIA": {
+          "description": "Ayuda de IA de la ficha",
+          "maxLength": 2000,
+          "type": "string",
+        },
+        "correoCuenta": {
+          "description": "Correo que crea la invitación pendiente",
+          "maxLength": 254,
+          "type": "string",
+        },
+        "nombre": {
+          "description": "Nombre de la ficha",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "nombreVisible": {
+          "description": "Nombre visible; por defecto, el nombre",
+          "maxLength": 80,
+          "type": "string",
+        },
+        "profesorId": {
+          "description": "Id de la ficha de profesorado",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "revision": {
+          "description": "Revisión leída antes de editar",
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+        "rol": {
+          "description": "Rol o nota de la ficha",
+          "maxLength": 500,
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "profesorId",
+        "revision",
+      ],
+      "type": "object",
+    },
+    "name": "actualizar_profesor",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "profesor": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "profesor",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Actualizar profesorado",
+  },
+  {
+    "annotations": {
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "confirmar": {
+          "description": "Llama con true para eliminar tras ver el aviso",
+          "type": "boolean",
+        },
+        "nombre": {
+          "description": "Nombre exacto de la ficha para confirmar la baja",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "revision": {
+          "description": "Revisión leída antes de editar",
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+        "seccion": {
+          "description": "Sección de la ficha de alumnado",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "seccion",
+        "revision",
+      ],
+      "type": "object",
+    },
+    "name": "eliminar_alumno",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "eliminada": {
+          "type": "string",
+        },
+        "herramienta": {
+          "type": "string",
+        },
+        "mensaje": {
+          "type": "string",
+        },
+        "necesitaConfirmacion": {
+          "type": "boolean",
+        },
+        "nombre": {
+          "type": "string",
+        },
+        "proyectoId": {
+          "type": "string",
+        },
+        "revision": {
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Eliminar alumnado",
+  },
+  {
+    "annotations": {
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "confirmar": {
+          "description": "Llama con true para eliminar tras ver el aviso",
+          "type": "boolean",
+        },
+        "nombre": {
+          "description": "Nombre exacto de la ficha para confirmar la baja",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "profesorId": {
+          "description": "Id de la ficha de profesorado",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "revision": {
+          "description": "Revisión leída antes de editar",
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "profesorId",
+        "revision",
+      ],
+      "type": "object",
+    },
+    "name": "eliminar_profesor",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "eliminado": {
+          "type": "string",
+        },
+        "herramienta": {
+          "type": "string",
+        },
+        "mensaje": {
+          "type": "string",
+        },
+        "necesitaConfirmacion": {
+          "type": "boolean",
+        },
+        "nombre": {
+          "type": "string",
+        },
+        "proyectoId": {
+          "type": "string",
+        },
+        "revision": {
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Eliminar profesorado",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object",
+    },
+    "name": "quien_soy",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "correo": {
+          "type": "string",
+        },
+        "esAdministrador": {
+          "type": "boolean",
+        },
+        "esPropietario": {
+          "type": "boolean",
+        },
+        "nombre": {
+          "type": "string",
+        },
+        "proyectos": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "required": [
+        "nombre",
+        "correo",
+        "esPropietario",
+        "esAdministrador",
+        "proyectos",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Quién soy",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "app": {
+          "description": "App de Mi espacio a abrir en la vista espacio",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "seccion": {
+          "description": "Sección dentro de la vista (clase o ajustes)",
+          "enum": [
+            "tareas",
+            "calendario",
+            "cuenta",
+            "administradores",
+          ],
+          "type": "string",
+        },
+        "vista": {
+          "description": "Vista pedida",
+          "enum": [
+            "clase",
+            "alumnos",
+            "profesores",
+            "espacio",
+            "ajustes",
+            "documentacion",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+      ],
+      "type": "object",
+    },
+    "name": "obtener_enlace",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "enlace": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "enlace",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Obtener enlace",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "appId": {
+          "description": "App de Mi espacio a abrir",
+          "enum": [
+            "excalidraw",
+            "edu-tools",
+            "blockly",
+            "mermaid",
+          ],
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "appId",
+      ],
+      "type": "object",
+    },
+    "name": "abrir_app",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "enlace": {
+          "type": "string",
+        },
+        "ventana_conectada": {
+          "type": "boolean",
+        },
+        "ventana_entregada": {
+          "type": "boolean",
+        },
+      },
+      "required": [
+        "enlace",
+        "ventana_conectada",
+        "ventana_entregada",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Abrir app",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+      ],
+      "type": "object",
+    },
+    "name": "obtener_resumen_proyecto",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "apps": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "enlaces": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+        "personas": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+        "proyectoId": {
+          "type": "string",
+        },
+        "tareas": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "tareas",
+        "personas",
+        "apps",
+        "enlaces",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Resumen del proyecto",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object",
+    },
+    "name": "listar_invitaciones_pendientes",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "invitaciones": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "required": [
+        "invitaciones",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Invitaciones pendientes",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "ambito": {
+          "description": "Ámbito de la invitación",
+          "enum": [
+            "project",
+            "site",
+          ],
+          "type": "string",
+        },
+        "id": {
+          "description": "Identificador de la invitación",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "ambito",
+      ],
+      "type": "object",
+    },
+    "name": "aceptar_invitacion",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "aceptada": {
+          "type": "boolean",
+        },
+        "ambito": {
+          "type": "string",
+        },
+        "proyectoId": {
+          "type": [
+            "string",
+            "null",
+          ],
+        },
+      },
+      "required": [
+        "aceptada",
+        "proyectoId",
+        "ambito",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Aceptar invitación",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "proyectoId": {
+          "description": "Id del proyecto (verifica el acceso)",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "name": "listar_apps",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "apps": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "required": [
+        "apps",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Listar apps",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "appId": {
+          "description": "Id de la app del catálogo",
+          "enum": [
+            "excalidraw",
+            "edu-tools",
+            "blockly",
+            "mermaid",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "appId",
+      ],
+      "type": "object",
+    },
+    "name": "obtener_app",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "app": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "app",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Obtener app",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "appId": {
+          "description": "Id de la app del catálogo",
+          "enum": [
+            "excalidraw",
+            "edu-tools",
+            "blockly",
+            "mermaid",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "appId",
+      ],
+      "type": "object",
+    },
+    "name": "instalar_app",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "app": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "app",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Instalar app",
+  },
+  {
+    "annotations": {
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "appId": {
+          "description": "Id de la app del catálogo",
+          "enum": [
+            "excalidraw",
+            "edu-tools",
+            "blockly",
+            "mermaid",
+          ],
+          "type": "string",
+        },
+        "confirmar": {
+          "description": "Llama con true para desinstalar tras ver el aviso",
+          "type": "boolean",
+        },
+      },
+      "required": [
+        "appId",
+      ],
+      "type": "object",
+    },
+    "name": "desinstalar_app",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "app": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+        "appId": {
+          "type": "string",
+        },
+        "herramienta": {
+          "type": "string",
+        },
+        "mensaje": {
+          "type": "string",
+        },
+        "necesitaConfirmacion": {
+          "type": "boolean",
+        },
+        "nombre": {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Desinstalar app",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+      ],
+      "type": "object",
+    },
+    "name": "listar_ventanas",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "conectadas": {
+          "type": "boolean",
+        },
+        "enlace": {
+          "type": "string",
+        },
+        "ventanas": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "required": [
+        "conectadas",
+        "ventanas",
+        "enlace",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Listar ventanas",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "appId": {
+          "description": "App de Mi espacio",
+          "enum": [
+            "excalidraw",
+            "edu-tools",
+            "blockly",
+            "mermaid",
+          ],
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "appId",
+      ],
+      "type": "object",
+    },
+    "name": "cerrar_app",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "appId": {
+          "type": "string",
+        },
+        "enlace": {
+          "type": "string",
+        },
+        "ventana_conectada": {
+          "type": "boolean",
+        },
+        "ventana_entregada": {
+          "type": "boolean",
+        },
+      },
+      "required": [
+        "appId",
+        "ventana_conectada",
+        "ventana_entregada",
+        "enlace",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Cerrar app",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "appId": {
+          "description": "App de Mi espacio",
+          "enum": [
+            "excalidraw",
+            "edu-tools",
+            "blockly",
+            "mermaid",
+          ],
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "appId",
+      ],
+      "type": "object",
+    },
+    "name": "minimizar_app",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "appId": {
+          "type": "string",
+        },
+        "enlace": {
+          "type": "string",
+        },
+        "ventana_conectada": {
+          "type": "boolean",
+        },
+        "ventana_entregada": {
+          "type": "boolean",
+        },
+      },
+      "required": [
+        "appId",
+        "ventana_conectada",
+        "ventana_entregada",
+        "enlace",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Minimizar app",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "appId": {
+          "description": "App de Mi espacio",
+          "enum": [
+            "excalidraw",
+            "edu-tools",
+            "blockly",
+            "mermaid",
+          ],
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "appId",
+      ],
+      "type": "object",
+    },
+    "name": "restaurar_app",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "appId": {
+          "type": "string",
+        },
+        "enlace": {
+          "type": "string",
+        },
+        "ventana_conectada": {
+          "type": "boolean",
+        },
+        "ventana_entregada": {
+          "type": "boolean",
+        },
+      },
+      "required": [
+        "appId",
+        "ventana_conectada",
+        "ventana_entregada",
+        "enlace",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Restaurar app",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "appId": {
+          "description": "App de Mi espacio",
+          "enum": [
+            "excalidraw",
+            "edu-tools",
+            "blockly",
+            "mermaid",
+          ],
+          "type": "string",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "appId",
+      ],
+      "type": "object",
+    },
+    "name": "ampliar_app",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "appId": {
+          "type": "string",
+        },
+        "enlace": {
+          "type": "string",
+        },
+        "ventana_conectada": {
+          "type": "boolean",
+        },
+        "ventana_entregada": {
+          "type": "boolean",
+        },
+      },
+      "required": [
+        "appId",
+        "ventana_conectada",
+        "ventana_entregada",
+        "enlace",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Ampliar app",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object",
+    },
+    "name": "listar_administradores",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "administradores": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "required": [
+        "administradores",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Listar administradores",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "correo": {
+          "maxLength": 254,
+          "type": "string",
+        },
+        "nombre": {
+          "maxLength": 80,
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "name": "crear_administrador",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "administrador": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "administrador",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Crear administrador",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "administradorId": {
+          "description": "Id de la ficha de administrador",
+          "format": "uuid",
+          "type": "string",
+        },
+        "correo": {
+          "maxLength": 254,
+          "type": "string",
+        },
+        "nombre": {
+          "maxLength": 80,
+          "type": "string",
+        },
+        "revision": {
+          "description": "Revisión leída antes de editar",
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+      },
+      "required": [
+        "administradorId",
+        "revision",
+      ],
+      "type": "object",
+    },
+    "name": "actualizar_administrador",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "administrador": {
+          "additionalProperties": {},
+          "type": "object",
+        },
+      },
+      "required": [
+        "administrador",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Actualizar administrador",
+  },
+  {
+    "annotations": {
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "administradorId": {
+          "description": "Id de la ficha de administrador",
+          "format": "uuid",
+          "type": "string",
+        },
+        "confirmar": {
+          "description": "Llama con true para eliminar tras ver el aviso",
+          "type": "boolean",
+        },
+        "confirmarNombre": {
+          "description": "Nombre o correo exacto de la ficha para confirmar",
+          "maxLength": 254,
+          "type": "string",
+        },
+        "revision": {
+          "description": "Revisión leída antes de eliminar",
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+      },
+      "required": [
+        "administradorId",
+        "revision",
+      ],
+      "type": "object",
+    },
+    "name": "eliminar_administrador",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "administradorId": {
+          "type": "string",
+        },
+        "correo": {
+          "type": "string",
+        },
+        "eliminado": {
+          "type": "string",
+        },
+        "herramienta": {
+          "type": "string",
+        },
+        "mensaje": {
+          "type": "string",
+        },
+        "necesitaConfirmacion": {
+          "type": "boolean",
+        },
+        "nombre": {
+          "type": "string",
+        },
+        "revision": {
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Eliminar administrador",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object",
+    },
+    "name": "listar_tokens_mcp",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "tokens": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "required": [
+        "tokens",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Listar tokens MCP",
+  },
+  {
+    "annotations": {
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "confirmar": {
+          "description": "Llama con true para revocar tras ver el aviso",
+          "type": "boolean",
+        },
+        "tokenId": {
+          "description": "Id del token MCP propio",
+          "format": "uuid",
+          "type": "string",
+        },
+      },
+      "required": [
+        "tokenId",
+      ],
+      "type": "object",
+    },
+    "name": "revocar_token_mcp",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "creadoEn": {
+          "type": "number",
+        },
+        "etiqueta": {
+          "type": "string",
+        },
+        "herramienta": {
+          "type": "string",
+        },
+        "mensaje": {
+          "type": "string",
+        },
+        "necesitaConfirmacion": {
+          "type": "boolean",
+        },
+        "revocado": {
+          "type": "string",
+        },
+        "revocadoEn": {
+          "type": [
+            "number",
+            "null",
+          ],
+        },
+        "tokenId": {
+          "type": "string",
+        },
+        "ultimoUso": {
+          "type": [
+            "number",
+            "null",
+          ],
+        },
+      },
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Revocar token MCP",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "desde": {
+          "description": "Primer día incluido (YYYY-MM-DD)",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "type": "string",
+        },
+        "hasta": {
+          "$ref": "#/properties/desde",
+          "description": "Último día incluido (YYYY-MM-DD)",
+        },
+        "herramienta": {
+          "description": "Nombre exacto de la herramienta",
+          "maxLength": 80,
+          "type": "string",
+        },
+        "pagina": {
+          "minimum": 1,
+          "type": "integer",
+        },
+        "porPagina": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de la llamada",
+          "maxLength": 80,
+          "type": "string",
+        },
+        "resultado": {
+          "description": "Código de resultado, por ejemplo ok o forbidden",
+          "maxLength": 64,
+          "type": "string",
+        },
+        "via": {
+          "description": "Vía de la llamada MCP",
+          "enum": [
+            "plugin",
+            "personal",
+            "oauth",
+          ],
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "name": "listar_actividad_mcp",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "actividad": {
+          "items": {
+            "additionalProperties": {},
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "pagina": {
+          "type": "number",
+        },
+        "porPagina": {
+          "type": "number",
+        },
+        "total": {
+          "type": "number",
+        },
+      },
+      "required": [
+        "actividad",
+        "total",
+        "pagina",
+        "porPagina",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:read",
+    "title": "Listar actividad MCP",
+  },
+]
+`;

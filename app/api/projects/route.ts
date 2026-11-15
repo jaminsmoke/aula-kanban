@@ -1,11 +1,13 @@
 import { asc, eq } from "drizzle-orm";
 import { z } from "zod";
-import { getDb } from "../../../db";
-import { appDocuments, boards, deletedStudents, deletedTeachers, projectMembers, projects, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
+import { getD1, getDb } from "../../../db";
+import { projectMembers, projects, userIdentities } from "../../../db/schema";
 import { getChatGPTUser } from "../../../lib/server/auth";
 import { isAdministrator, isOwner, projectFailureResponse } from "../../../lib/server/project";
-import { cleanupOrphanUploads, deleteProjectUploads } from "../../../lib/server/storage";
+import { createProject, deleteProject } from "../../../lib/server/projects";
+import { cleanupOrphanUploads } from "../../../lib/server/storage";
 import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
+import { canonicalProjectId, ensureLegacyProjectUuid } from "../../../lib/server/project-rekey";
 
 export const dynamic = "force-dynamic";
 
@@ -17,18 +19,24 @@ export async function GET() {
   const user = await getChatGPTUser();
   if (!user) return projectFailureResponse("unauthenticated");
   const owner = await isOwner(user);
+  if (owner) {
+    try { await ensureLegacyProjectUuid(getD1()); }
+    catch { return json({ message: "No se pudo actualizar el identificador del proyecto. Vuelve a intentarlo." }, 503); }
+  }
   await getDb().update(userIdentities).set({ displayName: user.displayName }).where(eq(userIdentities.id, user.userId));
   const admin = !owner && await isAdministrator(user);
   if (owner || admin) {
     try { await cleanupOrphanUploads(); } catch { /* Se reintentará al volver a cargar proyectos. */ }
   }
   const all = await getDb().select().from(projects).orderBy(asc(projects.createdAt), asc(projects.id));
-  if (owner || admin) return json({ projects: all.map((project) => ({ ...project, role: owner ? "owner" : "admin", studentSection: null, teacherId: null })), isOwner: owner, isAdmin: admin });
+  const legacyProjectId = await canonicalProjectId(getD1(), "default");
+  if (owner || admin) return json({ projects: all.map((project) => ({ ...project, role: owner ? "owner" : "admin", studentSection: null, teacherId: null })), isOwner: owner, isAdmin: admin, legacyProjectId });
   const members = await getDb().select().from(projectMembers).where(eq(projectMembers.userId, user.userId));
-  return json({ projects: all.flatMap((project) => {
+  const visible = all.flatMap((project) => {
     const member = members.find((item) => item.projectId === project.id);
     return member?.status === "active" ? [{ ...project, role: member.role, studentSection: member.studentSection, teacherId: member.teacherId }] : [];
-  }), isOwner: false });
+  });
+  return json({ projects: visible, isOwner: false, legacyProjectId: visible.some((project) => project.id === legacyProjectId) ? legacyProjectId : null });
 }
 
 /**
@@ -41,14 +49,8 @@ export async function POST(request: Request) {
   if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const user = await getChatGPTUser();
   if (!user) return projectFailureResponse("unauthenticated");
-  if (!(await isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden crear proyectos." }, 403);
-  const parsed = z.object({ id: z.string().uuid(), name: z.string().trim().min(1).max(80) }).safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return json({ message: "Escribe un nombre de hasta 80 caracteres." }, 400);
-  const [created] = await getDb().insert(projects).values({ ...parsed.data, createdAt: Date.now() }).onConflictDoNothing().returning();
-  if (created) return json(created, 201);
-  const [existing] = await getDb().select().from(projects).where(eq(projects.id, parsed.data.id));
-  if (existing?.name === parsed.data.name) return json(existing);
-  return json({ message: "No se pudo crear el proyecto. Vuelve a intentarlo." }, 409);
+  const result = await createProject(user, await request.json().catch(() => null));
+  return result.ok ? json(result.proyecto, result.creado ? 201 : 200) : json({ message: result.message }, result.status);
 }
 
 /**
@@ -61,26 +63,8 @@ export async function DELETE(request: Request) {
   if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const user = await getChatGPTUser();
   if (!user) return projectFailureResponse("unauthenticated");
-  if (!(await isOwner(user) || await isAdministrator(user))) return json({ message: "Solo el propietario o un administrador pueden eliminar proyectos." }, 403);
   const parsed = z.object({ id: z.string().min(1).max(80) }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Proyecto no válido." }, 400);
-  const db = getDb();
-  const [, , , , , , , , , result] = await db.batch([
-    db.delete(boards).where(eq(boards.projectId, parsed.data.id)),
-    db.delete(appDocuments).where(eq(appDocuments.projectId, parsed.data.id)),
-    db.delete(taskAssignees).where(eq(taskAssignees.projectId, parsed.data.id)),
-    db.delete(tasks).where(eq(tasks.projectId, parsed.data.id)),
-    db.delete(projectMembers).where(eq(projectMembers.projectId, parsed.data.id)),
-    db.delete(students).where(eq(students.projectId, parsed.data.id)),
-    db.delete(teachers).where(eq(teachers.projectId, parsed.data.id)),
-    db.delete(deletedStudents).where(eq(deletedStudents.projectId, parsed.data.id)),
-    db.delete(deletedTeachers).where(eq(deletedTeachers.projectId, parsed.data.id)),
-    db.delete(projects).where(eq(projects.id, parsed.data.id)),
-  ]);
-  try {
-    await deleteProjectUploads(parsed.data.id);
-  } catch {
-    return json({ message: "El proyecto se ha eliminado, pero no se han podido limpiar todos sus archivos. Vuelve a intentarlo." }, 503);
-  }
-  return json({ id: parsed.data.id, deleted: Boolean(result.meta.changes) });
+  const result = await deleteProject(user, parsed.data.id);
+  return result.ok ? json({ id: result.id, deleted: result.deleted }) : json({ message: result.message }, result.status);
 }

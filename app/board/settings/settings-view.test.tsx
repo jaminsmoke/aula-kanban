@@ -24,7 +24,9 @@ const props = {
 
 describe("SettingsView", () => {
   it("muestra Cuenta y permite abrir Administradores", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse([])));
+    vi.stubGlobal("fetch", vi.fn().mockImplementation((input: RequestInfo | URL) => Promise.resolve(String(input).includes("/api/storage/status")
+      ? jsonResponse({ database: true, bucket: true, bucketReachable: true, uploads: 2, ok: true })
+      : jsonResponse([]))));
 
     render(<SettingsView {...props} />);
 

@@ -12,8 +12,8 @@ export default function Portada({ signInHref }: { signInHref: string }) {
         <span className="session-mark" aria-hidden>▥</span>
         <p className="eyebrow"><span /> Aula Kanban</p>
         <h1>Tablero colaborativo para el grupo de clase</h1>
-        <p>Organiza el trabajo del proyecto en tareas, sigue el avance de cada una y comparte pizarras y aplicaciones útiles con todo el grupo.</p>
-        <p>Consulta la documentación para ver cómo funciona y qué puede hacer cada rol, o inicia sesión para abrir tus proyectos.</p>
+        <p>Organiza el trabajo del proyecto en tareas y en un calendario de entregas, reúne las fichas de alumnos y profesores y comparte pizarras y aplicaciones con todo el grupo.</p>
+        <p>Se conecta con asistentes de IA mediante el plugin de Aula Kanban, que actúa con los permisos de cada cuenta. Consulta la documentación para ver cómo funciona y qué puede hacer cada rol, o inicia sesión para abrir tus proyectos.</p>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           <a className="primary session-signin" href={signInHref} target="_top">Iniciar sesión con ChatGPT</a>
           <a className="secondary session-signin" href="/documentacion">Ver documentación</a>

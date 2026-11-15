@@ -6,6 +6,14 @@ export const projects = sqliteTable("projects", {
   createdAt: integer("created_at").notNull(),
 });
 
+// Correspondencia de identificadores antiguos; completed=0 solo existe dentro
+// de la transacción que traslada las referencias del proyecto.
+export const projectRekeys = sqliteTable("project_rekeys", {
+  oldId: text("old_id").primaryKey().notNull(),
+  newId: text("new_id").notNull(),
+  completed: integer("completed").notNull().default(0),
+}, (table) => [uniqueIndex("project_rekeys_new").on(table.newId)]);
+
 // Una sola fila con id "owner" guarda la identidad estable del propietario.
 export const instanceOwner = sqliteTable("instance_owner", {
   id: text("id").primaryKey().notNull(),
@@ -165,6 +173,63 @@ export const mcpTokens = sqliteTable("mcp_tokens", {
   revokedAt: integer("revoked_at"),
 }, (table) => [index("mcp_tokens_user").on(table.userId, table.revokedAt, table.createdAt)]);
 
+// Servidor de autorización OAuth (AS) del roadmap OAuth 2.1: clientes registrados
+// (RFC 7591) y tokens/códigos ligados a una cuenta y a la instancia.
+// Solo se guardan hashes con sal, como en `mcp_tokens`.
+
+export const oauthClients = sqliteTable("oauth_clients", {
+  clientId: text("client_id").primaryKey().notNull(),
+  clientSecretHash: text("client_secret_hash").notNull(),
+  clientSecretSalt: text("client_secret_salt").notNull(),
+  clientName: text("client_name").notNull().default(""),
+  redirectUris: text("redirect_uris").notNull().default("[]"),
+  scopes: text("scopes").notNull().default("mcp:read mcp:write"),
+  createdAt: integer("created_at").notNull(),
+});
+
+export const oauthAuthorizationCodes = sqliteTable("oauth_authorization_codes", {
+  id: text("id").primaryKey().notNull(),
+  clientId: text("client_id").notNull(),
+  userId: text("user_id").notNull(),
+  email: text("email").notNull().default(""),
+  redirectUri: text("redirect_uri").notNull(),
+  codeChallenge: text("code_challenge").notNull(),
+  scope: text("scope").notNull().default(""),
+  resource: text("resource").notNull().default(""),
+  expiresAt: integer("expires_at").notNull(),
+  consumedAt: integer("consumed_at"),
+  createdAt: integer("created_at").notNull(),
+}, (table) => [index("oauth_authorization_codes_client").on(table.clientId, table.expiresAt)]);
+
+export const oauthAccessTokens = sqliteTable("oauth_access_tokens", {
+  id: text("id").primaryKey().notNull(),
+  userId: text("user_id").notNull(),
+  email: text("email").notNull().default(""),
+  clientId: text("client_id").notNull(),
+  tokenHash: text("token_hash").notNull(),
+  salt: text("salt").notNull(),
+  scope: text("scope").notNull().default(""),
+  resource: text("resource").notNull().default(""),
+  expiresAt: integer("expires_at").notNull(),
+  lastUsedAt: integer("last_used_at"),
+  createdAt: integer("created_at").notNull(),
+  revokedAt: integer("revoked_at"),
+}, (table) => [index("oauth_access_tokens_user").on(table.userId, table.revokedAt, table.createdAt)]);
+
+export const oauthRefreshTokens = sqliteTable("oauth_refresh_tokens", {
+  id: text("id").primaryKey().notNull(),
+  userId: text("user_id").notNull(),
+  email: text("email").notNull().default(""),
+  clientId: text("client_id").notNull(),
+  tokenHash: text("token_hash").notNull(),
+  salt: text("salt").notNull(),
+  scope: text("scope").notNull().default(""),
+  resource: text("resource").notNull().default(""),
+  expiresAt: integer("expires_at").notNull(),
+  createdAt: integer("created_at").notNull(),
+  revokedAt: integer("revoked_at"),
+}, (table) => [index("oauth_refresh_tokens_user").on(table.userId, table.revokedAt, table.createdAt)]);
+
 export const projectMembers = sqliteTable("project_members", {
   id: text("id").primaryKey().notNull(),
   projectId: text("project_id").notNull(),
@@ -182,3 +247,15 @@ export const projectMembers = sqliteTable("project_members", {
   index("project_members_user_status").on(table.userId, table.status, table.projectId),
   index("project_members_invitation").on(table.email, table.status),
 ]);
+
+export const mcpAuditLog = sqliteTable("mcp_audit_log", {
+  id: text("id").primaryKey().notNull(),
+  userId: text("user_id").notNull(),
+  via: text("via").notNull(),
+  clientId: text("client_id"),
+  toolName: text("tool_name").notNull(),
+  projectId: text("project_id"),
+  resultCode: text("result_code").notNull(),
+  durationMs: integer("duration_ms").notNull(),
+  createdAt: integer("created_at").notNull(),
+}, (table) => [index("mcp_audit_log_created").on(table.createdAt)]);

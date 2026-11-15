@@ -17,7 +17,8 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
   const user = await getChatGPTUser();
   if (!user) return projectFailureResponse("unauthenticated");
   const found = await readUpload(id);
-  if (!found) return json({ message: "Archivo no encontrado." }, 404);
+  if (found.status === "storage_unavailable") return json({ message: "El almacenamiento de archivos no está configurado en este despliegue." }, 503);
+  if (found.status !== "ok") return json({ message: "Archivo no encontrado." }, 404);
   const projectRequest = new Request(`http://local/?project=${encodeURIComponent(found.row.projectId)}`);
   const resolved = await resolveProject(projectRequest);
   if (resolved.status !== "ok") return projectFailureResponse(resolved.status);

@@ -101,6 +101,7 @@ progress::-moz-progress-bar { background: var(--focus-on-dark); border-radius: 1
 .card { display: flex; width: 100%; flex-direction: column; align-items: stretch; text-align: left; gap: 8px; padding: 12px; color: var(--ink); background: var(--white); border: 1px solid var(--line-soft); border-radius: 10px; box-shadow: 0 2px 3px #29213a08; transition: box-shadow .16s ease, border-color .16s ease; }
 .card:hover { border-color: #cbb9ed; box-shadow: 0 3px 8px #29213a13; }
 .card-image { width: calc(100% + 24px); max-height: 130px; margin: -12px -12px 0; object-fit: cover; border-radius: 10px 10px 0 0; }
+.card-image-missing { display:block; margin:-12px -12px 0; padding:7px 10px; color:var(--muted); background:var(--surface-muted); border-radius:10px 10px 0 0; font-size:11px; }
 .card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .priority { display: inline-flex; align-items: center; gap: 4px; border-radius: 5px; padding: 3px 6px; font-size: 11px; font-weight: 700; }
 .priority.low { color: #236348; background: #e1f2e9; }

@@ -53,6 +53,22 @@ describe("useProjects", () => {
     await waitFor(() => expect(replace).toHaveBeenCalledWith("/?view=alumnos&project=p1"));
   });
 
+  it("actualiza enlaces antiguos al UUID solo si el proyecto es accesible", async () => {
+    const { replace } = stubLocation("?project=default&view=alumnos");
+    vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ projects: [aula], isOwner: false, legacyProjectId: "p1" })));
+    renderHook(() => useProjects());
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/?project=p1&view=alumnos"));
+  });
+
+  it("no redirige un enlace antiguo a un proyecto inaccesible", async () => {
+    const { replace } = stubLocation("?project=default");
+    vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ projects: [], isOwner: false, legacyProjectId: "p1" })));
+    const { result } = renderHook(() => useProjects());
+    await waitFor(() => expect(result.current.projectsLoaded).toBe(true));
+    expect(replace).not.toHaveBeenCalled();
+    expect(result.current.activeProject).toBeUndefined();
+  });
+
   it("deja el mensaje del servidor cuando la carga falla", async () => {
     stubLocation("");
     vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ message: "Sin sesión" }, false, 401)));

@@ -10,6 +10,8 @@ import { AulaStoreIcon } from "./store/aula-store-icon";
 // La tienda solo se descarga al abrirla.
 const AppsStore = lazy(() => import("./store/apps-store"));
 import { visibleTools, type SpaceRole, type SpaceTool } from "./tools";
+import { parseBoardUrl } from "../shared/board-url";
+import { useSpaceSocket } from "./use-space-socket";
 import { toolApps, toolWindow } from "../apps/registry";
 import "./space.css";
 
@@ -50,7 +52,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
   }, [projectId]);
   useEffect(() => { const first = window.setTimeout(() => { void refresh(); }, 0); const timer = window.setInterval(() => { void refresh(); }, 10000); return () => { window.clearTimeout(first); window.clearInterval(timer); }; }, [refresh]);
   const manage = async (id: string, action: StoreAction) => {
-    if (action === "uninstall" && !window.confirm("Se desinstalará esta aplicación de Mi espacio para los miembros de este proyecto. Las pizarras de las tareas no se ven afectadas. ¿Continuar?")) return;
+    if (action === "uninstall" && !window.confirm("Se desinstalará esta aplicación de Mi espacio para todos los miembros. Las pizarras de las tareas no se ven afectadas. ¿Continuar?")) return;
     try {
       const response = await fetch(`/api/space-apps?project=${encodeURIComponent(projectId)}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, action }) });
       if (!response.ok) throw new Error();
@@ -69,7 +71,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const open = (tool: SpaceTool) => {
+  const open = useCallback((tool: SpaceTool) => {
     setWindows((current) => {
       const existing = current.find((item) => item.tool.id === tool.id);
       zCounter.current += 1;
@@ -84,7 +86,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
       const size = { width, height };
       return [...current, { tool, minimized: false, position, size, maximized: false, zIndex: zCounter.current }];
     });
-  };
+  }, []);
 
   const focus = (id: string) => setWindows((current) => {
     zCounter.current += 1;
@@ -105,11 +107,49 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
   // instala desde Aula Store.
   const installedIds = new Set(managed.filter((app) => app.status === "installed").map((app) => app.id));
   const desktopTools = tools.filter((tool) => installedIds.has(tool.id));
+  // Paso A (MCP-04): `view=espacio&app=<appId>` abre esa ventana al cargar.
+  // Se lee una sola vez por app y solo si está instalada y visible para el
+  // rol; el parámetro queda en la URL y cerrar la ventana no lo toca.
+  const openedFromUrl = useRef<string | null>(null);
+  useEffect(() => {
+    if (managerConfigured !== true) return;
+    const appId = parseBoardUrl(window.location.search).app;
+    if (!appId || openedFromUrl.current === appId) return;
+    const tool = desktopTools.find((item) => item.id === appId);
+    if (!tool) return;
+    openedFromUrl.current = appId;
+    open(tool);
+  }, [managerConfigured, desktopTools, open]);
   // Si una app se desinstala, su ventana abierta desaparece (filtro en el
   // render, sin efecto): solo se muestran las de apps instaladas.
   const shownWindows = managerConfigured === null ? windows : windows.filter((item) => installedIds.has(item.tool.id));
   const active = shownWindows.filter((item) => !item.minimized).sort((a, b) => b.zIndex - a.zIndex)[0];
   const restore = (id: string) => setWindows((current) => current.map((item) => (item.tool.id === id ? { ...item, minimized: false } : item)));
+
+  // Canal en vivo del escritorio (Fase 2 de MCP-04): publica el estado de
+  // las ventanas y ejecuta los comandos que envían las herramientas MCP.
+  const { publicarEstado, alComando } = useSpaceSocket(projectId);
+  const latest = useRef({ open, close, minimize, restore, zoom, desktopTools });
+  useEffect(() => {
+    latest.current = { open, close, minimize, restore, zoom, desktopTools };
+  });
+  useEffect(() => {
+    return alComando((cmd) => {
+      const state = latest.current;
+      const tool = state.desktopTools.find((item) => item.id === cmd.appId);
+      if (!tool) return;
+      switch (cmd.accion) {
+        case "abrir": state.open(tool); break;
+        case "cerrar": state.close(cmd.appId); break;
+        case "minimizar": state.minimize(cmd.appId); break;
+        case "restaurar": state.restore(cmd.appId); break;
+        case "ampliar": state.zoom(cmd.appId); break;
+      }
+    });
+  }, [alComando]);
+  useEffect(() => {
+    publicarEstado(windows.map((item) => ({ appId: item.tool.id, abierta: true, minimizada: item.minimized, ampliada: item.maximized })));
+  }, [windows, publicarEstado]);
 
   return (
     <MotionConfig reducedMotion="user">

@@ -42,6 +42,44 @@ export function storageAvailable() {
   return Boolean(env.BUCKET);
 }
 
+/** Estado del almacenamiento para el diagnóstico de propietario/administración. */
+export type StorageStatus = {
+  database: boolean;
+  bucket: boolean;
+  bucketReachable: boolean;
+  uploads: number | null;
+  ok: boolean;
+};
+
+/**
+ * Comprueba D1, el binding R2 y una lectura mínima del bucket.
+ * No devuelve secretos ni lista archivos.
+ * @returns El estado del almacenamiento y el número de filas de `uploads`.
+ */
+export async function storageStatus(): Promise<StorageStatus> {
+  const database = Boolean(env.DB);
+  const bucket = Boolean(env.BUCKET);
+  let uploads: number | null = null;
+  let bucketReachable = false;
+  if (env.DB) {
+    try {
+      const row = await env.DB.prepare("SELECT COUNT(*) AS total FROM uploads").first<{ total: number }>();
+      uploads = Number(row?.total ?? 0);
+    } catch {
+      uploads = null;
+    }
+  }
+  if (env.BUCKET) {
+    try {
+      await env.BUCKET.list({ limit: 1 });
+      bucketReachable = true;
+    } catch {
+      bucketReachable = false;
+    }
+  }
+  return { database, bucket, bucketReachable, uploads, ok: database && bucket && bucketReachable && uploads !== null };
+}
+
 /**
  * Valida el tipo y el tamaño de un fichero según su finalidad.
  * @param purpose - Finalidad declarada de la subida.
@@ -109,14 +147,30 @@ export async function cleanupOrphanUploads() {
 }
 
 /**
+ * Lee solo el metadato de un fichero subido, sin tocar R2.
+ * @param id - Identificador del fichero.
+ * @returns La fila de metadatos o `null` si no existe.
+ */
+export async function findUpload(id: string) {
+  const [row] = await getDb().select().from(uploads).where(eq(uploads.id, id));
+  return row ?? null;
+}
+
+/** Resultado tipado de intentar servir un archivo subido. */
+export type UploadReadResult =
+  | { status: "ok"; row: typeof uploads.$inferSelect; object: R2ObjectBody }
+  | { status: "not_found" | "storage_unavailable" | "object_missing" };
+
+/**
  * Lee el metadato y el contenido de un fichero subido.
  * @param id - Identificador del fichero.
- * @returns La fila de metadatos con el objeto de R2, o `null` si no existe o no hay bucket.
+ * @returns El objeto, o el motivo concreto por el que no se puede servir.
  */
-export async function readUpload(id: string) {
+export async function readUpload(id: string): Promise<UploadReadResult> {
   const [row] = await getDb().select().from(uploads).where(eq(uploads.id, id));
-  if (!row || !env.BUCKET) return null;
+  if (!row) return { status: "not_found" };
+  if (!env.BUCKET) return { status: "storage_unavailable" };
   const object = await env.BUCKET.get(row.storageKey);
-  if (!object) return null;
-  return { row, object };
+  if (!object) return { status: "object_missing" };
+  return { status: "ok", row, object };
 }

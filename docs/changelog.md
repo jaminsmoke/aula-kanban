@@ -6,6 +6,272 @@
 
 ---
 
+## 2026-11-15 — UUID del proyecto y publicación 1.1.26
+
+**Estado:** Completada · Publicada
+
+- El proyecto heredado se trasladó a un UUID generado para esta instancia mediante un batch atómico; los enlaces anteriores se redirigen al identificador nuevo tras comprobar el acceso.
+- Se conserva la correspondencia en `project_rekeys`; las reglas de inmutabilidad solo permiten el traslado mientras la operación está en curso. Las claves de objetos R2 se conservan para no perder archivos.
+- Comparación de producción antes y después: 13 tareas, 17 alumnos, un profesor y dos membresías conservados; sin diferencias en las 11 tablas respaldadas salvo el identificador del proyecto.
+- Se comprobó el acceso de la cuenta de alumno a proyectos y tareas desde el plugin, y la redirección del enlace anterior en el navegador.
+- El diagnóstico de producción informa de D1 y R2 accesibles, con cero archivos registrados; la prueba de subida y la revisión de miniaturas pasan a PER-01, ahora en el roadmap activo.
+- Validación: 751 pruebas, tipos, lint y build correctos. Respaldo privado de las filas de producción y copia de la base local verificados antes del traslado.
+- Migraciones: `0034` tenía la instantánea mal formada y la marca temporal duplicada; se corrigió antes de aplicarla en producción. En local se reconcilió su historial tras verificar la estructura existente. `0035` añade el registro de equivalencias y adapta los disparadores para el traslado atómico.
+
+## 2026-11-15 — Roadmap MCP-10 · Archivos del proyecto por MCP cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Fase 1 — Subida:** `subir_archivo` recibe `proyectoId`, `finalidad`, `nombre`, `tipoMime` y `contenidoBase64`; decodifica base64, aplica los mismos tipos y límites que `/api/uploads` (5 MB para imágenes y 10 MB para documentos) y reutiliza `storeUpload`. Las cuentas invitadas reciben 403 y R2 ausente responde `unavailable`.
+- **Fase 2 — Consulta:** `obtener_archivo` lee solo los metadatos con `findUpload`, comprueba que el archivo pertenece al proyecto y devuelve tipo MIME, tamaño, finalidad, fecha y enlace absoluto. No descarga ni expone el binario.
+- **Fase 3 — Contrato y pruebas:** catálogo `0.20.0` con 50 herramientas (21 de lectura, 29 de escritura y 8 destructivas), ejemplos y roles, snapshot y README sincronizados. La matriz de roles se amplió a 336 casos y las pruebas del dominio cubren subida válida, invitado, base64/MIME inválidos, tamaño excesivo, R2 ausente, archivo ajeno y permisos.
+- **Nota de tamaño:** `/mcp` y `/api/mcp` no fijan un límite de cuerpo propio; el base64 añade ~33 % y el límite práctico depende de la plataforma y del cliente. El nombre se usa para construir el `File` y no se persiste, así que `obtener_archivo` no lo recupera.
+
+### Verificación
+
+- `npm run lint` 0 errores (3 avisos históricos de `ui://`), `npx tsc --noEmit` limpio, `npm test` **86 archivos / 736 tests** y `npm run build` en verde.
+- Sin cambios en `package.json`: sigue en `1.1.25`, sin publicar.
+
+### Seguimiento en backlog
+
+Roadmap vacío a la espera de la siguiente entrada. Quedan MCP-05 y los recortes de chunks (2 entradas).
+
+## 2026-11-15 — Roadmap MCP-09 · Administración de la instancia, tokens y auditoría cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Fase 1 — Administradores:** la lógica de `/api/administrators` se extrajo a `lib/server/administradores.ts` y la ruta quedó como envoltura; `listar_administradores`, `crear_administrador` y `actualizar_administrador` trabajan con nombre, correo, revisión y estado de cuenta, con permiso solo para propietario o administración. Catálogo `0.17.0`, 44 herramientas.
+- **Fase 2 — Baja y tokens:** `eliminar_administrador` avisa antes de borrar, exige `confirmar: true` y el nombre o correo exacto, y responde 409 si la revisión está desactualizada. `listar_tokens_mcp` y `revocar_token_mcp` solo operan sobre los tokens de la propia cuenta y nunca devuelven secreto, hash ni sal. Catálogo `0.18.0`, 47 herramientas.
+- **Fase 3 — Auditoría:** `listar_actividad_mcp` consulta `mcp_audit_log` con filtros de vía, herramienta, resultado, proyecto y fechas, y paginación de 1 a 100. Aplica retención de 90 días; la cuenta ve solo sus filas y el propietario o la administración ven toda la instancia. Devuelve únicamente metadatos, sin argumentos ni contenidos. Catálogo `0.19.0`, 48 herramientas (20 de lectura, 28 de escritura, 8 destructivas).
+- **Contrato y pruebas:** snapshot de `tools/list`, matriz de roles, guía y README sincronizados; paridad HTTP ↔ MCP de administradores y tokens, y pruebas SQLite reales para la retención, los filtros, la paginación, la visibilidad y la baja compartida con revisión.
+
+### Verificación
+
+- `npm run lint` 0 errores (3 avisos históricos de `ui://`), `npx tsc --noEmit` limpio, `npm test` **85 archivos / 714 tests** y `npm run build` en verde.
+- Sin cambios en `package.json`: sigue en `1.1.25`, sin publicar.
+
+### Seguimiento en backlog
+
+Roadmap vacío a la espera de la siguiente entrada. Quedan MCP-05, MCP-10 y los recortes de chunks (3 entradas).
+
+## 2026-11-15 — Roadmap DOC-07 + MCP-11 · Guía del plugin, instrucciones y prompts cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Fase 1 — Catálogo e instrucciones:** `lib/domain/mcp-catalogo.ts` reúne nombre, título, descripción, dominio, alcance y anotaciones de las 41 herramientas; el registro construye `MCP_TOOLS` desde ahí y un test impide que las definiciones de los dominios se desfases. `lib/server/mcp/instrucciones.ts` es el texto único que anuncian `/mcp` (`server/discover`/`initialize`) y `/api/mcp` (SDK), con la capacidad de prompts; el manifiesto no declara nombre, descripción ni icono porque no hay constancia de que Sites los admita.
+- **Fase 2 — Prompts y descripciones:** `lib/domain/mcp-prompts.ts` publica `resumen_de_clase`, `planificar_semana`, `alta_de_alumnado` e `instalar_apps_del_aula`, con las mismas definiciones en las dos puertas y validación de argumentos obligatorios. `lib/domain/mcp-descripciones.ts` añade a las 41 descripciones un ejemplo JSON y su regla de rol; el registro compone la descripción publicada.
+- **Fase 3 — Guía y cierre (DOC-07):** la sección «Servidor MCP» abre por el plugin para ChatGPT y Codex, deja el token personal como vía avanzada y genera la lista por dominio desde `mcpGuiaHerramientas()`; el README estrena «Plugin y herramientas» con un bloque entre marcadores generado por `mcpListaMarkdown()`. `mcp-guia.test.ts` comprueba el agrupado y la sincronización del README, y `content-coverage.test.ts` sigue cubriendo las 41 herramientas sin listas manuales.
+
+### Verificación
+
+- `npm run lint` 0 errores (3 avisos históricos de `ui://`), `npx tsc --noEmit` limpio, `npm test` **79 archivos / 640 tests** y `npm run build` en verde.
+- Sin cambios en las herramientas ni en la versión del catálogo (`0.16.0`); el snapshot de `tools/list` se mantiene porque solo cambian descripciones, prompts, instrucciones y documentación.
+- No se ha publicado ni se ha incrementado la versión local (sigue en `1.1.25`).
+
+### Seguimiento en backlog
+
+Roadmap vacío a la espera de la siguiente entrada. Quedan MCP-05, MCP-09, MCP-10 y los recortes de chunks (4 entradas).
+
+## 2026-11-15 — Roadmap MCP-08 · Proyectos: crear y eliminar cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Fase 1 — Extracción y creación:** `createProject` en `lib/server/projects.ts` con la ruta `POST /api/projects` como envoltura; `crear_proyecto` recibe el nombre (1–80), genera el id en el servidor y devuelve proyecto, rol y enlace; 403 fuera de propietario y administración. Catálogo `0.14.0`, 40 herramientas.
+- **Fase 2 — Aviso y recuento:** `deleteProject` y `projectDeletionInfo` con la ruta `DELETE` recableada; `eliminar_proyecto` devuelve el nombre y el resumen de lo que se borrará (tareas, fichas, miembros, pizarras, documentos y archivos), exige `confirmarNombre` exacto (400) y responde 404 si el proyecto no existe. Catálogo `0.15.0`, 41 herramientas.
+- **Fase 3 — Borrado y cierre:** con el nombre exacto y `confirmar: true`, `eliminar_proyecto` ejecuta el borrado en cascada y la limpieza de archivos; si quedan archivos sin limpiar, `unavailable` 503 con el mensaje de la web. Catálogo `0.16.0`.
+- **Contrato (MCP-12):** snapshot regenerado, matriz de roles con las tres herramientas de proyectos y paridad HTTP ↔ MCP en `app/api/proyectos-paridad.test.ts` (alta por propietario y administración, 403 de profesorado, aviso con recuento, nombre incorrecto, 404, borrado y 503).
+- **Ayuda y README:** sección MCP con 41 herramientas; README con 41 / `0.16.0` y la lista real de proyectos (`listar_proyectos`, `crear_proyecto`, `eliminar_proyecto`).
+
+### Verificación
+
+- `npm run lint` 0 errores (3 avisos históricos de `ui://`), `npx tsc --noEmit` limpio, `npm test` **76 archivos / 631 tests** y `npm run build` en verde.
+
+### Seguimiento en backlog
+
+Roadmap vacío a la espera de la siguiente entrada. Quedan DOC-07 (con MCP-11), MCP-05, MCP-09 a MCP-11 y recortes de chunks (6 entradas).
+
+## 2026-11-15 — Roadmap MCP-07 · Miembros e invitaciones del proyecto cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Fase 1 — Extracción y lectura:** `lib/server/members.ts` con `listMembers`, `inviteMember`, `removeMember` y `findMember`, y `/api/members` como envoltura. `listar_miembros` devuelve el miembro sin `userId`, con 403 para alumnado e invitados y filtrado del profesorado a alumnado y su propia ficha. Catálogo `0.11.0`, 37 herramientas.
+- **Fase 2 — Invitación:** `invitar_miembro` con correo, rol y ficha según el rol; 400 «Selecciona una ficha válida para el rol.» y 409 «Esa cuenta ya tiene otro rol en el proyecto.». La invitación queda pendiente y no envía correo. Catálogo `0.12.0`, 38 herramientas.
+- **Fase 3 — Retirada y cierre:** `retirar_miembro` destructiva con aviso previo (correo y rol) y `confirmar: true`; `findMember` comparte búsqueda y permisos con `removeMember`, así que el profesorado solo retira alumnado y cada cual puede retirarse a sí mismo. Catálogo `0.13.0`, 39 herramientas.
+- **Contrato (MCP-12):** snapshot regenerado, matriz de roles con las tres herramientas de miembros y paridad HTTP ↔ MCP en `app/api/personas-paridad.test.ts` (lista sin `userId`, filtrado del profesorado, 403 de alumnado, invitación idempotente, 400/409 y aviso/retirada).
+- **Ayuda y README:** sección MCP con 39 herramientas; README con 39 herramientas y catálogo `0.13.0`.
+
+### Verificación
+
+- `npm run lint` 0 errores (3 avisos históricos de `ui://`), `npx tsc --noEmit` limpio, `npm test` **75 archivos / 609 tests** y `npm run build` en verde.
+
+### Seguimiento en backlog
+
+Roadmap vacío a la espera de la siguiente entrada. Quedan DOC-07 (con MCP-11), MCP-05, MCP-08 a MCP-11 y recortes de chunks (7 entradas).
+
+## 2026-11-15 — Roadmap MCP-06 · Personas: fichas de alumnado y profesorado cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Fase 1 — Extracción y lectura:** la lógica de `mutate` de `/api/students` y `/api/teachers` pasa a `lib/server/people/{campos,students,teachers}.ts` con las rutas como envoltura; `listar_alumnos` y `listar_profesores` añaden rol, actividad, `ayudaIA`, `revision` y estado de cuenta; `obtener_alumno`/`obtener_profesor` responden 404 «No se encuentra la ficha en este proyecto.»; el correo solo aparece bajo `maySeeEmail`. Catálogo `0.8.0`, 30 herramientas.
+- **Fase 2 — Alta y edición:** `crear_alumno`/`crear_profesor` (sección o id generados por el servidor, invitación pendiente si se pasa correo y 403 por rol) y `actualizar_alumno`/`actualizar_profesor` con `revision`, conservando los campos omitidos y devolviendo el 409 de la web. Catálogo `0.9.0`, 34 herramientas.
+- **Fase 3 — Baja y cierre:** `deleteStudent`/`deleteTeacher` compartidos con las rutas `DELETE`; `eliminar_alumno`/`eliminar_profesor` destructivas con `revision`, aviso previo, `confirmar: true` y nombre exacto; la ficha pasa al histórico de 30 días y se retira su cuenta del proyecto. Catálogo `0.10.0`, 36 herramientas.
+- **Contrato (MCP-12):** snapshot regenerado, matriz de roles con las ocho herramientas de personas y paridad HTTP ↔ MCP de fichas en `app/api/personas-paridad.test.ts` (lectura, correo oculto, 404/403, alta, edición, 409 de revisión y bajas).
+- **Ayuda y README:** sección MCP con 36 herramientas, nota de los campos de ficha y aviso de bajas; README con 36 herramientas y catálogo `0.10.0`.
+
+### Verificación
+
+- `npm run lint` 0 errores (3 avisos históricos de `ui://`), `npx tsc --noEmit` limpio, `npm test` **75 archivos / 580 tests** y `npm run build` en verde.
+- La paridad llama a los `GET`/`POST`/`PATCH`/`DELETE` reales de las rutas con `resolveProject` mockeado; las bajas usan el `env.DB` simulado.
+
+### Seguimiento en backlog
+
+MCP-07 entra al roadmap; DOC-07 (con MCP-11), MCP-05, MCP-08 a MCP-11 y recortes de chunks siguen aparcados (7 entradas).
+
+## 2026-11-15 — Roadmap documental de cara al usuario cerrado (DOC-01..DOC-12)
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Ayuda completa en `app/board/docs/content.ts`:** corrección de lo obsoleto (DOC-01), Aula Store y las cuatro apps con sus versiones (DOC-05), tareas y calendario (DOC-02), personas, miembros e invitaciones (DOC-03), proyectos y ajustes (DOC-04), guías por rol y tabla de permisos (DOC-06), FAQ con los mensajes reales (DOC-10), enlaces por vista, portada y remix (DOC-08) y Novedades solo con versiones publicadas (DOC-09). Seis secciones nuevas (`calendario`, `personas`, `proyectos`, `problemas`, `enlaces`, `novedades`), cada una con icono e ilustración propios en `section-art.tsx` y `section-visuals.ts`.
+- **Bloque `image` en la ayuda:** `DocBlock` gana `{ type: "image", src, alt, caption }`, renderizado como `<figure>` con `<figcaption>` y estilos en `docs.css`; las ilustraciones siguen siendo las únicas con nombre accesible por `aria-labelledby`.
+- **Capturas reales sobre un proyecto de demostración (DOC-11):** proyecto «Proyecto de demostración» con seis alumnos y dos profesores ficticios, ocho tareas repartidas por estado y las cuatro apps instaladas, sembrado por la API en la base D1 local (no versionada). Capturas de 1200 px en `public/capturas/{tareas,calendario,espacio,ajustes}.webp` (16–46 KB), tomadas con Chrome headless a 1440×950 y cabeceras de sesión locales; Ajustes se recorta a la ficha de Cuenta para no mostrar tokens de pruebas. Textos alternativos y pies en la ayuda.
+- **Test de cobertura (DOC-12):** `content-coverage.test.ts` aplana el contenido y rompe si falta una vista de `BOARD_VIEWS`, una app de `NATIVE_APPS` (nombre y `appVersion`) o una herramienta de `MCP_TOOLS` (con límites de palabra); para cumplirlo, la sección MCP lista las 28 herramientas por dominio.
+- **Portada y hero:** `app/portada.tsx` y `docsHero.intro` resumen tareas y calendario, fichas, Mi espacio y plugin, sin datos de la instancia.
+
+### Verificación
+
+- `npm run lint` 0 errores (3 avisos históricos de `ui://`), `npx tsc --noEmit` limpio, `npm test` **74 archivos / 511 tests** y `npm run build` en verde.
+- El test de cobertura se comprobó en rojo quitando `cerrar_app` de la ayuda y volvió a verde al restaurar.
+- Las cuatro capturas se revisaron una a una (acentos correctos, sin datos reales de alumnos ni de producción).
+
+### Seguimiento en backlog
+
+DOC-07 (con MCP-11), MCP-05..MCP-11 y recortes de chunks (9 entradas).
+
+## 2026-11-14 — Roadmap MCP-04 · Mi espacio: enlace, ventanas en vivo y `ui://` cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Fase 1 — Enlace profundo:** `app=<appId>` en el esquema de URL de `view=espacio` (`lib/domain/board-url.ts` con `app` en `parseBoardUrl`/`buildBoardUrl` y tests); `SpaceView` abre la ventana indicada al cargar si la app está instalada. Herramienta `abrir_app` (lectura) con el enlace absoluto y 404 «La aplicación no está instalada». Catálogo en 23 herramientas (`0.6.0`).
+- **Fase 2 — Control en vivo:** canal `space` con el DO `SpaceRoom` nuevo (un DO por proyecto, solo en memoria) y ruta `/api/space-socket` en `worker/index.ts`; `SpaceView` publica el estado de sus ventanas y aplica comandos con el hook `use-space-socket`. Herramientas `listar_ventanas`, `cerrar_app`, `minimizar_app`, `restaurar_app`, `ampliar_app` y `abrir_app` en vivo (`ventana_conectada`/`ventana_entregada`); sin pestañas conectadas devuelven enlace sin error. Persistencia decidida como efímera por pestaña, sin tabla. Catálogo en 28 herramientas (`0.7.0`).
+- **Fase 3 — `ui://` (SEP-1865):** Sites/ChatGPT lo admite; implementado con el SDK 1.x instalado, sin `@modelcontextprotocol/ext-apps` (exige SDK v2): recurso `ui://aula-espacio/apertura` (`text/html;profile=mcp-app`) en ambas puertas y `_meta.ui.resourceUri` en `abrir_app`. Mini-app autocontenida con puente `ui/*` (initialize, tool-result con enlace, `tools/call` a `listar_apps`).
+- **Fase 4 — MCP-12 aplicado:** snapshot a 28 herramientas con igualdad de puertas, matriz de roles extendida (191 casos) y paridad MCP ↔ HTTP (18 casos), más 3 tests del hook cliente.
+- **Verificación:** `lint` 0, `tsc` limpio, **73 archivos / 508 tests**, `build` en verde; smoke con el plugin real por fase (catálogo, enlace, 404, `ventana_conectada: false` sin pestañas en dev, `resources/list`/`read`, `_meta` en `tools/list`). El socket en vivo no se puede probar con petición real en dev (vinext no enruta `/api/space-socket` por `worker/index.ts`, igual que `/api/board-socket`); su contrato queda verificado por código, tests del hook y documentación.
+
+### Seguimiento en backlog
+
+MCP-05 (acciones de cada app) y MCP-06..MCP-11, bloque documental DOC-01..DOC-12 (orden sugerido DOC-01 → DOC-05 → DOC-02 → DOC-03 → DOC-07 → DOC-04 → DOC-06 → DOC-10 → DOC-12 → DOC-08 → DOC-09 → DOC-11) y recortes de chunks. La guarda de `/oauth/revoke` en producción sigue pendiente de la próxima publicación.
+
+## 2026-11-14 — Roadmap MCP-03 · Aula Store: catálogo, instalar y desinstalar apps cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Fase 1 — Extracción y catálogo:** `lib/server/apps.ts` (`listInstalledApps`, `setAppInstalled`) con la ruta `/api/space-apps` re-cableada y `appVersion` guardado al instalar. Herramientas `listar_apps` (con `proyectoId` opcional que exige acceso) y `obtener_app` (ficha completa de la tienda).
+- **Fase 2 — Instalación y desinstalación:** `instalar_app` idempotente y `desinstalar_app` con aviso previo (desaparece de Mi espacio para todos; los documentos se conservan) y `confirmar: true`; solo propietario/administrador con el 403 compartido con la ruta. Catálogo en 22 herramientas, versión `0.5.0`.
+- **Fase 3 — MCP-12 aplicado:** snapshot a 22 herramientas con igualdad de puertas, matriz de roles extendida (148 casos por tabla en `matriz.test.ts`) y paridad MCP ↔ HTTP (16 casos en `paridad.test.ts`).
+- **Verificación:** `lint` 0, `tsc` limpio, **72 archivos / 457 tests**, `build` en verde; smoke con el plugin real por fase (catálogo, ficha, idempotencia, aviso/desinstalación con restauración del estado local y ruta GET con la versión de app).
+
+### Seguimiento en backlog
+
+MCP-04 (ventanas de Mi espacio, paso A a continuación) y MCP-05..MCP-11, bloque documental DOC-01..DOC-12 (orden sugerido DOC-01 → DOC-05 → DOC-02 → DOC-03 → DOC-07 → DOC-04 → DOC-06 → DOC-10 → DOC-12 → DOC-08 → DOC-09 → DOC-11) y recortes de chunks. La guarda de `/oauth/revoke` en producción sigue pendiente de la próxima publicación.
+
+## 2026-11-14 — Roadmap MCP-01 + MCP-02 · Contexto, enlaces, tareas completas y calendario cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Fase 1 — MCP-01 (contexto y enlaces):** esquema de URL movido a `lib/domain/board-url.ts` con reexportes en la app sin cambiar sus imports; `lib/server/mcp/links.ts` retirado; enlaces absolutos con el origen de la petición (`lib/server/mcp/enlaces.ts`, `extra.origen` en ambas puertas). Nuevas herramientas: `quien_soy` (identidad, propietario/administrador, proyectos con rol y ficha), `obtener_enlace` (URL canónica absoluta 403/404), `obtener_resumen_proyecto` (tareas por estado, vencidas, semana, personas, apps y enlaces) e invitaciones (`listar_invitaciones_pendientes`, `aceptar_invitacion`; lógica extraída a `lib/server/invitaciones.ts` y ruta re-cableada; 404 ajena/409 compartida).
+- **Fase 2 — MCP-02 (tareas completas y calendario):** `mover_tarea`, `asignar_tarea`, `desasignar_tarea`, `reprogramar_tarea` (mismo `updateTask` y permisos que la web; 409 con `revisionActual`); `listar_tareas` con `profesor`, rango de vencimiento, `sinFecha`, `vencidas` y `orden`; `listar_calendario` agrupado por día con tope de 92 días. `adjuntar_imagen_tarea` queda aparcada hasta MCP-10 (archivos). Catálogo en 18 herramientas, versión `0.4.0`.
+- **Fase 3 — MCP-12 aplicado:** snapshot a 18 herramientas con igualdad de puertas, matriz de roles 18 × 7 (122 casos por tabla en `matriz.test.ts`) y paridad MCP ↔ HTTP extendida (403/404 de contrato, invitaciones, refs 400, mover/reprogramar 409 y calendario 400 en `paridad.test.ts`).
+- **Verificación:** `lint` 0, `tsc` limpio, **72 archivos / 428 tests**, `build` en verde; smoke con el plugin real en cada fase (enlaces absolutos, calendario agrupado, mover/reprogramar con revisión, 404 estructurados). Base local limpia.
+
+### Seguimiento en backlog
+
+MCP-03 (Aula Store) es el siguiente en dependencia; MCP-04..MCP-11 y los recortes de chunks siguen aparcados. La guarda de `/oauth/revoke` en producción sigue pendiente de la próxima publicación.
+
+## 2026-11-14 — Roadmap MCP-00 + MCP-12 · Fundamentos del catálogo y su contrato cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Fase 1 — MCP-00 (fundamentos del catálogo):** registro central `lib/server/mcp/registro.ts` con un módulo por dominio (`dominios/proyectos.ts`, `tareas.ts`, `personas.ts`); `READ_TOOL_NAMES`/`WRITE_TOOL_NAMES` y `scopeForTool` derivan de cada definición, así que una herramienta nueva sin alcance rompe un test. Errores con contrato HTTP (`isError` + `structuredContent.error = { codigo, estado, mensaje }`: 401/400/404/403 desde `PROJECT_FAILURE_RESPONSES`, más 409/413/503/429) y `outputSchema` + `structuredContent` conservando el texto JSON. Anotaciones (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint: false`) en las 8 herramientas; `eliminar_tarea` (única destructiva) avisa antes y solo borra con `confirmar: true`. Revisión con `conflict` 409 y `revisionActual` en el error. Paginación uniforme (`pagina`/`porPagina`/`total`) en todas las listas. Tabla `mcp_audit_log` (migración `0034`; fecha, cuenta, vía, `clientId`, herramienta, proyecto, resultado, duración; sin argumentos) con retención de 90 días y purga al registrar; best-effort, nunca rompe la llamada. Límite del plugin por `userId` 120/min y 30/min en escrituras. Un solo catálogo, dos puertas: la versión sube a `0.2.0`. `imagenUrl` valida igual que `/api/tasks`; `listVisibleProjects` (`lib/server/projects.ts`) resuelve el rol global una sola vez por petición.
+- **Fase 2 — MCP-12 (contrato y pruebas):** snapshot de `tools/list` con esquemas, anotaciones y alcance; igualdad entre las puertas `/mcp` y `/api/mcp`; invariantes de alcance y anotaciones; matriz de roles 8 herramientas × 7 casos (propietario, administrador, profesor, alumno, invitado, sin acceso, inexistente) en `matriz.test.ts`; paridad MCP ↔ HTTP por operación en `paridad.test.ts` (resolución, invitado, alumno y fallos de mutación tal cual).
+- **Verificación:** `lint` 0, `tsc` limpio, **72 archivos / 354 tests**, `build` en verde; smoke con el plugin real (aviso sin borrar → borrado con `confirmar`, 409 con revisión, filas de auditoría). Base local limpia.
+- **Alcance aplazado (decisión registrada):** la extracción de las rutas HTTP a `lib/server` solo se hizo para proyectos (tareas ya vivía allí); apps, documentos, pizarras, miembros, invitaciones, fichas, administradores y subidas se extraerán con sus dominios (MCP-03..MCP-10).
+
+### Seguimiento en backlog
+
+MCP-01 (contexto y enlaces) y MCP-02 (tareas completas y calendario) como candidatos; MCP-03..MCP-11 y recortes de chunks siguen aparcados. La guarda de `/oauth/revoke` en producción sigue pendiente de la próxima publicación (ver entrada del plugin).
+
+## 2026-11-14 — Roadmap de Plugin de Aula Kanban para Sites cerrado
+
+**Estado:** Completada · Publicada (plugin verificado en GPT) · La guarda de `/oauth/revoke` en producción queda para la próxima publicación
+
+### Cambios
+
+- **Fase 1 — Protocolo e identidad:** endpoint `/mcp` con el catálogo MCP existente (`app/mcp/route.ts`: `server/discover` con versión `2026-07-28`, `tools/list` con las 8 herramientas y su `inputSchema`, `tools/call` con validación zod de argumentos) y capacidad `mcp` declarada en `.openai/hosting.json`. La identidad sale de `getChatGPTUser()` (cabeceras `oai-authenticated-user-*` de Sites); los `userId`/`email` enviados en argumentos se ignoran.
+- **Verificación de la Fase 1 (2026-11-14, dev 5173):** ciclo completo como propietario (crear → obtener → actualizar → eliminar); roles con cambio temporal y restauración de `instance_owner`/`project_members` en la D1 local: alumno (`rol: student`) crea sin responsable y asignada a sí mismo y recibe «Solo puedes asignarte la tarea a ti o dejarla sin asignar» con responsable ajeno; invitado (`rol: guest`) lee y recibe «Las cuentas invitadas solo pueden consultar el proyecto» al escribir; sin membresía, 0 proyectos; sin sesión, 401 `-32001`.
+- **Fase 2 — Seguridad y publicación:** el servidor OAuth experimental responde **503 en producción** en todos sus endpoints (`/oauth/register`, `/authorize` + consentimiento, `/oauth/token`, descubrimiento `/.well-known/*`); en la revisión de cierre se añadió la guarda que faltaba en `/oauth/revoke` (inerte en producción —sin tokens creables—, pero ya consistente; saldrá en la próxima publicación). El MCP de tokens personales (`/api/mcp`) queda como vía separada del plugin nativo.
+- **Manifiesto:** el `hosting.json` versionado conserva el ejemplo (`appgprj_0000…`); el `project_id` real sigue en `.openai/hosting.local.json` (gitignored) y el plugin vendored lo copia a `dist/.openai/hosting.json` al compilar, sin tocar la historia.
+- **Migraciones:** las 0031–0033 se aplican en Sites antes de actualizar el Worker en cada publicación; el plugin no depende de las tablas OAuth/MCP en producción.
+- **Verificación:** **69 archivos / 286 tests**, `lint`, `tsc` y `build` en verde sobre el árbol publicado. El propietario confirmó el plugin funcionando en GPT y en el Site.
+
+### Seguimiento en backlog
+
+Recortes de rendimiento de los chunks pesados. La entrada «GPT con Actions» queda cerrada: el plugin de Sites la sustituye.
+
+## 2026-11-14 — Roadmap de OAuth 2.1 para MCP y GPT cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Fase 1 — Servidor de autorización en el Site:** migración `0033_adorable_trish_tilby` (`oauth_clients`, `oauth_authorization_codes`, `oauth_access_tokens`, `oauth_refresh_tokens`), servicio `lib/server/oauth/` con secretos hasheados con sal y rutas `/oauth/register` (RFC 7591), `/oauth/authorize` + consentimiento con sesión SIWC y guarda de mismo origen, `/oauth/token` (authorization code con PKCE S256 obligatorio y refresh con rotación), `/oauth/revoke` (RFC 7009) y descubrimiento (`/.well-known/oauth-authorization-server`, `/.well-known/oauth-protected-resource/mcp`).
+- **Fase 2 — MCP como resource server OAuth:** verificador unificado `lib/server/mcp/auth.ts` (token personal `ak_mcp_…` con cuenta completa, o token OAuth con sus alcances `mcp:read`/`mcp:write` y recurso `origen/api/mcp`); pre-check de alcance en `tools/call` con `403 insufficient_scope` y desafío con `resource_metadata` en el `401`; `verifyAccessToken` devuelve `tokenId` y actualiza `last_used_at`.
+- **Fase 3 — Cierre con el GPT:** datos de conexión de ChatGPT Actions listos (authorization/token/revocation URL, recurso, scopes, registro previo del cliente) y documentación de instalación OAuth en `README.md` y en la nueva sección «Autorización OAuth» de `/documentacion` (descubrimiento, alcances, vigencias, revocación, nota de que los tokens personales siguen funcionando).
+- **Verificación:** **68 archivos / 279 tests**, `lint`, `tsc` y `build` en verde; smoke en dev (curl, sin Inspector en el entorno) del flujo completo: lectura 200, escritura sin `mcp:write` 403, revocado 401, token personal 200.
+
+### Seguimiento en backlog
+
+GPT con Actions y recortes de chunks.
+
+## 2026-11-14 — Roadmap de Repositorio público en GitHub, licencia MIT y CI cerrado
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- **Historial saneado:** los 65 commits de `main` quedaron con autor/committer `JaminSmoke <80690017+jaminsmoke@users.noreply.github.com>` (sin Gmail) tras `git filter-repo` con mailmap; copia de seguridad deliberada en la rama `respaldo-pre-github` y en `respaldo-pre-github.bundle` (ambas locales, sin publicar), `user.email` local al `noreply` y flujo de publicación de Sites intacto.
+- **`hosting.json` protegido:** el fichero versionado de `.openai/hosting.json` lleva un ejemplo (`appgprj_0000…`); el valor real vive en `.openai/hosting.local.json`, **gitignored**, y la build lo usa al publicar (pequeña desviación documentada en el plugin vendored). Los clonadores publican un `project_id` propio sin tocar el valor versionado.
+- **Licencia MIT** en la raíz («Copyright (c) 2026 Jorge Martín Delgado (JaminSmoke)») y **textos oficiales de licencia** de las ocho fuentes latinas de Excalidraw en `public/excalidraw/fonts/<Familia>/` (Assistant, Lilita y Nunito de `google/fonts`, Virgil de `excalidraw/virgil`, Cascadia de `microsoft/cascadia-code`, Liberation de `liberationfonts`, ComicShanns de `shannpersand/comic-shanns`, Excalifont con su encabezado oficial + OFL 1.1).
+- **CI** en `.github/workflows/ci.yml` (push/PR a `main`: `npm ci`, `lint`, `tsc --noEmit`, `vitest`, sin secretos), en verde en el repositorio público en ambos pushes.
+- **Repositorio público** [`jaminsmoke/aula-kanban`](https://github.com/jaminsmoke/aula-kanban) con tag `v1.1.24`, creado desde esta carpeta como remote adicional `github` (Sites sigue siendo el origen de publicación, sin migrar nada).
+- **Documentación y remix:** README con sección «Clonar desde GitHub» e instrucciones para un agente; el diálogo «Haz tu Site de Aula Kanban» ofrece ahora dos mensajes copiables (`@Sites` y «Copiar mensaje (git)» sobre clonar y publicar).
+- **Verificación:** suite completa **65/259 tests**, `lint`, `tsc` y `build` locales en verde; CI en verde en GitHub tras el primer y el segundo push.
+
+### Seguimiento en backlog
+
+OAuth 2.1, GPT con Actions y recortes de chunks.
+
 ## 2026-11-14 — Roadmap de Hidratación en `view=ajustes` cerrado
 
 **Estado:** Completada · Pendiente de publicación

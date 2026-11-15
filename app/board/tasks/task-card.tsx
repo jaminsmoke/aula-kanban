@@ -26,6 +26,7 @@ export default function TaskCard({ task, dragging, editable, onEdit, style, node
   return (
     <button type="button" ref={nodeRef} style={style} className={dragging ? "card dragging" : "card"} onClick={onEdit} title={editable ? "Abrir tarea" : "Ver tarea (solo lectura)"}>
       {task.imageUrl && task.imageUrl !== brokenImageUrl && <img className="card-image" src={task.imageUrl} alt="" loading="lazy" onError={() => setBrokenImageUrl(task.imageUrl)} />}
+      {task.imageUrl && task.imageUrl === brokenImageUrl && <span className="card-image-missing" role="status">Imagen no disponible</span>}
       <span className="card-top">
         <span className={`priority ${task.priority}`}><Flag size={12} /> {priorityNames[task.priority]}</span>
         <span className="grip" {...activatorProps} onClick={(event) => event.stopPropagation()}>

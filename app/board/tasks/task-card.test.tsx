@@ -64,6 +64,7 @@ describe("TaskCard", () => {
     const { container, rerender, handlers } = renderCard({ imageUrl: "https://ejemplo.test/rota.png" });
     fireEvent.error(container.querySelector("img")!);
     expect(container.querySelector("img")).toBeNull();
+    expect(screen.getByText("Imagen no disponible")).toBeTruthy();
     rerender(<TaskCard task={{ ...task, imageUrl: "https://ejemplo.test/nueva.png" }} dragging={false} editable {...handlers} />);
     expect(container.querySelector("img")?.getAttribute("src")).toBe("https://ejemplo.test/nueva.png");
   });

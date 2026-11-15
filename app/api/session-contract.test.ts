@@ -75,7 +75,7 @@ describe("contrato de respuestas sin sesión", () => {
     mocks.status = "unauthenticated";
     mocks.owner = false;
     mocks.admin = false;
-    mocks.read.mockReset().mockResolvedValue({ row: { projectId: "p1" }, object: { body: new Blob(["x"]) } });
+    mocks.read.mockReset().mockResolvedValue({ status: "ok", row: { projectId: "p1" }, object: { body: new Blob(["x"]) } });
   });
 
   it("responde 401 en todas las rutas sin sesión", async () => {

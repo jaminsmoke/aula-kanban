@@ -64,6 +64,13 @@ describe("resolución de proyecto", () => {
     expect(await resolveProject(request(), dependencies())).toEqual({ status: "ok", project: { ...project, access } });
   });
 
+  it("comprueba el permiso contra el UUID canónico al resolver un enlace antiguo", async () => {
+    const accessForUser = vi.fn(async () => access);
+    const result = await resolveProject(request("?project=default"), dependencies({ findProject: async () => project, accessForUser }));
+    expect(accessForUser).toHaveBeenCalledWith("p1", user);
+    expect(result).toMatchObject({ status: "ok", project: { id: "p1" } });
+  });
+
   it("usa el proyecto por defecto cuando falta el parámetro", async () => {
     const findProject = vi.fn(async (id: string) => ({ ...project, id }));
     const result = await resolveProject(request(""), dependencies({ findProject }));

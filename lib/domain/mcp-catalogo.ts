@@ -1,0 +1,437 @@
+/**
+ * Metadatos públicos del catálogo MCP: nombre, título, descripción, alcance y
+ * anotaciones. Vive en `lib/domain` (sin dependencias de servidor) para que el
+ * registro, la ayuda y el README lean la misma lista (DOC-07 + MCP-11).
+ */
+
+/** Dominios públicos del catálogo, en el orden en que se agrupan. */
+export const MCP_DOMINIOS = ["Proyectos", "Archivos", "Tareas", "Personas", "Contexto", "Invitaciones", "Aula Store", "Ventanas", "Administración"] as const;
+
+/** Dominio de una herramienta. */
+export type McpDominio = (typeof MCP_DOMINIOS)[number];
+
+/** Versión del contrato de herramientas. */
+export const MCP_CATALOG_VERSION = "0.20.0";
+
+/** Metadatos de una herramienta del catálogo. */
+export type McpCatalogoEntry = {
+  domain: McpDominio;
+  name: string;
+  title: string;
+  description: string;
+  scope: "mcp:read" | "mcp:write";
+  annotations: { readOnlyHint: boolean; destructiveHint: boolean; idempotentHint: boolean; openWorldHint: false };
+};
+
+/** Catálogo público en el orden en que se registran las herramientas. */
+export const MCP_CATALOGO: McpCatalogoEntry[] = [
+  {
+    domain: "Proyectos",
+    name: "listar_proyectos",
+    title: "Listar proyectos",
+    description: "Lista los proyectos de Aula Kanban visibles para la cuenta del token.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Proyectos",
+    name: "crear_proyecto",
+    title: "Crear proyecto",
+    description: "Crea un proyecto nuevo con su nombre; el servidor genera el id y devuelve el enlace. Solo el propietario o la administración pueden crear proyectos.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false},
+  },
+  {
+    domain: "Proyectos",
+    name: "eliminar_proyecto",
+    title: "Eliminar proyecto",
+    description: "Elimina un proyecto y todo su contenido. Sin `confirmar: true` devuelve el recuento de lo que se borrará; después exige el nombre exacto en `confirmarNombre`. Solo el propietario o la administración.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":true,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Archivos",
+    name: "subir_archivo",
+    title: "Subir archivo",
+    description: "Sube un archivo al proyecto y devuelve sus metadatos y su enlace. Acepta imágenes PNG/JPEG/WebP/GIF para tareas o pizarras, y PDF, texto, Markdown, CSV o imágenes como documento. Las cuentas invitadas no escriben.",
+    scope: "mcp:write",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  },
+  {
+    domain: "Archivos",
+    name: "obtener_archivo",
+    title: "Obtener archivo",
+    description: "Devuelve los metadatos y el enlace de un archivo del proyecto, sin descargar su contenido binario.",
+    scope: "mcp:read",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    domain: "Tareas",
+    name: "listar_tareas",
+    title: "Listar tareas",
+    description: "Lista las tareas de un proyecto con filtros opcionales. Sin `proyectoId` lista las tareas de todos los proyectos visibles.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Tareas",
+    name: "obtener_tarea",
+    title: "Obtener tarea",
+    description: "Devuelve una tarea con sus responsables, su estado y su revisión.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Tareas",
+    name: "crear_tarea",
+    title: "Crear tarea",
+    description: "Crea una tarea en el proyecto. Respeta los permisos de la cuenta: un alumno solo puede asignársela a sí mismo o dejarla sin asignar, y una cuenta invitada no puede crear.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false},
+  },
+  {
+    domain: "Tareas",
+    name: "actualizar_tarea",
+    title: "Actualizar tarea",
+    description: "Actualiza los campos indicados de una tarea o solo su estado. Devuelve la revisión nueva para la siguiente operación.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Tareas",
+    name: "mover_tarea",
+    title: "Mover tarea",
+    description: "Cambia solo el estado de una tarea (el cambio de columna del tablero). Sin cambiar sus demás datos; con `revision` se protege del conflicto.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Tareas",
+    name: "asignar_tarea",
+    title: "Asignar tarea",
+    description: "Añade responsables a una tarea sin reenviar la lista completa. El alumnado solo puede asignarse a sí mismo.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Tareas",
+    name: "desasignar_tarea",
+    title: "Desasignar tarea",
+    description: "Quita responsables de una tarea sin reenviar la lista completa.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Tareas",
+    name: "reprogramar_tarea",
+    title: "Reprogramar tarea",
+    description: "Cambia solo la fecha de vencimiento de una tarea (fecha YYYY-MM-DD o un valor vacío para quitarla).",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Tareas",
+    name: "listar_calendario",
+    title: "Calendario del proyecto",
+    description: "Lista las tareas con fecha de vencimiento de un proyecto agrupadas por día en un rango (máximo 92 días), con el enlace del calendario.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Tareas",
+    name: "eliminar_tarea",
+    title: "Eliminar tarea",
+    description: "Elimina una tarea del proyecto. Sin `confirmar: true` devuelve primero un aviso con lo que se borrará. No se puede deshacer.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":true,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "listar_alumnos",
+    title: "Listar alumnado",
+    description: "Lista el alumnado del proyecto con sección, nombre, rol, actividad, revisión y estado de cuenta; el correo solo si la cuenta puede verlo.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "listar_profesores",
+    title: "Listar profesorado",
+    description: "Lista el profesorado del proyecto con id, nombre, rol, actividad, revisión y estado de cuenta; el correo solo si la cuenta puede verlo.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "obtener_alumno",
+    title: "Obtener alumnado",
+    description: "Devuelve una ficha de alumnado por su sección, con rol, actividad, revisión y estado de cuenta. Falla con not_found si no existe en el proyecto.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "obtener_profesor",
+    title: "Obtener profesorado",
+    description: "Devuelve una ficha de profesorado por su id, con rol, actividad, revisión y estado de cuenta. Falla con not_found si no existe en el proyecto.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "listar_miembros",
+    title: "Listar miembros",
+    description: "Lista los miembros e invitaciones del proyecto sin exponer el userId. El alumnado y los invitados reciben 403; el profesorado solo ve alumnado y su propia ficha.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "invitar_miembro",
+    title: "Invitar miembro",
+    description: "Crea o actualiza una invitación pendiente con correo, rol y la ficha que corresponda; invitar no envía correo. El profesorado solo invita alumnado y cada cual puede invitarse a sí mismo. Falla con 400 si la ficha no encaja con el rol y con 409 si la cuenta ya tiene otro rol.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "retirar_miembro",
+    title: "Retirar miembro",
+    description: "Retira el acceso de una cuenta o una invitación del proyecto. Sin `confirmar: true` devuelve un aviso con el correo y el rol. El profesorado solo retira alumnado y cada cual puede retirarse a sí mismo.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":true,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "crear_alumno",
+    title: "Crear alumnado",
+    description: "Crea una ficha de alumnado (el servidor genera la sección) y, si se pasa correo, deja la invitación pendiente. Solo profesorado, administración y propietario.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "crear_profesor",
+    title: "Crear profesorado",
+    description: "Crea una ficha de profesorado (el servidor genera el id) y, si se pasa correo, deja la invitación pendiente. Solo administración y propietario.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "actualizar_alumno",
+    title: "Actualizar alumnado",
+    description: "Edita una ficha de alumnado con su revisión; los campos que no se envían se conservan. El alumnado solo puede editar su propia ficha y los invitados no editan.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "actualizar_profesor",
+    title: "Actualizar profesorado",
+    description: "Edita una ficha de profesorado con su revisión; los campos que no se envían se conservan. El profesorado solo puede editar su propia ficha.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "eliminar_alumno",
+    title: "Eliminar alumnado",
+    description: "Elimina una ficha de alumnado con su revisión. Sin `confirmar: true` devuelve un aviso; después exige el nombre exacto. Pasa al histórico de 30 días y retira su cuenta del proyecto.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":true,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Personas",
+    name: "eliminar_profesor",
+    title: "Eliminar profesorado",
+    description: "Elimina una ficha de profesorado con su revisión. Sin `confirmar: true` devuelve un aviso; después exige el nombre exacto. Pasa al histórico de 30 días y retira su cuenta del proyecto.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":true,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Contexto",
+    name: "quien_soy",
+    title: "Quién soy",
+    description: "Identifica la cuenta del token: nombre, correo, si es propietaria o administradora y sus proyectos con rol y ficha vinculada. Llamar primero antes de operar.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Contexto",
+    name: "obtener_enlace",
+    title: "Obtener enlace",
+    description: "Devuelve la URL absoluta canónica del Site para una vista y sección de un proyecto accesible, para mandarla al usuario.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Contexto",
+    name: "abrir_app",
+    title: "Abrir app",
+    description: "Devuelve la URL absoluta de Mi espacio con la app indicada abierta (paso A de MCP-04). Falla con not_found si la app no está instalada.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Contexto",
+    name: "obtener_resumen_proyecto",
+    title: "Resumen del proyecto",
+    description: "Resumen de un proyecto: tareas por estado, vencidas y de esta semana, alumnos y profesores, apps instaladas y enlaces.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Invitaciones",
+    name: "listar_invitaciones_pendientes",
+    title: "Invitaciones pendientes",
+    description: "Lista las invitaciones pendientes de la cuenta autenticada, de proyecto y de administración del sitio.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Invitaciones",
+    name: "aceptar_invitacion",
+    title: "Aceptar invitación",
+    description: "Acepta una invitación pendiente de la cuenta autenticada. Falla con 404 si ya no es para esta cuenta y con 409 si ya pertenece al proyecto.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false},
+  },
+  {
+    domain: "Aula Store",
+    name: "listar_apps",
+    title: "Listar apps",
+    description: "Lista el catálogo de Aula Store con su estado de instalación en la instancia. Con `proyectoId` exige acceso a ese proyecto; sin él basta estar autenticado.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Aula Store",
+    name: "obtener_app",
+    title: "Obtener app",
+    description: "Devuelve la ficha completa de la tienda de una app del catálogo.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Aula Store",
+    name: "instalar_app",
+    title: "Instalar app",
+    description: "Instala una app en toda la instancia (idempotente). Solo el propietario o un administrador; el resto recibe 403.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Aula Store",
+    name: "desinstalar_app",
+    title: "Desinstalar app",
+    description: "Desinstala una app de toda la instancia. Destructiva para el escritorio: sin `confirmar: true` avisa primero. Solo el propietario o un administrador; el resto recibe 403. Los documentos guardados se conservan.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":true,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Ventanas",
+    name: "listar_ventanas",
+    title: "Listar ventanas",
+    description: "Lista las ventanas abiertas en las pestañas conectadas de la propia cuenta en Mi espacio. Sin pestañas conectadas devuelve conectadas: false y el enlace al espacio.",
+    scope: "mcp:read",
+    annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Ventanas",
+    name: "cerrar_app",
+    title: "Cerrar app",
+    description: "Cierra la ventana abierta de la app en las pestañas conectadas de la propia cuenta (idempotente). Sin pestaña conectada devuelve ventana_entregada: false y el enlace.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Ventanas",
+    name: "minimizar_app",
+    title: "Minimizar app",
+    description: "Minimiza la ventana abierta de la app en las pestañas conectadas de la propia cuenta (idempotente). Sin pestaña conectada devuelve ventana_entregada: false y el enlace.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Ventanas",
+    name: "restaurar_app",
+    title: "Restaurar app",
+    description: "Restaura la ventana minimizada de la app en las pestañas conectadas de la propia cuenta (idempotente). Sin pestaña conectada devuelve ventana_entregada: false y el enlace.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Ventanas",
+    name: "ampliar_app",
+    title: "Ampliar app",
+    description: "Amplía la ventana de la app a pantalla completa en las pestañas conectadas de la propia cuenta (idempotente). Sin pestaña conectada devuelve ventana_entregada: false y el enlace.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
+  },
+  {
+    domain: "Administración",
+    name: "listar_administradores",
+    title: "Listar administradores",
+    description: "Lista las fichas de administrador de la instancia con nombre, correo, revisión y estado de cuenta. Solo el propietario o un administrador.",
+    scope: "mcp:read",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    domain: "Administración",
+    name: "crear_administrador",
+    title: "Crear administrador",
+    description: "Crea una ficha de administrador con nombre y correo opcional; si lleva correo, queda pendiente de aceptación. Solo el propietario o un administrador.",
+    scope: "mcp:write",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  },
+  {
+    domain: "Administración",
+    name: "actualizar_administrador",
+    title: "Actualizar administrador",
+    description: "Actualiza una ficha de administrador con su revisión; cambiar el correo retira el acceso anterior hasta que la cuenta vuelva a aceptar. Solo el propietario o un administrador.",
+    scope: "mcp:write",
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  },
+  {
+    domain: "Administración",
+    name: "eliminar_administrador",
+    title: "Eliminar administrador",
+    description: "Elimina una ficha de administrador con su revisión. Sin `confirmar: true` devuelve un aviso; después exige el nombre o el correo exacto. Solo el propietario o un administrador.",
+    scope: "mcp:write",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    domain: "Administración",
+    name: "listar_tokens_mcp",
+    title: "Listar tokens MCP",
+    description: "Lista los tokens MCP de la propia cuenta con etiqueta, fechas y estado de revocación; nunca devuelve el secreto, el hash ni la sal.",
+    scope: "mcp:read",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    domain: "Administración",
+    name: "revocar_token_mcp",
+    title: "Revocar token MCP",
+    description: "Revoca un token MCP propio. Sin `confirmar: true` devuelve un aviso con su etiqueta y fechas; si es el token en uso, la siguiente llamada falla. No crea tokens.",
+    scope: "mcp:write",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
+  },
+  {
+    domain: "Administración",
+    name: "listar_actividad_mcp",
+    title: "Listar actividad MCP",
+    description: "Lista la auditoría de llamadas MCP con filtros y paginación. La cuenta ve solo sus filas; el propietario o un administrador ven toda la instancia. No devuelve argumentos ni contenidos.",
+    scope: "mcp:read",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+];
+
+/**
+ * Metadatos de una herramienta por su nombre.
+ * @param name - Nombre de la herramienta.
+ * @returns Los metadatos o `undefined` si no está en el catálogo.
+ */
+export function metaDeHerramienta(name: string): McpCatalogoEntry | undefined {
+  return MCP_CATALOGO.find((entry) => entry.name === name);
+}

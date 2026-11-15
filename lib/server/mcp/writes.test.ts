@@ -102,7 +102,7 @@ describe("herramientas de escritura del MCP", () => {
       const created = await client.callTool({ name: "crear_tarea", arguments: { proyectoId: projectId, titulo: "X", prioridad: "normal", estado: "pending" } });
       expect(created.isError).toBe(true);
       expect(textOf(created)).toContain("Las cuentas invitadas solo pueden consultar el proyecto.");
-      const deleted = await client.callTool({ name: "eliminar_tarea", arguments: { proyectoId: projectId, tareaId: taskId } });
+      const deleted = await client.callTool({ name: "eliminar_tarea", arguments: { proyectoId: projectId, tareaId: taskId, confirmar: true } });
       expect(deleted.isError).toBe(true);
       expect(textOf(deleted)).toContain("Las cuentas invitadas solo pueden consultar el proyecto.");
       expect(createTask).not.toHaveBeenCalled();
@@ -158,7 +158,7 @@ describe("herramientas de escritura del MCP", () => {
   it("el fallo de negocio de deleteTask se devuelve como error con su mensaje", async () => {
     deleteTask.mockResolvedValueOnce({ ok: false, status: 403, message: "Solo puedes eliminar tareas asignadas únicamente a ti." });
     await withClient(async (client) => {
-      const result = await client.callTool({ name: "eliminar_tarea", arguments: { proyectoId: projectId, tareaId: taskId } });
+      const result = await client.callTool({ name: "eliminar_tarea", arguments: { proyectoId: projectId, tareaId: taskId, confirmar: true } });
       expect(result.isError).toBe(true);
       expect(textOf(result)).toContain("Solo puedes eliminar tareas asignadas únicamente a ti.");
     });
@@ -166,7 +166,7 @@ describe("herramientas de escritura del MCP", () => {
 
   it("eliminar_tarea usa la revisión actual si se omite y responde el id", async () => {
     await withClient(async (client) => {
-      const result = await client.callTool({ name: "eliminar_tarea", arguments: { proyectoId: projectId, tareaId: taskId } });
+      const result = await client.callTool({ name: "eliminar_tarea", arguments: { proyectoId: projectId, tareaId: taskId, confirmar: true } });
       expect(deleteTask).toHaveBeenCalledOnce();
       expect(deleteTask.mock.calls[0][0]).toMatchObject({ id: taskId, revision: 3 });
       expect(JSON.parse(textOf(result)).eliminada).toBe(taskId);

@@ -5,9 +5,10 @@ import { administrators, projectMembers, projects, tasks } from "../db/schema";
 import { runWithConnectorBinding } from "../lib/connector-context";
 import { BoardRoom } from "../lib/server/board-room";
 import { ensureInstanceOwner, isInstanceOwner } from "../lib/server/owner";
+import { SpaceRoom } from "../lib/server/space-room";
 import type { ConnectorBinding } from "../lib/connector-contract.mjs";
 
-export { BoardRoom };
+export { BoardRoom, SpaceRoom };
 
 /**
  * Comprueba la cuenta de la petición y la delega a la sala de su pizarra.
@@ -52,9 +53,44 @@ async function boardSocket(request: Request, env: Cloudflare.Env) {
   return rooms.getByName(`${projectId}:${ownerType}:${ownerId}`).fetch(request);
 }
 
+/**
+ * Escritorio en vivo de Mi espacio (Fase 2 de MCP-04): valida la cuenta como
+ * el socket de pizarras y delega en la sala de su proyecto.
+ * Contrato HTTP del upgrade: 401 sin sesión, 400 sin proyecto, 404 proyecto
+ * o acceso no disponible y 503 sin bindings.
+ * @param request - Petición de upgrade del socket.
+ * @param env - Entorno con los bindings de salas y base de datos.
+ * @returns La respuesta del Durable Object o el error HTTP del contrato.
+ */
+async function spaceSocket(request: Request, env: Cloudflare.Env) {
+  const userId = request.headers.get("oai-authenticated-user-id");
+  const email = request.headers.get("oai-authenticated-user-email") || "";
+  if (!userId) return new Response(null, { status: 401 });
+  const rooms = env.SPACE_ROOMS;
+  if (!rooms || !env.DB) return new Response(null, { status: 503 });
+  const projectId = new URL(request.url).searchParams.get("project");
+  if (!projectId || projectId.length > 80) return new Response(null, { status: 400 });
+  const db = drizzle(env.DB);
+  const [project] = await db.select({ id: projects.id }).from(projects).where(eq(projects.id, projectId));
+  if (!project) return new Response(null, { status: 404 });
+  const owner = await ensureInstanceOwner(env.DB, { userId, email }, env.OWNER_EMAIL);
+  let allowed = isInstanceOwner(owner, { userId, email });
+  if (!allowed) {
+    const [admin] = await db.select({ id: administrators.id }).from(administrators).where(eq(administrators.userId, userId));
+    allowed = Boolean(admin);
+  }
+  if (!allowed) {
+    const [member] = await db.select({ id: projectMembers.id }).from(projectMembers).where(and(eq(projectMembers.projectId, projectId), eq(projectMembers.userId, userId), eq(projectMembers.status, "active")));
+    allowed = Boolean(member);
+  }
+  if (!allowed) return new Response(null, { status: 404 });
+  return rooms.getByName(projectId).fetch(request);
+}
+
 const worker = {
   fetch(request: Request, env: Cloudflare.Env, ctx: ExecutionContext<{ CONNECTORS?: ConnectorBinding }>) {
     if (new URL(request.url).pathname === "/api/board-socket") return boardSocket(request, env);
+    if (new URL(request.url).pathname === "/api/space-socket") return spaceSocket(request, env);
     let binding = ctx.props?.CONNECTORS;
     // Local preview emulates the same request-scoped capability. This branch and
     // the auxiliary service binding are absent from production builds.

@@ -30,8 +30,14 @@
 .admin-note { padding:9px 11px; border:1px solid #f0dcb0; border-radius:9px; background:#fff8ea; color:#7a5000; }
 .admin-remove { color:var(--danger); }
 .admin-confirm { display:grid; gap:10px; padding:12px; border-radius:9px; background:var(--danger-soft); }
-.admin-confirm > div { display:flex; justify-content:flex-end; gap:8px; }
-.admin-error { color:var(--danger); }
+.admin-confirm > div { display:flex; justify-content:flex-end; gap:8px; }.admin-error { color: var(--danger); }
+.storage-section { margin-top: 26px; padding-top: 24px; border-top: 1px solid var(--line); }
+.storage-status { display:grid; gap:7px; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--surface-muted); }
+.storage-status.ok { border-color:#b9dfcf; background:#f1faf6; }
+.storage-status.error { border-color:#f2cdd9; background:var(--danger-soft); }
+.storage-status strong { font-size:13px; }
+.storage-status p { margin:0; color:var(--muted); line-height:1.5; }
+.storage-status ul { display:grid; gap:3px; margin:2px 0 0; padding-left:18px; color:var(--muted); font-size:12px; }
 
 /* Tokens del MCP (dentro de Cuenta) */
 .token-panel { display:grid; gap:14px; padding-top:6px; border-top:1px solid var(--line); }

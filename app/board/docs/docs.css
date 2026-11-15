@@ -209,3 +209,16 @@
   .doc-section-head h2 { font-size: 20px; }
   .doc-lead { font-size: 15.5px; }
 }
+
+/* --- Capturas del proyecto de demostración ------------------------------- */
+.doc-figure { margin: 22px 0 0; }
+.doc-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--docs-radius);
+  background: var(--white);
+  box-shadow: var(--docs-shadow);
+}
+.doc-figure figcaption { margin-top: 9px; color: var(--muted); font-size: 13px; }

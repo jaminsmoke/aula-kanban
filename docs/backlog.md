@@ -4,32 +4,31 @@
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** las entradas de esta revisión del 2026-11-14 comparten fecha; se muestran en el orden en que se acordaron. Las dependencias van en cada entrada.
+> **Nota:** el 2026-11-15 DOC-07 + MCP-11, MCP-09 y MCP-10 se cerraron; PER-01 pasó al roadmap y SYNC-01 entra arriba; MCP-05 y los recortes siguen aquí, en su orden.
 
 ---
 
+## 2026-11-15 — SYNC-01 · Sincronizar el repositorio tras cada publicación
 
-## 2026-11-14 — OAuth 2.1 y tokens para clientes externos (MCP y GPT)
-
-- Contexto: el roadmap del MCP entrega primero un token personal por cuenta (crear, listar y revocar en Ajustes > Cuenta) para no ampliar el alcance. OAuth 2.1 con registro dinámico de clientes, alcance por proyecto y caducidad se aparca hasta que haga falta conectar clientes que no acepten un token pegado a mano, o cuando el GPT tenga que actuar como la cuenta del docente sin copiar credenciales.
+- Contexto: la versión `1.1.26` ya está publicada en Sites (solo Codex puede publicar); el repositorio público se actualiza desde local con commit y push. El push a GitHub no publica en Sites.
 - Qué falta antes de retomarlo:
-  - [ ] Tener el MCP remoto publicado y usado con tokens personales, para conocer los casos reales (número de clientes, caducidad, rotación).
-  - [ ] Decidir si OAuth vive en el Site o en un proveedor externo; hoy no hay tabla de clientes ni de códigos de autorización.
-  - [ ] Definir alcances (`tareas:leer`, `tareas:escribir`, `personas:leer`) y su comprobación en `lib/server`.
-  - [ ] Resolver la convivencia con la guarda de mismo origen: OAuth tampoco debe abrir CSRF en el navegador.
-- Notas técnicas: el contrato de herramientas y el hash de tokens del roadmap del MCP son la base; OAuth solo cambia cómo se obtiene la identidad, no las operaciones. No duplicar herramientas para OAuth.
+  - [ ] Repetir la rutina tras cada bloque verificado: `git status`, checks, commit y `git push github main`.
+  - [ ] No cambiar la versión ni ejecutar `release:prepare` solo para sincronizar GitHub; la versión la fija la publicación.
+  - [ ] Comprobar que no se cuelan secretos, `.env*`, `.dev.vars*` ni datos de producción.
+- Notas técnicas: publicación y sincronización son operaciones distintas; el commit no sustituye al flujo de Sites.
 
-## 2026-11-14 — GPT con Actions como complemento del Site
+## 2026-11-14 — MCP-05 · Acciones de cada app: Diagramas, Bloques, Pizarras y Herramientas de aula
 
-- Contexto: un GPT personalizado que hable con la API de esta instancia es el complemento del MCP, no un sustituto. Hoy no hay OpenAPI, ni token de API, ni autenticación distinta de Sign in with ChatGPT (cookies y cabeceras `oai-authenticated-user-*` inyectadas por el dispatch). Además, las mutaciones JSON rechazan origen distinto (`isSameOrigin` en `lib/server/http.ts` → 403). Una Action de GPT sale de los servidores de OpenAI, no del origen del Site, así que con el código actual un POST quedaría bloqueado aunque hubiera sesión.
+- Contexto: «usar las aplicaciones» desde el plugin significa leer y escribir su trabajo guardado. Diagramas y Bloques guardan un documento JSON por proyecto en `app_documents` (`/api/app-documents`, máximo 200 KB, guest 403). Excalidraw guarda en `boards` (`ownerType` `task` | `project` | `space`, máximo 2 MB, revisión optimista, alumnado solo en sus tareas). Herramientas de aula no guarda nada en el servidor (historial de la calculadora en `localStorage`). Depende de MCP-03; los enlaces de MCP-04.
 - Qué falta antes de retomarlo:
-  - [ ] Publicar antes las URLs por vista, para que el GPT pueda citar enlaces reales.
-  - [ ] Preferible tener el MCP del Site en marcha y reutilizar las mismas operaciones, o extraer un contrato común.
-  - [ ] Redactar un OpenAPI mínimo sobre `/api/projects` y `/api/tasks` (y lecturas de personas) para las Actions.
-  - [ ] Definir una autenticación que no sea la cookie SIWC: token por usuario u OAuth, posterior al primer MCP. Sin eso, el GPT no puede actuar como la cuenta del docente o del alumno.
-  - [ ] Decidir cómo convive ese token con la guarda de mismo origen (excepción documentada al `Authorization`, no retirar la guarda del navegador).
-- Notas técnicas: no apuntar un GPT a la instancia de producción compartida como si fuera una API pública anónima. Cada instancia tiene su D1 y sus roles; el token tiene que estar atado a una cuenta y a esa instancia.
-
+  - [ ] **Diagramas (`mermaid`):** `leer_diagrama` (`proyectoId`) devuelve `{ codigo, actualizado }`. `guardar_diagrama` (`proyectoId`, `codigo` hasta 200 KB) guarda `{ code }`, el mismo formato que `mermaid-app.tsx`. `listar_plantillas_diagrama` devuelve `MERMAID_TEMPLATES` (flujo, secuencia, Gantt…), movido a `lib/`.
+  - [ ] **Bloques (`blockly`):** `leer_programa_bloques` devuelve la serialización de `Blockly.serialization.workspaces`. `guardar_programa_bloques` (`proyectoId`, `estado` JSON) valida la forma mínima (`blocks.blocks[]`) antes de guardar.
+  - [ ] **Pizarras (Excalidraw):** `leer_pizarra` (`proyectoId`, `tipo` `task` | `project` | `space`, `duenoId`) devuelve escena y `revision`. `guardar_pizarra` (… `escena`, `revision`) aplica `canWrite` y devuelve `conflict` 409. `anadir_a_pizarra` (escritura: lista acotada de elementos `texto` | `rectangulo` | `elipse` | `flecha` con posición y texto) la construye el servidor para que el agente no tenga que generar JSON de Excalidraw a mano.
+  - [ ] **Avisar a la sala en vivo:** al guardar una pizarra por MCP, enviar la escena nueva al `BoardRoom` de `${proyectoId}:${tipo}:${duenoId}`. Si no, una pestaña abierta seguiría con la escena vieja y su siguiente guardado chocaría con 409.
+  - [ ] **Herramientas de aula (`edu-tools`):** `consultar_elemento` (lectura: `simbolo` o `numero`) sobre `periodic-elements.json`, que es un dato que ya existe.
+  - [ ] Que todas las herramientas de una app respondan `not_found` («La aplicación no está instalada») si la app está desinstalada en la instancia.
+- Decisión (2026-11-14): descartado el cálculo en el servidor (calculadora, ecuaciones, generar código de Bloques, validar sintaxis Mermaid). Motivo: `@cortex-js/compute-engine` pesa 6,3 MB y, con Blockly y Mermaid, engordaría el Worker. Se quedan en el navegador.
+- Notas técnicas: una app nueva del catálogo debe declarar sus herramientas MCP en su carpeta, igual que se registra en `app/board/apps/registry.tsx`.
 
 ## 2026-11-14 — Recortes de rendimiento de los chunks pesados
 

@@ -42,6 +42,14 @@ export function DocBlockView({ block }: { block: DocBlock }) {
         </m.div>
       );
     }
+    case "image":
+      return (
+        <m.figure className="doc-figure" variants={revealItem}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- Capturas estáticas propias, ya servidas en WebP optimizado */}
+          <img src={block.src} alt={block.alt} loading="lazy" decoding="async" />
+          <figcaption>{block.caption}</figcaption>
+        </m.figure>
+      );
     case "code":
       return (
         <m.pre className="doc-code" variants={revealItem}>
