@@ -90,15 +90,27 @@ describe("subida de imágenes de la pizarra", () => {
     expect(enviado?.get("purpose")).toBe("board-asset");
   });
 
-  it("deja los PNG intactos y no intenta reducirlos", async () => {
+  it("reduce los PNG que superan el tope sin perder el alfa", async () => {
     respuestaSubida();
+    crearMiniatura.mockResolvedValue({ blob: new Blob(["x"], { type: "image/webp" }), width: 2048, height: 1152 });
 
     await uploadBlob("data:image/png;base64,AAAA", "image/png");
+
+    expect(crearMiniatura).toHaveBeenCalledWith(expect.any(File), { maxWidth: 2048, onlyWhenResized: true });
+    const archivo = enviado?.get("file") as File;
+    expect(archivo.name).toBe("board-image.webp");
+    expect(archivo.type).toBe("image/webp");
+  });
+
+  it("deja los GIF intactos y no intenta reducirlos", async () => {
+    respuestaSubida();
+
+    await uploadBlob("data:image/gif;base64,AAAA", "image/gif");
 
     expect(crearMiniatura).not.toHaveBeenCalled();
     const archivo = enviado?.get("file") as File;
     expect(archivo.name).toBe("board-image");
-    expect(archivo.type).toBe("image/png");
+    expect(archivo.type).toBe("image/gif");
   });
 
   it("sube el original si el generador no devuelve derivado", async () => {

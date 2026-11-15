@@ -17,7 +17,8 @@
 - Medición con `npm run perf:images -- --widths` y decisión documentada.
 
 **Fuera de alcance:**
-- GIF y PNG con transparencia; quedan intactos en esta fase.
+- GIF; se suben intactos y quedan fuera del derivado.
+- PNG con transparencia y capturas con texto, medidos en la fase 4.
 - Imágenes ya guardadas, el MCP, migraciones y cambios de esquema.
 - Publicación en Sites y `release:prepare`; la versión sigue en `1.1.28`.
 
@@ -40,7 +41,7 @@
 
 ### Fase 2 — Decisión
 
-- [x] Aprobar el tope de 2048 px, con PNG y GIF fuera del derivado.
+- [x] Aprobar el tope de 2048 px, con GIF fuera del derivado (PNG se revisó en la fase 4).
 - **Criterios de aceptación:** la recomendación queda escrita con las cifras y el motivo; si se descarta, se documenta y se cierra sin tocar código.
 
 ### Fase 3 — Integración
@@ -53,8 +54,10 @@
 ### Fase 4 — PNG con transparencia y capturas
 
 - [x] Medir PNG con alfa y capturas con texto a 1600 y 2048 px, comparando PNG redimensionado, WebP 0,8 y WebP sin pérdida.
-- [ ] Decidir si PNG entra en el derivado de pizarra con el mismo tope.
-- **Criterios de aceptación:** decisión escrita con la tabla y los riesgos; sin cambios de código hasta aprobarla.
+- [x] Decidir si PNG entra en el derivado de pizarra con el mismo tope: aprobado.
+- [x] Reducir también PNG en `uploadBlob` y cubrirlo con una prueba.
+- [x] Revisar en pantalla el texto de una captura real reducida a 2048 px: legible a 1:1 y algo más blando a 2x, sin artefactos.
+- **Criterios de aceptación:** el original se conserva cuando no hay reducción real y el canal alfa llega intacto al WebP.
 
 ## 5. Riesgos y bloqueos
 
@@ -62,7 +65,7 @@
 |---|---|---|
 | Pérdida de nitidez al ampliar | El detalle de la pizarra se ve blando | 2048 px cubre más zoom que 1600; revisar en navegador antes de publicar. |
 | Coste de codificación en móvil | La inserción se percibe lenta | 210 ms medidos en escritorio; mostrar estado y no bloquear la escena. |
-| PNG con transparencia o capturas con texto | El derivado pierde bordes o legibilidad | Dejarlos intactos hasta medirlos aparte. |
+| PNG con transparencia o capturas con texto | El derivado pierde bordes o legibilidad | Medido: el alfa llega exacto y el texto sigue legible a 1:1, aunque a 2x se ve algo más blando. |
 | Imágenes ya guardadas | Siguen a resolución completa | No se reescriben; el cambio afecta solo a subidas nuevas. |
 
 ## 6. Notas de sesión
@@ -70,3 +73,4 @@
 - 2026-11-15: fase 1 completada. En 12 MP, 1600 px deja 223 KB y 7,3 MB decodificados; 2048 px deja 348 KB y 12,0 MB, con 36,1–36,3 dB y 130–210 ms de codificación. En 2 MP, el tope de 2048 no reduce nada porque la imagen ya mide 1920 px. Se recomienda 2048 px solo si el ancho original lo supera; la decisión queda pendiente de aprobación.
 - 2026-11-15: aprobado el tope de 2048 px. `uploadBlob` reduce JPEG y WebP que superen ese ancho, deja PNG y GIF intactos y cae al original si el generador devuelve `null` o el derivado pesa más. Tres pruebas nuevas en `whiteboard-model.test.ts`; sin cambios de esquema ni de versión.
 - 2026-11-15: medición de PNG completada. WebP 0,8 conserva el alfa exacto y deja 20 KB en una captura de 2560 px (46,3 dB) y 72 KB en un logo transparente de 3000 px (41,0 dB), frente a 120 KB y 341 KB del PNG. Se recomienda incluir PNG con el mismo tope de 2048; la decisión queda pendiente de aprobación.
+- 2026-11-15: aprobada la inclusión de PNG. `uploadBlob` reduce JPEG, PNG y WebP que superen 2048 px y deja GIF intactos, con prueba del PNG y del GIF. Revisión visual sobre una captura real de `/documentacion` a 2560×1440: el derivado de 2048 px pesa 97 KB frente a 246 KB y el texto se lee igual a 1:1; a 2x sin suavizado se aprecia algo más blando, sin artefactos. Sin cambios de esquema ni de versión.

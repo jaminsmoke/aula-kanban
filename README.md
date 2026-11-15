@@ -369,7 +369,7 @@ El mismo panel incluye una **revisión paginada del inventario de R2**, también
 
 Las imágenes de tarea subidas desde el diálogo se reducen en el navegador: se guarda un WebP de 800 px de ancho como máximo (calidad 0,8) en lugar del original, porque la tarjeta y el detalle no pasan de 220 px. Si el navegador no puede generarlo o el derivado pesa más, se sube el archivo original; los GIF se envían intactos para no perder la animación. El límite de 5 MB se valida sobre el archivo enviado y el contrato de `/api/uploads` no cambia. `subir_archivo` del MCP no pasa por el navegador y sigue guardando el original.
 
-Las imágenes insertadas en la pizarra se reducen también en el navegador cuando superan 2048 px de ancho: se guarda un WebP de calidad 0,8 y se descarta el original. Las que ya caben en 2048 px, los PNG (por la transparencia) y los GIF se suben intactos; el MCP sigue guardando el original.
+Las imágenes insertadas en la pizarra se reducen también en el navegador cuando superan 2048 px de ancho: se guarda un WebP de calidad 0,8 que conserva el canal alfa y se descarta el original. Las que ya caben en 2048 px y los GIF se suben intactos; el MCP sigue guardando el original.
 
 Si falta R2, `/api/uploads` responde 503 y `/api/files/[id]` responde 503 cuando el archivo tiene metadatos. Un identificador inexistente sigue siendo 404. Para publicar una instancia con archivos:
 

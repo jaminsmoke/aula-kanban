@@ -73,7 +73,7 @@ Lectura:
 - En el logo transparente, WebP 0,8 deja 72 KB frente a 341 KB, con 41,0 dB y alfa exacto; el PNG redimensionado se queda en 230 KB.
 - El PSNR alto no garantiza por sí solo que el texto se lea igual de nítido: la captura es sintética y no se ha revisado en pantalla.
 
-Recomendación (pendiente de aprobación): incluir **PNG** en el derivado de pizarra con el mismo tope de 2048 px, WebP 0,8 y el mismo respaldo; los GIF siguen intactos. La decisión depende de aceptar que el texto de una captura real se vea algo más blando al ampliar.
+Decisión aprobada (2026-11-15): incluir **PNG** en el derivado de pizarra con el mismo tope de 2048 px, WebP 0,8 y el mismo respaldo; los GIF siguen intactos. El alfa llega exacto al WebP y la revisión del texto de una captura real se anota en el roadmap.
 
 ## Comparación de alternativas
 
@@ -114,4 +114,4 @@ El detalle de tarea muestra la imagen a un máximo de 220 px de alto y la tarjet
 
 ## Integración
 
-La fase 3 está integrada: `handleUpload` genera la miniatura, envía el WebP si pesa menos que el original y cae al original en cualquier otro caso. Los GIF no se transforman y el MCP mantiene su propio camino. En la pizarra, `uploadBlob` reduce a 2048 px solo las fotos JPEG y WebP que superan ese ancho; PNG y GIF se suben intactos. La medición de PNG está hecha y su inclusión sigue pendiente de aprobación.
+La fase 3 está integrada: `handleUpload` genera la miniatura, envía el WebP si pesa menos que el original y cae al original en cualquier otro caso. Los GIF no se transforman y el MCP mantiene su propio camino. En la pizarra, `uploadBlob` reduce a 2048 px las imágenes JPEG, PNG y WebP que superan ese ancho; los GIF se suben intactos y el WebP conserva el canal alfa de los PNG.

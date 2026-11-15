@@ -74,8 +74,9 @@ export async function uploadBlob(dataUrl: string, mimeType: string) {
     const type = mimeType || blob.type || "image/png";
     const original = new File([blob], "board-image", { type });
     // La pizarra permite ampliar, así que el tope es 2048 px y solo se reduce
-    // lo que lo supera. PNG y GIF se suben intactos.
-    const reducible = type === "image/jpeg" || type === "image/webp";
+    // lo que lo supera. Los GIF se suben intactos para no perder animación; el
+    // WebP conserva el canal alfa de los PNG.
+    const reducible = type === "image/jpeg" || type === "image/png" || type === "image/webp";
     const miniatura = reducible
       ? await crearMiniaturaDeArchivo(original, { maxWidth: MINIATURA_PIZARRA_MAX_WIDTH, onlyWhenResized: true })
       : null;
