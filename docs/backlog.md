@@ -4,7 +4,7 @@
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01 pasó al roadmap y SYNC-01 se queda aquí como norma operativa.
+> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01 se completó, CI-01 pasó al roadmap y SYNC-01 se queda aquí como norma operativa.
 
 ---
 
@@ -65,14 +65,6 @@
   - [ ] Agrupar las ilustraciones de `section-art.tsx` por familias.
   - [ ] Conservar exports públicos, snapshots y pruebas; no dividir `mcp-catalogo.ts` ni `mcp-descripciones.ts`, que son fuentes de verdad/generadas.
 - Notas técnicas: división mecánica y verificable; no partir archivos solo por número de líneas si la cohesión es mayor que el coste.
-
-## 2026-11-15 — CI-01 · Añadir el build al workflow de CI
-
-- Contexto: `.github/workflows/ci.yml` ejecuta `npm ci`, lint, `tsc --noEmit` y `npm test`, pero no `npm run build`; un fallo de compilación de vinext o de rutas solo se detecta al publicar o en local.
-- Qué falta antes de retomarlo:
-  - [ ] Añadir `npm run build` después de los tests en el job de checks.
-  - [ ] Medir el tiempo añadido y confirmar que no necesita secretos ni bindings reales.
-- Notas técnicas: CI solo verifica; no despliega ni sustituye al flujo de Codex/Sites.
 
 ## 2026-11-15 — SYNC-01 · Sincronizar el repositorio tras cada publicación
 
