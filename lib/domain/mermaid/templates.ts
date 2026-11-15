@@ -1,6 +1,7 @@
-/** Plantilla de diagrama Mermaid. */
+/** Plantilla de diagrama Mermaid compartida por la app y MCP. */
 export type MermaidTemplate = { id: string; label: string; code: string };
 
+/** Plantillas que ofrece la app Diagramas; MCP devuelve esta misma lista. */
 export const MERMAID_TEMPLATES: MermaidTemplate[] = [
   {
     id: "flujo",

@@ -42,11 +42,11 @@
 
 ### Fase 1: Documento y plantillas compartidos
 
-- [ ] Mover `MERMAID_TEMPLATES` y su tipo a `lib/domain/mermaid/templates.ts`; la app pasa a importarlos desde allí sin cambiar su comportamiento.
-- [ ] Crear un validador puro en `lib/domain/mermaid/document.ts` para comprobar que el documento es `{ code: string }` y conservar el resto de claves.
-- [ ] Cubrir la forma válida, el rechazo de `code` no textual, la conservación de campos desconocidos y la igualdad de la lista de plantillas con pruebas.
+- [x] Mover `MERMAID_TEMPLATES` y su tipo a `lib/domain/mermaid/templates.ts`; la app pasa a importarlos desde allí sin cambiar su comportamiento.
+- [x] Crear un validador puro en `lib/domain/mermaid/document.ts` para comprobar que el documento es `{ code: string }` y conservar el resto de claves.
+- [x] Cubrir la forma válida, el rechazo de `code` no textual, la conservación de campos desconocidos y la igualdad de la lista de plantillas con pruebas.
 - **Criterios de aceptación:** la app y MCP comparten plantillas y validación; el editor sigue mostrando las seis plantillas; un documento sin `code` se rechaza sin tocar la base de datos.
-- **Estado:**
+- **Estado:** Completada el 2026-11-15. 9 tests focalizados, `tsc` y lint en verde. `lib/domain/mermaid/templates.ts` es la única lista de plantillas y `lib/domain/mermaid/document.ts` valida `{ code }` conservando el resto de claves; `app/board/apps/mermaid/mermaid-templates.ts` desaparece.
 
 ### Fase 2: Herramientas MCP
 

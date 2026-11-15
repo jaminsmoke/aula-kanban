@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppDocument } from "../use-app-document";
-import { MERMAID_TEMPLATES } from "./mermaid-templates";
+import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useMermaidPreview } from "./use-mermaid-preview";
 import "./mermaid.css";
 
