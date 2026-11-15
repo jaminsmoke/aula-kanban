@@ -6,6 +6,28 @@
 
 ---
 
+## 2026-11-15 — Roadmap CI-02 · Optimización de workflows cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fase 1 — Filtros y concurrencia:** `.github/workflows/ci.yml` ignora `docs/**`, `AGENTS.md`, `**/*.md` y `.freebuff/**`; añade `concurrency` por workflow/ref con cancelación y `timeout-minutes: 10` al job `checks`.
+- **Fase 2 — Estructura:** se probó en la rama temporal `ci-02-measure` un workflow con dos jobs paralelos, `checks` y `verification`. La prueba terminó en 140 s y el job de verificación consumió 136 s por el segundo `npm ci`; el job único de referencia tardó 130 s. Se descartó la variante y se mantiene el job único.
+- Sin cambios de versión; `package.json` sigue en `1.1.26`.
+
+### Verificación
+
+- Commit `f058e96`: run `43694872488` en verde, 130 s; `main` no tiene branch protection ni rulesets.
+- Commit solo documental `2c2c7b1`: 0 ejecuciones de Actions, confirmado con la API.
+- Prueba paralela `c3fc6ce`: run `43695277830` en verde, 140 s; `checks` 54 s y `verification` 136 s; `npm ci` duplicado (23 s + 24 s). Sin mejora, se conserva el job único.
+- Rama temporal `ci-02-measure` eliminada.
+- `git diff --check` limpio.
+
+### Seguimiento en backlog
+
+Roadmap vacío. Quedan PER-03, PER-01B, PER-02, UI-01, ARCH-01, ARCH-02, SYNC-01, MCP-05 y recortes de rendimiento (9 entradas). SYNC-01 se conserva como norma operativa.
+
 ## 2026-11-15 — Roadmap UI-02 · Encuadre de miniaturas en las tarjetas cerrado
 
 **Estado:** Completada · Sin publicación
