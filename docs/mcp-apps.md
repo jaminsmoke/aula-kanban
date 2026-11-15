@@ -1,0 +1,90 @@
+# Cobertura MCP de las apps nativas
+
+Estado de la superficie MCP de las cuatro apps de Aula Store. La fuente de las
+herramientas es `lib/server/mcp/apps/registro.ts`; la instalación y los permisos
+se resuelven con `lib/server/mcp/apps/contrato.ts`.
+
+**Última revisión:** 2026-11-15 · **Catálogo:** `0.22.0` · **51 herramientas**
+
+## Herramientas comunes
+
+Estas herramientas no pertenecen a una app concreta, pero son su punto de
+entrada:
+
+- **Aula Store (MCP-03):** `listar_apps`, `obtener_app`, `instalar_app` y
+  `desinstalar_app`. Instalar y desinstalar exige propietario o administración.
+- **Apertura y ventanas (MCP-04):** `abrir_app`, `listar_ventanas`,
+  `cerrar_app`, `minimizar_app`, `restaurar_app` y `ampliar_app`. Requieren
+  acceso al proyecto y una app instalada; los controles solo actúan sobre las
+  pestañas conectadas de la propia cuenta.
+- **Herramientas de aula (MCP-05C):** `consultar_elemento`.
+
+`abrir_app` y `listar_ventanas` son de lectura; cerrar, minimizar, restaurar y
+ampliar son de escritura, pero no destructivas. Los invitados pueden abrir y
+controlar sus propias ventanas; la escritura de contenido de las apps sigue las
+reglas de cada app.
+
+## Matriz por app
+
+| App | Abrir | Ventana | Leer por MCP | Escribir por MCP | Exportar por MCP | Permisos | Límites |
+|---|---|---|---|---|---|---|---|
+| **Excalidraw** (`excalidraw`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No; la ventana exporta imagen | Abrir y leer: cualquier miembro. Escribir: no invitados; el alumnado solo en pizarras de sus tareas. La ventana de Mi espacio es de solo lectura para alumnado e invitados. | Snapshot de hasta 2 MB con revisión optimista; `409` si cambió. La escena en vivo de `BoardRoom` admite hasta 1 MB por mensaje. |
+| **Herramientas de aula** (`edu-tools`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `consultar_elemento` | No | No | Cualquier cuenta autenticada, incluidas invitadas y cuentas sin proyecto, si la app está instalada. La consulta no usa proyecto. | Una ficha por llamada entre 118 elementos. No hay estado de trabajo en el servidor; calculadora, memoria, medición y voz viven en el navegador. |
+| **Programación por bloques** (`blockly`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No; la ventana descarga JSON | Lectura: cualquier miembro. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Estado JSON de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. |
+| **Diagramas** (`mermaid`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No; la ventana exporta SVG | Lectura: cualquier miembro. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Código de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. La validación y el render de Mermaid se quedan en el navegador. |
+
+## Qué falta en cada app
+
+### Excalidraw — MCP-05B
+
+- Leer y escribir pizarras de tarea, proyecto y Mi espacio.
+- Añadir elementos con una lista acotada, sin pedir al agente el JSON interno.
+- Mantener la revisión optimista, los permisos de pizarra y la sala en vivo.
+- No se exporta la imagen desde MCP: el render pertenece a la ventana.
+
+### Programación por bloques — MCP-05D
+
+- Leer y guardar el estado de `app_documents` con la misma serialización que la
+  app.
+- Validar la forma mínima, el límite de 200.000 caracteres y el `403` de
+  invitados.
+- No se genera, ejecuta ni valida código en el servidor. La descarga JSON de la
+  ventana ya queda cubierta por la lectura del estado; no necesita otra
+  herramienta.
+
+### Diagramas — MCP-05E
+
+- Leer y guardar `{ code }` en `app_documents`, con el mismo límite y permisos.
+- Listar las plantillas compartidas desde una ubicación que también pueda
+  importar `lib`.
+- No se valida sintaxis, no se renderiza SVG y no se exporta desde MCP; la
+  vista previa y la descarga SVG son capacidades del navegador.
+
+### Herramientas de aula — sin entrada nueva
+
+- `consultar_elemento` cubre la única consulta estable de la app.
+- Calculadora, ecuaciones, medición y lectura en voz alta son interactivas,
+  usan `compute-engine` o la voz del sistema y no tienen estado de servidor. No
+  se trasladan al Worker en este roadmap.
+
+## Revisión de huecos
+
+- **Instalación y catálogo:** cubiertos por MCP-03.
+- **Abrir y controlar ventanas:** cubiertos por MCP-04 para las cuatro apps.
+- **Lectura y escritura de contenido:** MCP-05B, MCP-05D y MCP-05E.
+- **Exportación:** no hay una herramienta dedicada. Excalidraw necesita render
+  de imagen; Mermaid necesita render de SVG; Blockly descarga el mismo JSON que
+  devolverá `leer_programa_bloques`. Por eso no se crea una entrada nueva: las
+  exportaciones visuales se quedan en la ventana y la exportación de datos no
+  aporta nada sobre la lectura.
+- **Otras acciones:** no aparecen acciones de app fuera de las anteriores. Este
+  roadmap no añade entradas al backlog.
+
+## Referencias
+
+- [`roadmap.md`](roadmap.md): contrato común y piloto de Herramientas de aula.
+- [`backlog.md`](backlog.md): MCP-05B, MCP-05D y MCP-05E.
+- [`aplicaciones-nativas.md`](aplicaciones-nativas.md): catálogo, licencias y
+  versiones de las apps.
+- [`../app/board/apps/README.md`](../app/board/apps/README.md): cómo se declara
+  una app y su superficie MCP.

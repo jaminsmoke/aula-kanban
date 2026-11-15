@@ -46,6 +46,9 @@ sin proyecto) o `resolverAppEnProyecto` (con proyecto y escritura opcional) de
 `contrato.ts`. No dupliques la comprobación de instalación ni el mensaje de
 `not_found`.
 
+La cobertura actual, los permisos, los límites y lo que queda pendiente en cada
+app están en [`docs/mcp-apps.md`](../../../docs/mcp-apps.md).
+
 ## Versiones
 
 Cada ficha de `lib/native-apps.ts` declara:

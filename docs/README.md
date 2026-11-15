@@ -9,6 +9,7 @@
 | [`roadmap.md`](roadmap.md) | Roadmap MCP-05A + MCP-05C activo | Secuencia de ejecución |
 | [`backlog.md`](backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
+| [`mcp-apps.md`](mcp-apps.md) | Cobertura MCP, permisos y límites de las apps nativas | Temático |
 | [`aplicaciones-nativas.md`](aplicaciones-nativas.md) | Catálogo de apps nativas, licencias y estado | Temático |
 | [`roadmap-template.md`](roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
 | [`backlog-template.md`](backlog-template.md) | Plantilla para reiniciar el backlog | — |
