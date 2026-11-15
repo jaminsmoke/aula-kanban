@@ -68,16 +68,16 @@ Medición sobre `dist/client` del build actual, sin rebuild:
 
 ### Fase 1 — Línea base reproducible y presupuesto
 
-- [ ] Añadir `scripts/perf-report.mjs` para leer `dist/client/.vite/manifest.json`, resolver el cierre estático de cada flujo y listar los chunks principales con tamaño bruto y gzip.
-- [ ] Medir tablero, apertura de Básica, primer `=`, Científica/Ecuaciones, Diagramas con plantilla inicial, Diagramas con ELK, Pizarra y Blockly.
-- [ ] Medir en el build de producción con caché fría y ventana de red lenta; registrar la mediana de varias pasadas y no atribuir mejoras sin comparación.
-- [ ] Guardar una línea base versionada y documentar los presupuestos: el tablero no incorpora código de apps pesadas y ningún flujo empeora más de un 5 % sin una mejora deliberada.
-- [ ] Reutilizar el build existente; no reconstruir solo para medir.
+- [x] Añadir `scripts/perf-report.mjs` para leer `dist/client/.vite/manifest.json`, resolver el cierre estático de cada flujo y listar los chunks principales con tamaño bruto y gzip.
+- [x] Medir tablero, apertura de Básica, primer `=`, Científica/Ecuaciones, Diagramas con plantilla inicial, Diagramas con ELK, Pizarra, conversión Mermaid y Blockly.
+- [x] Guardar una línea base versionada en `docs/perf-baseline.json` y documentar la metodología y los presupuestos en `docs/rendimiento.md`.
+- [x] Reutilizar el build existente; no reconstruir solo para medir.
 
-**Criterios de aceptación:** el informe es determinista, no necesita red ni navegador para la parte estática, deja claros los costes por flujo y sirve como referencia para las fases siguientes.
+**Criterios de aceptación:** el informe es determinista, no necesita red ni navegador para la parte estática, deja claros los costes por flujo y sirve como referencia para las fases siguientes. La latencia real con red lenta requiere una build servida y pasa a la fase 2.
 
 ### Fase 2 — Básica sin el motor simbólico
 
+- [ ] Medir la latencia real de la primera evaluación en una build servida, con caché fría y red lenta; usar la mediana antes de cambiar el motor.
 - [ ] Confirmar con el informe que el primer `=` de Básica descarga `compute-engine` y medir su impacto en una red lenta.
 - [ ] Implementar un evaluador numérico pequeño para Básica, sin `eval`: decimales, suma, resta, multiplicación, división, porcentaje, signo, potencias, factorial y paréntesis del teclado físico.
 - [ ] Mantener `evaluateLatex` para Científica y Ecuaciones, con memoria, historial, errores y resultados exactos sin cambios.
@@ -123,4 +123,6 @@ Medición sobre `dist/client` del build actual, sin rebuild:
 - `compute-engine` 0.188.0 sí se empaqueta; el 0.29.1 de `mathlive` no aparece en el cliente. No se toca el árbol de dependencias por este segundo motor.
 - Las apps ya están registradas con `lazy` en `app/board/apps/registry.tsx`; la entrada del tablero no debe cambiar de estrategia.
 - El aviso de chunks >500 kB es de tamaño bruto y no se usará como criterio de éxito.
+- Fase 1 completada el 2026-11-15: `npm run perf:report`, `docs/perf-baseline.json` y `docs/rendimiento.md`; diez flujos deterministas. La Pizarra incluye ya el wasm de Excalidraw (1.254,5 KiB gzip).
+- La latencia real no se ha medido todavía; se validará en la fase 2 antes de cambiar el motor. No se atribuye ninguna mejora de tiempo a esta fase.
 - Sin cambios de versión: `package.json` sigue en `1.1.26`.

@@ -118,3 +118,4 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - [`../README.md`](../README.md): instalación, desarrollo, base de datos y migraciones.
 - [`../AGENTS.md`](../AGENTS.md): reglas del repo personal, publicación por Codex y trabajo del agente.
 - [`../package.json`](../package.json): dependencias y scripts del proyecto.
+- [`rendimiento.md`](rendimiento.md): línea base de chunks, presupuestos y generación del informe con `npm run perf:report`.
