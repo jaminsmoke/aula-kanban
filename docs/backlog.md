@@ -3,8 +3,8 @@
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 3 entradas aparcadas, cada una extraíble como roadmap independiente
-> **Nota:** PER-06, PER-07 y PER-08 se cerraron con pruebas controladas y sus limitaciones se documentaron en el changelog. UI-04, UI-05 y UI-06 recogen la revisión de navegación, fichas y hero del 15/11/2026.
+> **Estado:** 2 entradas aparcadas, cada una extraíble como roadmap independiente
+> **Nota:** PER-06, PER-07 y PER-08 se cerraron con pruebas controladas y sus limitaciones se documentaron en el changelog. UI-06 salió al roadmap activo; UI-04 y UI-05 siguen aquí.
 
 ---
 
@@ -35,16 +35,3 @@
   - [ ] Conectar la acción de alta con los diálogos existentes de cada vista.
   - [ ] Cubrir con pruebas los dos estados vacíos y las dos variantes de permiso.
 - **Criterios de aceptación:** con 0 fichas se entiende qué falta y qué hacer; el alta funciona desde el propio estado vacío; no aparece el selector de disposición sin fichas; pruebas de alumnos y profesores en verde.
-
-## 2026-11-15 — UI-06 · Hero del tablero compacto
-
-**Extraíble como roadmap propio:** sí, y es independiente de UI-04 y UI-05. Es el cambio más pequeño y el de menor riesgo.
-
-- Contexto: el hero de Tareas mide 230 px mínimos, 30/34 px de relleno y 32 px de margen arriba y abajo, con un titular a tamaño `--text-display` y un panel de progreso oscuro de 265 px o más. Sumado a la cabecera de 76 px, el kanban empieza hacia los 370 px de alto y en una pantalla de 1366×768 se ve poco más que la primera fila de tarjetas. El contexto («Grupo de clase», «Tablero de tareas») ya lo dan el proyecto activo y la barra «Kanban».
-- Oportunidad: dejar una franja compacta con el progreso en línea («3 de 8 · 38 %») y la acción «Nueva tarea», sin repetir el intro ni el panel de 8xl. El progreso sigue siendo el dato útil y el kanban gana la mayor parte del primer pantallazo.
-- Decisiones abiertas: si el titular se conserva como `h1` visible o pasa a una línea con el contador; si el intro desaparece del todo o queda como subtítulo solo en pantallas anchas.
-- Qué falta:
-  - [ ] Reducir el hero a una franja de una o dos líneas, con objetivo de 120 px de alto y sin panel oscuro independiente.
-  - [ ] Mantener `h1`, `progress` accesible y el botón de alta; conservar el estado de invitado y el responsive de 620 y 430 px.
-  - [ ] Revisar el hueco con la barra de herramientas para que no queden dos bloques de título seguidos.
-- **Criterios de aceptación:** en 1366×768 con la cabecera y el sidebar, la primera tarjeta de la columna izquierda se ve sin desplazar; el progreso sigue anunciándose como «Progreso del grupo»; las pruebas de `kanban-view` siguen pasando.
