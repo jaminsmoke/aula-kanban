@@ -42,10 +42,11 @@
 
 ### Fase 1 — Helpers de ruta
 
-- [ ] Inventariar los 24 handlers y fijar el orden exacto de autenticación, origen, formato, resolución de proyecto y permisos.
-- [ ] Añadir `withJsonMutation` para las mutaciones que comparten origen y JSON.
-- [ ] Añadir `withProjectRoute` para las rutas que resuelven proyecto y acceso, sin absorber validaciones propias.
-- [ ] Migrar primero un grupo pequeño de rutas y comparar respuestas antes de extenderlo.
+- [x] Inventariar los 24 handlers y fijar el orden exacto de autenticación, origen, formato, resolución de proyecto y permisos.
+- [x] Añadir `withJsonMutation` para las mutaciones que comparten origen y JSON.
+- [x] Añadir `withProjectRoute` para las rutas que resuelven proyecto y acceso, sin absorber validaciones propias.
+- [x] Migrar tareas, pizarras, documentos de apps, miembros, alumnado/profesorado (lectura), space-apps, proyectos (mutaciones), administradores e invitaciones.
+- [x] Añadir pruebas del orden de guardas y de la traducción de fallos del proyecto.
 - **Criterios de aceptación:** los códigos y mensajes 401/400/403/404/415 no cambian; las rutas que no usan proyecto no se fuerzan al helper; tests focalizados en verde.
 
 ### Fase 2 — Acceso separado de HTTP
@@ -87,5 +88,7 @@
 - Punto de partida: 15 `route.ts`, 24 handlers y helpers repetidos en `http.ts`, `project-access.ts` y `projects.ts`.
 - `project-access.ts` importa `json` y contiene `PROJECT_FAILURE_RESPONSES`; `projects.ts` importa `PROJECT_FAILURE_RESPONSES`.
 - `/api/projects` ejecuta en el `GET` la migración de UUID, la actualización de identidad y la limpieza de huérfanos.
+- Fase 1 completada el 2026-11-15: `lib/server/route-helpers.ts` concentra `withJsonMutation` y `withProjectRoute`; la composición mantiene origen/JSON antes de resolver el proyecto.
+- Quedan sin helper por su orden propio `uploads` (solo origen), `files` (lee R2 antes de resolver), `mcp/tokens` (autentica antes de origen) y las mutaciones de alumnado/profesorado, que viven en sus servicios; se decidirán en las fases siguientes.
 - Cada fase se cierra con su propio commit local, incluidas las fases de solo documentación; no se hace push hasta cerrar el roadmap.
 - No se cambia la versión ni se publica en Sites durante este roadmap.

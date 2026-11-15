@@ -3,9 +3,9 @@ import { z } from "zod";
 import { getDb } from "../../../db";
 import { tasks } from "../../../db/schema";
 import { priorities, statuses } from "../../../lib/domain/task";
-import { projectFailureResponse, resolveProject } from "../../../lib/server/project-access";
+import { json } from "../../../lib/server/http";
+import { withJsonMutation, withProjectRoute } from "../../../lib/server/route-helpers";
 import { purgeDeletedProfiles } from "../../../lib/server/deleted-profiles";
-import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
 import { createTaskPermissions, taskAuthGuard, unassigned, validateRefs } from "../../../lib/server/tasks/permissions";
 import { createTask, deleteTask, updateTask } from "../../../lib/server/tasks/mutations";
 import { decorate, projectData } from "../../../lib/server/tasks/queries";
@@ -17,27 +17,16 @@ const fields = z.object({ title: z.string().trim().min(1).max(120), description:
 const reference = z.object({ id: z.string().uuid(), revision: z.number().int().positive(), changes: z.unknown().optional() });
 type Ref = TaskRef;
 
-/**
- * Lista, crea, edita o elimina tareas del proyecto según el método.
- * Al listar purga primero las bajas caducadas de 30 días.
- * @param request - Petición con el proyecto en la URL y, si aplica, el cuerpo JSON.
- * @returns Respuesta JSON con las tareas decoradas o el error.
- */
-async function handle(request: Request) {
-  if (request.method !== "GET") {
-    if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
-    if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
-  }
-  const resolved = await resolveProject(request);
-  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
-  const project = resolved.project;
+const listTasks = withProjectRoute(async (_request, project) => {
+  const db = getDb();
+  await purgeDeletedProfiles(project.id);
+  const [list, data] = await Promise.all([db.select().from(tasks).where(eq(tasks.projectId, project.id)).orderBy(asc(tasks.createdAt), asc(tasks.id)), projectData(project.id)]);
+  return json(list.map(task => decorate(task, data)));
+});
+
+const mutateTasks = withJsonMutation(withProjectRoute(async (request, project) => {
   const user = project.access.user;
   const db = getDb();
-  if (request.method === "GET") {
-    await purgeDeletedProfiles(project.id);
-    const [list, data] = await Promise.all([db.select().from(tasks).where(eq(tasks.projectId, project.id)).orderBy(asc(tasks.createdAt), asc(tasks.id)), projectData(project.id)]);
-    return json(list.map(task => decorate(task, data)));
-  }
   if (project.access.role === "guest") return json({ message: "Las cuentas invitadas solo pueden consultar el proyecto." }, 403);
   const body = await request.json().catch(() => null);
   const data = await projectData(project.id);
@@ -81,5 +70,6 @@ async function handle(request: Request) {
   });
   if (!result.ok) return json({ message: result.message }, result.status);
   return json(decorate(result.value.task, result.value.data));
-}
-export { handle as GET, handle as POST, handle as PATCH, handle as DELETE };
+}));
+
+export { listTasks as GET, mutateTasks as POST, mutateTasks as PATCH, mutateTasks as DELETE };

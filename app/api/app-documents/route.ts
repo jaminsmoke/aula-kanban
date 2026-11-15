@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { projectFailureResponse, resolveProject } from "../../../lib/server/project-access";
 import { boundedJson } from "../../../lib/server/bounded-json";
 import { NATIVE_APP_IDS } from "../../../lib/native-apps";
 import { readAppDocument, saveAppDocument } from "../../../lib/server/app-documents";
-import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
+import { json } from "../../../lib/server/http";
+import { withJsonMutation, withProjectRoute } from "../../../lib/server/route-helpers";
 
 export const dynamic = "force-dynamic";
 const MAX_STATE = 200_000;
@@ -19,15 +19,8 @@ function appFrom(request: Request): string | null {
   return parsed.success ? parsed.data : null;
 }
 
-/**
- * Lee el documento guardado de una app en el proyecto activo.
- * @param request - Petición con `project` y `app`.
- * @returns El estado guardado o `null` si la app aún no tiene documento.
- */
-export async function GET(request: Request) {
-  const resolved = await resolveProject(request);
-  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
-  const project = resolved.project;
+/** Lee el documento guardado de una app en el proyecto activo. */
+export const GET = withProjectRoute(async (request, project) => {
   const appId = appFrom(request);
   if (!appId) return json({ message: "Aplicación no válida." }, 400);
   try {
@@ -36,20 +29,13 @@ export async function GET(request: Request) {
   } catch {
     return json({ message: "No se pudo leer el documento guardado." }, 502);
   }
-}
+});
 
 /**
  * Guarda el documento de una app para el proyecto. Sirve a cualquier app
  * nativa: el estado es JSON y la app decide su forma.
- * @param request - Petición con `project`, `app` y `state`.
- * @returns Confirmación con la fecha de guardado.
  */
-export async function POST(request: Request) {
-  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
-  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
-  const resolved = await resolveProject(request);
-  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
-  const project = resolved.project;
+export const POST = withJsonMutation(withProjectRoute(async (request, project) => {
   if (project.access.role === "guest") return json({ message: "Las cuentas invitadas solo pueden consultar el proyecto." }, 403);
   const appId = appFrom(request);
   if (!appId) return json({ message: "Aplicación no válida." }, 400);
@@ -73,4 +59,4 @@ export async function POST(request: Request) {
   } catch {
     return json({ message: "No se pudo guardar el documento." }, 502);
   }
-}
+}));

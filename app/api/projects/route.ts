@@ -6,7 +6,8 @@ import { getChatGPTUser } from "../../../lib/server/auth";
 import { isAdministrator, isOwner, projectFailureResponse } from "../../../lib/server/project-access";
 import { createProject, deleteProject } from "../../../lib/server/projects";
 import { cleanupOrphanUploads } from "../../../lib/server/storage";
-import { isJsonRequest, isSameOrigin, json } from "../../../lib/server/http";
+import { json } from "../../../lib/server/http";
+import { withJsonMutation } from "../../../lib/server/route-helpers";
 import { canonicalProjectId, ensureLegacyProjectUuid } from "../../../lib/server/project-rekey";
 
 export const dynamic = "force-dynamic";
@@ -39,32 +40,20 @@ export async function GET() {
   return json({ projects: visible, isOwner: false, legacyProjectId: visible.some((project) => project.id === legacyProjectId) ? legacyProjectId : null });
 }
 
-/**
- * Crea un proyecto nuevo (solo propietario o administrador).
- * @param request - Petición con identificador y nombre del proyecto.
- * @returns Respuesta JSON con el proyecto creado.
- */
-export async function POST(request: Request) {
-  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
-  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
+/** Crea un proyecto nuevo (solo propietario o administrador). */
+export const POST = withJsonMutation(async (request) => {
   const user = await getChatGPTUser();
   if (!user) return projectFailureResponse("unauthenticated");
   const result = await createProject(user, await request.json().catch(() => null));
   return result.ok ? json(result.proyecto, result.creado ? 201 : 200) : json({ message: result.message }, result.status);
-}
+});
 
-/**
- * Elimina un proyecto con sus tareas, fichas, miembros e histórico.
- * @param request - Petición con el identificador del proyecto.
- * @returns Respuesta JSON con el identificador y si se borró.
- */
-export async function DELETE(request: Request) {
-  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
-  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
+/** Elimina un proyecto con sus tareas, fichas, miembros e histórico. */
+export const DELETE = withJsonMutation(async (request) => {
   const user = await getChatGPTUser();
   if (!user) return projectFailureResponse("unauthenticated");
   const parsed = z.object({ id: z.string().min(1).max(80) }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Proyecto no válido." }, 400);
   const result = await deleteProject(user, parsed.data.id);
   return result.ok ? json({ id: result.id, deleted: result.deleted }) : json({ message: result.message }, result.status);
-}
+});
