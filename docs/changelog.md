@@ -6,6 +6,32 @@
 
 ---
 
+## 2026-11-15 — Roadmap ARCH-01 · Contratos de rutas y límites de capa cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fase 1 — Helpers de ruta:** `lib/server/route-helpers.ts` concentra `withJsonMutation` y `withProjectRoute`; tareas, pizarras, documentos de apps, miembros, lectura de alumnado/profesorado, space-apps, mutaciones de proyectos, administradores e invitaciones conservan el orden de guardas y el contrato HTTP.
+- **Fase 2 — Acceso y HTTP:** `project-http.ts` construye las respuestas y `project-contract.ts` conserva los mensajes públicos; `project-access.ts` deja de importar `json`. `projects.ts` y `mcp/contexto.ts` usan los mensajes de contrato, no el transporte. Una prueba de frontera impide la regresión.
+- **Fase 3 — Arranque de proyectos:** `project-overview.ts` concentra migración de UUID, identidad, limpieza best-effort y listado; `GET /api/projects` queda como envoltura y conserva el 503 de la migración y la respuesta pública.
+- **Fase 4 — Contrato y cierre:** contrato de sesión, permisos, errores y paridad HTTP ↔ MCP verificado; suite completa, typecheck, lint y build en verde.
+- Sin cambios funcionales ni de versión; `package.json` sigue en `1.1.26`.
+
+### Verificación
+
+- `npm run lint` limpio.
+- `npx tsc --noEmit` limpio.
+- Contrato: **7 archivos / 402 tests** (sesión, permisos, personas, proyectos, administración, matriz y paridad).
+- Suite completa: **92 archivos / 761 tests**.
+- `npm run build` en verde, con el aviso existente de chunks superiores a 500 kB.
+- `git diff --check` limpio.
+- Commits de fase: `56f56c4` (helpers), `2b148d7` (acceso/HTTP) y `e2f00ef` (arranque de proyectos).
+
+### Seguimiento en backlog
+
+Roadmap vacío. Quedan PER-03, PER-01B, PER-02, UI-01, SYNC-01, MCP-05 y recortes de rendimiento (7 entradas). SYNC-01 se conserva como norma operativa.
+
 ## 2026-11-15 — Roadmap ARCH-02 · Dividir los módulos grandes restantes cerrado
 
 **Estado:** Completada · Sin publicación
