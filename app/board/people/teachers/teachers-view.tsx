@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Plus } from "lucide-react";
+import { GraduationCap, Plus } from "lucide-react";
 import type { Task } from "../../../../lib/domain/task";
 import type { Student } from "../../../../lib/domain/student";
 import { taskBelongsTo } from "../../../../lib/domain/assignments";
 import LayoutToggle from "../../layout/layout-toggle";
 import ProfileCard from "../profile-card";
 import ProfileDetail from "../profile-detail";
+import PeopleEmptyState from "../empty-state";
 import { TeacherDeleteDialog, TeacherFormDialog } from "./teacher-dialogs";
 import { blankTeacher } from "./model";
 import { listTeachers, saveTeacher } from "./api";
@@ -68,6 +69,8 @@ export default function TeachersView({ projectId, isAdmin, ownTeacherId, tasks, 
   const teacherAsStudent = allPeople.find((person) => person.section === teacher?.id);
   const assigned = teacherAsStudent && students !== null ? (tasks ?? []).filter(task => task.assignees?.length ? task.assignees.some(person => person.kind === "teacher" && person.profileId === teacher?.id) : taskBelongsTo(task, teacherAsStudent, allPeople)) : [];
 
+  const isEmpty = teachers !== null && teachers.length === 0 && !error;
+
   return <section className="students-view">
     <div className="students-heading"><div className="students-title-row"><h2>Profesores</h2>{isAdmin && <button className="primary add-student" type="button" title="Añadir profesor" aria-label="Añadir profesor" onClick={() => { setError(""); setForm(blankTeacher()); }}><Plus size={20} /></button>}</div></div>
     {error && !form && !removing && <div className="alert" role="alert">{error} <button className="text-button" onClick={() => void load()}>Reintentar</button></div>}
@@ -82,10 +85,17 @@ export default function TeachersView({ projectId, isAdmin, ownTeacherId, tasks, 
       tasks={assigned}
       loading={tasks === null || students === null}
       onOpenTask={openTask}
-    /> : <div className="student-detail"><p>Esta ficha ya no está disponible.</p><button className="text-button back-link" onClick={() => setSelected(null)}>← Todos los profesores</button></div> : <>
+    /> : <div className="student-detail"><p>Esta ficha ya no está disponible.</p><button className="text-button back-link" onClick={() => setSelected(null)}>← Todos los profesores</button></div> : isEmpty ? (
+      <PeopleEmptyState
+        icon={GraduationCap}
+        title="Aún no hay profesores"
+        description={isAdmin ? "Añade la primera ficha del equipo docente." : "Cuando la administración añada la primera ficha, aparecerá aquí."}
+        action={isAdmin ? { label: "Añadir profesor", onClick: () => { setError(""); setForm(blankTeacher()); } } : undefined}
+      />
+    ) : <>
       <LayoutToggle count={teachers?.length ?? 0} unit="profesores" ariaLabel="Seleccionar vista de profesores" layout={layout} onLayout={setLayout} />
       <div className={layout === "grid" ? "students-grid" : "students-grid students-list"}>
-        {teachers === null ? <p>Cargando fichas…</p> : teachers.length === 0 ? <p className="intro">Aún no hay fichas de profesores en este proyecto.</p> : teachers.map(item => <ProfileCard key={item.id} name={item.displayName || item.name} role={item.role} accountStatus={item.accountStatus} onOpen={() => setSelected(item.id)} />)}
+        {teachers === null ? <p>Cargando fichas…</p> : teachers.map(item => <ProfileCard key={item.id} name={item.displayName || item.name} role={item.role} accountStatus={item.accountStatus} onOpen={() => setSelected(item.id)} />)}
       </div>
     </>}
     {form && <TeacherFormDialog teacher={form} onChange={setForm} error={error} busy={busy} onSubmit={save} onClose={() => setForm(null)} />}

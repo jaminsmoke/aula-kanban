@@ -1,12 +1,13 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import type { Task } from "../../../../lib/domain/task";
 import type { Student } from "../../../../lib/domain/student";
 import { taskBelongsTo } from "../../../../lib/domain/assignments";
 import LayoutToggle from "../../layout/layout-toggle";
 import ProfileCard from "../profile-card";
 import ProfileDetail from "../profile-detail";
+import PeopleEmptyState from "../empty-state";
 import "../people.css";
 
 /**
@@ -38,6 +39,7 @@ export default function StudentsView({
   onOpenTask: (task: Task) => void;
 }) {
   const student = studentName ? students?.find((item) => item.section === studentName) : undefined;
+  const isEmpty = students !== null && students.length === 0 && !studentError;
   return (
     <section className="students-view">
       <div className="students-heading">
@@ -63,7 +65,14 @@ export default function StudentsView({
           loading={tasks === null}
           onOpenTask={onOpenTask}
         />;
-      })() : <>
+      })() : isEmpty ? (
+        <PeopleEmptyState
+          icon={Users}
+          title="Aún no hay alumnos"
+          description={canManage ? "Crea la primera ficha para empezar a asignarle tareas." : "Cuando el profesorado cree la primera ficha, aparecerá aquí."}
+          action={canManage ? { label: "Añadir alumno", onClick: onCreate } : undefined}
+        />
+      ) : <>
         <LayoutToggle count={students?.length ?? 0} unit="alumnos" ariaLabel="Seleccionar vista de alumnos" layout={layout} onLayout={onLayout} />
         <div className={layout === "grid" ? "students-grid" : "students-grid students-list"}>
           {students === null && <p>{studentError ? "No se pudieron cargar las fichas." : "Cargando fichas…"}</p>}

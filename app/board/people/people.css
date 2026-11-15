@@ -29,6 +29,11 @@
 .student-status { flex:none; background:var(--ui-action-soft); color:var(--ui-action-text-hover); border-radius: var(--radius-xs); padding:5px 8px; font-size: var(--text-sm); font-weight: var(--weight-bold); }
 .student-status.done { background:var(--ui-success-soft); color:var(--ui-success); }
 .students-heading { margin-top:0; }
+.people-empty { display:grid; justify-items:center; gap:10px; margin-top:28px; padding:38px 24px; border:var(--border-width-hairline) dashed var(--ui-border-default); border-radius: var(--radius-lg); background:var(--ui-surface-raised); text-align:center; }
+.people-empty-icon { display:grid; place-items:center; width:52px; height:52px; border-radius: var(--radius-pill); background:var(--ui-action-soft); color:var(--ui-action-text); }
+.people-empty h3 { margin:0; font-size: var(--text-2xl); }
+.people-empty p { max-width:44ch; margin:0; color:var(--ui-text-muted); font-size: var(--text-md); line-height: var(--leading-normal); }
+.people-empty .primary { margin-top:6px; }
 .students-title-row { display:flex; align-items:center; gap:12px; }
 .students-title-row .add-student { flex:none; width:40px; min-height:40px; padding:0; border-radius: var(--radius-sm); }
 .students-view-options { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:28px; color:var(--ui-text-muted); font-size: var(--text-base); font-weight: var(--weight-semibold); }
@@ -75,6 +80,7 @@
   .student-profile-header { flex-wrap:wrap; }
 }
 @media (max-width: 480px) {
+  .people-empty { padding:28px 18px; }
   .student-detail { padding:18px; }
   .student-profile-header { padding:16px; gap:12px; align-items:flex-start; }
   .student-profile-avatar { flex-basis:48px; height:48px; border-radius: var(--radius-md); font-size: var(--text-2xl); }

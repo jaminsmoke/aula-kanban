@@ -2,7 +2,7 @@
 
 > **Entrada:** UI-05 — Estados vacíos de las fichas de alumnado y profesorado (sale del backlog).
 > **Backlog:** sin entradas.
-> **Estado:** Activo · dos fases pendientes.
+> **Estado:** En curso · fase 1 completada, fase 2 pendiente.
 > **Versión:** `1.1.30` sin cambios hasta el cierre.
 
 ---
@@ -43,10 +43,10 @@
 
 ### Fase 1: Componente compartido e integración
 
-- [ ] Crear `PeopleEmptyState` con icono, título, descripción y acción opcional (etiqueta y `onClick`), con estilos por tokens en `people.css`.
-- [ ] En Alumnos, con la lista cargada y 0 fichas, mostrar «Aún no hay alumnos» y la explicación; si `canManage`, «Añadir alumno» llama a `onCreate`.
-- [ ] En Profesores, sustituir la frase suelta por «Aún no hay profesores»; si `isAdmin`, «Añadir profesor» abre `blankTeacher()`.
-- [ ] Ocultar `LayoutToggle` cuando la lista está cargada y vacía; conservarlo con fichas y mientras se carga.
+- [x] Crear `PeopleEmptyState` con icono, título, descripción y acción opcional (etiqueta y `onClick`), con estilos por tokens en `people.css`.
+- [x] En Alumnos, con la lista cargada y 0 fichas, mostrar «Aún no hay alumnos» y la explicación; si `canManage`, «Añadir alumno» llama a `onCreate`.
+- [x] En Profesores, sustituir la frase suelta por «Aún no hay profesores»; si `isAdmin`, «Añadir profesor» abre `blankTeacher()`.
+- [x] Ocultar `LayoutToggle` cuando la lista está cargada y vacía; conservarlo con fichas y mientras se carga.
 - **Criterios de aceptación:** con 0 fichas las dos secciones explican qué falta y ofrecen el alta solo con permiso; sin permiso no hay acción; el selector no aparece sin fichas; carga y error conservan su comportamiento.
 
 ### Fase 2: Pruebas, verificación y cierre
@@ -69,4 +69,5 @@
 
 ## 6. Notas de sesión
 
+- 2026-11-15: fase 1 completada. `PeopleEmptyState` se usa en Alumnos y Profesores, el selector se oculta con 0 fichas y el alta reutiliza `onCreate` y `blankTeacher()`. Tipos, 7 pruebas focalizadas, lint y `git diff --check` en verde; sin pruebas nuevas del vacío hasta la fase 2. `1.1.30` sin cambios.
 - 2026-11-15: UI-05 sale del backlog y se abre este roadmap. Se divide en dos fases porque el componente y su integración se revisan como un solo bloque, y las pruebas y el cierre como otro; el alcance no justifica más. Sin cambios de código ni de versión; `1.1.30` se mantiene.
