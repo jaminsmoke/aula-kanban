@@ -7,7 +7,7 @@ export const introSections: DocSection[] = [
     lead: "Aula Kanban es el tablero colaborativo del grupo de clase: organiza el trabajo del proyecto en tareas, sigue el avance de cada una y comparte pizarras y aplicaciones útiles con todo el grupo.",
     blocks: [
       { type: "paragraph", text: "Cada proyecto es un tablero independiente. Las tareas, los alumnos, los profesores y las aplicaciones de Mi espacio pertenecen a ese proyecto: si cambias de proyecto en el selector de la cabecera, cambias de tablero." },
-      { type: "paragraph", text: "La cabecera separa el trabajo en Clase, Alumnos, Profesores y Documentación. Mi espacio se abre desde el icono de aplicaciones, junto a las vistas principales. El engranaje abre los ajustes generales, con Cuenta y Administradores." },
+      { type: "paragraph", text: "La cabecera separa el trabajo en Clase, Alumnos, Profesores y Documentación. Mi espacio se abre desde el icono de aplicaciones, junto a las vistas principales. El engranaje abre los ajustes generales, con Cuenta, Apariencia, Tokens MCP, Administradores y Almacenamiento." },
     ],
   },
   {

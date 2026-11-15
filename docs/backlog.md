@@ -2,18 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** UI-01 pasó al roadmap activo; PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; SYNC-01 se queda aquí como norma operativa.
+> **Nota:** UI-03 pasó al roadmap activo; UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; PER-01 sigue archivado con su trabajo pendiente abajo; SYNC-01 se queda aquí como norma operativa.
 
 ---
-
-## 2026-11-15 — UI-03 · Reorganizar las secciones de Ajustes
-
-- Contexto: el selector de tema ya vive en Ajustes > Apariencia. Ajustes mantiene `Cuenta` y `Administradores`, pero `Administradores` mezcla la gestión de fichas con el diagnóstico de almacenamiento, y `Cuenta` acumula los tokens MCP y el cierre de sesión. La jerarquía de secciones queda fuera de UI-01.
-- Qué falta: decidir un mapa estable de secciones (Cuenta, Apariencia, Administradores, Almacenamiento, Tokens MCP, Auditoría…), separar responsabilidades, revisar qué secciones requieren propietario o administración y conservar las URLs existentes con compatibilidad o redirecciones. Revisar también el sidebar en móvil.
-- Criterios mínimos: cada sección agrupa un solo tema; los permisos no muestran secciones restringidas; las URLs canónicas y atrás/adelante siguen funcionando; no se duplica lógica de cuenta, administración ni almacenamiento.
-- Notas técnicas: `?view=ajustes&section=apariencia` ya es válido. `SettingsStorage` es un componente independiente en `app/board/settings/settings-storage.tsx`; se puede promover a sección propia sin tocar la API. La entrada no cambia el alcance de UI-01 ni de la fase 7.1.
 
 ## 2026-11-15 — PER-03 · Purga segura de archivos sin uso
 

@@ -6,9 +6,9 @@
  * - `view`: una de `clase | alumnos | profesores | espacio | ajustes |
  *   documentacion`. Por defecto `clase`.
  * - `section`: sección dentro de la vista. En `clase` es `tareas` (por
- *   defecto) o `calendario`; en `ajustes` es `cuenta | apariencia |
- *   administradores` (por defecto `cuenta`). En el resto de vistas no tiene
- *   significado y se omite.
+ *   defecto) o `calendario`; en `ajustes` es `cuenta | apariencia | tokens |
+ *   administradores | almacenamiento` (por defecto `cuenta`). En el resto de
+ *   vistas no tiene significado y se omite.
  *
  * La forma canónica omite los valores por defecto: `/?project=p1` ya es
  * Clase > Tareas y `/?project=p1&view=ajustes` ya es Ajustes > Cuenta.
@@ -27,7 +27,7 @@ export type BoardView = "clase" | "alumnos" | "profesores" | "espacio" | "ajuste
 export type ClassSection = "tareas" | "calendario";
 
 /** Secciones válidas dentro de Ajustes. */
-export type SettingsSection = "cuenta" | "apariencia" | "administradores";
+export type SettingsSection = "cuenta" | "apariencia" | "tokens" | "administradores" | "almacenamiento";
 
 /** Vistas válidas del tablero. */
 export const BOARD_VIEWS: readonly BoardView[] = [
@@ -41,6 +41,15 @@ export const BOARD_VIEWS: readonly BoardView[] = [
 
 /** Secciones válidas dentro de Clase. */
 export const CLASS_SECTIONS: readonly ClassSection[] = ["tareas", "calendario"];
+
+/** Secciones válidas dentro de Ajustes, en el orden de navegación. */
+export const SETTINGS_SECTIONS: readonly SettingsSection[] = [
+  "cuenta",
+  "apariencia",
+  "tokens",
+  "administradores",
+  "almacenamiento",
+];
 
 /** Estado de vista y sección derivado de la URL. */
 export type BoardUrlState = {
@@ -75,10 +84,9 @@ export function parseBoardUrl(search: string): BoardUrlState {
   const classSection: ClassSection = CLASS_SECTIONS.includes(rawSection as ClassSection)
     ? (rawSection as ClassSection)
     : DEFAULT_STATE.classSection;
-  const settingsSection: SettingsSection =
-    rawSection === "administradores" || rawSection === "apariencia" || rawSection === "cuenta"
-      ? rawSection
-      : DEFAULT_STATE.settingsSection;
+  const settingsSection: SettingsSection = SETTINGS_SECTIONS.includes(rawSection as SettingsSection)
+    ? (rawSection as SettingsSection)
+    : DEFAULT_STATE.settingsSection;
 
   const app = view === "espacio" ? params.get("app") : null;
   return { view, classSection, settingsSection, app };

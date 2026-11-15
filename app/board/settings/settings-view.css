@@ -38,7 +38,6 @@
 .admin-remove { color:var(--ui-danger-text); }
 .admin-confirm { display:grid; gap:10px; padding:12px; border-radius: var(--radius-sm); background:var(--ui-danger-soft); }
 .admin-confirm > div { display:flex; justify-content:flex-end; gap:8px; }.admin-error { color:var(--ui-danger-text); }
-.storage-section { margin-top: 26px; padding-top: 24px; border-top: var(--border-width-hairline) solid var(--ui-border-default); }
 .storage-status { display:grid; gap:7px; padding:12px 14px; border:var(--border-width-hairline) solid var(--ui-border-default); border-radius: var(--radius-sm); background:var(--ui-surface-muted); }
 .storage-status.ok { border-color:var(--ui-border-success); background:var(--ui-success-soft); }
 .storage-status.error { border-color:var(--ui-border-danger); background:var(--ui-danger-soft); }
@@ -46,9 +45,9 @@
 .storage-status p { margin:0; color:var(--ui-text-muted); line-height: var(--leading-normal); }
 .storage-status ul { display:grid; gap:3px; margin:2px 0 0; padding-left:18px; color:var(--ui-text-muted); font-size: var(--text-sm); }
 
-/* Tokens del MCP (dentro de Cuenta) */
-.token-panel { display:grid; gap:14px; padding-top:6px; border-top:var(--border-width-hairline) solid var(--ui-border-default); }
-.token-panel h2 { display:flex; align-items:center; gap:9px; margin:0; font-size: var(--text-3xl); letter-spacing: var(--tracking-tight); }
+/* Tokens del MCP */
+.token-panel { gap:14px; }
+.token-panel h2 { display:flex; align-items:center; gap:9px; margin:0; font-size: var(--text-4xl); letter-spacing: var(--tracking-tight); }
 .token-panel > p { color:var(--ui-text-muted); line-height: var(--leading-normal); }
 .token-created { display:grid; gap:9px; padding:13px 14px; border:var(--border-width-hairline) solid var(--ui-border-accent); border-radius: var(--radius-md); background:var(--ui-action-soft); }
 .token-created strong { color:var(--ui-text-strong); font-size: var(--text-base); }

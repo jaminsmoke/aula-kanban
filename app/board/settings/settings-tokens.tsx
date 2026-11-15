@@ -15,7 +15,7 @@ function formatDate(timestamp: number | null): string {
 
 /**
  * Tokens del servidor MCP de la cuenta: crear, ver una sola vez y revocar.
- * @returns La gestión de tokens dentro de Ajustes > Cuenta.
+ * @returns La gestión de tokens en la sección Tokens MCP.
  */
 export default function SettingsTokens() {
   const [tokens, setTokens] = useState<McpTokenMeta[] | null>(null);
@@ -96,9 +96,11 @@ export default function SettingsTokens() {
   const revoked = tokens?.filter((token) => token.revokedAt !== null) ?? [];
 
   return (
-    <div className="token-panel" aria-labelledby="settings-tokens-title">
-      <h2 id="settings-tokens-title"><KeyRound size={20} aria-hidden /> Tokens del MCP</h2>
-      <p>Conecta clientes MCP (Claude, ChatGPT u otros) a tu cuenta. Cada token solo ve lo que tú ves en el tablero.</p>
+    <section className="settings-section token-panel" aria-labelledby="settings-tokens-title">
+      <div>
+        <h2 id="settings-tokens-title"><KeyRound size={20} aria-hidden /> Tokens del MCP</h2>
+        <p>Conecta clientes MCP (Claude, ChatGPT u otros) a tu cuenta. Cada token solo ve lo que tú ves en el tablero.</p>
+      </div>
 
       {created && (
         <div className="token-created" role="status">
@@ -145,6 +147,6 @@ export default function SettingsTokens() {
           {tokens !== null && tokens.length === 0 && <li className="token-state">Todavía no tienes tokens. Crea el primero con el formulario de arriba.</li>}
         </ul>
       )}
-    </div>
+    </section>
   );
 }

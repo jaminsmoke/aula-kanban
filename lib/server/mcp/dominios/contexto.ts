@@ -2,7 +2,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../../../db";
 import { instanceApps, students, tasks as taskRows, teachers, userIdentities } from "../../../../db/schema";
-import { BOARD_VIEWS, type BoardView, type ClassSection, type SettingsSection } from "../../../domain/board-url";
+import { BOARD_VIEWS, SETTINGS_SECTIONS, type BoardView, type ClassSection, type SettingsSection } from "../../../domain/board-url";
 import { NATIVE_APP_IDS } from "../../../native-apps";
 import { listInstalledApps } from "../../apps";
 import { comandarVentana } from "../../space-control";
@@ -25,7 +25,7 @@ const projectId = z.string().uuid().describe("Id del proyecto de Aula Kanban");
 
 const vistas = z.enum(BOARD_VIEWS as unknown as [BoardView, ...BoardView[]]).describe("Vista pedida");
 const seccionClase = z.enum(["tareas", "calendario"]).describe("Sección dentro de Clase");
-const seccionAjustes = z.enum(["cuenta", "apariencia", "administradores"]).describe("Sección dentro de Ajustes");
+const seccionAjustes = z.enum(SETTINGS_SECTIONS as unknown as [SettingsSection, ...SettingsSection[]]).describe("Sección dentro de Ajustes");
 
 /**
  * Nombre visible de la cuenta: identidad guardada o el correo.
@@ -78,7 +78,7 @@ async function obtenerEnlace(caller: McpCaller, args: Record<string, unknown>) {
   if (!resolved.ok) return falloResolucion(resolved);
   const view = (a.vista ?? "clase") as BoardView;
   const classSection = (view === "clase" && (a.seccion === "calendario" || a.seccion === "tareas") ? a.seccion : "tareas") as ClassSection;
-  const settingsSection = (view === "ajustes" && (a.seccion === "administradores" || a.seccion === "apariencia" || a.seccion === "cuenta") ? a.seccion : "cuenta") as SettingsSection;
+  const settingsSection = (view === "ajustes" && SETTINGS_SECTIONS.includes(a.seccion as SettingsSection) ? a.seccion : "cuenta") as SettingsSection;
   return payloadResult({ enlace: enlace(caller.origen, a.proyectoId, view, classSection, settingsSection, a.app) });
 }
 

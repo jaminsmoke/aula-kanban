@@ -22,6 +22,24 @@ const props = {
   onProjectsChanged: vi.fn(),
 };
 
+/**
+ * Prepara las respuestas de las secciones y registra qué endpoints se piden.
+ * @returns Las URLs solicitadas por la vista.
+ */
+function mockRequests() {
+  const calls: string[] = [];
+  vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+    const url = String(input);
+    calls.push(url);
+    if (url.includes("/api/storage/status")) {
+      return jsonResponse({ database: true, bucket: true, bucketReachable: true, uploads: 2, ok: true });
+    }
+    if (url.includes("/api/mcp/tokens") || url.includes("/api/administrators")) return jsonResponse([]);
+    return jsonResponse([]);
+  }));
+  return calls;
+}
+
 beforeEach(() => {
   localStorage.clear();
   document.documentElement.dataset.theme = "light";
@@ -29,37 +47,64 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.unstubAllGlobals();
   localStorage.clear();
   document.documentElement.dataset.theme = "light";
   document.documentElement.style.colorScheme = "light";
+  window.history.replaceState({}, "", "/");
 });
 
 describe("SettingsView", () => {
-  it("muestra Cuenta y permite abrir Administradores", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockImplementation((input: RequestInfo | URL) => Promise.resolve(String(input).includes("/api/storage/status")
-      ? jsonResponse({ database: true, bucket: true, bucketReachable: true, uploads: 2, ok: true })
-      : jsonResponse([]))));
+  it("muestra las cinco secciones y separa Tokens de Cuenta", async () => {
+    const calls = mockRequests();
 
     render(<SettingsView {...props} />);
 
-    expect(screen.getByRole("navigation", { name: "Secciones de ajustes" })).toBeTruthy();
+    const navigation = screen.getByRole("navigation", { name: "Secciones de ajustes" });
+    for (const name of ["Cuenta", "Apariencia", "Tokens MCP", "Administradores", "Almacenamiento"]) {
+      expect(within(navigation).getByRole("button", { name })).toBeTruthy();
+    }
     expect(screen.getByRole("button", { name: "Cuenta" }).getAttribute("aria-current")).toBe("page");
     expect(screen.getByText("seedy@sites.test")).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Tokens del MCP" })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Tokens MCP" }));
+    expect(screen.getByRole("heading", { name: "Tokens del MCP" })).toBeTruthy();
+    await waitFor(() => expect(calls.some((url) => url.includes("/api/mcp/tokens"))).toBe(true));
 
     fireEvent.click(screen.getByRole("button", { name: "Administradores" }));
     await waitFor(() => expect(screen.getByRole("heading", { name: "Administradores" })).toBeTruthy());
     expect(screen.getByRole("button", { name: "Administradores" }).getAttribute("aria-current")).toBe("page");
+
+    fireEvent.click(screen.getByRole("button", { name: "Almacenamiento" }));
+    await waitFor(() => expect(screen.getByText("Disponible")).toBeTruthy());
+    expect(screen.getByRole("heading", { name: "Almacenamiento de archivos" })).toBeTruthy();
   });
 
-  it("oculta Administradores a quien no es propietario ni administrador", () => {
+  it("oculta Administradores y Almacenamiento a quien no es propietario ni administrador", () => {
+    mockRequests();
     render(<SettingsView {...props} owner={false} admin={false} />);
 
     expect(screen.queryByRole("button", { name: "Administradores" })).toBeNull();
-    expect(screen.getByRole("button", { name: "Apariencia" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Almacenamiento" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Tokens MCP" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Cuenta" }).getAttribute("aria-current")).toBe("page");
   });
 
+  it("vuelve a Cuenta si una sección restringida se abre sin permiso", async () => {
+    const onSection = vi.fn();
+    mockRequests();
+    window.history.replaceState({}, "", "/?project=p1&view=ajustes&section=almacenamiento");
+
+    render(<SettingsView {...props} owner={false} admin={false} section="almacenamiento" onSection={onSection} />);
+
+    expect(screen.getByRole("heading", { name: "Cuenta" })).toBeTruthy();
+    await waitFor(() => expect(onSection).toHaveBeenCalledWith("cuenta"));
+    expect(window.location.search).toBe("?project=p1&view=ajustes");
+  });
+
   it("abre Apariencia y permite cambiar el tema", () => {
+    mockRequests();
     render(<SettingsView {...props} owner={false} admin={false} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Apariencia" }));

@@ -11,6 +11,8 @@ describe("parseBoardUrl", () => {
     expect(parseBoardUrl("?project=p1&view=alumnos")).toEqual({ view: "alumnos", classSection: "tareas", settingsSection: "cuenta", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=administradores")).toEqual({ view: "ajustes", classSection: "tareas", settingsSection: "administradores", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=apariencia")).toEqual({ view: "ajustes", classSection: "tareas", settingsSection: "apariencia", app: null });
+    expect(parseBoardUrl("?project=p1&view=ajustes&section=tokens")).toEqual({ view: "ajustes", classSection: "tareas", settingsSection: "tokens", app: null });
+    expect(parseBoardUrl("?project=p1&view=ajustes&section=almacenamiento")).toEqual({ view: "ajustes", classSection: "tareas", settingsSection: "almacenamiento", app: null });
     expect(parseBoardUrl("?project=p1&view=documentacion")).toEqual({ view: "documentacion", classSection: "tareas", settingsSection: "cuenta", app: null });
   });
 
@@ -43,6 +45,8 @@ describe("buildBoardUrl", () => {
     expect(buildBoardUrl("?project=p1", { view: "alumnos", classSection: "tareas", settingsSection: "cuenta", app: null })).toBe("?project=p1&view=alumnos");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=administradores", { view: "ajustes", classSection: "tareas", settingsSection: "administradores", app: null })).toBe("?project=p1&view=ajustes&section=administradores");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=apariencia", { view: "ajustes", classSection: "tareas", settingsSection: "apariencia", app: null })).toBe("?project=p1&view=ajustes&section=apariencia");
+    expect(buildBoardUrl("?project=p1&view=ajustes&section=tokens", { view: "ajustes", classSection: "tareas", settingsSection: "tokens", app: null })).toBe("?project=p1&view=ajustes&section=tokens");
+    expect(buildBoardUrl("?project=p1&view=ajustes&section=almacenamiento", { view: "ajustes", classSection: "tareas", settingsSection: "almacenamiento", app: null })).toBe("?project=p1&view=ajustes&section=almacenamiento");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=administradores", { view: "alumnos", classSection: "tareas", settingsSection: "administradores", app: null })).toBe("?project=p1&view=alumnos");
   });
 
@@ -63,7 +67,7 @@ describe("buildBoardUrl", () => {
   });
 
   it("hace roundtrip con parseBoardUrl", () => {
-    const state = parseBoardUrl("?project=p1&view=ajustes&section=administradores");
+    const state = parseBoardUrl("?project=p1&view=ajustes&section=almacenamiento");
     expect(parseBoardUrl(buildBoardUrl("?project=p1", state))).toEqual(state);
   });
 });

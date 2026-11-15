@@ -54,7 +54,7 @@ En desarrollo, `npm run dev` simula la sesión al visitar `/signin-with-chatgpt`
 
 ## Mi espacio y Aula Store
 
-La cabecera organiza el trabajo en **Clase**, **Alumnos**, **Profesores** y **Documentación**; **Mi espacio** se abre desde el icono de aplicaciones y el engranaje abre los **ajustes generales**, con Cuenta y Administradores. Incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, Herramientas de aula, Programación por bloques y Diagramas. Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Mi espacio no elimina las pizarras de las tareas ni sus datos.
+La cabecera organiza el trabajo en **Clase**, **Alumnos**, **Profesores** y **Documentación**; **Mi espacio** se abre desde el icono de aplicaciones y el engranaje abre los **ajustes generales**, con Cuenta, Apariencia, Tokens MCP, Administradores y Almacenamiento. Incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, Herramientas de aula, Programación por bloques y Diagramas. Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Mi espacio no elimina las pizarras de las tareas ni sus datos.
 Dentro de **Clase**, **Tareas** y **Calendario** comparten el mismo tablero: el calendario coloca cada tarea en su fecha de vencimiento, abre la tarea al pulsar su evento y solo se descarga al entrar en la sección.
 
 La lista de aplicaciones integradas, candidatas y descartadas, con licencias y versiones comprobadas, está en [`docs/aplicaciones-nativas.md`](docs/aplicaciones-nativas.md). El índice de documentación y el flujo de roadmap, backlog y changelog están en [`docs/README.md`](docs/README.md).
@@ -70,7 +70,7 @@ El **plugin de Aula Kanban para Sites** es la vía recomendada para ChatGPT y Co
 La lista siguiente se genera desde `lib/domain/mcp-catalogo.ts`; las dos puertas publican las mismas herramientas y cada descripción incluye un ejemplo de argumentos y su regla de rol.
 
 <!-- inicio catálogo MCP: generado desde lib/domain/mcp-catalogo.ts -->
-**50 herramientas · catálogo `0.20.0`:** 21 de lectura y 29 de escritura; 8 destructivas.
+**50 herramientas · catálogo `0.21.0`:** 21 de lectura y 29 de escritura; 8 destructivas.
 
 **Proyectos**
 
@@ -157,7 +157,7 @@ Las bajas destructivas piden confirmación; las fichas y los proyectos, además,
 
 El servidor **MCP remoto y alojado en el propio Site** sigue disponible en `/api/mcp` (transporte HTTP Streamable web-standard, sin sesiones) para los clientes que no usan el plugin. La producción es remota: no se entrega ningún proceso local como producto; lo local es solo para probar.
 
-- **Autenticación:** cada cuenta crea su propio token personal (`ak_mcp_…`) en **Ajustes > Cuenta > Tokens del MCP**. El secreto se muestra una sola vez al crearlo y solo se guarda su hash (SHA-256 con sal) en la tabla `mcp_tokens`. Sin token o con un token revocado, el endpoint responde `401`. Cada token tiene un límite de 120 peticiones por minuto.
+- **Autenticación:** cada cuenta crea su propio token personal (`ak_mcp_…`) en **Ajustes > Tokens MCP**. El secreto se muestra una sola vez al crearlo y solo se guarda su hash (SHA-256 con sal) en la tabla `mcp_tokens`. Sin token o con un token revocado, el endpoint responde `401`. Cada token tiene un límite de 120 peticiones por minuto.
 - **Permisos:** el token actúa con los permisos de tu rol en el proyecto: las cuentas invitadas solo pueden consultar, y un alumno solo puede crear o editar sus propias tareas (o reclamar una sin responsable), igual que en la web.
 - **Herramientas:** la lista y sus permisos son la sección generada de arriba, idéntica en `/mcp` y `/api/mcp`; el contrato está en `lib/domain/mcp-catalogo.ts` y los manejadores en `lib/server/mcp/dominios/`. Las respuestas incluyen enlaces al tablero y a la sección de Calendario.
 
@@ -176,7 +176,7 @@ Instalación en un cliente MCP (sustituye la URL por la de tu Site y tu token):
 
 Los clientes modernos con soporte HTTP remoto (Cursor, VS Code con extensión MCP, Claude en web u otros) se conectan directamente a esa URL. Los clientes clásicos que solo hablan stdio (p. ej. Claude Desktop) necesitan un puente local que reenvíe la URL remota junto con la cabecera `Authorization`: hay puentes de terceros como `mcp-remote`, pero no se publica ninguno con este proyecto.
 
-La documentación de instalación también está en la vista de usuario en `/documentacion` (sección «Servidor MCP») y junto a los tokens en Ajustes > Cuenta. Revoca el token en el mismo panel en cuanto dejes de usarlo.
+La documentación de instalación también está en la vista de usuario en `/documentacion` (sección «Servidor MCP») y en Ajustes > Tokens MCP. Revoca el token en el mismo panel en cuanto dejes de usarlo.
 
 ## Autorización OAuth experimental (clientes MCP externos)
 

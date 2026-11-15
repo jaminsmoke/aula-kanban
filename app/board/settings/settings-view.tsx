@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Palette, ShieldCheck, UserRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import { HardDrive, KeyRound, Palette, ShieldCheck, UserRound } from "lucide-react";
 import WorkspaceLayout, { type WorkspaceItem } from "../layout/workspace-layout";
 import type { Project } from "../shared/model";
 import SettingsAccount from "./settings-account";
 import SettingsAdmins from "./settings-admins";
 import SettingsAppearance from "./settings-appearance";
 import SettingsStorage from "./settings-storage";
+import SettingsTokens from "./settings-tokens";
 import "./settings-view.css";
 
 /** Secciones disponibles dentro de Ajustes (tipo canónico en `lib/domain/board-url`). */
@@ -33,12 +34,28 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, activ
   const section = controlledSection ?? innerSection;
   const setSection = onSection ?? setInnerSection;
   const privileged = owner || admin;
+  const restricted = section === "administradores" || section === "almacenamiento";
   const sections: WorkspaceItem<SettingsSection>[] = [
     { id: "cuenta", label: "Cuenta", icon: UserRound },
     { id: "apariencia", label: "Apariencia", icon: Palette },
-    ...(privileged ? [{ id: "administradores" as const, label: "Administradores", icon: ShieldCheck }] : []),
+    { id: "tokens", label: "Tokens MCP", icon: KeyRound },
+    ...(privileged ? [
+      { id: "administradores" as const, label: "Administradores", icon: ShieldCheck },
+      { id: "almacenamiento" as const, label: "Almacenamiento", icon: HardDrive },
+    ] : []),
   ];
-  const active = !privileged && section === "administradores" ? "cuenta" : section;
+  const active = !privileged && restricted ? "cuenta" : section;
+
+  useEffect(() => {
+    if (privileged || !restricted) return;
+    // Quita la sección restringida sin añadir una entrada al historial:
+    // el setter normal de la URL usa pushState y rompería atrás/adelante.
+    const url = new URL(window.location.href);
+    url.searchParams.set("view", "ajustes");
+    url.searchParams.delete("section");
+    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    setSection("cuenta");
+  }, [privileged, restricted, setSection]);
 
   return (
     <WorkspaceLayout title="Ajustes" label="Secciones de ajustes" items={sections} active={active} onSelect={setSection}>
@@ -47,11 +64,12 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, activ
           <SettingsAccount user={user} projectsLoaded={projectsLoaded} owner={owner} admin={admin} activeProject={activeProject} />
         ) : active === "apariencia" ? (
           <SettingsAppearance />
+        ) : active === "tokens" ? (
+          <SettingsTokens />
+        ) : active === "administradores" ? (
+          <SettingsAdmins onProjectsChanged={onProjectsChanged} />
         ) : (
-          <>
-            <SettingsAdmins onProjectsChanged={onProjectsChanged} />
-            <SettingsStorage />
-          </>
+          <SettingsStorage />
         )}
       </div>
     </WorkspaceLayout>

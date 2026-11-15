@@ -5,6 +5,7 @@
 export {
   BOARD_VIEWS,
   CLASS_SECTIONS,
+  SETTINGS_SECTIONS,
   buildBoardUrl,
   parseBoardUrl,
   type BoardUrlState,

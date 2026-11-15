@@ -11,7 +11,7 @@ export const MCP_DOMINIOS = ["Proyectos", "Archivos", "Tareas", "Personas", "Con
 export type McpDominio = (typeof MCP_DOMINIOS)[number];
 
 /** Versión del contrato de herramientas. */
-export const MCP_CATALOG_VERSION = "0.20.0";
+export const MCP_CATALOG_VERSION = "0.21.0";
 
 /** Metadatos de una herramienta del catálogo. */
 export type McpCatalogoEntry = {

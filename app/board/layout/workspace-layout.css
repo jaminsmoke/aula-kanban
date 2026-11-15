@@ -26,7 +26,7 @@
 @media (max-width: 720px) {
   .workspace-layout { grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr); }
   .workspace-sidebar { display:flex; align-items:center; gap:10px; height:auto; overflow:visible; padding:8px 12px; border-right:0; border-bottom:var(--border-width-strong) solid var(--ui-border-accent-strong); background:var(--ui-surface-frame); }
-  .workspace-sidebar-title { margin:0; padding-inline:6px; }
-  .workspace-nav { display:flex; gap:4px; overflow-x:auto; }
+  .workspace-sidebar-title { flex:none; margin:0; padding-inline:6px; white-space:nowrap; }
+  .workspace-nav { display:flex; flex:1; min-width:0; gap:4px; overflow-x:auto; }
   .workspace-nav button { width:auto; white-space:nowrap; }
 }

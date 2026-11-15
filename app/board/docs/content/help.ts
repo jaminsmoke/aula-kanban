@@ -14,7 +14,7 @@ export const helpSections: DocSection[] = [
           { term: "Clase > Calendario", text: "`/?project=<id>&section=calendario`; también admite `view=clase`." },
           { term: "Alumnos y Profesores", text: "`view=alumnos` y `view=profesores`." },
           { term: "Mi espacio", text: "`view=espacio`; `app=<appId>` abre una aplicación instalada, por ejemplo `view=espacio&app=mermaid`." },
-          { term: "Ajustes", text: "`view=ajustes`, con `section=cuenta` (por defecto) o `section=administradores`." },
+          { term: "Ajustes", text: "`view=ajustes`, con `section=cuenta` (por defecto), `apariencia`, `tokens`, `administradores` o `almacenamiento`; las dos últimas solo con permiso." },
           { term: "Documentación", text: "`/documentacion` sin sesión; dentro del tablero, `view=documentacion`." },
           { term: "Enlaces de proyecto", text: "El menú de la cabecera enlaza cada proyecto conservando la vista y la sección en las que estás." },
           { term: "Valores no válidos", text: "Un `view` o un `section` desconocidos caen a su valor por defecto; `project` conserva el proyecto activo." },
@@ -94,7 +94,7 @@ export const helpSections: DocSection[] = [
       {
         type: "definitions",
         items: [
-          { term: "El MCP responde 401 `unauthorized`", text: "El token falta, es incorrecto o se ha revocado. Crea otro en Ajustes > Cuenta y actualiza la cabecera `Authorization: Bearer …` del cliente." },
+          { term: "El MCP responde 401 `unauthorized`", text: "El token falta, es incorrecto o se ha revocado. Crea otro en Ajustes > Tokens MCP y actualiza la cabecera `Authorization: Bearer …` del cliente." },
           { term: "El MCP responde 429 `rate_limited`", text: "Cada token admite 120 peticiones por minuto. Espera los 60 segundos de la cabecera `retry-after` y repite." },
           { term: "El MCP responde 503 `database_unavailable`", text: "El Site no encuentra su base de datos en ese momento. Reintenta en unos segundos." },
           { term: "El MCP responde 403 `insufficient_scope`", text: "El token OAuth es de solo lectura y la herramienta escribe. Autoriza de nuevo con `mcp:write` o usa un token personal." },

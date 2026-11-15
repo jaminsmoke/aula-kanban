@@ -34,7 +34,7 @@ export default function SettingsStorage() {
   }, []);
 
   return (
-    <section className="settings-section storage-section" aria-labelledby="settings-storage-title">
+    <section className="settings-section" aria-labelledby="settings-storage-title">
       <div>
         <h2 id="settings-storage-title">Almacenamiento de archivos</h2>
         <p>D1 guarda las fichas de los archivos y R2 guarda las imágenes y documentos. Sites inyecta ambos bindings en el Worker.</p>

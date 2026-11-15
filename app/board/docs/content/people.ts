@@ -81,7 +81,7 @@ export const peopleSections: DocSection[] = [
           "El mismo panel avisa de que los permisos de la aplicación son independientes de la propiedad del Site en Sites, y ofrece «Cerrar sesión».",
         ],
       },
-      { type: "paragraph", text: "Dentro de Cuenta están los «Tokens del MCP». Cada token ve exactamente lo que tú ves en el tablero, así que sirve para conectar Claude, ChatGPT u otro cliente MCP con tu cuenta." },
+      { type: "paragraph", text: "En Ajustes > Tokens MCP están los tokens del servidor. Cada token ve exactamente lo que tú ves en el tablero, así que sirve para conectar Claude, ChatGPT u otro cliente MCP con tu cuenta." },
       {
         type: "steps",
         items: [
