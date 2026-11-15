@@ -6,7 +6,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](roadmap.md) | Sin roadmap activo | Secuencia de ejecución |
+| [`roadmap.md`](roadmap.md) | APP-01 · Matriz de herramientas, roles y alcance | Secuencia de ejecución |
 | [`backlog.md`](backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`mcp-apps.md`](mcp-apps.md) | Cobertura MCP, permisos y límites de las apps nativas | Temático |
@@ -72,7 +72,8 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
 - **Roadmap UI-08 completado:** Tienda en Administración, Clase como botón de icono en la cabecera, URL canónica `view=administracion&section=tienda` y alias `view=espacio`; revisado en 1366, 1024, 900, 620 y 390. Catálogo MCP `0.27.0`. Resumen en [`changelog.md`](changelog.md).
-- **Backlog:** sin entradas aparcadas.
+- **Roadmap APP-01 activo:** matriz de herramientas, roles y alcance. Plan en [`roadmap.md`](roadmap.md).
+- **Backlog:** APP-02, APP-03, PERM-01 y UI-09 (4 entradas).
 - **Roadmap UI-07 completado:** Documentación como sección de Ajustes, con URL canónica `view=ajustes&section=documentacion` y alias antiguo, y selector de proyecto en el hueco derecho de la cabecera; revisado en 1366, 1024 y 390. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap UI-05 completado:** estados vacíos de alumnado y profesorado con un componente compartido, selector oculto sin fichas y alta conectada a los diálogos existentes; revisado en 1366 y 390. Resumen en [`changelog.md`](changelog.md); roadmap sin fase activa.
 - **Roadmap UI-04 completado:** Alumnos y Profesores en una sola vista de administración con sidebar, URL canónica `view=administracion` y alias antiguos, revisada en 1366, 1024 y 390. Resumen en [`changelog.md`](changelog.md).
