@@ -2,20 +2,20 @@
    Programación por bloques (Blockly)
    ========================================================================== */
 
-.blockly-app { flex:1 1 auto; width:100%; min-width:0; display:flex; flex-direction:column; height:100%; min-height:0; background:var(--white); color:var(--ink); }
+.blockly-app { flex:1 1 auto; width:100%; min-width:0; display:flex; flex-direction:column; height:100%; min-height:0; background:var(--ui-surface-raised); color:var(--ui-text-primary); }
 
-.blockly-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:6px; flex:none; padding:8px 10px; border-bottom:1px solid var(--line-subtle); background:var(--surface-faint); }
+.blockly-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:6px; flex:none; padding:8px 10px; border-bottom:1px solid var(--ui-border-subtle); background:var(--ui-surface-faint); }
 
-.blockly-toolbar button { padding:7px 12px; border:1px solid var(--line-strong); border-radius:8px; background:var(--white); color:var(--ink-soft); font:inherit; font-size:12px; font-weight:650; cursor:pointer; }
+.blockly-toolbar button { padding:7px 12px; border:1px solid var(--ui-border-strong); border-radius:8px; background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:12px; font-weight:650; cursor:pointer; }
 
 .blockly-toolbar button:hover:not(:disabled) { background:var(--ui-surface-hover); }
 
 
 .blockly-toolbar button:focus-visible { outline:2px solid var(--ui-focus-ring); outline-offset:2px; }
 
-.blockly-toolbar .blockly-code-toggle[aria-pressed="true"] { border-color:var(--violet); background:var(--violet); color:var(--white); }
+.blockly-toolbar .blockly-code-toggle[aria-pressed="true"] { border-color:var(--ui-action-text); background:var(--ui-action-primary); color:var(--ui-text-inverse); }
 
-.blockly-status { margin-left:auto; color:var(--muted); font-size:11.5px; font-weight:650; }
+.blockly-status { margin-left:auto; color:var(--ui-text-muted); font-size:11.5px; font-weight:650; }
 
 .blockly-layout { flex:1 1 auto; min-height:0; display:flex; }
 
@@ -26,46 +26,46 @@
 .blockly-stage .blocklySvg { outline:none; }
 
 /* Panel de código generado. */
-.blockly-code { flex:0 0 360px; min-width:0; min-height:0; display:flex; flex-direction:column; border-left:1px solid var(--line-subtle); background:var(--surface-pale); }
+.blockly-code { flex:0 0 360px; min-width:0; min-height:0; display:flex; flex-direction:column; border-left:1px solid var(--ui-border-subtle); background:var(--ui-surface-pale); }
 
-.blockly-code-head { display:flex; align-items:center; justify-content:space-between; gap:8px; flex:none; padding:8px 10px; border-bottom:1px solid var(--surface-tint); }
+.blockly-code-head { display:flex; align-items:center; justify-content:space-between; gap:8px; flex:none; padding:8px 10px; border-bottom:1px solid var(--ui-surface-tint); }
 
 .blockly-code-tabs { display:flex; gap:4px; }
 
-.blockly-code-tabs button { padding:6px 10px; border:1px solid transparent; border-radius:7px; background:var(--ui-surface-hover); color:var(--ink-soft); font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; }
+.blockly-code-tabs button { padding:6px 10px; border:1px solid transparent; border-radius:7px; background:var(--ui-surface-hover); color:var(--ui-text-secondary); font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; }
 
-.blockly-code-tabs button[aria-selected="true"] { background:var(--white); border-color:var(--line-violet); color:var(--violet); }
+.blockly-code-tabs button[aria-selected="true"] { background:var(--ui-surface-raised); border-color:var(--ui-border-accent); color:var(--ui-action-text); }
 
-.blockly-code-copy { padding:6px 10px; border:1px solid var(--line-strong); border-radius:7px; background:var(--white); color:var(--ink-soft); font:inherit; font-size:11.5px; font-weight:650; cursor:pointer; }
+.blockly-code-copy { padding:6px 10px; border:1px solid var(--ui-border-strong); border-radius:7px; background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:11.5px; font-weight:650; cursor:pointer; }
 
-.blockly-code-copy:hover { background:var(--surface-hover); }
+.blockly-code-copy:hover { background:var(--ui-surface-hover); }
 
 .blockly-code-actions { display:flex; gap:6px; }
 
-.blockly-code-run { padding:6px 10px; border:1px solid var(--violet); border-radius:7px; background:var(--violet); color:var(--white); font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; }
+.blockly-code-run { padding:6px 10px; border:1px solid var(--ui-action-text); border-radius:7px; background:var(--ui-action-primary); color:var(--ui-text-inverse); font:inherit; font-size:11.5px; font-weight:700; cursor:pointer; }
 
-.blockly-code-run:hover:not(:disabled) { background:var(--violet-dark); }
+.blockly-code-run:hover:not(:disabled) { background:var(--ui-action-primary-hover); }
 
 
-.blockly-code-error { margin:0; padding:12px 14px; color:var(--danger-ink); font-size:12.5px; line-height:1.5; }
+.blockly-code-error { margin:0; padding:12px 14px; color:var(--ui-danger-ink); font-size:12.5px; line-height:1.5; }
 
-.blockly-run { flex:none; max-height:45%; overflow:auto; display:flex; flex-direction:column; gap:6px; padding:10px 14px; border-top:1px solid var(--surface-tint); background:var(--ui-success-soft); }
+.blockly-run { flex:none; max-height:45%; overflow:auto; display:flex; flex-direction:column; gap:6px; padding:10px 14px; border-top:1px solid var(--ui-surface-tint); background:var(--ui-success-soft); }
 
 .blockly-run.is-error { background:var(--ui-danger-soft); }
 
-.blockly-run.is-timeout { background:var(--warning-pale); }
+.blockly-run.is-timeout { background:var(--ui-warning-pale); }
 
 .blockly-run-title { color:var(--ui-success); font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
 
-.blockly-run.is-error .blockly-run-title { color:var(--danger-ink); }
+.blockly-run.is-error .blockly-run-title { color:var(--ui-danger-ink); }
 
-.blockly-run.is-timeout .blockly-run-title { color:var(--warning-deep); }
+.blockly-run.is-timeout .blockly-run-title { color:var(--ui-warning-deep); }
 
-.blockly-run-message { margin:0; color:var(--ink); font-size:12.5px; line-height:1.5; }
+.blockly-run-message { margin:0; color:var(--ui-text-primary); font-size:12.5px; line-height:1.5; }
 
-.blockly-run-logs { margin:0; padding-left:18px; color:var(--ink); font:12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.blockly-run-logs { margin:0; padding-left:18px; color:var(--ui-text-primary); font:12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
-.blockly-run.is-error .blockly-run-logs { color:var(--danger-ink); }
+.blockly-run.is-error .blockly-run-logs { color:var(--ui-danger-ink); }
 
 .blockly-code-body { flex:1 1 auto; min-height:0; margin:0; padding:12px 14px; overflow:auto; color:var(--ui-text-secondary); font:12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space:pre; }
 

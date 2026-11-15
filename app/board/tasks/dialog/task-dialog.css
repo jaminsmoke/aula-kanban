@@ -8,7 +8,7 @@
 .field-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 .field-count { color: var(--ui-text-muted); font-size: var(--text-sm); font-weight: var(--weight-medium); white-space: nowrap; }
 .field-hint { color: var(--ui-text-muted); font-size: var(--text-sm); font-weight: var(--weight-regular); margin-top: 6px; }
-.field-error { color: var(--ui-danger); font-size: var(--text-sm); font-weight: var(--weight-semibold); margin-top: 6px; }
+.field-error { color:var(--ui-danger-text); font-size: var(--text-sm); font-weight: var(--weight-semibold); margin-top: 6px; }
 .claim-banner { color: var(--ui-warning-deep); border: 1px solid var(--ui-border-warning); background: var(--ui-warning-pale); padding: 9px 12px; border-radius: 9px; font-size: var(--text-md); }
 .task-form.claiming .claim-muted { opacity: .55; }
 
@@ -25,13 +25,13 @@
 .date-warning { color: var(--ui-warning-deep); font-size: var(--text-sm); font-weight: var(--weight-semibold); margin-top: 6px; }
 .segmented { display: flex; gap: 2px; margin-top: 6px; padding: 3px; border: 1px solid var(--ui-border-control); border-radius: 9px; background: var(--ui-surface-faint); }
 .segmented-option { flex: 1; min-width: 0; min-height: 35px; border: 0; border-radius: 6px; background: transparent; color: var(--ui-text-muted); font-size: var(--text-base); font-weight: var(--weight-bold); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.segmented-option:hover:enabled { color: var(--ui-action-primary-hover); background: var(--ui-action-soft); }
+.segmented-option:hover:enabled { color:var(--ui-action-text-hover); background: var(--ui-action-soft); }
 .segmented-option.low[aria-pressed="true"] { background: var(--ui-success-soft); color: var(--ui-success); }
-.segmented-option.normal[aria-pressed="true"] { background: var(--ui-action-soft); color: var(--ui-action-primary); }
-.segmented-option.high[aria-pressed="true"] { background: var(--ui-danger-soft); color: var(--ui-danger); }
+.segmented-option.normal[aria-pressed="true"] { background: var(--ui-action-soft); color:var(--ui-action-text); }
+.segmented-option.high[aria-pressed="true"] { background: var(--ui-danger-soft); color:var(--ui-danger-text); }
 .task-tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--ui-border-soft); }
 .task-tab { border: 0; border-bottom: 2px solid transparent; background: none; padding: 9px 10px; color: var(--ui-text-muted); font-size: var(--text-md); font-weight: var(--weight-bold); cursor: pointer; }
-.task-tab.active { color: var(--ui-action-primary); border-bottom-color: var(--ui-action-bright); }
+.task-tab.active { color:var(--ui-action-text); border-bottom-color: var(--ui-action-bright); }
 [role="tabpanel"] { display: grid; gap: 15px; }
 [role="tabpanel"]:not([hidden]) { animation: fade-slide-in var(--duration-fast) var(--ease-out); }
 [role="tabpanel"][hidden] { display: none; }
@@ -61,7 +61,7 @@
 .whiteboard-shell-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .whiteboard-shell-bar .field-hint { margin-top: 0; }
 .whiteboard-expand { border: 1px solid var(--ui-border-control); background: var(--ui-surface-raised); }
-.whiteboard-expand:hover:enabled { color: var(--ui-action-primary-hover); background: var(--ui-action-soft); }
+.whiteboard-expand:hover:enabled { color:var(--ui-action-text-hover); background: var(--ui-action-soft); }
 /* En la pestaña Pizarra el diálogo se ensancha (con transición suave) y el
    lienzo es más alto, para que la barra de herramientas y el menú de
    Excalidraw no queden cortados. */

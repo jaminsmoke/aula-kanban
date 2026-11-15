@@ -3,6 +3,7 @@ import "./globals.css";
 import "./board/styles/buttons.css";
 import "./board/styles/access.css";
 import "./board/styles/dialogs.css";
+import { THEME_INIT_SCRIPT } from "./theme";
 
 export const metadata: Metadata = {
   title: "Aula Kanban",
@@ -18,7 +19,10 @@ export const metadata: Metadata = {
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="es" data-theme="light" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body>{children}</body>
     </html>
   );

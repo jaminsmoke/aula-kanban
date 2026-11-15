@@ -10,7 +10,7 @@
 
 - [ ] Unificar la jerarquía visual con una escala semántica de superficies, tinta, bordes y gradientes, sin cambiar el comportamiento ni la estructura de las pantallas.
 - [ ] Separar el marco (header/sidebar) del contenido y dejar preparada una capa de tema claro/oscuro sin duplicar componentes.
-- **Criterio de éxito:** Clase, Calendario, Ajustes, Documentación, Mi espacio y Aula Store consumen los mismos tokens; el contraste AA se mantiene; el marco se distingue del contenido; tipografía e iconos comparten escala; el tema oscuro se añade por tokens y no por variantes de componente; no hay regresiones funcionales.
+- **Criterio de éxito:** Clase, Calendario, Ajustes, Documentación, Mi espacio y Aula Store consumen los mismos tokens; el contraste AA se mantiene; el marco se distingue del contenido; tipografía, iconos, bordes y radios comparten escala; el tema oscuro se añade por tokens y no por variantes de componente; no hay regresiones funcionales.
 
 ## 2. Alcance
 
@@ -110,10 +110,18 @@
 
 ### Fase 7: Temas claro y oscuro
 
-- [ ] Introducir `[data-theme]`, `color-scheme`, preferencia del sistema y persistencia.
-- [ ] Invertir superficies, texto, bordes, sombras y foco; el chrome oscuro reutilizará `--ui-surface-frame` con otro valor.
-- [ ] Revisar AA y contraste gráfico en ambos temas sin duplicar componentes.
+- [x] Introducir `[data-theme]`, `color-scheme`, preferencia del sistema y persistencia.
+- [x] Invertir superficies, texto, bordes, sombras y foco; el chrome oscuro reutilizará `--ui-surface-frame` con otro valor.
+- [x] Revisar AA y contraste gráfico en ambos temas sin duplicar componentes.
 - **Criterios de aceptación:** ambos temas pasan AA; el cambio no recarga ni duplica CSS; no hay regresiones funcionales.
+- **Completada el 2026-11-15:** `[data-theme]` y `color-scheme` cambian el tema sin recargar; la preferencia `system | light | dark` se guarda en `aula-kanban-theme`, escucha `prefers-color-scheme` y se elige desde el menú de cuenta. El script inicial evita el destello antes de hidratar. 92 de los 93 tokens `--ui-*` se redefinen en un único bloque `[data-theme="dark"]`; el restante es la opacidad compartida. No se duplican componentes. Quedan 0 hexadecimales en los 22 CSS de feature y 189 usos en `globals.css`; el mínimo de texto es 5,72:1, el borde de control 3,17:1 y el foco 7,49:1. La inspección visual en navegador sigue pendiente.
+
+### Fase 7.1: Bordes, radios y separadores
+
+- [ ] Revisar grosores, radios y separadores del marco, el héroe de Tareas, las tarjetas y los controles.
+- [ ] Unificar la escala de bordes (1 px/2 px), radios y líneas divisorias; sustituir los valores sueltos que se repitan por tokens.
+- [ ] Ajustar el borde sidebar/contenido y el contorno del héroe para que acompañen la jerarquía sin competir con el contenido.
+- **Criterios de aceptación:** una sola escala de bordes y radios; sin cambios de layout; los separadores del marco, el héroe y las tarjetas se leen con la misma jerarquía en claro y oscuro; AA y foco visible se mantienen.
 
 ### Fase 8: Limpieza, guarda y cierre
 
@@ -132,6 +140,7 @@
 | Tipografía e iconos se tocan sin una escala | Alto | Fases 4 y 5 separadas; documentar roles y tamaños antes de aplicar. |
 | El tema oscuro se implementa antes de estabilizar color | Alto | Fase 7 al final; consume tokens ya validados. |
 | Los estilos de terceros no respetan los tokens | Medio | Intervenir solo en envoltorios y variables expuestas; no reescribir el vendor. |
+| La revisión de bordes y radios termina en un rediseño de layout | Medio | Fase 7.1 separada; solo escala, separadores y contorno, sin mover estructura ni contenido. |
 | La extensión termina en un rediseño de layout | Alto | Mantener estructura, navegación y comportamiento; cualquier cambio funcional sale a otro roadmap. |
 | Las pantallas de datos densos pierden legibilidad | Medio | Validar tablas, calendario y listas con contenido real, no solo estados vacíos. |
 
@@ -148,4 +157,5 @@
 - Fase 4 completada el 2026-11-15: 29 medidas de `font-size` quedan reducidas a 18 tokens; el CSS propio no conserva tamaños, interlineados, trackings ni pesos sueltos. Se mantienen las dos familias actuales, se añade `--font-mono` y se documenta la excepción de las apps internas.
 - Fase 5 completada el 2026-11-15: 13 tamaños de icono quedan reducidos a 6; lucide usa trazo 2 y la marca 2,4. Los botones de icono tienen un área mínima de 36 px y los iconos con texto quedan ocultos a lectores. La inspección visual en navegador sigue pendiente.
 - Fase 6 completada el 2026-11-15: los 80 hexadecimales de los CSS de feature bajan a 0; los 91 restantes están en `globals.css`. La tabla periódica estrena 11 tintes categóricos; hover, active, focus y disabled comparten tokens. La inspección visual en navegador sigue pendiente.
-- Auditoría para la siguiente fase: cero hexadecimales en CSS de feature; 91 en `globals.css`; 70 primitivas y 88 tokens `--ui-*`. La fase 7 debe invertir tokens, no componentes.
+- Fase 7 completada el 2026-11-15: el tema oscuro invierte 92 de los 93 tokens `--ui-*` en un solo bloque; `--ui-opacity-disabled` se comparte. La preferencia del sistema, el cambio manual y la persistencia funcionan desde el menú de cuenta. El mínimo de texto es 5,72:1, el borde de control 3,17:1 y el foco 7,49:1. La inspección visual en navegador sigue pendiente.
+- Siguiente fase: 7.1 revisará bordes, radios y separadores (incluidos el borde sidebar/contenido y el contorno del héroe de Tareas). Después queda la limpieza y la guarda de la fase 8.

@@ -74,9 +74,9 @@
   transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 .docs-index a svg { color: var(--ui-text-muted); transition: color var(--duration-fast) var(--ease-out); }
-.docs-index a:hover { background: var(--ui-action-soft); color: var(--ui-action-primary-hover); }
-.docs-index a[aria-current] { background: var(--ui-action-soft); color: var(--ui-action-primary-hover); font-weight: var(--weight-bold); }
-.docs-index a[aria-current] svg, .docs-index a:hover svg { color: var(--ui-action-primary); }
+.docs-index a:hover { background: var(--ui-action-soft); color:var(--ui-action-text-hover); }
+.docs-index a[aria-current] { background: var(--ui-action-soft); color:var(--ui-action-text-hover); font-weight: var(--weight-bold); }
+.docs-index a[aria-current] svg, .docs-index a:hover svg { color:var(--ui-action-text); }
 .docs-index a[aria-current]::before { content: ""; position: absolute; left: -10px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--ui-action-primary); }
 .docs-index a:focus-visible { outline: 2px solid var(--ui-focus-ring); outline-offset: 2px; }
 
@@ -100,12 +100,12 @@
 .doc-section-head { display: flex; align-items: center; gap: 13px; margin-bottom: 12px; }
 .doc-section-head h2 { font-size: var(--text-4xl); letter-spacing: var(--tracking-snug); scroll-margin-top: var(--docs-sticky-top); }
 .doc-section-head h2:focus { outline: none; }
-.doc-section-head h2:focus-visible { outline: 2px solid var(--ui-action-primary); outline-offset: 4px; border-radius: 4px; }
+.doc-section-head h2:focus-visible { outline:2px solid var(--ui-focus-ring); outline-offset: 4px; border-radius: 4px; }
 .doc-icon {
   display: grid; place-items: center; flex: none;
   width: 40px; height: 40px; border-radius: 12px;
   background: var(--ui-action-soft);
-  color: var(--ui-action-primary-hover);
+  color:var(--ui-action-text-hover);
 }
 .doc-lead { max-width: 62ch; color: var(--ui-text-secondary); font-size: var(--text-xl); line-height: var(--leading-relaxed); text-wrap: pretty; }
 .doc-paragraph { max-width: 70ch; font-size: var(--text-lg); line-height: var(--leading-relaxed); color: var(--ui-text-primary); }
@@ -135,8 +135,8 @@
 
 /* Definiciones (roles): término + descripción. */
 .doc-definitions { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 10px; margin: 0; }
-.doc-definition { padding: 13px 15px; border: 1px solid var(--ui-border-default); border-left: 3px solid var(--ui-action-primary); border-radius: 12px; background: var(--ui-surface-faint); }
-.doc-definition dt { color: var(--ui-action-primary-hover); font-size: var(--text-md); font-weight: var(--weight-bold); }
+.doc-definition { padding: 13px 15px; border: 1px solid var(--ui-border-default); border-left:3px solid var(--ui-action-text); border-radius: 12px; background: var(--ui-surface-faint); }
+.doc-definition dt { color:var(--ui-action-text-hover); font-size: var(--text-md); font-weight: var(--weight-bold); }
 .doc-definition dd { margin: 4px 0 0; font-size: var(--text-md); line-height: var(--leading-normal); }
 
 /* Notas por tono. */
@@ -144,11 +144,11 @@
 .doc-note svg { flex: none; margin-top: 2px; }
 .doc-note p { margin: 0; }
 .doc-note--info { border-color: var(--ui-border-accent); background: var(--ui-action-soft); color: var(--ui-text-strong); }
-.doc-note--info svg { color: var(--ui-action-primary); }
+.doc-note--info svg { color:var(--ui-action-text); }
 .doc-note--tip { border-color: var(--ui-border-warning); background: var(--ui-warning-pale); color: var(--ui-warning-deep); }
 .doc-note--tip svg { color: var(--ui-accent-amber-ink); }
 .doc-note--warning { border-color: var(--ui-border-danger); background: var(--ui-danger-soft); color: var(--ui-danger-deep); }
-.doc-note--warning svg { color: var(--ui-danger); }
+.doc-note--warning svg { color:var(--ui-danger-text); }
 
 /* Bloque de código: configuración del cliente MCP. */
 .doc-code { margin: 0; padding: 14px 16px; overflow-x: auto; border: 1px solid var(--ui-border-on-dark); border-radius: 12px; background: var(--ui-surface-inverse); color: var(--ui-text-on-dark-muted); font-size: var(--text-base); line-height: var(--leading-relaxed); }
@@ -159,16 +159,16 @@
    pintar, así ni el reveal ni la carga mueven el layout. Colores = tokens. */
 .doc-art-svg { display: block; width: 100%; height: auto; aspect-ratio: 260 / 200; overflow: visible; }
 .doc-art-svg--hero { aspect-ratio: 320 / 230; }
-.doc-art-svg .a-violet { fill: var(--ui-action-primary); }
-.doc-art-svg .a-violet-dark { fill: var(--ui-action-primary-hover); }
+.doc-art-svg .a-violet { fill:var(--ui-action-text); }
+.doc-art-svg .a-violet-dark { fill:var(--ui-action-text-hover); }
 .doc-art-svg .a-pale { fill: var(--ui-action-soft); }
 .doc-art-svg .a-lavender { fill: var(--ui-accent-lavender); }
 .doc-art-svg .a-amber { fill: var(--ui-accent-amber); }
 .doc-art-svg .a-line { fill: var(--ui-border-default); }
 .doc-art-svg .a-white { fill: var(--ui-text-inverse); }
 .doc-art-svg .a-glass { fill: var(--ui-text-inverse); fill-opacity: .12; }
-.doc-art-svg .s-violet { stroke: var(--ui-action-primary); }
-.doc-art-svg .s-violet-dark { stroke: var(--ui-action-primary-hover); }
+.doc-art-svg .s-violet { stroke:var(--ui-action-text); }
+.doc-art-svg .s-violet-dark { stroke:var(--ui-action-text-hover); }
 .doc-art-svg .s-lavender { stroke: var(--ui-accent-lavender); }
 .doc-art-svg .s-amber { stroke: var(--ui-accent-amber); }
 .doc-art-svg .s-line { stroke: var(--ui-border-default); }

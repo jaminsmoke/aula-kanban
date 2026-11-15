@@ -7,6 +7,7 @@ import type { Project } from "../shared/model";
 import { buildBoardUrl } from "../shared/board-url";
 import type { ClassSection } from "../class/class-view";
 import type { SettingsSection } from "../settings/settings-view";
+import ThemeSwitcher from "./theme-switcher";
 import "./header.css";
 
 const appVersion = appPackage.version;
@@ -94,7 +95,8 @@ export default function BoardHeader({
           </summary>
           <div className="account-dropdown">
             <strong>Cuenta de ChatGPT</strong><span>{user.email}</span>
-            <a href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
+            <ThemeSwitcher />
+            <a className="account-signout" href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
           </div>
         </details>
       </div>

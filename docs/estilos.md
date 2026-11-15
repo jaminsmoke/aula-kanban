@@ -1,6 +1,6 @@
 # Sistema visual
 
-> **Estado:** Fases 1-6 completadas (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
+> **Estado:** Fases 1-7 completadas; fase 7.1 pendiente (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
 > **Fuente de verdad:** [`../app/globals.css`](../app/globals.css)
 
 ---
@@ -17,15 +17,15 @@ La auditoría de la fase 1 midió todo el CSS propio del repositorio, sin contar
 
 Los 36 hexadecimales de `globals.css` ya son la base central. La deuda está en los **266 usos y 208 colores distintos** repartidos por los CSS de feature.
 
-Tras la fase 3 y el ajuste de marco 3.1, las pantallas de Ajustes, Documentación, Mi espacio y Aula Store, y los shells compartidos, no conservan ningún hexadecimal propio:
+Tras la fase 7, las pantallas de Ajustes, Documentación, Mi espacio y Aula Store, y los shells compartidos, no conservan ningún hexadecimal propio:
 
 | Ámbito actual | Archivos | Líneas | Usos de hex | Hex distintos |
 |---|---:|---:|---:|---:|
-| Toda la aplicación | 23 | 2.430 | 91 | 91 |
-| `app/globals.css` | 1 | 337 | 91 | 91 |
-| CSS de feature | 22 | 2.093 | 0 | 0 |
+| Toda la aplicación | 23 | 2.514 | 189 | 161 |
+| `app/globals.css` | 1 | 438 | 189 | 161 |
+| CSS de feature | 22 | 2.076 | 0 | 0 |
 
-Los 22 CSS de feature quedan a cero hexadecimales. Los 91 usos restantes viven en `app/globals.css`, la única fuente de color crudo.
+Los 22 CSS de feature quedan a cero hexadecimales. Los 189 usos restantes viven en `app/globals.css`, la única fuente de color crudo; los valores del tema oscuro se añaden al mismo archivo.
 
 ### Hexadecimales fuera de globals.css
 
@@ -39,7 +39,7 @@ No queda ninguno en los CSS de feature. Las únicas excepciones son colores de c
 | Compatibilidad | nombres existentes (`--canvas`, `--ink`, `--line`…) | Mantienen los valores actuales mientras se migran los CSS. No se usan en código nuevo. |
 | Semántica de UI | `--ui-*` | Capa estable para el CSS de feature y para los componentes nuevos. |
 
-La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes siguen resolviendo al mismo color, ahora a través de una primitiva. La fase 6 deja 70 primitivas y 88 tokens `--ui-*`; los 36 nombres de compatibilidad se conservan intactos. `--ui-surface-frame` separa el chrome del contenido y podrá invertirse en el tema oscuro sin tocar los componentes.
+La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes siguen resolviendo al mismo color, ahora a través de una primitiva. La fase 7 deja 70 primitivas, 93 tokens `--ui-*` y 36 nombres de compatibilidad. 92 tokens se redefinen en `[data-theme="dark"]`; `--ui-opacity-disabled` es el único que se comparte. `--ui-surface-frame` separa el chrome del contenido y se invierte en el tema oscuro sin tocar los componentes.
 
 ## 3. Mapa semántico
 
@@ -92,6 +92,8 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | `--ui-action-primary` | `--violet` | `#5839be` |
 | `--ui-action-primary-hover` | `--violet-dark` | `#42299c` |
 | `--ui-action-pressed` | primitiva propia | `#352080` |
+| `--ui-action-text` | `--violet` | `#5839be` |
+| `--ui-action-text-hover` | `--violet-dark` | `#42299c` |
 | `--ui-action-soft` | `--violet-pale` | `#eeebfb` |
 | `--ui-action-bright` | `--violet-bright` | `#7859d8` |
 | `--ui-focus-ring` | `--focus` | `#7656dd` |
@@ -132,6 +134,9 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 | Token de UI | Compatibilidad | Valor |
 |---|---|---|
 | `--ui-danger` | `--danger` | `#a52545` |
+| `--ui-danger-text` | `--danger` | `#a52545` |
+| `--ui-danger-solid` | `--danger` | `#a52545` |
+| `--ui-danger-solid-hover` | `--danger-deep` | `#842746` |
 | `--ui-danger-ink` | `--danger-ink` | `#8f1d2c` |
 | `--ui-danger-soft` | `--danger-soft` | `#fff1f6` |
 | `--ui-danger-deep` | `--danger-deep` | `#842746` |
@@ -149,13 +154,34 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 
 | Función | Tokens |
 |---|---|
-| Acción | `--ui-action-primary`, `--ui-action-primary-hover`, `--ui-action-pressed`, `--ui-action-soft` |
+| Acción | `--ui-action-primary`, `--ui-action-primary-hover`, `--ui-action-pressed`, `--ui-action-text`, `--ui-action-text-hover`, `--ui-action-soft` |
 | Información | `--ui-info-ink`, `--ui-info-soft` |
 | Éxito | `--ui-success`, `--ui-success-soft` |
 | Aviso | `--ui-warning-ink`, `--ui-warning-soft`, `--ui-warning-pale`, `--ui-warning-deep` |
-| Peligro | `--ui-danger`, `--ui-danger-ink`, `--ui-danger-soft`, `--ui-danger-deep` |
+| Peligro | `--ui-danger`, `--ui-danger-text`, `--ui-danger-solid`, `--ui-danger-solid-hover`, `--ui-danger-ink`, `--ui-danger-soft`, `--ui-danger-deep` |
 
-Los estados usan `--ui-surface-hover` y `--ui-action-primary-hover` para hover; `--ui-action-pressed` y `--ui-surface-recessed` para active; `--ui-focus-ring` para foco; y `--ui-opacity-disabled` para deshabilitado. La tabla periódica tiene 11 tintes categóricos, de `--ui-category-alkali` a `--ui-category-unknown`; el texto principal mantiene al menos 11,04:1 sobre ellos.
+Los estados usan `--ui-surface-hover` y `--ui-action-primary-hover` para hover; `--ui-action-pressed` y `--ui-surface-recessed` para active; `--ui-focus-ring` para foco; y `--ui-opacity-disabled` para deshabilitado. `--ui-action-primary` pinta fondos sólidos y `--ui-action-text` pinta texto, enlaces e iconos; `--ui-danger-solid` pinta fondos de peligro y `--ui-danger-text` pinta su texto. La tabla periódica tiene 11 tintes categóricos, de `--ui-category-alkali` a `--ui-category-unknown`; el texto principal mantiene al menos 11,04:1 sobre ellos en claro y 9,41:1 en oscuro.
+
+### Tema oscuro
+
+El tema se resuelve en `app/theme.ts` y se aplica con `data-theme` y `color-scheme` en el elemento `<html>`. La preferencia `system | light | dark` se guarda en `localStorage` con la clave `aula-kanban-theme`; `useTheme` escucha los cambios de `prefers-color-scheme`, y el selector vive en el menú de cuenta. El script inicial se inyecta en `<head>` desde `app/layout.tsx` para que no haya destello claro antes de hidratar.
+
+| Rol | Claro | Oscuro |
+|---|---:|---:|
+| Página | `#f7f8fc` | `#14111f` |
+| Elevada | `#fff` | `#211c2e` |
+| Marco | `#f2eef9` | `#1a1524` |
+| Atenuada | `#eeecf5` | `#2a2438` |
+| Texto principal | `#211b36` | `#f4f1fb` |
+| Texto atenuado | `#625c74` | `#b4abc5` |
+| Borde de control | `#ded9ea` | `#806b96` |
+| Acción sólida | `#5839be` | `#6f4bd8` |
+| Texto de acción | `#5839be` | `#c4aaff` |
+| Peligro sólido | `#a52545` | `#b83255` |
+| Texto de peligro | `#a52545` | `#ffadc0` |
+| Foco | `#7656dd` | `#c4aaff` |
+
+El bloque `[data-theme="dark"]` va después de `:root` y solo redefine tokens y `color-scheme`: no duplica selectores de componentes. Las apps internas conservan su escala compacta, pero consumen los mismos tokens de color.
 
 ### Tipografía
 
@@ -195,7 +221,8 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 
 - El CSS de feature consume `--ui-*`; no introduce hexadecimales ni usa `--primitive-*`.
 - El chrome (header/sidebar) usa `--ui-surface-frame`; no reutiliza `--ui-surface-inverse`, reservada a superficies de contenido oscuras.
-- El tema oscuro cambiará valores de tokens, no selectores ni variantes de componente.
+- El tema oscuro cambia valores de tokens, no selectores ni variantes de componente; `data-theme` y `color-scheme` son la única puerta de entrada.
+- Usa `--ui-action-text` para texto, enlaces e iconos; `--ui-action-primary` se reserva para fondos sólidos. Para peligro, usa `--ui-danger-solid` en fondos y `--ui-danger-text` en texto.
 - La tipografía usa `--text-*`, `--leading-*`, `--tracking-*`, `--weight-*` y las familias de `globals.css`; no se añaden tamaños ni pesos sueltos.
 - La iconografía usa 12, 16, 18, 20, 24 y 28 px con trazo 2; la marca usa 2,4. No se añaden tamaños ni trazos sueltos; las ilustraciones SVG y las apps internas son la excepción.
 - Un icono solo dentro de un botón exige `aria-label` y un área mínima de 36 × 36 px. Un icono junto a texto se oculta con `aria-hidden`; el texto sigue siendo la etiqueta. Un icono decorativo se oculta y no recibe foco.
@@ -218,7 +245,8 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 | 4 | Tipografía y jerarquía | Completada; 18 tokens de tamaño, 5 de interlineado, 6 de tracking y 5 pesos; sin medidas sueltas en el CSS propio. |
 | 5 | Iconografía y densidad | Completada; seis tamaños, trazo 2 (marca 2,4) y áreas táctiles de 36 px. |
 | 6 | Color, estados y acentos | Completada; cero hexadecimales en CSS de feature, 11 categorías y estados compartidos. |
-| 7 | Temas claro y oscuro | Pendiente. |
+| 7 | Temas claro y oscuro | Completada; preferencia del sistema, cambio manual, persistencia y 92 tokens invertidos en un único bloque. |
+| 7.1 | Bordes, radios y separadores | Pendiente; revisará grosores, radios y los separadores del marco y el héroe. |
 | 8 | Limpieza, guarda y cierre | Pendiente. |
 
 ### Contraste de la fase 2
@@ -266,4 +294,21 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 | Texto principal / categoría de lantánidos | 11,04:1 |
 | Blanco / acción pulsada | 12,58:1 |
 
-No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; en el marco, el mínimo es 5,56:1 para texto atenuado. La barra de progreso es un elemento gráfico y supera el mínimo de 3:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2-6.
+### Contraste de la fase 7 (tema oscuro)
+
+| Pareja | Ratio |
+|---|---:|
+| Texto principal / página | 16,66:1 |
+| Texto principal / elevada | 14,82:1 |
+| Texto atenuado / elevada | 7,54:1 |
+| Texto atenuado / superficie atenuada | 6,80:1 |
+| Acción texto / acción suave | 7,37:1 |
+| Blanco / acción sólida | 5,72:1 |
+| Blanco / peligro sólido | 5,79:1 |
+| Peligro texto / peligro suave | 8,57:1 |
+| Borde de control / superficie atenuada | 3,17:1 |
+| Foco / superficie atenuada | 7,49:1 |
+| Blanco / acción brillante (icono) | 3,79:1 |
+| Texto principal / categoría más oscura | 9,41:1 |
+
+No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; en el marco, el mínimo es 5,56:1 para texto atenuado. La barra de progreso es un elemento gráfico y supera el mínimo de 3:1. En el tema oscuro, el mínimo de texto es 5,72:1, el borde de control 3,17:1 y el foco 7,49:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2-7.
