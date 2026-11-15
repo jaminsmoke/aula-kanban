@@ -71,7 +71,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
-- **Roadmap PER-06 activo:** auditoría local de los snapshots de pizarra, decisión de no podar tumbas todavía y medición añadida al diagnóstico de almacenamiento; falta ejecutarla con datos de producción. Detalle en [`roadmap.md`](roadmap.md).
+- **Roadmap:** sin fase activa. PER-06 y PER-08 se midieron en producción y conservan seguimiento en el backlog por falta de muestra; detalles en el changelog.
 - **Roadmap PER-05 completado:** caché inmutable de un año para `/api/files/[id]`, en la respuesta y en los metadatos de R2. Sin cambios de esquema ni de versión; resumen en [`changelog.md`](changelog.md).
 - **Roadmap PER-04 completado:** derivado de 2048 px para JPEG, PNG y WebP de pizarra, con los GIF intactos; medición de fotos, PNG con alfa y capturas, más revisión visual del texto. Resumen en [`changelog.md`](changelog.md) y límite de nitidez en el backlog como PER-07.
 - **Roadmap PER-01B completado:** inventario de R2 publicado y revisado en producción. Resultado en [`changelog.md`](changelog.md).
@@ -87,7 +87,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap de componentes completado:** Aula Store, calculadora, Mermaid, diálogo de tarea, Blockly y Whiteboard divididos; verificación final correcta. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de reintento de pizarra completado:** el error de carga se limpia cuando la pizarra vuelve a cargar; regresión de hook y vista añadida. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de carga por pestañas de `edu-tools` completado:** tabla periódica, medición, lectura y ecuaciones se cargan bajo demanda; datos periódicos en JSON. Resumen en [`changelog.md`](changelog.md).
-- **Versión publicada:** 1.1.28. Los últimos hitos están en [`changelog.md`](changelog.md).
+- **Versión publicada:** 1.1.29. Los últimos hitos están en [`changelog.md`](changelog.md).
 - **Roadmap de respuestas sin sesión completado:** contrato 401/403/404/400 aplicado a las 12 rutas y contrato del socket documentado. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de propiedad completado:** identidad estable en `instance_owner`, migración `0028`, helper común y checklist de remix. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de `compute-engine` completado:** motor mantenido, carga selectiva en Científica/Ecuaciones y estado de cálculo. Resumen en [`changelog.md`](changelog.md).

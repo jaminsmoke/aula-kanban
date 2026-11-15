@@ -6,6 +6,15 @@
 
 ---
 
+## 2026-11-15 — PER-06 y PER-08 · Mediciones de producción, versión 1.1.29
+
+**Estado:** Instrumentación publicada y medida; seguimiento en backlog por falta de muestra.
+
+- Pizarras de producción: 0. No se puede medir su tamaño ni el porcentaje de tumbas en uso real; se mantiene la decisión de no podar y se conserva el seguimiento PER-06.
+- Archivos de producción: 1 imagen de tarea de 209,2 KB, origen desconocido por ser anterior a la migración; 0 archivos de 1 MiB o más y ninguna subida MCP clasificada. No hay muestra para justificar el redimensionador WASM; PER-08 conserva el seguimiento.
+- La migración añade `uploads.origin` como columna nullable, sin atribuir orígenes anteriores. El panel de Ajustes muestra ambas mediciones para propietario o administración.
+- Verificación: lint, tipos, 1.010 pruebas, build y despliegue en Sites satisfactorios. No se podaron pizarras ni se borraron archivos. PER-07 permanece en el backlog para evaluar nitidez con capturas de clase.
+
 ## 2026-11-15 — Roadmap PER-05 · Caché inmutable para `/api/files/[id]`
 
 **Estado:** Completada · Sin publicación

@@ -2,11 +2,16 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** PER-06 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** PER-06 está en el roadmap activo con la auditoría de los snapshots de pizarra. PER-05 se completó (caché inmutable de un año) y su resumen vive en el changelog; PER-08 recoge el derivado pendiente en las subidas por MCP. PER-04 se completó y su resumen vive en el changelog; PER-07 recoge el límite de nitidez del texto. SYNC-01 se completó y su norma vive en [`../AGENTS.md`](../AGENTS.md). La cobertura MCP está en [`mcp-apps.md`](mcp-apps.md). PER-01B se publicó en `1.1.28`; PER-02 se completó sin publicación; PER-03, MCP-05E, UI-03, UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron.
+> **Nota:** PER-06 se midió en producción; no había pizarras. PER-05 se completó (caché inmutable de un año) y su resumen vive en el changelog; PER-08 se midió en producción; no había subidas MCP clasificadas y se conserva el seguimiento. PER-04 se completó y su resumen vive en el changelog; PER-07 recoge el límite de nitidez del texto. SYNC-01 se completó y su norma vive en [`../AGENTS.md`](../AGENTS.md). La cobertura MCP está en [`mcp-apps.md`](mcp-apps.md). PER-01B se publicó en `1.1.28`; PER-02 se completó sin publicación; PER-03, MCP-05E, UI-03, UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron.
 
 ---
+
+## 2026-11-15 — PER-06 · Seguimiento con pizarras reales
+
+- La instrumentación ya está publicada. El 15/11/2026 producción tenía 0 pizarras; las cifras de dos pizarras locales no permiten extrapolar el uso real.
+- Cuando existan pizarras de clase, medir sus tamaños y tumbas y reconsiderar la poda solo con cifras reales. Por ahora no podar: podría resucitar elementos en clientes desfasados; si se retoma, probar la fusión y definir una ventana de seguridad.
 
 ## 2026-11-15 — PER-08 · Derivado en las subidas por MCP
 
@@ -20,6 +25,8 @@
   - [ ] Ejecutar la medición con datos reales de producción; el instrumento está listo, pero en esta sesión no hay acceso a D1 publicado.
   - [x] Evaluar un redimensionador WASM frente a documentar la asimetría como aceptada: viable con `@jsquash`, aplazado hasta tener volumen real; mientras tanto se documenta la recomendación de enviar la imagen ya reducida.
   - [x] Decidir si las imágenes con `finalidad=document` necesitan miniatura: no, se quedan solo con el enlace.
+- Seguimiento en producción (15/11/2026): solo 1 imagen antigua de 209,2 KB, origen unknown; no hay subidas MCP clasificadas. Repetir cuando haya una muestra real antes de decidir si compensa implementar WASM. No deducir el origen de archivos antiguos.
+
 
 ## 2026-11-15 — PER-07 · Nitidez del texto al ampliar el derivado de pizarra
 
