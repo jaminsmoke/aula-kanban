@@ -90,12 +90,12 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
   const actions = (tool: SpaceTool, installed: boolean) => (
     <>
       {installed ? (
-        <button type="button" className="store-primary" onClick={() => onOpen(tool)}><Play size={14} aria-hidden /> Abrir</button>
+        <button type="button" className="store-primary" onClick={() => onOpen(tool)}><Play size={16} aria-hidden /> Abrir</button>
       ) : isAdmin ? (
-        <button type="button" className="store-primary" onClick={() => onManage(tool.id, "install")}><Download size={14} aria-hidden /> Instalar</button>
+        <button type="button" className="store-primary" onClick={() => onManage(tool.id, "install")}><Download size={16} aria-hidden /> Instalar</button>
       ) : null}
       {isAdmin && installed ? (
-        <button type="button" className="store-secondary" onClick={() => onManage(tool.id, "uninstall")}><Trash2 size={14} aria-hidden /> Desinstalar</button>
+        <button type="button" className="store-secondary" onClick={() => onManage(tool.id, "uninstall")}><Trash2 size={16} aria-hidden /> Desinstalar</button>
       ) : null}
     </>
   );
@@ -107,14 +107,14 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
       <header className="store-header">
         <div className="store-header-main">
           <button type="button" className="store-back" onClick={onClose}><ArrowLeft size={16} aria-hidden /> Escritorio</button>
-          <span className="store-mark" aria-hidden><AulaStoreIcon size={26} /></span>
+          <span className="store-mark" aria-hidden><AulaStoreIcon size={24} /></span>
           <h2 className="store-title">Aula Store</h2>
           <span className="store-version">v{AULA_STORE_VERSION}</span>
           <div className="store-stats" aria-label="Resumen de la tienda">
             <span className="store-stat"><strong>{installedCount}</strong> instaladas</span>
             <span className="store-stat"><strong>{allTools.length}</strong> disponibles</span>
           </div>
-          <button type="button" className="store-refresh" onClick={onRefresh} title="Actualizar estado"><RefreshCw size={15} aria-hidden /> Actualizar</button>
+          <button type="button" className="store-refresh" onClick={onRefresh} title="Actualizar estado"><RefreshCw size={16} aria-hidden /> Actualizar</button>
         </div>
         <StoreFilters
           tools={allTools}
@@ -128,13 +128,13 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
         />
       </header>
 
-      {error ? <p role="alert" className="store-alert"><TriangleAlert size={15} aria-hidden /> {error}</p> : null}
+      {error ? <p role="alert" className="store-alert"><TriangleAlert size={16} aria-hidden /> {error}</p> : null}
 
       {visibleCount === 0 ? (
         <p className="store-results-empty">Sin resultados para «{query}».</p>
       ) : (
         <section className="store-section" aria-label={sectionTitle}>
-          <h3 className="store-section-title"><SectionIcon size={17} aria-hidden /> {sectionTitle}<span className="store-section-count">{sectionTools.length}</span></h3>
+          <h3 className="store-section-title"><SectionIcon size={18} aria-hidden /> {sectionTitle}<span className="store-section-count">{sectionTools.length}</span></h3>
           <div className="store-grid">
             <AnimatePresence mode="popLayout">
               {sectionTools.map((tool, index) => {
@@ -156,7 +156,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
         </section>
       )}
 
-      <p className="store-note"><Package size={14} aria-hidden /> Las aplicaciones nativas son librerías del propio Aula: instalarlas o desinstalarlas de «Mi espacio» solo registra su estado y no borra paquetes ni datos.</p>
+      <p className="store-note"><Package size={16} aria-hidden /> Las aplicaciones nativas son librerías del propio Aula: instalarlas o desinstalarlas de «Mi espacio» solo registra su estado y no borra paquetes ni datos.</p>
 
       {selectedTool ? (
         <StoreDetail

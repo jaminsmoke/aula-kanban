@@ -1,6 +1,6 @@
 # Sistema visual
 
-> **Estado:** Fases 1-4 completadas (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
+> **Estado:** Fases 1-5 completadas (2026-11-15) · Roadmap activo: [`roadmap.md`](roadmap.md)
 > **Fuente de verdad:** [`../app/globals.css`](../app/globals.css)
 
 ---
@@ -158,6 +158,19 @@ La fase 1 no cambia ningún selector ni valor visual: los 36 tokens existentes s
 
 La fase 4 mantiene dos familias —Bricolage Grotesque para display e Instrument Sans para UI— y añade una pila mono para código y datos. El CSS propio usa solo estos tokens; las apps internas (`edu-tools`, `periodic-table`, `blockly` y `mermaid`) conservan su escala compacta como excepción documentada.
 
+### Iconografía
+
+| Rol | Tamaño | Uso |
+|---|---:|---|
+| Metadato | 12 px | Prioridad, fechas y controles dentro de chips o filtros compactos. |
+| Control | 16 px | Botones, formularios, buscadores, menús y acciones de tabla. |
+| Navegación | 18 px | Header, sidebar, títulos de sección y acciones principales. |
+| Sección | 20 px | Cabeceras de bloque, cierre de diálogo y estados vacíos. |
+| Superficie | 24 px | Marca, accesos de Aula Store y ventanas destacadas. |
+| Escritorio | 28 px | Iconos de apps en Mi espacio. |
+
+Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no perder presencia a 24 px. Las ilustraciones SVG de Documentación no son iconos de interfaz y conservan sus trazos artísticos. Las apps internas mantienen su escala compacta como excepción.
+
 ## 4. Tokens locales pendientes
 
 | Archivo | Tokens locales | Tratamiento |
@@ -173,6 +186,8 @@ La fase 4 mantiene dos familias —Bricolage Grotesque para display e Instrument
 - El chrome (header/sidebar) usa `--ui-surface-frame`; no reutiliza `--ui-surface-inverse`, reservada a superficies de contenido oscuras.
 - El tema oscuro cambiará valores de tokens, no selectores ni variantes de componente.
 - La tipografía usa `--text-*`, `--leading-*`, `--tracking-*`, `--weight-*` y las familias de `globals.css`; no se añaden tamaños ni pesos sueltos.
+- La iconografía usa 12, 16, 18, 20, 24 y 28 px con trazo 2; la marca usa 2,4. No se añaden tamaños ni trazos sueltos; las ilustraciones SVG y las apps internas son la excepción.
+- Un icono solo dentro de un botón exige `aria-label` y un área mínima de 36 × 36 px. Un icono junto a texto se oculta con `aria-hidden`; el texto sigue siendo la etiqueta. Un icono decorativo se oculta y no recibe foco.
 - Las primitivas solo se declaran en `app/globals.css`.
 - Los nombres de compatibilidad se mantienen hasta completar la migración; no se añaden usos nuevos.
 - Los estados usan los tokens `--ui-danger-*`, `--ui-success-*`, `--ui-warning-*` e `--ui-info-*`.
@@ -188,7 +203,7 @@ La fase 4 mantiene dos familias —Bricolage Grotesque para display e Instrument
 | 3 | Ajustes, Documentación, Mi espacio y Aula Store | Completada; sin hexadecimales propios, gradientes solo en Mi espacio y Aula Store y contraste AA verificado numéricamente. |
 | 3.1 | Marco claro y superficies de chrome | Completada; `--ui-surface-frame` `#f2eef9`, activos violeta y contraste AA. |
 | 4 | Tipografía y jerarquía | Completada; 18 tokens de tamaño, 5 de interlineado, 6 de tracking y 5 pesos; sin medidas sueltas en el CSS propio. |
-| 5 | Iconografía y densidad | Pendiente. |
+| 5 | Iconografía y densidad | Completada; seis tamaños, trazo 2 (marca 2,4) y áreas táctiles de 36 px. |
 | 6 | Color, estados y acentos | Pendiente. |
 | 7 | Temas claro y oscuro | Pendiente. |
 | 8 | Limpieza, guarda y cierre | Pendiente. |
@@ -231,4 +246,4 @@ La fase 4 mantiene dos familias —Bricolage Grotesque para display e Instrument
 | Texto atenuado / marco | 5,56:1 |
 | Blanco / acción primaria | 7,65:1 |
 
-No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; en el marco, el mínimo es 5,56:1 para texto atenuado. La barra de progreso es un elemento gráfico y supera el mínimo de 3:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2-4.
+No hay fallos AA en texto normal o pequeño. El mínimo de la fase 3 es 4,98:1 para texto blanco sobre la acción brillante; en el marco, el mínimo es 5,56:1 para texto atenuado. La barra de progreso es un elemento gráfico y supera el mínimo de 3:1. La comprobación es numérica; no se hizo una inspección visual en navegador en las fases 2-5.

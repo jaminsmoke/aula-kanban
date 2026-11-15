@@ -39,7 +39,7 @@ export function DocsIndex({ sections }: { sections: DocSection[] }) {
           return (
             <li key={section.id}>
               <a href={`#${anchor}`} aria-current={active === anchor ? "location" : undefined} onClick={(event) => goToSection(event, anchor)}>
-                <Icon size={15} aria-hidden />
+                <Icon size={16} aria-hidden />
                 <span>{section.title}</span>
               </a>
             </li>

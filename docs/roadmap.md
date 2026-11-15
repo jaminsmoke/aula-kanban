@@ -94,10 +94,11 @@
 
 ### Fase 5: Iconografía y densidad
 
-- [ ] Normalizar los 13 tamaños de icono y los `strokeWidth` de lucide por rol (navegación, acción, estado, decorativo).
-- [ ] Alinear icono y texto, revisar áreas táctiles, estados vacíos, tablas y botones.
-- [ ] Documentar cuándo un icono va solo, con texto o es decorativo.
+- [x] Normalizar los 13 tamaños de icono y los `strokeWidth` de lucide por rol (navegación, acción, estado, decorativo).
+- [x] Alinear icono y texto, revisar áreas táctiles, estados vacíos, tablas y botones.
+- [x] Documentar cuándo un icono va solo, con texto o es decorativo.
 - **Criterios de aceptación:** una escala de iconos y trazos; no quedan tamaños sueltos en la UI; foco y contraste correctos.
+- **Completada el 2026-11-15:** los 13 tamaños quedan en 6 (12, 16, 18, 20, 24 y 28) en 84 usos; el trazo de lucide es 2 y la marca conserva 2,4. Los botones icon-only pasan a 36 px; el header mantiene 40 px y las fichas de personas 42 px. Se conservan los trazos 3/4/8 de las ilustraciones SVG y la escala interna de las apps. La inspección visual en navegador queda pendiente.
 
 ### Fase 6: Color, estados y acentos
 
@@ -144,4 +145,5 @@
 - Fase 3 completada el 2026-11-15: Ajustes, Documentación, Mi espacio, Aula Store, header y sidebar consumen los mismos tokens; los seis CSS de la fase quedan a cero hexadecimales y el héroe de Documentación pierde su gradiente múltiple. El inventario baja a 80 usos y 58 colores distintos fuera de `globals.css`; el mínimo de contraste de texto es 4,98:1. La revisión visual en navegador sigue pendiente.
 - Fase 3.1 completada el 2026-11-15: el primer pase de marco oscuro se descarta. El tema claro usa `--ui-surface-frame` (`#f2eef9`) para header y sidebar, con activos violeta y contenido claro; el tema oscuro se resolverá invirtiendo tokens en la fase 7.
 - Fase 4 completada el 2026-11-15: 29 medidas de `font-size` quedan reducidas a 18 tokens; el CSS propio no conserva tamaños, interlineados, trackings ni pesos sueltos. Se mantienen las dos familias actuales, se añade `--font-mono` y se documenta la excepción de las apps internas.
-- Auditoría para la siguiente fase: 13 tamaños de icono. No se añaden fuentes nuevas sin una necesidad documentada.
+- Fase 5 completada el 2026-11-15: 13 tamaños de icono quedan reducidos a 6; lucide usa trazo 2 y la marca 2,4. Los botones de icono tienen un área mínima de 36 px y los iconos con texto quedan ocultos a lectores. La inspección visual en navegador sigue pendiente.
+- Auditoría para la siguiente fase: 80 usos y 58 colores distintos fuera de `globals.css`; los iconos ya están normalizados.

@@ -40,11 +40,11 @@ export default function TaskDetail({ task }: { task: Task }) {
         </div>
         <div>
           <dt>Estado</dt>
-          <dd>{StatusIcon && <StatusIcon size={15} />} {columns[task.status].name}</dd>
+          <dd>{StatusIcon && <StatusIcon size={16} />} {columns[task.status].name}</dd>
         </div>
         <div>
           <dt>Fecha de entrega</dt>
-          <dd>{task.dueDate ? <time dateTime={task.dueDate}><CalendarDays size={14} /> {formatDate.format(new Date(`${task.dueDate}T12:00:00`))}</time> : "Sin fecha"}</dd>
+          <dd>{task.dueDate ? <time dateTime={task.dueDate}><CalendarDays size={16} /> {formatDate.format(new Date(`${task.dueDate}T12:00:00`))}</time> : "Sin fecha"}</dd>
         </div>
         <div>
           <dt>Creada por</dt>

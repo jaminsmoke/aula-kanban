@@ -21,7 +21,7 @@ export default function StoreFilters({ tools, query, category, installedOnly, in
   return (
     <div className="store-toolbar">
       <label className="store-search">
-        <Search size={17} aria-hidden />
+        <Search size={16} aria-hidden />
         <input type="search" value={query} onChange={(event) => onQuery(event.target.value)} placeholder="Buscar en Aula Store" aria-label="Buscar aplicaciones" />
       </label>
       <div className="store-filters" role="group" aria-label="Filtrar aplicaciones">

@@ -105,7 +105,7 @@ export default function SettingsTokens() {
           <strong>Token creado. Guárdalo ahora: solo se muestra esta vez.</strong>
           <code>{created.token}</code>
           <button type="button" className="secondary" onClick={copy}>
-            {copied ? <Check size={15} aria-hidden /> : <Copy size={15} aria-hidden />} {copied ? "Copiado" : "Copiar"}
+            {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />} {copied ? "Copiado" : "Copiar"}
           </button>
           <button type="button" className="text-button" onClick={() => setCreated(null)}>Cerrar</button>
         </div>
@@ -130,7 +130,7 @@ export default function SettingsTokens() {
                 <small>Creado {formatDate(token.createdAt)} · {formatDate(token.lastUsedAt)}</small>
               </div>
               <button type="button" className="text-button admin-remove" disabled={busy} onClick={() => revoke(token.id)}>
-                <ShieldX size={15} aria-hidden /> Revocar
+                <ShieldX size={16} aria-hidden /> Revocar
               </button>
             </li>
           ))}

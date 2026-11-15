@@ -35,9 +35,9 @@ function Lane({ status, cards, destination, isGuest, filtered, tasksNull, loadEr
   return (
     <section ref={setNodeRef} className={`lane ${status}${destination === status ? " drop-target" : ""}`} aria-label={name}>
       <div className="lane-header">
-        <span className="lane-icon"><Icon size={16} strokeWidth={2.25} /></span>
+        <span className="lane-icon"><Icon size={16} strokeWidth={2} /></span>
         <h3>{name}</h3><span className="count">{cards.length}</span>
-        {!isGuest && <button className="icon-button lane-add" type="button" disabled={saving || tasksNull} aria-label={`Añadir tarea a ${name}`} onClick={() => onOpenEditor(status)}><Plus size={17} /></button>}
+        {!isGuest && <button className="icon-button lane-add" type="button" disabled={saving || tasksNull} aria-label={`Añadir tarea a ${name}`} onClick={() => onOpenEditor(status)}><Plus size={16} /></button>}
       </div>
       <div className="lane-body">
         <SortableContext items={cards.map((task) => task.id)} strategy={verticalListSortingStrategy}>
@@ -45,7 +45,7 @@ function Lane({ status, cards, destination, isGuest, filtered, tasksNull, loadEr
         </SortableContext>
         {cards.length === 0 && (
           <div className="empty">
-            <span className="empty-icon"><ClipboardList size={20} strokeWidth={1.6} /></span>
+            <span className="empty-icon"><ClipboardList size={20} strokeWidth={2} /></span>
             <span>{tasksNull ? (loadError ? "Tablero no disponible" : "Cargando…") : filtered ? "Sin coincidencias" : "Sin tareas"}</span>
           </div>
         )}
@@ -103,10 +103,10 @@ export default function KanbanView({
           <p className="eyebrow"><span /> Grupo de clase</p>
           <h1 id="board-title">Tablero de tareas</h1>
           <p className="intro">Organizad el trabajo y seguid el avance de cada tarea.</p>
-          {!isGuest && <button className="primary" type="button" disabled={saving || tasks === null} onClick={() => onOpenEditor("pending")}><Plus size={19} /> Nueva tarea</button>}
+          {!isGuest && <button className="primary" type="button" disabled={saving || tasks === null} onClick={() => onOpenEditor("pending")}><Plus size={18} /> Nueva tarea</button>}
         </div>
         <div className="progress-panel">
-          <span className="progress-label"><Flag size={15} /> Progreso del grupo</span>
+          <span className="progress-label"><Flag size={16} /> Progreso del grupo</span>
           <div className="progress-value"><strong>{progress}<span>%</span></strong><span>{finished} de {total} {total === 1 ? "tarea hecha" : "tareas hechas"}</span></div>
           <progress aria-label="Progreso del grupo" max={100} value={progress} />
         </div>
@@ -115,15 +115,15 @@ export default function KanbanView({
         <div className="toolbar">
           <h2><Columns3 size={18} /> Kanban</h2>
           <div className="controls">
-            <label className="search"><Search size={17} /><input type="search" aria-label="Buscar tareas" placeholder="Buscar tareas…" value={search} onChange={(event) => onSearch(event.target.value)} /></label>
-            <label className="filter"><ListFilter size={17} /><select value={filter} aria-label="Filtrar por prioridad" onChange={(event) => onFilter(event.target.value)}>
+            <label className="search"><Search size={16} /><input type="search" aria-label="Buscar tareas" placeholder="Buscar tareas…" value={search} onChange={(event) => onSearch(event.target.value)} /></label>
+            <label className="filter"><ListFilter size={16} /><select value={filter} aria-label="Filtrar por prioridad" onChange={(event) => onFilter(event.target.value)}>
               <option value="">Todas las prioridades</option>
               {priorities.map((priority) => <option key={priority} value={priority}>{priorityNames[priority]}</option>)}
-            </select><ArrowDown size={13} aria-hidden /></label>
-            <label className="filter"><Users size={17} /><select value={studentFilter} aria-label="Filtrar por alumno" onChange={(event) => onStudentFilter(event.target.value)}>
+            </select><ArrowDown size={12} aria-hidden /></label>
+            <label className="filter"><Users size={16} /><select value={studentFilter} aria-label="Filtrar por alumno" onChange={(event) => onStudentFilter(event.target.value)}>
               <option value="">Todos los alumnos</option>
               {students?.map((student) => <option key={student.section} value={student.section}>{student.displayName || student.name}</option>)}
-            </select><ArrowDown size={13} aria-hidden /></label>
+            </select><ArrowDown size={12} aria-hidden /></label>
           </div>
         </div>
         {loadError && <div role="alert" className="alert">{loadError} <button type="button" className="text-button" onClick={onRetry}>Reintentar</button></div>}

@@ -33,7 +33,7 @@ export default function StoreCard({ tool, index, status, justInstalled, actions,
       <button type="button" className="store-card-cover" onClick={onDetails} aria-label={`Ver detalles de ${tool.name}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={tool.cover} alt="" loading="lazy" />
-        <span className="store-card-icon" aria-hidden><Icon size={22} strokeWidth={2} /></span>
+        <span className="store-card-icon" aria-hidden><Icon size={24} strokeWidth={2} /></span>
         <span className="store-card-category">{tool.category}</span>
       </button>
 
@@ -50,7 +50,7 @@ export default function StoreCard({ tool, index, status, justInstalled, actions,
 
       <div className="store-card-footer">
         {actions}
-        <button type="button" className="store-secondary store-details" onClick={onDetails}><Info size={14} aria-hidden /> Detalles</button>
+        <button type="button" className="store-secondary store-details" onClick={onDetails}><Info size={16} aria-hidden /> Detalles</button>
       </div>
 
       <StoreSuccess visible={justInstalled} />

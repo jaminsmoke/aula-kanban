@@ -86,7 +86,7 @@ export function ShareDialog({ url, projectName, onClose }: { url: string; projec
             input?.focus();
             input?.select();
           }
-        }}>{copied ? <Check size={17} /> : <Link2 size={17} />}{copied ? "Enlace copiado" : "Copiar enlace"}</button>
+        }}>{copied ? <Check size={16} /> : <Link2 size={16} />}{copied ? "Enlace copiado" : "Copiar enlace"}</button>
       </div>
     </Modal>
   );

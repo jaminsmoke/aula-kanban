@@ -30,7 +30,7 @@ export default function TaskCard({ task, dragging, editable, onEdit, style, node
       <span className="card-top">
         <span className={`priority ${task.priority}`}><Flag size={12} /> {priorityNames[task.priority]}</span>
         <span className="grip" {...activatorProps} onClick={(event) => event.stopPropagation()}>
-          <GripVertical size={17} />
+          <GripVertical size={16} />
         </span>
       </span>
       <strong>{task.title}</strong>
@@ -39,7 +39,7 @@ export default function TaskCard({ task, dragging, editable, onEdit, style, node
       {(label || task.dueDate) && (
         <span className="card-meta">
           {label && <span className="assignee" title={label}><span className="avatar">{initials}</span><span>{label}</span></span>}
-          {task.dueDate && <span className="date"><CalendarDays size={14} /> <time dateTime={task.dueDate}>{formatDate.format(new Date(task.dueDate + "T12:00:00"))}</time></span>}
+          {task.dueDate && <span className="date"><CalendarDays size={16} /> <time dateTime={task.dueDate}>{formatDate.format(new Date(task.dueDate + "T12:00:00"))}</time></span>}
         </span>
       )}
     </button>

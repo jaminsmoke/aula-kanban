@@ -163,7 +163,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
             const Icon = item.tool.icon;
             return (
               <button key={item.tool.id} type="button" className="space-minimized-icon" title={`${item.tool.name} (minimizada)`} aria-label={`Restaurar ${item.tool.name}`} onClick={() => restore(item.tool.id)}>
-                <Icon size={18} strokeWidth={1.9} />
+                <Icon size={18} strokeWidth={2} />
               </button>
             );
           })}
@@ -182,7 +182,7 @@ export default function SpaceView({ role, projectId, onExit }: { role: SpaceRole
             return (
               <div key={tool.id}>
               <button type="button" className="space-tool" onClick={() => open(tool)} title={tool.description}>
-                <span className="space-tool-icon" aria-hidden><Icon size={30} strokeWidth={1.9} /></span>
+                <span className="space-tool-icon" aria-hidden><Icon size={28} strokeWidth={2} /></span>
                 <span className="space-tool-name">{tool.name}</span>
               </button>
               </div>

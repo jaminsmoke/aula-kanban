@@ -143,7 +143,7 @@ export default function TaskDialog({
           ) : (
             <>
               <button type="button" className="secondary" disabled={saving} onClick={onClose}>Cancelar</button>
-              <button type="submit" className="primary" disabled={saving}>{saving ? "Guardando…" : claiming ? "Asignarme y guardar" : editor.task ? "Guardar cambios" : "Crear tarea"} <ArrowRight size={17} /></button>
+              <button type="submit" className="primary" disabled={saving}>{saving ? "Guardando…" : claiming ? "Asignarme y guardar" : editor.task ? "Guardar cambios" : "Crear tarea"} <ArrowRight size={16} /></button>
             </>
           )}
         </div>

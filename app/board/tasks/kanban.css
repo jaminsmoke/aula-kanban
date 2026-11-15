@@ -107,7 +107,7 @@ progress::-moz-progress-bar { background: var(--ui-focus-on-dark); border-radius
 .priority.low { color: var(--ui-success); background: var(--ui-success-soft); }
 .priority.normal { color: var(--ui-action-primary); background: var(--ui-action-soft); }
 .priority.high { color: var(--ui-danger); background: var(--ui-danger-soft); }
-.grip { display: grid; place-items: center; width: 25px; height: 24px; color: var(--ui-text-muted); cursor: grab; touch-action: none; user-select: none; }
+.grip { display: grid; place-items: center; width: 28px; height: 28px; color: var(--ui-text-muted); cursor: grab; touch-action: none; user-select: none; }
 .card.dragging { opacity: .55; }
 .card.dragging .grip { cursor: grabbing; }
 .card strong { font-size: var(--text-lg); line-height: var(--leading-snug); overflow-wrap: anywhere; }
@@ -150,7 +150,7 @@ progress::-moz-progress-bar { background: var(--ui-focus-on-dark); border-radius
   .board { grid-template-columns: 1fr; }
   .lane { min-height: 185px; }
   .empty { min-height: 82px; }
-  .empty-icon { width: 31px; height: 31px; }
+  .empty-icon { width: 36px; height: 36px; }
   .filter { gap: 5px; padding-inline: 7px; }
   .filter select { font-size: var(--text-sm); }
   .controls .filter { flex-basis: 100%; }

@@ -30,7 +30,7 @@
 .students-title-row .add-student { flex:none; width:40px; min-height:40px; padding:0; border-radius:10px; }
 .students-view-options { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:28px; color:var(--muted); font-size: var(--text-base); font-weight: var(--weight-semibold); }
 .layout-toggle { display:flex; gap:3px; padding:4px; background:var(--surface-muted); border-radius:10px; }
-.layout-toggle button { display:grid; place-items:center; width:36px; height:34px; border:0; border-radius:7px; color:var(--muted); background:transparent; }
+.layout-toggle button { display:grid; place-items:center; width:36px; height:36px; border:0; border-radius:7px; color:var(--muted); background:transparent; }
 .layout-toggle button[aria-pressed="true"] { color:var(--violet); background:var(--white); box-shadow:0 1px 3px #30225518; }
 .students-view-options + .students-grid { margin-top:14px; }
 .students-list { grid-template-columns:1fr; gap:8px; }

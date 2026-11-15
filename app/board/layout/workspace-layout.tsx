@@ -40,7 +40,7 @@ export default function WorkspaceLayout<T extends string>({ title, label, items,
                 aria-current={active === item.id ? "page" : undefined}
                 onClick={() => onSelect(item.id)}
               >
-                <Icon size={16} aria-hidden />
+                <Icon size={18} aria-hidden />
                 {item.label}
               </button>
             );

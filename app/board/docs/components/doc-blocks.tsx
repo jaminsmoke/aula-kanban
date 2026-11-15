@@ -37,7 +37,7 @@ export function DocBlockView({ block }: { block: DocBlock }) {
       const Icon = noteIcons[block.tone];
       return (
         <m.div className={`doc-note doc-note--${block.tone}`} role="note" aria-label={noteLabels[block.tone]} variants={revealItem}>
-          <Icon size={17} aria-hidden />
+          <Icon size={18} aria-hidden />
           <p>{block.text}</p>
         </m.div>
       );

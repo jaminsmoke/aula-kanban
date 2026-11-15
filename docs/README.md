@@ -36,9 +36,9 @@ La fuente única es `app/globals.css`. Los tokens se agrupan por intención:
 - **Marca y foco:** `--violet`, `--violet-dark`, `--violet-pale`, `--violet-bright`, `--focus`, `--focus-on-dark`.
 - **Estados:** `--danger`, `--danger-ink`, `--danger-soft`, `--danger-deep`, `--success`, `--success-soft`, `--warning-ink`, `--warning-soft`, `--warning-pale`, `--warning-deep`, `--info-ink`, `--info-soft`.
 - **Forma:** `--radius`, `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-pill`.
-- **Tipografía:** `--font-body`, `--font-display`.
+- **Tipografía:** `--font-body`, `--font-display`, `--font-mono` y la escala `--text-*`.
 
-Regla: un token debe representar un patrón compartido o una intención; no se tokeniza cada valor aislado, cada sombra ni cada tamaño de letra.
+Regla: un token debe representar un patrón compartido o una intención; no se tokeniza cada valor aislado. Los tamaños de letra siguen la escala `--text-*` y las sombras se agrupan por intención.
 
 Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fonts`, con sus licencias OFL. `public/_headers` fija caché inmutable de un año para los archivos de fuente; no se depende de Google Fonts en producción. Las fuentes latinas de Excalidraw se sirven desde `public/excalidraw/fonts`; Xiaolai queda fuera por tamaño.
 
@@ -111,7 +111,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap DOC-07 + MCP-11 completado:** catálogo público en `lib/domain/mcp-catalogo.ts`, instrucciones y prompts compartidos por `/mcp` y `/api/mcp`, guía del plugin en la ayuda y README generada desde el catálogo. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-09 completado:** administración de la instancia, tokens propios y auditoría por MCP (7 herramientas, catálogo `0.19.0`), con matriz, snapshot, paridad y pruebas SQLite. Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05, MCP-10 y recortes de chunks (3 entradas).
 - **Roadmap de MCP-10 completado:** archivos del proyecto por MCP con `subir_archivo` y `obtener_archivo`, límites compartidos con la web, matriz ampliada y 50 herramientas (`0.20.0`). Resumen en [`changelog.md`](changelog.md). Backlog: MCP-05 y recortes de chunks (2 entradas).
-- **Roadmap activo:** UI-01 — sistema visual: superficies semánticas, contraste AA, tipografía, iconografía y temas claro/oscuro; fases 1-4 completadas. Quedan iconografía (5), color y estados (6), temas (7) y limpieza/guarda (8). Backlog: 5 entradas (PER-03, PER-01B, PER-02, SYNC-01 y MCP-05). SYNC-01 permanece como norma operativa; PERF-01 y los roadmaps anteriores están en [`changelog.md`](changelog.md), y el roadmap anterior de PER-01 sigue en [`historial/roadmap-per-01.md`](historial/roadmap-per-01.md). La inspección visual en navegador de UI-01 queda pendiente.
+- **Roadmap activo:** UI-01 — sistema visual: superficies semánticas, contraste AA, tipografía, iconografía y temas claro/oscuro; fases 1-5 completadas. Quedan color y estados (6), temas (7) y limpieza/guarda (8). Backlog: 5 entradas (PER-03, PER-01B, PER-02, SYNC-01 y MCP-05). SYNC-01 permanece como norma operativa; PERF-01 y los roadmaps anteriores están en [`changelog.md`](changelog.md), y el roadmap anterior de PER-01 sigue en [`historial/roadmap-per-01.md`](historial/roadmap-per-01.md). La inspección visual en navegador de UI-01 queda pendiente.
 
 ## Documentación relacionada
 

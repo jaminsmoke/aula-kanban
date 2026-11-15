@@ -30,13 +30,14 @@
 .icon-button {
   display: inline-grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  padding: 0;
   color: var(--ui-text-muted);
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: 8px;
 }
 
 .icon-button:hover:enabled { color: var(--ui-action-primary); background: var(--ui-action-soft); }

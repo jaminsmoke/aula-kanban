@@ -71,7 +71,7 @@
 @media (max-width: 1050px) {
   .account-name { display: none; }
   .header-docs-label { display: none; }
-  .header-docs { width: 38px; height: 38px; justify-content: center; padding: 0; }
+  .header-docs { width: 40px; height: 40px; justify-content: center; padding: 0; }
 }
 @media (max-width: 1000px) {
   .topbar-inner { flex-wrap: wrap; padding-block: 10px; }
@@ -99,5 +99,5 @@
   .topbar-inner { gap: 4px; }
   .project-menu { margin-left: 4px; }
   .project-menu summary { max-width: 88px; padding: 0 4px; }
-  .header-docs, .header-settings { width: 32px; height: 32px; }
+  .header-docs, .header-settings { width: 36px; height: 36px; }
 }
