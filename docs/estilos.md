@@ -17,7 +17,7 @@ La auditoría de la fase 1 midió todo el CSS propio del repositorio, sin contar
 
 Los 36 hexadecimales de `globals.css` ya son la base central. La deuda está en los **266 usos y 208 colores distintos** repartidos por los CSS de feature.
 
-Tras la fase 8, las pantallas de Ajustes, Documentación, Mi espacio y Aula Store, y los shells compartidos, no conservan ningún hexadecimal propio:
+Tras la fase 8, las pantallas de Ajustes, Documentación, Tienda y Aula Store, y los shells compartidos, no conservan ningún hexadecimal propio:
 
 | Ámbito actual | Archivos | Líneas | Usos de hex | Hex distintos |
 |---|---:|---:|---:|---:|
@@ -218,7 +218,7 @@ La fase 4 mantiene dos familias —Bricolage Grotesque para display e Instrument
 | Navegación | 18 px | Header, sidebar, títulos de sección y acciones principales. |
 | Sección | 20 px | Cabeceras de bloque, cierre de diálogo y estados vacíos. |
 | Superficie | 24 px | Marca, accesos de Aula Store y ventanas destacadas. |
-| Escritorio | 28 px | Iconos de apps en Mi espacio. |
+| Escritorio | 28 px | Iconos de apps en Tienda. |
 
 Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no perder presencia a 24 px. Las ilustraciones SVG de Documentación no son iconos de interfaz y conservan sus trazos artísticos. Las apps internas mantienen su escala compacta como excepción.
 
@@ -266,7 +266,7 @@ Las sombras se agrupan por intención en tokens `--ui-shadow-*`. Los colores de 
 |---|---|---|
 | 1 | Inventario, primitivas y tokens `--ui-*` | Completada. |
 | 2 | Tareas y Calendario | Completada; sin hexadecimales propios y con contraste AA verificado. |
-| 3 | Ajustes, Documentación, Mi espacio y Aula Store | Completada; sin hexadecimales propios, gradientes solo en Mi espacio y Aula Store y contraste AA verificado numéricamente. |
+| 3 | Ajustes, Documentación, Tienda y Aula Store | Completada; sin hexadecimales propios, gradientes solo en Tienda y Aula Store y contraste AA verificado numéricamente. |
 | 3.1 | Marco claro y superficies de chrome | Completada; `--ui-surface-frame` `#f2eef9`, activos violeta y contraste AA. |
 | 4 | Tipografía y jerarquía | Completada; 18 tokens de tamaño, 5 de interlineado, 6 de tracking y 5 pesos; sin medidas sueltas en el CSS propio. |
 | 5 | Iconografía y densidad | Completada; seis tamaños, trazo 2 (marca 2,4) y áreas táctiles de 36 px. |

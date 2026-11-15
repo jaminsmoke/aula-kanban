@@ -6,8 +6,8 @@ export const introSections: DocSection[] = [
     title: "Qué es Aula Kanban",
     lead: "Aula Kanban es el tablero colaborativo del grupo de clase: organiza el trabajo del proyecto en tareas, sigue el avance de cada una y comparte pizarras y aplicaciones útiles con todo el grupo.",
     blocks: [
-      { type: "paragraph", text: "Cada proyecto es un tablero independiente. Las tareas, los alumnos, los profesores y las aplicaciones de Mi espacio pertenecen a ese proyecto: si cambias de proyecto en el selector de la cabecera, cambias de tablero." },
-      { type: "paragraph", text: "La cabecera separa el trabajo en Clase y Administración, con el selector de proyecto a la derecha. Mi espacio se abre desde el icono de aplicaciones. El engranaje abre los ajustes generales, con Cuenta, Apariencia, Documentación, Tokens MCP, Administradores y Almacenamiento." },
+      { type: "paragraph", text: "Cada proyecto es un tablero independiente. Las tareas, los alumnos, los profesores y las aplicaciones de Tienda pertenecen a ese proyecto: si cambias de proyecto en el selector de la cabecera, cambias de tablero." },
+      { type: "paragraph", text: "La cabecera separa el trabajo en Clase y Administración, con Clase en su botón de icono y el selector de proyecto a la derecha. Tienda está en el sidebar de Administración. El engranaje abre los ajustes generales, con Cuenta, Apariencia, Documentación, Tokens MCP, Administradores y Almacenamiento." },
     ],
   },
   {
@@ -41,7 +41,7 @@ export const introSections: DocSection[] = [
           { term: "Crear o eliminar proyectos", text: "Solo el propietario y la administración («Solo el propietario o un administrador pueden crear proyectos.» y «…pueden eliminar proyectos.»)." },
           { term: "Compartir el proyecto o cambiar de proyecto", text: "Cualquier miembro activo: «Compartir proyecto» copia el enlace y el selector de la cabecera cambia de tablero." },
           { term: "Instalar o desinstalar aplicaciones", text: "Solo el propietario y la administración; la instalación es para toda la instancia." },
-          { term: "Usar las aplicaciones de Mi espacio", text: "Todos los miembros; guardar en Diagramas o Programación por bloques requiere un rol distinto de invitado." },
+          { term: "Usar las aplicaciones de Tienda", text: "Todos los miembros; guardar en Diagramas o Programación por bloques requiere un rol distinto de invitado." },
           { term: "Ajustes", text: "«Cuenta» y los tokens del MCP son de cada cuenta; «Administradores» solo lo ven el propietario y la administración." },
         ],
       },

@@ -31,7 +31,7 @@ if (!network || !(network in NETWORKS)) throw new Error(`Red desconocida: ${netw
 if (!chromePath || !existsSync(chromePath)) throw new Error(`No se encontró Chrome. Indica --chrome o define CHROME_PATH.`);
 
 async function main() {
-const targetUrl = `${url}/?project=${encodeURIComponent(project)}&view=espacio`;
+const targetUrl = `${url}/?project=${encodeURIComponent(project)}&view=administracion&section=tienda`;
 const profile = await mkdtemp(path.join(os.tmpdir(), "aula-perf-"));
 const debugPort = await freePort();
 const chrome = spawn(chromePath, [
@@ -129,9 +129,9 @@ async function measure(cdp, mode, pageUrl) {
     const loaded = cdp.waitEvent("Page.loadEventFired", timeoutMs).catch(() => null);
     await cdp.send("Page.navigate", { url: pageUrl });
     await loaded;
-    await cdp.waitFor(`[...document.querySelectorAll(".space-tool")].some((button) => button.textContent?.includes("Herramientas de aula"))`, timeoutMs);
+    await cdp.waitFor(`[...document.querySelectorAll(".store-tool")].some((button) => button.textContent?.includes("Herramientas de aula"))`, timeoutMs);
     const opened = await cdp.eval(`(() => {
-      const button = [...document.querySelectorAll(".space-tool")].find((item) => item.textContent?.includes("Herramientas de aula"));
+      const button = [...document.querySelectorAll(".store-tool")].find((item) => item.textContent?.includes("Herramientas de aula"));
       button?.click();
       return !!button;
     })()`);

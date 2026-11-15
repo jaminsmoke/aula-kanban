@@ -6,8 +6,8 @@ const MAX_MESSAGE_BYTES = 16_384;
 type Session = { userId: string; projectId: string };
 
 /**
- * Sala en vivo del escritorio de Mi espacio: un Durable Object **por
- * proyecto** que conecta las pestañas abiertas en `view=espacio` y guarda
+ * Sala en vivo del escritorio de Tienda: un Durable Object **por
+ * proyecto** que conecta las pestañas abiertas en Administración > Tienda y guarda
  * el estado de sus ventanas **en memoria** (efímero, sin tabla en D1). Las
  * herramientas MCP (`lib/server/space-control.ts`) leen ese estado y le
  * envían comandos por RPC; los clientes los publican y los ejecutan.

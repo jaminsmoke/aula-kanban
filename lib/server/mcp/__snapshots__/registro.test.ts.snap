@@ -2065,7 +2065,7 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
       "additionalProperties": false,
       "properties": {
         "app": {
-          "description": "App de Mi espacio a abrir en la vista espacio",
+          "description": "App de Tienda a abrir en Administración > Tienda",
           "maxLength": 80,
           "minLength": 1,
           "type": "string",
@@ -2149,7 +2149,7 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
       "additionalProperties": false,
       "properties": {
         "appId": {
-          "description": "App de Mi espacio a abrir",
+          "description": "App de Tienda a abrir",
           "enum": [
             "excalidraw",
             "edu-tools",
@@ -3314,7 +3314,7 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
       "additionalProperties": false,
       "properties": {
         "appId": {
-          "description": "App de Mi espacio",
+          "description": "App de Tienda",
           "enum": [
             "excalidraw",
             "edu-tools",
@@ -3376,7 +3376,7 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
       "additionalProperties": false,
       "properties": {
         "appId": {
-          "description": "App de Mi espacio",
+          "description": "App de Tienda",
           "enum": [
             "excalidraw",
             "edu-tools",
@@ -3438,7 +3438,7 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
       "additionalProperties": false,
       "properties": {
         "appId": {
-          "description": "App de Mi espacio",
+          "description": "App de Tienda",
           "enum": [
             "excalidraw",
             "edu-tools",
@@ -3500,7 +3500,7 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
       "additionalProperties": false,
       "properties": {
         "appId": {
-          "description": "App de Mi espacio",
+          "description": "App de Tienda",
           "enum": [
             "excalidraw",
             "edu-tools",

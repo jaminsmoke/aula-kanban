@@ -34,19 +34,21 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 
 ## Línea base
 
-| Flujo | Bruto | Gzip | Presupuesto provisional (+5 %) | Archivos |
+| Flujo | Bruto | Gzip | Presupuesto vigente | Archivos |
 |---|---:|---:|---:|---:|
-| Tablero | 543,8 KiB | 163,4 KiB (167.291 B) | 175.656 B | 25 |
-| Herramientas de aula · abrir Básica | 495,7 KiB | 140,3 KiB (143.645 B) | 150.827 B | 15 |
-| Herramientas de aula · primer `=` en Básica | 495,7 KiB | 140,3 KiB (143.645 B) | 150.827 B | 15 |
-| Herramientas de aula · Científica/Ecuaciones | 6.662,0 KiB | 1.925,2 KiB (1.971.390 B) | 2.069.960 B | 17 |
-| Diagramas · flujo inicial | 1.135,3 KiB | 308,7 KiB (316.117 B) | 331.923 B | 42 |
-| Diagramas · con ELK | 2.573,9 KiB | 749,9 KiB (767.869 B) | 806.262 B | 40 |
-| Mi espacio · abrir | 517,2 KiB | 162,6 KiB (166.456 B) | 174.779 B | 18 |
-| Pizarra · abrir | 3.573,1 KiB | 1.254,5 KiB (1.284.657 B) | 1.348.890 B | 31 |
-| Pizarra · conversión Mermaid | 4.337,0 KiB | 1.451,8 KiB (1.486.666 B) | 1.560.999 B | 58 |
-| Blockly · abrir | 1.145,6 KiB | 321,5 KiB (329.172 B) | 345.631 B | 17 |
-| Blockly · panel de código | 1.279,9 KiB | 356,5 KiB (365.024 B) | 383.275 B | 20 |
+| Tablero | 550,6 KiB | 164,2 KiB (168.132 B) | 175.656 B | 27 |
+| Herramientas de aula · abrir Básica | 498,9 KiB | 140,4 KiB (143.773 B) | 150.827 B | 15 |
+| Herramientas de aula · primer `=` en Básica | 498,9 KiB | 140,4 KiB (143.773 B) | 150.827 B | 15 |
+| Herramientas de aula · Científica/Ecuaciones | 6.665,3 KiB | 1.925,3 KiB (1.971.518 B) | 2.069.960 B | 17 |
+| Diagramas · flujo inicial | 1.137,0 KiB | 308,9 KiB (316.274 B) | 331.923 B | 42 |
+| Diagramas · con ELK | 2.575,6 KiB | 750,0 KiB (768.014 B) | 806.262 B | 40 |
+| Tienda · abrir | 518,6 KiB | 162,5 KiB (166.438 B) | 174.779 B | 18 |
+| Pizarra · abrir | 3.434,2 KiB | 1.213,1 KiB (1.242.198 B) | 1.348.890 B | 21 |
+| Pizarra · conversión Mermaid | 4.198,1 KiB | 1.410,4 KiB (1.444.212 B) | 1.560.999 B | 48 |
+| Blockly · abrir | 1.147,4 KiB | 321,6 KiB (329.303 B) | 345.631 B | 17 |
+| Blockly · panel de código | 1.281,6 KiB | 356,6 KiB (365.155 B) | 383.275 B | 20 |
+
+Línea base regenerada el 2026-11-15 con la build de la fase 2 de UI-08. La raíz del flujo de Tienda es `app/board/store/store-desktop.tsx`; las secciones «Cambio de fase 2» y «Cambio de fase 3» conservan las cifras históricas de sus mediciones.
 
 Los totales incluyen el framework y la entrada compartida. La comparación útil es entre flujos del mismo informe, no contra una medición externa con otra build.
 
@@ -71,7 +73,7 @@ Los totales incluyen el framework y la entrada compartida. La comparación útil
 
 ## Latencia real
 
-Medición sobre `npm start` (build servida), Chrome headless, red **Fast 3G** (1,6 Mbps, 150 ms RTT), caché desactivada y limpiada en cada muestra; **5 muestras por modo**. El cronómetro arranca al iniciar la navegación y termina en el primer `4` de `2+2`; abrir Mi espacio y Herramientas de aula forma parte del tiempo.
+Medición sobre `npm start` (build servida), Chrome headless, red **Fast 3G** (1,6 Mbps, 150 ms RTT), caché desactivada y limpiada en cada muestra; **5 muestras por modo**. El cronómetro arranca al iniciar la navegación y termina en el primer `4` de `2+2`; abrir Tienda y Herramientas de aula forma parte del tiempo.
 
 | Modo | Apertura (mediana) | Primer resultado (mediana) | Total (mediana) | Motor |
 |---|---:|---:|---:|---|
@@ -85,7 +87,7 @@ La apertura es prácticamente la misma en ambos modos (unos 3 s). La diferencia 
 - **Tablero:** no puede incorporar `compute-engine`, Mermaid, Excalidraw, ELK ni Blockly. Es la única regla estructural que no admite el margen del 5 %.
 - **Flujos:** ninguno debe superar su presupuesto provisional sin una mejora deliberada y una actualización razonada de la línea base.
 - **Herramientas de aula:** abrir Básica y pulsar `=` no descargan el motor. Científica y Ecuaciones sí lo usan.
-- **Mi espacio:** no puede incluir `compute-engine`, Mermaid, KaTeX, Excalidraw, ELK, Cytoscape ni Blockly; solo debe cargar el escritorio y el catálogo.
+- **Tienda:** no puede incluir `compute-engine`, Mermaid, KaTeX, Excalidraw, ELK, Cytoscape ni Blockly; solo debe cargar el escritorio y el catálogo.
 - **Pizarra:** el wasm de Excalidraw es un coste aceptado de abrir la Pizarra. No se divide ni se sustituye la librería sin una decisión explícita.
 - **Conversión Mermaid:** 1.560.999 B. Abrir la Pizarra no puede incluir Mermaid 11, KaTeX ni `mermaid-to-excalidraw`; la conversión debe conservar su diagrama de flujo de Mermaid 11.
 - **Blockly:** el motor y los generadores son costes de la app; deben seguir cargándose solo al abrirla o al pedir el panel de código.
@@ -95,12 +97,12 @@ La apertura es prácticamente la misma en ambos modos (unos 3 s). La diferencia 
 
 ## Hallazgos
 
-- El tablero queda en **163,4 KiB gzip** y no incluye ninguna app pesada.
+- El tablero queda en **164,2 KiB gzip** y no incluye ninguna app pesada.
 - La primera evaluación de la Básica ya no descarga `compute-engine`; usa el evaluador racional incluido en la app.
-- Abrir la Pizarra cuesta **1.254,5 KiB gzip**, de los que **717,8 KiB** son el chunk wasm de Excalidraw. La conversión Mermaid añade **197,3 KiB** y solo se descarga al usarla.
-- Abrir Mi espacio cuesta **162,6 KiB gzip** y no incluye ninguna app pesada.
-- Diagramas con la plantilla de flujo cuesta **308,7 KiB gzip**; el caso con ELK sube a **749,8 KiB**. El flujo normal no incluye ELK ni Cytoscape.
-- Abrir Blockly cuesta **321,5 KiB gzip**; el panel de código añade **35,0 KiB** con los generadores y el idioma.
+- Abrir la Pizarra cuesta **1.213,1 KiB gzip**, de los que **717,8 KiB** son el chunk wasm de Excalidraw. La conversión Mermaid añade **197,3 KiB** y solo se descarga al usarla.
+- Abrir Tienda cuesta **162,5 KiB gzip** y no incluye ninguna app pesada.
+- Diagramas con la plantilla de flujo cuesta **308,9 KiB gzip**; el caso con ELK sube a **750,0 KiB**. El flujo normal no incluye ELK ni Cytoscape.
+- Abrir Blockly cuesta **321,6 KiB gzip**; el panel de código añade **35,0 KiB** con los generadores y el idioma.
 - El chunk de `compute-engine` empaquetado es la versión 0.188.0. El motor 0.29.1 que entra por `mathlive` no aparece en el cliente.
 
 ## Limitaciones

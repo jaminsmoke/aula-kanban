@@ -10,7 +10,7 @@ import { m } from "motion/react";
  * @param props - Título, posición, tamaño, límites y acciones de la ventana.
  * @returns La ventana con su contenido.
  */
-export default function SpaceWindow({
+export default function StoreWindow({
   title, position, size, bounds, zIndex, maximized, minimized, onMove, onResize, onFocus, onClose, onMinimize, onZoom, children,
 }: {
   title: string;
@@ -32,7 +32,7 @@ export default function SpaceWindow({
 
   function startDrag(event: PointerEvent<HTMLDivElement>) {
     if (maximized) return;
-    if ((event.target as HTMLElement).closest(".space-window-controls")) return;
+    if ((event.target as HTMLElement).closest(".store-window-controls")) return;
     drag.current = { dx: event.clientX - position.x, dy: event.clientY - position.y };
     onFocus();
     const move = (moveEvent: globalThis.PointerEvent) => {
@@ -82,22 +82,22 @@ export default function SpaceWindow({
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.96, y: 12 }}
       transition={{ duration: 0.24, ease: "easeOut" }}
-      className={`space-window${maximized ? " space-window--maximized" : ""}`}
+      className={`store-window${maximized ? " store-window--maximized" : ""}`}
       role="dialog"
       aria-label={title}
       style={{ left: position.x, top: position.y, zIndex, width: size.width, height: size.height, borderRadius: maximized ? 0 : undefined, display: minimized ? "none" : undefined }}
       onPointerDown={onFocus}
     >
-      <div className="space-window-titlebar" onPointerDown={startDrag}>
-        <div className="space-window-controls">
-          <button type="button" className="space-traffic space-traffic-close" aria-label={`Cerrar ${title}`} onClick={onClose} />
-          <button type="button" className="space-traffic space-traffic-minimize" aria-label={`Minimizar ${title}`} onClick={onMinimize} />
-          <button type="button" className="space-traffic space-traffic-zoom" aria-label={`${maximized ? "Reducir" : "Ampliar"} ${title}`} onClick={onZoom} />
+      <div className="store-window-titlebar" onPointerDown={startDrag}>
+        <div className="store-window-controls">
+          <button type="button" className="store-traffic store-traffic-close" aria-label={`Cerrar ${title}`} onClick={onClose} />
+          <button type="button" className="store-traffic store-traffic-minimize" aria-label={`Minimizar ${title}`} onClick={onMinimize} />
+          <button type="button" className="store-traffic store-traffic-zoom" aria-label={`${maximized ? "Reducir" : "Ampliar"} ${title}`} onClick={onZoom} />
         </div>
-        <span className="space-window-title">{title}</span>
+        <span className="store-window-title">{title}</span>
       </div>
-      <div className="space-window-body">{children}</div>
-      {!maximized && <div className="space-resize" onPointerDown={startResize} aria-hidden />}
+      <div className="store-window-body">{children}</div>
+      {!maximized && <div className="store-resize" onPointerDown={startResize} aria-hidden />}
     </m.div>
   );
 }

@@ -84,7 +84,7 @@ describe("buildBoardUrl", () => {
     expect(buildBoardUrl("?section=calendario", { ...defaults, view: "administracion", classSection: "calendario" })).toBe("?view=administracion");
   });
 
-  it("canoniza Mi espacio como Tienda y escribe app solo en esa sección", () => {
+  it("canoniza el alias de Tienda y escribe app solo en esa sección", () => {
     expect(buildBoardUrl("?project=p1", { ...defaults, view: "espacio", app: "mermaid" })).toBe("?project=p1&view=administracion&section=tienda&app=mermaid");
     expect(buildBoardUrl("?project=p1&view=espacio&app=mermaid", { ...defaults, view: "espacio" })).toBe("?project=p1&view=administracion&section=tienda");
     expect(buildBoardUrl("?project=p1&view=espacio&app=mermaid", { ...defaults, app: "mermaid" })).toBe("?project=p1");

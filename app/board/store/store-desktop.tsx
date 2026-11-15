@@ -2,20 +2,20 @@
 
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
-import SpaceWindow from "./space-window";
-import type { StoreAction } from "./store/apps-store";
-import { AulaStoreIcon } from "./store/aula-store-icon";
+import StoreWindow from "./store-window";
+import type { StoreAction } from "./catalog/apps-store";
+import { AulaStoreIcon } from "./catalog/aula-store-icon";
 
 // La tienda solo se descarga al abrirla.
-const AppsStore = lazy(() => import("./store/apps-store"));
-import { visibleTools, type SpaceRole, type SpaceTool } from "./tools";
+const AppsStore = lazy(() => import("./catalog/apps-store"));
+import { visibleTools, type StoreRole, type StoreTool } from "./tools";
 import { parseBoardUrl } from "../shared/board-url";
 import { useSpaceSocket } from "./use-space-socket";
 import { toolApps, toolWindow } from "../apps/registry";
-import "./space.css";
+import "./store-desktop.css";
 
 type OpenWindow = {
-  tool: SpaceTool;
+  tool: StoreTool;
   minimized: boolean;
   position: { x: number; y: number };
   size: { width: number; height: number };
@@ -30,7 +30,7 @@ type OpenWindow = {
  * @param props - Rol del usuario y proyecto activo.
  * @returns El escritorio dentro del contenido de Administración.
  */
-export default function SpaceView({ role, projectId }: { role: SpaceRole; projectId: string }) {
+export default function StoreDesktop({ role, projectId }: { role: StoreRole; projectId: string }) {
   const tools = visibleTools(role);
   const [managed, setManaged] = useState<{ id: string; status: string; url: string | null; version?: string | null }[]>([]);
   const [storeOpen, setStoreOpen] = useState(false);
@@ -38,7 +38,7 @@ export default function SpaceView({ role, projectId }: { role: SpaceRole; projec
   const [managerError, setManagerError] = useState("");
   const refresh = useCallback(async () => {
     try {
-      const response = await fetch(`/api/space-apps?project=${encodeURIComponent(projectId)}`, { cache: "no-store" });
+      const response = await fetch(`/api/store-apps?project=${encodeURIComponent(projectId)}`, { cache: "no-store" });
       if (!response.ok) throw new Error();
       const data = await response.json() as { apps: typeof managed };
       setManaged(data.apps); setManagerConfigured(true);
@@ -53,7 +53,7 @@ export default function SpaceView({ role, projectId }: { role: SpaceRole; projec
   const manage = async (id: string, action: StoreAction) => {
     if (action === "uninstall" && !window.confirm("Se desinstalará esta aplicación de Tienda para todos los miembros. Las pizarras de las tareas no se ven afectadas. ¿Continuar?")) return;
     try {
-      const response = await fetch(`/api/space-apps?project=${encodeURIComponent(projectId)}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, action }) });
+      const response = await fetch(`/api/store-apps?project=${encodeURIComponent(projectId)}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id, action }) });
       if (!response.ok) throw new Error();
       await refresh();
     } catch { setManagerError("No se pudo actualizar la aplicación. Inténtalo de nuevo."); }
@@ -82,7 +82,7 @@ export default function SpaceView({ role, projectId }: { role: SpaceRole; projec
     return () => observer.disconnect();
   }, []);
 
-  const open = useCallback((tool: SpaceTool) => {
+  const open = useCallback((tool: StoreTool) => {
     setWindows((current) => {
       const existing = current.find((item) => item.tool.id === tool.id);
       zCounter.current += 1;
@@ -174,46 +174,46 @@ export default function SpaceView({ role, projectId }: { role: SpaceRole; projec
   return (
     <MotionConfig reducedMotion="user">
     <LazyMotion features={domAnimation}>
-    <section className="space-view" aria-label="Tienda">
-      <div className="space-desktop" ref={desktopRef} aria-label="Escritorio de aplicaciones">
-        {managerError && <p role="alert" className="space-empty">{managerError}</p>}
+    <section className="store-view" aria-label="Tienda">
+      <div className="store-desktop" ref={desktopRef} aria-label="Escritorio de aplicaciones">
+        {managerError && <p role="alert" className="store-empty">{managerError}</p>}
         {managerConfigured === null ? (
-          <p className="space-empty">Cargando aplicaciones…</p>
+          <p className="store-empty">Cargando aplicaciones…</p>
         ) : !managerError && desktopTools.length === 0 ? (
-          <p className="space-empty">Todavía no hay herramientas instaladas. Abre Aula Store para añadirlas.</p>
+          <p className="store-empty">Todavía no hay herramientas instaladas. Abre Aula Store para añadirlas.</p>
         ) : null}
-        <div className="space-icons">
+        <div className="store-icons">
           {desktopTools.map((tool) => {
             const Icon = tool.icon;
             return (
               <div key={tool.id}>
-              <button type="button" className="space-tool" onClick={() => open(tool)} title={tool.description}>
-                <span className="space-tool-icon" aria-hidden><Icon size={28} strokeWidth={2} /></span>
-                <span className="space-tool-name">{tool.name}</span>
+              <button type="button" className="store-tool" onClick={() => open(tool)} title={tool.description}>
+                <span className="store-tool-icon" aria-hidden><Icon size={28} strokeWidth={2} /></span>
+                <span className="store-tool-name">{tool.name}</span>
               </button>
               </div>
             );
           })}
         </div>
-        <nav className="space-dock" aria-label="Accesos de Tienda">
+        <nav className="store-dock" aria-label="Accesos de Tienda">
           {shownWindows.filter((item) => item.minimized).map((item) => {
             const Icon = item.tool.icon;
             return (
-              <button key={item.tool.id} type="button" className="space-minimized-icon" title={`${item.tool.name} (minimizada)`} aria-label={`Restaurar ${item.tool.name}`} onClick={() => restore(item.tool.id)}>
+              <button key={item.tool.id} type="button" className="store-minimized-icon" title={`${item.tool.name} (minimizada)`} aria-label={`Restaurar ${item.tool.name}`} onClick={() => restore(item.tool.id)}>
                 <Icon size={18} strokeWidth={2} />
               </button>
             );
           })}
-          <button type="button" className="space-dock-store" onClick={() => setStoreOpen(true)} title="Aula Store: instala o desinstala aplicaciones del catálogo">
-            <span className="space-dock-tile" aria-hidden><AulaStoreIcon size={24} /></span>
-            <span className="space-dock-name">Aula Store</span>
+          <button type="button" className="store-dock-store" onClick={() => setStoreOpen(true)} title="Aula Store: instala o desinstala aplicaciones del catálogo">
+            <span className="store-dock-tile" aria-hidden><AulaStoreIcon size={24} /></span>
+            <span className="store-dock-name">Aula Store</span>
           </button>
         </nav>
         <AnimatePresence>
         {shownWindows.map((item) => {
           const App = toolApps[item.tool.id];
           return (
-            <SpaceWindow
+            <StoreWindow
               key={item.tool.id}
               title={item.tool.name}
               position={item.maximized ? { x: 0, y: 0 } : item.position}
@@ -229,14 +229,14 @@ export default function SpaceView({ role, projectId }: { role: SpaceRole; projec
               onMinimize={() => minimize(item.tool.id)}
               onZoom={() => zoom(item.tool.id)}
             >
-              {App ? <Suspense fallback={<p className="space-loading">Cargando {item.tool.name}…</p>}><App projectId={projectId} role={role} instanceUrl={managed.find(app => app.id === item.tool.id && app.status === "installed")?.url ?? undefined} /></Suspense> : <p className="space-loading">Próximamente.</p>}
-            </SpaceWindow>
+              {App ? <Suspense fallback={<p className="store-loading">Cargando {item.tool.name}…</p>}><App projectId={projectId} role={role} instanceUrl={managed.find(app => app.id === item.tool.id && app.status === "installed")?.url ?? undefined} /></Suspense> : <p className="store-loading">Próximamente.</p>}
+            </StoreWindow>
           );
         })}
         </AnimatePresence>
       </div>
       {storeOpen ? (
-        <Suspense fallback={<p className="space-loading">Cargando Aula Store…</p>}>
+        <Suspense fallback={<p className="store-loading">Cargando Aula Store…</p>}>
         <AppsStore
           role={role}
           apps={managed}

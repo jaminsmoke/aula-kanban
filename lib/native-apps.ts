@@ -5,7 +5,7 @@
 
 export type NativeCategory = "Aula" | "Pizarras" | "Programación" | "Diagramas";
 
-export const SPACE_CATEGORIES: NativeCategory[] = ["Aula", "Pizarras", "Programación", "Diagramas"];
+export const STORE_CATEGORIES: NativeCategory[] = ["Aula", "Pizarras", "Programación", "Diagramas"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
 export const AULA_STORE_VERSION = "1.0.0";
@@ -36,7 +36,7 @@ export type NativeAppMeta = {
   upstream: NativeAppPackage;
   /** Piezas adicionales que añade nuestra integración. */
   extras?: readonly NativeAppPackage[];
-  /** Tamaño inicial de la ventana en Mi espacio. */
+  /** Tamaño inicial de la ventana en Tienda. */
   window: { width: number; height: number };
 };
 

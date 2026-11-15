@@ -9,7 +9,7 @@ import "./whiteboard.css";
  * (`ownerType: "task"`, por defecto) el dueño es la tarea; en el hub
  * (`ownerType: "project"`, con `ownerId` igual al proyecto) es la pizarra
  * compartida del proyecto, y (`ownerType: "space"`, también con `ownerId`
- * igual al proyecto) es la pizarra del espacio de trabajo de «Mi espacio».
+ * igual al proyecto) es la pizarra del espacio de trabajo de «Tienda».
  * @param props - Tarea dueña, tipo de dueño, identificador del dueño y bandera de solo lectura.
  * @returns La pizarra con sus estados de carga y error.
  */

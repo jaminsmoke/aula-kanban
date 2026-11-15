@@ -1,14 +1,14 @@
 import { lazy, type ComponentType } from "react";
 import { GitBranch, PencilRuler, Puzzle, Ruler } from "lucide-react";
 import { NATIVE_APPS, nativeAppMeta, type NativeAppId } from "../../../lib/native-apps";
-import type { SpaceIconProps, SpaceRole, SpaceTool } from "./types";
+import type { StoreIconProps, StoreRole, StoreTool } from "./types";
 
 /** Props comunes que recibe cada app nativa dentro de su ventana. */
-export type SpaceAppProps = { projectId: string; role: SpaceRole; instanceUrl?: string };
+export type StoreAppProps = { projectId: string; role: StoreRole; instanceUrl?: string };
 
-const ROLES: SpaceRole[] = ["owner", "admin", "teacher", "student", "guest"];
+const ROLES: StoreRole[] = ["owner", "admin", "teacher", "student", "guest"];
 
-const ICONS: Record<NativeAppId, ComponentType<SpaceIconProps>> = {
+const ICONS: Record<NativeAppId, ComponentType<StoreIconProps>> = {
   excalidraw: PencilRuler,
   "edu-tools": Ruler,
   blockly: Puzzle,
@@ -17,7 +17,7 @@ const ICONS: Record<NativeAppId, ComponentType<SpaceIconProps>> = {
 
 // El código de cada app solo se descarga cuando su ventana se abre por
 // primera vez. Añadir una app = crear su carpeta y registrarla aquí.
-const APPS: Record<NativeAppId, ComponentType<SpaceAppProps>> = {
+const APPS: Record<NativeAppId, ComponentType<StoreAppProps>> = {
   excalidraw: lazy(() => import("./excalidraw/excalidraw-app")),
   "edu-tools": lazy(() => import("./edu-tools/edu-tools-app")),
   blockly: lazy(() => import("./blockly/blockly-app")),
@@ -25,10 +25,10 @@ const APPS: Record<NativeAppId, ComponentType<SpaceAppProps>> = {
 };
 
 /** Componente de cada app, indexado por id, para abrir su ventana. */
-export const toolApps: Record<string, ComponentType<SpaceAppProps>> = APPS;
+export const toolApps: Record<string, ComponentType<StoreAppProps>> = APPS;
 
 /** Catálogo de apps con su icono y roles, listo para la tienda y el hub. */
-export const spaceTools: SpaceTool[] = NATIVE_APPS.map((meta) => ({
+export const storeTools: StoreTool[] = NATIVE_APPS.map((meta) => ({
   ...meta,
   icon: ICONS[meta.id],
   roles: [...ROLES],
@@ -43,7 +43,7 @@ export function toolWindow(id: string): { width: number; height: number } {
   return nativeAppMeta(id)?.window ?? { width: 880, height: 560 };
 }
 
-const isAdmin = (role: SpaceRole) => role === "owner" || role === "admin";
+const isAdmin = (role: StoreRole) => role === "owner" || role === "admin";
 
 /**
  * Herramientas visibles para un rol: las suyas y, si es administrador,
@@ -52,7 +52,7 @@ const isAdmin = (role: SpaceRole) => role === "owner" || role === "admin";
  * @param tools - Catálogo completo de herramientas.
  * @returns Las herramientas que ese rol puede ver.
  */
-export function visibleTools(role: SpaceRole, tools: SpaceTool[] = spaceTools): SpaceTool[] {
+export function visibleTools(role: StoreRole, tools: StoreTool[] = storeTools): StoreTool[] {
   if (isAdmin(role)) return tools;
   return tools.filter((tool) => tool.roles.includes(role));
 }

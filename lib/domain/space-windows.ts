@@ -1,5 +1,5 @@
 /**
- * Protocolo de escritorio en vivo de Mi espacio (Fase 2 del roadmap de
+ * Protocolo de escritorio en vivo de Tienda (Fase 2 del roadmap de
  * MCP-04).
  *
  * El escritorio es **efímero por pestaña**: las ventanas abiertas viven en la

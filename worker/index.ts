@@ -54,7 +54,7 @@ async function boardSocket(request: Request, env: Cloudflare.Env) {
 }
 
 /**
- * Escritorio en vivo de Mi espacio (Fase 2 de MCP-04): valida la cuenta como
+ * Escritorio en vivo de Tienda (Fase 2 de MCP-04): valida la cuenta como
  * el socket de pizarras y delega en la sala de su proyecto.
  * Contrato HTTP del upgrade: 401 sin sesión, 400 sin proyecto, 404 proyecto
  * o acceso no disponible y 503 sin bindings.

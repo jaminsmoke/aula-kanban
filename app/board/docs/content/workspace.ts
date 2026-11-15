@@ -32,20 +32,20 @@ function bloquesCatalogoMcp(): DocBlock[] {
 export const workspaceSections: DocSection[] = [
   {
     id: "espacio",
-    title: "Mi espacio, Aula Store y las aplicaciones",
-    lead: "«Mi espacio» es el escritorio del proyecto: desde ahí se abren las aplicaciones en ventanas. Las aplicaciones se instalan desde Aula Store una sola vez para toda la instancia —las instala el propietario o un administrador— y las usan todos los miembros.",
+    title: "Tienda, Aula Store y las aplicaciones",
+    lead: "«Tienda» es el escritorio del proyecto: desde ahí se abren las aplicaciones en ventanas. Las aplicaciones se instalan desde Aula Store una sola vez para toda la instancia —las instala el propietario o un administrador— y las usan todos los miembros.",
     blocks: [
       {
         type: "steps",
         items: [
-          "Abre «Mi espacio» desde el icono de la cabecera. En el escritorio solo aparecen las aplicaciones instaladas.",
+          "Abre Administración > Tienda desde el sidebar. En el escritorio solo aparecen las aplicaciones instaladas.",
           "Haz clic en un icono para abrir la aplicación en una ventana. Si ya estaba abierta, la ventana vuelve al frente.",
           "Arrastra la ventana desde su barra de título y cambia su tamaño desde la esquina inferior derecha.",
           "El semáforo de la ventana cierra, minimiza y amplia. Una ventana minimizada deja su icono en la barra superior: pulsa «Restaurar» para traerla de vuelta; ampliada ocupa la pantalla y el mismo botón la devuelve a su tamaño anterior.",
         ],
       },
       { type: "note", tone: "info", text: "Cerrar una ventana no borra nada: lo guardado sigue en el proyecto y vuelve a aparecer al abrir la aplicación otra vez." },
-      { type: "image", src: "/capturas/espacio.webp", alt: "Mi espacio con las cuatro aplicaciones instaladas y el botón de Aula Store", caption: "Mi espacio con Excalidraw, Herramientas de aula, Programación por bloques y Diagramas instaladas." },
+      { type: "image", src: "/capturas/espacio.webp", alt: "Tienda con las cuatro aplicaciones instaladas y el botón de Aula Store", caption: "Tienda con Excalidraw, Herramientas de aula, Programación por bloques y Diagramas instaladas." },
       {
         type: "steps",
         items: [
@@ -55,7 +55,7 @@ export const workspaceSections: DocSection[] = [
           "Pulsa «Instalar» o «Desinstalar». Solo el propietario o un administrador puede hacerlo, y el cambio vale para todos los miembros.",
         ],
       },
-      { type: "note", tone: "info", text: "Instalar o desinstalar una aplicación solo registra su estado en Mi espacio: no borra paquetes ni datos, y las pizarras de las tareas no se ven afectadas. Al desinstalar, Aula Store pide confirmación." },
+      { type: "note", tone: "info", text: "Instalar o desinstalar una aplicación solo registra su estado en Tienda: no borra paquetes ni datos, y las pizarras de las tareas no se ven afectadas. Al desinstalar, Aula Store pide confirmación." },
       {
         type: "definitions",
         items: [

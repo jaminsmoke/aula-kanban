@@ -6,7 +6,7 @@ import type { AccionVentana, ComandoVentana, VentanaEstado } from "../../../lib/
 const ACCIONES: readonly AccionVentana[] = ["abrir", "cerrar", "minimizar", "restaurar", "ampliar"];
 
 /**
- * Conecta el escritorio de Mi espacio con la sala en vivo del proyecto
+ * Conecta el escritorio de Tienda con la sala en vivo del proyecto
  * (`/api/space-socket`, Fase 2 de MCP-04): la pestaña publica el estado de
  * sus ventanas y ejecuta los comandos que envían las herramientas MCP
  * (abrir/cerrar/minimizar/restaurar/ampliar ventanas de la cuenta dueña del

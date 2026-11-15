@@ -71,7 +71,7 @@ export const taskSections: DocSection[] = [
           "La pestaña «Pizarra» solo aparece al editar una tarea existente: no hay pizarra para una tarea que aún no se ha creado.",
         ],
       },
-      { type: "note", tone: "info", text: "La pizarra de la tarea es distinta de la de Mi espacio: esta vive dentro de su tarea y comparte sus permisos. El propietario, la administración y el profesorado editan la de cualquier tarea; un alumno, solo la de una tarea sin responsable o la suya; las cuentas invitadas solo pueden mirarla (el diálogo se abre como «Detalle de la tarea»)." },
+      { type: "note", tone: "info", text: "La pizarra de la tarea es distinta de la de Tienda: esta vive dentro de su tarea y comparte sus permisos. El propietario, la administración y el profesorado editan la de cualquier tarea; un alumno, solo la de una tarea sin responsable o la suya; las cuentas invitadas solo pueden mirarla (el diálogo se abre como «Detalle de la tarea»)." },
       { type: "note", tone: "tip", text: "La pizarra se comparte en directo: los demás ven tus trazos y tu puntero mientras dibujas. Si dos personas escriben a la vez, los cambios se combinan y el aviso lo indica; si falla el guardado de un trazo o una imagen, se reintenta sin perder lo dibujado." },
     ],
   },

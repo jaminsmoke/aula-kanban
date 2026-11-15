@@ -8,7 +8,7 @@ vi.mock("../students/students-view", () => ({
 vi.mock("../teachers/teachers-view", () => ({
   default: () => <div>Profesores</div>,
 }));
-vi.mock("../../space/space-view", () => ({
+vi.mock("../../store/store-desktop", () => ({
   default: () => <div>Escritorio de Tienda</div>,
 }));
 

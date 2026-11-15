@@ -228,7 +228,7 @@ export const herramientasExcalidraw: McpToolDefinicion[] = [
   {
     name: "leer_pizarra",
     title: "Leer pizarra",
-    description: "Lee el snapshot, la revisión y la fecha de una pizarra de Excalidraw de tarea, proyecto o Mi espacio. Requiere que Excalidraw esté instalada y acceso al proyecto.",
+    description: "Lee el snapshot, la revisión y la fecha de una pizarra de Excalidraw de tarea, proyecto o Tienda. Requiere que Excalidraw esté instalada y acceso al proyecto.",
     inputSchema: { proyectoId, tipo, duenoId },
     outputSchema: {
       snapshot: z.string(),

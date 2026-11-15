@@ -71,7 +71,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
-- **Roadmap UI-08 activo:** Tienda como sección de Administración, retirada de Mi espacio y Clase como botón de icono en la cabecera, con URL canónica `view=administracion&section=tienda` y alias `view=espacio`. Plan en [`roadmap.md`](roadmap.md).
+- **Roadmap UI-08 activo:** Tienda como sección de Administración, sin acceso propio en la cabecera y Clase como botón de icono, con URL canónica `view=administracion&section=tienda` y alias `view=espacio`. Plan en [`roadmap.md`](roadmap.md).
 - **Backlog:** sin entradas aparcadas; UI-08 salió al roadmap.
 - **Roadmap UI-07 completado:** Documentación como sección de Ajustes, con URL canónica `view=ajustes&section=documentacion` y alias antiguo, y selector de proyecto en el hueco derecho de la cabecera; revisado en 1366, 1024 y 390. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap UI-05 completado:** estados vacíos de alumnado y profesorado con un componente compartido, selector oculto sin fichas y alta conectada a los diálogos existentes; revisado en 1366 y 390. Resumen en [`changelog.md`](changelog.md); roadmap sin fase activa.
@@ -99,7 +99,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap de documentos completado:** Blockly y Mermaid usan `app_documents`; las dos tablas históricas se retiraron tras la auditoría y respaldo.
 - **Roadmap de rendimiento y acabado completado:** tokens CSS, check de Aula Store sin Lottie y fuentes autohospedadas; verificación final correcta. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de versiones de Aula Store completado:** versiones propias por app, versión de la tienda y ficha técnica con upstream y ampliaciones. Resumen en [`changelog.md`](changelog.md).
-- **Roadmap de navegación de Clase completado:** Clase como vista principal, sidebar de pantalla partida, Tareas, header de cuatro vistas y Mi espacio como icono. Resumen en [`changelog.md`](changelog.md).
+- **Roadmap de navegación de Clase completado:** Clase como vista principal, sidebar de pantalla partida, Tareas, header de cuatro vistas y Administración con Tienda en su sidebar. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de ajustes generales completado:** vista con sidebar, Cuenta, Administradores y engranaje de cabecera. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de jerarquía de personas completado:** alumnos en `people/students/`, profesores en `people/teachers/` y compartidos en `people/`. Resumen en [`changelog.md`](changelog.md).
 - **Roadmap de medición de chunks completado:** inventario, decisión de no dividir librerías lazy y fuentes latinas de Excalidraw autohospedadas. Resumen en [`changelog.md`](changelog.md).

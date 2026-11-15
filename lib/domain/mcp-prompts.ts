@@ -105,19 +105,19 @@ No inventes correos ni nombres que no estén en la lista. Si un alta falla, sigu
     title: "Instalar apps del aula",
     description: "Revisa el catálogo e instala en la instancia las apps indicadas, comprobando antes el rol de administración.",
     arguments: [
-      { name: "proyectoId", description: "Id del proyecto desde el que se abre Mi espacio", required: true },
+      { name: "proyectoId", description: "Id del proyecto desde el que se abre Tienda", required: true },
       { name: "apps", description: "Ids de apps separados por comas", required: true },
     ],
     tools: ["quien_soy", "listar_apps", "obtener_app", "instalar_app", "obtener_enlace"],
     messages: ({ proyectoId, apps }) => [
       texto(
-        `Instala en el aula las apps: ${apps}. El proyecto para abrir Mi espacio es ${proyectoId}.
+        `Instala en el aula las apps: ${apps}. El proyecto para abrir Tienda es ${proyectoId}.
 
 1. Llama a "quien_soy". Solo el propietario o una cuenta administradora pueden instalar apps; si no lo eres, explica quién debe hacerlo y detente.
 2. Llama a "listar_apps" y comprueba qué apps del catálogo ya están instaladas.
 3. Para cada app pedida, llama a "obtener_app" y confirma que existe y que su id coincide.
 4. Instala las que falten con "instalar_app" (es idempotente). Si un id no existe, dilo y no inventes otro.
-5. Termina con "obtener_enlace" usando la vista "espacio" y la primera app instalada, para que la persona pueda abrirla.
+5. Termina con "obtener_enlace" usando la vista "administracion", la sección "tienda" y la primera app instalada, para que la persona pueda abrirla.
 
 La instalación es de toda la instancia, no solo del proyecto. Resume qué apps quedaron instaladas.`,
       ),

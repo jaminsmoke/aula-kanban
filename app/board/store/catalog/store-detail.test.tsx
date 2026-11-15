@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { Gem } from "lucide-react";
 import { describe, expect, it, vi } from "vitest";
-import type { SpaceTool } from "../tools";
+import type { StoreTool } from "../tools";
 import StoreDetail from "./store-detail";
 
-const tool: SpaceTool = {
+const tool: StoreTool = {
   id: "excalidraw",
   name: "Excalidraw",
   description: "Pizarra del espacio de trabajo.",

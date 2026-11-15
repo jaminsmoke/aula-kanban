@@ -85,8 +85,8 @@ async function obtenerEnlace(caller: McpCaller, args: Record<string, unknown>) {
 }
 
 /**
- * Abrir la app indicada en Mi espacio (MCP-04, Paso A): devuelve el enlace
- * profundo `view=espacio&app=<appId>` para mandarlo al usuario. Falla con
+ * Abrir la app indicada en Tienda (MCP-04, Paso A): devuelve el enlace
+ * profundo `view=administracion&section=tienda&app=<appId>` para mandarlo al usuario. Falla con
  * `not_found` si la app no está instalada: el enlace no abriría nada.
  * @param caller - Cuenta identificada por el token.
  * @param args - `{ proyectoId, appId }`.
@@ -100,7 +100,7 @@ async function abrirApp(caller: McpCaller, args: Record<string, unknown>) {
   if (!instalada) return errorHerramienta("not_found", "La aplicación no está instalada");
   const resultado = await comandarVentana(proyectoId, caller.userId, "abrir", appId as string);
   return payloadResult({
-    enlace: enlace(caller.origen, proyectoId, "espacio", "tareas", "cuenta", appId as string),
+    enlace: enlace(caller.origen, proyectoId, "administracion", "tareas", "cuenta", appId as string, "tienda"),
     ventana_conectada: resultado.conectada,
     ventana_entregada: resultado.entregada,
   });
@@ -180,7 +180,7 @@ export const herramientasContexto: McpToolDefinicion[] = [
       proyectoId: projectId,
       vista: vistas.optional(),
       seccion: seccionClase.or(seccionAjustes).or(seccionAdministracion).optional().describe("Sección dentro de la vista (clase, administración o ajustes)"),
-      app: z.string().min(1).max(80).optional().describe("App de Mi espacio a abrir en la vista espacio"),
+      app: z.string().min(1).max(80).optional().describe("App de Tienda a abrir en Administración > Tienda"),
     },
     outputSchema: { enlace: z.string() },
     scope: "mcp:read",
@@ -190,10 +190,10 @@ export const herramientasContexto: McpToolDefinicion[] = [
   {
     name: "abrir_app",
     title: "Abrir app",
-    description: "Devuelve la URL absoluta de Mi espacio con la app indicada abierta (paso A de MCP-04). Falla con not_found si la app no está instalada.",
+    description: "Devuelve la URL absoluta de Tienda con la app indicada abierta (paso A de MCP-04). Falla con not_found si la app no está instalada.",
     inputSchema: {
       proyectoId: projectId,
-      appId: z.enum(NATIVE_APP_IDS as unknown as [string, ...string[]]).describe("App de Mi espacio a abrir"),
+      appId: z.enum(NATIVE_APP_IDS as unknown as [string, ...string[]]).describe("App de Tienda a abrir"),
     },
     outputSchema: { enlace: z.string(), ventana_conectada: z.boolean(), ventana_entregada: z.boolean() },
     scope: "mcp:read",

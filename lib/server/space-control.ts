@@ -3,7 +3,7 @@ import type { AccionVentana, VentanaEstado } from "../domain/space-windows";
 import type { SpaceRoom } from "./space-room";
 
 /**
- * Acceso al canal en vivo de Mi espacio desde el servidor (Fase 2 de
+ * Acceso al canal en vivo de Tienda desde el servidor (Fase 2 de
  * MCP-04): un Durable Object `SpaceRoom` por proyecto. Sin binding (tests,
  * despliegues sin DO) se comporta como «sin pestañas conectadas»: las
  * herramientas devuelven el enlace del paso A en vez de fallar.

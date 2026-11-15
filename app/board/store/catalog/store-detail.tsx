@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { X } from "lucide-react";
-import type { SpaceTool } from "../tools";
+import type { StoreTool } from "../tools";
 import { statusLabel } from "./store-model";
 
 /**
@@ -11,7 +11,7 @@ import { statusLabel } from "./store-model";
  * @returns El diálogo de detalle.
  */
 export default function StoreDetail({ tool, status, isAdmin, actions, onClose }: {
-  tool: SpaceTool;
+  tool: StoreTool;
   status: string;
   isAdmin: boolean;
   actions: ReactNode;

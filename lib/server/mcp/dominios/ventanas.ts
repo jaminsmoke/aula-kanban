@@ -7,7 +7,7 @@ import { enlace } from "../enlaces";
 import type { McpToolDefinicion } from "./tipos";
 
 /**
- * Dominio de ventanas en vivo de Mi espacio (Fase 2 de MCP-04): lista las
+ * Dominio de ventanas en vivo de Tienda (Fase 2 de MCP-04): lista las
  * ventanas abiertas en las pestañas conectadas de la propia cuenta y envía
  * comandos de control (cerrar/minimizar/restaurar/ampliar) por el canal
  * `space`. Sin pestañas conectadas las herramientas devuelven el enlace del
@@ -15,7 +15,7 @@ import type { McpToolDefinicion } from "./tipos";
  */
 
 const projectId = z.string().uuid().describe("Id del proyecto de Aula Kanban");
-const appIdSchema = z.enum(NATIVE_APP_IDS as unknown as [string, ...string[]]).describe("App de Mi espacio");
+const appIdSchema = z.enum(NATIVE_APP_IDS as unknown as [string, ...string[]]).describe("App de Tienda");
 
 type ControlArgs = { proyectoId: string; appId: string };
 
@@ -27,7 +27,7 @@ async function listarVentanas(caller: McpCaller, args: Record<string, unknown>) 
   return payloadResult({
     conectadas: estado !== null,
     ventanas: estado ?? [],
-    enlace: enlace(caller.origen, proyectoId, "espacio", "tareas", "cuenta"),
+    enlace: enlace(caller.origen, proyectoId, "administracion", "tareas", "cuenta", undefined, "tienda"),
   });
 }
 
@@ -48,7 +48,7 @@ function controlar(accion: "cerrar" | "minimizar" | "restaurar" | "ampliar") {
       appId,
       ventana_conectada: resultado.conectada,
       ventana_entregada: resultado.entregada,
-      enlace: enlace(caller.origen, proyectoId, "espacio", "tareas", "cuenta", appId),
+      enlace: enlace(caller.origen, proyectoId, "administracion", "tareas", "cuenta", appId, "tienda"),
     });
   };
 }
@@ -58,7 +58,7 @@ export const herramientasVentanas: McpToolDefinicion[] = [
   {
     name: "listar_ventanas",
     title: "Listar ventanas",
-    description: "Lista las ventanas abiertas en las pestañas conectadas de la propia cuenta en Mi espacio. Sin pestañas conectadas devuelve conectadas: false y el enlace al espacio.",
+    description: "Lista las ventanas abiertas en las pestañas conectadas de la propia cuenta en Tienda. Sin pestañas conectadas devuelve conectadas: false y el enlace a Tienda.",
     inputSchema: { proyectoId: projectId },
     outputSchema: {
       conectadas: z.boolean(),

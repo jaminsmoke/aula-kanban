@@ -1,7 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { SPACE_CATEGORIES, type SpaceCategory, type SpaceTool } from "../tools";
+import { STORE_CATEGORIES, type StoreCategory, type StoreTool } from "../tools";
 
 /**
  * Buscador y filtros de categoría/instaladas de Aula Store.
@@ -9,13 +9,13 @@ import { SPACE_CATEGORIES, type SpaceCategory, type SpaceTool } from "../tools";
  * @returns La barra de búsqueda y los chips de filtros.
  */
 export default function StoreFilters({ tools, query, category, installedOnly, installedCount, onQuery, onCategory, onInstalledOnly }: {
-  tools: SpaceTool[];
+  tools: StoreTool[];
   query: string;
-  category: SpaceCategory | "todas";
+  category: StoreCategory | "todas";
   installedOnly: boolean;
   installedCount: number;
   onQuery: (value: string) => void;
-  onCategory: (value: SpaceCategory | "todas") => void;
+  onCategory: (value: StoreCategory | "todas") => void;
   onInstalledOnly: () => void;
 }) {
   return (
@@ -28,7 +28,7 @@ export default function StoreFilters({ tools, query, category, installedOnly, in
         <button type="button" className={`store-filter${category === "todas" && !installedOnly ? " store-filter--active" : ""}`} aria-pressed={category === "todas" && !installedOnly} onClick={() => { onCategory("todas"); if (installedOnly) onInstalledOnly(); }}>
           Todo<span className="store-filter-count">{tools.length}</span>
         </button>
-        {SPACE_CATEGORIES.map((name) => {
+        {STORE_CATEGORIES.map((name) => {
           const count = tools.filter((tool) => tool.category === name).length;
           if (!count) return null;
           return (

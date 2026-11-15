@@ -235,12 +235,12 @@ export function WhiteboardArt() {
 }
 
 /**
- * Mi espacio: ventana de escritorio con apps que aparecen y la tienda flotando.
+ * Tienda: ventana de escritorio con apps que aparecen y la tienda flotando.
  * @returns El SVG de la sección.
  */
 export function SpaceArt() {
   return (
-    <ArtFrame label="Ventana de Mi espacio con iconos de aplicaciones y la tienda">
+    <ArtFrame label="Ventana de Tienda con iconos de aplicaciones y la tienda">
       <rect x="26" y="20" width="208" height="160" rx="14" className="a-white s-line" strokeWidth="2" />
       <path d="M26 34a14 14 0 0 1 14-14h180a14 14 0 0 1 14 14v22H26z" className="a-pale" />
       <circle cx="46" cy="38" r="5" className="a-violet" />

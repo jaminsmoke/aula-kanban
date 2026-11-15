@@ -32,7 +32,7 @@ const ayuda = docSections.map(textoDe).join("\n");
 const nombreDeVista: Record<BoardView, string> = {
   clase: "Clase",
   administracion: "Administración",
-  espacio: "Mi espacio",
+  espacio: "Tienda",
   ajustes: "Ajustes",
   documentacion: "Documentación",
 };

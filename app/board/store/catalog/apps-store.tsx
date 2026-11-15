@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
 import { ArrowLeft, Download, Package, Play, RefreshCw, Trash2, TriangleAlert } from "lucide-react";
-import { AULA_STORE_VERSION, visibleTools, type SpaceCategory, type SpaceRole, type SpaceTool } from "../tools";
+import { AULA_STORE_VERSION, visibleTools, type StoreCategory, type StoreRole, type StoreTool } from "../tools";
 import { AulaStoreIcon } from "./aula-store-icon";
 import StoreCard from "./store-card";
 import StoreDetail from "./store-detail";
@@ -14,22 +14,22 @@ import "./store.css";
 export type { StoreAction, StoreApp } from "./store-model";
 
 /**
- * Catálogo de aplicaciones nativas de Mi espacio, agrupado por categorías y con
+ * Catálogo de aplicaciones nativas de Tienda, agrupado por categorías y con
  * ficha de detalle.
  * @returns La tienda de aplicaciones.
  */
 export default function AppsStore({ role, apps, error, onManage, onOpen, onRefresh, onClose }: {
-  role: SpaceRole;
+  role: StoreRole;
   apps: StoreApp[];
   error: string;
   onManage: (id: string, action: StoreAction) => void;
-  onOpen: (tool: SpaceTool) => void;
+  onOpen: (tool: StoreTool) => void;
   onRefresh: () => void;
   onClose: () => void;
 }) {
   const isAdmin = role === "owner" || role === "admin";
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<SpaceCategory | "todas">("todas");
+  const [category, setCategory] = useState<StoreCategory | "todas">("todas");
   const [installedOnly, setInstalledOnly] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [justInstalled, setJustInstalled] = useState<string | null>(null);
@@ -69,7 +69,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
    * @param tool - Herramienta del catálogo.
    * @returns `true` si debe mostrarse.
    */
-  const matches = (tool: SpaceTool) => {
+  const matches = (tool: StoreTool) => {
     if (category !== "todas" && tool.category !== category) return false;
     if (installedOnly && statusOf(tool.id) !== "installed") return false;
     const text = `${tool.name} ${tool.tagline} ${tool.description} ${tool.category}`.toLowerCase();
@@ -87,7 +87,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
    * @param installed - Si está instalada.
    * @returns Los botones disponibles para el rol actual.
    */
-  const actions = (tool: SpaceTool, installed: boolean) => (
+  const actions = (tool: StoreTool, installed: boolean) => (
     <>
       {installed ? (
         <button type="button" className="store-primary" onClick={() => onOpen(tool)}><Play size={16} aria-hidden /> Abrir</button>
@@ -156,7 +156,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
         </section>
       )}
 
-      <p className="store-note"><Package size={16} aria-hidden /> Las aplicaciones nativas son librerías del propio Aula: instalarlas o desinstalarlas de «Mi espacio» solo registra su estado y no borra paquetes ni datos.</p>
+      <p className="store-note"><Package size={16} aria-hidden /> Las aplicaciones nativas son librerías del propio Aula: instalarlas o desinstalarlas de «Tienda» solo registra su estado y no borra paquetes ni datos.</p>
 
       {selectedTool ? (
         <StoreDetail

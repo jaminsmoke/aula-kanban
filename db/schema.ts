@@ -134,7 +134,7 @@ export const uploads = sqliteTable("uploads", {
 }, (table) => [index("uploads_project").on(table.projectId, table.createdAt)]);
 
 // Estado de las aplicaciones nativas (librerías npm del propio Site) instaladas
-// en «Mi espacio». Es por instancia: el dueño o un administrador decide qué
+// en «Tienda». Es por instancia: el dueño o un administrador decide qué
 // aplicaciones están disponibles para toda la instancia de Aula Kanban.
 export const instanceApps = sqliteTable("instance_apps", {
   id: text("id").primaryKey().notNull(),

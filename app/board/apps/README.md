@@ -9,7 +9,7 @@ apps/
     <id>.css          estilos propios
     ...               helpers, datos y tests de la app
   registry.tsx        icono, componente lazy y roles de cada app
-  types.ts            tipos de la interfaz (SpaceTool, SpaceRole…)
+  types.ts            tipos de la interfaz (StoreTool, StoreRole…)
 ```
 
 El catálogo visible en la tienda y los ids que acepta la API están en

@@ -109,8 +109,8 @@ const FLOWS = [
   },
   {
     id: "espacio",
-    label: "Mi espacio · abrir",
-    roots: ["app/board/space/space-view.tsx"],
+    label: "Tienda · abrir",
+    roots: ["app/board/store/store-desktop.tsx"],
   },
   {
     id: "pizarra",

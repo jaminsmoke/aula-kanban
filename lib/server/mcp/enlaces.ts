@@ -17,7 +17,7 @@ import { buildBoardUrl, type AdministracionSection, type BoardUrlState, type Boa
  * @param view - Vista pedida (`clase` por defecto).
  * @param classSection - Sección de Clase (`tareas` por defecto).
  * @param settingsSection - Sección de Ajustes (`cuenta` por defecto).
- * @param app - App de Mi espacio a abrir (`app=<appId>`), si se pide.
+ * @param app - App de Tienda a abrir (`app=<appId>`), si se pide.
  * @param administracionSection - Sección de Administración (`alumnos` por defecto).
  * @returns La URL canónica, absoluta o relativa.
  */

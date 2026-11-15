@@ -11,7 +11,7 @@ export const MCP_DOMINIOS = ["Proyectos", "Archivos", "Tareas", "Personas", "Con
 export type McpDominio = (typeof MCP_DOMINIOS)[number];
 
 /** Versión del contrato de herramientas. */
-export const MCP_CATALOG_VERSION = "0.26.0";
+export const MCP_CATALOG_VERSION = "0.27.0";
 
 /** Metadatos de una herramienta del catálogo. */
 export type McpCatalogoEntry = {
@@ -269,7 +269,7 @@ export const MCP_CATALOGO: McpCatalogoEntry[] = [
     domain: "Contexto",
     name: "abrir_app",
     title: "Abrir app",
-    description: "Devuelve la URL absoluta de Mi espacio con la app indicada abierta (paso A de MCP-04). Falla con not_found si la app no está instalada.",
+    description: "Devuelve la URL absoluta de Tienda con la app indicada abierta (paso A de MCP-04). Falla con not_found si la app no está instalada.",
     scope: "mcp:read",
     annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
   },
@@ -333,7 +333,7 @@ export const MCP_CATALOGO: McpCatalogoEntry[] = [
     domain: "Apps",
     name: "leer_pizarra",
     title: "Leer pizarra",
-    description: "Lee el snapshot, la revisión y la fecha de una pizarra de Excalidraw de tarea, proyecto o Mi espacio. Requiere que Excalidraw esté instalada y acceso al proyecto.",
+    description: "Lee el snapshot, la revisión y la fecha de una pizarra de Excalidraw de tarea, proyecto o Tienda. Requiere que Excalidraw esté instalada y acceso al proyecto.",
     scope: "mcp:read",
     annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
   },
@@ -405,7 +405,7 @@ export const MCP_CATALOGO: McpCatalogoEntry[] = [
     domain: "Ventanas",
     name: "listar_ventanas",
     title: "Listar ventanas",
-    description: "Lista las ventanas abiertas en las pestañas conectadas de la propia cuenta en Mi espacio. Sin pestañas conectadas devuelve conectadas: false y el enlace al espacio.",
+    description: "Lista las ventanas abiertas en las pestañas conectadas de la propia cuenta en Tienda. Sin pestañas conectadas devuelve conectadas: false y el enlace a Tienda.",
     scope: "mcp:read",
     annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
   },

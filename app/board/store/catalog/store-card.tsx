@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { Info } from "lucide-react";
 import { m } from "motion/react";
-import type { SpaceTool } from "../tools";
+import type { StoreTool } from "../tools";
 import { STATUS_META, statusLabel } from "./store-model";
 import StoreSuccess from "./store-success";
 
@@ -13,7 +13,7 @@ import StoreSuccess from "./store-success";
  * @returns La tarjeta animada.
  */
 export default function StoreCard({ tool, index, status, justInstalled, actions, onDetails }: {
-  tool: SpaceTool;
+  tool: StoreTool;
   index: number;
   status: string;
   justInstalled: boolean;

@@ -8,7 +8,7 @@ vi.mock("../../lib/server/mcp/registro", async () => {
   return {
     pluginCatalog: () => new Map([[tool.name, tool]]),
     toolsListEntries: () => [{ name: tool.name, title: "Listar proyectos", description: "Lista proyectos", inputSchema: tool.inputSchema, outputSchema: {}, annotations: {} }],
-    MCP_CATALOG_VERSION: "0.26.0",
+    MCP_CATALOG_VERSION: "0.27.0",
   };
 });
 import { POST } from "./route";
@@ -25,7 +25,7 @@ describe("plugin MCP de Sites", () => {
     expect(discovery.result.capabilities).toHaveProperty("prompts");
     expect(discovery.result.instructions).toContain("quien_soy");
     const init = await (await POST(request("initialize", { protocolVersion: "2026-07-28" }))).json() as { result: { serverInfo: { name: string; version: string }; instructions: string } };
-    expect(init.result.serverInfo).toEqual({ name: "aula-kanban", version: "0.26.0" });
+    expect(init.result.serverInfo).toEqual({ name: "aula-kanban", version: "0.27.0" });
     expect(init.result.instructions).toBe(discovery.result.instructions);
     const prompts = await (await POST(request("prompts/list"))).json() as { result: { prompts: Array<{ name: string }> } };
     expect(prompts.result.prompts.map((prompt) => prompt.name)).toEqual(["resumen_de_clase", "planificar_semana", "alta_de_alumnado", "instalar_apps_del_aula"]);

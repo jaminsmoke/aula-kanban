@@ -41,8 +41,7 @@ describe("BoardHeader", () => {
     expect(within(nav).queryByRole("button", { name: "Alumnos" })).toBeNull();
     expect(within(nav).queryByRole("button", { name: "Profesores" })).toBeNull();
     expect(within(nav).queryByRole("button", { name: "Tienda" })).toBeNull();
-    expect(within(nav).queryByRole("button", { name: "Mi espacio" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Mi espacio" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Tienda" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Documentación" })).toBeNull();
     expect(screen.getByRole("button", { name: "Ajustes" })).toBeTruthy();
     expect(screen.queryByText("Ajustes de la cuenta")).toBeNull();

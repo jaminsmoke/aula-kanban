@@ -1,6 +1,6 @@
 "use client";
 
-import type { SpaceRole } from "../types";
+import type { StoreRole } from "../types";
 import BlocklyCodePanel from "./blockly-code-panel";
 import { useBlockly } from "./use-blockly";
 import "./blockly.css";
@@ -11,7 +11,7 @@ import "./blockly.css";
  * @param props - Proyecto activo.
  * @returns El espacio de trabajo con su barra de acciones y panel de código.
  */
-export default function BlocklyApp({ projectId, role }: { projectId: string; role: SpaceRole }) {
+export default function BlocklyApp({ projectId, role }: { projectId: string; role: StoreRole }) {
   const {
     container, ready, status, showCode, codeTab, code, codeError, runResult, running,
     save, load, example, download, clear, toggleCode, selectTab, copyCode, run,

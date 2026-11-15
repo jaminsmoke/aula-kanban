@@ -1,4 +1,4 @@
-import type { SpaceIconProps } from "../tools";
+import type { StoreIconProps } from "../tools";
 
 /**
  * Glifo de Aula Store: bolsa de compra con asa, dibujada en SVG propio para no
@@ -8,7 +8,7 @@ import type { SpaceIconProps } from "../tools";
  * @param props - Tamaño y clases del icono.
  * @returns El glifo de Aula Store como SVG.
  */
-export function AulaStoreIcon({ size = 24, className }: SpaceIconProps) {
+export function AulaStoreIcon({ size = 24, className }: StoreIconProps) {
   return (
     <svg
       width={size}

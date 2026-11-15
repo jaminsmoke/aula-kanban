@@ -30,8 +30,8 @@ export function listarRecursosUi() {
       uri: UI_APERTURA_URI,
       name: "apertura-espacio",
       mimeType: UI_MIME_TYPE,
-      title: "Aula Kanban — Mi espacio",
-      description: "Abrir una app de Mi espacio dentro del chat.",
+      title: "Aula Kanban — Tienda",
+      description: "Abrir una app de Tienda dentro del chat.",
     },
   ];
 }
@@ -54,7 +54,7 @@ export function registrarRecursosUi(server: McpServer) {
   server.registerResource(
     "apertura-espacio",
     UI_APERTURA_URI,
-    { title: "Aula Kanban — Mi espacio", description: "Abrir una app de Mi espacio dentro del chat.", mimeType: UI_MIME_TYPE },
+    { title: "Aula Kanban — Tienda", description: "Abrir una app de Tienda dentro del chat.", mimeType: UI_MIME_TYPE },
     async () => ({ contents: [{ uri: UI_APERTURA_URI, mimeType: UI_MIME_TYPE, text: UI_APERTURA_HTML }] }),
   );
 }
@@ -77,8 +77,8 @@ export const UI_APERTURA_HTML = `<!doctype html>
 </style>
 </head>
 <body>
-  <h1>Aula Kanban · Mi espacio</h1>
-  <p id="aviso">Abre una app del espacio para trabajar en ella.</p>
+  <h1>Aula Kanban · Tienda</h1>
+  <p id="aviso">Abre una app de Tienda para trabajar en ella.</p>
   <a id="abrir" class="boton" hidden target="_blank" rel="noopener">Abrir en Aula Kanban</a>
   <button id="listar" class="boton" style="background:#374151">Listar apps</button>
   <ul id="apps"></ul>

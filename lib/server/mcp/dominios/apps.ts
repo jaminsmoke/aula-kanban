@@ -7,7 +7,7 @@ import type { McpToolDefinicion } from "./tipos";
 
 /**
  * Dominio de Aula Store (MCP-03): catálogo, ficha e instalación de apps de
- * Mi espacio. La instalación es de la instancia y solo la pueden gestionar
+ * Tienda. La instalación es de la instancia y solo la pueden gestionar
  * el propietario o un administrador, igual que la web.
  */
 
@@ -109,7 +109,7 @@ async function desinstalarApp(caller: McpCaller, args: Record<string, unknown>) 
       herramienta: "desinstalar_app",
       appId: a.appId,
       nombre: meta.name,
-      mensaje: `${meta.name} desaparecerá de Mi espacio para todos los miembros. Los documentos guardados se conservan. Llama de nuevo con confirmar: true para continuar.`,
+      mensaje: `${meta.name} desaparecerá de Tienda para todos los miembros. Los documentos guardados se conservan. Llama de nuevo con confirmar: true para continuar.`,
     });
   }
   const estado = await setAppInstalled(caller.userId, a.appId as NativeAppId, false);

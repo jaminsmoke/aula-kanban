@@ -52,9 +52,9 @@ Si devuelve el texto, la aplicación responde con la portada a un visitante sin 
 
 En desarrollo, `npm run dev` simula la sesión al visitar `/signin-with-chatgpt`, así que la portada anónima hay que probarla sin esa cookie (por ejemplo, en una ventana privada).
 
-## Mi espacio y Aula Store
+## Tienda y Aula Store
 
-La cabecera organiza el trabajo en **Clase** y **Administración** (con Alumnos y Profesores en su sidebar), con el selector de proyecto a la derecha; **Mi espacio** se abre desde el icono de aplicaciones y el engranaje abre los **ajustes generales**, con Cuenta, Apariencia, Documentación, Tokens MCP, Administradores y Almacenamiento. Incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, Herramientas de aula, Programación por bloques y Diagramas. Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Mi espacio no elimina las pizarras de las tareas ni sus datos.
+La cabecera organiza el trabajo en **Clase** y **Administración** (con Alumnos, Profesores y Tienda en su sidebar), con Clase en su botón de icono y el selector de proyecto a la derecha. **Tienda** es el escritorio de aplicaciones del proyecto; el engranaje abre los **ajustes generales**, con Cuenta, Apariencia, Documentación, Tokens MCP, Administradores y Almacenamiento. Incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, Herramientas de aula, Programación por bloques y Diagramas. Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Tienda no elimina las pizarras de las tareas ni sus datos.
 Dentro de **Clase**, **Tareas** y **Calendario** comparten el mismo tablero: el calendario coloca cada tarea en su fecha de vencimiento, abre la tarea al pulsar su evento y solo se descarga al entrar en la sección.
 
 La lista de aplicaciones integradas, candidatas y descartadas, con licencias y versiones comprobadas, está en [`docs/aplicaciones-nativas.md`](docs/aplicaciones-nativas.md). El índice de documentación y el flujo de roadmap, backlog y changelog están en [`docs/README.md`](docs/README.md).
@@ -70,7 +70,7 @@ El **plugin de Aula Kanban para Sites** es la vía recomendada para ChatGPT y Co
 La lista siguiente se genera desde `lib/domain/mcp-catalogo.ts`; las dos puertas publican las mismas herramientas y cada descripción incluye un ejemplo de argumentos y su regla de rol.
 
 <!-- inicio catálogo MCP: generado desde lib/domain/mcp-catalogo.ts -->
-**59 herramientas · catálogo `0.26.0`:** 26 de lectura y 33 de escritura; 8 destructivas.
+**59 herramientas · catálogo `0.27.0`:** 26 de lectura y 33 de escritura; 8 destructivas.
 
 **Proyectos**
 
@@ -264,7 +264,7 @@ Local tool usage metrics are disabled by default. Set `WRANGLER_SEND_METRICS=tru
 
 - edit site code under `app/`
 - dependency direction is `app → lib → db`: `lib/domain/` holds pure types and helpers, `lib/server/` holds auth and server-side access, and ESLint blocks any `lib → app` import
-- stylesheets sit next to the code they style: `app/globals.css` (tokens and base elements), shared board styles in `app/board/styles/` (`buttons.css`, `access.css`, `dialogs.css`) and feature CSS next to its component (`tasks/kanban.css`, `people/people.css`, `layout/header.css`, `space/space.css`, `space/store/store.css`, docs and each app). Responsive rules live in the CSS of their feature. Plain CSS, no Tailwind or shadcn scaffolding
+- stylesheets sit next to the code they style: `app/globals.css` (tokens and base elements), shared board styles in `app/board/styles/` (`buttons.css`, `access.css`, `dialogs.css`) and feature CSS next to its component (`tasks/kanban.css`, `people/people.css`, `layout/header.css`, `store/store-desktop.css`, `store/catalog/store.css`, docs and each app). Responsive rules live in the CSS of their feature. Plain CSS, no Tailwind or shadcn scaffolding
 - `npm test` runs Vitest; tests sit next to their source as `*.test.tsx`, for example `app/board/tasks/use-tasks.test.tsx`
 - `lib/server/auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
 - `.openai/hosting.json` declares optional Sites D1 and R2 bindings

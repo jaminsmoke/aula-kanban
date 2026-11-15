@@ -3,12 +3,12 @@
 import { Suspense, lazy, type ComponentProps } from "react";
 import { GraduationCap, LayoutGrid, Users } from "lucide-react";
 import type { AdministracionSection } from "../../shared/board-url";
-import type { SpaceRole } from "../../space/tools";
+import type { StoreRole } from "../../store/tools";
 import WorkspaceLayout, { type WorkspaceItem } from "../../layout/workspace-layout";
 import StudentsView from "../students/students-view";
 import TeachersView from "../teachers/teachers-view";
 
-const SpaceView = lazy(() => import("../../space/space-view"));
+const StoreDesktop = lazy(() => import("../../store/store-desktop"));
 
 const sections: WorkspaceItem<AdministracionSection>[] = [
   { id: "alumnos", label: "Alumnos", icon: Users },
@@ -26,7 +26,7 @@ export default function AdministrationView({ section, onSection, students, teach
   onSection: (section: AdministracionSection) => void;
   students: ComponentProps<typeof StudentsView>;
   teachers: ComponentProps<typeof TeachersView>;
-  tienda: { role: SpaceRole; projectId: string };
+  tienda: { role: StoreRole; projectId: string };
 }) {
   return (
     <WorkspaceLayout
@@ -44,7 +44,7 @@ export default function AdministrationView({ section, onSection, students, teach
           <TeachersView {...teachers} />
         ) : (
           <Suspense fallback={<div className="access-loading" role="status">Cargando Tienda…</div>}>
-            <SpaceView role={tienda.role} projectId={tienda.projectId} />
+            <StoreDesktop role={tienda.role} projectId={tienda.projectId} />
           </Suspense>
         )}
       </div>

@@ -13,7 +13,7 @@ export const helpSections: DocSection[] = [
           { term: "Clase > Tareas", text: "`/?project=<id>` o `/?project=<id>&view=clase`." },
           { term: "Clase > Calendario", text: "`/?project=<id>&section=calendario`; también admite `view=clase`." },
           { term: "Administración", text: "`view=administracion` abre Alumnos; `view=administracion&section=profesores`, Profesores. `view=alumnos` y `view=profesores` siguen funcionando como enlaces antiguos." },
-          { term: "Mi espacio", text: "`view=espacio`; `app=<appId>` abre una aplicación instalada, por ejemplo `view=espacio&app=mermaid`." },
+          { term: "Tienda", text: "`view=administracion&section=tienda`; `app=<appId>` abre una aplicación instalada, por ejemplo `view=administracion&section=tienda&app=mermaid`. El antiguo `view=espacio` se reescribe a esta dirección." },
           { term: "Ajustes", text: "`view=ajustes`, con `section=cuenta` (por defecto), `apariencia`, `documentacion`, `tokens`, `administradores` o `almacenamiento`; las dos últimas solo con permiso." },
           { term: "Documentación", text: "`/documentacion` sin sesión; dentro del tablero, `view=ajustes&section=documentacion`." },
           { term: "Enlaces de proyecto", text: "El menú de la cabecera enlaza cada proyecto conservando la vista y la sección en las que estás." },
