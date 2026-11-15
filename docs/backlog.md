@@ -2,25 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 2 entradas aparcadas, cada una extraíble como roadmap independiente
-> **Nota:** PER-06, PER-07 y PER-08 se cerraron con pruebas controladas y sus limitaciones se documentaron en el changelog. UI-06 salió al roadmap activo; UI-04 y UI-05 siguen aquí.
+> **Roadmap:** UI-04 · Vista de administración · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 1 entrada aparcada, extraíble como roadmap independiente
+> **Nota:** PER-06, PER-07 y PER-08 se cerraron con pruebas controladas y sus limitaciones se documentaron en el changelog. UI-04 y UI-06 salieron al roadmap activo; UI-05 sigue aquí.
 
 ---
-
-## 2026-11-15 — UI-04 · Vista de administración para alumnado y profesorado
-
-**Extraíble como roadmap propio:** sí. No depende de UI-05 ni de UI-06; puede absorber el estado vacío de UI-05 si se quiere resolver todo de una vez, pero no es necesario.
-
-- Contexto: `BoardView` es plano (`clase · alumnos · profesores · espacio · ajustes · documentacion`) y la cabecera muestra tres botones de texto. Alumnos y Profesores son dos vistas de página completa que repiten cabecera propia (`eyebrow`, `h1`, intro y botón de alta) y no comparten el sidebar que ya usan Clase (Tareas/Calendario) y Ajustes. `WorkspaceLayout` existe y sirve tal cual para una vista `administracion` con secciones `alumnos` y `profesores`.
-- Oportunidad: una sola entrada «Administración» en la cabecera, con el sidebar de secciones, deja sitio para futuras secciones y quita dos botones de la navegación principal. Las vistas pueden conservar su contenido y su carga de datos; lo que cambia es el marco y la URL.
-- Decisión pendiente: quién puede abrir Administración. Hoy Alumnos es también la vía del alumnado para ver y editar su propia ficha (`ownStudent`). Si la vista se restringe a propietario, administración y profesorado, hace falta un acceso equivalente para el alumnado (por ejemplo «Mi ficha») para no perder esa capacidad. Esta decisión debe cerrarse antes de la primera fase.
-- Qué falta:
-  - [ ] Extender el esquema de URL con `administracion` y sus secciones `alumnos` y `profesores`; canonizar la URL nueva y conservar `view=alumnos` y `view=profesores` como alias redirigidos.
-  - [ ] Decidir el acceso al alumnado a su propia ficha y reflejarlo en la cabecera, en el sidebar y en `obtener_enlace` del MCP.
-  - [ ] Mover las dos vistas al sidebar y retirar la cabecera duplicada de cada una.
-  - [ ] Actualizar pruebas de cabecera, URL, alumnos y profesores; comprobar atrás/adelante y enlaces antiguos.
-- **Criterios de aceptación:** una única entrada de navegación para alumnado y profesorado, URLs antiguas que siguen funcionando, ficha propia accesible para el alumnado y sidebar utilizable en móvil; pruebas de cabecera, URL y ambas vistas en verde.
 
 ## 2026-11-15 — UI-05 · Estados vacíos de las fichas de alumnado y profesorado
 
