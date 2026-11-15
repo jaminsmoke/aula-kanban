@@ -1,9 +1,9 @@
 # Roadmap — UI-02 · Encuadre de miniaturas en las tarjetas
 
-> **Estado:** Activo
+> **Estado:** En curso
 > **Inicio:** 2026-11-15
 > **Entrada:** UI-02 — Encuadre de miniaturas en las tarjetas (sale del backlog).
-> **Backlog:** PER-03, PER-01B, PER-02, UI-01, ARCH-01, ARCH-02, SYNC-01, MCP-05 y recortes de rendimiento (9 entradas). SYNC-01 se queda como norma operativa.
+> **Backlog:** CI-02, PER-03, PER-01B, PER-02, UI-01, ARCH-01, ARCH-02, SYNC-01, MCP-05 y recortes de rendimiento (10 entradas). SYNC-01 se queda como norma operativa.
 > **Regla:** Este documento contiene solo la fase activa. Lo que se aparca pasa al backlog; lo completado pasa al changelog cuando **todas** las fases del roadmap hayan terminado.
 > **Publicación:** los commits y el push van al repo personal `jaminsmoke/aula-kanban`; Sites lo publica y verifica Codex de OpenAI. Un push no es una publicación.
 
@@ -39,10 +39,10 @@
 
 ### Fase 1 — Marco y verificación
 
-- [ ] Sustituir `max-height`/`cover` por una altura estable de 130 px, `object-fit: contain` y fondo neutro, conservando el ancho completo y los radios.
+- [x] Sustituir `max-height`/`cover` por una altura estable de 130 px, `object-fit: contain` y fondo neutro, conservando el ancho completo y los radios.
 - [ ] Revisar imágenes horizontales, verticales y cuadradas en escritorio y móvil; corregir desbordamientos sin cambiar la estructura de la tarjeta.
-- [ ] Mantener el fallback de imagen rota y actualizar `task-card.test.tsx` si el cambio afecta al DOM.
-- [ ] Ejecutar `npx tsc --noEmit`, `npx vitest run app/board/tasks/task-card.test.tsx` y `npm run build`.
+- [x] Mantener el fallback de imagen rota y actualizar `task-card.test.tsx` si el cambio afecta al DOM.
+- [x] Ejecutar `npx tsc --noEmit`, `npx vitest run app/board/tasks/task-card.test.tsx` y `npm run build`.
 - **Criterios de aceptación:** la imagen se ve completa y centrada, la altura de la tarjeta no depende de la proporción, el fallback sigue funcionando y los checks pasan.
 
 ## 5. Riesgos y bloqueos
@@ -56,5 +56,6 @@
 ## 6. Notas de sesión
 
 - UI-02 sale del backlog el 2026-11-15. CI-01 ya está cerrado y verificado en GitHub Actions.
+- Implementación del 2026-11-15: `.card-image` usa `height: 130px`, `object-fit: contain`, `object-position: center` y `--surface-muted`; `npx tsc --noEmit`, 5/5 pruebas de `TaskCard` y `npm run build` en verde. Queda la revisión visual en navegador antes de cerrar.
 - No se toca la persistencia de archivos ni se implementan miniaturas derivadas; eso sigue en PER-02/PER-03.
 - La prueba actual de `TaskCard` ya cubre la imagen rota y el reintento al cambiar la URL.

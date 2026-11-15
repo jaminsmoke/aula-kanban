@@ -8,6 +8,18 @@
 
 ---
 
+## 2026-11-15 — CI-02 · Disparadores y ejecución inteligente de workflows
+
+- Contexto: `ci.yml` es el único workflow y se ejecuta en cada push a `main` y en cada PR; los commits documentales también lanzan lint, tipos, la suite completa y build. La ejecución completa ronda los 109-115 s, con tests de 36-53 s y build de 30 s; esperar ese ciclo para un cambio de docs frena el trabajo. No hay `concurrency`, filtros de rutas ni separación entre validación rápida y build.
+- Qué falta antes de retomarlo:
+  - [ ] Medir qué proporción de ejecuciones son solo documentación y definir rutas que no deban lanzar la suite completa (`docs/**`, `**/*.md`, `AGENTS.md` y artefactos de agente), sin saltarse cambios mixtos.
+  - [ ] Añadir `concurrency` por rama/PR con cancelación de ejecuciones obsoletas y decidir si el push a `main` es puerta independiente o si la PR ya cubre la validación.
+  - [ ] Separar lint/tipos de tests/build solo si la medida demuestra que reduce el tiempo de feedback; evitar duplicar `npm ci` en jobs paralelos sin caché.
+  - [ ] Revisar caché de npm/Vite, `timeout-minutes` y pasos condicionales; no cachear artefactos con secretos ni reutilizar builds entre commits.
+  - [ ] Mantener el build obligatorio para cambios de código y no añadir deploy ni credenciales al workflow.
+- Criterios mínimos: un push solo documental no ejecuta la suite completa; un cambio de código sigue validando lint, tipos, tests y build; una ejecución nueva cancela la anterior; el tiempo de feedback baja sin perder cobertura ni ocultar fallos.
+- Notas técnicas: no implementar a ciegas; comparar runs reales antes y después. GitHub Actions ya cachea npm con `setup-node`; evaluar primero filtros y concurrencia, que son baratos, antes de trocear jobs. La verificación de Sites sigue siendo de Codex.
+
 ## 2026-11-15 — PER-03 · Purga segura de archivos sin uso
 
 - Contexto: se ha verificado la subida de archivos, pero actualmente solo se limpian los objetos al eliminar su proyecto. Cambiar una miniatura o cancelar una subida no elimina necesariamente sus objetos. **La purga automática aún no está implementada.**
