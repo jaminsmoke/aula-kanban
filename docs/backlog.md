@@ -2,11 +2,21 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** vacío · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** PER-05 activo · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** PER-04 se completó y su resumen vive en el changelog; PER-07 recoge el límite de nitidez del texto. SYNC-01 se completó y su norma vive en [`../AGENTS.md`](../AGENTS.md). La cobertura MCP está en [`mcp-apps.md`](mcp-apps.md). PER-01B se publicó en `1.1.28`; PER-02 se completó sin publicación; PER-03, MCP-05E, UI-03, UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron.
+> **Nota:** PER-05 pasa al roadmap activo con la caché inmutable de `/api/files/[id]`; PER-08 recoge el derivado pendiente en las subidas por MCP. PER-04 se completó y su resumen vive en el changelog; PER-07 recoge el límite de nitidez del texto. SYNC-01 se completó y su norma vive en [`../AGENTS.md`](../AGENTS.md). La cobertura MCP está en [`mcp-apps.md`](mcp-apps.md). PER-01B se publicó en `1.1.28`; PER-02 se completó sin publicación; PER-03, MCP-05E, UI-03, UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron.
 
 ---
+
+## 2026-11-15 — PER-08 · Derivado en las subidas por MCP
+
+- Contexto: `subir_archivo` decodifica base64 y guarda el original en R2 con cualquier finalidad: 5 MB para imágenes y 10 MB para documentos. Las imágenes enviadas como `finalidad=document` tampoco se reducen. La web sí genera WebP (800 px en tareas, 2048 px en pizarras) porque el canvas está en el navegador.
+- Oportunidad: pedir al cliente MCP que envíe la imagen ya reducida, o redimensionar en el Worker con WASM; de paso, las capturas guardadas como documento podrían tener miniatura.
+- Limitación: el Site solo declara `BUCKET` y `DB`, así que el binding `IMAGES` no está disponible, y `sharp` no encaja en el Worker.
+- Qué falta:
+  - [ ] Medir cuántas subidas por MCP llegan y con qué peso; sin datos de producción no hay cifras.
+  - [ ] Evaluar un redimensionador WASM frente a documentar la asimetría como aceptada.
+  - [ ] Decidir si las imágenes con `finalidad=document` necesitan miniatura o solo el enlace.
 
 ## 2026-11-15 — PER-07 · Nitidez del texto al ampliar el derivado de pizarra
 
@@ -16,14 +26,6 @@
   - [ ] Medir capturas reales de clase, no solo la página de documentación.
   - [ ] Comparar 2560 px, calidad 0,9 y conservar el original enlazado frente al derivado actual.
   - [ ] Decidir si conviene un umbral distinto para capturas con texto o mantener el tope único de 2048 px.
-
-## 2026-11-15 — PER-05 · Caché inmutable y validación para `/api/files/[id]`
-
-- Contexto: cada archivo se sirve desde el Worker con `Cache-Control: private, max-age=3600`; no hay `ETag` ni `Last-Modified`. El identificador es un UUID nuevo por subida y el objeto de R2 no se reemplaza, así que el contenido es inmutable.
-- Oportunidad: `private, max-age=31536000, immutable` evitaría revalidaciones y descargas repetidas de la misma imagen de tarea o de pizarra. Si se prefiere una caché corta, un `ETag` con el `etag` de R2 permitiría responder 304.
-- Qué falta:
-  - [ ] Confirmar que ningún flujo reutiliza un id para contenido distinto (revisar `storeUpload` y el cambio de proyecto).
-  - [ ] Aplicar la cabecera y añadir una prueba de contrato de la respuesta.
 
 ## 2026-11-15 — PER-06 · Auditar el tamaño y la compactación de los snapshots de pizarra
 

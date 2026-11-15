@@ -19,7 +19,7 @@ Cada escenario se repite tres veces y se publica la mediana. La transferencia se
 ## Recorrido actual
 
 - La tarea sube el archivo tal cual a `POST /api/uploads?project=…` con `purpose=task-image`. Se admiten PNG, JPEG, WebP y GIF de hasta **5 MB**; el límite se valida en `validateUpload` y también en el MCP.
-- `storeUpload` guarda el original en R2 con la clave `proyecto/task-image/id.ext` y `cacheControl: private, max-age=3600`. No hay transformación ni copia derivada.
+- `storeUpload` guarda el original en R2 con la clave `proyecto/task-image/id.ext` y `cacheControl: private, max-age=31536000, immutable`. No hay transformación ni copia derivada del archivo de tarea en el servidor.
 - La tarjeta pinta `<img className="card-image" src="/api/files/…" loading="lazy">` en un marco de **130 px de alto** con `object-fit: contain`. El detalle usa `task-detail-image` con ancho completo y **220 px de alto**. No hay `width`/`height`, `srcset` ni miniatura.
 - El original se descarga entero para pintarse en esos marcos. El tamaño decodificado en memoria es el de la imagen completa.
 

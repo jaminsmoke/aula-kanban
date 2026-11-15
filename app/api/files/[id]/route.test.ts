@@ -31,6 +31,7 @@ describe("GET /api/files/[id]", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("text/plain");
     expect(response.headers.get("content-length")).toBe("4");
+    expect(response.headers.get("cache-control")).toBe("private, max-age=31536000, immutable");
     expect(await response.text()).toBe("hola");
   });
 

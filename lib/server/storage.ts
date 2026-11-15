@@ -108,7 +108,9 @@ export async function storeUpload(input: { projectId: string; purpose: UploadPur
   const extension = EXTENSIONS[input.file.type] ?? ".bin";
   const storageKey = `${input.projectId}/${input.purpose}/${id}${extension}`;
   await bucket.put(storageKey, input.file, {
-    httpMetadata: { contentType: input.file.type, cacheControl: "private, max-age=3600" },
+    // El id es único por subida y el objeto no se reemplaza: el contenido de
+    // una clave nunca cambia.
+    httpMetadata: { contentType: input.file.type, cacheControl: "private, max-age=31536000, immutable" },
   });
   const url = `/api/files/${id}`;
   try {

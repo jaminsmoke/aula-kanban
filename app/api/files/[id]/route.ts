@@ -8,7 +8,8 @@ export const dynamic = "force-dynamic";
 
 
 /**
- * Sirve un fichero subido a los miembros de su proyecto.
+ * Sirve un fichero subido a los miembros de su proyecto. El id identifica un
+ * contenido inmutable, así que la respuesta se puede cachear un año.
  * @param request - Petición con el identificador del fichero.
  * @param context - Parámetros de la ruta con el identificador.
  * @returns El contenido del fichero o el error correspondiente.
@@ -27,7 +28,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     headers: {
       "Content-Type": found.row.mimeType,
       "Content-Length": String(found.row.sizeBytes),
-      "Cache-Control": "private, max-age=3600",
+      "Cache-Control": "private, max-age=31536000, immutable",
     },
   });
 }
