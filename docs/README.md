@@ -71,6 +71,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
+- **Roadmap PER-04 completado:** derivado de 2048 px para JPEG, PNG y WebP de pizarra, con los GIF intactos; medición de fotos, PNG con alfa y capturas, más revisión visual del texto. Resumen en [`changelog.md`](changelog.md) y límite de nitidez en el backlog como PER-07.
 - **Roadmap PER-01B completado:** inventario de R2 publicado y revisado en producción. Resultado en [`changelog.md`](changelog.md).
 - **Roadmap PER-03 completado:** inventario de referencias en tareas, pizarras y documentos, purga idempotente de R2 y `uploads` con 7 días de gracia, simulación previa y control en Ajustes > Almacenamiento. Sin migraciones ni cambio de versión; resumen en [`changelog.md`](changelog.md).
 - **Roadmap MCP-05E completado:** lectura, guardado y plantillas de la app Diagramas desde MCP sobre `app_documents`, con la lista de plantillas compartida, límite de 200 KB y bloqueo de invitados. Catálogo `0.26.0` con 59 herramientas; resumen en [`changelog.md`](changelog.md) y cobertura en [`mcp-apps.md`](mcp-apps.md).

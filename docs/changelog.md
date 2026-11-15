@@ -6,6 +6,31 @@
 
 ---
 
+## 2026-11-15 — Roadmap PER-04 · Derivado de 2048 px para las imágenes de pizarra
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fase 1 — Medición:** `npm run perf:images` acepta `--widths` y mide 1600 y 2048 px sobre fotos sintéticas. En 12 MP, 2048 px deja 348 KB y 12,0 MB decodificados frente a 3,9 MB y 46,5 MB del original, con 36,3 dB y 210 ms de codificación; en 2 MP no hay reducción real porque la imagen ya mide 1920 px.
+- **Fase 2 — Decisión:** tope único de 2048 px y solo si la imagen lo supera, para conservar más ampliación que 1600 px y no reescribir lo que ya cabe.
+- **Fase 3 — Integración:** `uploadBlob` reduce antes de subir con `crearMiniaturaDeArchivo(..., { maxWidth: 2048, onlyWhenResized: true })` y cae al original si no hay derivado o pesa más. Se descartó el binding `IMAGES` porque el Site solo declara `BUCKET` y `DB`.
+- **Fase 4 — PNG y capturas:** `--kind png` mide PNG con alfa y capturas con texto. WebP 0,8 conserva el canal alfa exacto y baja 341 KB a 72 KB en un logo transparente y 120 KB a 20 KB en una captura, con 41,0–46,3 dB. Aprobada la inclusión de PNG con el mismo tope; los GIF siguen intactos.
+- Revisión visual con una captura real de `/documentacion` a 2560×1440: el derivado de 2048 px pesa 97 KB frente a 246 KB, el texto se lee igual a 1:1 y se ve algo más blando a 2x sin suavizado, sin artefactos. El límite queda en el backlog como PER-07.
+- Sin migraciones ni cambios en `/api/uploads`, la purga o el inventario; la versión sigue en `1.1.28`. Roadmap cerrado y `docs/roadmap.md` reiniciado desde la plantilla.
+
+### Verificación
+
+- `npx tsc --noEmit`, `npm run lint`, suite completa (121 archivos, 1004 pruebas) y `npm run build`, correctos.
+- 13 pruebas focalizadas de `whiteboard-model` e `image-thumbnail` tras incluir PNG.
+- `git diff --check` limpio.
+- Commits: `c7ea03f` (medición), `6586545` (integración JPEG/WebP), `667f608` (medición PNG), `1b15eaa` (PNG en el derivado) y `dd15fe1` (límite en backlog); el cierre queda en el commit de documentación.
+- Sin publicación en Sites ni `release:prepare`; no había datos de producción ni sesión para revisar imágenes reales de pizarra.
+
+### Seguimiento en backlog
+
+PER-05 (caché y ETag), PER-06 (snapshots de pizarra) y PER-07 (nitidez del texto a 2x) quedan en [`backlog.md`](backlog.md).
+
 ## 2026-11-15 — Roadmap SYNC-01 · Norma de sincronización del repositorio
 
 **Estado:** Completada · Sin publicación
