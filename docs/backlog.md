@@ -8,6 +8,15 @@
 
 ---
 
+## 2026-11-15 — PER-07 · Nitidez del texto al ampliar el derivado de pizarra
+
+- Contexto: desde `1b15eaa`, las capturas PNG de la pizarra se guardan como WebP 0,8 de 2048 px y el original se descarta. La revisión con una captura real de `/documentacion` (2560×1440: 97 KB el derivado frente a 246 KB el PNG) deja el texto idéntico a 1:1 y algo más blando a 2x sin suavizado, sin artefactos.
+- Oportunidad: si el alumnado amplía mucho una captura con texto, un tope mayor, una calidad algo superior o conservar el original junto al derivado mejorarían la lectura a costa de más peso y memoria.
+- Qué falta:
+  - [ ] Medir capturas reales de clase, no solo la página de documentación.
+  - [ ] Comparar 2560 px, calidad 0,9 y conservar el original enlazado frente al derivado actual.
+  - [ ] Decidir si conviene un umbral distinto para capturas con texto o mantener el tope único de 2048 px.
+
 ## 2026-11-15 — PER-05 · Caché inmutable y validación para `/api/files/[id]`
 
 - Contexto: cada archivo se sirve desde el Worker con `Cache-Control: private, max-age=3600`; no hay `ETag` ni `Last-Modified`. El identificador es un UUID nuevo por subida y el objeto de R2 no se reemplaza, así que el contenido es inmutable.
