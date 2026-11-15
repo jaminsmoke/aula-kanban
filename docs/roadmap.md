@@ -61,12 +61,13 @@
 
 ### Fase 3: Añadir elementos y sala en vivo
 
-- [ ] Crear `lib/domain/boards/excalidraw-elements.ts` con un constructor puro para `texto`, `rectangulo`, `elipse` y `flecha`; completa los campos que Excalidraw necesita y no toca `appState` ni `files`.
-- [ ] Implementar `anadir_a_pizarra` con `proyectoId`, `tipo`, `duenoId`, `revision` y una lista acotada de elementos; valida cantidad, texto y coordenadas, fusiona con la escena existente y no acepta tipos fuera de la lista.
-- [ ] Añadir `publicarEscena` al `BoardRoom` y un helper de servidor que publique solo después de guardar; sin binding o sin pestañas debe devolver `sincronizada: false` sin fallar.
-- [ ] Si el snapshot supera 1 MB, no enviarlo por el socket: guardarlo, devolver `sincronizada: false` y dejar que el sondeo de la web lo cargue.
-- [ ] Actualizar catálogo a `0.24.0` con 54 herramientas (23 de lectura, 31 de escritura y 8 destructivas), snapshot, matriz y ayuda.
+- [x] Crear `lib/domain/boards/excalidraw-elements.ts` con un constructor puro para `texto`, `rectangulo`, `elipse` y `flecha`; completa los campos que Excalidraw necesita y no toca `appState` ni `files`.
+- [x] Implementar `anadir_a_pizarra` con `proyectoId`, `tipo`, `duenoId`, `revision` y una lista acotada de elementos; valida cantidad, texto y coordenadas, fusiona con la escena existente y no acepta tipos fuera de la lista.
+- [x] Añadir `publicarEscena` al `BoardRoom` y un helper de servidor que publique solo después de guardar; sin binding o sin pestañas debe devolver `sincronizada: false` sin fallar.
+- [x] Si el snapshot supera 1 MB, no enviarlo por el socket: guardarlo, devolver `sincronizada: false` y dejar que el sondeo de la web lo cargue.
+- [x] Actualizar catálogo a `0.24.0` con 54 herramientas (23 de lectura, 31 de escritura y 8 destructivas), snapshot, matriz y ayuda.
 - **Criterios de aceptación:** se añaden los cuatro tipos con posición y texto; se conservan elementos, archivos y estado existentes; una revisión ajena devuelve 409; una pestaña abierta recibe la escena guardada; los límites de 2 MB, 1 MB en vivo y 50 elementos se respetan.
+- **Estado:** Completada el 2026-11-15. 416 tests focalizados, suite completa 106 archivos / 874 tests, `tsc` y lint en verde. El constructor puro, la fusión, `publicarEscena` y la matriz de roles están cubiertos; catálogo `0.24.0` con 54 herramientas.
 
 ### Fase 4: Cobertura, verificación y cierre
 
@@ -95,5 +96,6 @@
 - El snapshot puede llegar a 2 MB; la escena que viaja por `BoardRoom` sigue limitada a 1 MB.
 - Fase 1 completada: `lib/server/boards.ts` concentra dueño, permisos, lectura y guardado optimista; `app/api/boards` queda como envoltorio y conserva sus mensajes. La suite completa queda en 102 archivos / 829 tests.
 - Fase 2 completada: `lib/server/mcp/apps/excalidraw.ts` expone `leer_pizarra` y `guardar_pizarra`; el catálogo sube a `0.23.0` con 53 herramientas. La app desinstalada responde `not_found` y el conflicto conserva `revisionActual`.
+- Fase 3 completada: `anadir_a_pizarra` construye texto, rectángulos, elipses y flechas, conserva la escena y publica en `BoardRoom` solo después de guardar; sin pestañas o por encima de 1 MB devuelve `sincronizada: false`. El catálogo sube a `0.24.0` con 54 herramientas.
 - No se cambia la versión del Site (`1.1.27`) ni se publica en Sites durante el roadmap.
 - El cierre deja los commits locales; el push a GitHub se decide al cerrar, según SYNC-01 y la autorización del usuario.

@@ -4,7 +4,7 @@ Estado de la superficie MCP de las cuatro apps de Aula Store. La fuente de las
 herramientas es `lib/server/mcp/apps/registro.ts`; la instalación y los permisos
 se resuelven con `lib/server/mcp/apps/contrato.ts`.
 
-**Última revisión:** 2026-11-15 · **Catálogo:** `0.23.0` · **53 herramientas**
+**Última revisión:** 2026-11-15 · **Catálogo:** `0.24.0` · **54 herramientas**
 
 ## Herramientas comunes
 
@@ -17,7 +17,7 @@ entrada:
   `cerrar_app`, `minimizar_app`, `restaurar_app` y `ampliar_app`. Requieren
   acceso al proyecto y una app instalada; los controles solo actúan sobre las
   pestañas conectadas de la propia cuenta.
-- **Excalidraw (MCP-05B):** `leer_pizarra` y `guardar_pizarra`. Leer requiere acceso al proyecto; escribir exige revisión y sigue las reglas de la pizarra.
+- **Excalidraw (MCP-05B):** `leer_pizarra`, `guardar_pizarra` y `anadir_a_pizarra`. Leer requiere acceso al proyecto; escribir exige revisión y sigue las reglas de la pizarra.
 - **Herramientas de aula (MCP-05C):** `consultar_elemento`.
 
 `abrir_app` y `listar_ventanas` son de lectura; cerrar, minimizar, restaurar y
@@ -29,20 +29,24 @@ reglas de cada app.
 
 | App | Abrir | Ventana | Leer por MCP | Escribir por MCP | Exportar por MCP | Permisos | Límites |
 |---|---|---|---|---|---|---|---|
-| **Excalidraw** (`excalidraw`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_pizarra` | Sí, `guardar_pizarra` | No; la ventana exporta imagen | Leer: cualquier miembro. Escribir: no invitados; el alumnado solo en pizarras de sus tareas. La ventana de Mi espacio es de solo lectura para alumnado e invitados. | Snapshot de hasta 2 MB con revisión optimista; `409` con `revisionActual` si cambió. La escena en vivo de `BoardRoom` admite hasta 1 MB por mensaje. |
+| **Excalidraw** (`excalidraw`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_pizarra` | Sí, `guardar_pizarra` y `anadir_a_pizarra` | No; la ventana exporta imagen | Leer: cualquier miembro. Escribir: no invitados; el alumnado solo en pizarras de sus tareas. La ventana de Mi espacio es de solo lectura para alumnado e invitados. | Snapshot de hasta 2 MB con revisión optimista; `409` con `revisionActual` si cambió. La publicación en vivo admite hasta 1 MB; las escenas mayores se recogen por sondeo. |
 | **Herramientas de aula** (`edu-tools`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `consultar_elemento` | No | No | Cualquier cuenta autenticada, incluidas invitadas y cuentas sin proyecto, si la app está instalada. La consulta no usa proyecto. | Una ficha por llamada entre 118 elementos. No hay estado de trabajo en el servidor; calculadora, memoria, medición y voz viven en el navegador. |
 | **Programación por bloques** (`blockly`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No; la ventana descarga JSON | Lectura: cualquier miembro. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Estado JSON de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. |
 | **Diagramas** (`mermaid`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No; la ventana exporta SVG | Lectura: cualquier miembro. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Código de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. La validación y el render de Mermaid se quedan en el navegador. |
 
 ## Qué falta en cada app
 
-### Excalidraw — MCP-05B (fase 2 completada)
+### Excalidraw — MCP-05B (fases 2 y 3 completadas)
 
-- Leer y escribir pizarras de tarea, proyecto y Mi espacio con `leer_pizarra` y
-  `guardar_pizarra`.
-- Añadir elementos con una lista acotada, sin pedir al agente el JSON interno.
-- Mantener la revisión optimista, los permisos de pizarra y la sala en vivo.
+- Leer, escribir y añadir elementos en pizarras de tarea, proyecto y Mi espacio
+  con `leer_pizarra`, `guardar_pizarra` y `anadir_a_pizarra`.
+- Añadir texto, rectángulos, elipses y flechas con una lista acotada, sin pedir
+  al agente el JSON interno, y conservar `appState`, `files` y los campos
+  desconocidos de la escena.
+- Mantener la revisión optimista, los permisos de pizarra y la publicación en
+  `BoardRoom`; las escenas mayores de 1 MB se recogen por sondeo.
 - No se exporta la imagen desde MCP: el render pertenece a la ventana.
+- Queda el cierre de la fase 4: build, ayuda y revisión final de la matriz.
 
 ### Programación por bloques — MCP-05D
 
@@ -73,7 +77,7 @@ reglas de cada app.
 
 - **Instalación y catálogo:** cubiertos por MCP-03.
 - **Abrir y controlar ventanas:** cubiertos por MCP-04 para las cuatro apps.
-- **Lectura y escritura de contenido:** MCP-05B (fase 2 completada), MCP-05D y MCP-05E.
+- **Lectura y escritura de contenido:** MCP-05B (fases 2 y 3 completadas), MCP-05D y MCP-05E.
 - **Exportación:** no hay una herramienta dedicada. Excalidraw necesita render
   de imagen; Mermaid necesita render de SVG; Blockly descarga el mismo JSON que
   devolverá `leer_programa_bloques`. Por eso no se crea una entrada nueva: las
@@ -84,7 +88,7 @@ reglas de cada app.
 
 ## Referencias
 
-- [`roadmap.md`](roadmap.md): MCP-05B en curso (fase 2 completada).
+- [`roadmap.md`](roadmap.md): MCP-05B en curso (fase 3 completada).
 - [`changelog.md`](changelog.md): resumen del roadmap MCP-05A + MCP-05C.
 - [`backlog.md`](backlog.md): MCP-05D y MCP-05E.
 - [`aplicaciones-nativas.md`](aplicaciones-nativas.md): catálogo, licencias y

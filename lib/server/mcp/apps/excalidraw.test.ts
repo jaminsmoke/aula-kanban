@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   resolverAppEnProyecto: vi.fn(),
   readBoard: vi.fn(),
   saveBoard: vi.fn(),
+  publicarEscena: vi.fn(),
 }));
 
 vi.mock("./contrato", () => ({ resolverAppEnProyecto: mocks.resolverAppEnProyecto }));
@@ -11,8 +12,10 @@ vi.mock("../../boards", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../../boards")>();
   return { ...actual, readBoard: mocks.readBoard, saveBoard: mocks.saveBoard };
 });
+vi.mock("../../board-control", () => ({ publicarEscena: mocks.publicarEscena }));
 
 import { MAX_BOARD_SNAPSHOT_BYTES } from "../../boards";
+import { MAX_ELEMENTOS_ANADIDOS } from "../../../domain/boards/excalidraw-elements";
 import { herramientasExcalidraw } from "./excalidraw";
 
 const caller = { userId: "u1", email: "docente@example.com" };
@@ -29,6 +32,8 @@ type Body = {
   snapshot?: string;
   revision?: number;
   updatedAt?: number;
+  anadidos?: number;
+  sincronizada?: boolean;
   error?: { codigo: string; estado: number; mensaje: string; revisionActual?: number };
 };
 
@@ -59,6 +64,7 @@ beforeEach(() => {
     ok: true,
     value: { ownerType: "space", ownerId: projectId, snapshot: '{"elements":[]}', revision: 3, updatedAt: 20 },
   });
+  mocks.publicarEscena.mockResolvedValue(true);
 });
 
 describe("herramientas de Excalidraw", () => {
@@ -158,5 +164,114 @@ describe("herramientas de Excalidraw", () => {
       snapshot: '{"elements":[]}',
       revision: 2,
     })).error).toMatchObject({ codigo: "forbidden", estado: 403 });
+  });
+
+  it("añade elementos y publica la escena guardada", async () => {
+    const escena = {
+      type: "excalidraw",
+      version: 2,
+      source: "aula-kanban",
+      custom: "se conserva",
+      elements: [{ id: "anterior", version: 2 }],
+      appState: { zoom: { value: 1 } },
+      files: { f1: { dataURL: "/api/files/f1" } },
+    };
+    mocks.readBoard.mockResolvedValue({
+      ok: true,
+      value: { ownerType: "space", ownerId: projectId, snapshot: JSON.stringify(escena), revision: 2, updatedAt: 10 },
+    });
+    mocks.saveBoard.mockImplementation(async (input: { snapshot: string }) => ({
+      ok: true,
+      value: { ownerType: "space", ownerId: projectId, snapshot: input.snapshot, revision: 3, updatedAt: 20 },
+    }));
+
+    const body = await call("anadir_a_pizarra", {
+      proyectoId: projectId,
+      tipo: "space",
+      duenoId: projectId,
+      revision: 2,
+      elementos: [{ tipo: "rectangulo", x: 1, y: 2, ancho: 10, alto: 10 }],
+    });
+    expect(body).toMatchObject({ revision: 3, updatedAt: 20, anadidos: 1, sincronizada: true });
+
+    const saved = mocks.saveBoard.mock.calls[0][0] as { snapshot: string; revision: number };
+    const parsed = JSON.parse(saved.snapshot) as { elements: Array<Record<string, unknown>>; appState: unknown; files: unknown; custom: string };
+    expect(saved.revision).toBe(2);
+    expect(parsed.elements).toHaveLength(2);
+    expect(parsed.elements[1]).toMatchObject({ type: "rectangle", width: 10, height: 10 });
+    expect(parsed.appState).toEqual({ zoom: { value: 1 } });
+    expect(parsed.files).toEqual({ f1: { dataURL: "/api/files/f1" } });
+    expect(parsed.custom).toBe("se conserva");
+    expect(mocks.publicarEscena).toHaveBeenCalledWith(projectId, "space", projectId, saved.snapshot, 3);
+    expect(mocks.saveBoard.mock.invocationCallOrder[0]).toBeLessThan(mocks.publicarEscena.mock.invocationCallOrder[0]);
+  });
+
+  it("guarda aunque no haya pestañas para publicar", async () => {
+    mocks.publicarEscena.mockResolvedValue(false);
+    const body = await call("anadir_a_pizarra", {
+      proyectoId: projectId,
+      tipo: "space",
+      duenoId: projectId,
+      revision: 2,
+      elementos: [{ tipo: "texto", texto: "Hola", x: 0, y: 0 }],
+    });
+    expect(body).toMatchObject({ revision: 3, anadidos: 1, sincronizada: false });
+    expect(mocks.saveBoard).toHaveBeenCalled();
+  });
+
+  it("devuelve conflict si la revisión leída no coincide antes de construir", async () => {
+    mocks.readBoard.mockResolvedValue({
+      ok: true,
+      value: { ownerType: "space", ownerId: projectId, snapshot: '{"elements":[]}', revision: 3, updatedAt: 10 },
+    });
+    const body = await call("anadir_a_pizarra", {
+      proyectoId: projectId,
+      tipo: "space",
+      duenoId: projectId,
+      revision: 2,
+      elementos: [{ tipo: "elipse", x: 0, y: 0, ancho: 10, alto: 10 }],
+    });
+    expect(body.error).toMatchObject({ codigo: "conflict", estado: 409, revisionActual: 3 });
+    expect(mocks.saveBoard).not.toHaveBeenCalled();
+    expect(mocks.publicarEscena).not.toHaveBeenCalled();
+  });
+
+  it("rechaza una escena guardada que no es válida", async () => {
+    mocks.readBoard.mockResolvedValue({
+      ok: true,
+      value: { ownerType: "space", ownerId: projectId, snapshot: "{no es json", revision: 2, updatedAt: 10 },
+    });
+    const body = await call("anadir_a_pizarra", {
+      proyectoId: projectId,
+      tipo: "space",
+      duenoId: projectId,
+      revision: 2,
+      elementos: [{ tipo: "flecha", x: 0, y: 0, ancho: 10, alto: 10 }],
+    });
+    expect(body.error).toMatchObject({ codigo: "invalid", estado: 400 });
+    expect(mocks.saveBoard).not.toHaveBeenCalled();
+  });
+
+  it("rechaza más de 50 elementos y tipos fuera de la lista", async () => {
+    const demasiados = Array.from({ length: MAX_ELEMENTOS_ANADIDOS + 1 }, () => ({ tipo: "rectangulo", x: 0, y: 0, ancho: 1, alto: 1 }));
+    const exceso = await call("anadir_a_pizarra", {
+      proyectoId: projectId,
+      tipo: "space",
+      duenoId: projectId,
+      revision: 2,
+      elementos: demasiados,
+    });
+    expect(exceso.error).toMatchObject({ codigo: "invalid", estado: 400 });
+    expect(mocks.resolverAppEnProyecto).not.toHaveBeenCalled();
+
+    const desconocido = await call("anadir_a_pizarra", {
+      proyectoId: projectId,
+      tipo: "space",
+      duenoId: projectId,
+      revision: 2,
+      elementos: [{ tipo: "cuadro", x: 0, y: 0, ancho: 1, alto: 1 }],
+    });
+    expect(desconocido.error).toMatchObject({ codigo: "invalid", estado: 400 });
+    expect(mocks.saveBoard).not.toHaveBeenCalled();
   });
 });

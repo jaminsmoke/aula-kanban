@@ -2669,6 +2669,278 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
   {
     "annotations": {
       "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false,
+    },
+    "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "duenoId": {
+          "description": "Id de la tarea o del proyecto dueño de la pizarra",
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string",
+        },
+        "elementos": {
+          "description": "Elementos que se añaden al final de la escena",
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "alto": {
+                    "$ref": "#/properties/elementos/items/anyOf/0/properties/ancho",
+                    "description": "Alto; se calcula a partir del texto si se omite",
+                  },
+                  "ancho": {
+                    "description": "Ancho; se calcula a partir del texto si se omite",
+                    "maximum": 100000,
+                    "minimum": 1,
+                    "type": "number",
+                  },
+                  "color": {
+                    "description": "Color hexadecimal, por ejemplo #1e1e1e",
+                    "pattern": "^#[0-9a-fA-F]{6}$",
+                    "type": "string",
+                  },
+                  "texto": {
+                    "description": "Texto que se escribe en la pizarra",
+                    "maxLength": 500,
+                    "minLength": 1,
+                    "type": "string",
+                  },
+                  "tipo": {
+                    "const": "texto",
+                    "type": "string",
+                  },
+                  "x": {
+                    "description": "Posición horizontal",
+                    "maximum": 100000,
+                    "minimum": -100000,
+                    "type": "number",
+                  },
+                  "y": {
+                    "description": "Posición vertical",
+                    "maximum": 100000,
+                    "minimum": -100000,
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "tipo",
+                  "texto",
+                  "x",
+                  "y",
+                ],
+                "type": "object",
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "alto": {
+                    "description": "Alto del rectángulo",
+                    "maximum": 100000,
+                    "minimum": 1,
+                    "type": "number",
+                  },
+                  "ancho": {
+                    "description": "Ancho del rectángulo",
+                    "maximum": 100000,
+                    "minimum": 1,
+                    "type": "number",
+                  },
+                  "color": {
+                    "$ref": "#/properties/elementos/items/anyOf/0/properties/color",
+                    "description": "Color hexadecimal, por ejemplo #1e1e1e",
+                  },
+                  "tipo": {
+                    "const": "rectangulo",
+                    "type": "string",
+                  },
+                  "x": {
+                    "description": "Posición horizontal",
+                    "maximum": 100000,
+                    "minimum": -100000,
+                    "type": "number",
+                  },
+                  "y": {
+                    "description": "Posición vertical",
+                    "maximum": 100000,
+                    "minimum": -100000,
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "tipo",
+                  "x",
+                  "y",
+                  "ancho",
+                  "alto",
+                ],
+                "type": "object",
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "alto": {
+                    "description": "Alto de la elipse",
+                    "maximum": 100000,
+                    "minimum": 1,
+                    "type": "number",
+                  },
+                  "ancho": {
+                    "description": "Ancho de la elipse",
+                    "maximum": 100000,
+                    "minimum": 1,
+                    "type": "number",
+                  },
+                  "color": {
+                    "$ref": "#/properties/elementos/items/anyOf/0/properties/color",
+                    "description": "Color hexadecimal, por ejemplo #1e1e1e",
+                  },
+                  "tipo": {
+                    "const": "elipse",
+                    "type": "string",
+                  },
+                  "x": {
+                    "description": "Posición horizontal",
+                    "maximum": 100000,
+                    "minimum": -100000,
+                    "type": "number",
+                  },
+                  "y": {
+                    "description": "Posición vertical",
+                    "maximum": 100000,
+                    "minimum": -100000,
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "tipo",
+                  "x",
+                  "y",
+                  "ancho",
+                  "alto",
+                ],
+                "type": "object",
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "alto": {
+                    "description": "Desplazamiento vertical de la flecha",
+                    "maximum": 100000,
+                    "minimum": 1,
+                    "type": "number",
+                  },
+                  "ancho": {
+                    "description": "Desplazamiento horizontal de la flecha",
+                    "maximum": 100000,
+                    "minimum": 1,
+                    "type": "number",
+                  },
+                  "color": {
+                    "$ref": "#/properties/elementos/items/anyOf/0/properties/color",
+                    "description": "Color hexadecimal, por ejemplo #1e1e1e",
+                  },
+                  "tipo": {
+                    "const": "flecha",
+                    "type": "string",
+                  },
+                  "x": {
+                    "description": "Posición horizontal del inicio",
+                    "maximum": 100000,
+                    "minimum": -100000,
+                    "type": "number",
+                  },
+                  "y": {
+                    "description": "Posición vertical del inicio",
+                    "maximum": 100000,
+                    "minimum": -100000,
+                    "type": "number",
+                  },
+                },
+                "required": [
+                  "tipo",
+                  "x",
+                  "y",
+                  "ancho",
+                  "alto",
+                ],
+                "type": "object",
+              },
+            ],
+          },
+          "maxItems": 50,
+          "minItems": 1,
+          "type": "array",
+        },
+        "proyectoId": {
+          "description": "Id del proyecto de Aula Kanban",
+          "format": "uuid",
+          "type": "string",
+        },
+        "revision": {
+          "description": "Revisión leída antes de añadir",
+          "minimum": 0,
+          "type": "integer",
+        },
+        "tipo": {
+          "description": "Tipo de pizarra: task, project o space",
+          "enum": [
+            "task",
+            "project",
+            "space",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "proyectoId",
+        "tipo",
+        "duenoId",
+        "revision",
+        "elementos",
+      ],
+      "type": "object",
+    },
+    "name": "anadir_a_pizarra",
+    "outputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "anadidos": {
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+        "revision": {
+          "exclusiveMinimum": 0,
+          "type": "integer",
+        },
+        "sincronizada": {
+          "type": "boolean",
+        },
+        "updatedAt": {
+          "minimum": 0,
+          "type": "integer",
+        },
+      },
+      "required": [
+        "revision",
+        "updatedAt",
+        "anadidos",
+        "sincronizada",
+      ],
+      "type": "object",
+    },
+    "scope": "mcp:write",
+    "title": "Añadir a pizarra",
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
       "idempotentHint": true,
       "openWorldHint": false,
       "readOnlyHint": true,

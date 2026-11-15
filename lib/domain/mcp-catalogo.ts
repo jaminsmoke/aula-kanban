@@ -11,7 +11,7 @@ export const MCP_DOMINIOS = ["Proyectos", "Archivos", "Tareas", "Personas", "Con
 export type McpDominio = (typeof MCP_DOMINIOS)[number];
 
 /** Versión del contrato de herramientas. */
-export const MCP_CATALOG_VERSION = "0.23.0";
+export const MCP_CATALOG_VERSION = "0.24.0";
 
 /** Metadatos de una herramienta del catálogo. */
 export type McpCatalogoEntry = {
@@ -342,6 +342,14 @@ export const MCP_CATALOGO: McpCatalogoEntry[] = [
     name: "guardar_pizarra",
     title: "Guardar pizarra",
     description: "Guarda el snapshot de una pizarra de Excalidraw con la revisión leída. Falla con conflict y la revisión actual si otra sesión guardó antes. Requiere permiso de escritura; invitados no escriben y el alumnado solo en sus tareas.",
+    scope: "mcp:write",
+    annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false},
+  },
+  {
+    domain: "Apps",
+    name: "anadir_a_pizarra",
+    title: "Añadir a pizarra",
+    description: "Añade texto, rectángulos, elipses o flechas a una pizarra de Excalidraw con la revisión leída. Conserva appState y files; si el snapshot supera 1 MB no se publica en vivo y la web lo recoge por sondeo. Requiere permiso de escritura.",
     scope: "mcp:write",
     annotations: {"readOnlyHint":false,"destructiveHint":false,"idempotentHint":false,"openWorldHint":false},
   },

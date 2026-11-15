@@ -1,7 +1,6 @@
 import { DurableObject } from "cloudflare:workers";
+import { MAX_BOARD_LIVE_BYTES } from "../domain/boards/excalidraw-elements";
 import { ensureInstanceOwner, isInstanceOwner } from "./owner";
-
-const MAX_MESSAGE_BYTES = 1_000_000;
 
 type Session = { userId: string; email: string; projectId: string; ownerType: string; ownerId: string };
 type IncomingMessage = { type?: string; snapshot?: string; pointer?: unknown };
@@ -40,12 +39,38 @@ export class BoardRoom extends DurableObject<Cloudflare.Env> {
   }
 
   /**
+   * Publica una escena ya guardada en todas las pestañas conectadas. Es una
+   * llamada RPC del servidor, no un mensaje de cliente: no escribe en D1 y no
+   * sustituye al guardado. Si la escena supera 1 MB no se envía y la web la
+   * recogerá por el sondeo habitual.
+   * @param snapshot - Snapshot serializado que ya se guardó.
+   * @param revision - Revisión guardada, para que el cliente pueda ordenar escenas.
+   * @returns `true` si al menos una pestaña recibió la escena.
+   */
+  async publicarEscena(snapshot: string, revision: number): Promise<boolean> {
+    if (snapshot.length > MAX_BOARD_LIVE_BYTES) return false;
+    this.lastScene = snapshot;
+    const payload = JSON.stringify({ type: "scene", snapshot, revision });
+    let entregada = false;
+    for (const socket of this.ctx.getWebSockets()) {
+      if (socket.readyState !== 1) continue;
+      try {
+        socket.send(payload);
+        entregada = true;
+      } catch {
+        // Un socket que falla no debe tumbar la publicación al resto.
+      }
+    }
+    return entregada;
+  }
+
+  /**
    * Reenvía la escena o la presencia de un participante al resto de la sala.
    * @param socket - Socket emisor del mensaje.
    * @param message - Mensaje JSON del cliente (`scene` o `presence`).
    */
   override async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer) {
-    if (typeof message !== "string" || message.length > MAX_MESSAGE_BYTES) return;
+    if (typeof message !== "string" || message.length > MAX_BOARD_LIVE_BYTES) return;
     let data: IncomingMessage;
     try {
       data = JSON.parse(message) as IncomingMessage;
@@ -54,7 +79,7 @@ export class BoardRoom extends DurableObject<Cloudflare.Env> {
     }
     const session = this.sessions.get(socket);
     if (!session || !await this.allowed(session, false)) { socket.close(1008, "Acceso retirado"); return; }
-    if (data.type === "scene" && typeof data.snapshot === "string" && data.snapshot.length <= MAX_MESSAGE_BYTES) {
+    if (data.type === "scene" && typeof data.snapshot === "string" && data.snapshot.length <= MAX_BOARD_LIVE_BYTES) {
       if (!await this.allowed(session, true)) return;
       this.lastScene = data.snapshot;
       await this.broadcast(socket, JSON.stringify({ type: "scene", snapshot: data.snapshot }));

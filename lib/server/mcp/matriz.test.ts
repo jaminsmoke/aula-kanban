@@ -89,6 +89,7 @@ vi.mock("../../../db", () => ({
         };
         if (table === projectsTable) return chain(proyectosMock);
         if (table === taskRowsTable) return chain([taskRow]);
+        if (table === boardsTable) return chain([{ id: "board1", projectId, ownerType: "space", ownerId: projectId, snapshot: '{"elements":[]}', revision: 2, updatedAt: 1 }]);
         if (table === studentsTable) return chain([{ section: "s1", projectId, name: "Ada", displayName: "Ada", activities: "lectura", deleted: 0 }]);
         if (table === teachersTable) return chain([{ id: "t1", projectId, name: "Profe", displayName: "Profe" }]);
         if (table === projectMembersTable) return chain([
@@ -185,7 +186,7 @@ vi.mock("../tasks/mutations", () => ({
   deleteTask: async () => ({ ok: true as const, value: { id: taskId } }),
 }));
 
-import { administrators as administratorsTable, instanceApps as instanceAppsTable, projectMembers as projectMembersTable, projects as projectsTable, students as studentsTable, tasks as taskRowsTable, teachers as teachersTable } from "../../../db/schema";
+import { administrators as administratorsTable, boards as boardsTable, instanceApps as instanceAppsTable, projectMembers as projectMembersTable, projects as projectsTable, students as studentsTable, tasks as taskRowsTable, teachers as teachersTable } from "../../../db/schema";
 import { registerTools } from "./registro";
 
 type Esperado = "ok" | "forbidden" | "not_found";
@@ -231,6 +232,7 @@ const args: Record<string, Record<string, unknown>> = {
   desinstalar_app: { appId: "mermaid", confirmar: true },
   leer_pizarra: { proyectoId: projectId, tipo: "space", duenoId: projectId },
   guardar_pizarra: { proyectoId: projectId, tipo: "space", duenoId: projectId, snapshot: '{"elements":[]}', revision: 2 },
+  anadir_a_pizarra: { proyectoId: projectId, tipo: "space", duenoId: projectId, revision: 2, elementos: [{ tipo: "rectangulo", x: 0, y: 0, ancho: 10, alto: 10 }] },
   consultar_elemento: { simbolo: "Na" },
   listar_ventanas: { proyectoId: projectId },
   cerrar_app: { proyectoId: projectId, appId: "mermaid" },
@@ -288,6 +290,7 @@ const matriz: Record<string, Partial<Record<Rol | "inexistente", Esperado>>> = {
   desinstalar_app: { owner: "ok", admin: "ok", teacher: "forbidden", student: "forbidden", guest: "forbidden", sin_acceso: "forbidden" },
   leer_pizarra: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "forbidden", inexistente: "not_found" },
   guardar_pizarra: { owner: "ok", admin: "ok", teacher: "ok", student: "forbidden", guest: "forbidden", sin_acceso: "forbidden", inexistente: "not_found" },
+  anadir_a_pizarra: { owner: "ok", admin: "ok", teacher: "ok", student: "forbidden", guest: "forbidden", sin_acceso: "forbidden", inexistente: "not_found" },
   consultar_elemento: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "ok" },
   listar_ventanas: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "forbidden", inexistente: "not_found" },
   cerrar_app: { owner: "ok", admin: "ok", teacher: "ok", student: "ok", guest: "ok", sin_acceso: "forbidden", inexistente: "not_found" },
