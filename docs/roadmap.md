@@ -49,13 +49,13 @@
 - [x] Recomendar una opción con su coste de integración: derivado en cliente que sustituye al original, con respaldo, en [`miniaturas.md`](miniaturas.md).
 - **Criterios de aceptación:** cumplidos; la tabla compara las cuatro alternativas (incluida la variante que conserva el original) y la recomendación es explícita.
 
-### Fase 3 — Decisión e integración (pendiente de aprobación)
+### Fase 3 — Decisión e integración
 
-- [ ] Confirmar la recomendación de la fase 2: derivado en cliente que sustituye al original en subidas nuevas, con respaldo al original si falla.
-- [ ] Integrar en `handleUpload`: generar el derivado, subirlo como `task-image`, dejar los GIF intactos y no tocar las imágenes ya guardadas.
-- [ ] Probar el camino feliz, el respaldo cuando el generador devuelve `null` y el GIF sin transformar.
-- [ ] Documentar en el README la pérdida del original en subidas nuevas, la asimetría con el MCP y el límite de 5 MB.
-- [ ] Pasar lint, tipos, pruebas y build sobre el resultado.
+- [x] Confirmar la recomendación de la fase 2: derivado en cliente que sustituye al original en subidas nuevas, con respaldo al original si falla.
+- [x] Integrar en `handleUpload`: generar el derivado, subirlo como `task-image` solo si pesa menos que el original, dejar los GIF intactos y no tocar las imágenes ya guardadas.
+- [x] Probar el camino feliz, el respaldo cuando el generador devuelve `null`, el error de la API y las salidas tempranas del generador (GIF, tipo no admitido y navegador sin canvas).
+- [x] Documentar en el README la pérdida del original en subidas nuevas, la asimetría con el MCP y el límite de 5 MB.
+- [x] Pasar lint, tipos, pruebas y build sobre el resultado.
 - **Criterios de aceptación:** decisión escrita con evidencia, sin cambios de esquema ni de versión, y checks verdes. Si no se aprueba, se documenta el motivo y se cierra sin tocar código de producto.
 
 ## 5. Riesgos y bloqueos
@@ -73,3 +73,4 @@
 
 - 2026-11-15: PER-02 sale del backlog y entra al roadmap tras publicar `1.1.28`. Fase 1 completada con una foto sintética de 12 MP: 3,9 MB, 46,5 MB decodificados y ~20 s en Fast 3G frente a 61 KB, 1,8 MB y ~0,3 s del derivado de 800 px.
 - 2026-11-15: fase 2 completada. El derivado de 800 px WebP 0,8 obtiene 35,7 dB de PSNR y cuesta 27–35 ms de codificación en escritorio. El binding `IMAGES` no está disponible en el Site. Se recomienda el derivado en cliente que sustituye al original, con respaldo; conservar ambos se descarta por esquema, purga e inventario. La fase 3 queda pendiente de aprobación.
+- 2026-11-15: fase 3 integrada tras aprobar la recomendación. `handleUpload` sube el WebP derivado solo si pesa menos que el original; si no hay miniatura, sube el archivo tal cual. GIF intacto y MCP sin cambios. Seis pruebas nuevas: tres del generador y tres del diálogo (derivado, respaldo y error de la API).

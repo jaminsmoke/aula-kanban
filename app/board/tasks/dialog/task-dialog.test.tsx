@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import TaskDialog from "./task-dialog";
 import { blank } from "../../shared/model";
 import type { Task } from "../../../../lib/domain/task";
@@ -18,6 +18,9 @@ const task: Task = {
   revision: 0,
   creator: "Marta",
 };
+
+const { crearMiniatura } = vi.hoisted(() => ({ crearMiniatura: vi.fn() }));
+vi.mock("../../shared/image-thumbnail", () => ({ crearMiniaturaDeArchivo: crearMiniatura }));
 
 function renderDialog(overrides: Partial<Parameters<typeof TaskDialog>[0]> = {}) {
   const props = {
@@ -214,5 +217,62 @@ describe("TaskDialog", () => {
     expect(screen.getByRole("tab", { name: "Resumen" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByRole("alert").textContent).toContain("URL de imagen válida");
     expect(props.onSubmit).not.toHaveBeenCalled();
+  });
+
+  describe("subida de imágenes", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      crearMiniatura.mockReset();
+    });
+
+    function subirArchivo(file: File) {
+      const input = document.getElementById("task-image-upload") as HTMLInputElement;
+      Object.defineProperty(input, "files", { configurable: true, value: [file] });
+      fireEvent.change(input);
+    }
+
+    function respuestaSubida() {
+      const fetchMock = vi.fn<(input: string, init?: RequestInit) => Promise<Response>>(async () => new Response(JSON.stringify({ url: "/api/files/abc" }), { status: 201, headers: { "content-type": "application/json" } }));
+      vi.stubGlobal("fetch", fetchMock);
+      return fetchMock;
+    }
+
+    it("sube el derivado WebP cuando pesa menos que el original", async () => {
+      const fetchMock = respuestaSubida();
+      crearMiniatura.mockResolvedValue({ blob: new Blob(["webp"], { type: "image/webp" }), width: 800, height: 600 });
+      const { props } = renderDialog();
+
+      subirArchivo(new File([new Uint8Array(128)], "FOTO.JPG", { type: "image/jpeg" }));
+
+      await waitFor(() => expect(props.onForm).toHaveBeenCalledWith(expect.objectContaining({ imageUrl: "/api/files/abc" })));
+      const body = (fetchMock.mock.calls[0][1] as RequestInit).body as FormData;
+      const enviado = body.get("file") as File;
+      expect(enviado.name).toBe("FOTO.webp");
+      expect(enviado.type).toBe("image/webp");
+      expect(enviado.size).toBe(4);
+      expect(body.get("purpose")).toBe("task-image");
+    });
+
+    it("sube el original si el generador no devuelve miniatura", async () => {
+      const fetchMock = respuestaSubida();
+      crearMiniatura.mockResolvedValue(null);
+      const { props } = renderDialog();
+      const original = new File([new Uint8Array(128)], "foto.png", { type: "image/png" });
+
+      subirArchivo(original);
+
+      await waitFor(() => expect(props.onForm).toHaveBeenCalledWith(expect.objectContaining({ imageUrl: "/api/files/abc" })));
+      expect(((fetchMock.mock.calls[0][1] as RequestInit).body as FormData).get("file")).toBe(original);
+    });
+
+    it("muestra el error de la API sin romper el diálogo", async () => {
+      vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ message: "La imagen supera los 5 MB permitidos." }), { status: 413 })));
+      crearMiniatura.mockResolvedValue(null);
+      renderDialog();
+
+      subirArchivo(new File([new Uint8Array(16)], "foto.png", { type: "image/png" }));
+
+      await waitFor(() => expect(screen.getByRole("alert").textContent).toContain("5 MB"));
+    });
   });
 });

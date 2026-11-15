@@ -6,6 +6,7 @@ import { ArrowRight, Trash2 } from "lucide-react";
 import type { Task, TaskFields } from "../../../../lib/domain/task";
 import type { Student } from "../../../../lib/domain/student";
 import Modal from "../../shared/modal";
+import { crearMiniaturaDeArchivo } from "../../shared/image-thumbnail";
 import AssigneeFields from "./assignee-fields";
 import TaskDetail from "./task-detail";
 import TaskForm from "./task-form";
@@ -58,8 +59,14 @@ export default function TaskDialog({
     setImageError("");
     try {
       const projectId = new URLSearchParams(window.location.search).get("project") || "default";
+      // El derivado sustituye al original solo si se genera y pesa menos; los
+      // GIF y los navegadores sin canvas siguen subiendo el archivo tal cual.
+      const miniatura = await crearMiniaturaDeArchivo(file);
+      const derivado = miniatura && miniatura.blob.size > 0 && miniatura.blob.size < file.size
+        ? new File([miniatura.blob], `${file.name.replace(/\.[^.]*$/, "") || "imagen"}.webp`, { type: miniatura.blob.type || "image/webp" })
+        : file;
       const body = new FormData();
-      body.append("file", file);
+      body.append("file", derivado);
       body.append("purpose", "task-image");
       const response = await fetch(`/api/uploads?project=${encodeURIComponent(projectId)}`, { method: "POST", body });
       const data = await response.json().catch(() => null) as { url?: unknown; message?: unknown } | null;

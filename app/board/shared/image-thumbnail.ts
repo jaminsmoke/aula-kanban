@@ -1,9 +1,9 @@
 /**
- * Prototipo de miniatura derivada para imágenes de tarea (PER-02, fase 2).
+ * Miniatura derivada para imágenes de tarea (PER-02).
  *
- * No está conectado a la subida: solo demuestra la generación en cliente y
- * sirve de base para la fase 3. Devuelve `null` ante cualquier fallo para que
- * quien lo integre pueda subir el original como respaldo.
+ * `handleUpload` la genera antes de subir y envía el derivado en lugar del
+ * original cuando pesa menos. Devuelve `null` ante cualquier fallo para que la
+ * subida continúe con el archivo original.
  */
 import { MINIATURA_MAX_WIDTH, calcularDimensionesMiniatura } from "../../../lib/domain/uploads/thumbnail";
 

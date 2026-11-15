@@ -51,7 +51,7 @@ Generar el derivado en el cliente y subir **solo** el derivado en las imágenes 
 - Solo JPEG, PNG y WebP. Los GIF se suben intactos para no perder la animación.
 - Si el navegador no puede decodificar, codificar o no tiene `OffscreenCanvas`, se sube el original como hasta ahora. La subida nunca se bloquea por la miniatura.
 - Las imágenes ya guardadas no se tocan; el cambio afecta solo a las subidas nuevas.
-- Se mantiene el límite de 5 MB y el contrato de `/api/uploads`; el MCP sigue subiendo el original, porque no pasa por el cliente. Esa asimetría se documentará en la fase 3.
+- Se mantiene el límite de 5 MB y el contrato de `/api/uploads`; el MCP sigue subiendo el original, porque no pasa por el cliente. Esa asimetría está documentada en el README.
 
 El detalle de tarea muestra la imagen a un máximo de 220 px de alto y la tarjeta a 130 px, así que 800 px cubre también pantallas de alta densidad en esos marcos. No hay ninguna vista que use la resolución completa.
 
@@ -70,6 +70,6 @@ El detalle de tarea muestra la imagen a un máximo de 220 px de alto y la tarjet
 - Una sola máquina y un solo navegador; no se midió un móvil de gama media ni la batería. La codificación de 27–35 ms es de escritorio.
 - No se usan imágenes de producción: no hay sesión ni datos reales en esta sesión.
 
-## Siguiente paso
+## Integración
 
-La fase 3 integra la recomendación si se aprueba: derivado en cliente, respaldo al original, GIF intacto y documentación de la asimetría con el MCP.
+La fase 3 está integrada: `handleUpload` genera la miniatura, envía el WebP si pesa menos que el original y cae al original en cualquier otro caso. Los GIF no se transforman y el MCP mantiene su propio camino.

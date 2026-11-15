@@ -367,6 +367,8 @@ El mismo panel permite **simular y ejecutar la limpieza de archivos sin uso**, t
 
 El mismo panel incluye una **revisión paginada del inventario de R2**, también disponible en `GET /api/storage/inventory` para propietario o administración. Lee el bucket por páginas de hasta 100 objetos con un cursor opaco, coteja cada clave con `uploads` y clasifica en con fila, objeto sin fila, fila sin objeto y clave a revisar. Es solo lectura: no descarga cuerpos, no firma URLs y no borra ni modifica nada. Al recorrer todas las páginas se cubren también las claves antiguas fuera del formato `proyecto/finalidad/id.ext`, que se marcan para revisión y nunca como huérfanas borrables; cada objeto sin fila requiere una decisión manual antes de tocar R2. Si R2 no está disponible, la ruta responde 503 y el resultado no se cachea.
 
+Las imágenes de tarea subidas desde el diálogo se reducen en el navegador: se guarda un WebP de 800 px de ancho como máximo (calidad 0,8) en lugar del original, porque la tarjeta y el detalle no pasan de 220 px. Si el navegador no puede generarlo o el derivado pesa más, se sube el archivo original; los GIF se envían intactos para no perder la animación. El límite de 5 MB se valida sobre el archivo enviado y el contrato de `/api/uploads` no cambia. `subir_archivo` del MCP no pasa por el navegador y sigue guardando el original.
+
 Si falta R2, `/api/uploads` responde 503 y `/api/files/[id]` responde 503 cuando el archivo tiene metadatos. Un identificador inexistente sigue siendo 404. Para publicar una instancia con archivos:
 
 1. Confirma que el Site tiene R2 habilitado y que el binding se llama `BUCKET`.
