@@ -56,7 +56,7 @@ function batchLimit(limit: number | undefined): number {
  * @param projectId - Proyecto activo.
  * @returns El conjunto de identificadores referenciados, o `null` si un documento está corrupto.
  */
-async function projectReferences(projectId: string): Promise<Set<string> | null> {
+export async function projectFileReferences(projectId: string): Promise<Set<string> | null> {
   const db = getD1();
   const [tasks, boards, documents] = await Promise.all([
     db.prepare("SELECT image_url AS imageUrl FROM tasks WHERE project_id = ? AND image_url IS NOT NULL AND image_url <> ''")
@@ -93,7 +93,7 @@ export async function findUnusedUploads(input: {
   graceMs?: number;
   limit?: number;
 }): Promise<UnusedUploadsReport> {
-  const references = await projectReferences(input.projectId);
+  const references = await projectFileReferences(input.projectId);
   if (references === null) return { ok: false, projectId: input.projectId, reason: "references_unreadable" };
 
   const now = input.now ?? Date.now();

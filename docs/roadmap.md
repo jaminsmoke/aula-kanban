@@ -53,11 +53,12 @@
 
 ### Fase 2: Purga idempotente y reintentable
 
-- [ ] Implementar el servicio de purga con relectura de referencias, borrado de R2 y después de la fila, tope por llamada y tolerancia a fallos individuales.
-- [ ] Devolver recuentos de candidatos, borrados, omitidos por referencia nueva y fallos, sin lanzar por un archivo concreto.
-- [ ] Exponer `POST /api/storage/purge` para propietario o administración, con mismo origen, `simulacion` por defecto y `limite` acotado.
-- [ ] Cubrir sustitución de imagen, cancelación de subida, referencia compartida, archivo recién subido, fallo de R2, reintento y proyecto eliminado.
+- [x] Implementar el servicio de purga con relectura de referencias, borrado de R2 y después de la fila, tope por llamada y tolerancia a fallos individuales.
+- [x] Devolver recuentos de candidatos, borrados, omitidos por referencia nueva y fallos, sin lanzar por un archivo concreto.
+- [x] Exponer `POST /api/storage/purge` para propietario o administración, con mismo origen, `simulacion` por defecto y `limite` acotado.
+- [x] Cubrir sustitución de imagen, cancelación de subida, referencia compartida, archivo recién subido, fallo de R2, reintento y proyecto eliminado.
 - **Criterios de aceptación:** el archivo referenciado sobrevive; el huérfano antiguo desaparece de R2 y de `uploads`; un fallo de R2 deja la fila para el siguiente intento; una referencia creada entre el inventario y el borrado evita la eliminación.
+- **Estado:** Completada el 2026-11-15. `lib/server/uploads/purge.ts` relee las referencias antes de cada borrado, elimina R2 y después la fila, tolera fallos y simula por defecto; `POST /api/storage/purge` queda reservado a propietario o administración y recorre todos los proyectos con archivos. 25 tests focalizados, `tsc` y lint en verde.
 
 ### Fase 3: Activación, cobertura y cierre
 
