@@ -26,6 +26,15 @@ describe("modelo de la pizarra", () => {
     expect(merged.find((item) => item.id === "b")?.isDeleted).toBe(true);
   });
 
+  it("conserva un borrado reciente ante un cliente desfasado en ambos sentidos", () => {
+    const tumba = element("compartido", 4, 1, true);
+    const copiaAntigua = element("compartido", 3, 2, false);
+    expect(mergeElements([tumba], [copiaAntigua])).toEqual([tumba]);
+    expect(mergeElements([copiaAntigua], [tumba])).toEqual([tumba]);
+    // Si se suprime la tumba, un cliente atrasado puede reintroducir el elemento.
+    expect(mergeElements([], [copiaAntigua])).toEqual([copiaAntigua]);
+  });
+
   it("interpreta un snapshot vacío o corrupto como escena vacía", () => {
     expect(parseSnapshot("")).toBe(EMPTY_SNAPSHOT);
     expect(parseSnapshot("{no es json")).toBe(EMPTY_SNAPSHOT);

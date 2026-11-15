@@ -72,6 +72,7 @@ describe("herramientas de archivos", () => {
     expect(state.store).toHaveBeenCalledTimes(1);
     const input = state.store.mock.calls[0][0] as { file: File; projectId: string };
     expect(input.projectId).toBe(projectId);
+    expect(state.store.mock.calls[0][0]).toMatchObject({ origin: "mcp", purpose: "document" });
     expect(input.file).toBeInstanceOf(File);
     expect(input.file.name).toBe("nota.txt");
     expect(input.file.type).toBe("text/plain");

@@ -1,10 +1,31 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** vacío · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-15 — PER-06, PER-07 y PER-08 · Prueba de extremo a extremo
+
+**Estado:** Cerrado con pruebas controladas; publicado en 1.1.30.
+
+- Se creó un proyecto temporal en producción, con tarea y pizarra; al dibujar y eliminar un rectángulo, el panel midió 560 caracteres, 1 elemento y 1 borrado. La prueba unitaria con un cliente desfasado confirma que una tumba preserva el borrado y que su ausencia puede resucitarlo. Decisión: no podar tumbas por ahora.
+- La cuenta de prueba subió por MCP un PNG de 68 bytes; el panel lo clasificó como `mcp/task-image`. Es una prueba funcional, no una muestra representativa del volumen o de imágenes grandes. Se mantiene el original en MCP y se aplaza incorporar WASM hasta tener necesidad contrastada; el límite y la recomendación de reducir en cliente siguen documentados.
+- Comparación sintética de tres muestras para una captura de 2560×1440: PNG original 120 KB; WebP 0,8 a 2048/2560 px 20/28 KB; WebP 0,9 24/35 KB. Los PSNR a 0,8 fueron 46,3/46,7 dB. Se mantiene 2048 px y 0,8 de momento: no se midió legibilidad en capturas reales de clase y estas cifras no prueban que una opción conserve texto mejor.
+- Se eliminó el proyecto temporal, su tarea, ficha, invitación, pizarra y archivo. El diagnóstico volvió a 0 pizarras y 1 archivo preexistente; el inventario confirmó 1 objeto con fila y 0 huérfanos.
+- Verificaciones anteriores de la publicación 1.1.30: lint, tipos, build y 1.011 pruebas. No se añadió poda ni transformación en servidor.
+
+## 2026-11-15 — Publicación 1.1.30 · Pruebas de pizarra y MCP
+
+- Publicada en Sites con 1.011 pruebas, lint, tipos y build correctos. La prueba de fusión muestra que una tumba reciente evita la resurrección de un elemento de un cliente desfasado; sin la tumba, la resurrección es posible. La prueba MCP comprueba que se registra el origen `mcp`.
+- PER-06, PER-07 y PER-08 permanecen activos en el roadmap: las pruebas controladas no sustituyen datos de uso real ni capturas de clase y no se ha implementado poda ni redimensionado en servidor.
+
+## 2026-11-15 — Seguimiento de pizarras y miniaturas
+
+- Comparadas tres muestras sintéticas de captura a 2048 y 2560 px: 20 y 28 KB en WebP 0,8, frente a 120 KB del PNG original. La legibilidad en capturas reales y la calidad 0,9 siguen pendientes en PER-07; no se cambia la configuración.
+- Verificación focalizada: 4 archivos de pruebas y 14 pruebas correctas para estadísticas de pizarras y subidas y generación de miniaturas.
+- Se mantiene el seguimiento de PER-06 y PER-08 hasta disponer de pizarras y subidas MCP reales. El roadmap permanece libre y no hay cambios de código ni nueva publicación.
 
 ## 2026-11-15 — PER-06 y PER-08 · Mediciones de producción, versión 1.1.29
 

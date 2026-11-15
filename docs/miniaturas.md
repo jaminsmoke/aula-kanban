@@ -134,3 +134,8 @@ Lectura:
 - Habría que leer las dimensiones antes de decodificar, saltar los GIF para no perder la animación y empaquetar el `.wasm` en el build, porque el Worker no puede descargarlo en tiempo de ejecución.
 - Ahorro potencial: el tope de 5 MB bajaría a ~350 KB con 2048 px y calidad 0,8, según la medición de pizarra.
 - Decisión: no implementarlo todavía. Sin datos del volumen de subidas MCP, el coste en memoria, CPU y pruebas supera al beneficio; se documenta la recomendación de enviar la imagen ya reducida y se retoma si el volumen lo justifica.
+
+
+## Seguimiento PER-07: comparación sintética de 2048 y 2560 px
+
+El 15/11/2026 se ejecutó `npm run perf:images -- --kind png --widths 2048,2560 --runs 3`. En una captura sintética de 2560×1440, el PNG original ocupó 120 KB; los WebP con calidad 0,8 ocuparon 20 KB a 2048 px y 28 KB a 2560 px, con PSNR de 46,3 y 46,7 dB respectivamente. La codificación medida fue de 70 y 113 ms. Son tres muestras en un navegador de escritorio y el PSNR no mide directamente la legibilidad. La repetición a calidad 0,9 produjo 24 KB a 2048 px y 35 KB a 2560 px; el original PNG ocupó 120 KB. Son datos sintéticos y no se ha medido legibilidad con capturas de clase. Se mantiene 2048 px y calidad 0,8 por ahora.
