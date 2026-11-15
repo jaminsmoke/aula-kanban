@@ -6,6 +6,27 @@
 
 ---
 
+## 2026-11-15 — Roadmap SYNC-01 · Norma de sincronización del repositorio
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- SYNC-01 sale del backlog: la norma de commits por bloque, push único al cierre, CI y revisión de secretos vive solo en `AGENTS.md`, sin una copia que pueda contradecirla.
+- Verificación con el cierre de PER-02: push `174436a..06eeb67` único, `github/main` en `06eeb67`, checks y build sobre el estado final y ningún secreto ni archivo `.env*` en el commit.
+- Sin cambios de código, dependencias ni versión; `package.json` sigue en `1.1.28`.
+- Roadmap cerrado y `docs/roadmap.md` reiniciado desde la plantilla. El backlog conserva PER-04, PER-05 y PER-06.
+
+### Verificación
+
+- `git diff --check` limpio.
+- Sin cambios de código: no se repitieron lint, tipos, suite ni build, que ya estaban en verde sobre este mismo árbol en el cierre de PER-02.
+- Sin publicación en Sites ni `release:prepare`.
+
+### Seguimiento en backlog
+
+PER-04, PER-05 y PER-06 quedan en [`backlog.md`](backlog.md); no se añaden entradas nuevas.
+
 ## 2026-11-15 — Roadmap PER-02 · Miniaturas derivadas de las imágenes de tareas
 
 **Estado:** Completada · Sin publicación
