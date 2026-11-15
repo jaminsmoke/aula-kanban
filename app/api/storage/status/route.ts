@@ -2,6 +2,7 @@ import { getChatGPTUser } from "../../../../lib/server/auth";
 import { isAdministrator, isOwner } from "../../../../lib/server/project-access";
 import { json } from "../../../../lib/server/http";
 import { storageStatus } from "../../../../lib/server/storage";
+import { uploadStats } from "../../../../lib/server/uploads/stats";
 
 export const dynamic = "force-dynamic";
 
@@ -15,5 +16,12 @@ export async function GET() {
   if (!(await isOwner(user)) && !(await isAdministrator(user))) {
     return json({ message: "Solo el propietario o un administrador pueden consultar el almacenamiento." }, 403);
   }
-  return json(await storageStatus());
+  const status = await storageStatus();
+  if (!status.database) return json({ ...status, uploadStats: null });
+  try {
+    return json({ ...status, uploadStats: await uploadStats() });
+  } catch {
+    // La medición no debe tumbar el diagnóstico.
+    return json({ ...status, uploadStats: null });
+  }
 }

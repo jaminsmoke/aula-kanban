@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   const problem = validateUpload(purpose.data, file.type, file.size);
   if (problem) return json({ message: problem }, 400);
   try {
-    const stored = await storeUpload({ projectId: project.id, purpose: purpose.data, file, ownerUserId: user.userId });
+    const stored = await storeUpload({ projectId: project.id, purpose: purpose.data, origin: "web", file, ownerUserId: user.userId });
     return json({ ...stored, mimeType: file.type, sizeBytes: file.size }, 201);
   } catch (error) {
     if (error instanceof StorageUnavailableError) return json({ message: "La subida de archivos aún no está habilitada en este despliegue. Usa una URL externa de momento." }, 503);

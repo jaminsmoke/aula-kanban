@@ -127,6 +127,8 @@ export const uploads = sqliteTable("uploads", {
   mimeType: text("mime_type").notNull(),
   sizeBytes: integer("size_bytes").notNull(),
   purpose: text("purpose").notNull(),
+  // "web" o "mcp" para las subidas nuevas; NULL en las anteriores.
+  origin: text("origin"),
   ownerUserId: text("owner_user_id"),
   createdAt: integer("created_at").notNull(),
 }, (table) => [index("uploads_project").on(table.projectId, table.createdAt)]);

@@ -253,6 +253,13 @@
       "when": 1794724846432,
       "tag": "0035_strange_magdalene",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "6",
+      "when": 1794763096613,
+      "tag": "0036_material_pet_avengers",
+      "breakpoints": true
     }
   ]
 }

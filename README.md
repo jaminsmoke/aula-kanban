@@ -355,13 +355,13 @@ Para un cambio nuevo:
 
 La aplicación usa `administrators_unified` para los administradores y `instance_owner` para la identidad del propietario. `deleted_students` y `deleted_teachers` almacenan el historial de fichas eliminadas y su purga está en `lib/server/deleted-profiles.ts`.
 
-La migración `0023` añade `instance_apps`, que guarda qué aplicaciones nativas están instaladas en la instancia (no por proyecto). Las aplicaciones comienzan desinstaladas y solo el propietario o un administrador las gestionan desde Aula Store. La `0026` añade `app_documents`, con un estado JSON por proyecto y app, y la `0027` protege sus relaciones con los proyectos. La `0029` retira las tablas históricas de documentos y la `0030` las antiguas tablas de administradores, aplicaciones por proyecto y estado de transición.
+La migración `0023` añade `instance_apps`, que guarda qué aplicaciones nativas están instaladas en la instancia (no por proyecto). Las aplicaciones comienzan desinstaladas y solo el propietario o un administrador las gestionan desde Aula Store. La `0026` añade `app_documents`, con un estado JSON por proyecto y app, y la `0027` protege sus relaciones con los proyectos. La `0029` retira las tablas históricas de documentos y la `0030` las antiguas tablas de administradores, aplicaciones por proyecto y estado de transición. La `0036` añade `uploads.origin` (`web` o `mcp`) para medir qué subidas llegan por el MCP; las filas anteriores quedan sin origen.
 
 ## Almacenamiento de archivos (R2)
 
 La aplicación no usa un VPS ni un volumen: D1 guarda los metadatos de `uploads` y R2 guarda los bytes con el binding `BUCKET`. `.openai/hosting.json` declara `"r2": "BUCKET"`; Sites inyecta ese binding en el Worker y `vite.config.ts` lo simula en local. El código nunca escribe archivos en el filesystem del servidor.
 
-El propietario o un administrador puede comprobar el estado en **Ajustes > Almacenamiento** o con `GET /api/storage/status`. El diagnóstico devuelve si D1 existe, si el binding `BUCKET` está presente, si el bucket responde a una lectura mínima y cuántas filas hay en `uploads`; no lista objetos ni expone secretos.
+El propietario o un administrador puede comprobar el estado en **Ajustes > Almacenamiento** o con `GET /api/storage/status`. El diagnóstico devuelve si D1 existe, si el binding `BUCKET` está presente, si el bucket responde a una lectura mínima, cuántas filas hay en `uploads` y la distribución por origen (`web` o `mcp`), finalidad y tamaño, que sirve para decidir si hace falta reducir las imágenes del MCP; no lista objetos ni expone secretos.
 
 El mismo panel permite **simular y ejecutar la limpieza de archivos sin uso**, también disponible en `POST /api/storage/purge` con `simulacion: true` por defecto. Un archivo solo se borra si ningún documento del proyecto lo referencia, han pasado 7 días desde su subida y la comprobación se repite justo antes del borrado; el objeto de R2 se elimina antes que la fila y un fallo se reintenta en la siguiente ejecución. Cada llamada procesa hasta 100 archivos por proyecto y no hay limpieza programada: Sites no expone un cron de Worker, así que la ejecución es manual.
 

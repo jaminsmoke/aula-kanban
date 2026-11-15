@@ -6,6 +6,10 @@ import { uploads } from "../../db/schema";
 export const uploadPurposes = ["task-image", "board-asset", "document"] as const;
 export type UploadPurpose = (typeof uploadPurposes)[number];
 
+/** Vía por la que entró el archivo: la web o el servidor MCP. */
+export const uploadOrigins = ["web", "mcp"] as const;
+export type UploadOrigin = (typeof uploadOrigins)[number];
+
 const IMAGE_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 const DOCUMENT_MIME_TYPES = ["application/pdf", "text/plain", "text/markdown", "text/csv", ...IMAGE_MIME_TYPES];
 const EXTENSIONS: Record<string, string> = {
@@ -100,7 +104,7 @@ export function validateUpload(purpose: UploadPurpose, mimeType: string, sizeByt
  * @param input - Proyecto, finalidad, contenido y propietario de la subida.
  * @returns El identificador y la URL interna del fichero (`/api/files/…`).
  */
-export async function storeUpload(input: { projectId: string; purpose: UploadPurpose; file: File; ownerUserId: string }) {
+export async function storeUpload(input: { projectId: string; purpose: UploadPurpose; origin: UploadOrigin; file: File; ownerUserId: string }) {
   const bucket = env.BUCKET;
   const database = env.DB;
   if (!bucket || !database) throw new StorageUnavailableError();
@@ -114,9 +118,9 @@ export async function storeUpload(input: { projectId: string; purpose: UploadPur
   });
   const url = `/api/files/${id}`;
   try {
-    const result = await database.prepare(`INSERT INTO uploads (id, project_id, storage_key, url, mime_type, size_bytes, purpose, owner_user_id, created_at)
-      SELECT ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM projects WHERE id = ?) RETURNING id`)
-      .bind(id, input.projectId, storageKey, url, input.file.type, input.file.size, input.purpose, input.ownerUserId, Date.now(), input.projectId).first();
+    const result = await database.prepare(`INSERT INTO uploads (id, project_id, storage_key, url, mime_type, size_bytes, purpose, origin, owner_user_id, created_at)
+      SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM projects WHERE id = ?) RETURNING id`)
+      .bind(id, input.projectId, storageKey, url, input.file.type, input.file.size, input.purpose, input.origin, input.ownerUserId, Date.now(), input.projectId).first();
     if (!result) throw new Error("project_unavailable");
   } catch (error) {
     await bucket.delete(storageKey);

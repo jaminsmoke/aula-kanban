@@ -98,7 +98,7 @@ async function subirArchivo(caller: McpCaller, args: Record<string, unknown>) {
 
   try {
     const file = new File([bytes.buffer as ArrayBuffer], a.nombre, { type: a.tipoMime });
-    const stored = await storeUpload({ projectId: a.proyectoId, purpose: a.finalidad, file, ownerUserId: caller.userId });
+    const stored = await storeUpload({ projectId: a.proyectoId, purpose: a.finalidad, origin: "mcp", file, ownerUserId: caller.userId });
     const row = await findUpload(stored.id);
     return payloadResult({
       archivo: row

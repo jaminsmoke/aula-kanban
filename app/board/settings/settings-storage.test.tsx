@@ -17,6 +17,20 @@ describe("SettingsStorage", () => {
     expect(screen.getByText("3 archivos con metadatos. Las imágenes y documentos se pueden subir.")).toBeTruthy();
   });
 
+  it("resume las subidas por origen y tamaño", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({
+      ...status,
+      uploadStats: { total: 2, rows: [
+        { origin: "web", purpose: "task-image", count: 1, bytes: 40_000, maxBytes: 40_000, over1mb: 0, over2mb: 0 },
+        { origin: "mcp", purpose: "board-asset", count: 1, bytes: 3_145_728, maxBytes: 3_145_728, over1mb: 1, over2mb: 1 },
+      ] },
+    })));
+    render(<SettingsStorage />);
+
+    expect(await screen.findByText(/mcp\/board-asset/)).toBeTruthy();
+    expect(screen.getByText(/≥1 MB: 1 · ≥2 MB: 1/)).toBeTruthy();
+  });
+
   it("avisa cuando falta R2", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ database: true, bucket: false, bucketReachable: false, uploads: 2, ok: false })));
     render(<SettingsStorage />);

@@ -3,12 +3,18 @@
 import { useEffect, useState } from "react";
 import type { InventoryEntry, InventoryStatus } from "../../../lib/domain/uploads/inventory";
 
+type UploadStats = {
+  total: number;
+  rows: Array<{ origin: string; purpose: string; count: number; bytes: number; maxBytes: number; over1mb: number; over2mb: number }>;
+};
+
 type StorageStatus = {
   database: boolean;
   bucket: boolean;
   bucketReachable: boolean;
   uploads: number | null;
   ok: boolean;
+  uploadStats?: UploadStats | null;
 };
 
 type PurgeReport = {
@@ -178,6 +184,22 @@ export default function SettingsStorage() {
               <li>Filas de archivos: {status.uploads === null ? "no se pudieron leer" : status.uploads}</li>
             </ul>
           </div>
+
+          {status.uploadStats ? (
+            <div className="storage-uploads">
+              <h3>Subidas por origen y tamaño</h3>
+              <p>La web ya reduce las imágenes antes de subirlas; esta medición separa lo que llega por MCP para decidir si hace falta un redimensionador en el servidor.</p>
+              {status.uploadStats.rows.length ? (
+                <ul>
+                  {status.uploadStats.rows.map((row) => (
+                    <li key={`${row.origin}-${row.purpose}`}>
+                      <code>{row.origin}/{row.purpose}</code>: {plural(row.count, "archivo", "archivos")} · {peso(row.bytes)} en total · máximo {peso(row.maxBytes)} · ≥1 MB: {row.over1mb} · ≥2 MB: {row.over2mb}
+                    </li>
+                  ))}
+                </ul>
+              ) : <p>Todavía no hay archivos.</p>}
+            </div>
+          ) : null}
 
           <div className="storage-purge">
             <h3>Archivos sin uso</h3>

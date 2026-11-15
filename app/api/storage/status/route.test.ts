@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   owner: false,
   admin: false,
   status: { database: true, bucket: true, bucketReachable: true, uploads: 2, ok: true },
+  stats: { total: 2, rows: [] } as { total: number; rows: unknown[] },
 }));
 
 vi.mock("../../../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user }));
@@ -13,6 +14,7 @@ vi.mock("../../../../lib/server/project-access", () => ({
   isAdministrator: async () => mocks.admin,
 }));
 vi.mock("../../../../lib/server/storage", () => ({ storageStatus: async () => mocks.status }));
+vi.mock("../../../../lib/server/uploads/stats", () => ({ uploadStats: async () => mocks.stats }));
 
 import { GET } from "./route";
 
@@ -41,12 +43,13 @@ describe("diagnóstico de almacenamiento", () => {
     mocks.admin = true;
     const response = await GET();
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual(mocks.status);
+    expect(await response.json()).toEqual({ ...mocks.status, uploadStats: mocks.stats });
   });
 
   it("devuelve el estado al propietario", async () => {
     const response = await GET();
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual(mocks.status);
+    expect(await response.json()).toEqual({ ...mocks.status, uploadStats: mocks.stats });
   });
+
 });
