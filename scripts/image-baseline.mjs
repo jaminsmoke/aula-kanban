@@ -12,6 +12,10 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 // Misma red que scripts/perf-latency.mjs: Fast 3G (1,6 Mbps de bajada).
 const FAST_3G_BYTES_PER_SECOND = 200000;
 const DEFAULT_TARGET_WIDTHS = [800];
+const PNG_SCENARIOS = [
+  { id: "logo-transparente", label: "Logo transparente (3000×2000)", width: 3000, height: 2000 },
+  { id: "captura-texto", label: "Captura con texto (2560×1440)", width: 2560, height: 1440 },
+];
 const SCENARIOS = [
   { id: "foto-12mp", label: "Foto 12 MP (4032×3024)", width: 4032, height: 3024 },
   { id: "foto-2mp", label: "Foto 2 MP (1920×1080)", width: 1920, height: 1080 },
@@ -21,10 +25,13 @@ const defaults = {
   chrome: process.env.CHROME_PATH || defaultChromePath(),
 };
 const options = parseArgs(process.argv.slice(2));
+const kind = options.kind ?? "photos";
 const runs = Number(options.runs ?? defaults.runs);
 const chromePath = String(options.chrome ?? defaults.chrome);
-const targetWidths = parseWidths(options.widths ?? DEFAULT_TARGET_WIDTHS.join(","));
+const defaultWidths = kind === "png" ? [2048] : DEFAULT_TARGET_WIDTHS;
+const targetWidths = parseWidths(options.widths ?? defaultWidths.join(","));
 
+if (kind !== "photos" && kind !== "png") throw new Error("--kind debe ser photos o png.");
 if (!Number.isInteger(runs) || runs < 1) throw new Error("--runs debe ser un entero positivo.");
 if (!chromePath || !existsSync(chromePath)) throw new Error("No se encontró Chrome. Indica --chrome o define CHROME_PATH.");
 
@@ -59,14 +66,19 @@ async function main() {
       await cdp.send("Runtime.enable");
       const samples = [];
       for (const width of targetWidths) {
-        const measured = await cdp.eval(`${measureExpression(SCENARIOS, runs, width)}`);
+        const measured = await cdp.eval(kind === "png"
+          ? `${measurePngExpression(PNG_SCENARIOS, runs, width)}`
+          : `${measureExpression(SCENARIOS, runs, width)}`);
         if (!Array.isArray(measured)) throw new Error("Chrome no devolvió las muestras esperadas.");
         samples.push(...measured.map((scenario) => ({ ...scenario, targetWidth: width })));
       }
       const result = {
         measuredAt: new Date().toISOString(),
         browser: "Chrome headless",
-        note: "Imágenes sintéticas generadas en el navegador; decodificación con createImageBitmap. La transferencia se calcula, no se mide en red.",
+        kind,
+        note: kind === "png"
+          ? "PNG sintéticos generados en el navegador; se comparan PNG redimensionado, WebP 0,8 y WebP sin pérdida. La transferencia se calcula, no se mide en red."
+          : "Imágenes sintéticas generadas en el navegador; decodificación con createImageBitmap. La transferencia se calcula, no se mide en red.",
         network: { label: "Fast 3G", bytesPerSecond: FAST_3G_BYTES_PER_SECOND },
         targetWidths,
         runs,
@@ -208,11 +220,210 @@ function measureExpression(scenarios, runs, targetWidth) {
 }
 
 /**
+ * Construye la expresión que genera PNG sintéticos con transparencia y texto.
+ * @param {typeof PNG_SCENARIOS} scenarios - Escenas a medir.
+ * @param {number} runs - Muestras por escenario.
+ * @param {number} targetWidth - Ancho máximo del derivado.
+ * @returns {string} Una promesa con las muestras.
+ */
+function measurePngExpression(scenarios, runs, targetWidth) {
+  return `(async () => {
+    const scenarios = ${JSON.stringify(scenarios)};
+    const runs = ${runs};
+    const targetWidth = ${targetWidth};
+
+    function drawLogo(context, width, height) {
+      for (let index = 0; index < 18; index += 1) {
+        context.beginPath();
+        context.arc(
+          width * (0.12 + ((index * 37) % 76) / 100),
+          height * (0.15 + ((index * 53) % 70) / 100),
+          width * (0.03 + ((index * 11) % 9) / 100),
+          0,
+          Math.PI * 2,
+        );
+        context.fillStyle = "rgba(" + (30 + index * 7) + ", " + (90 + index * 3) + ", " + (140 + index * 5) + ", " + (0.25 + ((index * 13) % 60) / 100) + ")";
+        context.fill();
+      }
+      context.globalAlpha = 1;
+      context.fillStyle = "#0b1f33";
+      context.font = "bold " + Math.round(width / 9) + "px sans-serif";
+      context.fillText("Aula", width * 0.08, height * 0.58);
+      context.font = "600 " + Math.round(width / 26) + "px sans-serif";
+      context.fillText("Kanban", width * 0.08, height * 0.74);
+      context.strokeStyle = "rgba(20, 60, 90, 0.6)";
+      context.lineWidth = Math.max(1, width / 700);
+      context.strokeRect(width * 0.05, height * 0.08, width * 0.9, height * 0.84);
+      context.setLineDash([width / 150, width / 300]);
+      context.beginPath();
+      context.moveTo(width * 0.08, height * 0.86);
+      context.lineTo(width * 0.9, height * 0.86);
+      context.stroke();
+      context.setLineDash([]);
+    }
+
+    function drawScreenshot(context, width, height) {
+      context.fillStyle = "#f7f8fa";
+      context.fillRect(0, 0, width, height);
+      context.fillStyle = "#1d3557";
+      context.fillRect(0, 0, width, height * 0.07);
+      context.fillStyle = "#ffffff";
+      context.font = "bold " + Math.round(width / 90) + "px sans-serif";
+      context.fillText("Aula Kanban · Tareas del proyecto", width * 0.03, height * 0.047);
+      context.fillStyle = "#e8edf3";
+      context.fillRect(0, height * 0.07, width * 0.2, height);
+      const menu = ["Resumen", "Pendientes", "En curso", "Hechas", "Calendario", "Alumnado"];
+      context.font = Math.round(width / 130) + "px sans-serif";
+      for (let index = 0; index < menu.length; index += 1) {
+        context.fillStyle = index === 0 ? "#1d3557" : "#425466";
+        context.fillText(menu[index], width * 0.03, height * (0.14 + index * 0.05));
+      }
+      const cardWidth = width * 0.2;
+      const cardHeight = height * 0.26;
+      const titles = [
+        "Preparar la práctica de sensores",
+        "Revisar el informe del grupo 3",
+        "Publicar el calendario de entrega",
+        "Corregir las fichas pendientes",
+        "Montar el tablero de la semana",
+        "Actualizar el material de clase",
+      ];
+      context.font = Math.round(width / 150) + "px sans-serif";
+      for (let index = 0; index < 6; index += 1) {
+        const column = index % 3;
+        const row = Math.floor(index / 3);
+        const x = width * 0.24 + column * (cardWidth + width * 0.02);
+        const y = height * 0.12 + row * (cardHeight + height * 0.03);
+        context.fillStyle = "#ffffff";
+        context.fillRect(x, y, cardWidth, cardHeight);
+        context.strokeStyle = "#d7dee6";
+        context.lineWidth = 1;
+        context.strokeRect(x, y, cardWidth, cardHeight);
+        context.fillStyle = "#1d3557";
+        context.fillText(titles[index], x + cardWidth * 0.06, y + cardHeight * 0.18);
+        context.fillStyle = "#6b7a8c";
+        for (let line = 0; line < 4; line += 1) {
+          context.fillRect(x + cardWidth * 0.06, y + cardHeight * (0.3 + line * 0.09), cardWidth * (0.6 + (line % 3) * 0.08), Math.max(1, height / 800));
+        }
+        context.fillStyle = "#e8f0fb";
+        context.fillRect(x + cardWidth * 0.06, y + cardHeight * 0.78, cardWidth * 0.34, cardHeight * 0.12);
+        context.fillStyle = "#1d3557";
+        context.font = Math.round(width / 190) + "px sans-serif";
+        context.fillText("Media", x + cardWidth * 0.09, y + cardHeight * 0.855);
+        context.font = Math.round(width / 150) + "px sans-serif";
+      }
+      context.strokeStyle = "#1d3557";
+      context.lineWidth = Math.max(1, width / 900);
+      context.beginPath();
+      context.moveTo(width * 0.24, height * 0.94);
+      context.lineTo(width * 0.96, height * 0.94);
+      context.stroke();
+    }
+
+    const results = [];
+    for (const scenario of scenarios) {
+      const samples = [];
+      for (let run = 0; run < runs; run += 1) {
+        const width = scenario.width;
+        const height = scenario.height;
+        const canvas = new OffscreenCanvas(width, height);
+        const context = canvas.getContext("2d");
+        context.clearRect(0, 0, width, height);
+        if (scenario.id === "logo-transparente") drawLogo(context, width, height);
+        else drawScreenshot(context, width, height);
+
+        let started = performance.now();
+        const original = await canvas.convertToBlob({ type: "image/png" });
+        const encodeOriginalMs = performance.now() - started;
+
+        started = performance.now();
+        const bitmap = await createImageBitmap(original);
+        const decodeOriginalMs = performance.now() - started;
+
+        const scale = Math.min(1, targetWidth / width);
+        const outWidth = Math.round(width * scale);
+        const outHeight = Math.round(height * scale);
+        const resized = new OffscreenCanvas(outWidth, outHeight);
+        const resizedContext = resized.getContext("2d");
+        started = performance.now();
+        resizedContext.drawImage(bitmap, 0, 0, outWidth, outHeight);
+        const resizeMs = performance.now() - started;
+
+        started = performance.now();
+        const resizedPng = await resized.convertToBlob({ type: "image/png" });
+        const encodePngMs = performance.now() - started;
+
+        started = performance.now();
+        const lossy = await resized.convertToBlob({ type: "image/webp", quality: 0.8 });
+        const encodeLossyMs = performance.now() - started;
+
+        started = performance.now();
+        const lossless = await resized.convertToBlob({ type: "image/webp", quality: 1 });
+        const encodeLosslessMs = performance.now() - started;
+
+        const reference = resizedContext.getImageData(0, 0, outWidth, outHeight).data;
+        started = performance.now();
+        const lossyBitmap = await createImageBitmap(lossy);
+        const decodeLossyMs = performance.now() - started;
+        const decoded = new OffscreenCanvas(outWidth, outHeight);
+        const decodedContext = decoded.getContext("2d");
+        decodedContext.drawImage(lossyBitmap, 0, 0);
+        const decodedPixels = decodedContext.getImageData(0, 0, outWidth, outHeight).data;
+        let squaredError = 0;
+        let alphaMaxError = 0;
+        for (let index = 0; index < reference.length; index += 4) {
+          for (let channel = 0; channel < 3; channel += 1) {
+            const delta = reference[index + channel] - decodedPixels[index + channel];
+            squaredError += delta * delta;
+          }
+          const alphaDelta = Math.abs(reference[index + 3] - decodedPixels[index + 3]);
+          if (alphaDelta > alphaMaxError) alphaMaxError = alphaDelta;
+        }
+        const mse = squaredError / ((reference.length / 4) * 3);
+        const psnrDb = mse === 0 ? 99 : 10 * Math.log10((255 * 255) / mse);
+        lossyBitmap.close();
+        bitmap.close();
+
+        samples.push({
+          originalBytes: original.size,
+          resizedPngBytes: resizedPng.size,
+          lossyBytes: lossy.size,
+          losslessBytes: lossless.size,
+          decodedBytes: width * height * 4,
+          width: outWidth,
+          height: outHeight,
+          encodeOriginalMs,
+          decodeOriginalMs,
+          resizeMs,
+          encodePngMs,
+          encodeLossyMs,
+          encodeLosslessMs,
+          decodeLossyMs,
+          psnrDb,
+          alphaMaxError,
+        });
+      }
+      results.push({ id: scenario.id, label: scenario.label, samples });
+    }
+    return results;
+  })()`;
+}
+
+/**
  * Resume las muestras y devuelve la tabla en Markdown.
- * @param {{runs: number, scenarios: Array<{label: string, samples: Array<Record<string, number>>}>}} result - Medición completa.
+ * @param {{kind?: string, runs: number, scenarios: Array<{label: string, samples: Array<Record<string, number>>}>}} result - Medición completa.
  * @returns {string} Tabla de resultados.
  */
 function markdown(result) {
+  return result.kind === "png" ? markdownPng(result) : markdownPhotos(result);
+}
+
+/**
+ * Tabla de fotos opacas.
+ * @param {{runs: number, scenarios: Array<{label: string, samples: Array<Record<string, number>>}>}} result - Medición completa.
+ * @returns {string} Tabla de resultados.
+ */
+function markdownPhotos(result) {
   const lines = [
     "# Línea base de imágenes",
     "",
@@ -226,6 +437,28 @@ function markdown(result) {
   for (const scenario of result.scenarios) {
     const row = summarize(scenario.samples);
     lines.push(`| ${scenario.label} | ${row.width} px | ${bytes(row.originalBytes)} | ${bytes(row.derivativeBytes)} | ${percent(row.originalBytes, row.derivativeBytes)} | ${ms(transfer(row.originalBytes))} → ${ms(transfer(row.derivativeBytes))} | ${ms(row.decodeOriginalMs)} → ${ms(row.decodeDerivativeMs)} (codificar ${ms(row.encodeDerivativeMs)}) | ${db(row.psnrDb)} | ${bytes(row.decodedBytes)} → ${bytes(row.width * row.height * 4)} |`);
+  }
+  return `${lines.join("\n")}\n`;
+}
+
+/**
+ * Tabla de PNG con transparencia y capturas.
+ * @param {{runs: number, scenarios: Array<{label: string, samples: Array<Record<string, number>>}>}} result - Medición completa.
+ * @returns {string} Tabla de resultados.
+ */
+function markdownPng(result) {
+  const lines = [
+    "# Línea base de PNG y capturas",
+    "",
+    `- Muestras por escenario: ${result.runs}`,
+    `- Navegador: ${result.browser}`,
+    "",
+    "| Escenario | Ancho | PNG original | PNG redimensionado | WebP 0,8 | WebP sin pérdida | PSNR 0,8 | Error alfa máx. | Transferencia Fast 3G (original → WebP 0,8) | Codificar 0,8 |",
+    "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+  ];
+  for (const scenario of result.scenarios) {
+    const row = summarize(scenario.samples);
+    lines.push(`| ${scenario.label} | ${row.width} px | ${bytes(row.originalBytes)} | ${bytes(row.resizedPngBytes)} | ${bytes(row.lossyBytes)} | ${bytes(row.losslessBytes)} | ${db(row.psnrDb)} | ${Math.round(row.alphaMaxError)} | ${ms(transfer(row.originalBytes))} → ${ms(transfer(row.lossyBytes))} | ${ms(row.encodeLossyMs)} |`);
   }
   return `${lines.join("\n")}\n`;
 }

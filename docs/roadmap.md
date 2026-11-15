@@ -50,6 +50,12 @@
 - [x] Actualizar el README y pasar lint, tipos, pruebas y build.
 - **Criterios de aceptación:** sin cambios de esquema ni de versión; el original se conserva cuando no hay reducción real.
 
+### Fase 4 — PNG con transparencia y capturas
+
+- [x] Medir PNG con alfa y capturas con texto a 1600 y 2048 px, comparando PNG redimensionado, WebP 0,8 y WebP sin pérdida.
+- [ ] Decidir si PNG entra en el derivado de pizarra con el mismo tope.
+- **Criterios de aceptación:** decisión escrita con la tabla y los riesgos; sin cambios de código hasta aprobarla.
+
 ## 5. Riesgos y bloqueos
 
 | Riesgo | Impacto | Mitigación |
@@ -63,3 +69,4 @@
 
 - 2026-11-15: fase 1 completada. En 12 MP, 1600 px deja 223 KB y 7,3 MB decodificados; 2048 px deja 348 KB y 12,0 MB, con 36,1–36,3 dB y 130–210 ms de codificación. En 2 MP, el tope de 2048 no reduce nada porque la imagen ya mide 1920 px. Se recomienda 2048 px solo si el ancho original lo supera; la decisión queda pendiente de aprobación.
 - 2026-11-15: aprobado el tope de 2048 px. `uploadBlob` reduce JPEG y WebP que superen ese ancho, deja PNG y GIF intactos y cae al original si el generador devuelve `null` o el derivado pesa más. Tres pruebas nuevas en `whiteboard-model.test.ts`; sin cambios de esquema ni de versión.
+- 2026-11-15: medición de PNG completada. WebP 0,8 conserva el alfa exacto y deja 20 KB en una captura de 2560 px (46,3 dB) y 72 KB en un logo transparente de 3000 px (41,0 dB), frente a 120 KB y 341 KB del PNG. Se recomienda incluir PNG con el mismo tope de 2048; la decisión queda pendiente de aprobación.

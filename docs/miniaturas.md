@@ -11,7 +11,7 @@ El script no necesita la app ni la base de datos: genera imágenes sintéticas e
 
 ```bash
 npm run perf:images
-# Opciones: --runs 5, --widths 800,1600,2048, --chrome <ruta>, --json, --out docs/miniaturas.json
+# Opciones: --runs 5, --widths 800,1600,2048, --kind png, --chrome <ruta>, --json, --out docs/miniaturas.json
 ```
 
 Cada escenario se repite tres veces y se publica la mediana. La transferencia se calcula con el perfil de Fast 3G de `perf-latency.mjs` (1,6 Mbps de bajada); no se mide sobre la red.
@@ -55,6 +55,26 @@ Lectura:
 
 Aprobado e integrado el 2026-11-15: tope de **2048 px** para fotos JPEG y WebP de pizarra, WebP 0,8, solo si el ancho original supera 2048; PNG y GIF intactos. Coste medido: 210 ms de codificación en escritorio en una foto de 12 MP, sin contar la subida.
 
+### PNG con transparencia y capturas
+
+Medición del 2026-11-15 con `npm run perf:images -- --kind png --widths 1600,2048`, 3 muestras por escenario. El original es PNG y se comparan tres salidas: PNG redimensionado sin pérdida, WebP 0,8 y WebP sin pérdida (calidad 1).
+
+| Escenario | Ancho | PNG original | PNG redimensionado | WebP 0,8 | WebP sin pérdida | PSNR 0,8 | Error alfa máx. | Codificar 0,8 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Logo transparente (3000×2000) | 1600 px | 341 KB | 154 KB | 58 KB | 159 KB | 41,0 dB | 0 | 122 ms |
+| Captura con texto (2560×1440) | 1600 px | 120 KB | 70 KB | 14 KB | 260 KB | 45,1 dB | 0 | 45 ms |
+| Logo transparente (3000×2000) | 2048 px | 341 KB | 230 KB | 72 KB | 176 KB | 41,0 dB | 0 | 185 ms |
+| Captura con texto (2560×1440) | 2048 px | 120 KB | 104 KB | 20 KB | 349 KB | 46,3 dB | 0 | 69 ms |
+
+Lectura:
+
+- El canal alfa sobrevive intacto en WebP (error máximo 0) y también al redimensionar el PNG: la transparencia no obliga a descartar el derivado.
+- En la captura con texto, WebP 0,8 deja 20 KB frente a 120 KB del PNG original, con 46,3 dB. El PNG redimensionado sin pérdida baja a 104 KB; el WebP sin pérdida es peor que el PNG por la naturaleza plana de la interfaz sintética.
+- En el logo transparente, WebP 0,8 deja 72 KB frente a 341 KB, con 41,0 dB y alfa exacto; el PNG redimensionado se queda en 230 KB.
+- El PSNR alto no garantiza por sí solo que el texto se lea igual de nítido: la captura es sintética y no se ha revisado en pantalla.
+
+Recomendación (pendiente de aprobación): incluir **PNG** en el derivado de pizarra con el mismo tope de 2048 px, WebP 0,8 y el mismo respaldo; los GIF siguen intactos. La decisión depende de aceptar que el texto de una captura real se vea algo más blando al ampliar.
+
 ## Comparación de alternativas
 
 | Opción | Qué implica | Coste en la tarjeta | Cambios necesarios | Riesgo | Veredicto |
@@ -94,4 +114,4 @@ El detalle de tarea muestra la imagen a un máximo de 220 px de alto y la tarjet
 
 ## Integración
 
-La fase 3 está integrada: `handleUpload` genera la miniatura, envía el WebP si pesa menos que el original y cae al original en cualquier otro caso. Los GIF no se transforman y el MCP mantiene su propio camino. En la pizarra, `uploadBlob` reduce a 2048 px solo las fotos JPEG y WebP que superan ese ancho; PNG y GIF se suben intactos.
+La fase 3 está integrada: `handleUpload` genera la miniatura, envía el WebP si pesa menos que el original y cae al original en cualquier otro caso. Los GIF no se transforman y el MCP mantiene su propio camino. En la pizarra, `uploadBlob` reduce a 2048 px solo las fotos JPEG y WebP que superan ese ancho; PNG y GIF se suben intactos. La medición de PNG está hecha y su inclusión sigue pendiente de aprobación.
