@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { jsonResponse } from "../../../vitest.setup";
 import type { Project } from "../shared/model";
 import SettingsView from "./settings-view";
@@ -22,6 +22,18 @@ const props = {
   onProjectsChanged: vi.fn(),
 };
 
+beforeEach(() => {
+  localStorage.clear();
+  document.documentElement.dataset.theme = "light";
+  document.documentElement.style.colorScheme = "light";
+});
+
+afterEach(() => {
+  localStorage.clear();
+  document.documentElement.dataset.theme = "light";
+  document.documentElement.style.colorScheme = "light";
+});
+
 describe("SettingsView", () => {
   it("muestra Cuenta y permite abrir Administradores", async () => {
     vi.stubGlobal("fetch", vi.fn().mockImplementation((input: RequestInfo | URL) => Promise.resolve(String(input).includes("/api/storage/status")
@@ -43,6 +55,20 @@ describe("SettingsView", () => {
     render(<SettingsView {...props} owner={false} admin={false} />);
 
     expect(screen.queryByRole("button", { name: "Administradores" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Apariencia" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Cuenta" }).getAttribute("aria-current")).toBe("page");
+  });
+
+  it("abre Apariencia y permite cambiar el tema", () => {
+    render(<SettingsView {...props} owner={false} admin={false} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Apariencia" }));
+    expect(screen.getByRole("heading", { name: "Apariencia" })).toBeTruthy();
+    const group = screen.getByRole("group", { name: "Tema de la interfaz" });
+    expect(within(group).getByRole("button", { name: "Sistema" }).getAttribute("aria-pressed")).toBe("true");
+
+    fireEvent.click(within(group).getByRole("button", { name: "Oscuro" }));
+    expect(document.documentElement.dataset.theme).toBe("dark");
+    expect(within(group).getByRole("button", { name: "Oscuro" }).getAttribute("aria-pressed")).toBe("true");
   });
 });

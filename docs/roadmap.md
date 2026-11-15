@@ -26,6 +26,7 @@
 - Auditar iconografía: tamaños, trazo, alineación, densidad y estados.
 - Revisar color, estados y acentos; implementar el tema claro/oscuro en una fase posterior.
 - Hacer un piloto en Clase > Tareas y Calendario antes de extender el sistema.
+- La reorganización de la jerarquía de Ajustes queda fuera de este roadmap; se aparca como UI-03.
 
 **Fuera de alcance:**
 
@@ -114,7 +115,7 @@
 - [x] Invertir superficies, texto, bordes, sombras y foco; el chrome oscuro reutilizará `--ui-surface-frame` con otro valor.
 - [x] Revisar AA y contraste gráfico en ambos temas sin duplicar componentes.
 - **Criterios de aceptación:** ambos temas pasan AA; el cambio no recarga ni duplica CSS; no hay regresiones funcionales.
-- **Completada el 2026-11-15:** `[data-theme]` y `color-scheme` cambian el tema sin recargar; la preferencia `system | light | dark` se guarda en `aula-kanban-theme`, escucha `prefers-color-scheme` y se elige desde el menú de cuenta. El script inicial evita el destello antes de hidratar. 92 de los 93 tokens `--ui-*` se redefinen en un único bloque `[data-theme="dark"]`; el restante es la opacidad compartida. No se duplican componentes. Quedan 0 hexadecimales en los 22 CSS de feature y 189 usos en `globals.css`; el mínimo de texto es 5,72:1, el borde de control 3,17:1 y el foco 7,49:1. La inspección visual en navegador sigue pendiente.
+- **Completada el 2026-11-15:** `[data-theme]` y `color-scheme` cambian el tema sin recargar; la preferencia `system | light | dark` se guarda en `aula-kanban-theme`, escucha `prefers-color-scheme` y se elige desde Ajustes > Apariencia. El script inicial evita el destello antes de hidratar. 92 de los 93 tokens `--ui-*` se redefinen en un único bloque `[data-theme="dark"]`; el restante es la opacidad compartida. No se duplican componentes. Quedan 0 hexadecimales en los 22 CSS de feature y 189 usos en `globals.css`; el mínimo de texto es 5,72:1, el borde de control 3,17:1 y el foco 7,49:1. La inspección visual en navegador sigue pendiente.
 
 ### Fase 7.1: Bordes, radios y separadores
 
@@ -139,6 +140,7 @@
 | El chrome claro se confunde con el contenido | Medio | `--ui-surface-frame` distinto, borde y activo violeta; medir contraste. |
 | Tipografía e iconos se tocan sin una escala | Alto | Fases 4 y 5 separadas; documentar roles y tamaños antes de aplicar. |
 | El tema oscuro se implementa antes de estabilizar color | Alto | Fase 7 al final; consume tokens ya validados. |
+| La reorganización de Ajustes se mezcla con temas | Medio | El selector vive en Apariencia; la separación de secciones queda en UI-03. |
 | Los estilos de terceros no respetan los tokens | Medio | Intervenir solo en envoltorios y variables expuestas; no reescribir el vendor. |
 | La revisión de bordes y radios termina en un rediseño de layout | Medio | Fase 7.1 separada; solo escala, separadores y contorno, sin mover estructura ni contenido. |
 | La extensión termina en un rediseño de layout | Alto | Mantener estructura, navegación y comportamiento; cualquier cambio funcional sale a otro roadmap. |
@@ -157,5 +159,6 @@
 - Fase 4 completada el 2026-11-15: 29 medidas de `font-size` quedan reducidas a 18 tokens; el CSS propio no conserva tamaños, interlineados, trackings ni pesos sueltos. Se mantienen las dos familias actuales, se añade `--font-mono` y se documenta la excepción de las apps internas.
 - Fase 5 completada el 2026-11-15: 13 tamaños de icono quedan reducidos a 6; lucide usa trazo 2 y la marca 2,4. Los botones de icono tienen un área mínima de 36 px y los iconos con texto quedan ocultos a lectores. La inspección visual en navegador sigue pendiente.
 - Fase 6 completada el 2026-11-15: los 80 hexadecimales de los CSS de feature bajan a 0; los 91 restantes están en `globals.css`. La tabla periódica estrena 11 tintes categóricos; hover, active, focus y disabled comparten tokens. La inspección visual en navegador sigue pendiente.
-- Fase 7 completada el 2026-11-15: el tema oscuro invierte 92 de los 93 tokens `--ui-*` en un solo bloque; `--ui-opacity-disabled` se comparte. La preferencia del sistema, el cambio manual y la persistencia funcionan desde el menú de cuenta. El mínimo de texto es 5,72:1, el borde de control 3,17:1 y el foco 7,49:1. La inspección visual en navegador sigue pendiente.
+- Fase 7 completada el 2026-11-15: el tema oscuro invierte 92 de los 93 tokens `--ui-*` en un solo bloque; `--ui-opacity-disabled` se comparte. La preferencia del sistema, el cambio manual y la persistencia funcionan desde Ajustes > Apariencia. El mínimo de texto es 5,72:1, el borde de control 3,17:1 y el foco 7,49:1. La inspección visual en navegador sigue pendiente.
+- El selector de tema se retiró del menú de cuenta y vive en la sección Apariencia de Ajustes. La reorganización de las demás secciones (por ejemplo, separar Almacenamiento de Administradores) queda en el backlog como UI-03; el alcance de la fase 7.1 no cambia.
 - Siguiente fase: 7.1 revisará bordes, radios y separadores (incluidos el borde sidebar/contenido y el contorno del héroe de Tareas). Después queda la limpieza y la guarda de la fase 8.

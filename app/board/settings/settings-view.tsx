@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { ShieldCheck, UserRound } from "lucide-react";
+import { Palette, ShieldCheck, UserRound } from "lucide-react";
 import WorkspaceLayout, { type WorkspaceItem } from "../layout/workspace-layout";
 import type { Project } from "../shared/model";
 import SettingsAccount from "./settings-account";
 import SettingsAdmins from "./settings-admins";
+import SettingsAppearance from "./settings-appearance";
 import SettingsStorage from "./settings-storage";
 import "./settings-view.css";
 
@@ -34,15 +35,18 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, activ
   const privileged = owner || admin;
   const sections: WorkspaceItem<SettingsSection>[] = [
     { id: "cuenta", label: "Cuenta", icon: UserRound },
+    { id: "apariencia", label: "Apariencia", icon: Palette },
     ...(privileged ? [{ id: "administradores" as const, label: "Administradores", icon: ShieldCheck }] : []),
   ];
-  const active = privileged ? section : "cuenta";
+  const active = !privileged && section === "administradores" ? "cuenta" : section;
 
   return (
     <WorkspaceLayout title="Ajustes" label="Secciones de ajustes" items={sections} active={active} onSelect={setSection}>
       <div className="settings-content">
         {active === "cuenta" ? (
           <SettingsAccount user={user} projectsLoaded={projectsLoaded} owner={owner} admin={admin} activeProject={activeProject} />
+        ) : active === "apariencia" ? (
+          <SettingsAppearance />
         ) : (
           <>
             <SettingsAdmins onProjectsChanged={onProjectsChanged} />

@@ -10,6 +10,7 @@ describe("parseBoardUrl", () => {
   it("lee vista y sección de la URL sin tocar el proyecto", () => {
     expect(parseBoardUrl("?project=p1&view=alumnos")).toEqual({ view: "alumnos", classSection: "tareas", settingsSection: "cuenta", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=administradores")).toEqual({ view: "ajustes", classSection: "tareas", settingsSection: "administradores", app: null });
+    expect(parseBoardUrl("?project=p1&view=ajustes&section=apariencia")).toEqual({ view: "ajustes", classSection: "tareas", settingsSection: "apariencia", app: null });
     expect(parseBoardUrl("?project=p1&view=documentacion")).toEqual({ view: "documentacion", classSection: "tareas", settingsSection: "cuenta", app: null });
   });
 
@@ -41,6 +42,7 @@ describe("buildBoardUrl", () => {
   it("escribe vista y sección no por defecto y limpia la sección al cambiar de vista", () => {
     expect(buildBoardUrl("?project=p1", { view: "alumnos", classSection: "tareas", settingsSection: "cuenta", app: null })).toBe("?project=p1&view=alumnos");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=administradores", { view: "ajustes", classSection: "tareas", settingsSection: "administradores", app: null })).toBe("?project=p1&view=ajustes&section=administradores");
+    expect(buildBoardUrl("?project=p1&view=ajustes&section=apariencia", { view: "ajustes", classSection: "tareas", settingsSection: "apariencia", app: null })).toBe("?project=p1&view=ajustes&section=apariencia");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=administradores", { view: "alumnos", classSection: "tareas", settingsSection: "administradores", app: null })).toBe("?project=p1&view=alumnos");
   });
 

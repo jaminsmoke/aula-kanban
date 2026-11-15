@@ -164,7 +164,7 @@ Los estados usan `--ui-surface-hover` y `--ui-action-primary-hover` para hover; 
 
 ### Tema oscuro
 
-El tema se resuelve en `app/theme.ts` y se aplica con `data-theme` y `color-scheme` en el elemento `<html>`. La preferencia `system | light | dark` se guarda en `localStorage` con la clave `aula-kanban-theme`; `useTheme` escucha los cambios de `prefers-color-scheme`, y el selector vive en el menú de cuenta. El script inicial se inyecta en `<head>` desde `app/layout.tsx` para que no haya destello claro antes de hidratar.
+El tema se resuelve en `app/theme.ts` y se aplica con `data-theme` y `color-scheme` en el elemento `<html>`. La preferencia `system | light | dark` se guarda en `localStorage` con la clave `aula-kanban-theme`; `useTheme` escucha los cambios de `prefers-color-scheme`, y el selector vive en Ajustes > Apariencia (`app/board/settings/settings-appearance.tsx`). El script inicial se inyecta en `<head>` desde `app/layout.tsx` para que no haya destello claro antes de hidratar.
 
 | Rol | Claro | Oscuro |
 |---|---:|---:|
@@ -245,7 +245,7 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 | 4 | Tipografía y jerarquía | Completada; 18 tokens de tamaño, 5 de interlineado, 6 de tracking y 5 pesos; sin medidas sueltas en el CSS propio. |
 | 5 | Iconografía y densidad | Completada; seis tamaños, trazo 2 (marca 2,4) y áreas táctiles de 36 px. |
 | 6 | Color, estados y acentos | Completada; cero hexadecimales en CSS de feature, 11 categorías y estados compartidos. |
-| 7 | Temas claro y oscuro | Completada; preferencia del sistema, cambio manual, persistencia y 92 tokens invertidos en un único bloque. |
+| 7 | Temas claro y oscuro | Completada; preferencia del sistema, cambio manual, persistencia, 92 tokens invertidos y selector en Ajustes > Apariencia. |
 | 7.1 | Bordes, radios y separadores | Pendiente; revisará grosores, radios y los separadores del marco y el héroe. |
 | 8 | Limpieza, guarda y cierre | Pendiente. |
 

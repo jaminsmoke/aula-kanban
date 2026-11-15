@@ -8,6 +8,13 @@
 
 ---
 
+## 2026-11-15 — UI-03 · Reorganizar las secciones de Ajustes
+
+- Contexto: el selector de tema ya vive en Ajustes > Apariencia. Ajustes mantiene `Cuenta` y `Administradores`, pero `Administradores` mezcla la gestión de fichas con el diagnóstico de almacenamiento, y `Cuenta` acumula los tokens MCP y el cierre de sesión. La jerarquía de secciones queda fuera de UI-01.
+- Qué falta: decidir un mapa estable de secciones (Cuenta, Apariencia, Administradores, Almacenamiento, Tokens MCP, Auditoría…), separar responsabilidades, revisar qué secciones requieren propietario o administración y conservar las URLs existentes con compatibilidad o redirecciones. Revisar también el sidebar en móvil.
+- Criterios mínimos: cada sección agrupa un solo tema; los permisos no muestran secciones restringidas; las URLs canónicas y atrás/adelante siguen funcionando; no se duplica lógica de cuenta, administración ni almacenamiento.
+- Notas técnicas: `?view=ajustes&section=apariencia` ya es válido. `SettingsStorage` es un componente independiente en `app/board/settings/settings-storage.tsx`; se puede promover a sección propia sin tocar la API. La entrada no cambia el alcance de UI-01 ni de la fase 7.1.
+
 ## 2026-11-15 — PER-03 · Purga segura de archivos sin uso
 
 - Contexto: se ha verificado la subida de archivos, pero actualmente solo se limpian los objetos al eliminar su proyecto. Cambiar una miniatura o cancelar una subida no elimina necesariamente sus objetos. **La purga automática aún no está implementada.**

@@ -40,10 +40,6 @@
 .account-dropdown button:hover,.account-dropdown a:hover { background:var(--ui-action-soft); }
 .account-dropdown svg { color:var(--ui-action-text); }
 
-.theme-switcher { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; margin-top:2px; padding-top:10px; border-top:1px solid var(--ui-border-default); }
-.theme-switcher button { justify-content:center; gap:5px; width:100%; padding:8px 6px; border:1px solid transparent; border-radius:7px; background:var(--ui-surface-muted); color:var(--ui-text-muted); font-size:var(--text-sm); font-weight:var(--weight-semibold); }
-.theme-switcher button:hover:enabled { background:var(--ui-surface-hover); color:var(--ui-text-primary); }
-.theme-switcher button[aria-pressed="true"] { border-color:var(--ui-border-accent); background:var(--ui-action-soft); color:var(--ui-action-text); }
 .account-avatar { display:grid; place-items:center; width:36px; height:36px; flex:none; border-radius:50%; border:1px solid var(--ui-border-accent); background:var(--ui-action-soft); color:var(--ui-action-text); font-weight: var(--weight-bold); font-size: var(--text-base); transition:background var(--duration-fast) var(--ease-out); }
 .account-menu summary:hover .account-avatar { background:var(--ui-surface-hover); }
 .account-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--ui-text-primary); font-size: var(--text-base); font-weight: var(--weight-semibold); }
