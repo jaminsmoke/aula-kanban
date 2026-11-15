@@ -6,6 +6,32 @@
 
 ---
 
+## 2026-11-15 — Roadmap PERF-01 · Coste de las apps pesadas cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fase 1 — Línea base:** `scripts/perf-report.mjs`, `npm run perf:report`, `docs/perf-baseline.json` y `docs/rendimiento.md` miden el cierre de cada flujo en bruto y gzip.
+- **Fase 2 — Básica sin motor:** un evaluador racional pequeño sustituye a `compute-engine` en la Básica; Científica y Ecuaciones conservan el motor. El primer `=` baja de **1.922,3 a 140,3 KiB gzip**.
+- **Fase 3 — Mermaid y KaTeX:** la conversión Mermaid incluye ahora su flowchart real; Mermaid 11/12 y las dos copias de KaTeX no coinciden en ningún flujo. Se añadió una prueba funcional de conversión y guardas de carga.
+- **Fase 4 — Latencia y CI:** `perf:latency` mide sobre la build servida con Chrome, caché fría y Fast 3G; `perf:budget` lee `docs/perf-budget.json` y CI lo ejecuta después del build. Mi espacio queda en **162,6 KiB gzip** sin apps pesadas.
+- Sin cambios de versión; `package.json` sigue en `1.1.26`.
+
+### Verificación
+
+- `npm run lint` limpio.
+- `npx tsc --noEmit` limpio.
+- Suite completa: **94 archivos / 783 tests**.
+- `npm run build` en verde, con el aviso existente de chunks superiores a 500 kB.
+- `npm run perf:budget` correcto para los once flujos; `git diff --check` limpio.
+- Latencia real, 5 muestras por modo: Básica **3.149,6 ms** y Científica **12.753,1 ms** hasta el primer resultado; `compute-engine` solo aparece en Científica.
+- Commits de fase: `725408e`, `09d0eaa`, `f517b56` y `fd6e860`. Push único de cierre a `github/main`.
+
+### Seguimiento en backlog
+
+Roadmap vacío. Backlog: 6 entradas (PER-03, PER-01B, PER-02, UI-01, SYNC-01 y MCP-05). SYNC-01 se conserva como norma operativa.
+
 ## 2026-11-15 — Roadmap ARCH-01 · Contratos de rutas y límites de capa cerrado
 
 **Estado:** Completada · Sin publicación

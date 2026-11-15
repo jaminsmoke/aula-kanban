@@ -4,7 +4,7 @@
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01, CI-01, UI-02, CI-02, ARCH-01 y ARCH-02 se completaron, la entrada de rendimiento pasó al roadmap como PERF-01 y SYNC-01 se queda aquí como norma operativa.
+> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron; SYNC-01 se queda aquí como norma operativa. No hay roadmap activo.
 
 ---
 

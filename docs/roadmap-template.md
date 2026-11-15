@@ -14,10 +14,10 @@
 ## 2. Alcance
 
 **Dentro:**
-- 
+-
 
 **Fuera de alcance:**
-- 
+-
 
 ## 3. Decisiones de arquitectura
 
@@ -27,20 +27,20 @@
 
 ## 4. Fases
 
-### Fase 1: 
+### Fase 1:
 - [ ] Tarea
 - [ ] Tarea
-- **Criterios de aceptación:** 
+- **Criterios de aceptación:**
 
-### Fase 2: 
+### Fase 2:
 - [ ] Tarea
 - [ ] Tarea
-- **Criterios de aceptación:** 
+- **Criterios de aceptación:**
 
-### Fase 3: 
+### Fase 3:
 - [ ] Tarea
 - [ ] Tarea
-- **Criterios de aceptación:** 
+- **Criterios de aceptación:**
 
 ## 5. Riesgos y bloqueos
 
@@ -50,4 +50,4 @@
 
 ## 6. Notas de sesión
 
-- 
+-
