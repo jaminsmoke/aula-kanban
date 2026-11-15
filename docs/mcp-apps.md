@@ -82,7 +82,7 @@ reglas de cada app.
 
 ## Referencias
 
-- [`roadmap.md`](roadmap.md): contrato común y piloto de Herramientas de aula.
+- [`changelog.md`](changelog.md): resumen del roadmap MCP-05A + MCP-05C.
 - [`backlog.md`](backlog.md): MCP-05B, MCP-05D y MCP-05E.
 - [`aplicaciones-nativas.md`](aplicaciones-nativas.md): catálogo, licencias y
   versiones de las apps.

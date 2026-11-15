@@ -6,6 +6,32 @@
 
 ---
 
+## 2026-11-15 — Roadmap MCP-05A + MCP-05C · Contrato MCP de apps y piloto cerrado
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- **Fase 1 — Contrato común:** `resolverAppInstalada` y `resolverAppEnProyecto` resuelven instalación, proyecto, acceso y escritura con el contrato de errores existente. `APP_MCP_DECLARACIONES` exige una entrada por app y un test impide dejar una app sin superficie MCP.
+- **Fase 2 — Piloto de Herramientas de aula:** `consultar_elemento` busca por símbolo o número atómico, exige la app instalada y no necesita proyecto. Los 118 elementos y su tipo pasan a `lib/domain/edu-tools/` para que la interfaz y MCP lean la misma copia.
+- **Fase 3 — Cobertura y cierre:** `docs/mcp-apps.md` reúne apertura, ventana, lectura, escritura, exportación, permisos y límites de las cuatro apps. La revisión confirma que los únicos huecos son MCP-05B, MCP-05D y MCP-05E; las exportaciones renderizadas se quedan en la ventana.
+- Catálogo `0.22.0` con 51 herramientas (22 de lectura, 29 de escritura y 8 destructivas). Sin migraciones ni cambio de versión; `package.json` sigue en `1.1.27`.
+- Roadmap cerrado y `docs/roadmap.md` reiniciado. El backlog conserva 7 entradas.
+
+### Verificación
+
+- `npm run lint` limpio.
+- `npx tsc --noEmit` limpio.
+- `npm test`: **100 archivos / 816 tests**.
+- `npm run build` correcto, con el aviso existente de chunks superiores a 500 kB.
+- `git diff --check` limpio.
+- Commits de fase: `4381d10` (contrato), `7aa4e50` (piloto) y `fcda106` (cobertura).
+- Sin inspección visual en navegador; la verificación es de código y documentación.
+
+### Seguimiento en backlog
+
+MCP-05B, MCP-05D y MCP-05E siguen en [`backlog.md`](backlog.md); no se añaden entradas nuevas. PER-03, PER-01B, PER-02, SYNC-01 y esas tres apps suman 7 entradas.
+
 ## 2026-11-15 — Roadmap UI-03 · Secciones de Ajustes cerrado
 
 **Estado:** Completada · Sin publicación
