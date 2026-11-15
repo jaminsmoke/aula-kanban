@@ -4,7 +4,7 @@
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap activo:** [`roadmap.md`](roadmap.md) · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01, CI-01, UI-02, CI-02 y ARCH-02 se completaron, y SYNC-01 se queda aquí como norma operativa.
+> **Nota:** PER-01 se archivó con su trabajo pendiente conservado abajo; HIER-01, CI-01, UI-02, CI-02 y ARCH-02 se completaron, ARCH-01 pasó al roadmap y SYNC-01 se queda aquí como norma operativa.
 
 ---
 
@@ -37,16 +37,6 @@
   - [ ] Hacer un piloto en Clase > Tareas y extenderlo después a Calendario, Ajustes y Documentación.
   - [ ] Revisar escritorio, tablet y móvil, además de `prefers-reduced-motion`.
 - Notas técnicas: mantener `app/globals.css` como fuente de verdad de tokens y los CSS de feature como consumidores; no duplicar paletas por pantalla. Validar contraste y no tocar lógica.
-
-## 2026-11-15 — ARCH-01 · Contratos de rutas y límites de capa
-
-- Contexto: hay 24 handlers en 15 `route.ts` de `app/api`. Se repiten `isSameOrigin`, `isJsonRequest`, `resolveProject`, `projectFailureResponse`, la comprobación de invitado y el parseo del cuerpo. `lib/server/project.ts` mezcla acceso con respuestas HTTP, `projects.ts` importa mensajes HTTP y `app/api/projects/route.ts` ejecuta migración de UUID, identidad y limpieza de huérfanos.
-- Qué falta antes de retomarlo:
-  - [ ] Extraer helpers de ruta (`withProjectRoute` y mutación JSON) sin cambiar códigos ni mensajes del contrato.
-  - [ ] Separar el acceso de proyecto (`project-access.ts`) de sus respuestas HTTP (`project-http.ts`); los servicios no deben importar mensajes de transporte.
-  - [ ] Mover la migración de UUID, la actualización de identidad y la limpieza de huérfanos de `/api/projects` a un servicio idempotente.
-  - [ ] Cubrir el refactor con el contrato de sesión, permisos, errores y paridad HTTP ↔ MCP.
-- Notas técnicas: refactor incremental; no mover carpetas; no ocultar validaciones específicas de cada ruta detrás de un helper genérico.
 
 ## 2026-11-15 — SYNC-01 · Sincronizar el repositorio al cerrar cada roadmap
 
