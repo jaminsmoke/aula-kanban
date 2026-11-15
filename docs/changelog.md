@@ -1,10 +1,34 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** UI-04 · Vista de administración · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-15 — Roadmap UI-04 · Vista de administración
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Alumnos y Profesores pasan a una sola vista `administracion` con el sidebar de `WorkspaceLayout`; la cabecera cambia los tres botones por una entrada «Administración» y cada sección conserva su contador, su disposición y su alta.
+- `view=administracion` es la URL canónica: Alumnos omite la sección y Profesores usa `section=profesores`. `view=alumnos` y `view=profesores` siguen funcionando como alias y se reescriben con `replaceState`, sin añadir una entrada al historial.
+- El alumnado mantiene el acceso: al entrar en Alumnos se abre su propia ficha una vez por proyecto. Los permisos de alta y edición no cambian.
+- Se retiran de las dos vistas el `eyebrow`, la intro y el `h1` duplicados; el título de sección es un `h2` y el sidebar reutiliza el marco existente.
+- `obtener_enlace` acepta `administracion` y su sección; ayuda, README y snapshot del catálogo actualizados. Sin migraciones ni cambio de versión: `1.1.30`.
+
+### Verificación
+
+- Build servida en `8791` con identidad local: 1366×900 con seis alumnos, detalle de ficha y vuelta; 1024×768 con dos profesores; 390×844 con el sidebar en fila y las dos secciones.
+- Sin `eyebrow`, intro ni desbordes horizontales; a 390 el contenido tiene scroll propio (913 px frente a 677 visibles) y el sidebar mide 60 px de alto, frente a 224 px a 1366 y 208 px a 1024.
+- Alias: `?view=alumnos` → `?view=administracion`; `?view=profesores` → `?view=administracion&section=profesores`. Atrás vuelve a Alumnos y adelante a Profesores.
+- Suite completa: 123 archivos / 1.014 pruebas; `tsc`, lint, build y `git diff --check` en verde. Sin excepciones de consola.
+- Commits: `2a6bbd5` (roadmap) y `da02b7e` (vista, URL y MCP); el cierre queda en el commit de documentación. Sin `release:prepare` ni publicación.
+
+### Seguimiento en backlog
+
+UI-05 (estados vacíos de fichas) sigue en [`backlog.md`](backlog.md).
 
 ## 2026-11-15 — Roadmap UI-06 · Hero compacto del tablero
 

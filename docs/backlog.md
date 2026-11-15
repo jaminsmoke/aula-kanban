@@ -2,9 +2,9 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** UI-04 · Vista de administración · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** 1 entrada aparcada, extraíble como roadmap independiente
-> **Nota:** PER-06, PER-07 y PER-08 se cerraron con pruebas controladas y sus limitaciones se documentaron en el changelog. UI-04 y UI-06 salieron al roadmap activo; UI-05 sigue aquí.
+> **Nota:** PER-06, PER-07 y PER-08 se cerraron con pruebas controladas y sus limitaciones se documentaron en el changelog. UI-04 y UI-06 se completaron desde el roadmap; UI-05 sigue aquí.
 
 ---
 
