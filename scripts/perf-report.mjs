@@ -43,6 +43,10 @@ function findKey(pattern, label) {
 const browserEntry = Object.keys(manifest).find((key) => manifest[key].isEntry);
 if (!browserEntry) throw new Error("El manifiesto no declara una entrada de navegador.");
 
+const mermaidCore = findKey(
+  /^node_modules\/mermaid\/dist\/mermaid\.core\.mjs$/,
+  "el núcleo de Mermaid",
+);
 const mermaidFlow = findKey(
   /^node_modules\/mermaid\/dist\/chunks\/mermaid\.core\/flowDiagram-[^/]+\.mjs$/,
   "el diagrama de flujo de Mermaid",
@@ -50,6 +54,10 @@ const mermaidFlow = findKey(
 const mermaidElk = findKey(
   /^node_modules\/mermaid\/dist\/chunks\/mermaid\.core\/elk-[^/]+\.mjs$/,
   "ELK de Mermaid",
+);
+const mermaidConversionFlow = findKey(
+  /^node_modules\/@excalidraw\/mermaid-to-excalidraw\/node_modules\/mermaid\/dist\/chunks\/mermaid\.core\/flowDiagram-[^/]+\.mjs$/,
+  "el diagrama de flujo de la conversión Mermaid",
 );
 const excalidrawWasm = Object.keys(manifest).find((key) =>
   /\/chunk-EIO[^/]+\.js$/.test(manifest[key].file ?? ""),
@@ -114,6 +122,7 @@ const FLOWS = [
       "app/board/shared/whiteboard/index.ts",
       excalidrawWasm,
       "node_modules/@excalidraw/mermaid-to-excalidraw/dist/index.js",
+      mermaidConversionFlow,
     ],
   },
   {
@@ -166,6 +175,22 @@ for (const flow of FLOWS) {
   for (const rootKey of flow.roots) {
     if (!manifest[rootKey]) throw new Error(`La raíz ${rootKey} no existe en el manifiesto.`);
     collect(rootKey, seen, missing);
+  }
+
+  if (flow.id === "pizarra" && [...seen].some((file) => /mermaid|katex/i.test(file))) {
+    throw new Error("Abrir la Pizarra está descargando la conversión Mermaid o KaTeX.");
+  }
+  if (flow.id === "diagramas" && [...seen].some((file) => /elk-|cytoscape/i.test(file))) {
+    throw new Error("El diagrama de flujo normal está descargando ELK o Cytoscape.");
+  }
+  if (flow.id === "diagramas-elk" && ![...seen].some((file) => /elk-/i.test(file))) {
+    throw new Error("El flujo con ELK no incluye el chunk de ELK.");
+  }
+  if (flow.id === "pizarra-mermaid" && !seen.has(manifest[mermaidConversionFlow].file)) {
+    throw new Error("La conversión Mermaid no incluye su diagrama de flujo.");
+  }
+  if (flow.id === "pizarra-mermaid" && (seen.has(manifest[mermaidCore].file) || seen.has(manifest[mermaidFlow].file))) {
+    throw new Error("La conversión Mermaid está mezclando Mermaid 11 y Mermaid 12.");
   }
 
   const files = [];

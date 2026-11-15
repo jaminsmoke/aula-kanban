@@ -36,6 +36,7 @@
 | Conservar `compute-engine` para Científica y Ecuaciones | Sustituirlo por `mathjs` o un motor único | Se necesita LaTeX y cálculo simbólico; el coste solo es aceptable cuando se usa |
 | Evaluar la Básica con un evaluador numérico pequeño | Cargar 1,83 MB gzip para cualquier `=` | La Básica no necesita símbolos ni resultados exactos simbólicos |
 | No forzar alias de Mermaid ni KaTeX | Unificar versiones con `overrides` sin prueba | Mermaid 11.17 y 12.3 no son intercambiables; la conversión a Excalidraw es sensible |
+| No actualizar `mermaid-to-excalidraw` a 3.x en esta fase | Eliminar Mermaid 11 y KaTeX 0.16 del árbol | 3.x cambia el motor a Pele y el resultado visual; es una migración funcional, no un recorte de rendimiento |
 | Aceptar el wasm de Excalidraw como coste de la Pizarra | Dividirlo o cambiar de librería | Es un binario de producción de Excalidraw; no hay un recorte limpio |
 | No deduplicar el `compute-engine` 0.29.1 de `mathlive` | Forzar una versión única en todo el árbol | No aparece en el bundle cliente actual; solo sería un problema de instalación |
 
@@ -47,20 +48,20 @@ Medición sobre `dist/client` del build actual, sin rebuild:
 |---|---|---|
 | Entrada del tablero | `index` y `board`; las apps se importan con `lazy` | En torno a 150 KB gzip según la línea base anterior; la fase 1 lo recalcula con el cierre completo |
 | Abrir Herramientas de aula en Básica | `edu-tools-app` no importa el motor al abrir | Sin `compute-engine` |
-| Pulsar `=` en Básica | `useCalculator` llama siempre a `evaluateLatex` | `compute-engine`: 6.309.699 B / **1.828.624 B gzip** |
+| Pulsar `=` en Básica | Antes llamaba a `evaluateLatex`; desde la fase 2 usa el evaluador básico | `compute-engine`: 6.309.699 B / **1.828.624 B gzip** antes; ahora no se descarga |
 | Científica o Ecuaciones | `preloadEngine` y evaluaciones | El mismo motor de 1,83 MB gzip |
 | Diagramas | `mermaid` 12.3.0; el render inicial usa la plantilla de flujo | Núcleo de Mermaid y chunks asociados bajo demanda |
 | Diagramas con ELK/Cytoscape | Dependencias de Mermaid 12.3.0 | ELK 1.501.961 B / **459.844 B gzip**; Cytoscape 442.621 B / **138.507 B gzip**; solo en diagramas que los usan |
 | Pizarra | Excalidraw 0.18.1 y `whiteboard` | Wasm Emscripten 1.821.059 B / **741.648 B gzip**; `whiteboard` 1.135.890 B / **360.430 B gzip** |
 | Blockly | `blockly` y generadores cargados bajo demanda | `blockly_compressed` 629.116 B / **174.382 B gzip** |
-| KaTeX duplicado | `mermaid` 12.3.0 usa 0.18.10; `@excalidraw/mermaid-to-excalidraw` 2.2.2 usa 0.16.47 | Dos chunks de **76.755 B** y **76.564 B gzip** |
-| Mermaid duplicado | `@excalidraw/mermaid-to-excalidraw` trae Mermaid 11.17.2 | Chunk de parser separado; confirmar si se carga al abrir la Pizarra o solo al convertir |
+| KaTeX duplicado | `mermaid` 12.3.0 usa 0.18.10; `@excalidraw/mermaid-to-excalidraw` 2.2.2 usa 0.16.47 | Dos chunks de **76.755 B** y **76.564 B gzip**; ambos dinámicos y nunca en el mismo flujo medido |
+| Mermaid duplicado | `@excalidraw/mermaid-to-excalidraw` trae Mermaid 11.17.2 | 11.17.2 solo en la conversión; 12.3.0 solo en Diagramas; no coinciden |
 
 ### Hallazgos de la revisión
 
-- **La Básica no es gratuita al evaluar.** El backlog hablaba de Científica y Ecuaciones, pero `equals` usa `evaluateLatex` en todos los modos. Es el mayor ahorro potencial y no exige tocar el motor científico.
+- **La Básica no era gratuita al evaluar.** El backlog hablaba de Científica y Ecuaciones, pero `equals` usaba `evaluateLatex` en todos los modos. Fue el mayor ahorro potencial y no exigió tocar el motor científico.
 - **El `compute-engine` 0.29.1 de `mathlive` no está en el cliente.** `@smst/edu-tools` lo instala como dependencia, pero no hay rastro de `mathlive` en `dist/client`; no conviene gastar trabajo en un problema que no se descarga.
-- **La conversión Mermaid de Excalidraw es una importación dinámica.** `whiteboard` referencia `@excalidraw/mermaid-to-excalidraw`, pero no se puede afirmar que sus dos KaTeX se descarguen al abrir la Pizarra. La fase 3 debe medir el flujo antes de unificar.
+- **La conversión Mermaid de Excalidraw es una importación dinámica.** La fase 3 confirmó que abrir la Pizarra no la carga; Mermaid 11 y KaTeX 0.16 solo aparecen al convertir.
 - **Lo que ya está bien:** las apps están en `lazy`, abrir Básica no descarga el motor, ELK/Cytoscape/Blockly no forman parte de la entrada y las fuentes de Excalidraw se sirven localmente. No se debe reescribir eso.
 - **El aviso de build no es el objetivo.** Un chunk de 6,3 MB en bruto es un problema, pero el presupuesto útil es el gzip que descarga cada flujo. El aviso de 500 kB puede quedar mientras los flujos no regresen.
 
@@ -87,13 +88,13 @@ Medición sobre `dist/client` del build actual, sin rebuild:
 
 ### Fase 3 — Mermaid, KaTeX y conversión
 
-- [ ] Medir qué carga realmente abrir Diagramas, un diagrama con ELK y la conversión Mermaid a Excalidraw.
-- [ ] Determinar si las dos copias de KaTeX y los dos parsers de Mermaid se descargan en algún flujo real o si una de ellas es solo una importación dinámica no usada.
-- [ ] Evaluar una alineación de versiones compatible, o un `override` acotado, solo si Diagramas y la conversión pasan sus pruebas; no forzar un alias.
-- [ ] Mantener ELK y Cytoscape bajo demanda y evitar que un diagrama normal los incorpore.
-- [ ] Retirar las copias duplicadas que no se usen o documentar por qué son inevitables.
+- [x] Medir qué carga realmente abrir Diagramas, un diagrama con ELK y la conversión Mermaid a Excalidraw.
+- [x] Determinar si las dos copias de KaTeX y los dos parsers de Mermaid se descargan en algún flujo real o si una de ellas es solo una importación dinámica no usada.
+- [x] Evaluar una alineación de versiones compatible, o un `override` acotado, solo si Diagramas y la conversión pasan sus pruebas; no forzar un alias.
+- [x] Mantener ELK y Cytoscape bajo demanda y evitar que un diagrama normal los incorpore.
+- [x] Retirar las copias duplicadas que no se usen o documentar por qué son inevitables.
 
-**Criterios de aceptación:** no hay una descarga duplicada evitable en los flujos medidos; si Mermaid 11/12 debe seguir separado, queda justificado con una medición y una prueba de conversión.
+**Criterios de aceptación:** no hay una descarga duplicada evitable en los flujos medidos; si Mermaid 11/12 debe seguir separado, queda justificado con una medición y una prueba de conversión. Completada el 2026-11-15: abrir la Pizarra no carga la conversión; la conversión real incluye su flowchart de Mermaid 11 y cuesta 1.451,8 KiB gzip; Mermaid 11/12 y las dos KaTeX no coinciden en ningún flujo.
 
 ### Fase 4 — Pizarra, Blockly y guardas de CI
 
@@ -125,5 +126,6 @@ Medición sobre `dist/client` del build actual, sin rebuild:
 - El aviso de chunks >500 kB es de tamaño bruto y no se usará como criterio de éxito.
 - Fase 1 completada el 2026-11-15: `npm run perf:report`, `docs/perf-baseline.json` y `docs/rendimiento.md`; diez flujos deterministas. La Pizarra incluye ya el wasm de Excalidraw (1.254,5 KiB gzip).
 - Fase 2 completada el 2026-11-15: `basic-evaluate.ts` y `calculator-evaluation.ts` separan el cálculo racional del motor simbólico; el flujo `basica-evalua` baja de 1.922,3 a 140,3 KiB gzip.
+- Fase 3 completada el 2026-11-15: abrir la Pizarra sigue en 1.254,5 KiB gzip y no incluye la conversión; la conversión completa, con el flowchart de Mermaid 11, cuesta 1.451,8 KiB. Mermaid 11 y KaTeX 0.16 solo aparecen al convertir; Mermaid 12 y KaTeX 0.18 solo en Diagramas. Se añadió una prueba funcional de conversión y guardas de flujo. Se descartó `mermaid-to-excalidraw` 3.6.0 porque cambia el motor a Pele y el resultado visual.
 - La latencia real no se ha medido todavía; se validará en la fase 4 antes de cerrar el roadmap. No se atribuye ninguna mejora de tiempo a esta fase.
 - Sin cambios de versión: `package.json` sigue en `1.1.26`.

@@ -520,11 +520,12 @@
       "roots": [
         "app/board/shared/whiteboard/index.ts",
         "_chunk-EIO257PC-BEcCMZRJ.js",
-        "node_modules/@excalidraw/mermaid-to-excalidraw/dist/index.js"
+        "node_modules/@excalidraw/mermaid-to-excalidraw/dist/index.js",
+        "node_modules/@excalidraw/mermaid-to-excalidraw/node_modules/mermaid/dist/chunks/mermaid.core/flowDiagram-HODETNUW.mjs"
       ],
-      "raw": 4375686,
-      "gzip": 1464883,
-      "fileCount": 51,
+      "raw": 4441023,
+      "gzip": 1486653,
+      "fileCount": 58,
       "files": [
         {
           "file": "_next/static/chunks/chunk-EIO257PC-BEcCMZRJ.js",
@@ -577,14 +578,14 @@
           "gzip": 20717
         },
         {
+          "file": "_next/static/chunks/chunk-SHT3W25Y-DEJFkSKV.js",
+          "raw": 61336,
+          "gzip": 19496
+        },
+        {
           "file": "_next/static/chunks/chunk-LNGE3PJU-D_5Clqaj.js",
           "raw": 46390,
           "gzip": 15340
-        },
-        {
-          "file": "_next/static/chunks/rough.esm-kCko1tw7.js",
-          "raw": 27103,
-          "gzip": 8783
         }
       ]
     },

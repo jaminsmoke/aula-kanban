@@ -1,6 +1,6 @@
 # Rendimiento del cliente
 
-> **Estado:** línea base de PERF-01 · fase 2 · build `1.1.26` · 2026-11-15
+> **Estado:** línea base de PERF-01 · fase 3 · build `1.1.26` · 2026-11-15
 > **Informe:** `npm run perf:report` · **Datos:** [`perf-baseline.json`](perf-baseline.json)
 
 ---
@@ -20,7 +20,7 @@ Para actualizar la línea base:
 npm run perf:report -- --json --out docs/perf-baseline.json
 ```
 
-El script lee `dist/client/.vite/manifest.json`, sigue los `imports` estáticos y el CSS de cada entrada y suma sus tamaños bruto y gzip. Los `dynamicImports` no se siguen automáticamente: cada flujo añade como raíz explícita las cargas dinámicas que necesita (motor de cálculo, núcleo de Mermaid, diagrama de flujo, ELK, wasm de Excalidraw y Blockly).
+El script lee `dist/client/.vite/manifest.json`, sigue los `imports` estáticos y el CSS de cada entrada y suma sus tamaños bruto y gzip. Los `dynamicImports` no se siguen automáticamente: cada flujo añade como raíz explícita las cargas dinámicas que necesita (motor de cálculo, núcleo de Mermaid, diagrama de flujo, diagrama de flujo de la conversión, ELK, wasm de Excalidraw y Blockly).
 
 El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros assets que no estén declarados en el manifiesto. Por eso sirve para comparar flujos entre sí y detectar regresiones, no como sustituto de una medición real de red.
 
@@ -35,7 +35,7 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 | Diagramas · flujo inicial | 1.135,3 KiB | 308,7 KiB (316.082 B) | 331.886 B | 42 |
 | Diagramas · con ELK | 2.573,9 KiB | 749,8 KiB (767.826 B) | 806.217 B | 40 |
 | Pizarra · abrir | 3.573,0 KiB | 1.254,5 KiB (1.284.638 B) | 1.348.870 B | 31 |
-| Pizarra · conversión Mermaid | 4.273,1 KiB | 1.430,5 KiB (1.464.883 B) | 1.538.127 B | 51 |
+| Pizarra · conversión Mermaid | 4.337,0 KiB | 1.451,8 KiB (1.486.653 B) | 1.560.986 B | 58 |
 | Blockly · abrir | 1.145,6 KiB | 321,5 KiB (329.170 B) | 345.629 B | 17 |
 | Blockly · panel de código | 1.279,9 KiB | 356,5 KiB (365.022 B) | 383.273 B | 20 |
 
@@ -47,7 +47,18 @@ Los totales incluyen el framework y la entrada compartida. La comparación útil
 - Ahora: cuesta **140,3 KiB gzip** (143.645 B), lo mismo que abrir la app. La reducción es de **1.782,0 KiB gzip** (1.824.754 B).
 - El motor sigue disponible para Científica/Ecuaciones: **1.925,2 KiB gzip**.
 - El parser básico añade **1,2 KiB gzip** al chunk de la app, pero elimina 1,83 MB de descarga en el flujo más común.
-- El informe falla si el flujo `basica-evalua` vuelve a incluir un archivo `compute-engine`.
+- El informe falla si el flujo `basica-evalua` vuelve a incluir un archivo `compute-engine`. También falla si la Pizarra incluye Mermaid/KaTeX, si Diagramas incluye ELK/Cytoscape o si la conversión mezcla Mermaid 11 y 12.
+
+## Cambio de fase 3
+
+- Abrir la Pizarra no descarga la conversión: **1.254,5 KiB gzip** (1.284.638 B), sin Mermaid ni KaTeX.
+- La conversión Mermaid solo se paga al usarla. El informe ahora incluye su diagrama de flujo de Mermaid 11: **1.451,8 KiB gzip** (1.486.653 B), **197,3 KiB** más que abrir la Pizarra.
+- El aumento respecto a la cifra anterior (1.430,5 KiB) es de **21,3 KiB gzip** (21.770 B) y no es una regresión: antes el informe no seguía esa carga dinámica.
+- Mermaid 12.3.0 se queda en Diagramas; Mermaid 11.17.2 solo aparece en la conversión. Ningún flujo carga ambos.
+- KaTeX 0.18.10 y 0.16.47 son importaciones dinámicas de sus respectivos Mermaid; no aparecen en los flujos medidos y no se cargan juntas.
+- No se fuerza ningún alias. `@excalidraw/mermaid-to-excalidraw` 3.6.0 eliminaría Mermaid 11 y KaTeX 0.16, pero cambia el motor de conversión a Pele y el resultado visual; queda fuera de este roadmap.
+- El diagrama de flujo normal no incluye ELK ni Cytoscape; el flujo con ELK sigue separado.
+- Hay una prueba funcional de conversión (`mermaid-conversion.test.ts`) que convierte un flowchart y comprueba que produce rectángulos y flechas.
 
 ## Presupuestos
 
@@ -55,6 +66,7 @@ Los totales incluyen el framework y la entrada compartida. La comparación útil
 - **Flujos:** ninguno debe superar su presupuesto provisional sin una mejora deliberada y una actualización razonada de la línea base.
 - **Herramientas de aula:** abrir Básica y pulsar `=` no descargan el motor. Científica y Ecuaciones sí lo usan.
 - **Pizarra:** el wasm de Excalidraw es un coste aceptado de abrir la Pizarra. No se divide ni se sustituye la librería sin una decisión explícita.
+- **Conversión Mermaid:** 1.560.986 B. Abrir la Pizarra no puede incluir Mermaid 11, KaTeX ni `mermaid-to-excalidraw`; la conversión debe conservar su diagrama de flujo de Mermaid 11.
 - **Blockly:** el motor y los generadores son costes de la app; deben seguir cargándose solo al abrirla o al pedir el panel de código.
 - **Cualquier flujo nuevo** debe añadirse al script y a esta tabla antes de considerarse cubierto.
 
@@ -64,8 +76,8 @@ La fase 4 convertirá estos presupuestos en una comprobación de CI. Hasta enton
 
 - El tablero queda en **163,4 KiB gzip** y no incluye ninguna app pesada.
 - La primera evaluación de la Básica ya no descarga `compute-engine`; usa el evaluador racional incluido en la app.
-- Abrir la Pizarra cuesta **1.254,5 KiB gzip**, de los que **717,8 KiB** son el chunk wasm de Excalidraw.
-- Diagramas con la plantilla de flujo cuesta **308,7 KiB gzip**; el caso con ELK sube a **749,8 KiB**.
+- Abrir la Pizarra cuesta **1.254,5 KiB gzip**, de los que **717,8 KiB** son el chunk wasm de Excalidraw. La conversión Mermaid añade **197,3 KiB** y solo se descarga al usarla.
+- Diagramas con la plantilla de flujo cuesta **308,7 KiB gzip**; el caso con ELK sube a **749,8 KiB**. El flujo normal no incluye ELK ni Cytoscape.
 - Abrir Blockly cuesta **321,5 KiB gzip**; el panel de código añade **35,0 KiB** con los generadores y el idioma.
 - El chunk de `compute-engine` empaquetado es la versión 0.188.0. El motor 0.29.1 que entra por `mathlive` no aparece en el cliente.
 
@@ -74,5 +86,6 @@ La fase 4 convertirá estos presupuestos en una comprobación de CI. Hasta enton
 - Esta línea base mide bytes estáticos, no tiempo de ejecución ni latencia de red.
 - La latencia real con caché fría y red lenta se medirá en la fase 4 sobre una build servida; no se afirmará una mejora de tiempo sin esa comparación.
 - El informe no modela el cacheo de Sites ni el orden exacto de las peticiones del navegador.
+- La conversión se mide con un flowchart de Mermaid 11, que es el caso más habitual; otros tipos de diagrama pueden añadir chunks propios.
 - No se ejecuta un rebuild solo para medir: se reutiliza el `dist/client` actual.
 - Sin cambios de versión; `package.json` sigue en `1.1.26`.
