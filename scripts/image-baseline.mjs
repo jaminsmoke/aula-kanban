@@ -6,12 +6,12 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-// Línea base de PER-02: cuánto cuesta una imagen de tarea tal cual se sube
-// frente a una miniatura de 800 px generada en el cliente.
+// Línea base de imágenes: PER-02 mide la miniatura de tarea de 800 px y
+// `--widths` permite comparar otros topes, como los de PER-04 en la pizarra.
 const root = fileURLToPath(new URL("../", import.meta.url));
 // Misma red que scripts/perf-latency.mjs: Fast 3G (1,6 Mbps de bajada).
 const FAST_3G_BYTES_PER_SECOND = 200000;
-const TARGET_WIDTH = 800;
+const DEFAULT_TARGET_WIDTHS = [800];
 const SCENARIOS = [
   { id: "foto-12mp", label: "Foto 12 MP (4032×3024)", width: 4032, height: 3024 },
   { id: "foto-2mp", label: "Foto 2 MP (1920×1080)", width: 1920, height: 1080 },
@@ -23,6 +23,7 @@ const defaults = {
 const options = parseArgs(process.argv.slice(2));
 const runs = Number(options.runs ?? defaults.runs);
 const chromePath = String(options.chrome ?? defaults.chrome);
+const targetWidths = parseWidths(options.widths ?? DEFAULT_TARGET_WIDTHS.join(","));
 
 if (!Number.isInteger(runs) || runs < 1) throw new Error("--runs debe ser un entero positivo.");
 if (!chromePath || !existsSync(chromePath)) throw new Error("No se encontró Chrome. Indica --chrome o define CHROME_PATH.");
@@ -56,14 +57,18 @@ async function main() {
     await cdp.open();
     try {
       await cdp.send("Runtime.enable");
-      const samples = await cdp.eval(`${measureExpression(SCENARIOS, runs)}`);
-      if (!Array.isArray(samples)) throw new Error("Chrome no devolvió las muestras esperadas.");
+      const samples = [];
+      for (const width of targetWidths) {
+        const measured = await cdp.eval(`${measureExpression(SCENARIOS, runs, width)}`);
+        if (!Array.isArray(measured)) throw new Error("Chrome no devolvió las muestras esperadas.");
+        samples.push(...measured.map((scenario) => ({ ...scenario, targetWidth: width })));
+      }
       const result = {
         measuredAt: new Date().toISOString(),
         browser: "Chrome headless",
         note: "Imágenes sintéticas generadas en el navegador; decodificación con createImageBitmap. La transferencia se calcula, no se mide en red.",
         network: { label: "Fast 3G", bytesPerSecond: FAST_3G_BYTES_PER_SECOND },
-        targetWidth: TARGET_WIDTH,
+        targetWidths,
         runs,
         scenarios: samples,
       };
@@ -86,13 +91,14 @@ async function main() {
  * Construye la expresión que se evalúa en la página.
  * @param {typeof SCENARIOS} scenarios - Tamaños a medir.
  * @param {number} runs - Muestras por escenario.
+ * @param {number} targetWidth - Ancho máximo del derivado.
  * @returns {string} Una promesa con las muestras.
  */
-function measureExpression(scenarios, runs) {
+function measureExpression(scenarios, runs, targetWidth) {
   return `(async () => {
     const scenarios = ${JSON.stringify(scenarios)};
     const runs = ${runs};
-    const targetWidth = ${TARGET_WIDTH};
+    const targetWidth = ${targetWidth};
     const results = [];
     for (const scenario of scenarios) {
       const samples = [];
@@ -214,12 +220,12 @@ function markdown(result) {
     `- Navegador: ${result.browser}`,
     `- Red de referencia para la transferencia: ${result.network.label}`,
     "",
-    "| Escenario | Original | Derivado 800 px WebP | Reducción | Transferencia Fast 3G | Decodificación | Calidad (PSNR) | Memoria decodificada |",
-    "|---|---:|---:|---:|---:|---:|---:|---:|",
+    "| Escenario | Ancho derivado | Original | Derivado WebP | Reducción | Transferencia Fast 3G | Decodificación | Calidad (PSNR) | Memoria decodificada |",
+    "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
   ];
   for (const scenario of result.scenarios) {
     const row = summarize(scenario.samples);
-    lines.push(`| ${scenario.label} | ${bytes(row.originalBytes)} | ${bytes(row.derivativeBytes)} | ${percent(row.originalBytes, row.derivativeBytes)} | ${ms(transfer(row.originalBytes))} → ${ms(transfer(row.derivativeBytes))} | ${ms(row.decodeOriginalMs)} → ${ms(row.decodeDerivativeMs)} (codificar ${ms(row.encodeDerivativeMs)}) | ${db(row.psnrDb)} | ${bytes(row.decodedBytes)} → ${bytes(row.width * row.height * 4)} |`);
+    lines.push(`| ${scenario.label} | ${row.width} px | ${bytes(row.originalBytes)} | ${bytes(row.derivativeBytes)} | ${percent(row.originalBytes, row.derivativeBytes)} | ${ms(transfer(row.originalBytes))} → ${ms(transfer(row.derivativeBytes))} | ${ms(row.decodeOriginalMs)} → ${ms(row.decodeDerivativeMs)} (codificar ${ms(row.encodeDerivativeMs)}) | ${db(row.psnrDb)} | ${bytes(row.decodedBytes)} → ${bytes(row.width * row.height * 4)} |`);
   }
   return `${lines.join("\n")}\n`;
 }
@@ -269,6 +275,19 @@ function percent(original, derivative) {
 /** Formatea la relación señal-ruido en decibelios. */
 function db(value) {
   return `${value.toFixed(1).replace(".", ",")} dB`;
+}
+
+/**
+ * Lee la lista de anchos objetivo separada por comas.
+ * @param {string} value - Anchos pedidos.
+ * @returns {number[]} Anchos válidos y sin repetir.
+ */
+function parseWidths(value) {
+  const widths = [...new Set(String(value).split(",").map((item) => Number(item.trim())))];
+  if (!widths.length || widths.some((width) => !Number.isInteger(width) || width < 64 || width > 4096)) {
+    throw new Error("--widths debe ser una lista de enteros entre 64 y 4096.");
+  }
+  return widths;
 }
 
 /** Lee argumentos `--clave valor`. */

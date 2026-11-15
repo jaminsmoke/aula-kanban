@@ -1,6 +1,6 @@
-# Miniaturas de imágenes de tareas
+# Miniaturas de imágenes
 
-> **Estado:** fase 2 de PER-02 · build `1.1.28` · 2026-11-15
+> **Estado:** PER-02 integrado · PER-04 en medición · build `1.1.28` · 2026-11-15
 > **Medición:** `npm run perf:images` · **Prototipo:** `app/board/shared/image-thumbnail.ts` · **Roadmap:** [`roadmap.md`](roadmap.md)
 
 ---
@@ -11,7 +11,7 @@ El script no necesita la app ni la base de datos: genera imágenes sintéticas e
 
 ```bash
 npm run perf:images
-# Opciones: --runs 5, --chrome <ruta>, --json, --out docs/miniaturas.json
+# Opciones: --runs 5, --widths 800,1600,2048, --chrome <ruta>, --json, --out docs/miniaturas.json
 ```
 
 Cada escenario se repite tres veces y se publica la mediana. La transferencia se calcula con el perfil de Fast 3G de `perf-latency.mjs` (1,6 Mbps de bajada); no se mide sobre la red.
@@ -33,6 +33,27 @@ Medición del 2026-11-15, Chrome headless, 3 muestras por escenario:
 | Foto 2 MP (1920×1080) | 704 KB | 51 KB | 93 % | 3.606 ms → 259 ms | 9 ms → 3 ms (codificar 27 ms) | 35,7 dB | 7,9 MB → 1,4 MB |
 
 La codificación del derivado es el coste que paga el cliente al subir: 27–35 ms de mediana en esta máquina, sin contar la lectura del archivo ni la subida. Un PSNR de 35,7 dB frente a la referencia reducida es una diferencia de compresión visible solo al comparar píxeles, no en una tarjeta de 130 px.
+
+## Imágenes de pizarra (PER-04)
+
+Las imágenes insertadas en Excalidraw se suben con `purpose=board-asset` tal cual llegan del portapapeles o del equipo. La pizarra las amplía, así que el tope de 800 px de la tarjeta no sirve. Medición del 2026-11-15 con `npm run perf:images -- --widths 800,1600,2048`, 3 muestras por escenario:
+
+| Escenario | Ancho derivado | Original | Derivado WebP | Reducción | Transferencia Fast 3G | Decodificación | Calidad (PSNR) | Memoria decodificada |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Foto 12 MP (4032×3024) | 800 px | 3,9 MB | 61 KB | 98 % | 20.489 ms → 310 ms | 48 ms → 4 ms (codificar 34 ms) | 35,7 dB | 46,5 MB → 1,8 MB |
+| Foto 2 MP (1920×1080) | 800 px | 704 KB | 51 KB | 93 % | 3.606 ms → 259 ms | 8 ms → 3 ms (codificar 28 ms) | 35,7 dB | 7,9 MB → 1,4 MB |
+| Foto 12 MP (4032×3024) | 1600 px | 3,9 MB | 223 KB | 94 % | 20.489 ms → 1.144 ms | 45 ms → 12 ms (codificar 130 ms) | 36,1 dB | 46,5 MB → 7,3 MB |
+| Foto 2 MP (1920×1080) | 1600 px | 704 KB | 168 KB | 76 % | 3.606 ms → 862 ms | 8 ms → 10 ms (codificar 97 ms) | 36,2 dB | 7,9 MB → 5,5 MB |
+| Foto 12 MP (4032×3024) | 2048 px | 3,9 MB | 348 KB | 91 % | 20.489 ms → 1.782 ms | 46 ms → 20 ms (codificar 210 ms) | 36,3 dB | 46,5 MB → 12,0 MB |
+| Foto 2 MP (1920×1080) | 1920 px | 704 KB | 408 KB | 42 % | 3.606 ms → 2.089 ms | 8 ms → 20 ms (codificar 186 ms) | 36,2 dB | 7,9 MB → 7,9 MB |
+
+Lectura:
+
+- En 12 MP, 2048 px deja 348 KB (91 % menos) y 12,0 MB decodificados, con 36,3 dB y 210 ms de codificación en escritorio; 1600 px baja a 223 KB y 7,3 MB, pero cubre menos ampliación.
+- En 2 MP, pedir 2048 px no reduce dimensiones: el derivado pesa 408 KB frente a 704 KB, pero la memoria decodificada es la misma y la decodificación pasa de 8 a 20 ms. **Si la imagen ya cabe en el tope, no hay que generar derivado.**
+- El ahorro depende del zoom: 2048 px cubre hasta unos 2,3 aumentos en un lienzo de 900 px; 1600 px, hasta unos 1,8. La nitidez real del zoom no se puede validar en esta sesión.
+
+Recomendación (pendiente de aprobación): tope de **2048 px** para fotos opacas de pizarra, WebP 0,8, solo si el ancho original supera 2048; PNG con transparencia y GIF intactos en esta fase. Coste medido: 210 ms de codificación en escritorio en una foto de 12 MP, sin contar la subida.
 
 ## Comparación de alternativas
 
@@ -69,6 +90,7 @@ El detalle de tarea muestra la imagen a un máximo de 220 px de alto y la tarjet
 - Se mide JPEG de entrada y WebP de salida con calidad 0,8; no se han probado AVIF, PNG con transparencia, GIF animado ni orientación EXIF.
 - Una sola máquina y un solo navegador; no se midió un móvil de gama media ni la batería. La codificación de 27–35 ms es de escritorio.
 - No se usan imágenes de producción: no hay sesión ni datos reales en esta sesión.
+- La medición de pizarra usa las mismas fotos sintéticas opacas; no cubre PNG con transparencia, capturas con texto ni el zoom real de Excalidraw.
 
 ## Integración
 

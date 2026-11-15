@@ -2,21 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** vacío · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** PER-04 activo · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** Aparcado
-> **Nota:** SYNC-01 se completó y su norma vive en [`../AGENTS.md`](../AGENTS.md). La cobertura MCP está en [`mcp-apps.md`](mcp-apps.md). PER-01B se publicó en `1.1.28`; PER-02 se completó sin publicación; PER-03, MCP-05E, UI-03, UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron.
+> **Nota:** PER-04 está en el roadmap activo con su medición en [`miniaturas.md`](miniaturas.md). SYNC-01 se completó y su norma vive en [`../AGENTS.md`](../AGENTS.md). La cobertura MCP está en [`mcp-apps.md`](mcp-apps.md). PER-01B se publicó en `1.1.28`; PER-02 se completó sin publicación; PER-03, MCP-05E, UI-03, UI-01, HIER-01, CI-01, UI-02, CI-02, ARCH-01, ARCH-02 y PERF-01 se completaron.
 
 ---
-
-## 2026-11-15 — PER-04 · Imágenes de pizarra: medir un derivado antes de subir
-
-- Contexto: `uploadBlob` sube el blob original que Excalidraw inserta, con `purpose=board-asset` y el mismo límite de 5 MB que las imágenes de tarea. La escena guarda la URL interna, no el base64, así que el snapshot no carga con la imagen, pero R2 conserva la resolución completa.
-- Oportunidad: un tope de 1600–2048 px y WebP para fotos, dejando PNG intacto si hay transparencia, reduciría peso y decodificación en pizarras con muchas imágenes.
-- Antes de implementar: medir con una variante de `npm run perf:images` y confirmar que el zoom de Excalidraw no pierde nitidez; la tarjeta de tarea no sirve de referencia porque aquí la imagen se amplía.
-- Qué falta:
-  - [ ] Medir peso, decodificación y calidad con un tope de 1600 px y otro de 2048 px.
-  - [ ] Decidir si el derivado sustituye al original y qué hacer con PNG transparente y GIF.
-  - [ ] Documentar la decisión y, si sale adelante, integrar en `uploadBlob` con respaldo al original.
 
 ## 2026-11-15 — PER-05 · Caché inmutable y validación para `/api/files/[id]`
 
