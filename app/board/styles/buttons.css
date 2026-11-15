@@ -16,16 +16,16 @@
   transition: background .16s ease, border-color .16s ease;
 }
 
-.primary { background: var(--violet); color: var(--white); }
-.primary:hover:enabled { background: var(--violet-dark); }
-.secondary { background: var(--white); color: var(--ink); border-color: var(--line); }
-.secondary:hover:enabled { background: #f8f6ff; border-color: #d9d0f4; }
-.danger { background: var(--danger); color: var(--white); }
-.danger:hover:enabled { background: #8c1937; }
-.danger-quiet { padding-inline: 4px; color: var(--danger); background: transparent; }
-.danger-quiet:hover:enabled { background: #fbe8ee; }
+.primary { background: var(--ui-action-primary); color: var(--ui-text-inverse); }
+.primary:hover:enabled { background: var(--ui-action-primary-hover); }
+.secondary { background: var(--ui-surface-raised); color: var(--ui-text-primary); border-color: var(--ui-border-default); }
+.secondary:hover:enabled { background: var(--ui-surface-hover); border-color: var(--ui-border-accent); }
+.danger { background: var(--ui-danger); color: var(--ui-text-inverse); }
+.danger:hover:enabled { background: var(--ui-danger-deep); }
+.danger-quiet { padding-inline: 4px; color: var(--ui-danger); background: transparent; }
+.danger-quiet:hover:enabled { background: var(--ui-danger-soft); }
 .share { min-height: 36px; }
-.share svg { color: var(--violet); }
+.share svg { color: var(--ui-action-primary); }
 
 .icon-button {
   display: inline-grid;
@@ -33,13 +33,13 @@
   width: 30px;
   height: 30px;
   flex: 0 0 30px;
-  color: var(--muted);
+  color: var(--ui-text-muted);
   background: transparent;
   border: 1px solid transparent;
   border-radius: 7px;
 }
 
-.icon-button:hover:enabled { color: var(--violet); background: var(--violet-pale); }
+.icon-button:hover:enabled { color: var(--ui-action-primary); background: var(--ui-action-soft); }
 
 .account-status {
   display: inline-flex;
@@ -47,12 +47,12 @@
   margin-top: 7px;
   padding: 3px 7px;
   border-radius: 7px;
-  background: #eeecf4;
-  color: #635d70;
+  background: var(--ui-surface-muted);
+  color: var(--ui-text-muted);
   font-size: 11px;
   font-weight: 700;
 }
 
-.account-status.pending { background: #fff2db; color: #805500; }
-.account-status.active { background: #ddf3ea; color: var(--success); }
+.account-status.pending { background: var(--ui-warning-soft); color: var(--ui-warning-deep); }
+.account-status.active { background: var(--ui-success-soft); color: var(--ui-success); }
 .student-card .account-status { display: inline-flex; }

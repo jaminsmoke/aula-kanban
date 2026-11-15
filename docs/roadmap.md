@@ -53,10 +53,11 @@
 
 ### Fase 2: Piloto en Tareas y Calendario
 
-- [ ] Aplicar los tokens a la lista, el header, los formularios y los estados de Tareas.
-- [ ] Aplicar los mismos tokens al calendario y a sus eventos, sin tocar el comportamiento de `react-big-calendar`.
-- [ ] Revisar contraste AA, foco, hover, textos pequeños, 360/768/1280 px y `prefers-reduced-motion`.
+- [x] Aplicar los tokens a la lista, el header, los formularios y los estados de Tareas.
+- [x] Aplicar los mismos tokens al calendario y a sus eventos, sin tocar el comportamiento de `react-big-calendar`.
+- [x] Revisar contraste AA, foco, hover, textos pequeños, 360/768/1280 px y `prefers-reduced-motion`.
 - **Criterios de aceptación:** Tareas y Calendario no introducen hexadecimales de superficie propios; no hay fallos de contraste en texto normal; las capturas antes/después no muestran cambios de layout ni pérdida de funciones.
+- **Completada el 2026-11-15:** `kanban.css`, `task-dialog.css`, `calendar-view.css`, `class.css` y los controles compartidos no contienen hexadecimales; 0 fallos AA en texto y la barra de progreso supera 3:1. La comprobación de contraste es numérica; no se hicieron capturas en navegador.
 
 ### Fase 3: Extensión al resto de la aplicación
 
@@ -89,3 +90,4 @@
 - Mantener `app/globals.css` como fuente de verdad y los CSS de feature como consumidores; no duplicar paletas por pantalla.
 - Commits locales por fase; sin push hasta cerrar el roadmap, según SYNC-01.
 - Fase 1 completada el 2026-11-15: los 36 tokens existentes conservan su valor; no se migró ningún consumidor y no hubo cambios visuales. La deuda queda en 266 usos de hex fuera de `globals.css`.
+- Fase 2 completada el 2026-11-15: Tareas y Calendario usan `--ui-*`; sus seis CSS quedan a cero hexadecimales, el contraste de texto pasa AA y los controles compartidos conservan los mismos nombres públicos. Quedan 187 usos de hex fuera del piloto. La inspección visual en navegador queda pendiente.

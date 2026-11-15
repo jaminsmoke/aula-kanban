@@ -8,10 +8,10 @@
 /* Fallback de la sección en carga diferida; el CSS del calendario aún no está. */
 .class-section-loading {
   padding:48px 20px;
-  border:1px solid var(--line);
+  border:1px solid var(--ui-border-default);
   border-radius:var(--radius-lg);
-  background:var(--white);
-  color:var(--muted);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-muted);
   font-size:14px;
   text-align:center;
 }
