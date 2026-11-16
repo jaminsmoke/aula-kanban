@@ -17,7 +17,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Sin fase activa; plantilla lista para el siguiente roadmap | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | STORE-06 activo: Ajedrez en Aula Store | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -80,8 +80,9 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
+- **Roadmap STORE-06 activo:** Ajedrez como app nativa de Aula Store con tablero, reglas completas, dos jugadores locales y rival aleatorio; sin motor, red ni persistencia inicial. Plan en [`roadmap.md`](developing/roadmap.md); el Site sigue en `1.1.34` y sin publicación.
 - **Roadmap STORE-05 completado:** las cinco portadas de Aula Store son SVG de 1200×675; Excalidraw, Programación por bloques y Diagramas sustituyen sus capturas PNG y se retiran los archivos antiguos. Verificado en tarjeta y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-05.md`](historial/roadmap-store-05.md). Sin cambio de versión ni publicación.
-- **Backlog:** STORE-06 (Ajedrez), STORE-07 (Física 2D) y STORE-08 (Geometría interactiva), pendientes de priorizar.
+- **Backlog:** STORE-07 (Física 2D) y STORE-08 (Geometría interactiva), pendientes de priorizar.
 - **Roadmap UI-08 completado:** Tienda en Administración, Clase como botón de icono en la cabecera, URL canónica `view=administracion&section=tienda` y alias `view=espacio`; revisado en 1366, 1024, 900, 620 y 390. Catálogo MCP `0.27.0`. Resumen en [`changelog.md`](developing/changelog.md).
 - **Roadmap APP-01 completado:** inventario y matriz de herramientas, roles y alcance en [`matriz-herramientas.md`](Store/matriz-herramientas.md). Resumen en [`changelog.md`](developing/changelog.md).
 - **Roadmap APP-03 completado:** mochila del alumnado y maletín docente (migración 0037 y sección `clase > mochila`); resumen en [`changelog.md`](developing/changelog.md).

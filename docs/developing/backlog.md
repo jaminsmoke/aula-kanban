@@ -2,23 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 3 entradas: STORE-06, STORE-07 y STORE-08 pendientes
+> **Roadmap:** STORE-06 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas: STORE-07 y STORE-08 pendientes
 
 ---
-
-## 2026-11-16 — STORE-06 · Ajedrez
-
-- Contexto: es la candidata más barata del catálogo. `chess.js` 1.4.0 (BSD-2) resuelve las reglas y `react-chessboard` 5.12.1 (MIT) aporta el tablero; juntos ocupan unos 70 KB y no necesitan servidor ni red. Cubre lógica, estrategia y torneos de clase.
-- Alcance:
-  1. Crear `app/board/apps/ajedrez/` con tablero, piezas, movimientos legales, jaque, jaque mate, tablas, reinicio e historial de jugadas.
-  2. Ofrecer dos jugadores en el mismo navegador y un rival aleatorio sencillo; no hace falta motor de ajedrez.
-  3. Diseño responsive y accesible: coordenadas, turno visible, selección de casilla y alternativa por teclado.
-- Antes de retomarlo:
-  - [ ] Decidir si la primera versión incluye rival aleatorio o solo dos jugadores.
-  - [ ] Definir si hace falta guardar la partida; si sí, usar `app_documents`.
-- Criterios: las reglas se aplican completas, no hay red ni servidor, funciona a 1366, 1024 y 390 px y las licencias BSD-2/MIT quedan en `THIRD-PARTY-NOTICES.md`.
-- Notas: no añadir Stockfish ni WASM en la primera versión. `chess.js` y `react-chessboard` se cargan solo al abrir la ventana; la portada y la ficha siguen el formato SVG actual.
 
 ## 2026-11-16 — STORE-07 · Física 2D
 

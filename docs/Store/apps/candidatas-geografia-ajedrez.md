@@ -2,7 +2,7 @@
 
 Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
-> **En backlog:** Ajedrez (`chess.js` + `react-chessboard`) como **STORE-06**.
+> **En roadmap:** Ajedrez (`chess.js` + `react-chessboard`) como **STORE-06**.
 > Mapas sigue como candidata condicionada por la dependencia de teselas externas.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |

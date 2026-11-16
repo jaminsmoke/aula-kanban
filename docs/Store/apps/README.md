@@ -97,13 +97,12 @@ La tabla de versiones por app está en [`integradas.md#versiones-por-app`](integ
 
 ## Siguientes candidatas
 
-Estas tres entran en el backlog como siguientes incorporaciones, por relación
-valor/coste y por cubrir huecos claros del catálogo actual:
+Estas tres son las siguientes incorporaciones por relación valor/coste y por
+cubrir huecos claros del catálogo actual:
 
-1. **Ajedrez** (`chess.js` + `react-chessboard`): la incorporación más barata.
-2. **Física 2D** (`matter-js`): primer laboratorio STEM manipulable.
-3. **Geometría interactiva** (`jsxgraph`): construcciones y funciones con
-   arrastre, usando la opción MIT de su licencia dual.
+1. **Ajedrez** (`chess.js` + `react-chessboard`): ya en el roadmap **STORE-06**.
+2. **Física 2D** (`matter-js`): en el backlog como **STORE-07**.
+3. **Geometría interactiva** (`jsxgraph`): en el backlog como **STORE-08**.
 
 Después de esas tres, las candidatas con más encaje son los mapas conceptuales,
 las presentaciones y las líneas de tiempo. El resto sigue documentado por
