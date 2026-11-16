@@ -18,8 +18,6 @@ comporten las apps de Tienda; no cambia por sí misma los permisos actuales.
 |---|---|---|---|---|---|---|
 | Calculadora y ecuaciones | Todos los roles del proyecto | Sí | No, solo trabajo local | No | Dispositivo / navegador | Sin herramienta |
 | Tabla periódica | Todos los roles del proyecto | Sí | No | No | Datos de referencia en el cliente | `consultar_elemento` |
-| Medición | Todos los roles del proyecto | Sí | No | No | Dispositivo / navegador | Sin herramienta |
-| Lectura en voz alta | Todos los roles del proyecto | Sí | No | No | Dispositivo / navegador; voz del sistema | Sin herramienta |
 | Excalidraw de Tienda | Owner, admin y teacher; student y guest en modo lectura | Sí | Sí para owner, admin y teacher; no para student ni guest | En vivo | Pizarra del proyecto | `leer_pizarra`, `guardar_pizarra`, `anadir_a_pizarra` |
 | Programación por bloques | Todos los roles; guest en solo lectura | Sí | Sí para owner, admin, teacher y student; no para guest | Documento compartido de proyecto | `app_documents` | `leer_programa_bloques`, `guardar_programa_bloques` |
 | Diagramas | Todos los roles; guest en solo lectura | Sí | Sí para owner, admin, teacher y student; no para guest | Documento compartido de proyecto | `app_documents` | `leer_diagrama`, `guardar_diagrama`, `listar_plantillas_diagrama` |

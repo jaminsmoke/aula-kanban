@@ -226,7 +226,7 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 
 | Archivo | Tokens locales | Tratamiento |
 |---|---|---|
-| `edu-tools.css` | `--background`, `--card`, `--surface`, `--border`, `--rule`, `--calc-*` y equivalentes de la librería | Mapear a `--ui-*` al migrar la app; conservar los nombres que exija `@smst/edu-tools`. |
+| `edu-tools.css` | `--background`, `--card`, `--surface`, `--border`, `--rule` y `--calc-*` | Alias locales de la app, ya derivados de `--ui-*`; no queda ninguna librería externa que los exija. |
 | `docs.css` | `--docs-radius-lg`, `--docs-radius`, `--docs-radius-sm`, `--docs-gap`, `--docs-index-width`, `--docs-art-width` y `--docs-sticky-top` | Solo medidas; los radios ya derivan de `--radius-*` y los colores pasan a `--ui-*`. |
 | `kanban.css` | `--accent` y `--accent-bg` por carril | Se conservan como variables locales, pero ya derivan de `--ui-*`; no queda ningún hexadecimal. |
 | Apps internas | Escala compacta de `edu-tools`, `periodic-table`, `blockly` y `mermaid` | Excepción de fase 4: sus controles densos conservan medidas propias; desde la fase 7.1 sus bordes y radios usan la escala global y desde la fase 6 todos sus colores usan tokens. |

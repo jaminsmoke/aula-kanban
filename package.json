@@ -28,7 +28,6 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@excalidraw/excalidraw": "^0.18.1",
     "@modelcontextprotocol/sdk": "^1.32.2",
-    "@smst/edu-tools": "^2.2.1",
     "blockly": "^13.4.0",
     "date-fns": "^4.4.0",
     "drizzle-orm": "0.45.2",

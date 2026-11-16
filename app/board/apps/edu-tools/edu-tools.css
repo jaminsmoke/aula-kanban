@@ -1,9 +1,6 @@
 /* ==========================================================================
-   Herramientas de aula (@smst/edu-tools)
-   La librería trae su CSS compilado en capas (Tailwind) y respeta
-   `prefers-color-scheme`. Estas reglas, sin capa, atan su paleta a los tokens
-   del tema del Site y fijan el tamaño de la ventana; ganan a lo que traiga el
-   paquete.
+   Herramientas de aula: calculadora y tabla periódica.
+   Paleta derivada del tema activo del Site y tamaño de ventana.
    ========================================================================== */
 
 .edu-app {
@@ -61,69 +58,6 @@
 .edu-card--calc { width:min(360px, 100%); align-items:center; text-align:center; }
 
 .edu-card--periodic { flex:1 1 auto; min-height:0; gap:14px; }
-
-.edu-card--ruler { flex:1 1 auto; min-height:0; }
-
-.edu-ruler { position:relative; flex:1 1 auto; display:flex; align-items:center; min-height:150px; padding:6px 0; cursor:crosshair; touch-action:none; }
-
-/* El componente mide su ancho con ResizeObserver y ocupa todo el alto; aquí se
-   centra el dibujo para dejar espacio de medición arriba y abajo. */
-.edu-ruler > div { display:flex; align-items:center; }
-
-.edu-ruler-overlay { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
-
-.edu-ruler-overlay line { stroke:var(--ui-action-text); stroke-width:2; }
-
-.edu-ruler-overlay circle { fill:var(--ui-text-inverse); stroke:var(--ui-action-text); stroke-width:2; }
-
-.edu-ruler-readout { position:absolute; transform:translate(-50%,-150%); padding:3px 8px; border-radius: var(--radius-xs); background:var(--ui-surface-inverse); color:var(--ui-text-inverse); font-size:11.5px; font-weight:700; white-space:nowrap; pointer-events:none; }
-
-.edu-card--tts { flex:1 1 auto; min-height:0; }
-
-.edu-tts { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
-
-.edu-tts > * { flex:1 1 auto; min-height:0; }
-
-/* Conmutador interno de «Medir»: cada instrumento ocupa la tarjeta completa. */
-.edu-segmented { display:inline-flex; flex:none; align-self:flex-start; gap:4px; padding:4px; border-radius: var(--radius-sm); background:var(--ui-surface-recessed); }
-
-.edu-segmented button { padding:6px 12px; border:0; border-radius: var(--radius-xs); background:transparent; color:var(--ui-text-secondary); font:inherit; font-size:12px; font-weight:650; cursor:pointer; }
-
-.edu-segmented button[aria-pressed="true"] { background:var(--ui-surface-raised); color:var(--ui-action-text); box-shadow:var(--ui-shadow-control); }
-
-.edu-segmented button:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
-
-.edu-card-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-
-.edu-turn-info { display:flex; align-items:center; gap:10px; }
-
-.edu-turn-info > span { min-width:3.5ch; text-align:right; color:var(--ui-action-text); font-size:14px; font-weight:750; font-variant-numeric:tabular-nums; }
-
-.edu-turn-info button { padding:5px 10px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:11.5px; font-weight:650; cursor:pointer; }
-
-.edu-turn-info button:hover { background:var(--ui-surface-hover); }
-
-.edu-card--protractor { flex:1 1 auto; min-height:0; }
-
-/* Cuadrado de giro: el transportador puede rotar 360° sin salirse de la tarjeta. */
-.edu-protractor-box { position:relative; flex:1 1 auto; min-height:0; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-
-.edu-protractor-rig { position:relative; flex:none; }
-
-/* Guía del campo de giro: convierte el espacio reservado en parte del diseño. */
-.edu-protractor-guide { position:absolute; inset:0; border:var(--border-width-hairline) dashed var(--ui-border-accent); border-radius:50%; }
-
-.edu-protractor-guide::after { content:""; position:absolute; left:50%; top:50%; width:7px; height:7px; margin:-3.5px 0 0 -3.5px; border-radius:50%; background:var(--ui-border-control); }
-
-.edu-protractor-turn { position:absolute; left:50%; bottom:50%; width:calc(100% - 40px); transform-origin:50% 100%; }
-
-.edu-protractor-knob { position:absolute; top:-13px; left:50%; width:22px; height:22px; margin-left:-11px; padding:0; border:var(--border-width-strong) solid var(--ui-text-inverse); border-radius:50%; background:var(--ui-action-primary); box-shadow:var(--ui-shadow-mark); cursor:grab; touch-action:none; }
-
-.edu-protractor-knob:hover { background:var(--ui-action-primary-hover); }
-
-.edu-protractor-knob:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:3px; }
-
-.edu-protractor-knob.is-dragging { cursor:grabbing; background:var(--ui-action-primary-hover); }
 
 /* Calculadora: una sola vista con teclado ampliable. */
 .calc { width:100%; display:flex; flex-direction:column; gap:8px; }
@@ -275,36 +209,6 @@
 
 .multi-eq-hint { flex:1 1 220px; color:var(--ui-text-muted); font-size:11.5px; }
 
-/* Lector de texto a voz. */
-.tts { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:12px; }
-
-.tts-text { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:6px; }
-
-.tts-label { color:var(--ui-text-muted); font-size:12px; font-weight:650; }
-
-.tts-text textarea { flex:1 1 auto; min-height:140px; padding:12px 14px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-primary); font:inherit; font-size:14px; line-height:1.55; resize:none; }
-
-.tts-text textarea:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:1px; }
-
-.tts-controls { display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px; }
-
-.tts-field { display:flex; flex-direction:column; gap:6px; }
-
-.tts-field select { padding:8px 10px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-primary); font:inherit; font-size:12.5px; max-width:260px; }
-
-.tts-rate input { width:180px; accent-color:var(--ui-action-text); }
-
-.tts-actions { display:flex; gap:8px; }
-
-.tts-actions button { padding:8px 14px; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-sm); background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:12.5px; font-weight:650; cursor:pointer; }
-
-
-.tts-actions .tts-primary { border-color:var(--ui-action-text); background:var(--ui-action-primary); color:var(--ui-text-inverse); }
-
-.tts-actions .tts-primary:hover:not(:disabled) { background:var(--ui-action-primary-hover); }
-
-.tts-count { margin-left:auto; color:var(--ui-text-muted); font-size:11.5px; font-weight:650; font-variant-numeric:tabular-nums; }
-
 @media (max-width: 560px) {
   .edu-view { padding:12px; }
   .edu-card { padding:14px; }
@@ -322,7 +226,6 @@
   .edu-card { padding:12px 13px; }
   .edu-card-title { font-size:12px; }
   .edu-hint { font-size:11.5px; }
-  .edu-ruler { min-height:120px; }
   .calc-layout { flex-direction:column; align-items:center; }
   .calc-history, .calc-equations { flex:0 0 auto; width:min(380px, 100%); max-height:240px; }
 }
@@ -334,5 +237,4 @@
 @container eduapp (max-width: 620px) {
   .edu-app-tab { padding:6px 10px; font-size:12px; }
   .edu-card--calc { width:100%; }
-  .edu-view--medir { gap:8px; }
 }

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import EduToolsApp from "./edu-tools-app";
 
@@ -7,7 +7,7 @@ beforeEach(() => {
 });
 
 describe("Herramientas de aula", () => {
-  it("abre la calculadora, amplía a científica y cambia entre vistas", async () => {
+  it("abre la calculadora, amplía a científica y cambia a la tabla periódica", async () => {
     render(<EduToolsApp />);
     expect(screen.getByRole("button", { name: "7" })).toBeTruthy();
 
@@ -18,13 +18,10 @@ describe("Herramientas de aula", () => {
     fireEvent.click(screen.getByRole("button", { name: "Ecuaciones" }));
     expect(await screen.findByRole("group", { name: "Teclado de ecuaciones" }, { timeout: 10000 })).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
-    expect(screen.getByRole("group", { name: "Instrumento de medida" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("tab", { name: "Ciencias" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Tabla periódica" }));
     expect(await screen.findByRole("searchbox", { name: "Buscar elemento" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("tab", { name: "Lectura" }));
-    expect(screen.getByText("Lectura en voz alta")).toBeTruthy();
-    await waitFor(() => expect(document.querySelector(".edu-tts .tts, .edu-tts .pt-empty")).toBeTruthy());
+    expect(screen.queryByRole("tab", { name: "Medir" })).toBeNull();
+    expect(screen.queryByRole("tab", { name: "Lectura" })).toBeNull();
   }, 20000);
 
   it("calcula una suma con el ratón", async () => {
@@ -93,62 +90,11 @@ describe("Herramientas de aula", () => {
     expect(screen.getByText("= 2")).toBeTruthy();
   });
 
-  it("gira el transportador con el teclado", () => {
+  it("cambia de vista con Alt+1 y Alt+2", async () => {
     render(<EduToolsApp />);
-    fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
-    fireEvent.click(screen.getByRole("button", { name: "Transportador" }));
-    const knob = screen.getByRole("slider", { name: "Girar transportador" });
-    expect(knob.getAttribute("aria-valuenow")).toBe("0");
-    fireEvent.keyDown(knob, { key: "ArrowRight" });
-    expect(knob.getAttribute("aria-valuenow")).toBe("5");
-    fireEvent.keyDown(knob, { key: "ArrowRight", shiftKey: true });
-    expect(knob.getAttribute("aria-valuenow")).toBe("6");
-    fireEvent.keyDown(knob, { key: "Home" });
-    expect(knob.getAttribute("aria-valuenow")).toBe("0");
-  });
-
-  it("conserva el ángulo del transportador al cambiar de pestaña", () => {
-    render(<EduToolsApp />);
-    fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
-    fireEvent.click(screen.getByRole("button", { name: "Transportador" }));
-    fireEvent.keyDown(screen.getByRole("slider", { name: "Girar transportador" }), { key: "ArrowRight" });
-    expect(screen.getByRole("slider", { name: "Girar transportador" }).getAttribute("aria-valuenow")).toBe("5");
-
-    fireEvent.click(screen.getByRole("tab", { name: "Calculadora" }));
-    fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
-    expect(screen.getByRole("slider", { name: "Girar transportador" }).getAttribute("aria-valuenow")).toBe("5");
-  });
-
-  it("mide una distancia arrastrando sobre la regla", () => {
-    const { container } = render(<EduToolsApp />);
-    fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
-    const ruler = container.querySelector(".edu-ruler");
-    expect(ruler).toBeTruthy();
-    fireEvent.pointerDown(ruler as Element, { clientX: 100, clientY: 50, pointerId: 1 });
-    fireEvent.pointerMove(ruler as Element, { clientX: 200, clientY: 50, pointerId: 1 });
-    fireEvent.pointerUp(ruler as Element, { clientX: 200, clientY: 50, pointerId: 1 });
-    expect(screen.getAllByText(/2\.6 cm/).length).toBeGreaterThan(0);
-  });
-
-  it("conserva la medición de la regla al cambiar de pestaña", () => {
-    const { container } = render(<EduToolsApp />);
-    fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
-    const ruler = container.querySelector(".edu-ruler");
-    fireEvent.pointerDown(ruler as Element, { clientX: 100, clientY: 50, pointerId: 1 });
-    fireEvent.pointerMove(ruler as Element, { clientX: 200, clientY: 50, pointerId: 1 });
-    fireEvent.pointerUp(ruler as Element, { clientX: 200, clientY: 50, pointerId: 1 });
-    expect(screen.getAllByText(/2\.6 cm/).length).toBeGreaterThan(0);
-
-    fireEvent.click(screen.getByRole("tab", { name: "Calculadora" }));
-    fireEvent.click(screen.getByRole("tab", { name: "Medir" }));
-    expect(screen.getAllByText(/2\.6 cm/).length).toBeGreaterThan(0);
-  });
-
-  it("cambia de vista con Alt+1…4", () => {
-    render(<EduToolsApp />);
-    fireEvent.keyDown(window, { key: "3", altKey: true });
-    expect(screen.getByRole("tab", { name: "Medir" }).getAttribute("aria-selected")).toBe("true");
-    expect(screen.getByRole("group", { name: "Instrumento de medida" })).toBeTruthy();
+    fireEvent.keyDown(window, { key: "2", altKey: true });
+    expect(screen.getByRole("tab", { name: "Tabla periódica" }).getAttribute("aria-selected")).toBe("true");
+    expect(await screen.findByRole("searchbox", { name: "Buscar elemento" })).toBeTruthy();
 
     fireEvent.keyDown(window, { key: "1", altKey: true });
     expect(screen.getByRole("tab", { name: "Calculadora" }).getAttribute("aria-selected")).toBe("true");
@@ -157,7 +103,7 @@ describe("Herramientas de aula", () => {
 
   it("busca en español y muestra la ficha del elemento", async () => {
     render(<EduToolsApp />);
-    fireEvent.click(screen.getByRole("tab", { name: "Ciencias" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Tabla periódica" }));
     fireEvent.change(await screen.findByRole("searchbox", { name: "Buscar elemento" }), { target: { value: "sodio" } });
     expect(screen.getByRole("status").textContent).toBe("1 de 118");
     fireEvent.click(screen.getByRole("gridcell", { name: /Sodio/ }));
@@ -173,14 +119,14 @@ describe("Herramientas de aula", () => {
 
   it("filtra por bloque", async () => {
     render(<EduToolsApp />);
-    fireEvent.click(screen.getByRole("tab", { name: "Ciencias" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Tabla periódica" }));
     fireEvent.change(await screen.findByLabelText("Bloque"), { target: { value: "f" } });
     expect(screen.getByRole("status").textContent).toBe("28 de 118");
   });
 
   it("marca los elementos con categoría predicha", async () => {
     render(<EduToolsApp />);
-    fireEvent.click(screen.getByRole("tab", { name: "Ciencias" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Tabla periódica" }));
     fireEvent.change(await screen.findByRole("searchbox", { name: "Buscar elemento" }), { target: { value: "oganeson" } });
     fireEvent.click(screen.getByRole("gridcell", { name: /Oganes/ }));
     expect(document.querySelector(".pt-detail-head.is-predicted")).toBeTruthy();

@@ -1,5 +1,5 @@
 import { lazy, type ComponentType } from "react";
-import { GitBranch, PencilRuler, Puzzle, Ruler } from "lucide-react";
+import { Calculator, GitBranch, PencilRuler, Puzzle } from "lucide-react";
 import { NATIVE_APPS, nativeAppMeta, type NativeAppId } from "../../../lib/native-apps";
 import type { StoreIconProps, StoreRole, StoreTool } from "./types";
 
@@ -10,7 +10,7 @@ const ROLES: StoreRole[] = ["owner", "admin", "teacher", "student", "guest"];
 
 const ICONS: Record<NativeAppId, ComponentType<StoreIconProps>> = {
   excalidraw: PencilRuler,
-  "edu-tools": Ruler,
+  "edu-tools": Calculator,
   blockly: Puzzle,
   mermaid: GitBranch,
 };

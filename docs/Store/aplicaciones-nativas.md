@@ -65,7 +65,7 @@ los de las futuras apps que usen este modelo.
 |---|---|---|---|---|
 | Pizarra Excalidraw | `@excalidraw/excalidraw` 0.18.1 | MIT | ✅ Integrada | Pizarras de tareas, proyecto y Tienda, con sincronización en vivo y superficie MCP de lectura, escritura y adición de formas; instalable desde Aula Store |
 | Programación por bloques | `blockly` 13.4.0 | Apache-2.0 | ✅ Integrada | Caja de herramientas en español, bloques de lógica, bucles, matemáticas, texto, variables y funciones; guardado por proyecto en D1 (`app_documents`), ejemplo inicial, descarga en JSON y **panel de código** JavaScript/Python con copia y **ejecución de JavaScript** (salida, errores y tiempo agotado). Los recursos (`media/`) se sirven desde `public/blockly-media` |
-| Herramientas de aula | `@smst/edu-tools` 2.2.1 | MIT | ✅ Integrada | **Calculadora** en el centro con chips de modo (Básica / Científica con dos páginas de funciones / Ecuaciones), memoria M+/M−/MR, historial persistente y resultado decimal y exacto; al activar **Ecuaciones** aparece su panel al lado, con varias líneas, variables compartidas, teclado matemático y resultado por fila. **Ciencias** (tabla periódica propia en español con búsqueda, filtros, modelo atómico animado, descripción e historia), **Medir** (regla con medición + transportador giratorio) y **Lectura** en voz alta. Atajos Alt+1…4 |
+| Herramientas de aula | Integración propia · `@cortex-js/compute-engine` 0.188.0 | — | ✅ Integrada | **Calculadora** en el centro con chips de modo (Básica / Científica con dos páginas de funciones / Ecuaciones), memoria M+/M−/MR, historial persistente y resultado decimal y exacto; al activar **Ecuaciones** aparece su panel al lado, con varias líneas, variables compartidas, teclado matemático y resultado por fila. **Tabla periódica** propia en español con búsqueda, filtros, modelo atómico animado, descripción e historia. Atajos Alt+1 y Alt+2 |
 | Diagramas | `mermaid` 12.3.0 | MIT | ✅ Integrada | Diagramas de flujo, secuencia, Gantt, clases, estados y líneas de tiempo; editor y vista previa, plantillas, guardado por proyecto en D1 (`app_documents`) y exportación SVG |
 
 ## Versiones
@@ -92,7 +92,7 @@ Aula Store usa la misma política para su propia versión. La versión del Site 
 | App | Versión de la app | Upstream |
 |---|---|---|
 | Excalidraw | `1.0.0` | `@excalidraw/excalidraw 0.18.1` |
-| Herramientas de aula | `1.0.0` | `@smst/edu-tools 2.2.1` · `@cortex-js/compute-engine 0.188.0` |
+| Herramientas de aula | `1.0.0` | `@cortex-js/compute-engine 0.188.0` |
 | Programación por bloques | `1.0.0` | `blockly 13.4.0` |
 | Diagramas | `1.0.0` | `mermaid 12.3.0` |
 
@@ -106,7 +106,6 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|
-| Herramientas de aula | `@smst/edu-tools` 2.2.1 | MIT | Calculadora, ecuaciones LaTeX, tabla periódica, transportador, regla, escuadra, lupa, TTS, diccionario, pizarra | ~2,3 MB sin empaquetar | **Integrada en parte**: calculadora, tabla periódica, transportador y regla. Subrutas por herramienta (`./calculator`, `./equation`, `./periodic`…). Depende de `jsdom`/`linkedom` y `mathlive`, pero los chunks usados solo importan React y `mathlive` se carga bajo demanda. Trae `./geogebra` y `./askai` que dependen de servicios externos |
 | Tarjetas de repaso | `ts-fsrs` 6.0.0 | MIT | Repetición espaciada (FSRS) con UI propia | ~20 KB | Necesita persistencia para tener sentido (nivel 2 o 3) |
 | Tarjetas (algoritmo SM-2) | `supermemo` 2.0.23 | MIT | Alternativa simple a FSRS | ~15 KB | Solo algoritmo |
 | Conjuntos de preguntas | `@open-spaced-repetition/srs-kit` 1.0.0 | BSD-3 | Contratos y esquema de SRS | ~20 KB | Requiere implementar la UI |
@@ -119,7 +118,7 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 | Física 2D | `matter-js` 0.20.0 | MIT | Gravedad, colisiones, muelles, péndulos | ~90 KB gzip | Sandbox manipulable; UI propia |
 | Física 2D (WASM) | `@dimforge/rapier2d` 0.21.0 | Apache-2.0 | Motor de física más preciso | ~1 MB WASM | Alternativa a Matter.js si hace falta precisión |
 | Geometría interactiva | `jsxgraph` 1.14.3 | MIT **o** LGPL-3.0 | Construcciones, funciones, lugares geométricos | ~400 KB | Elegir la opción MIT de la licencia dual |
-| Editor de fórmulas | `mathlive` 0.111.4 | MIT | Teclado matemático, exportación a LaTeX | ~500 KB + fuentes | También es dependencia de `@smst/edu-tools` |
+| Editor de fórmulas | `mathlive` 0.111.4 | MIT | Teclado matemático, exportación a LaTeX | ~500 KB + fuentes | Candidata si hace falta un teclado matemático más rico |
 | Render de fórmulas | `katex` 0.19.1 | MIT | Render de LaTeX en cualquier app | ~280 KB + fuentes | Pieza de apoyo, no app por sí sola |
 | Calculadora científica | `mathjs` 15.2.0 | Apache-2.0 | Evaluación simbólica y unidades | ~350 KB | Detrás de una UI propia |
 | Moléculas 3D | `3dmol` 2.5.5 | BSD-3 | Modelos moleculares giratorios | ~1 MB | Carga estructuras PDB/SDF |
@@ -169,7 +168,7 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 | Nombre | Qué se dijo | Qué hay realmente |
 |---|---|---|
 | `@itkdm/open-lab-components` | 210+ componentes interactivos STEM | Existe. MIT, 0.1.1 (febrero 2026), 3 MB, sin dependencias, repositorio público con 10 estrellas. Son **fragmentos HTML/CSS/JS**, no componentes React: necesitan `iframe` aislado. Candidata con reservas por madurez |
-| `@smst/edu-tools` | Herramientas educativas en React | Existe. MIT, 2.2.1 (octubre 2025), 2,27 MB, con subrutas por herramienta. Depende de `jsdom`, `linkedom`, `mathlive`, `react-rnd`… Importar solo lo necesario. El repositorio declarado en `package.json` devuelve 404: sin código público verificable, tratar como dependencia con cautela |
+| `@smst/edu-tools` | Herramientas educativas en React | Existe. MIT, 2.2.1 (octubre 2025), 2,27 MB, con subrutas por herramienta. Se usó para regla y transportador y se retiró en APP-02: la calculadora y la tabla periódica son código propio. El repositorio declarado en `package.json` devuelve 404 |
 | `marimo-learn` | Widgets de evaluación en Python o bundle npm | Existe **solo en PyPI** (0.14.0, MIT): widgets para cuadernos marimo, requiere `marimo` y `anywidget`. **No hay bundle npm** ni versión cliente pura, así que no encaja como app nativa. Su repositorio enlazado también devuelve 404. Se cubre con `ts-fsrs` + UI propia |
 | `eXeLearning` | Editor de recursos open source | Existe, **AGPL-3.0** y aplicación de escritorio (repositorio activo, actualizado en noviembre de 2026). No se puede incrustar: solo se pueden **importar sus exportaciones** HTML/SCORM como contenido. El contenido exportado lleva la licencia que elija el autor (por defecto CC BY-SA) |
 
@@ -190,7 +189,7 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
 ## Orden recomendado
 
-1. ~~`@smst/edu-tools`~~ — ✅ integrada (calculadora, ciencias, medir y lectura).
+1. ~~`@smst/edu-tools`~~ — descartado en APP-02; calculadora y tabla periódica son integración propia.
 2. ~~`blockly`~~ — ✅ integrada (programación por bloques).
 3. ~~`mermaid`~~ — ✅ integrada (diagramas).
 4. **`chess.js` + `react-chessboard`** — el añadido más barato.

@@ -45,11 +45,13 @@
 
 ## 4. Fases
 
-### Fase 1: Recorte de Medir, Lectura y la dependencia
-- [ ] Retirar las vistas Medir y Lectura del shell, `measure-tools`, `use-measure-tools`, `edu-tts` y sus estilos y pruebas; los atajos quedan para las dos vistas restantes.
-- [ ] Quitar `@smst/edu-tools` del `package.json`, el import de estilos, `types/edu-tools.d.ts`, la entrada `inline` de `vitest` y cualquier referencia en scripts.
-- [ ] Actualizar la ayuda y la documentación que describen cuatro pestañas.
+### Fase 1: Recorte de Medir, Lectura y la dependencia — completada
+- [x] Retirar las vistas Medir y Lectura del shell, `measure-tools`, `use-measure-tools`, `edu-tts` y sus estilos y pruebas; los atajos quedan para las dos vistas restantes.
+- [x] Quitar `@smst/edu-tools` del `package.json`, el import de estilos, `types/edu-tools.d.ts`, la entrada `inline` de `vitest` y cualquier referencia en scripts.
+- [x] Actualizar la ayuda y la documentación que describen cuatro pestañas.
 - **Criterios de aceptación:** calculadora y tabla funcionan igual; no quedan referencias a Medir, Lectura ni `ruler`/`protractor`; suite, `tsc`, ESLint y build en verde; `package-lock.json` sin `@smst/edu-tools`.
+
+**Implementado (2026-11-16):** el shell queda con dos pestañas, Calculadora y Tabla periódica, con atajos Alt+1 y Alt+2. Se eliminan `measure-tools.tsx`, `use-measure-tools.ts`, `edu-tts.tsx`, `types/edu-tools.d.ts` y sus reglas CSS y pruebas. `@smst/edu-tools` sale de `package.json`, del lock (180 paquetes menos), del import de estilos, de `vitest` y de la documentación; la calculadora conserva `@cortex-js/compute-engine` como upstream. La ayuda, la matriz, MCP y la ficha de la app describen solo las dos vistas. Verificación: 18 pruebas focales, `tsc` y ESLint en verde; suite completa y build en la verificación final de la fase.
 
 ### Fase 2: Dos aplicaciones en el catálogo
 - [ ] Añadir `calculadora` y `tabla-periodica` a `NATIVE_APP_IDS` con ficha, categorías, subcategoría, ventana y versión `1.0.0`; `upstream` opcional para la tabla (integración propia).

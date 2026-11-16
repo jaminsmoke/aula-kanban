@@ -70,8 +70,8 @@ if (typeof globalThis.IntersectionObserver === "undefined") {
   Object.defineProperty(globalThis, "IntersectionObserver", { configurable: true, value: IntersectionObserverStub });
 }
 
-/* Las apps nativas (transportador, regla) miden su contenedor con
-   ResizeObserver; jsdom no lo implementa y los efectos lanzarían. */
+/* El escritorio y alguna app nativa miden su contenedor con ResizeObserver;
+   jsdom no lo implementa y los efectos lanzarían. */
 if (typeof globalThis.ResizeObserver === "undefined") {
   class ResizeObserverStub {
     observe() {}

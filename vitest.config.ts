@@ -12,12 +12,5 @@ export default defineConfig({
     include: ["app/**/*.test.{ts,tsx}", "lib/**/*.test.{ts,tsx}"],
     setupFiles: ["./vitest.setup.ts"],
     restoreMocks: true,
-    server: {
-      deps: {
-        // Las apps nativas traen CSS propio; hay que procesarlas con Vite para
-        // que la importación de estilos no llegue a Node.
-        inline: ["@smst/edu-tools"],
-      },
-    },
   },
 });

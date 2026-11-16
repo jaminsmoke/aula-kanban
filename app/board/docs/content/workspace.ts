@@ -60,12 +60,12 @@ export const workspaceSections: DocSection[] = [
         type: "definitions",
         items: [
           { term: "Excalidraw (1.0.0)", text: "Pizarra del espacio de trabajo del proyecto, independiente de la pizarra de cada tarea. Se guarda en el proyecto y se comparte en directo: el alumnado y las cuentas invitadas la ven en modo lectura, y todos ven el puntero de los demás mientras dibujan." },
-          { term: "Herramientas de aula (1.0.0)", text: "Cuatro pestañas: Calculadora (Básica, Científica, Ecuaciones e Historial, con memoria MC/M+/M−/MR), Ciencias (tabla periódica con pestañas Ficha, Descripción e Historia, y modelo atómico del elemento), Medir (regla para medir en centímetros y pulgadas y transportador que gira con el ratón o las flechas) y Lectura (texto a voz con la voz del sistema). Atajos Alt+1 a Alt+4." },
+          { term: "Herramientas de aula (1.0.0)", text: "Dos pestañas: Calculadora (Básica, Científica, Ecuaciones e Historial, con memoria MC/M+/M−/MR) y Tabla periódica (con pestañas Ficha, Descripción e Historia, y modelo atómico del elemento). Atajos Alt+1 y Alt+2." },
           { term: "Programación por bloques (1.0.0)", text: "Editor de bloques con «Guardar», «Cargar», «Ejemplo», «Descargar», «Limpiar» y «Código»: genera el programa en JavaScript o Python, permite ejecutarlo y copiarlo. Se guarda por proyecto en la base de datos; las cuentas invitadas solo pueden consultarlo." },
           { term: "Diagramas (1.0.0)", text: "Escribes el diagrama en texto y ves la vista previa al instante, con plantillas listas. «Guardar» y «Cargar» trabajan por proyecto en la base de datos, y «Exportar SVG» descarga la imagen." },
         ],
       },
-      { type: "note", tone: "info", text: "El historial de la calculadora se guarda en este navegador, no en el proyecto: no lo ves desde otro equipo y puedes vaciarlo con «Borrar» en el panel del historial. La memoria de la calculadora y las mediciones de la regla viven solo mientras la ventana está abierta. Los documentos de Programación por bloques y Diagramas sí se guardan en el proyecto, con el botón «Guardar»." },
+      { type: "note", tone: "info", text: "El historial de la calculadora se guarda en este navegador, no en el proyecto: no lo ves desde otro equipo y puedes vaciarlo con «Borrar» en el panel del historial. La memoria de la calculadora vive solo mientras la ventana está abierta. Los documentos de Programación por bloques y Diagramas sí se guardan en el proyecto, con el botón «Guardar»." },
     ],
   },
   {

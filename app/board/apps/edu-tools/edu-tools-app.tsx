@@ -1,35 +1,27 @@
 "use client";
 
-import "@smst/edu-tools/styles";
 import { lazy, Suspense, useEffect, useState } from "react";
 import CalculatorPanel from "./calculator/calculator-panel";
-import MeasureTools from "./tools/measure-tools";
-import { useMeasureTools } from "./tools/use-measure-tools";
 import "./edu-tools.css";
 
 const PeriodicTableEs = lazy(() => import("./periodic-table/periodic-table-es"));
-const TtsEs = lazy(() => import("./tools/edu-tts"));
 
-type ToolView = "calculadora" | "ciencias" | "medir" | "lectura";
+type ToolView = "calculadora" | "tabla-periodica";
 
 const VIEWS: { id: ToolView; label: string }[] = [
   { id: "calculadora", label: "Calculadora" },
-  { id: "ciencias", label: "Ciencias" },
-  { id: "medir", label: "Medir" },
-  { id: "lectura", label: "Lectura" },
+  { id: "tabla-periodica", label: "Tabla periódica" },
 ];
 
 /**
  * Herramientas de aula: calculadora con pantalla, memoria e historial y modo
- * científico, ecuaciones por líneas, tabla periódica, medición y lectura en voz
- * alta.
+ * científico, ecuaciones por líneas y tabla periódica.
  * @returns La ventana con la vista activa.
  */
 export default function EduToolsApp() {
   const [view, setView] = useState<ToolView>("calculadora");
-  const measure = useMeasureTools({ active: view === "medir" });
 
-  // Atajos Alt+1…4 para cambiar de vista sin soltar el teclado.
+  // Atajos Alt+1…2 para cambiar de vista sin soltar el teclado.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (!event.altKey || event.ctrlKey || event.metaKey) return;
@@ -58,29 +50,13 @@ export default function EduToolsApp() {
           </div>
         ) : null}
 
-        {view === "ciencias" ? (
+        {view === "tabla-periodica" ? (
           <div className="edu-view edu-view--fill">
             <section className="edu-card edu-card--periodic">
               <h3 className="edu-card-title">Tabla periódica</h3>
               <Suspense fallback={<p className="edu-hint" role="status">Cargando la tabla periódica…</p>}>
                 <PeriodicTableEs />
               </Suspense>
-            </section>
-          </div>
-        ) : null}
-
-        {view === "medir" ? <MeasureTools measure={measure} /> : null}
-
-        {view === "lectura" ? (
-          <div className="edu-view edu-view--fill">
-            <section className="edu-card edu-card--tts">
-              <h3 className="edu-card-title">Lectura en voz alta</h3>
-              <div className="edu-tts">
-                <Suspense fallback={<p className="edu-hint" role="status">Cargando el lector…</p>}>
-                  <TtsEs />
-                </Suspense>
-              </div>
-              <p className="edu-hint">Escribe o pega un texto, elige la voz y pulsa Leer. Usa la voz del sistema, sin enviar nada fuera.</p>
             </section>
           </div>
         ) : null}

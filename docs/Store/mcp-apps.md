@@ -38,7 +38,7 @@ reglas de cada app.
 | App | Abrir | Ventana | Leer por MCP | Escribir por MCP | Exportar por MCP | Permisos | Límites |
 |---|---|---|---|---|---|---|---|
 | **Excalidraw** (`excalidraw`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_pizarra` | Sí, `guardar_pizarra` y `anadir_a_pizarra` | No; la ventana exporta imagen | Leer: cualquier miembro. Escribir: no invitados; el alumnado solo en pizarras de sus tareas. La ventana de Tienda es de solo lectura para alumnado e invitados. | Snapshot de hasta 2 MB con revisión optimista; `409` con `revisionActual` si cambió. La publicación en vivo admite hasta 1 MB; las escenas mayores se recogen por sondeo. |
-| **Herramientas de aula** (`edu-tools`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `consultar_elemento` | No | No | Cualquier cuenta autenticada, incluidas invitadas y cuentas sin proyecto, si la app está instalada. La consulta no usa proyecto. | Una ficha por llamada entre 118 elementos. No hay estado de trabajo en el servidor; calculadora, memoria, medición y voz viven en el navegador. |
+| **Herramientas de aula** (`edu-tools`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `consultar_elemento` | No | No | Cualquier cuenta autenticada, incluidas invitadas y cuentas sin proyecto, si la app está instalada. La consulta no usa proyecto. | Una ficha por llamada entre 118 elementos. No hay estado de trabajo en el servidor; la calculadora y su memoria viven en el navegador. |
 | **Programación por bloques** (`blockly`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_programa_bloques` | Sí, `guardar_programa_bloques` | No; la ventana descarga JSON | Lectura: cualquier miembro. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Estado JSON de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. |
 | **Diagramas** (`mermaid`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_diagrama` y `listar_plantillas_diagrama` | Sí, `guardar_diagrama` | No; la ventana exporta SVG | Lectura y plantillas: cualquier miembro con acceso, o cualquier cuenta autenticada para las plantillas si la app está instalada. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Código de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. La validación y el render de Mermaid se quedan en el navegador. |
 
@@ -87,9 +87,8 @@ reglas de cada app.
 ### Herramientas de aula — sin entrada nueva
 
 - `consultar_elemento` cubre la única consulta estable de la app.
-- Calculadora, ecuaciones, medición y lectura en voz alta son interactivas,
-  usan `compute-engine` o la voz del sistema y no tienen estado de servidor. No
-  se trasladan al Worker en este roadmap.
+- Calculadora y ecuaciones son interactivas, usan `compute-engine` y no
+  tienen estado de servidor. No se trasladan al Worker en este roadmap.
 
 ## Revisión de huecos
 

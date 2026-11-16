@@ -41,15 +41,15 @@ describe("ficha técnica de Aula Store", () => {
       tool={{
         ...tool,
         name: "Herramientas de aula",
-        upstream: { name: "@smst/edu-tools", version: "2.2.1" },
-        extras: [{ name: "@cortex-js/compute-engine", version: "0.188.0" }],
+        upstream: { name: "@cortex-js/compute-engine", version: "0.188.0" },
+        extras: [{ name: "blockly", version: "13.4.0" }],
       }}
       {...props}
     />);
     expect(screen.getByText("Versión de Herramientas de aula")).toBeTruthy();
-    expect(screen.getByText("@smst/edu-tools 2.2.1")).toBeTruthy();
-    expect(screen.getByText("Ampliaciones")).toBeTruthy();
     expect(screen.getByText("@cortex-js/compute-engine 0.188.0")).toBeTruthy();
+    expect(screen.getByText("Ampliaciones")).toBeTruthy();
+    expect(screen.getByText("blockly 13.4.0")).toBeTruthy();
   });
 
   it("permite una etiqueta de versión distinta del nombre de la app", () => {

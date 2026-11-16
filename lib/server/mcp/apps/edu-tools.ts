@@ -7,10 +7,10 @@ import type { McpToolDefinicion } from "../dominios/tipos";
 /**
  * Herramientas MCP de Herramientas de aula (MCP-05C).
  *
- * La app no guarda estado de trabajo en el servidor: la calculadora, la
- * memoria, la regla y el lector viven en el navegador. La única superficie
- * estable para MCP es la tabla periódica, que se consulta por símbolo o
- * número atómico y no requiere proyecto.
+ * La app no guarda estado de trabajo en el servidor: la calculadora, su
+ * memoria y la tabla viven en el navegador. La única superficie estable para
+ * MCP es la tabla periódica, que se consulta por símbolo o número atómico y no
+ * requiere proyecto.
  */
 
 /**
