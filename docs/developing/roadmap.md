@@ -46,10 +46,12 @@ Motivos de la decisión (revisado 2026-11-16):
 
 **Implementado (2026-11-16):** 10 títulos de Marea Verde (CC BY-NC-SA): ESO 1º–4º (4ºA/4ºB) y Bachillerato (Matemáticas I/II, CCSS I/II y Generales), con URLs originales y tamaños verificados (8–32 MB; 4ºB, con 32 MB, se valora por capítulos en una fase posterior). **Corrección de alcance:** el grupo de Matemáticas de Marea Verde cubre ESO y Bachillerato, no Primaria; Primaria queda para una fase posterior con INTEF/EDIA (HTML/SCORM, CC BY-SA).
 
-### Fase 2: Persistencia y servido
-- [ ] Ingesta de los PDF a R2 y servido por la ruta de archivos existente, con atribución y licencia en los metadatos.
-- [ ] Gestión de actualizaciones: al cambiar la fuente, se sustituye el archivo y se registra la versión.
+### Fase 2: Persistencia y servido — completada
+- [x] Ingesta de los PDF a R2 y servido por la ruta de archivos existente, con atribución y licencia en los metadatos.
+- [x] Gestión de actualizaciones: al cambiar la fuente, se sustituye el archivo y se registra la versión.
 - **Criterios de aceptación:** cada libro del catálogo se sirve desde Aula Kanban (sin pedir a la fuente), con su licencia y atribución visibles.
+
+**Implementado (2026-11-16):** claves versionadas `books/<id>/<fecha>.pdf` en el bucket `site-creator-r2`; script `scripts/ingest-books.mjs` (descarga, verifica tamaño contra el catálogo, sube y marca `storageKey`/`version` en `lib/books.ts`; `--remote` solo para Codex en producción); rutas `GET /api/books` (catálogo con procedencia y disponibilidad) y `GET /api/books/<id>/file` (PDF con caché inmutable, 404/503 según estado). Los 10 libros están ingeridos en el R2 local y verificados en el navegador (catálogo 200 y PDF servido). Documentación en `docs/Store/libros.md`. La ingesta remota la hace Codex al publicar.
 
 ### Fase 3: Vista Libros en la Tienda
 - [ ] La pestaña «Libros» pasa a activa: secciones por nivel y materia, tarjetas con ficha (descripción, licencia, atribución) y apertura en ventana con visor PDF.

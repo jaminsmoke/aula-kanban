@@ -13,9 +13,9 @@ describe("catálogo de libros", () => {
       expect(book.source.url).toMatch(/^https:\/\/apuntesmareaverde\.org\.es\//);
       expect(book.format).toBe("pdf");
       expect(book.sizeBytes).toBeGreaterThan(0);
-      // Sin ingesta todavía: ni clave de almacenamiento ni versión.
-      expect(book.storageKey).toBeNull();
-      expect(book.version).toBeNull();
+      // Ingeridos: clave versionada en R2 y versión registrada.
+      expect(book.storageKey).toBe(`books/${book.id}/${book.version}.pdf`);
+      expect(book.version).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     }
   });
 

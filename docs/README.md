@@ -9,6 +9,7 @@
 | [`aplicaciones-nativas.md`](Store/aplicaciones-nativas.md) | Catálogo de apps nativas, licencias y estado | Temático |
 | [`mcp-apps.md`](Store/mcp-apps.md) | Cobertura MCP, permisos y límites de las apps nativas | Temático |
 | [`matriz-herramientas.md`](Store/matriz-herramientas.md) | Matriz de APP-01: audiencia, alcance, colaboración y acciones | Temático |
+| [`libros.md`](Store/libros.md) | Catálogo de libros escolares, licencias e ingesta a R2 | Temático |
 
 ## Planificación (`developing/`)
 
