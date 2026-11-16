@@ -6,6 +6,23 @@
 
 ---
 
+## 2026-11-16 — Roadmap STORE-03A · Taxonomía de la Tienda por familias de uso (multi-categoría)
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Las categorías de Aula Store pasan a ser familias de uso — **Educación, Oficina, Productividad** (Oficina nace vacía) — con multi-categoría por app (`categories: string[]`) y **subcategorías de vocabulario compartido** (Pizarras, Diagramas, Programación, Herramientas).
+- Asignaciones iniciales: Excalidraw → Educación/Pizarras; Herramientas de aula → Educación/Herramientas; Programación por bloques → Productividad/Programación; **Diagramas → Educación y Productividad** (primera app en dos categorías). «Aula» desaparece como categoría.
+- Tienda según la nueva taxonomía: filtros con conteos coherentes (Oficina siempre visible con 0), secciones por categoría con aviso «Más adelante» en vacías, tarjeta con subcategoría y ficha con las categorías principales.
+- Contrato MCP: `listar_apps`/`obtener_app` devuelven `categorias` + `subcategoria`; sin referencias viejas en `mcp-apps.md` ni en la ayuda; documentado en `docs/Store/aplicaciones-nativas.md`.
+
+### Verificación
+
+- Suite completa: 137 archivos / 1.078 pruebas; `tsc`, ESLint y build en verde.
+- Navegador local: «Mejores aplicaciones» (4), Educación (3) y Productividad (2, con Diagramas en ambas), Oficina (0 con «Más adelante») y filtros correctos; sin regresión en búsqueda e instaladas; a 390 px, una columna.
+- Commits: `2fc91fe` (Fase 1), `dfa742f` (Fase 2); el cierre queda en el commit de documentación.
+
 ## 2026-11-16 — Roadmap STORE-04 · Herramientas asignables por proyecto
 
 **Estado:** Completada · Sin publicación

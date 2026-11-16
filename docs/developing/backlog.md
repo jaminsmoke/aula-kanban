@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** STORE-03A · Taxonomía de la Tienda (multi-categoría) · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** APP-02 aparcada; PERM-01 pendiente como prerequisito de APP-03; APP-03 (carpetas) pendiente; STORE-03B depende de STORE-03A
+> **Roadmap:** sin fase activa (STORE-03A cerrada) · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** APP-02 aparcada; PERM-01 pendiente como prerequisito de APP-03; APP-03 (carpetas) y STORE-03B (barra inferior y carruseles) pendientes de priorizar
 
 ---
 

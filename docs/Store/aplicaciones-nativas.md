@@ -46,7 +46,10 @@ los de las futuras apps que usen este modelo.
 
 1. Carpeta propia en `app/board/apps/<id>/` con su componente y estilos.
 2. Ficha en `NATIVE_APPS` de `lib/native-apps.ts` (data pura, también para el
-   servidor): nombre, categoría, portada, características y tamaño de ventana.
+   servidor): nombre, categorías (familias de uso) y subcategoría, portada,
+   características y tamaño de ventana. La taxonomía cerrada está en
+   `lib/native-apps.ts` (`STORE_TOP_CATEGORIES` y `STORE_SUBCATEGORIES`);
+   una app puede pertenecer a varias categorías principales.
 3. Registro en `app/board/apps/registry.tsx`: icono y componente lazy. El test
    `registry.test.ts` avisa si falta algo o si los ids no coinciden con la API.
 4. Si guarda un documento, usa `useAppDocument` y añade su estado a esa tabla;
