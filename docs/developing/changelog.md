@@ -6,6 +6,11 @@
 
 ---
 
+## 2026-11-16 — Publicación 1.1.32
+
+- La migración 0039, aún no aplicada en la instancia publicada ni en la base local principal, se ajusta a solo esquema. El traslado de `edu-tools` se ejecuta fuera de la migración: la instalación mediante lote atómico y las preferencias por usuario y proyecto, sin sobrescribir valores nuevos y de forma repetible.
+- Se probaron instalación previa, desinstalación, preferencias existentes y repetición; las migraciones de esquema se aplicaron en local y producción. Sites confirmó la publicación; navegación, 17 alumnos y catálogo de cinco apps comprobados. Lint, tipos, build y 1.104 pruebas correctos.
+
 ## 2026-11-16 — Roadmap APP-02 · Calculadora y Tabla periódica independientes
 
 **Estado:** Completada · Sin publicación
@@ -15,7 +20,7 @@
 - Aula Store pasa a **cinco apps**: Excalidraw, Calculadora, Tabla periódica, Programación por bloques y Diagramas. Cada una tiene ficha, portada, icono, ventana y carga diferida propios; `upstream` es opcional y la tabla es integración propia. La calculadora conserva `@cortex-js/compute-engine`.
 - Se retiran **Medir y Lectura** —vistas, medidor, lector de voz, estilos, pruebas y referencias— y se elimina `@smst/edu-tools` del proyecto (180 paquetes menos en el lock). El código se reparte en `apps/calculadora/` y `apps/tabla-periodica/`, con una base CSS compartida.
 - `consultar_elemento` pasa a exigir `tabla-periodica`; la calculadora declara su superficie MCP como pendiente. El catálogo sube a **`0.28.0`** con snapshot, matriz, paridad y guía actualizados.
-- **Migración local `0039`**: si `edu-tools` estaba instalada, crea las dos apps instaladas conservando versión; copia favorito y posición de `app_preferences`; retira las filas antiguas. Es idempotente y no pisa filas nuevas. Alias `edu-tools` → `calculadora` en URL, `buildBoardUrl`, `abrir_app`, enlaces y canal en vivo.
+- **Transición de datos:** si `edu-tools` estaba instalada, crea las dos apps instaladas conservando versión; copia favorito y posición por usuario y proyecto y retira las filas antiguas. Es idempotente y no pisa filas nuevas. La migración `0039` queda limitada al esquema. Alias `edu-tools` → `calculadora` en URL, `buildBoardUrl`, `abrir_app`, enlaces y canal en vivo.
 - Ayuda, README, `aplicaciones-nativas.md`, `matriz-herramientas.md`, `mcp-apps.md`, estilos y rendimiento actualizados. La Tienda lista las cinco apps y la ficha de la tabla no atribuye un paquete que no usa.
 
 ### Verificación
@@ -27,7 +32,7 @@
 
 ### Seguimiento
 
-- **APP-03** (carpetas e iconos de mochila/maletín) sigue pendiente de priorizar y ya usa los ids `calculadora` y `tabla-periodica`; la migración 0039 deja sus preferencias preparadas. No hay más entradas.
+- **APP-03** (carpetas e iconos de mochila/maletín) sigue pendiente de priorizar y ya usa los ids `calculadora` y `tabla-periodica`; la transición conserva sus preferencias. No hay más entradas.
 
 ## 2026-11-16 — Roadmap PERM-02 · Secciones de permisos en Ajustes y Administración
 

@@ -3,6 +3,9 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
+// Estas pruebas simulan D1 y cubren permisos/paridad; la transición tiene su propia suite SQLite.
+vi.mock("../app-migration", () => ({ migrateLegacyAppInstall: async () => {}, migrateLegacyAppPreferences: async () => {} }));
+
 /**
  * Paridad MCP ↔ HTTP (MCP-12): para cada operación, el mismo caso da el
  * mismo estado y el mismo mensaje por la herramienta que por la ruta.

@@ -1,3 +1,4 @@
+import { migrateLegacyAppInstall } from "./app-migration";
 import { getDb } from "../../db";
 import { instanceApps } from "../../db/schema";
 import { NATIVE_APP_IDS, nativeAppMeta, type NativeAppId } from "../native-apps";
@@ -24,6 +25,7 @@ export type AppInstalledState = {
  * @returns Una entrada por aplicación del catálogo.
  */
 export async function listInstalledApps(): Promise<AppInstalledState[]> {
+  await migrateLegacyAppInstall();
   const rows = await getDb().select().from(instanceApps);
   return NATIVE_APP_IDS.map((id) => {
     const row = rows.find((item) => item.appId === id);
@@ -41,6 +43,7 @@ export async function listInstalledApps(): Promise<AppInstalledState[]> {
  * @returns El nuevo estado de la app.
  */
 export async function setAppInstalled(userId: string, appId: NativeAppId, installed: boolean): Promise<AppInstalledState> {
+  await migrateLegacyAppInstall();
   const status = installed ? "installed" : "not_installed";
   const version = installed ? (nativeAppMeta(appId)?.appVersion ?? null) : null;
   const now = Date.now();

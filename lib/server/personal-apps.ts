@@ -1,3 +1,4 @@
+import { migrateLegacyAppPreferences } from "./app-migration";
 import { and, asc, eq, inArray } from "drizzle-orm";
 import { getDb } from "../../db";
 import { appPreferences } from "../../db/schema";
@@ -92,14 +93,11 @@ export function orderPersonalApps(items: readonly PersonalAppItem[]): PersonalAp
  */
 export async function listPersonalApps(projectId: string, userId: string): Promise<PersonalAppItem[]> {
   const db = getDb();
-  const [installedState, stored] = await Promise.all([
-    listInstalledApps(),
-    db
-      .select()
-      .from(appPreferences)
-      .where(and(eq(appPreferences.projectId, projectId), eq(appPreferences.userId, userId)))
-      .orderBy(asc(appPreferences.position)),
-  ]);
+  const installedState = await listInstalledApps();
+  await migrateLegacyAppPreferences(projectId, userId);
+  const stored = await db.select().from(appPreferences)
+    .where(and(eq(appPreferences.projectId, projectId), eq(appPreferences.userId, userId)))
+    .orderBy(asc(appPreferences.position));
   const installed = new Set(installedState.filter((item) => item.status === "installed").map((item) => item.id));
   const preferences: PersonalAppPreference[] = [];
   for (const row of stored) {
@@ -145,6 +143,7 @@ export function parsePersonalItems(body: unknown): PersonalAppPreference[] {
  */
 export async function setPersonalApps(projectId: string, userId: string, items: readonly PersonalAppPreference[]): Promise<PersonalAppItem[]> {
   const installedState = await listInstalledApps();
+  await migrateLegacyAppPreferences(projectId, userId);
   const installed = new Set(installedState.filter((item) => item.status === "installed").map((item) => item.id));
   if (items.some((item) => !installed.has(item.id))) {
     throw new PersonalAppsError("Solo puedes guardar herramientas instaladas en la instancia.", 400);

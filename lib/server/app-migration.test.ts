@@ -1,9 +1,9 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+vi.mock("../../db", () => ({ getD1: () => { throw new Error("binding no proporcionado"); } }));
+import { migrateLegacyAppInstall, migrateLegacyAppPreferences } from "./app-migration";
 
-const migration = readFileSync(resolve("drizzle/0039_split_edu_tools.sql"), "utf8");
+
 
 const DDL = `
   CREATE TABLE instance_apps (
@@ -32,9 +32,33 @@ function openDb() {
   return db;
 }
 
-function applyTwice(db: DatabaseSync) {
-  db.exec(migration);
-  db.exec(migration);
+function fakeD1(db: DatabaseSync): D1Database {
+  return {
+    prepare(sql: string) {
+      let params: string[] = [];
+      const stmt = {
+        bind(...args: string[]) { params = args; return stmt; },
+        async first() { return db.prepare(sql).get(...params) ?? null; },
+        execute() { db.prepare(sql).run(...params); },
+      };
+      return stmt;
+    },
+    async batch(stmts: Array<{ execute(): void }>) {
+      db.exec("BEGIN");
+      try { for (const stmt of stmts) stmt.execute(); db.exec("COMMIT"); }
+      catch (error) { db.exec("ROLLBACK"); throw error; }
+      return [];
+    },
+  } as unknown as D1Database;
+}
+
+async function applyTwice(db: DatabaseSync) {
+  const binding = fakeD1(db);
+  for (let n = 0; n < 2; n++) {
+    await migrateLegacyAppInstall(binding);
+    await migrateLegacyAppPreferences("p1", "u1", binding);
+    await migrateLegacyAppPreferences("p2", "u2", binding);
+  }
 }
 
 type AppRow = { app_id: string; installed: number; version: string | null };
@@ -48,8 +72,8 @@ function preferences(db: DatabaseSync): PreferenceRow[] {
   return db.prepare("SELECT project_id, user_id, app_id, favorite, position FROM app_preferences ORDER BY project_id, user_id, app_id").all() as PreferenceRow[];
 }
 
-describe("migración 0039 · separación de edu-tools", () => {
-  it("duplica la instalación y las preferencias en las dos apps y retira la fila antigua", () => {
+describe("transición de datos · separación de edu-tools", () => {
+  it("duplica la instalación y las preferencias en las dos apps y retira la fila antigua", async () => {
     const db = openDb();
     try {
       db.exec(`
@@ -58,7 +82,7 @@ describe("migración 0039 · separación de edu-tools", () => {
           ('p1', 'u1', 'edu-tools', 1, 2, 10),
           ('p2', 'u2', 'edu-tools', 0, NULL, 20);
       `);
-      applyTwice(db);
+      await applyTwice(db);
 
       expect(apps(db)).toEqual([
         { app_id: "calculadora", installed: 1, version: "1.2.3" },
@@ -75,14 +99,14 @@ describe("migración 0039 · separación de edu-tools", () => {
     }
   });
 
-  it("no instala nada si edu-tools estaba desinstalada, pero conserva sus preferencias", () => {
+  it("no instala nada si edu-tools estaba desinstalada, pero conserva sus preferencias", async () => {
     const db = openDb();
     try {
       db.exec(`
         INSERT INTO instance_apps VALUES ('legacy', 'edu-tools', 0, NULL, 'u-owner', 10);
         INSERT INTO app_preferences VALUES ('p1', 'u1', 'edu-tools', 1, 0, 10);
       `);
-      applyTwice(db);
+      await applyTwice(db);
 
       expect(apps(db)).toEqual([]);
       expect(preferences(db)).toEqual([
@@ -94,7 +118,7 @@ describe("migración 0039 · separación de edu-tools", () => {
     }
   });
 
-  it("no pisa una instalación o preferencia nueva que ya exista", () => {
+  it("no pisa una instalación o preferencia nueva que ya exista", async () => {
     const db = openDb();
     try {
       db.exec(`
@@ -103,7 +127,7 @@ describe("migración 0039 · separación de edu-tools", () => {
         INSERT INTO app_preferences VALUES ('p1', 'u1', 'calculadora', 0, 0, 5);
         INSERT INTO app_preferences VALUES ('p1', 'u1', 'edu-tools', 1, 3, 10);
       `);
-      applyTwice(db);
+      await applyTwice(db);
 
       expect(apps(db)).toEqual([
         { app_id: "calculadora", installed: 0, version: null },
@@ -118,10 +142,10 @@ describe("migración 0039 · separación de edu-tools", () => {
     }
   });
 
-  it("es un no-op repetible si no existe ninguna fila antigua", () => {
+  it("es un no-op repetible si no existe ninguna fila antigua", async () => {
     const db = openDb();
     try {
-      applyTwice(db);
+      await applyTwice(db);
       expect(apps(db)).toEqual([]);
       expect(preferences(db)).toEqual([]);
     } finally {

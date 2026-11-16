@@ -100,7 +100,7 @@ Aula Store usa la misma política para su propia versión. La versión del Site 
 
 La tienda empieza en `1.0.0`. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
 
-La migración local `0039_split_edu_tools` separa una instalación antigua de `edu-tools` en las dos apps nuevas, conserva favorito y posición de cada preferencia y retira la fila vieja. Es idempotente: repetirla no duplica instalaciones ni preferencias. Durante un ciclo, `?app=edu-tools` y `abrir_app` resuelven el alias como `calculadora`.
+La transición de datos del servicio separa una instalación antigua de `edu-tools` en las dos apps nuevas y traslada favorito y posición por usuario y proyecto al consultar su espacio. Es atómica por lote e idempotente: respeta los valores nuevos y retira las filas antiguas una vez trasladadas. `0039_split_edu_tools` contiene solo esquema. Durante un ciclo, `?app=edu-tools` y `abrir_app` resuelven el alias como `calculadora`.
 
 ## Candidatas
 

@@ -3,6 +3,9 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
+// Estas pruebas simulan D1 y cubren permisos/paridad; la transición tiene su propia suite SQLite.
+vi.mock("../app-migration", () => ({ migrateLegacyAppInstall: async () => {}, migrateLegacyAppPreferences: async () => {} }));
+
 /**
  * Matriz de roles por herramienta (MCP-12): cada una de las 8 herramientas
  * ante propietario, administrador, profesor, alumno, invitado, cuenta sin
