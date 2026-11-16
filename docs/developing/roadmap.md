@@ -1,84 +1,82 @@
-# Roadmap PROMO-01 · Vista previa en redes (Open Graph y Twitter Card)
+# Roadmap PROMO-02 · Portada pública nueva
 
-> **Estado:** En curso · verificación local completada; validación externa pendiente de publicación
+> **Estado:** Activo
 > **Inicio:** 2026-11-16
-> **Entrada:** PROMO-01 — los enlaces públicos a Aula Kanban deben mostrar una tarjeta grande y reconocible al compartirlos en redes y mensajería.
-> **Backlog:** PROMO-02..06 (5 entradas, pendientes de debate)
+> **Entrada:** PROMO-02 — la portada anónima de `/` debe explicar el producto, para quién es y por qué destaca el plugin, con una entrada clara a la aplicación.
+> **Dependencias:** PROMO-01 (mensaje e imagen social; su cierre externo sigue pendiente) y PROMO-03 (capturas de la demo; no bloquean la primera versión, que puede usar la ilustración existente).
+> **Backlog:** PROMO-01 pausado y PROMO-03..06 pendientes de debate.
 > **Changelog:** [`changelog.md`](changelog.md)
 
 ---
 
 ## 1. Objetivo
 
-- [ ] Que cualquier enlace público a Aula Kanban muestre una tarjeta Open Graph coherente, con imagen de 1200×630, título y descripción, en LinkedIn, X, Facebook y WhatsApp.
-- [ ] Criterio de éxito: el HTML servido sin sesión contiene `og:title`, `og:description`, `og:url`, `og:image` absoluta y `twitter:card=summary_large_image`; la imagen responde 200 con las dimensiones correctas y los validadores no muestran errores.
+- [ ] Rehacer la portada pública de `/` para que un visitante sin sesión entienda qué es Aula Kanban, cómo organiza el trabajo de clase y qué aporta el plugin de ChatGPT, sin mostrar datos de ninguna instancia.
+- [ ] Criterio de éxito: la portada se ve sin sesión, mantiene el inicio de sesión con `returnTo` y el enlace a `/documentacion`, no desborda a 1366, 1024 ni 390 px, y no aumenta el presupuesto de rendimiento del flujo `tablero`.
 
 ## 2. Alcance
 
 **Dentro:**
-- Resolver la URL pública canónica con una variable de entorno y un fallback para el Site actual.
-- Metadatos compartidos en `app/layout.tsx`: `metadataBase`, Open Graph y Twitter Card.
-- Imagen social estática `public/og/aula-kanban.png` de 1200×630, sin datos de una cuenta ni de un proyecto.
-- Pruebas de los metadatos y del HTML público servido; validación en los principales validadores sociales.
-- Documentar la variable de URL y el proceso de sustituir la imagen.
+- Rehacer `app/portada.tsx` en la misma ruta `/`; no crear `/landing`.
+- Explicar el producto en bloques breves: tablero y calendario, personas y materiales, pizarras y apps, y plugin de ChatGPT.
+- Dar una entrada principal a la aplicación y un enlace secundario a la documentación, conservando el `returnTo` de la URL profunda.
+- Usar la identidad visual, las fuentes y los tokens existentes; se puede reutilizar `HeroArt` o una composición estática equivalente.
+- Una hoja de estilos propia de la portada y pruebas de contenido, rutas y rama sin sesión.
+- Documentar el cambio en README o ayuda si el texto de presentación lo necesita.
 
 **Fuera de alcance:**
-- Imágenes generadas por petición (`opengraph-image.tsx`) o tarjetas distintas por proyecto, tarea o cuenta.
-- Metadatos propios para `/documentacion` u otras rutas: en esta fase todas comparten la tarjeta raíz.
-- Cambiar la portada pública, el vídeo, las páginas legales o el modo demo (PROMO-02..05).
-- Publicar en Sites, cambiar de dominio o crear cuentas en redes sociales.
+- Crear el proyecto de demo, sembrarlo o hacer capturas nuevas: eso pertenece a PROMO-03. Si ese material llega durante este roadmap, se integra sin rehacer la estructura.
+- Producir el vídeo promocional completo. Un vídeo pesado exigiría póster y `preload="none"`, pero no es requisito para esta portada.
+- Añadir el botón de demo sin cuenta (PROMO-05), las páginas legales y de rastreo (PROMO-04) o cambiar precios, cuentas o dominio.
+- Cambiar los metadatos sociales o la tarjeta ya implementados en PROMO-01.
+- Publicar en Sites o modificar migraciones. La publicación y la validación en producción siguen el flujo del repositorio.
 
 ## 3. Decisiones de arquitectura
 
 | Decisión | Alternativa descartada | Motivo |
 |---|---|---|
-| **PNG estático en `public/og/`** | `app/opengraph-image.tsx` generado en el Worker | La imagen se revisa una vez, no depende de fuentes ni de runtime y evita sorpresas de soporte en vinext/Workers. |
-| **Tarjeta única en el layout raíz** | Metadatos distintos por ruta | El producto y el mensaje son los mismos; una sola fuente evita divergencias y mantiene el alcance pequeño. |
-| **`NEXT_PUBLIC_SITE_URL` con fallback al Site actual** | URL fija incrustada | El Site actual funciona sin configuración, y una copia puede anunciar su propio dominio. |
-| **PNG 1200×630** | WebP o SVG | Es el formato y tamaño que aceptan de forma consistente los rastreadores sociales. |
-| **Imagen de marca sin captura de cuenta** | Recorte de `espacio.webp` | Evita mostrar «Seedy» o el proyecto «pruebas» y no bloquea la promoción con PROMO-03. |
+| **Mantener `/` como única URL pública** | Crear `/landing` | Evita dos portadas, enlaces duplicados y una redirección extra; `/` ya es la entrada pública. |
+| **Una composición de marca sin datos reales** | Capturas de una cuenta o proyecto | La portada no debe publicar nombres, correos ni proyectos; PROMO-03 aportará material controlado. |
+| **CSS propio `app/portada.css` importado desde `portada.tsx`** | Añadirlo a `app/layout.tsx` | La portada no debe cargar su CSS en el tablero, la documentación ni las pantallas de acceso. |
+| **`Portada` sigue siendo un componente de servidor** | Convertirlo en cliente para animaciones | El inicio de sesión debe ser una navegación superior y la portada no necesita estado propio. |
+| **Ilustración estática o `HeroArt` según el coste** | Añadir movimiento por defecto | La portada promocional no debe inflar el flujo `tablero`; si `HeroArt` añade demasiado cliente, se usa una versión estática. |
+| **Mensaje alineado con `SITE_DESCRIPTION` y la tarjeta social** | Textos distintos por superficie | La imagen, el título y la propuesta deben contar la misma historia al compartir y al entrar. |
 
 ## 4. Fases
 
-### Fase 1: URL canónica y metadatos — completada
-- [x] Añadir una constante/helper de URL pública con `NEXT_PUBLIC_SITE_URL` y fallback `https://aula-kanban.doubleoak32.chatgpt.site`, documentando que una copia debe configurar su dominio.
-- [x] Ampliar `metadata` en `app/layout.tsx` con `metadataBase`, `openGraph` (`title`, `description`, `url`, `type`, `locale: es_ES`, `siteName` e `images`) y `twitter` (`card: summary_large_image`, `title`, `description`, `images`).
-- [x] Añadir una prueba que compruebe la URL base, el locale, el tipo y que la imagen declarada es `/og/aula-kanban.png` con `alt`.
-- **Criterios de aceptación:** los metadatos se generan sin depender de la sesión; la URL de imagen es absoluta al renderizar; ningún dato personal entra en la tarjeta.
+### Fase 1: Contenido y estructura — pendiente
+- [ ] Auditar `app/portada.tsx`, `app/page.tsx`, `app/portada.test.tsx` y `app/page.test.tsx`; conservar la rama anónima y el tablero autenticado.
+- [ ] Definir una jerarquía breve: héroe con la propuesta y el CTA, tres o cuatro bloques de valor, plugin de ChatGPT y pie con documentación.
+- [ ] Redactar textos en castellano que expliquen el producto sin datos de la instancia y sin prometer funciones que el rol del visitante no tendrá.
+- [ ] Quitar el `style={{...}}` en línea de los botones y mantener el inicio de sesión como `<a target="_top">`.
+- **Criterios de aceptación:** `/` sin sesión muestra la nueva portada; con sesión sigue mostrando el tablero; el enlace de acceso conserva el `returnTo`; los tests cubren los CTA y la ruta de documentación.
 
-**Implementado (2026-11-16):** `lib/domain/site.ts` centraliza la URL pública, el nombre, la descripción y la imagen social; `resolveSiteUrl` acepta solo HTTP/HTTPS, normaliza al origen y cae al dominio actual si la variable falta o no es válida. `app/layout.tsx` publica `metadataBase`, Open Graph y Twitter Card con una imagen absoluta de 1200×630. `lib/domain/site.test.ts` y `app/layout.test.ts` cubren la resolución y el contrato de metadatos; el README documenta `NEXT_PUBLIC_SITE_URL`.
+### Fase 2: Diseño visual, temas y responsive — pendiente
+- [ ] Crear `app/portada.css` junto a `portada.tsx`, usando solo tokens y sin modificar `.session-card`, que comparten otras pantallas.
+- [ ] Componer el héroe y los bloques con la tipografía, el color y la ilustración de la marca; reutilizar `HeroArt` solo si el coste de cliente y movimiento es aceptable.
+- [ ] Revisar 1366, 1024 y 390 px en tema claro y oscuro, foco de teclado, contraste y ausencia de desbordamiento horizontal.
+- [ ] Respetar `prefers-reduced-motion` si hay animación y evitar imágenes o vídeos que empeoren la carga inicial.
+- **Criterios de aceptación:** la portada se entiende y se recorre en las tres anchuras; no aparecen colores crudos ni desbordes; la entrada principal es visible sin hacer scroll en escritorio y alcanzable en móvil.
 
-### Fase 2: Imagen social — completada
-- [x] Diseñar `public/og/aula-kanban.png` a 1200×630 con la marca, una frase corta y los cinco iconos de apps o una composición equivalente; sin capturas con datos reales.
-- [x] Optimizar el PNG (objetivo < 300 KB) y añadir caché razonable para `/og/*` si encaja con `public/_headers`.
-- [x] Revisar la tarjeta a tamaño completo y en la previsualización reducida de LinkedIn, X y WhatsApp; comprobar que el texto clave sigue legible.
-- **Criterios de aceptación:** la imagen mide exactamente 1200×630, se sirve con `200` y `image/png`, y no contiene texto cortado ni datos de una cuenta.
-
-**Implementado (2026-11-16):** la tarjeta combina la marca, «Tu clase, en orden.», la propuesta de tareas, calendario, pizarras y apps con IA, y un escritorio simulado con el dock de cinco apps y el chip «Plugin de ChatGPT». No reutiliza capturas ni incluye nombres de cuenta o proyecto. El PNG mide 1200×630 y pesa **121 KB**; `public/_headers` sirve `/og/*` con caché pública de un día. Se revisó a tamaño completo y a 600×315: el titular y la propuesta siguen legibles y no hay texto cortado.
-
-### Fase 3: Verificación y cierre — en curso
-- [x] Suite completa, `tsc`, ESLint, build y `perf:budget`; comprobar el HTML público de `/` y `/documentacion` con la build servida.
-- [ ] Pasar LinkedIn Post Inspector, Facebook Sharing Debugger y X Card Validator; probar un enlace en WhatsApp; repetir tras publicar si cambia la URL. **Bloqueado:** la versión publicada `1.1.32` todavía no incluye estos metadatos y `/og/aula-kanban.png` responde `404`.
-- [x] Actualizar README y ayuda/documentación si procede.
-- [ ] Añadir el resumen al changelog y archivar este roadmap cuando la validación externa esté completa.
-- **Criterios de aceptación:** todos los validadores leen título, descripción e imagen; la tarjeta se ve bien en redes y mensajería; sin regresiones en la portada ni en las pruebas.
-
-**Verificado localmente (2026-11-16):** **144 archivos / 1.112 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde. La build servida devuelve `200` en `/` y `/documentacion` con `og:title`, `og:description`, `og:url`, `og:image` absoluta de 1200×630 con `alt` y `twitter:card=summary_large_image`; la imagen responde `200`, `image/png`, 123.510 bytes y caché de un día. La comprobación de producción confirma que `1.1.32` solo sirve el título y que la imagen aún da `404`, por lo que los validadores sociales y WhatsApp no pueden aprobar esta revisión hasta publicar.
+### Fase 3: Verificación y cierre — pendiente
+- [ ] Ejecutar suite completa, `tsc`, ESLint, build y `perf:budget`; comparar el flujo `tablero` con la línea base.
+- [ ] Servir la build y comprobar `/` sin sesión, `/documentacion`, el enlace de inicio de sesión y que los metadatos sociales de PROMO-01 siguen intactos.
+- [ ] Actualizar README o ayuda si cambia la presentación pública, añadir el resumen al changelog y archivar este roadmap.
+- **Criterios de aceptación:** sin regresiones en la portada, la documentación, el tablero ni el presupuesto; la nueva portada queda documentada y el roadmap cerrado solo con todas las fases verificadas.
 
 ## 5. Riesgos y bloqueos
 
 | Riesgo | Impacto | Mitigación |
 |---|---|---|
-| Un remix conserva la URL del Site original | La tarjeta enlaza al dominio equivocado | Variable de entorno documentada y fallback solo para el Site actual. |
-| Los rastreadores conservan una tarjeta antigua | Se sigue viendo la vista previa anterior | Revalidar en cada validador tras publicar; no cambiar la URL de la imagen sin motivo. |
-| La imagen pesa demasiado o tiene texto diminuto | La tarjeta tarda o se lee mal | PNG optimizado, composición simple y revisión a tamaño reducido. |
-| Duplicar etiquetas por usar imagen estática y ruta generada | Metadatos contradictorios | Una sola vía: archivo estático declarado en `metadata`. |
-| La URL de Sites cambia | `metadataBase` queda obsoleto | Configurar `NEXT_PUBLIC_SITE_URL` en el despliegue y revisar antes de publicar. |
+| PROMO-03 aún no tiene proyecto de demo ni capturas nuevas | La portada podría quedarse esperando material | Lanzar la estructura con la ilustración existente; integrar capturas después sin cambiar la jerarquía. |
+| `HeroArt` y `motion` añaden JavaScript al visitante anónimo | La portada promocional empeora el flujo `tablero` | Medir con `perf:budget`; usar una composición estática si supera el margen. |
+| Reutilizar `.session-card` y `access.css` rompe otras pantallas | Regresión en login, sesión o documentación | Hoja `portada.css` propia y pruebas existentes de `session-page`. |
+| El CTA usa navegación de cliente o pierde la URL profunda | El login no vuelve al proyecto o vista pedidos | Mantener `chatGPTSignInPath` y `<a target="_top">`, con prueba de `returnTo`. |
+| La portada promete demo, datos o funciones que aún no existen | Expectativa incumplida al entrar | Copy limitado a lo disponible; el botón de demo queda para PROMO-05. |
+| El CSS de la portada se carga en todas las rutas | Coste innecesario en el tablero y la documentación | Importar `app/portada.css` solo desde `app/portada.tsx`. |
 
 ## 6. Notas de sesión
 
-- 2026-11-16: PROMO-01 sale del backlog como primera fase de promoción. Se elige tarjeta estática compartida y se deja PROMO-02..06 en el backlog a la espera de debate.
-- 2026-11-16: la imagen no reutilizará las capturas actuales para no publicar nombres de cuenta o proyecto; la captura de producto se abordará en PROMO-03.
-- 2026-11-16: Fase 1 completada; los metadatos ya apuntan a `/og/aula-kanban.png`, que se crea en la Fase 2.
-- 2026-11-16: Fase 2 completada; la tarjeta se revisó a 1200×630 y 600×315, y `/og/*` queda con caché de un día para poder sustituir el archivo sin esperar un año.
-- 2026-11-16: Fase 3 verificada en local y en la build servida; sigue en curso porque los validadores externos necesitan una publicación que todavía no se ha hecho. No se añade al changelog ni se archiva el roadmap.
+- 2026-11-16: PROMO-02 sale del backlog y pasa a ser el roadmap activo. PROMO-01 se pausa con su plan conservado porque la validación externa depende de publicar la tarjeta.
+- 2026-11-16: la primera versión no espera a PROMO-03; se apoyará en la ilustración y el mensaje ya existentes. Las capturas de la demo se incorporarán cuando estén disponibles.
+- 2026-11-16: el botón de demo sin cuenta, las páginas legales y el vídeo quedan fuera de este roadmap.

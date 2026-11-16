@@ -1,7 +1,7 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** PROMO-01 · Vista previa en redes · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** PROMO-02 · Portada pública nueva · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---

@@ -2,12 +2,18 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** PROMO-01 · Vista previa en redes · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 5 entradas pendientes de debate (PROMO-02..06)
+> **Roadmap:** PROMO-02 · Portada pública nueva · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas: PROMO-01 pausado y PROMO-03..06 pendientes de debate
 
 ---
 
-## 2026-11-16 — PROMO-02..06 · Preparar la promoción (portada, demo, legal y rendimiento)
+## 2026-11-16 — PROMO-01 · Cierre externo de la vista previa en redes (pausado)
+
+- Contexto: las fases 1 y 2 están completas y la fase 3 se verificó en local: 144 archivos / 1.112 pruebas, `tsc`, ESLint, build, `perf:budget`, HTML de `/` y `/documentacion` e imagen social correctos.
+- Falta antes de retomarlo: publicar una versión que incluya los metadatos, pasar LinkedIn Post Inspector, Facebook Sharing Debugger, X Card Validator y WhatsApp, y entonces añadir el changelog y archivar el plan.
+- Notas: producción sigue en `1.1.32` y `/og/aula-kanban.png` responde 404; commits `ad73cf2`, `c7338cf` y `2f7e242`. El plan completo se conserva en [`historial/roadmap-promo-01.md`](../historial/roadmap-promo-01.md).
+
+## 2026-11-16 — PROMO-03..06 · Preparar la promoción (demo, legal y rendimiento)
 
 > Origen: revisión de solo lectura del 16 nov 2026 sobre la 1.1.32 (web en vivo y repo). Veredicto: lista para promocionar **con arreglos**; lo que falla es la entrada pública. El vídeo será una presentación animada con fragmentos cortos de la app integrados. Orden = impacto.
 >
@@ -18,14 +24,6 @@
 > - Pruebas junto al código (`*.test.ts(x)`, Vitest + Testing Library + jsdom). Checks de CI (`.github/workflows/ci.yml`): `npm run lint`, `npx tsc --noEmit`, `npm test`, `npm run build`, `npm run perf:budget`.
 > - Reglas de `AGENTS.md`: commits locales por fase y **un único push** al cerrar el roadmap; **solo Codex publica en Sites**, aplica migraciones remotas y verifica la versión publicada (`npm run release:prepare -- --published-version X.Y.Z`). Que haya push no significa que esté publicado.
 > - Al llevar una PROMO al roadmap, seguir `docs/developing/templates/roadmap-template.md` y cerrar en `docs/developing/changelog.md` como el resto.
-
-### PROMO-02 · Portada pública nueva
-- Contexto: `app/page.tsx` devuelve `<Portada>` (`app/portada.tsx`) cuando `getChatGPTUser()` (`lib/server/auth.ts`) es `null`, y el tablero si hay sesión. La portada actual es una tarjeta `session-page`/`session-card` (estilos en `app/board/styles/access.css`, compartidos con otras pantallas de acceso) con dos párrafos y los botones «Iniciar sesión con ChatGPT» (`signInHref`, `target="_top"`) y «Ver documentación» (`/documentacion`). `/landing` da 404 porque no existe esa ruta.
-- Alcance: rehacer `app/portada.tsx` en la misma ruta `/` (no crear `/landing`): qué es, para quién, capturas o un vídeo corto (material de PROMO-03), el plugin de ChatGPT como diferencial, botón de entrar y enlace a la documentación; más adelante, el botón de demo de PROMO-05.
-- Archivos: `app/portada.tsx`, `app/portada.test.tsx`, `app/page.test.tsx` (cubre la rama sin sesión), estilos en una hoja propia (por ejemplo `app/board/styles/portada.css`, importada en `app/layout.tsx` como las demás) para no romper `.session-card`, que usan otras pantallas. Imágenes en `public/capturas/` o en una carpeta nueva de `public/`. Se pueden reutilizar `app/board/docs/components/docs-hero.tsx` e `app/board/docs/illustrations/hero-art.tsx`.
-- Criterios: se entiende la app sin iniciar sesión; sin desbordes a 1366, 1024 y 390 px, en tema claro y oscuro (`app/theme.ts`); se mantiene el `returnTo` de `chatGPTSignInPath`; el peso no infla el flujo `tablero` de `docs/perf-budget.json`; sirve de plano de cierre del vídeo.
-- Dependencias: PROMO-01 (misma imagen y mensaje), PROMO-03 (material visual).
-- Notas: quitar el `style={{...}}` en línea de los botones y pasarlo a CSS con tokens. No usar colores crudos (`app/styles.test.ts`). Un vídeo pesado debe ir con `preload="none"` o póster.
 
 ### PROMO-03 · Proyecto de demo para grabar y capturas nuevas
 - Contexto: el «Proyecto de demostración» de DOC-11 (6 alumnos y 2 profesores ficticios, 8 tareas, apps instaladas) se sembró **por la API en la D1 local, sin versionar**: no hay script en el repo y en producción no existe. Las capturas `public/capturas/{tareas,calendario,ajustes}.webp` son de la 1.1.25, con la cabecera antigua (Clase/Alumnos/Profesores arriba), y `espacio.webp` es de la 1.1.31, con el proyecto «pruebas» y el usuario «Seedy».
