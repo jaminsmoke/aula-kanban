@@ -48,11 +48,13 @@
 
 **Implementado (2026-11-16):** `lib/domain/site.ts` centraliza la URL pública, el nombre, la descripción y la imagen social; `resolveSiteUrl` acepta solo HTTP/HTTPS, normaliza al origen y cae al dominio actual si la variable falta o no es válida. `app/layout.tsx` publica `metadataBase`, Open Graph y Twitter Card con una imagen absoluta de 1200×630. `lib/domain/site.test.ts` y `app/layout.test.ts` cubren la resolución y el contrato de metadatos; el README documenta `NEXT_PUBLIC_SITE_URL`.
 
-### Fase 2: Imagen social — pendiente
-- [ ] Diseñar `public/og/aula-kanban.png` a 1200×630 con la marca, una frase corta y los cinco iconos de apps o una composición equivalente; sin capturas con datos reales.
-- [ ] Optimizar el PNG (objetivo < 300 KB) y añadir caché razonable para `/og/*` si encaja con `public/_headers`.
-- [ ] Revisar la tarjeta a tamaño completo y en la previsualización reducida de LinkedIn, X y WhatsApp; comprobar que el texto clave sigue legible.
+### Fase 2: Imagen social — completada
+- [x] Diseñar `public/og/aula-kanban.png` a 1200×630 con la marca, una frase corta y los cinco iconos de apps o una composición equivalente; sin capturas con datos reales.
+- [x] Optimizar el PNG (objetivo < 300 KB) y añadir caché razonable para `/og/*` si encaja con `public/_headers`.
+- [x] Revisar la tarjeta a tamaño completo y en la previsualización reducida de LinkedIn, X y WhatsApp; comprobar que el texto clave sigue legible.
 - **Criterios de aceptación:** la imagen mide exactamente 1200×630, se sirve con `200` y `image/png`, y no contiene texto cortado ni datos de una cuenta.
+
+**Implementado (2026-11-16):** la tarjeta combina la marca, «Tu clase, en orden.», la propuesta de tareas, calendario, pizarras y apps con IA, y un escritorio simulado con el dock de cinco apps y el chip «Plugin de ChatGPT». No reutiliza capturas ni incluye nombres de cuenta o proyecto. El PNG mide 1200×630 y pesa **121 KB**; `public/_headers` sirve `/og/*` con caché pública de un día. Se revisó a tamaño completo y a 600×315: el titular y la propuesta siguen legibles y no hay texto cortado.
 
 ### Fase 3: Verificación y cierre — pendiente
 - [ ] Suite completa, `tsc`, ESLint, build y `perf:budget`; comprobar el HTML público de `/` y `/documentacion` con la build servida.
@@ -75,3 +77,4 @@
 - 2026-11-16: PROMO-01 sale del backlog como primera fase de promoción. Se elige tarjeta estática compartida y se deja PROMO-02..06 en el backlog a la espera de debate.
 - 2026-11-16: la imagen no reutilizará las capturas actuales para no publicar nombres de cuenta o proyecto; la captura de producto se abordará en PROMO-03.
 - 2026-11-16: Fase 1 completada; los metadatos ya apuntan a `/og/aula-kanban.png`, que se crea en la Fase 2.
+- 2026-11-16: Fase 2 completada; la tarjeta se revisó a 1200×630 y 600×315, y `/og/*` queda con caché de un día para poder sustituir el archivo sin esperar un año.

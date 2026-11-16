@@ -56,7 +56,7 @@ En desarrollo, `npm run dev` simula la sesión al visitar `/signin-with-chatgpt`
 
 Los metadatos Open Graph y Twitter Card usan la URL pública de la instancia para construir enlaces absolutos e imágenes sociales. Si `NEXT_PUBLIC_SITE_URL` no está definida, se usa `https://aula-kanban.doubleoak32.chatgpt.site`; una copia debe configurar su propio origen para no anunciar el Site original. Solo se acepta `http` o `https` y se conserva el origen, sin ruta.
 
-La tarjeta declara `/og/aula-kanban.png` como imagen de 1200×630. El archivo vive en `public/og/` y se puede sustituir sin cambiar los metadatos.
+La tarjeta declara `/og/aula-kanban.png` como imagen de 1200×630. El archivo vive en `public/og/` y se sirve con caché pública de un día. Para sustituirlo, guarda un PNG exactamente 1200×630 y preferiblemente por debajo de 300 KB en la misma ruta, sin datos de una cuenta ni de un proyecto; revisa que el texto clave siga legible a tamaño completo y a 600×315. Los metadatos no cambian.
 
 ## Tienda y Aula Store
 
