@@ -131,6 +131,10 @@
   --ui-accent-amber: var(--primitive-accent-amber);
   --ui-accent-amber-ink: var(--primitive-accent-amber-ink);
   --ui-accent-lavender: var(--primitive-accent-lavender);
+  /* El tablero de ajedrez conserva un fondo claro en ambos temas para que las
+     piezas negras y blancas mantengan contraste. */
+  --ui-chess-light: #f4efff;
+  --ui-chess-dark: #b7a8d9;
   --ui-category-alkali: var(--primitive-category-alkali);
   --ui-category-alkaline: var(--primitive-category-alkaline);
   --ui-category-transition: var(--primitive-category-transition);

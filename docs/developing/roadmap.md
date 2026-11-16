@@ -44,12 +44,12 @@
 
 ## 4. Fases
 
-### Fase 1 — Tablero y reglas
+### Fase 1 — Tablero y reglas (completada)
 
-- [ ] Instalar `chess.js` y `react-chessboard` en `package.json` y actualizar el lockfile.
-- [ ] Crear `app/board/apps/ajedrez/` con el componente, estilos y prueba de la ventana.
-- [ ] Implementar tablero, piezas, selección de casilla, movimientos legales, turno, jaque, jaque mate, tablas, reinicio e historial.
-- [ ] Cubrir dos jugadores en el mismo navegador.
+- [x] Instalar `chess.js` y `react-chessboard` en `package.json` y actualizar el lockfile.
+- [x] Crear `app/board/apps/ajedrez/` con el componente, estilos y prueba de la ventana.
+- [x] Implementar tablero, piezas, selección de casilla, movimientos legales, turno, jaque, jaque mate, tablas, reinicio e historial.
+- [x] Cubrir dos jugadores en el mismo navegador.
 - **Criterios de aceptación:**
   - Las reglas se aplican completas y no se permite un movimiento ilegal.
   - El estado de la partida (turno, jaque, jaque mate o tablas) es visible.
@@ -99,4 +99,5 @@
 - 2026-11-16: STORE-06 sale del backlog y pasa a ser el roadmap activo. `chess.js` 1.4.0 es BSD-2 y `react-chessboard` 5.12.1 es MIT; este último declara peer dependencies de React 19, que coincide con el proyecto.
 - La app no necesita persistencia en la primera versión. Si se añade guardado, el camino es `app_documents`, no una tabla nueva.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales. Añadir Ajedrez a la demo sería una tarea aparte.
+- 2026-11-16: Fase 1 completada. La app tiene tablero, reglas completas, jaque, mate, tablas, historial, reinicio, coronación con elección de pieza y dos jugadores locales. Se revisó a 1366, 1024 y 390 px con un contenedor de ventana; el tablero usa colores propios claros para mantener el contraste de las piezas en ambos temas. Pruebas de la app y del modelo: 8 correctas; suite completa: 162 archivos / 1.181 pruebas.
 - No se cambia la versión del Site (`1.1.34`) ni se publica en Sites desde este roadmap.

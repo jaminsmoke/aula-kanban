@@ -1,0 +1,311 @@
+/* ==========================================================================
+   Ajedrez: tablero local de dos jugadores
+   ========================================================================== */
+
+.ajedrez-app {
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  background:var(--ui-surface-hover);
+  color:var(--ui-text-primary);
+  container-type:inline-size;
+  container-name:ajedrezapp;
+  --chess-light:var(--ui-chess-light);
+  --chess-dark:var(--ui-chess-dark);
+  --chess-last:var(--ui-warning-pale);
+  --chess-check:var(--ui-danger-soft);
+  --chess-selected-ring:var(--ui-action-text);
+  --chess-target-ring:var(--ui-action-text);
+}
+
+.ajedrez-toolbar {
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 14px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-surface-faint);
+}
+
+.ajedrez-heading {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+
+.ajedrez-mark {
+  display:grid;
+  place-items:center;
+  flex:none;
+  width:34px;
+  height:34px;
+  border-radius: var(--radius-sm);
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+}
+
+.ajedrez-heading strong {
+  display:block;
+  font-size:14px;
+  line-height:1.2;
+}
+
+.ajedrez-heading small {
+  display:block;
+  margin-top:2px;
+  color:var(--ui-text-muted);
+  font-size:11px;
+  font-weight:600;
+  line-height:1.25;
+}
+
+.ajedrez-reset {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  flex:none;
+  margin-left:auto;
+  padding:7px 11px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+  font:inherit;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.ajedrez-reset:hover { background:var(--ui-surface-hover); }
+.ajedrez-reset:focus-visible { outline:var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
+
+.ajedrez-layout {
+  flex:1 1 auto;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 250px;
+  gap:16px;
+  padding:16px;
+  overflow:auto;
+}
+
+.ajedrez-board-column {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.ajedrez-board-shell {
+  position:relative;
+  width:min(100%,560px);
+}
+
+.ajedrez-board-shell > div { width:100%; }
+
+.ajedrez-hint {
+  max-width:560px;
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+  line-height:1.45;
+  text-align:center;
+}
+
+.ajedrez-side {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.ajedrez-status {
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  flex:none;
+  padding:11px 12px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+}
+
+.ajedrez-status p {
+  margin:0;
+  font-size:13px;
+  font-weight:650;
+  line-height:1.35;
+}
+
+.ajedrez-status-dot {
+  flex:none;
+  width:8px;
+  height:8px;
+  margin-top:5px;
+  border-radius:50%;
+  background:var(--ui-action-text);
+}
+
+.ajedrez-status.is-check {
+  border-color:var(--ui-border-warning);
+  background:var(--ui-warning-pale);
+  color:var(--ui-warning-deep);
+}
+
+.ajedrez-status.is-check .ajedrez-status-dot { background:var(--ui-warning-ink); }
+
+.ajedrez-status.is-over {
+  border-color:var(--ui-border-accent);
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text-hover);
+}
+
+.ajedrez-status.is-over .ajedrez-status-dot { background:var(--ui-action-text-hover); }
+
+.ajedrez-history {
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+}
+
+.ajedrez-history-head {
+  flex:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:9px 11px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+}
+
+.ajedrez-history-head h4 {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:var(--tracking-caps);
+  text-transform:uppercase;
+}
+
+.ajedrez-history-head span {
+  display:inline-grid;
+  place-items:center;
+  min-width:22px;
+  height:20px;
+  padding:0 6px;
+  border-radius: var(--radius-pill);
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+  font-size:11px;
+  font-weight:800;
+}
+
+.ajedrez-history-list {
+  flex:1 1 auto;
+  min-height:0;
+  margin:0;
+  padding:6px;
+  overflow:auto;
+  list-style:none;
+  display:grid;
+  align-content:start;
+  gap:1px;
+}
+
+.ajedrez-history-list li {
+  display:grid;
+  grid-template-columns:30px 1fr 1fr;
+  gap:6px;
+  padding:6px 7px;
+  border-radius: var(--radius-xs);
+  color:var(--ui-text-secondary);
+  font-size:12px;
+  line-height:1.35;
+}
+
+.ajedrez-history-list li:nth-child(odd) { background:var(--ui-surface-faint); }
+
+.ajedrez-move-number {
+  color:var(--ui-text-muted);
+  font-variant-numeric:tabular-nums;
+}
+
+.ajedrez-history-empty {
+  margin:0;
+  padding:14px 12px;
+  color:var(--ui-text-muted);
+  font-size:12px;
+  line-height:1.45;
+}
+
+.ajedrez-promotion {
+  position:absolute;
+  left:50%;
+  top:50%;
+  z-index:2;
+  width:min(300px,calc(100% - 24px));
+  padding:16px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-md);
+  background:var(--ui-surface-raised);
+  box-shadow:var(--ui-shadow-card-hover);
+  transform:translate(-50%,-50%);
+}
+
+.ajedrez-promotion p {
+  margin:0 0 12px;
+  color:var(--ui-text-primary);
+  font-size:13px;
+  font-weight:750;
+  line-height:1.35;
+}
+
+.ajedrez-promotion-options {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+.ajedrez-promotion-options button {
+  padding:8px 10px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+  font:inherit;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.ajedrez-promotion-options button:hover { background:var(--ui-action-soft); color:var(--ui-action-text); }
+.ajedrez-promotion-options button:focus-visible { outline:var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
+
+@container ajedrezapp (max-width: 700px) {
+  .ajedrez-layout { grid-template-columns:1fr; gap:12px; padding:12px; }
+  .ajedrez-board-column { justify-content:flex-start; }
+  .ajedrez-side { flex-direction:row; align-items:stretch; }
+  .ajedrez-status { flex:1 1 auto; }
+  .ajedrez-history { flex:1 1 0; min-height:150px; max-height:210px; }
+  .ajedrez-hint { display:none; }
+}
+
+@container ajedrezapp (max-width: 480px) {
+  .ajedrez-toolbar { padding:8px 10px; }
+  .ajedrez-heading small { display:none; }
+  .ajedrez-side { flex-direction:column; }
+  .ajedrez-history { max-height:180px; }
+}
