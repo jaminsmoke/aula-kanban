@@ -58,7 +58,7 @@ Cada ficha de `lib/native-apps.ts` declara:
 - `upstream`: paquete principal y versión exacta instalada; opcional si la integración es propia.
 - `extras`: librerías adicionales que añade nuestra integración, si las hay.
 
-La versión de Aula Store vive en `AULA_STORE_VERSION` y se muestra en la cabecera de la tienda. La versión del Site es independiente. La política de incremento y la tabla de versiones están en [`docs/Store/aplicaciones-nativas.md`](../../../docs/Store/aplicaciones-nativas.md#versiones).
+La versión de Aula Store vive en `AULA_STORE_VERSION` y se muestra en la cabecera de la tienda. La versión del Site es independiente. La política de incremento está en [`docs/Store/apps/README.md`](../../../docs/Store/apps/README.md#versiones) y la tabla por app en [`docs/Store/apps/integradas.md`](../../../docs/Store/apps/integradas.md#versiones-por-app).
 
 ## Tamaño y estado
 

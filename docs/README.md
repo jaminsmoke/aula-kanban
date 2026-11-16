@@ -6,7 +6,8 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`aplicaciones-nativas.md`](Store/aplicaciones-nativas.md) | Catálogo de apps nativas, licencias y estado | Temático |
+| [`apps/README.md`](Store/apps/README.md) | Catálogo de apps nativas: criterios, integración, versiones y candidatas por categoría | Temático |
+| [`apps/integradas.md`](Store/apps/integradas.md) | Apps integradas y versiones por app | Temático |
 | [`mcp-apps.md`](Store/mcp-apps.md) | Cobertura MCP, permisos y límites de las apps nativas | Temático |
 | [`matriz-herramientas.md`](Store/matriz-herramientas.md) | Matriz de APP-01: audiencia, alcance, colaboración y acciones | Temático |
 | [`matriz-permisos.md`](Store/matriz-permisos.md) | Matriz de PERM-01: capacidades con ámbito, roles y concesiones | Temático |
@@ -80,6 +81,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
 - **Roadmap STORE-05 completado:** las cinco portadas de Aula Store son SVG de 1200×675; Excalidraw, Programación por bloques y Diagramas sustituyen sus capturas PNG y se retiran los archivos antiguos. Verificado en tarjeta y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-05.md`](historial/roadmap-store-05.md). Sin cambio de versión ni publicación.
+- **Backlog:** STORE-06 (Ajedrez), STORE-07 (Física 2D) y STORE-08 (Geometría interactiva), pendientes de priorizar.
 - **Roadmap UI-08 completado:** Tienda en Administración, Clase como botón de icono en la cabecera, URL canónica `view=administracion&section=tienda` y alias `view=espacio`; revisado en 1366, 1024, 900, 620 y 390. Catálogo MCP `0.27.0`. Resumen en [`changelog.md`](developing/changelog.md).
 - **Roadmap APP-01 completado:** inventario y matriz de herramientas, roles y alcance en [`matriz-herramientas.md`](Store/matriz-herramientas.md). Resumen en [`changelog.md`](developing/changelog.md).
 - **Roadmap APP-03 completado:** mochila del alumnado y maletín docente (migración 0037 y sección `clase > mochila`); resumen en [`changelog.md`](developing/changelog.md).
