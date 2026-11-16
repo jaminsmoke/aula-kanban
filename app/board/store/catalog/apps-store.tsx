@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
-import { ArrowLeft, Download, Package, Play, RefreshCw, Star, Trash2, TriangleAlert } from "lucide-react";
+import { ArrowLeft, Download, LayoutGrid, Package, Play, RefreshCw, Star, Trash2, TriangleAlert } from "lucide-react";
 import { STORE_CATEGORIES, AULA_STORE_VERSION, visibleTools, type StoreCategory, type StoreRole, type StoreTool } from "../tools";
 import { AulaStoreIcon } from "./aula-store-icon";
 import StoreCard from "./store-card";
@@ -159,6 +159,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
   return (
     <MotionConfig reducedMotion="user">
     <LazyMotion features={domAnimation}>
+    <div className="store-shell">
     <div className="store-catalog" role="region" aria-label="Aula Store">
       <header className="store-header">
         <div className="store-header-main">
@@ -173,13 +174,10 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
           <button type="button" className="store-refresh" onClick={onRefresh} title="Actualizar estado"><RefreshCw size={16} aria-hidden /> Actualizar</button>
         </div>
         <StoreFilters
-          tools={allTools}
           query={query}
-          category={category}
           installedOnly={installedOnly}
           installedCount={installedCount}
           onQuery={setQuery}
-          onCategory={setCategory}
           onInstalledOnly={() => setInstalledOnly((current) => !current)}
         />
       </header>
@@ -218,6 +216,16 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
           onClose={() => setSelectedId(null)}
         />
       ) : null}
+    </div>
+      <nav className="store-bottombar" aria-label="Categorías de la tienda">
+        <button type="button" className={`store-bottomtab${category === "todas" ? " store-bottomtab--active" : ""}`} aria-current={category === "todas" ? "page" : undefined} onClick={() => setCategory("todas")}><LayoutGrid size={18} aria-hidden /> Todo</button>
+        {STORE_CATEGORIES.map((name) => {
+          const CategoryIcon = CATEGORY_ICONS[name];
+          return (
+            <button key={name} type="button" className={`store-bottomtab${category === name ? " store-bottomtab--active" : ""}`} aria-current={category === name ? "page" : undefined} onClick={() => setCategory(name)}><CategoryIcon size={18} aria-hidden /> {name}</button>
+          );
+        })}
+      </nav>
     </div>
     </LazyMotion>
     </MotionConfig>

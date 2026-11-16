@@ -7,12 +7,6 @@
 
 ---
 
-## 2026-11-16 — STORE-03B · Navegación inferior y galerías horizontales en Aula Store
-
-- Contexto: tras STORE-03A (taxonomía multi-categoría), la Tienda debe dejar el scroll infinito y repartir las subcategorías en galerías horizontales con fade en los bordes (sin scrollbar visible, scroll-snap), como las secciones de la App Store o Play Store.
-- Diseño pendiente (decidido en revisión 2026-11-16, listo para roadmap al cerrar STORE-03A): barra inferior fija con «Todo» + las tres categorías principales; dentro de cada categoría, las subcategorías como carruseles horizontales; Oficina/Productividad vacías con mensaje «más adelante». Los filtros de búsqueda e instaladas se mantienen arriba; «Mejores aplicaciones» pasa a ser la cabecera de «Todo» (sin sección propia).
-- Criterios: la barra inferior cambia de categoría y se mantiene visible al hacer scroll; las galerías se desplazan con fade lateral sin scrollbar; sin regresión en búsqueda, instaladas y ficha de app.
-- Dependencias: STORE-03A (taxonomía y modelo multi-categoría).
 
 ## 2026-11-15 — APP-03 (seguimiento) · Carpetas e iconos propios en mochila y maletín
 

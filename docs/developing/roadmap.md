@@ -39,9 +39,9 @@
 ## 4. Fases
 
 ### Fase 1: Barra inferior fija con Todo y categorías
-- [ ] Reestructuración de `AppsStore` (cabecera, scroll propio y barra inferior fuera del scroll).
-- [ ] Barra inferior: Todo, Educación, Oficina, Productividad (+ Instaladas se mantiene como filtro superior).
-- [ ] La navegación por categorías reemplaza filtros superiores de categoría sin regresión en búsqueda e instaladas.
+- [x] Reestructuración de `AppsStore` (cabecera, scroll propio y barra inferior fuera del scroll).
+- [x] Barra inferior: Todo, Educación, Oficina, Productividad (+ Instaladas se mantiene como filtro superior).
+- [x] La navegación por categorías reemplaza filtros superiores de categoría sin regresión en búsqueda e instaladas.
 - **Criterios de aceptación:** cambiar de categoría desde la barra sin perder la barra al hacer scroll; búsqueda/instaladas intactos.
 
 ### Fase 2: Galerías horizontales con fade por subcategoría
@@ -66,3 +66,4 @@
 ## 6. Notas de sesión
 
 - 2026-11-16: roadmap creado tras cerrar STORE-03A; la entrada STORE-03B sale del backlog y la de STORE-03A se elimina (regla de flujo).
+- 2026-11-16: Fase 1 completada — `.store-shell` (column flex) con `.store-catalog` de scroll propio y `.store-bottombar` fija (Todo + 3 categorías, `aria-current`); chips de categoría retirados de `StoreFilters` (quedan búsqueda + Instaladas combinable). Suite de catálogo 6/6, `tsc` y ESLint en verde. La entrada STORE-03B se eliminó del backlog al pasar al roadmap.
