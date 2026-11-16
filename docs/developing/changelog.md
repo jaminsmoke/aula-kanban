@@ -1,10 +1,33 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** APP-02 · Separar Herramientas de aula en Calculadora y Tabla periódica · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-16 — Roadmap APP-02 · Calculadora y Tabla periódica independientes
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Aula Store pasa a **cinco apps**: Excalidraw, Calculadora, Tabla periódica, Programación por bloques y Diagramas. Cada una tiene ficha, portada, icono, ventana y carga diferida propios; `upstream` es opcional y la tabla es integración propia. La calculadora conserva `@cortex-js/compute-engine`.
+- Se retiran **Medir y Lectura** —vistas, medidor, lector de voz, estilos, pruebas y referencias— y se elimina `@smst/edu-tools` del proyecto (180 paquetes menos en el lock). El código se reparte en `apps/calculadora/` y `apps/tabla-periodica/`, con una base CSS compartida.
+- `consultar_elemento` pasa a exigir `tabla-periodica`; la calculadora declara su superficie MCP como pendiente. El catálogo sube a **`0.28.0`** con snapshot, matriz, paridad y guía actualizados.
+- **Migración local `0039`**: si `edu-tools` estaba instalada, crea las dos apps instaladas conservando versión; copia favorito y posición de `app_preferences`; retira las filas antiguas. Es idempotente y no pisa filas nuevas. Alias `edu-tools` → `calculadora` en URL, `buildBoardUrl`, `abrir_app`, enlaces y canal en vivo.
+- Ayuda, README, `aplicaciones-nativas.md`, `matriz-herramientas.md`, `mcp-apps.md`, estilos y rendimiento actualizados. La Tienda lista las cinco apps y la ficha de la tabla no atribuye un paquete que no usa.
+
+### Verificación
+
+- Suite completa: **142 archivos / 1.104 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde. El presupuesto mantiene todos los flujos por debajo de su límite; Calculadora Básica queda en **131.984 B gzip** y Científica/Ecuaciones en **1.959.729 B**.
+- Navegador local a **1366×900** y **390×844**, en claro y oscuro: cinco apps en Tienda, instalación y desinstalación independientes, Calculadora y Tabla periódica abiertas, alias `?app=edu-tools` resuelto a `calculadora`, sin desbordamiento de página a 390 px. La revisión encontró un aviso de claves duplicadas en las galerías de categoría y se corrigió; la consola queda limpia.
+- Latencia real sobre la build servida (Fast 3G, 5 muestras): Básica **3.535,7 ms** totales; Científica **13.051,2 ms**, con la descarga de `compute-engine` en el primer resultado.
+- Commits: `8ca4c18` (Fase 1), `5e95754` (Fase 2), `fab2c53` (Fase 3) y el commit de cierre de esta fase. Sin publicación en Sites ni cambio de versión del Site (`1.1.31`).
+
+### Seguimiento
+
+- **APP-03** (carpetas e iconos de mochila/maletín) sigue pendiente de priorizar y ya usa los ids `calculadora` y `tabla-periodica`; la migración 0039 deja sus preferencias preparadas. No hay más entradas.
 
 ## 2026-11-16 — Roadmap PERM-02 · Secciones de permisos en Ajustes y Administración
 

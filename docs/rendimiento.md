@@ -1,6 +1,6 @@
 # Rendimiento del cliente
 
-> **Estado:** línea base de PERF-01 · fase 4 · build `1.1.26` · 2026-11-15
+> **Estado:** línea base de PERF-01 · cierre de APP-02 · build `1.1.31` · 2026-11-16
 > **Informe:** `npm run perf:report` · **Presupuesto:** `npm run perf:budget` · **Datos:** [`perf-baseline.json`](perf-baseline.json) · **Latencia:** [`perf-latency.json`](perf-latency.json)
 
 ---
@@ -36,19 +36,19 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 
 | Flujo | Bruto | Gzip | Presupuesto vigente | Archivos |
 |---|---:|---:|---:|---:|
-| Tablero | 550,6 KiB | 164,2 KiB (168.137 B) | 175.656 B | 27 |
-| Herramientas de aula · abrir Básica | 498,9 KiB | 140,4 KiB (143.772 B) | 150.827 B | 15 |
-| Herramientas de aula · primer `=` en Básica | 498,9 KiB | 140,4 KiB (143.772 B) | 150.827 B | 15 |
-| Herramientas de aula · Científica/Ecuaciones | 6.665,3 KiB | 1.925,3 KiB (1.971.516 B) | 2.069.960 B | 17 |
-| Diagramas · flujo inicial | 1.137,0 KiB | 308,9 KiB (316.270 B) | 331.923 B | 42 |
-| Diagramas · con ELK | 2.575,6 KiB | 750,0 KiB (768.014 B) | 806.262 B | 40 |
-| Tienda · abrir | 518,6 KiB | 162,5 KiB (166.436 B) | 174.779 B | 18 |
-| Pizarra · abrir | 3.434,2 KiB | 1.213,1 KiB (1.242.184 B) | 1.348.890 B | 21 |
-| Pizarra · conversión Mermaid | 4.198,1 KiB | 1.410,4 KiB (1.444.185 B) | 1.560.999 B | 48 |
-| Blockly · abrir | 1.147,4 KiB | 321,6 KiB (329.306 B) | 345.631 B | 17 |
-| Blockly · panel de código | 1.281,6 KiB | 356,6 KiB (365.158 B) | 383.275 B | 20 |
+| Tablero | 558,1 KiB | 166,2 KiB (170.154 B) | 175.656 B | 28 |
+| Calculadora · abrir Básica | 432,2 KiB | 128,9 KiB (131.984 B) | 150.827 B | 16 |
+| Calculadora · primer `=` en Básica | 432,2 KiB | 128,9 KiB (131.984 B) | 150.827 B | 16 |
+| Calculadora · Científica/Ecuaciones | 6.598,5 KiB | 1.913,8 KiB (1.959.729 B) | 2.069.960 B | 18 |
+| Diagramas · flujo inicial | 1.139,7 KiB | 309,1 KiB (316.509 B) | 331.923 B | 42 |
+| Diagramas · con ELK | 2.578,4 KiB | 750,3 KiB (768.263 B) | 806.262 B | 40 |
+| Tienda · abrir | 523,7 KiB | 163,8 KiB (167.713 B) | 174.779 B | 20 |
+| Pizarra · abrir | 3.437,0 KiB | 1.213,3 KiB (1.242.436 B) | 1.348.890 B | 21 |
+| Pizarra · conversión Mermaid | 4.200,9 KiB | 1.410,6 KiB (1.444.450 B) | 1.560.999 B | 48 |
+| Blockly · abrir | 1.150,1 KiB | 321,8 KiB (329.553 B) | 345.631 B | 17 |
+| Blockly · panel de código | 1.284,3 KiB | 356,8 KiB (365.404 B) | 383.275 B | 20 |
 
-Línea base regenerada el 2026-11-15 con la build de la fase 2 de UI-08. La raíz del flujo de Tienda es `app/board/store/store-desktop.tsx`; las secciones «Cambio de fase 2» y «Cambio de fase 3» conservan las cifras históricas de sus mediciones.
+Línea base regenerada el 2026-11-16 con la build de cierre de APP-02. La raíz de los flujos de la calculadora es `app/board/apps/calculadora/calculadora-app.tsx`; la Tienda sigue midiendo desde `app/board/store/store-desktop.tsx` y las secciones «Cambio de fase 2» y «Cambio de fase 3» conservan las cifras históricas de sus mediciones.
 
 Los totales incluyen el framework y la entrada compartida. La comparación útil es entre flujos del mismo informe, no contra una medición externa con otra build.
 
@@ -73,20 +73,20 @@ Los totales incluyen el framework y la entrada compartida. La comparación útil
 
 ## Latencia real
 
-Medición sobre `npm start` (build servida), Chrome headless, red **Fast 3G** (1,6 Mbps, 150 ms RTT), caché desactivada y limpiada en cada muestra; **5 muestras por modo**. El cronómetro arranca al iniciar la navegación y termina en el primer `4` de `2+2`; abrir Tienda y Herramientas de aula forma parte del tiempo.
+Medición sobre `npm start` (build servida), Chrome headless, red **Fast 3G** (1,6 Mbps, 150 ms RTT), caché desactivada y limpiada en cada muestra; **5 muestras por modo**. El cronómetro arranca al iniciar la navegación y termina en el primer `4` de `2+2`; abrir Tienda y Calculadora forma parte del tiempo.
 
 | Modo | Apertura (mediana) | Primer resultado (mediana) | Total (mediana) | Motor |
 |---|---:|---:|---:|---|
-| Básica | 3.024,1 ms | 125,1 ms | 3.149,6 ms | No |
-| Científica | 3.023,0 ms | 9.670,1 ms | 12.753,1 ms | Sí |
+| Básica | 3.409,4 ms | 125,9 ms | 3.535,7 ms | No |
+| Científica | 3.368,2 ms | 9.657,4 ms | 13.051,2 ms | Sí |
 
-La apertura es prácticamente la misma en ambos modos (unos 3 s). La diferencia de **9.603,5 ms** está en el primer resultado de Científica y coincide con la descarga de `compute-engine`; la Básica no lo solicita. Es una medición local, no una promesa de latencia de producción.
+La apertura es prácticamente la misma en ambos modos (unos 3,4 s). La diferencia de **9.531,5 ms** está en el primer resultado de Científica y coincide con la descarga de `compute-engine`; la Básica no lo solicita. Es una medición local, no una promesa de latencia de producción.
 
 ## Presupuestos
 
 - **Tablero:** no puede incorporar `compute-engine`, Mermaid, Excalidraw, ELK ni Blockly. Es la única regla estructural que no admite el margen del 5 %.
 - **Flujos:** ninguno debe superar su presupuesto provisional sin una mejora deliberada y una actualización razonada de la línea base.
-- **Herramientas de aula:** abrir Básica y pulsar `=` no descargan el motor. Científica y Ecuaciones sí lo usan.
+- **Calculadora:** abrir Básica y pulsar `=` no descargan el motor. Científica y Ecuaciones sí lo usan.
 - **Tienda:** no puede incluir `compute-engine`, Mermaid, KaTeX, Excalidraw, ELK, Cytoscape ni Blockly; solo debe cargar el escritorio y el catálogo.
 - **Pizarra:** el wasm de Excalidraw es un coste aceptado de abrir la Pizarra. No se divide ni se sustituye la librería sin una decisión explícita.
 - **Conversión Mermaid:** 1.560.999 B. Abrir la Pizarra no puede incluir Mermaid 11, KaTeX ni `mermaid-to-excalidraw`; la conversión debe conservar su diagrama de flujo de Mermaid 11.
@@ -108,9 +108,9 @@ La apertura es prácticamente la misma en ambos modos (unos 3 s). La diferencia 
 ## Limitaciones
 
 - Esta línea base mide bytes estáticos, no tiempo de ejecución ni latencia de red.
-- La latencia real con caché fría y red lenta se medirá en la fase 4 sobre una build servida; no se afirmará una mejora de tiempo sin esa comparación.
+- La latencia real se midió en la fase 4 sobre una build servida; no se afirma una mejora de tiempo respecto a la medición anterior porque las condiciones y la app cambiaron.
 - El informe no modela el cacheo de Sites ni el orden exacto de las peticiones del navegador.
 - La conversión se mide con un flowchart de Mermaid 11, que es el caso más habitual; otros tipos de diagrama pueden añadir chunks propios.
 - La latencia se midió en un servidor local con Fast 3G y Chrome headless; no representa la red ni el CDN de producción y no se ejecuta en CI.
 - No se ejecuta un rebuild solo para medir: se reutiliza el `dist/client` actual.
-- Sin cambios de versión; `package.json` sigue en `1.1.26`.
+- Sin cambios de versión; `package.json` sigue en `1.1.31`.

@@ -171,7 +171,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
       .map((sub) => ({ sub, items: tools.filter((tool) => tool.subcategory === sub) }))
       .filter((gallery) => gallery.items.length > 0);
     return (
-      <section className="store-section" aria-label={name}>
+      <section key={name} className="store-section" aria-label={name}>
         <h3 className="store-section-title"><CategoryIcon size={18} aria-hidden /> {name}<span className="store-section-count">{tools.length}</span></h3>
         {tools.length ? (
           galleries.map(({ sub, items }) => (

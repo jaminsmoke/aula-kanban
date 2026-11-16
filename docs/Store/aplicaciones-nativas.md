@@ -3,7 +3,7 @@
 Lista viva de las aplicaciones nativas de Aula Kanban: qué está integrado, qué es
 candidato y qué se ha descartado, con la licencia y la versión comprobadas en npm.
 
-Última verificación: **2026-11-14**.
+Última verificación: **2026-11-16**.
 
 ## Qué es una aplicación nativa
 
