@@ -45,7 +45,7 @@ La visibilidad del Site (privado o «cualquiera con el enlace») es un ajuste de
 Sin navegador, esta petición solo confirma que la aplicación sirve la portada; no sustituye a revisar el ajuste de la plataforma:
 
 ```sh
-curl -s https://<tu-site>/ | grep -o "Tablero colaborativo para el grupo de clase"
+curl -s https://<tu-site>/ | grep -o "Tu clase, en orden"
 ```
 
 Si devuelve el texto, la aplicación responde con la portada a un visitante sin cabeceras de identidad. Si la plataforma exige login, la respuesta será su pantalla de acceso aunque el código sea correcto.

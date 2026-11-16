@@ -44,11 +44,11 @@
 
 ## 4. Fases
 
-### Fase 1: Contenido y estructura — pendiente
-- [ ] Auditar `app/portada.tsx`, `app/page.tsx`, `app/portada.test.tsx` y `app/page.test.tsx`; conservar la rama anónima y el tablero autenticado.
-- [ ] Definir una jerarquía breve: héroe con la propuesta y el CTA, tres o cuatro bloques de valor, plugin de ChatGPT y pie con documentación.
-- [ ] Redactar textos en castellano que expliquen el producto sin datos de la instancia y sin prometer funciones que el rol del visitante no tendrá.
-- [ ] Quitar el `style={{...}}` en línea de los botones y mantener el inicio de sesión como `<a target="_top">`.
+### Fase 1: Contenido y estructura — completada
+- [x] Auditar `app/portada.tsx`, `app/page.tsx`, `app/portada.test.tsx` y `app/page.test.tsx`; conservar la rama anónima y el tablero autenticado.
+- [x] Definir una jerarquía breve: héroe con la propuesta y el CTA, tres o cuatro bloques de valor, plugin de ChatGPT y pie con documentación.
+- [x] Redactar textos en castellano que expliquen el producto sin datos de la instancia y sin prometer funciones que el rol del visitante no tendrá.
+- [x] Quitar el `style={{...}}` en línea de los botones y mantener el inicio de sesión como `<a target="_top">`.
 - **Criterios de aceptación:** `/` sin sesión muestra la nueva portada; con sesión sigue mostrando el tablero; el enlace de acceso conserva el `returnTo`; los tests cubren los CTA y la ruta de documentación.
 
 ### Fase 2: Diseño visual, temas y responsive — pendiente
@@ -80,3 +80,4 @@
 - 2026-11-16: PROMO-02 sale del backlog y pasa a ser el roadmap activo. PROMO-01 se pausa con su plan conservado porque la validación externa depende de publicar la tarjeta.
 - 2026-11-16: la primera versión no espera a PROMO-03; se apoyará en la ilustración y el mensaje ya existentes. Las capturas de la demo se incorporarán cuando estén disponibles.
 - 2026-11-16: el botón de demo sin cuenta, las páginas legales y el vídeo quedan fuera de este roadmap.
+- 2026-11-16: Fase 1 completada. La portada presenta la propuesta, tres bloques de producto, el plugin y un pie con documentación; el acceso conserva `returnTo` y las pruebas cubren los CTA y la ruta de documentación. El diseño visual queda para la Fase 2.
