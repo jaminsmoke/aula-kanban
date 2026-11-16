@@ -52,6 +52,12 @@ Si devuelve el texto, la aplicación responde con la portada a un visitante sin 
 
 En desarrollo, `npm run dev` simula la sesión al visitar `/signin-with-chatgpt`, así que la portada anónima hay que probarla sin esa cookie (por ejemplo, en una ventana privada).
 
+## Vista previa en redes
+
+Los metadatos Open Graph y Twitter Card usan la URL pública de la instancia para construir enlaces absolutos e imágenes sociales. Si `NEXT_PUBLIC_SITE_URL` no está definida, se usa `https://aula-kanban.doubleoak32.chatgpt.site`; una copia debe configurar su propio origen para no anunciar el Site original. Solo se acepta `http` o `https` y se conserva el origen, sin ruta.
+
+La tarjeta declara `/og/aula-kanban.png` como imagen de 1200×630. El archivo vive en `public/og/` y se puede sustituir sin cambiar los metadatos.
+
 ## Tienda y Aula Store
 
 La cabecera organiza el trabajo en **Clase** y **Administración** (con Alumnos, Profesores y Tienda en su sidebar), con Clase en su botón de icono y el selector de proyecto a la derecha. **Tienda** es el escritorio de aplicaciones del proyecto; el engranaje abre los **ajustes generales**, con Cuenta, Apariencia, Documentación, Tokens MCP, Administradores y Almacenamiento. Incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, Calculadora, Tabla periódica, Programación por bloques y Diagramas. Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Tienda no elimina las pizarras de las tareas ni sus datos.

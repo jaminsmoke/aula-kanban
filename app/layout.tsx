@@ -4,11 +4,35 @@ import "./board/styles/buttons.css";
 import "./board/styles/access.css";
 import "./board/styles/dialogs.css";
 import { THEME_INIT_SCRIPT } from "./theme";
+import { siteUrl, SITE_DESCRIPTION, SITE_NAME, SOCIAL_IMAGE } from "../lib/domain/site";
+
+const socialImage = {
+  url: new URL(SOCIAL_IMAGE.path, siteUrl).toString(),
+  width: SOCIAL_IMAGE.width,
+  height: SOCIAL_IMAGE.height,
+  alt: SOCIAL_IMAGE.alt,
+};
 
 export const metadata: Metadata = {
-  title: "Aula Kanban",
-  description: "Tablero colaborativo de tareas para el grupo de clase.",
+  metadataBase: siteUrl,
+  title: SITE_NAME,
+  description: SITE_DESCRIPTION,
   icons: { icon: "/favicon.svg" },
+  openGraph: {
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    url: siteUrl,
+    siteName: SITE_NAME,
+    locale: "es_ES",
+    type: "website",
+    images: [socialImage],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    images: [socialImage],
+  },
 };
 
 /**

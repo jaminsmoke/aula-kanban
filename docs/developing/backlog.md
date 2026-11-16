@@ -2,12 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 6 entradas pendientes de debate (PROMO-01..06); la próxima decisión abre el siguiente roadmap
+> **Roadmap:** PROMO-01 · Vista previa en redes · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 5 entradas pendientes de debate (PROMO-02..06)
 
 ---
 
-## 2026-11-16 — PROMO-01..06 · Preparar la promoción (vídeo y redes)
+## 2026-11-16 — PROMO-02..06 · Preparar la promoción (portada, demo, legal y rendimiento)
 
 > Origen: revisión de solo lectura del 16 nov 2026 sobre la 1.1.32 (web en vivo y repo). Veredicto: lista para promocionar **con arreglos**; lo que falla es la entrada pública. El vídeo será una presentación animada con fragmentos cortos de la app integrados. Orden = impacto.
 >
@@ -18,13 +18,6 @@
 > - Pruebas junto al código (`*.test.ts(x)`, Vitest + Testing Library + jsdom). Checks de CI (`.github/workflows/ci.yml`): `npm run lint`, `npx tsc --noEmit`, `npm test`, `npm run build`, `npm run perf:budget`.
 > - Reglas de `AGENTS.md`: commits locales por fase y **un único push** al cerrar el roadmap; **solo Codex publica en Sites**, aplica migraciones remotas y verifica la versión publicada (`npm run release:prepare -- --published-version X.Y.Z`). Que haya push no significa que esté publicado.
 > - Al llevar una PROMO al roadmap, seguir `docs/developing/templates/roadmap-template.md` y cerrar en `docs/developing/changelog.md` como el resto.
-
-### PROMO-01 · Vista previa en redes (Open Graph y Twitter Card)
-- Contexto: la portada tiene title, description, viewport y favicon, pero ninguna etiqueta `og:` ni `twitter:`; un enlace en LinkedIn, X o WhatsApp sale sin tarjeta ni imagen. Los metadatos salen solo de `export const metadata` en `app/layout.tsx` (`title`, `description`, `icons: /favicon.svg`); `app/documentacion/page.tsx` no exporta metadatos propios.
-- Alcance: ampliar `metadata` en `app/layout.tsx` con `metadataBase` (hoy no existe en el repo; URL pública `https://aula-kanban.doubleoak32.chatgpt.site`), `openGraph` (`title`, `description`, `url`, `type`, `locale: es_ES`, `images` 1200×630 con `alt`) y `twitter` (`card: summary_large_image`). Opcional: `metadata` propio en `app/documentacion/page.tsx`.
-- Archivos: `app/layout.tsx`; imagen nueva como `app/opengraph-image.png` (convención de vinext: sirve en `/opengraph-image` y genera las etiquetas) o estática en `public/` (por ejemplo `public/og/aula-kanban.png`) referenciada desde `metadata`. Elegir **una** de las dos vías.
-- Criterios: el HTML servido sin sesión contiene `og:image` con URL absoluta y `twitter:card`; la tarjeta se ve bien en los validadores de LinkedIn, X y Facebook y al pegar el enlace en WhatsApp. Prueba en `app/page.test.tsx` o una nueva junto a `app/layout.tsx`. Hacerlo **antes de publicar nada**.
-- Notas: `vinext/dist/server/metadata-routes.js` admite `opengraph-image.tsx/.png`, `twitter-image`, `icon`, `apple-icon` y `favicon.ico`. Antes de usar la variante `.tsx` (imagen generada), comprobar que funciona en el Worker; la `.png` estática es la opción segura. La URL del Site depende del alojamiento en Sites: si cambia, `metadataBase` debe cambiar con ella.
 
 ### PROMO-02 · Portada pública nueva
 - Contexto: `app/page.tsx` devuelve `<Portada>` (`app/portada.tsx`) cuando `getChatGPTUser()` (`lib/server/auth.ts`) es `null`, y el tablero si hay sesión. La portada actual es una tarjeta `session-page`/`session-card` (estilos en `app/board/styles/access.css`, compartidos con otras pantallas de acceso) con dos párrafos y los botones «Iniciar sesión con ChatGPT» (`signInHref`, `target="_top"`) y «Ver documentación» (`/documentacion`). `/landing` da 404 porque no existe esa ruta.
