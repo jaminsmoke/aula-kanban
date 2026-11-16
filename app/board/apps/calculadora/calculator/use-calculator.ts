@@ -6,6 +6,9 @@ import { getEngineStatus, subscribeEngineStatus, type EngineStatus } from "./eng
 import { evaluateLatex, preloadEngine } from "./edu-evaluate";
 import { HISTORY_KEY, type HistoryEntry, type Key } from "./calculator-keys";
 
+const MODE_KEY = "aula-kanban-calculator-mode";
+const PRELOAD_DELAY_MS = 120;
+
 /**
  * Estado y acciones de la calculadora: memoria, historial, teclado lógico y
  * atajos de teclado físico.
@@ -35,14 +38,29 @@ export function useCalculator() {
   const [showHistory, setShowHistory] = useState(false);
   const justEvaluated = useRef(false);
   const lastAnswer = useRef("");
+  const preloadTimer = useRef<number | null>(null);
 
   // El estado del motor se comparte entre la calculadora y el editor de ecuaciones.
   useEffect(() => subscribeEngineStatus(setEngineStatus), []);
+
+  // Si la última vez se usó la Científica, se adelanta la descarga al abrir.
+  useEffect(() => {
+    try {
+      if (window.localStorage.getItem(MODE_KEY) === "cientifica") preloadEngine();
+    } catch {
+      /* sin persistencia */
+    }
+  }, []);
 
   // El motor solo se adelanta en las vistas que lo necesitan; la calculadora
   // básica sigue abriendo sin descargar compute-engine.
   const setKeypad = useCallback((mode: "basica" | "cientifica") => {
     setKeypadState(mode);
+    try {
+      window.localStorage.setItem(MODE_KEY, mode);
+    } catch {
+      /* sin persistencia */
+    }
     if (mode === "cientifica") preloadEngine();
   }, []);
 
@@ -52,6 +70,23 @@ export function useCalculator() {
       return !current;
     });
   }, []);
+
+  const cancelPreload = useCallback(() => {
+    if (preloadTimer.current === null) return;
+    window.clearTimeout(preloadTimer.current);
+    preloadTimer.current = null;
+  }, []);
+
+  const requestPreload = useCallback(() => {
+    if (engineStatus === "loading" || engineStatus === "ready") return;
+    if (preloadTimer.current !== null) return;
+    preloadTimer.current = window.setTimeout(() => {
+      preloadTimer.current = null;
+      preloadEngine();
+    }, PRELOAD_DELAY_MS);
+  }, [engineStatus]);
+
+  useEffect(() => cancelPreload, [cancelPreload]);
 
   const evaluate = useCallback(async (input: string) => {
     if (keypad === "basica") {
@@ -211,6 +246,8 @@ export function useCalculator() {
     showHistory,
     shown: error ?? (busy ? "Calculando…" : result ?? "0"),
     setKeypad,
+    requestPreload,
+    cancelPreload,
     setSciPage,
     toggleEquations,
     toggleHistory: () => setShowHistory((current) => !current),

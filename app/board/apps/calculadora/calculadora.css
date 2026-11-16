@@ -102,6 +102,10 @@
 
 .calc-modes .calc-modes-equations[aria-pressed="true"] { background:var(--ui-action-primary-hover); }
 
+.calc-engine-status { margin:0; color:var(--ui-text-muted); font-size:10.5px; font-weight:650; text-align:right; opacity:0; animation:calc-status-in .12s var(--ease-out) 150ms forwards; }
+
+@keyframes calc-status-in { to { opacity:1; } }
+
 .calc-pager { display:flex; justify-content:flex-end; gap:4px; }
 
 .calc-pager button { width:26px; height:20px; padding:0; border:var(--border-width-hairline) solid var(--ui-border-strong); border-radius: var(--radius-xs); background:var(--ui-surface-raised); color:var(--ui-text-secondary); font:inherit; font-size:10.5px; font-weight:700; cursor:pointer; }

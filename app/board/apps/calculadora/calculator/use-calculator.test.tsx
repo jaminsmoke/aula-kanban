@@ -22,6 +22,7 @@ beforeEach(() => {
   mocks.evaluate.mockReset();
   mocks.basic.mockReset();
   mocks.basic.mockReturnValue(null);
+  window.localStorage.clear();
 });
 
 describe("carga de la calculadora", () => {
@@ -47,6 +48,40 @@ describe("carga de la calculadora", () => {
 
     act(() => result.current.toggleEquations());
     expect(mocks.preload).toHaveBeenCalledTimes(2);
+  });
+
+  it("guarda el último modo y precarga al abrir si era Científica", () => {
+    window.localStorage.setItem("aula-kanban-calculator-mode", "cientifica");
+    renderHook(() => useCalculator());
+    expect(mocks.preload).toHaveBeenCalledTimes(1);
+  });
+
+  it("guarda el modo al cambiarlo", () => {
+    const { result } = renderHook(() => useCalculator());
+    act(() => result.current.setKeypad("cientifica"));
+    expect(window.localStorage.getItem("aula-kanban-calculator-mode")).toBe("cientifica");
+
+    act(() => result.current.setKeypad("basica"));
+    expect(window.localStorage.getItem("aula-kanban-calculator-mode")).toBe("basica");
+  });
+
+  it("precarga por intención tras un retardo corto y se puede cancelar", () => {
+    const { result } = renderHook(() => useCalculator());
+    vi.useFakeTimers();
+
+    act(() => result.current.requestPreload());
+    act(() => { vi.advanceTimersByTime(119); });
+    expect(mocks.preload).not.toHaveBeenCalled();
+
+    act(() => { vi.advanceTimersByTime(1); });
+    expect(mocks.preload).toHaveBeenCalledTimes(1);
+
+    act(() => result.current.requestPreload());
+    act(() => result.current.cancelPreload());
+    act(() => { vi.advanceTimersByTime(200); });
+    expect(mocks.preload).toHaveBeenCalledTimes(1);
+
+    vi.useRealTimers();
   });
 
   it("evalúa la Básica sin delegar en el motor", async () => {

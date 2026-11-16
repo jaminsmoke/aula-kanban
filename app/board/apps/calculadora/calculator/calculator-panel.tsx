@@ -37,10 +37,12 @@ export default function CalculatorPanel() {
 
           <div className="calc-modes" role="group" aria-label="Modo de la calculadora">
             <button type="button" aria-pressed={calc.keypad === "basica"} onClick={() => calc.setKeypad("basica")}>Básica</button>
-            <button type="button" aria-pressed={calc.keypad === "cientifica"} onClick={() => calc.setKeypad("cientifica")}>Científica</button>
-            <button type="button" className="calc-modes-equations" aria-pressed={calc.showEquations} onClick={calc.toggleEquations}>Ecuaciones</button>
+            <button type="button" aria-pressed={calc.keypad === "cientifica"} onClick={() => calc.setKeypad("cientifica")} onPointerEnter={calc.requestPreload} onPointerLeave={calc.cancelPreload} onFocus={calc.requestPreload} onBlur={calc.cancelPreload}>Científica</button>
+            <button type="button" className="calc-modes-equations" aria-pressed={calc.showEquations} onClick={calc.toggleEquations} onPointerEnter={calc.requestPreload} onPointerLeave={calc.cancelPreload} onFocus={calc.requestPreload} onBlur={calc.cancelPreload}>Ecuaciones</button>
             <button type="button" className="calc-modes-history" aria-pressed={calc.showHistory} onClick={calc.toggleHistory}>Historial ({calc.history.length})</button>
           </div>
+
+          {calc.engineStatus === "loading" && !calc.busy ? <p className="calc-engine-status" role="status">Preparando el motor…</p> : null}
 
           <CalculatorKeypad keypad={calc.keypad} sciPage={calc.sciPage} onPage={calc.setSciPage} onPress={calc.press} />
 

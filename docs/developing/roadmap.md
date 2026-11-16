@@ -52,12 +52,13 @@
 - **Criterios de aceptación:** la línea base queda registrada con los mismos números de partida; el estado del motor se puede observar y probar; `perf:budget` no cambia y la Básica no descarga el motor.
 - **Verificación:** medición sobre la build servida con el proyecto de demo, 5 muestras y Fast 3G: Básica abre en **3.444,9 ms**, primer resultado **141,4 ms**, total **3.592,5 ms**, sin `compute-engine`; Científica abre en **3.428,4 ms**, primer resultado **9.695,2 ms**, total **13.138 ms**, con el motor descargado. `engine-status.ts` publica `idle | loading | ready | error`, `use-calculator` lo expone como `engineStatus` y las pruebas cubren la suscripción, el estado listo tras evaluar y que la Básica no precarga. Suite completa **156 archivos / 1.146 pruebas**, `tsc`, ESLint y build correctos. `perf:budget` sigue en verde: `tablero` 170.708 B, `basica` 132.298 B y `cientifica` 1.960.043 B gzip.
 
-### Fase 2: Precarga por intención e indicador
-- [ ] Precargar al enfocar o pasar el puntero por Científica/Ecuaciones, con un retardo corto y una sola vez, además del cambio de modo actual.
-- [ ] Guardar el último modo y, si era Científica, precargar al abrir la calculadora; la Básica sigue sin precargar por defecto.
-- [ ] Mostrar «Preparando el motor…» mientras carga y «Calculando…» al evaluar; evitar el parpadeo si el motor ya está listo o en caché.
-- [ ] Medir de nuevo y comparar la mediana del primer resultado con la línea base.
+### Fase 2: Precarga por intención e indicador — completada (2026-11-16)
+- [x] Precargar al enfocar o pasar el puntero por Científica/Ecuaciones, con un retardo corto y una sola vez, además del cambio de modo actual.
+- [x] Guardar el último modo y, si era Científica, precargar al abrir la calculadora; la Básica sigue sin precargar por defecto.
+- [x] Mostrar «Preparando el motor…» mientras carga y «Calculando…» al evaluar; evitar el parpadeo si el motor ya está listo o en caché.
+- [x] Medir de nuevo y comparar la mediana del primer resultado con la línea base.
 - **Criterios de aceptación:** el aviso aparece al elegir el modo, no solo al pulsar `=`; la Básica, el Tablero y la Tienda conservan sus presupuestos; la comparación de latencia queda documentada con 5 muestras.
+- **Verificación:** la precarga por intención espera 120 ms y se cancela al salir o desenfocar; el último modo se guarda y, si era Científica, la descarga empieza al abrir la calculadora. El aviso «Preparando el motor…» aparece con Fast 3G (comprobado en navegador: texto visible, opacidad 1) y no se muestra con `busy`. La medición con 5 muestras queda prácticamente igual: Básica 3.442,6 / 147,8 / 3.594,9 ms; Científica 3.416,9 / 9.685,4 / 13.124,3 ms. `perf-latency` limpia `localStorage` y pulsa Científica sin pasar por encima, así que no puede medir la precarga por intención ni el modo recordado; la mejora es de percepción y se documenta como tal. Suite completa **156 archivos / 1.149 pruebas**, `tsc`, ESLint y build correctos. `perf:budget`: `tablero` 170.713 B, `basica` 132.617 B y `cientifica` 1.960.363 B gzip.
 
 ### Fase 3: Recorte o alternativa y cierre
 - [ ] Evaluar un recorte del motor, una carga por subconjunto o una alternativa más ligera; medir el tamaño y la latencia antes de decidir.
@@ -87,3 +88,4 @@
 - 2026-11-16: la revisión que originó esta entrada también descartó «GPT con Actions»; el sustituto es el plugin de Sites con MCP y no forma parte de este roadmap.
 - 2026-11-16: no se publica en Sites ni se cambia la versión `1.1.32`; el cierre es local y el push, único, como en los roadmaps anteriores.
 - 2026-11-16: la línea base se midió con el proyecto de demo `2222…` en la build local y se guardó en un JSON temporal; `docs/perf-latency.json` y la tabla de `docs/rendimiento.md` se actualizarán al cerrar la fase 2 o 3, con la comparación definitiva.
+- 2026-11-16: `perf-latency` limpia `localStorage` y pulsa Científica sin simular hover, así que no mide la precarga por intención ni el modo recordado; la mejora de esta fase es de percepción y la fase 3 decidirá si añade una variante de medición o la documenta como cambio cualitativo.
