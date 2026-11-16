@@ -20,7 +20,7 @@
 ### Verificación
 
 - Cabecera y Ajustes revisados a 1366, 1024 y 390 px; sin desbordes y con Clase centrada.
-- Suite completa: **160 archivos / 1.173 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde (`tablero` 170.870 B, `basica` 132.650 B, `cientifica` 1.960.394 B gzip).
+- Suite completa: **160 archivos / 1.173 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde (`tablero` 170.875 B, `basica` 132.657 B, `cientifica` 1.960.403 B gzip).
 - Commits: `f78ef0f` (Fase 1), `1ff8771` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites y sin cambio de versión: la instancia sigue en **1.1.34**.
 
 ### Seguimiento

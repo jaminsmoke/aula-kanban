@@ -63,7 +63,7 @@
 - [x] Pasar suite completa, `tsc`, ESLint, build y `perf:budget`; revisar la cabecera y Ajustes a 1366, 1024 y 390 px.
 - [x] Actualizar README, ayuda, changelog y archivar este roadmap.
 - **Criterios de aceptación:** la cabecera cumple las tres zonas, el remix está contextualizado y probado, no hay regresiones ni cambios de datos, y el roadmap se cierra con todas las fases verificadas.
-- **Verificación:** cabecera y Ajustes revisados a 1366, 1024 y 390 px; la marca queda a la izquierda, Clase centrada y la tarjeta de «Tu Site» cabe sin desbordes. La ayuda y el README remiten a Ajustes > Tu Site, y la definición del remix ya no figura entre las acciones del menú de proyecto. Suite completa **160 archivos / 1.173 pruebas**, `tsc`, ESLint, build y `perf:budget` en verde (`tablero` 170.870 B, `basica` 132.650 B, `cientifica` 1.960.394 B gzip). Sin cambios de datos ni de versión: la instancia sigue en **1.1.34**.
+- **Verificación:** cabecera y Ajustes revisados a 1366, 1024 y 390 px; la marca queda a la izquierda, Clase centrada y la tarjeta de «Tu Site» cabe sin desbordes. La ayuda y el README remiten a Ajustes > Tu Site, y la definición del remix ya no figura entre las acciones del menú de proyecto. Suite completa **160 archivos / 1.173 pruebas**, `tsc`, ESLint, build y `perf:budget` en verde (`tablero` 170.875 B, `basica` 132.657 B, `cientifica` 1.960.403 B gzip). Sin cambios de datos ni de versión: la instancia sigue en **1.1.34**.
 
 ## 5. Riesgos y bloqueos
 
