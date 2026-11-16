@@ -2,7 +2,7 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** PROMO-03 · Proyecto de demo versionado y capturas nuevas · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** 2 entradas: PROMO-01 pausado y PROMO-04..06 pendientes de debate
 
 ---
@@ -37,7 +37,7 @@
 - Alcance: entrada «Probar la demo» desde la portada a un proyecto de demo fijo (PROMO-03), sin cuenta, tratada **como `guest`** de ese proyecto y de ningún otro. Opción preferente: una identidad de demo sintética en el servidor, nunca leída de cabeceras que pueda mandar el cliente, mapeada a `Access` con `role: "guest"`, limitada a lectura y a ese `projectId`.
 - Archivos: `lib/server/auth.ts`, `lib/server/project-access.ts`, `lib/server/capabilities.ts`, `lib/domain/permisos.ts`, `app/page.tsx` (hoy sin usuario muestra la portada), `worker/index.ts` (sockets en vivo: decidir si la demo los usa o queda estática), MCP fuera de alcance (`app/mcp/route.ts` y `app/api/mcp/route.ts` siguen exigiendo autenticación). Pruebas existentes de referencia: `lib/server/project-access.test.ts`, `lib/server/capabilities.test.ts`, `lib/domain/permisos.test.ts`, `lib/server/boards.test.ts` («bloquea a invitados») y las de paridad `app/api/**/*-paridad.test.ts`.
 - Criterios: ninguna escritura posible en modo demo (403 en todas las rutas de escritura, con pruebas); sin acceso a otros proyectos, a Ajustes > Tokens MCP, a Administradores ni a Almacenamiento; sin correos de miembros; aviso visible de que es una demo y botón para entrar de verdad; la sesión real de ChatGPT tiene prioridad sobre la de demo.
-- Dependencias: PROMO-03 (proyecto de demo), PROMO-02 (botón en la portada).
+- Dependencias: PROMO-03 (proyecto de demo, completado) y PROMO-02 (botón en la portada, completado).
 - Notas: es el cambio de **más riesgo**: toca la autenticación de toda la app. Ver antes la matriz de `docs/Store/matriz-permisos.md` y `docs/Store/matriz-herramientas.md`. Alternativa más barata si se descarta: un vídeo o recorrido con capturas en la portada, sin backend.
 
 ### PROMO-06 · Primer resultado de la calculadora científica

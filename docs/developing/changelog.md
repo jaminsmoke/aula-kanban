@@ -1,10 +1,32 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** PROMO-03 · Proyecto de demo versionado y capturas nuevas · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-16 — Roadmap PROMO-03 · Proyecto de demo versionado y capturas nuevas
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- `scripts/seed-demo.mjs` y `npm run seed:demo` crean o actualizan el proyecto fijo `22222222-2222-4222-8222-222222222222` («Proyecto de demostración») con 6 alumnos, 2 profesores, 8 tareas repartidas en las cuatro columnas (25 % completadas), las cinco apps instaladas, una pizarra, un diagrama y un programa de bloques. La segunda ejecución no duplica nada y no toca otros proyectos.
+- La semilla admite `--dry-run`, limita `--base-url` a `localhost`/`127.0.0.1` y rechaza cualquier origen remoto antes de conectar. Usa la sesión local de desarrollo (cookie `__sites_local_auth` y cabeceras `local_seedy`), sin cuentas reales ni tokens.
+- `public/capturas/{tareas,calendario,espacio,ajustes}.webp` se rehicieron desde ese proyecto con la interfaz actual: 1200 px, entre 20 y 45 KB, Ajustes recortado a Cuenta. La ayuda actualiza `alt` y pies en `tasks.ts` y `workspace.ts`; la imagen de Tienda pasa tras los pasos de Aula Store y el calendario ya no fija un mes.
+- README documenta el comando de siembra, la guarda local y la advertencia de no ejecutarlo contra producción.
+
+### Verificación
+
+- Suite completa: **144 archivos / 1.113 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde. Flujo `tablero` **170.156 B gzip** (límite 175.656 B).
+- D1 limpia temporal migrada hasta `0040_personal_folders.sql` y build servida en `127.0.0.1:8792`: el dry-run mostró el plan, la siembra dejó 6 alumnos, 2 profesores, 8 tareas (2 por estado) y 5 apps, y la segunda ejecución respondió «sin cambios». El tablero servido a 1366 px muestra el proyecto de demostración, el 25 % y dos tareas por columna.
+- Las cuatro rutas de `public/capturas/` responden `200 image/webp`; la ayuda se revisó a 1366, 1024 y 390 px sin desbordes.
+- Commits: `21a6a2c` (Fase 1), `fc548cb` (cookie local), `7a3add8` (Fase 2) y el commit de cierre. Sin push ni publicación: el Site sigue en **1.1.32**.
+
+### Seguimiento
+
+- PROMO-04..06 permanecen en el backlog; PROMO-05 reutilizará este proyecto de demostración. PROMO-01 sigue pausado hasta publicar y validar la tarjeta social.
 
 ## 2026-11-16 — Roadmap PROMO-02 · Portada pública nueva
 
