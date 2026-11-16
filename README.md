@@ -57,7 +57,7 @@ En desarrollo, `npm run dev` simula la sesión al visitar `/signin-with-chatgpt`
 La cabecera organiza el trabajo en **Clase** y **Administración** (con Alumnos, Profesores y Tienda en su sidebar), con Clase en su botón de icono y el selector de proyecto a la derecha. **Tienda** es el escritorio de aplicaciones del proyecto; el engranaje abre los **ajustes generales**, con Cuenta, Apariencia, Documentación, Tokens MCP, Administradores y Almacenamiento. Incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, Herramientas de aula, Programación por bloques y Diagramas. Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Tienda no elimina las pizarras de las tareas ni sus datos.
 Dentro de **Clase**, **Tareas** y **Calendario** comparten el mismo tablero: el calendario coloca cada tarea en su fecha de vencimiento, abre la tarea al pulsar su evento y solo se descarga al entrar en la sección.
 
-La lista de aplicaciones integradas, candidatas y descartadas, con licencias y versiones comprobadas, está en [`docs/aplicaciones-nativas.md`](docs/aplicaciones-nativas.md). El índice de documentación y el flujo de roadmap, backlog y changelog están en [`docs/README.md`](docs/README.md).
+La lista de aplicaciones integradas, candidatas y descartadas, con licencias y versiones comprobadas, está en [`docs/Store/aplicaciones-nativas.md`](docs/Store/aplicaciones-nativas.md). El índice de documentación y el flujo de roadmap, backlog y changelog están en [`docs/README.md`](docs/README.md).
 
 ## Plugin y herramientas
 

@@ -15,7 +15,7 @@
 
 - Haz un commit local por fase o bloque verificado; no hace falta esperar al final para confirmar el trabajo.
 - No hagas push por cada bloque ni para «probar» CI. Un push dispara workflows y consume cuota.
-- Haz el push a `github main` solo cuando el roadmap esté completo, su resumen esté arriba de `docs/changelog.md` y `docs/roadmap.md` se haya reiniciado.
+- Haz el push a `github main` solo cuando el roadmap esté completo, su resumen esté arriba de `docs/developing/changelog.md` y `docs/developing/roadmap.md` se haya reiniciado.
 - Antes de ese push, ejecuta los checks y el build sobre el estado final; el push debe ser único y suficiente.
 - Los cambios de política o documentación que deban quedar registrados en el remoto pueden publicarse una vez, siempre que no disparen CI (por ejemplo, `docs/**` o `AGENTS.md`).
 

@@ -1,7 +1,7 @@
 # Miniaturas de imágenes
 
 > **Estado:** PER-02 integrado · PER-04 en medición · build `1.1.28` · 2026-11-15
-> **Medición:** `npm run perf:images` · **Prototipo:** `app/board/shared/image-thumbnail.ts` · **Roadmap:** [`roadmap.md`](roadmap.md)
+> **Medición:** `npm run perf:images` · **Prototipo:** `app/board/shared/image-thumbnail.ts` · **Roadmap:** [`roadmap.md`](developing/roadmap.md)
 
 ---
 

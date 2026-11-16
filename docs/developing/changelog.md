@@ -42,7 +42,7 @@
 ### Cambios
 
 - Inventario completo de las cuatro vistas de EduTools, Excalidraw, Blockly y Diagramas, con datos, estado local, permisos actuales y cobertura MCP.
-- Matriz aprobable en [`matriz-herramientas.md`](matriz-herramientas.md): por defecto se deniega, la visibilidad no otorga permisos y las reglas se evalúan por proyecto.
+- Matriz aprobable en [`matriz-herramientas.md`](../Store/matriz-herramientas.md): por defecto se deniega, la visibilidad no otorga permisos y las reglas se evalúan por proyecto.
 - Regla de instalación global: solo owner y admin de instancia pueden instalar o desinstalar apps; el rol de profesor por sí solo no concede gestión global.
 - No se crean herramientas exclusivas de profesor ni se separan las herramientas de EduTools. La mochila/maletín sigue en el backlog hasta tener permisos definidos.
 - UI-09 se retira del backlog: las tarjetas y la ficha ya aplican la regla de instalación del servidor.
@@ -285,7 +285,7 @@ PER-04, PER-05 y PER-06 quedan en [`backlog.md`](backlog.md); no se añaden entr
 
 ### Cambios
 
-- **Fase 1 — Línea base:** `scripts/image-baseline.mjs` y `npm run perf:images` miden con Chrome headless el peso, la transferencia estimada, la decodificación, la memoria, la codificación y el PSNR de fotos sintéticas; el método y los límites quedan en [`miniaturas.md`](miniaturas.md).
+- **Fase 1 — Línea base:** `scripts/image-baseline.mjs` y `npm run perf:images` miden con Chrome headless el peso, la transferencia estimada, la decodificación, la memoria, la codificación y el PSNR de fotos sintéticas; el método y los límites quedan en [`miniaturas.md`](../miniaturas.md).
 - **Fase 2 — Prototipo y comparación:** `calcularDimensionesMiniatura` (7 pruebas) y `crearMiniaturaDeArchivo` generan un WebP de 800 px con orientación EXIF y sin metadatos. Una foto de 12 MP baja de 3,9 MB a 61 KB y de 46,5 MB decodificados a 1,8 MB, con 35,7 dB de PSNR. El Site solo declara `BUCKET` y `DB`, así que se descarta el binding `IMAGES`.
 - **Fase 3 — Integración:** la subida de tareas envía el derivado como `task-image` solo si pesa menos que el original; si el generador devuelve `null`, se sube el archivo tal cual. GIF y tipos no admitidos no se transforman. Seis pruebas nuevas (tres del generador y tres del diálogo).
 - Sin migraciones y sin cambios en `/api/uploads`, en la purga ni en el inventario; la versión sigue en `1.1.28`.

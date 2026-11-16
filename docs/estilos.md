@@ -1,6 +1,6 @@
 # Sistema visual
 
-> **Estado:** Fases 1-8 completadas; roadmap UI-01 cerrado (2026-11-15) · Resumen: [`changelog.md`](changelog.md)
+> **Estado:** Fases 1-8 completadas; roadmap UI-01 cerrado (2026-11-15) · Resumen: [`changelog.md`](developing/changelog.md)
 > **Fuente de verdad:** [`../app/globals.css`](../app/globals.css)
 
 ---

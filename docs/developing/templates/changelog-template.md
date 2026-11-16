@@ -1,6 +1,6 @@
 # Plantilla de Changelog
 
-> **Uso:** Copia esta plantilla para crear `docs/changelog.md` cuando no exista. No escribas el changelog real dentro de esta plantilla.
+> **Uso:** Copia esta plantilla para crear `docs/developing/changelog.md` cuando no exista. No escribas el changelog real dentro de esta plantilla.
 > **Regla:** Las entradas nuevas van **siempre arriba**; lo más antiguo queda al final. El orden es cronológico inverso, no prioridad.
 > **Flujo:** Al completar un roadmap, su resumen pasa aquí como una entrada nueva. No se borran entradas antiguas.
 > **Formato:** Fecha, versión o hito, cambios y verificación.

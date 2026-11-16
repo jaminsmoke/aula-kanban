@@ -1,6 +1,6 @@
 # Plantilla de Backlog
 
-> **Uso:** Copia esta plantilla para reiniciar `docs/backlog.md` cuando el backlog se quede vacío (todo movido al roadmap).
+> **Uso:** Copia esta plantilla para reiniciar `docs/developing/backlog.md` cuando el backlog se quede vacío (todo movido al roadmap).
 > **Regla:** Las entradas nuevas van **siempre arriba**; lo viejo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo **sale** del backlog. Lo que se aparca del roadmap **entra** aquí.
 > **Estado:** `Aparcado`

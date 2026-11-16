@@ -47,7 +47,7 @@ sin proyecto) o `resolverAppEnProyecto` (con proyecto y escritura opcional) de
 `not_found`.
 
 La cobertura actual, los permisos, los límites y lo que queda pendiente en cada
-app están en [`docs/mcp-apps.md`](../../../docs/mcp-apps.md).
+app están en [`docs/Store/mcp-apps.md`](../../../docs/Store/mcp-apps.md).
 
 ## Versiones
 
@@ -58,7 +58,7 @@ Cada ficha de `lib/native-apps.ts` declara:
 - `upstream`: paquete principal y versión exacta instalada.
 - `extras`: librerías adicionales que añade nuestra integración, si las hay.
 
-La versión de Aula Store vive en `AULA_STORE_VERSION` y se muestra en la cabecera de la tienda. La versión del Site es independiente. La política de incremento y la tabla de versiones están en [`docs/aplicaciones-nativas.md`](../../../docs/aplicaciones-nativas.md#versiones).
+La versión de Aula Store vive en `AULA_STORE_VERSION` y se muestra en la cabecera de la tienda. La versión del Site es independiente. La política de incremento y la tabla de versiones están en [`docs/Store/aplicaciones-nativas.md`](../../../docs/Store/aplicaciones-nativas.md#versiones).
 
 ## Tamaño y estado
 
