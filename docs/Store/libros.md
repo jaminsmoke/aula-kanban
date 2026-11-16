@@ -1,10 +1,13 @@
-# Libros escolares (STORE-02)
+# Libros escolares (STORE-02 / STORE-04)
 
-Catálogo de libros descargables de la vista «Libros» de Aula Store. Los
-libros no son apps instalables: son contenido persistido en el bucket R2
-(`site-creator-r2`, binding `BUCKET`) con su procedencia registrada, para
-poder redistribuirlos legalmente y abrirlos en una ventana propia sin
-salir de Aula Kanban.
+Catálogo de libros que el docente habilita por proyecto como herramienta
+en la mochila del alumnado y el maletín docente (carpeta «Libros»,
+visibilidad y asignación en Administración → Profesores/Alumnos →
+Herramientas). Los libros no son apps instalables de Aula Store: son
+contenido persistido en el bucket R2 (`site-creator-r2`, binding
+`BUCKET`) con su procedencia registrada, para poder redistribuirlos
+legalmente y leerlos en ventana propia sin salir de Aula Kanban.
+Lectura embebida de solo lectura, sin descarga.
 
 ## Catálogo
 
@@ -26,7 +29,7 @@ abierto.
 - Ningún título entra sin licencia verificada. Los libros comerciales
   con copyright (Santillana, Anaya, SM, Oxford…) no se incluyen.
 - Cada ficha muestra autor, fuente, URL original y licencia; la misma
-  procedencia viaja en `GET /api/books` y se muestra en la vista Libros.
+  procedencia viaja en `GET /api/books` y se muestra junto al visor.
 - Claves versionadas e inmutables (`books/<id>/<fecha>.pdf`): una copia
   nunca cambia; actualizar es ingerir una versión nueva.
 

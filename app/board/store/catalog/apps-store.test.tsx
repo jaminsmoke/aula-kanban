@@ -5,7 +5,7 @@ import AppsStore, { type StoreApp } from "./apps-store";
 
 const noop = () => {};
 const native: StoreApp[] = [{ id: "excalidraw", status: "installed", url: null }];
-const props = { role: "owner" as const, projectId: "p1", apps: native, error: "", onManage: vi.fn(), onOpen: noop, onRefresh: noop, onClose: noop };
+const props = { role: "owner" as const, apps: native, error: "", onManage: vi.fn(), onOpen: noop, onRefresh: noop, onClose: noop };
 
 describe("Aula Store", () => {
   it("permite al administrador desinstalar Excalidraw", () => {
@@ -26,17 +26,11 @@ describe("Aula Store", () => {
     expect(screen.queryByRole("button", { name: /Desinstalar/ })).toBeNull();
   });
 
-  it("activa la pestaña Libros y muestra la vista de libros", () => {
+  it("ya no muestra la pestaña Libros (STORE-04: los libros viven en la mochila)", () => {
     render(<AppsStore {...props} />);
-    const appsTab = screen.getByRole("button", { name: "Aplicaciones" });
-    expect(appsTab.getAttribute("aria-current")).toBe("page");
-    const booksTab = screen.getByRole("button", { name: /Libros/ });
-    expect((booksTab as HTMLButtonElement).disabled).toBe(false);
-    fireEvent.click(booksTab);
-    expect(booksTab.getAttribute("aria-current")).toBe("page");
-    expect(screen.getByLabelText("Vista de libros")).toBeTruthy();
-    fireEvent.click(appsTab);
+    expect(screen.queryByRole("button", { name: /^Libros/ })).toBeNull();
     expect(screen.queryByLabelText("Vista de libros")).toBeNull();
+    expect(screen.getByRole("region", { name: "Mejores aplicaciones" })).toBeTruthy();
   });
 
   it("muestra «Mejores aplicaciones» y las secciones por categoría en el inicio", () => {

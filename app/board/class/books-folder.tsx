@@ -2,9 +2,35 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { BookOpen, TriangleAlert } from "lucide-react";
+import type { StoreTool } from "../store/tools";
 import "./books-folder.css";
 import type { BookWithAvailability } from "../../../lib/server/books";
 import { BOOK_LEVELS } from "../../../lib/books";
+
+/**
+ * Adapta un libro a la forma de herramienta que usa la ventana del
+ * desktop (solo importan id, nombre, descripción e icono; el tamaño cae
+ * al de ventana estándar).
+ * @param book - Libro del catálogo con su disponibilidad y URL.
+ * @returns La herramienta simulada para abrir la ventana del visor.
+ */
+export function bookTool(book: BookWithAvailability): StoreTool {
+  return {
+    id: `book-${book.id}`,
+    name: book.title,
+    tagline: book.tagline,
+    description: book.description,
+    category: book.subject as StoreTool["category"],
+    cover: "",
+    features: [],
+    appVersion: "1.0.0",
+    versionLabel: book.title,
+    upstream: { name: book.source.name, version: book.version ?? "" },
+    window: { width: 920, height: 640 },
+    icon: BookOpen,
+    roles: ["owner", "admin", "teacher", "student", "guest"],
+  } as StoreTool;
+}
 
 /**
  * Carpeta «Libros» del escritorio personal (STORE-04): los libros

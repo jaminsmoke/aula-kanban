@@ -2,13 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
-import { ArrowLeft, BookOpen, Download, LayoutGrid, Package, Play, RefreshCw, Star, Trash2, TriangleAlert } from "lucide-react";
+import { ArrowLeft, Download, Package, Play, RefreshCw, Star, Trash2, TriangleAlert } from "lucide-react";
 import { STORE_CATEGORIES, AULA_STORE_VERSION, visibleTools, type StoreCategory, type StoreRole, type StoreTool } from "../tools";
 import { AulaStoreIcon } from "./aula-store-icon";
 import StoreCard from "./store-card";
 import StoreDetail from "./store-detail";
 import StoreFilters from "./store-filters";
-import BooksView from "./books-view";
 import { CATEGORY_ICONS, FEATURED_APP_IDS, type StoreAction, type StoreApp } from "./store-model";
 import "./store.css";
 
@@ -19,9 +18,8 @@ export type { StoreAction, StoreApp } from "./store-model";
  * ficha de detalle.
  * @returns La tienda de aplicaciones.
  */
-export default function AppsStore({ role, projectId, apps, error, onManage, onOpen, onRefresh, onClose }: {
+export default function AppsStore({ role, apps, error, onManage, onOpen, onRefresh, onClose }: {
   role: StoreRole;
-  projectId: string;
   apps: StoreApp[];
   error: string;
   onManage: (id: string, action: StoreAction) => void;
@@ -33,8 +31,6 @@ export default function AppsStore({ role, projectId, apps, error, onManage, onOp
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<StoreCategory | "todas">("todas");
   const [installedOnly, setInstalledOnly] = useState(false);
-  // Vista de la tienda: Aplicaciones (apps nativas) o Libros (STORE-02).
-  const [storeView, setStoreView] = useState<"apps" | "libros">("apps");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [justInstalled, setJustInstalled] = useState<string | null>(null);
   const prevStatuses = useRef<Map<string, string>>(new Map());
@@ -87,7 +83,7 @@ export default function AppsStore({ role, projectId, apps, error, onManage, onOp
 
   // Sin buscador ni filtros, la vista Aplicaciones muestra secciones
   // físicas: «Mejores aplicaciones» y una sección por categoría.
-  const isHome = storeView === "apps" && query.trim() === "" && category === "todas" && !installedOnly;
+  const isHome = query.trim() === "" && category === "todas" && !installedOnly;
   const featuredTools = FEATURED_APP_IDS
     .map((id) => allTools.find((tool) => tool.id === id))
     .filter((tool): tool is StoreTool => Boolean(tool));
@@ -173,11 +169,7 @@ export default function AppsStore({ role, projectId, apps, error, onManage, onOp
           </div>
           <button type="button" className="store-refresh" onClick={onRefresh} title="Actualizar estado"><RefreshCw size={16} aria-hidden /> Actualizar</button>
         </div>
-        <div className="store-views" role="group" aria-label="Vistas de la tienda">
-          <button type="button" className={`store-view-tab${storeView === "apps" ? " store-view-tab--active" : ""}`} aria-current={storeView === "apps" ? "page" : undefined} onClick={() => setStoreView("apps")}><LayoutGrid size={16} aria-hidden /> Aplicaciones</button>
-          <button type="button" className={`store-view-tab${storeView === "libros" ? " store-view-tab--active" : ""}`} aria-current={storeView === "libros" ? "page" : undefined} onClick={() => setStoreView("libros")}><BookOpen size={16} aria-hidden /> Libros</button>
-        </div>
-        {storeView === "apps" ? (<StoreFilters
+        <StoreFilters
           tools={allTools}
           query={query}
           category={category}
@@ -186,13 +178,9 @@ export default function AppsStore({ role, projectId, apps, error, onManage, onOp
           onQuery={setQuery}
           onCategory={setCategory}
           onInstalledOnly={() => setInstalledOnly((current) => !current)}
-        />) : null}
+        />
       </header>
 
-      {storeView === "libros" ? (
-        <BooksView projectId={projectId} />
-      ) : (
-      <>
       {error ? <p role="alert" className="store-alert"><TriangleAlert size={16} aria-hidden /> {error}</p> : null}
 
       {visibleCount === 0 ? (
@@ -227,8 +215,6 @@ export default function AppsStore({ role, projectId, apps, error, onManage, onOp
           onClose={() => setSelectedId(null)}
         />
       ) : null}
-      </>
-      )}
     </div>
     </LazyMotion>
     </MotionConfig>

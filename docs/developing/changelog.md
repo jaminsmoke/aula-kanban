@@ -6,6 +6,23 @@
 
 ---
 
+## 2026-11-16 — Roadmap STORE-04 · Herramientas asignables por proyecto
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Libros dejan de ser una sección de la Tienda y pasan a ser una herramienta asignable por proyecto: la pestaña «Libros» y la vista se retiran de Aula Store; queda como única puerta la carpeta «Libros» en la mochila del alumnado y el maletín docente.
+- Modelo `project_books` (proyecto × libro) con migración local 0038 y `PUT /api/project-books` (owner/admin/profesor del proyecto; alumnos e invitados 403): cada proyecto decide su subconjunto de libros.
+- Administración → Profesores y Alumnos gana pestañas «Miembros»/«Herramientas» con el panel «Libros» (toggle maestro y selección por nivel), visible solo para quien gestiona el proyecto.
+- Carpeta «Libros» en el escritorio personal con visor embebido de **solo lectura** (sin descarga): iconos y ventanas desaparecen al deshabilitarse. El catálogo, R2 y rutas de STORE-02 se conservan; la ingesta remota la hace Codex al publicar.
+
+### Verificación
+
+- Suite completa: 137 archivos / 1.077 pruebas; `tsc`, ESLint y build en verde (con `GET|PUT /api/project-books`).
+- Navegador local: pestaña «Herramientas» en Alumnos con guardado, icono Libros en la mochila con 10 filas y visor del PDF a pantalla completa; Tienda solo con Aplicaciones (filtros y secciones intactos).
+- Commits: `464056f` (Fase 1), `38d6019` (Fase 2), `f9d6001` (Fase 3); el cierre queda en el commit de documentación.
+
 ## 2026-11-16 — Roadmap STORE-02 · Vista Libros con persistencia propia en Aula Store
 
 **Estado:** Completada · Sin publicación

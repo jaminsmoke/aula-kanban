@@ -2,7 +2,7 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** STORE-04 · Herramientas asignables por proyecto · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** sin fase activa (STORE-04 cerrada) · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** APP-02 aparcada; PERM-01 pendiente como prerequisito de APP-03; STORE-03 y APP-03 (carpetas) pendientes de priorizar
 
 ---
