@@ -39,11 +39,13 @@
 
 ## 4. Fases
 
-### Fase 1: Taxonomía cerrada en el catálogo
-- [ ] Categorías principales, subcategorías y `categories: string[]` + `subcategory` por app en `lib/native-apps.ts`.
-- [ ] Asignaciones iniciales: excalidraw → Educación/Pizarras; edu-tools → Educación/<sub nueva>; blockly → Productividad/Programación; mermaid → Educación y Productividad/Diagramas.
-- [ ] Pruebas del catálogo (cobertura: cada app visible en ≥1 categoría; subcategorías del vocabulario).
+### Fase 1: Taxonomía cerrada en el catálogo — completada
+- [x] Categorías principales, subcategorías y `categories: string[]` + `subcategory` por app en `lib/native-apps.ts`.
+- [x] Asignaciones iniciales: excalidraw → Educación/Pizarras; edu-tools → Educación/Herramientas; blockly → Productividad/Programación; mermaid → Educación y Productividad/Diagramas.
+- [x] Pruebas del catálogo (cobertura: cada app visible en ≥1 categoría; subcategorías del vocabulario).
 - **Criterios de aceptación:** cada app visible pertenece a ≥1 categoría principal; el vocabulario de subcategorías es cerrado y compartido.
+
+**Implementado (2026-11-16):** categorías principales Educación/Oficina/Productividad (`STORE_TOP_CATEGORIES`) y subcategorías Pizarras/Diagramas/Programación/Herramientas (`STORE_SUBCATEGORIES`); `category` → `categories: string[]` + `subcategory` en cada ficha, con los consumidores migrados (filtros, secciones, tarjeta con subcategoría, ficha con categorías, preferencias personales, contrato MCP `categorias`+`subcategoria` e iconos por categoría). Verificado en el navegador: «Mejores aplicaciones» (4), Educación (3) y Productividad (2, con Diagramas en ambas); Oficina sin sección por estar vacía.
 
 ### Fase 2: Tienda según la nueva taxonomía
 - [ ] Ficha de app con su(s) categoría(s) principal(es) y subcategoría.

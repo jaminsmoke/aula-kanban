@@ -36,7 +36,7 @@ describe("Aula Store", () => {
   it("muestra «Mejores aplicaciones» y las secciones por categoría en el inicio", () => {
     render(<AppsStore {...props} role="owner" />);
     expect(screen.getByRole("region", { name: "Mejores aplicaciones" })).toBeTruthy();
-    for (const category of ["Aula", "Pizarras", "Programación", "Diagramas"]) {
+    for (const category of ["Educación", "Productividad"]) {
       expect(screen.getByRole("region", { name: category })).toBeTruthy();
     }
     // Cada app aparece en «Mejores aplicaciones» y en su categoría.
@@ -53,8 +53,10 @@ describe("Aula Store", () => {
   });
   it("filtra por categoría y abre la ficha de detalle", () => {
     render(<AppsStore {...props} role="owner" />);
-    fireEvent.click(screen.getByRole("button", { name: /^Aula/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Educación/ }));
     expect(screen.getByText("Herramientas de aula")).toBeTruthy();
+    expect(screen.getByText("Excalidraw")).toBeTruthy();
+    expect(screen.queryByText("Programación por bloques")).toBeNull();
     fireEvent.click(screen.getAllByRole("button", { name: /Detalles/ })[0]);
     expect(screen.getByRole("dialog")).toBeTruthy();
   });

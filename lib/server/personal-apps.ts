@@ -188,6 +188,6 @@ export function describePersonalApps(items: readonly PersonalAppItem[]) {
     ...item,
     name: nativeAppMeta(item.id)?.name ?? item.id,
     tagline: nativeAppMeta(item.id)?.tagline ?? "",
-    category: nativeAppMeta(item.id)?.category ?? "Aula",
+    category: nativeAppMeta(item.id)?.categories[0] ?? "Educación",
   }));
 }

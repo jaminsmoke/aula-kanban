@@ -70,9 +70,9 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
    * @returns `true` si debe mostrarse.
    */
   const matches = (tool: StoreTool) => {
-    if (category !== "todas" && tool.category !== category) return false;
+    if (category !== "todas" && !tool.categories.includes(category)) return false;
     if (installedOnly && statusOf(tool.id) !== "installed") return false;
-    const text = `${tool.name} ${tool.tagline} ${tool.description} ${tool.category}`.toLowerCase();
+    const text = `${tool.name} ${tool.tagline} ${tool.description} ${tool.categories.join(" ")} ${tool.subcategory}`.toLowerCase();
     return text.includes(query.trim().toLowerCase());
   };
 
@@ -88,7 +88,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
     .map((id) => allTools.find((tool) => tool.id === id))
     .filter((tool): tool is StoreTool => Boolean(tool));
   const categorySections = STORE_CATEGORIES
-    .map((name) => ({ name, tools: allTools.filter((tool) => tool.category === name) }))
+    .map((name) => ({ name, tools: allTools.filter((tool) => tool.categories.includes(name)) }))
     .filter((section) => section.tools.length > 0);
 
   /**

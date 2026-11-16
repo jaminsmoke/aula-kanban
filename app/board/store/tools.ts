@@ -4,5 +4,5 @@
  * `lib/native-apps.ts`; aquí solo se re-exportan para no romper imports.
  */
 export type { StoreCategory, StoreIconProps, StoreRole, StoreTool } from "../apps/types";
-export { AULA_STORE_VERSION, STORE_CATEGORIES } from "../../../lib/native-apps";
+export { AULA_STORE_VERSION, STORE_CATEGORIES, STORE_TOP_CATEGORIES, STORE_SUBCATEGORIES } from "../../../lib/native-apps";
 export { storeTools, toolApps, toolWindow, visibleTools } from "../apps/registry";

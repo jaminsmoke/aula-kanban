@@ -62,6 +62,6 @@ describe("describePersonalApps", () => {
     const described = describePersonalApps([
       { id: "mermaid", favorite: true, position: 0, installed: true },
     ]);
-    expect(described[0]).toMatchObject({ id: "mermaid", name: "Diagramas", category: "Diagramas" });
+    expect(described[0]).toMatchObject({ id: "mermaid", name: "Diagramas", category: "Educación" });
   });
 });

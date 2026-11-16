@@ -34,7 +34,7 @@ export default function StoreCard({ tool, index, status, justInstalled, actions,
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={tool.cover} alt="" loading="lazy" />
         <span className="store-card-icon" aria-hidden><Icon size={24} strokeWidth={2} /></span>
-        <span className="store-card-category">{tool.category}</span>
+        <span className="store-card-category">{tool.subcategory}</span>
       </button>
 
       <div className="store-card-body">

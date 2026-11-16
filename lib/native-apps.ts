@@ -1,11 +1,28 @@
 /**
  * Catálogo compartido de aplicaciones nativas. Es data pura (sin React) para
  * poder importarlo desde el servidor (API) y desde la interfaz.
+ *
+ * Taxonomía (STORE-03A): categorías principales por familia de uso
+ * (Educación, Oficina, Productividad) con multi-categoría por app, y
+ * subcategorías de vocabulario compartido (la misma subcategoría existe
+ * dentro de todas las categorías principales de la app).
  */
 
-export type NativeCategory = "Aula" | "Pizarras" | "Programación" | "Diagramas";
+/** Categorías principales de Aula Store, por familia de uso. */
+export type StoreTopCategory = "Educación" | "Oficina" | "Productividad";
 
-export const STORE_CATEGORIES: NativeCategory[] = ["Aula", "Pizarras", "Programación", "Diagramas"];
+export const STORE_TOP_CATEGORIES: readonly StoreTopCategory[] = ["Educación", "Oficina", "Productividad"];
+
+/** Subcategorías de Aula Store; vocabulario cerrado y compartido. */
+export type SubCategory = "Pizarras" | "Diagramas" | "Programación" | "Herramientas";
+
+export const STORE_SUBCATEGORIES: readonly SubCategory[] = ["Pizarras", "Diagramas", "Programación", "Herramientas"];
+
+/** Alias heredado: la categoría principal de una app. */
+export type NativeCategory = StoreTopCategory;
+
+/** Categorías principales de la Tienda (filtros y secciones). */
+export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
 export const AULA_STORE_VERSION = "1.0.0";
@@ -25,7 +42,10 @@ export type NativeAppMeta = {
   name: string;
   tagline: string;
   description: string;
-  category: NativeCategory;
+  /** Categorías principales a las que pertenece (≥1). */
+  categories: readonly StoreTopCategory[];
+  /** Subcategoría compartida; la misma en todas sus categorías. */
+  subcategory: SubCategory;
   cover: string;
   features: readonly string[];
   /** Versión de nuestra integración, independiente de la versión del Site. */
@@ -46,7 +66,8 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     name: "Excalidraw",
     tagline: "Pizarra colaborativa para dibujar, explicar y anotar.",
     description: "Pizarra del espacio de trabajo con Excalidraw (MIT): dibuja y colabora en directo.",
-    category: "Pizarras",
+    categories: ["Educación"],
+    subcategory: "Pizarras",
     cover: "/store/excalidraw.png",
     features: ["Lienzo infinito con formas, texto y flechas", "Ideal para esquemas y explicaciones en directo", "Exporta el resultado a imagen"],
     appVersion: "1.0.0",
@@ -58,7 +79,8 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     name: "Herramientas de aula",
     tagline: "Calculadora científica, tabla periódica, medición y lectura.",
     description: "Calculadora con pantalla, modo científico, memoria e historial; ecuaciones por líneas con variables, tabla periódica, medición y lectura en voz alta (MIT).",
-    category: "Aula",
+    categories: ["Educación"],
+    subcategory: "Herramientas",
     cover: "/store/edu-tools.png",
     features: ["Calculadora básica y científica con memoria e historial", "Tabla periódica con ficha, modelo atómico e historia", "Regla, transportador y lectura en voz alta"],
     appVersion: "1.0.0",
@@ -71,7 +93,8 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     name: "Programación por bloques",
     tagline: "Programa con bloques y obtén código JavaScript o Python.",
     description: "Editor de bloques tipo Scratch con Blockly (Apache-2.0): lógica, bucles, matemáticas y texto, guardado por proyecto y código generado en JavaScript y Python.",
-    category: "Programación",
+    categories: ["Productividad"],
+    subcategory: "Programación",
     cover: "/store/blockly.png",
     features: ["Bloques de lógica, bucles, matemáticas y texto", "Código generado en JavaScript y Python", "Guardado por proyecto y ejecución de la salida"],
     appVersion: "1.0.0",
@@ -83,7 +106,8 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     name: "Diagramas",
     tagline: "Escribe el diagrama en texto y míralo al instante.",
     description: "Diagramas de flujo, secuencia, Gantt, clases y líneas de tiempo con Mermaid (MIT): vista previa y exportación SVG.",
-    category: "Diagramas",
+    categories: ["Educación", "Productividad"],
+    subcategory: "Diagramas",
     cover: "/store/mermaid.png",
     features: ["Flujos, secuencia, Gantt, clases y estados", "Plantillas listas y vista previa en vivo", "Guardado por proyecto y exportación SVG"],
     appVersion: "1.0.0",

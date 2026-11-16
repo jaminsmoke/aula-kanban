@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import type { NativeAppMeta, NativeCategory } from "../../../lib/native-apps";
+import type { NativeAppMeta, NativeCategory, StoreTopCategory, SubCategory } from "../../../lib/native-apps";
 import type { Project } from "../shared/model";
 
 /** Rol del usuario en el proyecto activo. */
@@ -17,6 +17,9 @@ export type StoreIconProps = {
 
 /** Categorías del catálogo de apps nativas. */
 export type StoreCategory = NativeCategory;
+
+/** Categorías principales por familia de uso (STORE-03A). */
+export type { StoreTopCategory, SubCategory };
 
 /**
  * Ficha de una app tal como la consume la interfaz: los metadatos del

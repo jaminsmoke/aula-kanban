@@ -17,7 +17,8 @@ const appIdSchema = z.enum(NATIVE_APP_IDS as unknown as [string, ...string[]]).d
 type AppView = {
   id: string;
   nombre: string;
-  categoria: string;
+  categorias: string[];
+  subcategoria: string;
   tagline: string;
   appVersion: string;
   paquete: string;
@@ -36,7 +37,8 @@ function vista(meta: NativeAppMeta, estado: AppInstalledState): AppView {
   return {
     id: meta.id,
     nombre: meta.name,
-    categoria: meta.category,
+    categorias: [...meta.categories],
+    subcategoria: meta.subcategory,
     tagline: meta.tagline,
     appVersion: meta.appVersion,
     paquete: meta.upstream.name,

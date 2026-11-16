@@ -29,7 +29,7 @@ export default function StoreFilters({ tools, query, category, installedOnly, in
           Todo<span className="store-filter-count">{tools.length}</span>
         </button>
         {STORE_CATEGORIES.map((name) => {
-          const count = tools.filter((tool) => tool.category === name).length;
+          const count = tools.filter((tool) => tool.categories.includes(name)).length;
           if (!count) return null;
           return (
             <button key={name} type="button" className={`store-filter${category === name ? " store-filter--active" : ""}`} aria-pressed={category === name} onClick={() => onCategory(name)}>

@@ -1,4 +1,4 @@
-import { GitBranch, GraduationCap, PencilRuler, Puzzle } from "lucide-react";
+import { Briefcase, GraduationCap, Puzzle } from "lucide-react";
 
 /** Estado de una aplicación nativa tal como lo devuelve la API. */
 export type StoreApp = {
@@ -21,12 +21,11 @@ export type StoreAction = "install" | "uninstall";
  */
 export const FEATURED_APP_IDS = ["excalidraw", "edu-tools", "blockly", "mermaid"] as const;
 
-/** Icono de cada categoría del catálogo. */
+/** Icono de cada categoría principal del catálogo (STORE-03A). */
 export const CATEGORY_ICONS = {
-  Aula: GraduationCap,
-  Pizarras: PencilRuler,
-  Programación: Puzzle,
-  Diagramas: GitBranch,
+  Educación: GraduationCap,
+  Oficina: Briefcase,
+  Productividad: Puzzle,
 } as const;
 
 /** Metadatos visuales de cada estado de instalación. */

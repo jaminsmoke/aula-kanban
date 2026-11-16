@@ -29,7 +29,7 @@ export default function StoreDetail({ tool, status, isAdmin, actions, onClose }:
             <span className="store-card-icon store-card-icon--static" aria-hidden><Icon size={24} strokeWidth={2} /></span>
             <div className="store-detail-title">
               <h3>{tool.name}</h3>
-              <p>{tool.category} · {statusLabel(status)}</p>
+              <p>{tool.categories.join(" · ")} · {tool.subcategory} · {statusLabel(status)}</p>
             </div>
           </div>
           <p className="store-detail-description">{tool.description}</p>
