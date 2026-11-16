@@ -1,7 +1,7 @@
 /** Tipos compartidos y orden canónico de las secciones de la documentación. */
 
 /** Identificadores de sección: forman las anclas `#docs-<id>` del índice. */
-export const docSectionIds = ["que-es", "roles", "personas", "proyectos", "tareas", "calendario", "pizarras", "espacio", "mcp", "oauth", "enlaces", "novedades", "problemas", "ayuda"] as const;
+export const docSectionIds = ["que-es", "roles", "personas", "proyectos", "tareas", "calendario", "pizarras", "espacio", "mochila", "mcp", "oauth", "enlaces", "novedades", "problemas", "ayuda"] as const;
 
 /** Identificador de una sección de la documentación. */
 export type DocSectionId = (typeof docSectionIds)[number];

@@ -158,6 +158,8 @@ export const appPreferences = sqliteTable("app_preferences", {
   appId: text("app_id").notNull(),
   favorite: integer("favorite").notNull().default(0),
   position: integer("position"),
+  /** Carpeta personal de la app; `null` = icono suelto en el escritorio. */
+  folder: text("folder"),
   updatedAt: integer("updated_at").notNull(),
 }, (table) => [
   primaryKey({ columns: [table.projectId, table.userId, table.appId] }),

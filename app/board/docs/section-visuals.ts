@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
-import { AppWindow, CalendarDays, Columns3, FolderKanban, KeyRound, LifeBuoy, Link2, ListTodo, PenTool, Plug, Sparkles, TriangleAlert, Users, UsersRound, type LucideIcon } from "lucide-react";
+import { AppWindow, Backpack, CalendarDays, Columns3, FolderKanban, KeyRound, LifeBuoy, Link2, ListTodo, PenTool, Plug, Sparkles, TriangleAlert, Users, UsersRound, type LucideIcon } from "lucide-react";
 import type { DocSectionId } from "./content";
-import { BoardArt, CalendarArt, HelpArt, LinksArt, McpArt, NewsArt, OAuthArt, PeopleArt, ProjectsArt, RolesArt, SpaceArt, TasksArt, TroubleArt, WhiteboardArt } from "./illustrations";
+import { BoardArt, CalendarArt, HelpArt, LinksArt, McpArt, MochilaArt, NewsArt, OAuthArt, PeopleArt, ProjectsArt, RolesArt, SpaceArt, TasksArt, TroubleArt, WhiteboardArt } from "./illustrations";
 
 /** Presentación de una sección: icono del índice/cabecera e ilustración. */
 export type SectionVisual = { icon: LucideIcon; Illustration: ComponentType };
@@ -19,6 +19,7 @@ export const sectionVisuals = {
   calendario: { icon: CalendarDays, Illustration: CalendarArt },
   pizarras: { icon: PenTool, Illustration: WhiteboardArt },
   espacio: { icon: AppWindow, Illustration: SpaceArt },
+  mochila: { icon: Backpack, Illustration: MochilaArt },
   mcp: { icon: Plug, Illustration: McpArt },
   oauth: { icon: KeyRound, Illustration: OAuthArt },
   enlaces: { icon: Link2, Illustration: LinksArt },

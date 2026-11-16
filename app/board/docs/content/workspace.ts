@@ -70,6 +70,23 @@ export const workspaceSections: DocSection[] = [
     ],
   },
   {
+    id: "mochila",
+    title: "Mi mochila y Maletín docente",
+    lead: "Cada persona organiza sus herramientas instaladas en carpetas propias, por usuario y proyecto. La mochila del alumnado y el maletín del profesorado comparten este escritorio personal, pero conservan su icono y su nombre; no hay tienda ni instalación en él.",
+    blocks: [
+      {
+        type: "steps",
+        items: [
+          "Abre Clase > Mi mochila (alumnado) o Maletín (profesorado). Solo aparecen las aplicaciones instaladas en la instancia y visibles para tu rol.",
+          "Pulsa «Organizar» y escribe el nombre de una carpeta junto a cada aplicación. Deja el campo vacío para mantenerla suelta en el escritorio.",
+          "Pulsa «Guardar carpetas»: las apps con el mismo nombre se agrupan y la carpeta ocupa el lugar de su primera app en el orden personal.",
+          "Abre una carpeta para ver sus aplicaciones y pulsa una de ellas para abrir su ventana. La carpeta «Libros» sigue siendo independiente.",
+        ],
+      },
+      { type: "note", tone: "info", text: "La organización es personal de cada cuenta en el proyecto: no cambia la instalación global ni la ve el resto del profesorado o alumnado. Una carpeta existe mientras tenga aplicaciones; si la vacías, desaparece del escritorio." },
+    ],
+  },
+  {
     id: "mcp",
     title: "Servidor MCP",
     lead: "Aula Kanban también escucha a herramientas de inteligencia artificial (ChatGPT, Codex y otros clientes compatibles con MCP) gracias al plugin de Sites y a un servidor remoto alojado en el propio Site. Tu asistente ve y mueve el mismo tablero que tú.",

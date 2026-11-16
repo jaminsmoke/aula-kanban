@@ -46,13 +46,13 @@ const request = (method: string, body?: unknown) => new Request(endpoint, {
   body: body === undefined ? undefined : JSON.stringify(body),
 });
 
-const described = [{ id: "mermaid", favorite: true, position: 0, installed: true }];
+const described = [{ id: "mermaid", favorite: true, position: 0, folder: "Mis diagramas", installed: true }];
 
 describe("ruta del espacio personal", () => {
   beforeEach(() => {
     mocks.status = "ok";
-    mocks.list.mockReset().mockResolvedValue([{ id: "mermaid", favorite: true, position: 0, installed: true }]);
-    mocks.set.mockReset().mockResolvedValue([{ id: "mermaid", favorite: true, position: 0, installed: true }]);
+    mocks.list.mockReset().mockResolvedValue([{ id: "mermaid", favorite: true, position: 0, folder: "Mis diagramas", installed: true }]);
+    mocks.set.mockReset().mockResolvedValue([{ id: "mermaid", favorite: true, position: 0, folder: "Mis diagramas", installed: true }]);
     mocks.describe.mockReset().mockReturnValue(described);
   });
 
@@ -65,9 +65,9 @@ describe("ruta del espacio personal", () => {
   });
 
   it("guarda la selección completa y nunca instala", async () => {
-    const response = await PUT(request("PUT", { items: [{ id: "mermaid", favorite: true, position: 0 }] }));
+    const response = await PUT(request("PUT", { items: [{ id: "mermaid", favorite: true, position: 0, folder: "Mis diagramas" }] }));
     expect(response.status).toBe(200);
-    expect(mocks.set).toHaveBeenCalledWith("p1", "u1", [{ id: "mermaid", favorite: true, position: 0 }]);
+    expect(mocks.set).toHaveBeenCalledWith("p1", "u1", [{ id: "mermaid", favorite: true, position: 0, folder: "Mis diagramas" }]);
   });
 
   it("rechaza un cuerpo inválido sin guardar", async () => {

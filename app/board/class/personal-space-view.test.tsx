@@ -1,11 +1,11 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import PersonalSpaceView from "./personal-space-view";
 import { jsonResponse } from "../../../vitest.setup";
 
 const installed = [
-  { id: "excalidraw", name: "Excalidraw", tagline: "Pizarra colaborativa para dibujar, explicar y anotar.", category: "Pizarras", favorite: true, position: 0 },
-  { id: "mermaid", name: "Diagramas", tagline: "Escribe el diagrama en texto y míralo al instante.", category: "Diagramas", favorite: false, position: 1 },
+  { id: "excalidraw", name: "Excalidraw", tagline: "Pizarra colaborativa para dibujar, explicar y anotar.", category: "Pizarras", favorite: true, position: 0, folder: null as string | null },
+  { id: "mermaid", name: "Diagramas", tagline: "Escribe el diagrama en texto y míralo al instante.", category: "Diagramas", favorite: false, position: 1, folder: null as string | null },
 ];
 
 const catalog = [
@@ -52,6 +52,50 @@ describe("PersonalSpaceView", () => {
     expect(await screen.findByRole("dialog", { name: "Excalidraw" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Cerrar Excalidraw" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Minimizar Excalidraw" })).toBeTruthy();
+  });
+
+  it("agrupa apps en una carpeta y las abre desde su ventana", async () => {
+    const grouped = [
+      { ...installed[0], folder: "Mis pizarras" },
+      { ...installed[1], folder: "Mis pizarras" },
+    ];
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => String(url).includes("project-books")
+      ? jsonResponse({ books: [] })
+      : jsonResponse({ apps: grouped })));
+    render(<PersonalSpaceView role="student" projectId="p1" />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Abrir carpeta Mis pizarras" }));
+    const folder = await screen.findByRole("dialog", { name: "Mis pizarras" });
+    expect(folder).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Excalidraw/ })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Excalidraw/ }));
+    expect(await screen.findByRole("dialog", { name: "Excalidraw" })).toBeTruthy();
+  });
+
+  it("guarda la carpeta escrita en el organizador y la aplica al escritorio", async () => {
+    let personal = installed;
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (String(url).includes("project-books")) return jsonResponse({ books: [] });
+      if (init?.method === "PUT") {
+        const body = JSON.parse(String(init.body)) as { items: { id: string; folder: string | null }[] };
+        personal = personal.map((app) => ({
+          ...app,
+          folder: body.items.find((item) => item.id === app.id)?.folder ?? null,
+        }));
+      }
+      return jsonResponse({ apps: personal });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    render(<PersonalSpaceView role="student" projectId="p1" />);
+
+    fireEvent.click(await screen.findByRole("button", { name: /Organizar/ }));
+    fireEvent.change(await screen.findByLabelText("Carpeta de Excalidraw"), { target: { value: "  Mis   pizarras  " } });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar carpetas" }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("/api/personal-apps"), expect.objectContaining({ method: "PUT" })));
+    const put = fetchMock.mock.calls.find(([, init]) => init?.method === "PUT");
+    expect(JSON.parse(String(put?.[1]?.body)).items).toContainEqual({ id: "excalidraw", favorite: true, position: 0, folder: "Mis pizarras" });
+    expect(await screen.findByRole("button", { name: "Abrir carpeta Mis pizarras" })).toBeTruthy();
   });
 
   it("usa «Maletín docente» para el profesorado", async () => {

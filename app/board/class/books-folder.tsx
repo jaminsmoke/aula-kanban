@@ -37,7 +37,7 @@ export function bookTool(book: BookWithAvailability): StoreTool {
  * Carpeta «Libros» del escritorio personal (STORE-04): los libros
  * habilitados en el proyecto por el docente, agrupados por nivel, para
  * abrirlos en ventana con visor de solo lectura. No es la carpeta
- * general de la mochila (backlog APP-03): es el piloto de organización.
+ * general de la mochila (APP-03B): es una carpeta independiente.
  * @param props - Proyecto activo y apertura del visor de un libro.
  * @returns La carpeta con los libros habilitados.
  */

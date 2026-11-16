@@ -1,0 +1,102 @@
+/* Carpetas y organizador del escritorio personal (APP-03B). */
+.personal-space .store-icons { padding-top: 74px; }
+.personal-organize {
+  position: absolute;
+  z-index: 4;
+  top: 18px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 13px;
+  border: var(--border-width-hairline) solid var(--ui-border-on-dark);
+  border-radius: var(--radius-pill);
+  background: var(--ui-surface-on-dark-subtle);
+  color: var(--ui-text-inverse);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+}
+.personal-organize:hover { background: var(--ui-surface-on-dark-subtle); }
+.personal-organize:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-on-dark); outline-offset: 2px; }
+.personal-folder-icon { background: linear-gradient(150deg, var(--ui-accent-amber), var(--ui-warning-deep)); }
+.personal-folder-window {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  align-content: start;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  overflow-y: auto;
+}
+.personal-folder-app {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 9px 10px;
+  border: var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background: var(--ui-surface-raised);
+  color: var(--ui-text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.personal-folder-app:hover { background: var(--ui-surface-hover); }
+.personal-folder-app:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus); outline-offset: 1px; }
+.personal-folder-app-icon {
+  display: grid;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--ui-action-soft);
+  color: var(--ui-action-text);
+}
+.personal-organizer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  padding: 16px;
+}
+.personal-organizer-intro { margin: 0 0 12px; color: var(--ui-text-muted); font-size: var(--text-sm); line-height: var(--leading-normal); }
+.personal-organizer-rows { display: grid; grid-auto-rows: min-content; align-content: start; flex: 1 1 auto; gap: 8px; min-height: 0; overflow-y: auto; padding-right: 3px; }
+.personal-organizer-row { display: flex; align-items: center; gap: 12px; }
+.personal-organizer-row > span { flex: 1 1 auto; min-width: 0; font-size: var(--text-base); font-weight: var(--weight-semibold); }
+.personal-organizer-row input {
+  flex: 0 1 220px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px 9px;
+  border: var(--border-width-hairline) solid var(--ui-border-control);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: var(--text-sm);
+}
+.personal-organizer-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; padding-top: 13px; }
+.personal-organizer-error { flex: 1 1 100%; margin: 0; color: var(--ui-danger-text); font-size: var(--text-sm); }
+.personal-organizer-saved { color: var(--ui-success); font-size: var(--text-sm); font-weight: var(--weight-semibold); }
+.personal-organizer-save {
+  margin-left: auto;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--ui-action-primary);
+  color: var(--ui-text-inverse);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+}
+.personal-organizer-save:hover:enabled { background: var(--ui-action-primary-hover); }
+.personal-organizer-save:disabled { opacity: 0.6; cursor: wait; }
+.personal-organizer-save:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus); outline-offset: 2px; }
+
+@media (max-width: 520px) {
+  .personal-organizer-row { align-items: stretch; flex-direction: column; gap: 3px; }
+  .personal-organizer-row input { flex-basis: auto; }
+}

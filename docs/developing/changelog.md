@@ -6,6 +6,23 @@
 
 ---
 
+## 2026-11-16 — Roadmap APP-03B · Carpetas personales en mochila y maletín
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- `app_preferences` gana `folder` (migración local `0040_personal_folders.sql`): una app pertenece como máximo a una carpeta por usuario y proyecto. La API normaliza el texto, admite hasta 40 caracteres, convierte vacío o ausente en `null` y devuelve la carpeta en `GET`/`PUT /api/personal-apps`.
+- El escritorio personal agrupa por carpeta respetando el orden personal, muestra un icono de carpeta propio y abre cada carpeta como ventana con sus apps; las apps siguen abriendo sus ventanas y la carpeta «Libros» queda independiente. Las carpetas vacías desaparecen y sus ventanas se filtran.
+- El organizador permite escribir una carpeta por app y guardar sin salir del escritorio; mantiene un borrador local para no perder cambios con el refresco de 10 s. La mochila conserva `Backpack` y el maletín `Briefcase`.
+- Las ventanas personalizadas usan su tamaño declarado (`tool.window`), lo que ajusta las ventanas de carpeta y organizador; la ayuda, la matriz de herramientas y la documentación se actualizan.
+
+### Verificación
+
+- Suite completa: **142 archivos / 1.106 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde.
+- Migración `0040` aplicada en local y comprobada con guardado, relectura y agrupación reales. No se aplicó en remoto ni se publicó en Sites; el Site sigue en **1.1.32**.
+- Navegador a **1366×900** y **390×844**, en claro y oscuro: escritorio con carpeta, ventana con sus dos apps, organizador y ausencia de desbordamiento horizontal; consola sin excepciones.
+
 ## 2026-11-16 — Publicación 1.1.32
 
 - La migración 0039, aún no aplicada en la instancia publicada ni en la base local principal, se ajusta a solo esquema. El traslado de `edu-tools` se ejecuta fuera de la migración: la instalación mediante lote atómico y las preferencias por usuario y proyecto, sin sobrescribir valores nuevos y de forma repetible.

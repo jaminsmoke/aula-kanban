@@ -27,6 +27,8 @@ export type PersonalAppPreference = {
   favorite: boolean;
   /** Posición en la presentación personal; `null` = orden del catálogo. */
   position: number | null;
+  /** Carpeta personal; `null` = icono suelto en el escritorio. */
+  folder: string | null;
 };
 
 /** Une la preferencia con el estado de instalación de la app. */
@@ -62,6 +64,7 @@ export function applyPreferences(
       id,
       favorite: preference?.favorite ?? false,
       position: preference?.position ?? null,
+      folder: preference?.folder ?? null,
       installed: installed.has(id),
     };
   });
@@ -102,7 +105,7 @@ export async function listPersonalApps(projectId: string, userId: string): Promi
   const preferences: PersonalAppPreference[] = [];
   for (const row of stored) {
     if (isAppId(row.appId)) {
-      preferences.push({ id: row.appId, favorite: row.favorite === 1, position: row.position });
+      preferences.push({ id: row.appId, favorite: row.favorite === 1, position: row.position, folder: row.folder ?? null });
     }
   }
   return orderPersonalApps(applyPreferences(installed, preferences).filter((item) => item.installed));
@@ -120,15 +123,22 @@ export function parsePersonalItems(body: unknown): PersonalAppPreference[] {
   const seen = new Set<string>();
   return (body as { items: unknown[] }).items.map((raw) => {
     if (!raw || typeof raw !== "object") throw new PersonalAppsError("Revisa la selección de herramientas.", 400);
-    const { id, favorite, position } = raw as { id?: unknown; favorite?: unknown; position?: unknown };
+    const { id, favorite, position, folder } = raw as { id?: unknown; favorite?: unknown; position?: unknown; folder?: unknown };
     if (!isAppId(id)) throw new PersonalAppsError("Aplicación no válida.", 400);
     if (typeof favorite !== "boolean") throw new PersonalAppsError("Revisa la selección de herramientas.", 400);
     if ((position !== null && position !== undefined) && (!Number.isInteger(position) || (position as number) < 0)) {
       throw new PersonalAppsError("Revisa la posición de las herramientas.", 400);
     }
+    if (folder !== null && folder !== undefined && typeof folder !== "string") {
+      throw new PersonalAppsError("Revisa el nombre de la carpeta.", 400);
+    }
+    const folderName = typeof folder === "string" ? folder.trim().replace(/\s+/g, " ") : null;
+    if (folderName && folderName.length > 40) {
+      throw new PersonalAppsError("El nombre de la carpeta no puede superar 40 caracteres.", 400);
+    }
     if (seen.has(id)) throw new PersonalAppsError("Hay aplicaciones repetidas en la selección.", 400);
     seen.add(id);
-    return { id, favorite, position: (position as number | null) ?? null };
+    return { id, favorite, position: (position as number | null) ?? null, folder: folderName || null };
   });
 }
 
@@ -170,6 +180,7 @@ export async function setPersonalApps(projectId: string, userId: string, items: 
         appId: item.id,
         favorite: item.favorite ? 1 : 0,
         position: item.position,
+        folder: item.folder,
         updatedAt: now,
       })),
     );

@@ -260,6 +260,29 @@ export function SpaceArt() {
 }
 
 /**
+ * Mochila: una ventana personal con una carpeta y aplicaciones agrupadas.
+ * @returns El SVG de la sección.
+ */
+export function MochilaArt() {
+  return (
+    <ArtFrame label="Mochila personal con una carpeta de aplicaciones y varios iconos">
+      <rect x="26" y="20" width="208" height="160" rx="14" className="a-white s-line" strokeWidth="2" />
+      <path d="M26 34a14 14 0 0 1 14-14h180a14 14 0 0 1 14 14v22H26z" className="a-pale" />
+      <circle cx="46" cy="38" r="5" className="a-violet" />
+      <circle cx="64" cy="38" r="5" className="a-lavender" />
+      <circle cx="82" cy="38" r="5" className="a-amber" />
+      <Appear order={0}>
+        <path d="M44 82h42l8 8h32v54H44z" className="a-amber" />
+        <path d="M44 90h82v54H44z" className="a-amber" opacity="0.65" />
+      </Appear>
+      <Appear order={1}><rect x="154" y="78" width="44" height="44" rx="10" className="a-violet" /></Appear>
+      <Appear order={2}><rect x="154" y="134" width="44" height="24" rx="7" className="a-lavender" /></Appear>
+      <Appear order={3}><rect x="46" y="148" width="90" height="9" rx="4.5" className="a-line" /></Appear>
+    </ArtFrame>
+  );
+}
+
+/**
  * Onda que se expande desde el salvavidas mientras se ve.
  * @returns El círculo del pulso.
  */

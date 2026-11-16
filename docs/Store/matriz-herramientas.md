@@ -39,6 +39,6 @@ comporten las apps de Tienda; no cambia por sí misma los permisos actuales.
 ## Límites pendientes
 
 - APP-02 cerró el reparto de EduTools en Calculadora y Tabla periódica, sin Medir ni Lectura; esta matriz no cambia los permisos por ese reparto.
-- La matriz no crea mochila del alumnado ni maletín docente (APP-03).
+- La mochila del alumnado y el maletín docente (APP-03/APP-03B) son una organización personal de las apps instaladas; no cambian la audiencia ni los permisos de esta matriz.
 - La matriz no delega permisos (PERM-01); la instalación global permanece owner/admin.
 - Exportaciones visuales (imagen de Excalidraw, SVG de Diagramas, JSON de Blockly) siguen siendo locales de la ventana; no se añaden herramientas MCP de exportación.

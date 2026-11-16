@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { StoreTool } from "./tools";
-import { toolWindow } from "../apps/registry";
 
 /** Ventana abierta en un escritorio: app, estado y geometría. */
 export type DesktopWindow = {
@@ -55,7 +54,7 @@ export function useDesktopWindows() {
       if (existing) {
         return current.map((item) => (item.tool.id === tool.id ? { ...item, minimized: false, zIndex: zCounter.current } : item));
       }
-      const preferred = toolWindow(tool.id);
+      const preferred = tool.window;
       const rect = desktopRef.current?.getBoundingClientRect();
       const areaWidth = Math.max(280, rect?.width ?? window.innerWidth);
       const areaHeight = Math.max(240, rect?.height ?? window.innerHeight);
