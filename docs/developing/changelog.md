@@ -6,6 +6,22 @@
 
 ---
 
+## 2026-11-16 — Roadmap STORE-02 · Vista Libros con persistencia propia en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Catálogo curado `lib/books.ts`: 10 títulos de Matemáticas de Textos Marea Verde (CC BY-NC-SA), ESO 1º–4º y Bachillerato, con procedencia (fuente, URL, licencia y atribución), clave versionada en R2 y portada/contraportada. Ningún libro comercial con copyright.
+- Persistencia propia en R2 (`site-creator-r2`): claves `books/<id>/<fecha>.pdf` y `-cover.jpg`/`-back.jpg` inmutables; scripts `scripts/ingest-books.mjs` y `scripts/extract-book-covers.mjs` (+ `scripts/rasterize-pages.py` con PyMuPDF) para ingerir y extraer, y rutas `GET /api/books`, `GET /api/books/<id>/file` y `GET /api/books/<id>/image` con la membresía activa exigida. La ingesta remota la hace Codex al publicar.
+- Vista «Libros» en Aula Store: pestaña habilitada, secciones por nivel, tarjetas con portada, ficha con portada, contraportada, licencia y atribución, visor PDF en ventana propia y descarga; «Aplicaciones» intacta. Documentación en `docs/Store/libros.md`.
+
+### Verificación
+
+- Suite completa: 134 archivos / 1.066 pruebas; `tsc`, ESLint y build en verde (con las 3 rutas nuevas).
+- Navegador local: catálogo con procedencia, 10/10 tarjetas con portada, ficha con portada y contraportada, ventana del visor con el PDF y atribución; rejilla auto-plegable a 390 px (una columna).
+- Commits: `7caaf8d` (Fase 1), `5e3d4fa` (Fase 2), `743b7ce` (Fase 3), `4af0ba4` (portadas); el cierre queda en el commit de documentación.
+
 ## 2026-11-16 — Roadmap STORE-01 · Vistas y secciones físicas en Aula Store
 
 **Estado:** Completada · Sin publicación
