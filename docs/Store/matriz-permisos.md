@@ -2,8 +2,15 @@
 
 Matriz aprobada para el roadmap PERM-01 (Fase 1). Define capacidades
 explícitas con ámbito, roles predeterminados y concesiones revocables. Es
-el contrato que debe aplicar el control autoritativo de servidor (Fase 2);
-esta matriz no cambia por sí misma los permisos actuales.
+el contrato que aplica el control autoritativo de servidor (Fase 2).
+
+Aplicación actual (Fase 2): `lib/server/capabilities.ts` evalúa de forma
+centralizada `instalar-app` y `asignar-libros` en HTTP y MCP, y `SpaceRoom`
+revalida la pertenencia por mensaje. Las demás capacidades se apoyan en el
+acceso por proyecto (`project-access.ts`), ya centralizado. Las concesiones
+individuales con tabla de datos aún no existen: sin concesiones creadas no
+se concede nada nuevo (se deniega por defecto), así que el contrato se
+cumple sin necesitar una migración.
 
 La matriz de herramientas de APP-01 (`matriz-herramientas.md`) se conserva
 como audiencia y alcance por app; esta matriz añade quién puede conceder,
@@ -45,10 +52,10 @@ también es administrador permitido.
 | Capacidad | Ámbito | Sujeto | Quién la concede / revoca | Duración y auditoría |
 |---|---|---|---|---|
 | Instalar / desinstalar apps de instancia | Instancia / app | `owner`, `admin` | Dueño (alta de administradores) y administradores existentes; no revocable por concesión (ver regla) | Permanente mientras dure el rol global; todo cambio en auditoría con actor y ámbito |
-| Administrar administradores de instancia | Instancia | `owner` (alta), `owner` y administradores (baja, sin autoexclusión del último dueño) | Dueño; administradores no pueden promover a dueño | Permanente; cambios en auditoría |
+| Administrar administradores de instancia | Instancia | `owner`, `admin` (alta y baja) | Dueño y administradores existentes; nadie puede promover a dueño (el dueño nunca es ficha de administrador) | Permanente; cambios en auditoría |
 | Gestionar proyectos (crear, eliminar, ajustes) | Instancia | `owner`, `admin` | Dueño y administradores de instancia | Permanente; cambios en auditoría |
-| Gestionar miembros del proyecto (añadir, retirar, roles) | Proyecto | `owner`, `admin`, y `teacher` con capacidad concedida | Dueño, administradores y concesiones revocables con ámbito de proyecto | Concesión con ámbito de proyecto y duración; revocación inmediata con invalidación |
-| Habilitar libros por proyecto (STORE-04) | Proyecto | `owner`, `admin`, `teacher` con capacidad concedida | Dueño, administradores y concesiones revocables de proyecto | Concesión de proyecto; revocación inmediata |
+| Gestionar miembros del proyecto (añadir, retirar, roles) | Proyecto | `owner`, `admin` (completo); `teacher` (listar, invitar alumnado y retirar alumnado) | Dueño, administradores y profesorado según el rol, sin tabla de concesiones todavía | Sujeto al rol de miembro; al salir del proyecto cesa |
+| Habilitar libros por proyecto (STORE-04) | Proyecto | `owner`, `admin`, `teacher` (por rol) | Dueño, administradores y profesorado del propio proyecto | Sujeto al rol de miembro; al salir del proyecto cesa |
 | Crear / editar documentos compartidos (app_documents) | Proyecto / app | Según matriz APP-01 (profesorado y alumnado escriben donde está listado; invitado solo consulta) | Roles predeterminados; concesiones de proyecto donde se decida | Sujeto al rol de miembro; al salir del proyecto cesa |
 | Pizarra de proyecto (Excalidraw) | Proyecto | Según matriz APP-01 | Roles predeterminados | Sujeto al rol de miembro; al salir del proyecto cesa |
 | Consulta pública sin proyecto (`consultar_elemento`, `listar_plantillas_diagrama`) | Instancia | Cualquier cuenta autenticada | Sin concesión | Sin ámbito de proyecto; no implica escritura |
@@ -84,11 +91,15 @@ titularidad de Sites sigue fuera de la aplicación.
   proyecto; no se acumulan ni se trasladan entre proyectos, ni se
   convierten en capacidades globales.
 
-## Ubicación propuesta (a validar en Fase 3)
+## Ubicación validada (Fase 3)
 
-- **Permisos por proyecto:** Administración → sección del proyecto.
-- **Permisos de instancia:** Ajustes > Permisos. Validar estructura y
-  alcance antes de implementarla.
+- **Permisos por proyecto:** Administración (Alumnos/Profesores) con su
+  gestión de miembros existente; sin sección nueva.
+- **Permisos de instancia:** Ajustes > Administradores con su gestión de
+  administradores existente. La sección nueva «Ajustes > Permisos» queda
+  descartada mientras no exista almacenamiento de concesiones
+  individuales (una UI sin datos sería un placeholder); si se añade la
+  tabla de concesiones, la sección lo acogerá.
 
 ## Verificación de la matriz (Fase 1)
 

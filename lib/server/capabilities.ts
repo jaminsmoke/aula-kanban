@@ -10,7 +10,7 @@ import { globalRoleForUser, projectAccessForUser } from "./project-access";
  * Las demás capacidades (documentos, pizarras, miembros) se apoyan en el
  * acceso por proyecto (`projectAccessForUser` / `resolve`), ya
  * centralizado en `project-access.ts`; este módulo cubre las dos
- * capacidades con regla propia y las que comparten UI, HTTP y MCP.
+ * capacidades con regla propia que comparten UI, HTTP y MCP.
  */
 export type Capacidad = "instalar-app" | "asignar-libros";
 
