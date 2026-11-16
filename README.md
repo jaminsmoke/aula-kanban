@@ -58,6 +58,8 @@ Los metadatos Open Graph y Twitter Card usan la URL pública de la instancia par
 
 La tarjeta declara `/og/aula-kanban.png` como imagen de 1200×630. El archivo vive en `public/og/` y se sirve con caché pública de un día. Para sustituirlo, guarda un PNG exactamente 1200×630 y preferiblemente por debajo de 300 KB en la misma ruta, sin datos de una cuenta ni de un proyecto; revisa que el texto clave siga legible a tamaño completo y a 600×315. Los metadatos no cambian.
 
+Tras publicar, vuelve a pasar la URL por los inspectores de LinkedIn, Facebook y X y prueba el enlace en WhatsApp: pueden conservar la tarjeta anterior aunque el HTML ya sea nuevo.
+
 ## Tienda y Aula Store
 
 La cabecera organiza el trabajo en **Clase** y **Administración** (con Alumnos, Profesores y Tienda en su sidebar), con Clase en su botón de icono y el selector de proyecto a la derecha. **Tienda** es el escritorio de aplicaciones del proyecto; el engranaje abre los **ajustes generales**, con Cuenta, Apariencia, Documentación, Tokens MCP, Administradores y Almacenamiento. Incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, Calculadora, Tabla periódica, Programación por bloques y Diagramas. Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Tienda no elimina las pizarras de las tareas ni sus datos.

@@ -1,6 +1,6 @@
 # Roadmap PROMO-01 · Vista previa en redes (Open Graph y Twitter Card)
 
-> **Estado:** En curso
+> **Estado:** En curso · verificación local completada; validación externa pendiente de publicación
 > **Inicio:** 2026-11-16
 > **Entrada:** PROMO-01 — los enlaces públicos a Aula Kanban deben mostrar una tarjeta grande y reconocible al compartirlos en redes y mensajería.
 > **Backlog:** PROMO-02..06 (5 entradas, pendientes de debate)
@@ -56,11 +56,14 @@
 
 **Implementado (2026-11-16):** la tarjeta combina la marca, «Tu clase, en orden.», la propuesta de tareas, calendario, pizarras y apps con IA, y un escritorio simulado con el dock de cinco apps y el chip «Plugin de ChatGPT». No reutiliza capturas ni incluye nombres de cuenta o proyecto. El PNG mide 1200×630 y pesa **121 KB**; `public/_headers` sirve `/og/*` con caché pública de un día. Se revisó a tamaño completo y a 600×315: el titular y la propuesta siguen legibles y no hay texto cortado.
 
-### Fase 3: Verificación y cierre — pendiente
-- [ ] Suite completa, `tsc`, ESLint, build y `perf:budget`; comprobar el HTML público de `/` y `/documentacion` con la build servida.
-- [ ] Pasar LinkedIn Post Inspector, Facebook Sharing Debugger y X Card Validator; probar un enlace en WhatsApp; repetir tras publicar si cambia la URL.
-- [ ] Actualizar README, ayuda/documentación si procede, changelog y archivar este roadmap.
+### Fase 3: Verificación y cierre — en curso
+- [x] Suite completa, `tsc`, ESLint, build y `perf:budget`; comprobar el HTML público de `/` y `/documentacion` con la build servida.
+- [ ] Pasar LinkedIn Post Inspector, Facebook Sharing Debugger y X Card Validator; probar un enlace en WhatsApp; repetir tras publicar si cambia la URL. **Bloqueado:** la versión publicada `1.1.32` todavía no incluye estos metadatos y `/og/aula-kanban.png` responde `404`.
+- [x] Actualizar README y ayuda/documentación si procede.
+- [ ] Añadir el resumen al changelog y archivar este roadmap cuando la validación externa esté completa.
 - **Criterios de aceptación:** todos los validadores leen título, descripción e imagen; la tarjeta se ve bien en redes y mensajería; sin regresiones en la portada ni en las pruebas.
+
+**Verificado localmente (2026-11-16):** **144 archivos / 1.112 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde. La build servida devuelve `200` en `/` y `/documentacion` con `og:title`, `og:description`, `og:url`, `og:image` absoluta de 1200×630 con `alt` y `twitter:card=summary_large_image`; la imagen responde `200`, `image/png`, 123.510 bytes y caché de un día. La comprobación de producción confirma que `1.1.32` solo sirve el título y que la imagen aún da `404`, por lo que los validadores sociales y WhatsApp no pueden aprobar esta revisión hasta publicar.
 
 ## 5. Riesgos y bloqueos
 
@@ -78,3 +81,4 @@
 - 2026-11-16: la imagen no reutilizará las capturas actuales para no publicar nombres de cuenta o proyecto; la captura de producto se abordará en PROMO-03.
 - 2026-11-16: Fase 1 completada; los metadatos ya apuntan a `/og/aula-kanban.png`, que se crea en la Fase 2.
 - 2026-11-16: Fase 2 completada; la tarjeta se revisó a 1200×630 y 600×315, y `/og/*` queda con caché de un día para poder sustituir el archivo sin esperar un año.
+- 2026-11-16: Fase 3 verificada en local y en la build servida; sigue en curso porque los validadores externos necesitan una publicación que todavía no se ha hecho. No se añade al changelog ni se archiva el roadmap.
