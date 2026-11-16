@@ -6,6 +6,14 @@
 
 ---
 
+## 2026-11-16 — Publicación 1.1.33
+
+**Estado:** Publicada; demo no sembrada y oculta.
+
+- Publicadas las mejoras de portada, páginas legales, carpetas personales y calculadora. La migración 0040 añade una columna nullable; Sites confirmó el despliegue.
+- Lint, tipos, 1.159 pruebas y build correctos. El proyecto de clase sigue presente. El proyecto demo no se ha insertado: el conector disponible no permite escribir la D1. La portada oculta su enlace mientras falten datos.
+- La petición HTTP directa sin sesión devolvió 403 de Sites; el acceso anónimo no se ha confirmado. PROMO-07B conserva la siembra y verificación pendientes, incluida la revisión de colisiones de ids en el SQL.
+
 ## 2026-11-16 — Roadmap PROMO-07 · Preparar la demo para producción
 
 **Estado:** Completada · Pendiente de publicación
