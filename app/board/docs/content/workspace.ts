@@ -45,7 +45,6 @@ export const workspaceSections: DocSection[] = [
         ],
       },
       { type: "note", tone: "info", text: "Cerrar una ventana no borra nada: lo guardado sigue en el proyecto y vuelve a aparecer al abrir la aplicación otra vez." },
-      { type: "image", src: "/capturas/espacio.webp", alt: "Tienda con las cinco aplicaciones instaladas y el botón de Aula Store", caption: "Tienda con Excalidraw, Calculadora, Tabla periódica, Programación por bloques y Diagramas instaladas." },
       {
         type: "steps",
         items: [
@@ -55,6 +54,7 @@ export const workspaceSections: DocSection[] = [
           "Pulsa «Instalar» o «Desinstalar». Solo el propietario o un administrador puede hacerlo, y el cambio vale para todos los miembros.",
         ],
       },
+      { type: "image", src: "/capturas/espacio.webp", alt: "Aula Store abierto con las cinco aplicaciones instaladas y el filtro Instaladas activo", caption: "Aula Store en Administración > Tienda: las cinco aplicaciones del proyecto aparecen como instaladas y se pueden abrir, desinstalar o consultar en Detalles." },
       { type: "note", tone: "info", text: "Instalar o desinstalar una aplicación solo registra su estado en Tienda: no borra paquetes ni datos, y las pizarras de las tareas no se ven afectadas. Al desinstalar, Aula Store pide confirmación." },
       {
         type: "definitions",

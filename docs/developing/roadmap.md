@@ -52,11 +52,12 @@
 - **Criterios de aceptación:** el dry-run muestra el plan sin escribir; la primera ejecución crea exactamente los datos previstos; la segunda no duplica ni pisa datos ajenos; cualquier URL remota se rechaza antes de abrir una conexión.
 - **Verificación:** `npm run seed:demo -- --base-url http://127.0.0.1:8792 --dry-run` mostró el plan sobre una D1 limpia; la siembra dejó 1 proyecto, 6 alumnos, 2 profesores, 8 tareas (2 por columna), 15 asignaciones, 5 apps, 1 pizarra y 2 documentos; la tercera ejecución respondió «sin cambios». `http://192.168.1.10:5173` se rechazó antes de conectar. La D1 de prueba se creó con `--persist-to` temporal fuera del repositorio.
 
-### Fase 2: Capturas actuales y textos — pendiente
-- [ ] Capturar las cuatro vistas del proyecto de demo a 1200 px y WebP, con la cabecera actual, el escritorio de apps y sin datos reales ni tokens.
-- [ ] Recortar Ajustes a Cuenta, revisar el contraste del calendario y comprobar que las cinco apps aparecen instaladas.
-- [ ] Actualizar `alt`, pies y referencias en la ayuda; revisar las cuatro imágenes a tamaño completo y a 600 px de ancho.
+### Fase 2: Capturas actuales y textos — completada (2026-11-16)
+- [x] Capturar las cuatro vistas del proyecto de demo a 1200 px y WebP, con la cabecera actual, el escritorio de apps y sin datos reales ni tokens.
+- [x] Recortar Ajustes a Cuenta, revisar el contraste del calendario y comprobar que las cinco apps aparecen instaladas.
+- [x] Actualizar `alt`, pies y referencias en la ayuda; revisar las cuatro imágenes a tamaño completo y a 600 px de ancho.
 - **Criterios de aceptación:** las cuatro rutas de `public/capturas/` responden y pesan menos de 50 KB; las capturas coinciden con la UI servida; la ayuda no menciona una app, cabecera o fecha que ya no aparezca; `content-coverage.test.ts` pasa.
+- **Verificación:** capturas tomadas con Chrome headless a 1440×950 (tema claro) contra el servidor de desarrollo en `127.0.0.1:5173` sembrado con el proyecto `22222222-…`, y escaladas a 1200 px. Pesos: `tareas.webp` 44.788 B, `calendario.webp` 25.352 B, `espacio.webp` 44.506 B y `ajustes.webp` 20.304 B (1200×792 salvo Ajustes, 1200×421 recortado a Cuenta). Las cuatro rutas responden `200 image/webp`. La ayuda se revisó a 1200 y 390 px: las imágenes no desbordan y los pies nuevos se leen. `content-coverage.test.ts` pasa.
 
 ### Fase 3: Verificación y cierre — pendiente
 - [ ] Ejecutar la siembra desde una D1 local limpia y repetirla; comprobar el proyecto con la app servida en local, sin tocar Sites.
@@ -83,3 +84,5 @@
 - 2026-11-16: el servidor de desarrollo está en `http://localhost:5173`; no se publica ni se modifica la versión `1.1.32`.
 - 2026-11-16: la fase 1 usa el proyecto fijo `22222222-2222-4222-8222-222222222222`, distinto del `11111111-…` de `perf-latency.mjs`. La demo antigua sembrada a mano en la D1 local no se borra ni se modifica; la semilla nueva se validó en una D1 temporal limpia.
 - 2026-11-16: la instalación de las cinco apps se hace por `POST /api/space-apps?project=…`; no hace falta tocar `instance_apps` con SQL directo.
+- 2026-11-16: la semilla enviaba solo las cabeceras `oai-authenticated-user-*`, pero el servidor de desarrollo las descarta y exige la cookie `__sites_local_auth=1`; se añade la cookie para que el flujo documentado (`npm run dev` + `npm run seed:demo`) funcione sin 401.
+- 2026-11-16: la captura de Tienda muestra Aula Store abierto con el filtro «Instaladas» (5), porque el escritorio vacío no demuestra la instalación; la imagen se coloca tras los pasos de la tienda y su pie ya no depende del mes.

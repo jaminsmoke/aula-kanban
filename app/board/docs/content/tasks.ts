@@ -44,7 +44,7 @@ export const taskSections: DocSection[] = [
     title: "Calendario de Clase",
     lead: "Dentro de Clase, la sección Calendario coloca cada tarea en su fecha de entrega y la muestra en vista de mes, semana o agenda. Una tarea sin fecha no aparece: el calendario no inventa días.",
     blocks: [
-      { type: "image", src: "/capturas/calendario.webp", alt: "Calendario de noviembre de 2026 con las fechas de entrega del proyecto de demostración", caption: "El mismo proyecto en Calendario: cada tarea en su fecha de entrega, en vista de mes." },
+      { type: "image", src: "/capturas/calendario.webp", alt: "Calendario del mes con las fechas de entrega del proyecto de demostración", caption: "El mismo proyecto en Calendario: cada tarea en su fecha de entrega, en vista de mes." },
       {
         type: "steps",
         items: [

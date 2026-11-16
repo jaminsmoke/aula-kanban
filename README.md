@@ -363,7 +363,7 @@ npm run seed:demo -- --dry-run
 npm run seed:demo
 ```
 
-`scripts/seed-demo.mjs` solo acepta `localhost` o `127.0.0.1` y rechaza cualquier URL remota antes de abrir una conexión. Crea o actualiza el proyecto fijo `22222222-2222-4222-8222-222222222222` con seis alumnos, dos profesores, ocho tareas repartidas en las cuatro columnas (25 % completadas), las cinco apps instaladas, una pizarra, un diagrama y un programa de bloques. Es seguro repetirlo: no duplica tareas ni fichas y no toca otros proyectos. Usa las cabeceras de la sesión local de desarrollo (`local_seedy`), así que no necesita una cuenta real ni tokens. **No lo ejecutes contra producción ni cambies `--local` por `--remote`:** sembrar la D1 remota requiere autorización y la ejecuta Codex.
+`scripts/seed-demo.mjs` solo acepta `localhost` o `127.0.0.1` y rechaza cualquier URL remota antes de abrir una conexión. Crea o actualiza el proyecto fijo `22222222-2222-4222-8222-222222222222` con seis alumnos, dos profesores, ocho tareas repartidas en las cuatro columnas (25 % completadas), las cinco apps instaladas, una pizarra, un diagrama y un programa de bloques. Es seguro repetirlo: no duplica tareas ni fichas y no toca otros proyectos. Usa la sesión local de desarrollo (la cookie `__sites_local_auth` y las cabeceras `local_seedy`), así que no necesita una cuenta real ni tokens. **No lo ejecutes contra producción ni cambies `--local` por `--remote`:** sembrar la D1 remota requiere autorización y la ejecuta Codex.
 
 Para un cambio nuevo:
 
