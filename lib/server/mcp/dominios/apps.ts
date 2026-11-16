@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AULA_STORE_VERSION, NATIVE_APP_IDS, NATIVE_APPS, nativeAppMeta, type NativeAppId, type NativeAppMeta } from "../../../native-apps";
 import { listInstalledApps, setAppInstalled, MANAGE_APPS_FORBIDDEN, type AppInstalledState } from "../../apps";
-import { isAdministrator, isOwner } from "../../project-access";
+import { tieneCapacidad } from "../../capabilities";
 import { errorHerramienta, falloResolucion, payloadResult, resolve, toChatGPTUser, type McpCaller } from "../contexto";
 import type { McpToolDefinicion } from "./tipos";
 
@@ -49,13 +49,13 @@ function vista(meta: NativeAppMeta, estado: AppInstalledState): AppView {
 }
 
 /**
- * Comprueba que la cuenta puede gestionar aplicaciones de la instancia.
+ * Comprueba que la cuenta puede gestionar aplicaciones de la instancia
+ * (matriz PERM-01, misma evaluación que la ruta HTTP).
  * @param caller - Cuenta identificada por el token.
  * @returns `true` si es propietaria o administradora.
  */
 async function puedeGestionar(caller: McpCaller): Promise<boolean> {
-  const user = toChatGPTUser(caller);
-  return (await isOwner(user)) || (await isAdministrator(user));
+  return tieneCapacidad(toChatGPTUser(caller), "instalar-app");
 }
 
 function gestionarForbidido() {

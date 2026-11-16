@@ -1,3 +1,4 @@
+import { tieneCapacidad } from "../../../lib/server/capabilities";
 import { json } from "../../../lib/server/http";
 import { withProjectRoute } from "../../../lib/server/route-helpers";
 import { ProjectBooksError, listProjectBooks, parseProjectBooks, setProjectBooks } from "../../../lib/server/project-books";
@@ -24,8 +25,7 @@ export const GET = withProjectRoute(async (_request, project) => {
  * anterior: lo que no venga queda deshabilitado.
  */
 export const PUT = withProjectRoute(async (request, project) => {
-  const role = project.access.role;
-  if (role !== "owner" && role !== "admin" && role !== "teacher") {
+  if (!(await tieneCapacidad(project.access.user, "asignar-libros", project.id))) {
     return json({ message: "Solo el profesorado puede asignar libros." }, 403);
   }
   try {

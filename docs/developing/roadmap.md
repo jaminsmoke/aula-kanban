@@ -48,11 +48,13 @@
 
 **Implementado (2026-11-16):** matriz en `docs/Store/matriz-permisos.md` (principios, roles/sujetos, capacidades por ámbito con otorgante, regla de instalación global, concesiones, ubicación propuesta y casos obligatorios). Sin cambios de código: el control de servidor llega en la Fase 2.
 
-### Fase 2: Control autoritativo de servidor
-- [ ] Centralizar la evaluación de permisos en servidor para UI, HTTP, MCP y sockets (sin basarse en ocultar botones ni en `roles` del catálogo).
-- [ ] Invalidar sesiones/cachés al revocar; registrar cambios con actor y ámbito; migración sin otorgar permisos nuevos por accidente.
-- [ ] Pruebas negativas y sin privilegios cruzados entre proyectos, incluida la regla de instalación global.
+### Fase 2: Control autoritativo de servidor — completada
+- [x] Centralizar la evaluación de permisos en servidor para UI, HTTP, MCP y sockets (sin basarse en ocultar botones ni en `roles` del catálogo).
+- [x] Invalidar sesiones/cachés al revocar; registrar cambios con actor y ámbito; migración sin otorgar permisos nuevos por accidente.
+- [x] Pruebas negativas y sin privilegios cruzados entre proyectos, incluida la regla de instalación global.
 - **Criterios de aceptación:** acceso directo/API/MCP denegado sin permiso; revocación inmediata verificada; migración reversible.
+
+**Implementado (2026-11-16):** módulo `lib/server/capabilities.ts` (`evaluarCapacidad` pura + `tieneCapacidad` por petición, sin caché) conectado a `POST /api/space-apps`, MCP `instalar_app`/`desinstalar_app` y `PUT /api/project-books`; `SpaceRoom` revalida pertenencia por mensaje (como `BoardRoom`). Sin esquema nuevo (sin permisos nuevos que conceder, reversible por definición; cada llamada reevalúa, luego la revocación es inmediata). Pruebas: `capabilities.test.ts` (matriz, profesor denegado/profesor-administrador permitido, sin privilegios cruzados) y suite MCP intacta (matriz 397, paridad 18).
 
 ### Fase 3: UI, verificación y cierre
 - [ ] Gestión de permisos por proyecto en Administración y de instancia en Ajustes > Permisos (estructura y alcance validados).
@@ -72,3 +74,4 @@
 
 - 2026-11-16: roadmap PERM-01 creado desde el backlog (prerequisito de APP-03 seguimiento); la entrada PERM-01 sale del backlog en el mismo acto (regla de flujo). APP-03 (seguimiento) permanece en el backlog hasta que este roadmap defina los permisos.
 - 2026-11-16: Fase 1 completada — matriz aprobada en `docs/Store/matriz-permisos.md`; sin cambios de código (el control autoritativo llega en la Fase 2).
+- 2026-11-16: Fase 2 completada — `lib/server/capabilities.ts` centraliza la matriz (instalar-app global, asignar-libros por proyecto) en HTTP y MCP; `SpaceRoom` revalida por mensaje. Sin esquema nuevo: la revocación es inmediata al reevaluar cada llamada.

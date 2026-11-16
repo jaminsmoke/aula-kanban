@@ -14,6 +14,10 @@ vi.mock("../../../lib/server/project-access", () => ({
   projectFailureResponse: (status: string) => new Response(JSON.stringify({ message: status }), {
     status: status === "unauthenticated" ? 401 : 403,
   }),
+  // Evaluación central de capacidades (PERM-01): el rol global coincide
+  // con el rol de proyecto cuando es owner/admin de instancia.
+  globalRoleForUser: async () => (mocks.role === "owner" || mocks.role === "admin" ? mocks.role : null),
+  projectAccessForUser: async () => ({ user: { userId: "u1" }, role: mocks.role, studentSection: null, teacherId: null }),
 }));
 vi.mock("../../../lib/server/project-books", () => {
   class ProjectBooksError extends Error {

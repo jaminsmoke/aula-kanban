@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { getChatGPTUser } from "../../../lib/server/auth";
-import { isAdministrator, isOwner, resolveProject } from "../../../lib/server/project-access";
+import { tieneCapacidad } from "../../../lib/server/capabilities";
+import { resolveProject } from "../../../lib/server/project-access";
 import { projectFailureResponse } from "../../../lib/server/project-http";
 import { NATIVE_APP_IDS } from "../../../lib/native-apps";
 import { listInstalledApps, setAppInstalled, MANAGE_APPS_FORBIDDEN } from "../../../lib/server/apps";
@@ -30,7 +31,7 @@ export const GET = withProjectRoute(async () => {
 export const POST = withJsonMutation(async (request) => {
   const user = await getChatGPTUser();
   if (!user) return projectFailureResponse("unauthenticated");
-  if (!(await isOwner(user) || await isAdministrator(user))) return json({ message: MANAGE_APPS_FORBIDDEN }, 403);
+  if (!(await tieneCapacidad(user, "instalar-app"))) return json({ message: MANAGE_APPS_FORBIDDEN }, 403);
   const parsed = z.object({ id: appId, action: z.enum(["install", "uninstall"]) }).strict().safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Aplicación o acción no válida." }, 400);
   const resolved = await resolveProject(request);

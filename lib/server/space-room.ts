@@ -1,9 +1,10 @@
 import { DurableObject } from "cloudflare:workers";
 import { validarVentanas, type AccionVentana, type VentanaEstado } from "../domain/space-windows";
+import { ensureInstanceOwner, isInstanceOwner } from "./owner";
 
 const MAX_MESSAGE_BYTES = 16_384;
 
-type Session = { userId: string; projectId: string };
+type Session = { userId: string; email: string; projectId: string };
 
 /**
  * Sala en vivo del escritorio de Tienda: un Durable Object **por
@@ -36,6 +37,7 @@ export class SpaceRoom extends DurableObject<Cloudflare.Env> {
     this.ctx.acceptWebSocket(server);
     this.sessions.set(server, {
       userId: request.headers.get("oai-authenticated-user-id") || "anon",
+      email: request.headers.get("oai-authenticated-user-email") || "",
       projectId: new URL(request.url).searchParams.get("project") || "default",
     });
     return new Response(null, { status: 101, webSocket: client });
@@ -56,7 +58,7 @@ export class SpaceRoom extends DurableObject<Cloudflare.Env> {
     }
     if (data.type !== "estado") return;
     const session = this.sessions.get(socket);
-    if (!session) return;
+    if (!session || !(await this.allowed(session))) { socket.close(1008, "Acceso retirado"); return; }
     const ventanas = validarVentanas(data.ventanas);
     if (ventanas) this.estados.set(session.userId, ventanas);
   }
@@ -80,6 +82,26 @@ export class SpaceRoom extends DurableObject<Cloudflare.Env> {
    */
   override webSocketError(socket: WebSocket) {
     this.webSocketClose(socket);
+  }
+
+  /**
+   * Revalida la pertenencia al proyecto antes de cada mensaje (matriz
+   * PERM-01): una baja de miembro revoca el acceso en la siguiente
+   * publicación, sin esperar a reconectar.
+   * @param session - Cuenta y proyecto de la pestaña.
+   * @returns `true` si la cuenta conserva acceso al proyecto.
+   */
+  private async allowed(session: Session): Promise<boolean> {
+    const db = this.env.DB;
+    if (!db) return false;
+    const project = await db.prepare("SELECT id FROM projects WHERE id = ?").bind(session.projectId).first();
+    if (!project) return false;
+    const owner = await ensureInstanceOwner(db, { userId: session.userId, email: session.email }, this.env.OWNER_EMAIL);
+    if (isInstanceOwner(owner, session)) return true;
+    const admin = await db.prepare("SELECT id FROM administrators_unified WHERE user_id = ?").bind(session.userId).first();
+    if (admin) return true;
+    const member = await db.prepare("SELECT id FROM project_members WHERE project_id = ? AND user_id = ? AND status = 'active'").bind(session.projectId, session.userId).first();
+    return Boolean(member);
   }
 
   /**
