@@ -8,6 +8,7 @@ import { AulaStoreIcon } from "./aula-store-icon";
 import StoreCard from "./store-card";
 import StoreDetail from "./store-detail";
 import StoreFilters from "./store-filters";
+import BooksView from "./books-view";
 import { CATEGORY_ICONS, FEATURED_APP_IDS, type StoreAction, type StoreApp } from "./store-model";
 import "./store.css";
 
@@ -18,8 +19,9 @@ export type { StoreAction, StoreApp } from "./store-model";
  * ficha de detalle.
  * @returns La tienda de aplicaciones.
  */
-export default function AppsStore({ role, apps, error, onManage, onOpen, onRefresh, onClose }: {
+export default function AppsStore({ role, projectId, apps, error, onManage, onOpen, onRefresh, onClose }: {
   role: StoreRole;
+  projectId: string;
   apps: StoreApp[];
   error: string;
   onManage: (id: string, action: StoreAction) => void;
@@ -31,8 +33,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<StoreCategory | "todas">("todas");
   const [installedOnly, setInstalledOnly] = useState(false);
-  // Vista de la tienda: «Aplicaciones» es la única con contenido por ahora;
-  // «Libros» llegará con STORE-02 y está deshabilitada hasta entonces.
+  // Vista de la tienda: Aplicaciones (apps nativas) o Libros (STORE-02).
   const [storeView, setStoreView] = useState<"apps" | "libros">("apps");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [justInstalled, setJustInstalled] = useState<string | null>(null);
@@ -174,9 +175,9 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
         </div>
         <div className="store-views" role="group" aria-label="Vistas de la tienda">
           <button type="button" className={`store-view-tab${storeView === "apps" ? " store-view-tab--active" : ""}`} aria-current={storeView === "apps" ? "page" : undefined} onClick={() => setStoreView("apps")}><LayoutGrid size={16} aria-hidden /> Aplicaciones</button>
-          <button type="button" className="store-view-tab" disabled title="Próximamente (STORE-02)"><BookOpen size={16} aria-hidden /> Libros <span className="store-view-soon">Próximamente</span></button>
+          <button type="button" className={`store-view-tab${storeView === "libros" ? " store-view-tab--active" : ""}`} aria-current={storeView === "libros" ? "page" : undefined} onClick={() => setStoreView("libros")}><BookOpen size={16} aria-hidden /> Libros</button>
         </div>
-        <StoreFilters
+        {storeView === "apps" ? (<StoreFilters
           tools={allTools}
           query={query}
           category={category}
@@ -185,9 +186,13 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
           onQuery={setQuery}
           onCategory={setCategory}
           onInstalledOnly={() => setInstalledOnly((current) => !current)}
-        />
+        />) : null}
       </header>
 
+      {storeView === "libros" ? (
+        <BooksView projectId={projectId} />
+      ) : (
+      <>
       {error ? <p role="alert" className="store-alert"><TriangleAlert size={16} aria-hidden /> {error}</p> : null}
 
       {visibleCount === 0 ? (
@@ -222,6 +227,8 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
           onClose={() => setSelectedId(null)}
         />
       ) : null}
+      </>
+      )}
     </div>
     </LazyMotion>
     </MotionConfig>

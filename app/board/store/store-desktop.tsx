@@ -166,6 +166,7 @@ export default function StoreDesktop({ role, projectId }: { role: StoreRole; pro
         <Suspense fallback={<p className="store-loading">Cargando Aula Store…</p>}>
         <AppsStore
           role={role}
+          projectId={projectId}
           apps={managed}
           error={managerError}
           onManage={(id, action) => void manage(id, action)}

@@ -115,3 +115,76 @@
 .store-detail-tech dd { margin:0; color:var(--ui-text-secondary); font-size: var(--text-sm); line-height: var(--leading-snug); text-align:right; overflow-wrap:anywhere; }
 .store-detail-note { margin:0; padding:9px 11px; border-radius: var(--radius-sm); background:var(--ui-warning-pale); color:var(--ui-warning-deep); font-size: var(--text-sm); }
 .store-detail-actions { display:flex; flex-wrap:wrap; gap:8px; }
+
+/* Vista Libros (STORE-02): contenedor del visor, tarjetas y lector PDF. */
+.books-desktop {
+  position: relative;
+  display: grid;
+  gap: 22px;
+  padding: 16px 20px 40px;
+}
+.book-card-motion {
+  min-width: 0;
+}
+.book-card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background:
+    radial-gradient(130% 90% at 50% -15%, color-mix(in srgb, #7a4ba0 16%, transparent), transparent 68%),
+    color-mix(in srgb, var(--card) 92%, transparent);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 0.08);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+.book-card:hover {
+  border-color: color-mix(in srgb, #7a4ba0 34%, var(--line));
+  box-shadow: 0 20px 42px rgb(0 0 0 / 0.13);
+  transform: translateY(-2px);
+}
+.book-card-cover {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 20px;
+  color: var(--text);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.book-card-icon {
+  display: grid;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--gold) 34%, var(--line));
+  border-radius: 12px;
+  color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 9%, var(--card));
+}
+.book-viewer {
+  display: grid;
+  gap: 10px;
+  height: 100%;
+  padding: 12px 16px 16px;
+}
+.book-viewer-note {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.book-viewer-frame {
+  width: 100%;
+  min-height: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}

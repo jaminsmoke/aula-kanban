@@ -5,12 +5,12 @@ import AppsStore, { type StoreApp } from "./apps-store";
 
 const noop = () => {};
 const native: StoreApp[] = [{ id: "excalidraw", status: "installed", url: null }];
-const props = { apps: native, error: "", onManage: vi.fn(), onOpen: noop, onRefresh: noop, onClose: noop };
+const props = { role: "owner" as const, projectId: "p1", apps: native, error: "", onManage: vi.fn(), onOpen: noop, onRefresh: noop, onClose: noop };
 
 describe("Aula Store", () => {
   it("permite al administrador desinstalar Excalidraw", () => {
     const manage = vi.fn();
-    const { container } = render(<AppsStore {...props} role="owner" onManage={manage} />);
+    const { container } =    render(<AppsStore {...props} onManage={manage} />);
     expect(container.querySelector(".store-catalog")).toBeTruthy();
     expect(container.querySelector(".store-view")).toBeNull();
     // Excalidraw está en «Mejores aplicaciones» y en su categoría.
@@ -26,13 +26,17 @@ describe("Aula Store", () => {
     expect(screen.queryByRole("button", { name: /Desinstalar/ })).toBeNull();
   });
 
-  it("muestra las vistas de la tienda con Libros próximamente", () => {
-    render(<AppsStore {...props} role="owner" />);
+  it("activa la pestaña Libros y muestra la vista de libros", () => {
+    render(<AppsStore {...props} />);
     const appsTab = screen.getByRole("button", { name: "Aplicaciones" });
     expect(appsTab.getAttribute("aria-current")).toBe("page");
     const booksTab = screen.getByRole("button", { name: /Libros/ });
-    expect((booksTab as HTMLButtonElement).disabled).toBe(true);
-    expect(screen.getByText("Próximamente")).toBeTruthy();
+    expect((booksTab as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.click(booksTab);
+    expect(booksTab.getAttribute("aria-current")).toBe("page");
+    expect(screen.getByLabelText("Vista de libros")).toBeTruthy();
+    fireEvent.click(appsTab);
+    expect(screen.queryByLabelText("Vista de libros")).toBeNull();
   });
 
   it("muestra «Mejores aplicaciones» y las secciones por categoría en el inicio", () => {

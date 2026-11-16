@@ -53,10 +53,12 @@ Motivos de la decisión (revisado 2026-11-16):
 
 **Implementado (2026-11-16):** claves versionadas `books/<id>/<fecha>.pdf` en el bucket `site-creator-r2`; script `scripts/ingest-books.mjs` (descarga, verifica tamaño contra el catálogo, sube y marca `storageKey`/`version` en `lib/books.ts`; `--remote` solo para Codex en producción); rutas `GET /api/books` (catálogo con procedencia y disponibilidad) y `GET /api/books/<id>/file` (PDF con caché inmutable, 404/503 según estado). Los 10 libros están ingeridos en el R2 local y verificados en el navegador (catálogo 200 y PDF servido). Documentación en `docs/Store/libros.md`. La ingesta remota la hace Codex al publicar.
 
-### Fase 3: Vista Libros en la Tienda
-- [ ] La pestaña «Libros» pasa a activa: secciones por nivel y materia, tarjetas con ficha (descripción, licencia, atribución) y apertura en ventana con visor PDF.
-- [ ] Botón de descarga del archivo; sin regresión en la vista Aplicaciones (STORE-01).
+### Fase 3: Vista Libros en la Tienda — completada
+- [x] La pestaña «Libros» pasa a activa: secciones por nivel y materia, tarjetas con ficha (descripción, licencia, atribución) y apertura en ventana con visor PDF.
+- [x] Botón de descarga del archivo; sin regresión en la vista Aplicaciones (STORE-01).
 - **Criterios de aceptación:** abrir un libro no saca al usuario de Aula Kanban; la vista Aplicaciones sigue igual.
+
+**Implementado (2026-11-16):** pestaña «Libros» habilitada en Aula Store con `BooksView` (`app/board/store/catalog/books-view.tsx`): secciones por nivel (ESO/Bachillerato), tarjetas con materia, tamaño y estado de ingesta, ficha de detalle con fuente, licencia y atribución, descarga del PDF y visor en ventana propia con la atribución visible. «Aplicaciones» queda intacta. Verificado en el navegador: pestaña activa, 10 tarjetas en 2 secciones y ventana con el PDF de 1º ESO abierto.
 
 ### Fase 4: Verificación y cierre
 - [ ] Suite completa, `tsc`, ESLint y build en verde.
