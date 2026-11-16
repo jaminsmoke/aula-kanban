@@ -25,9 +25,9 @@ export type NativeCategory = StoreTopCategory;
 export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
-export const AULA_STORE_VERSION = "1.0.0";
+export const AULA_STORE_VERSION = "1.1.0";
 
-export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid"] as const;
+export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez"] as const;
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
 
@@ -138,6 +138,20 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     appVersion: "1.0.0",
     upstream: { name: "mermaid", version: "12.3.0" },
     window: { width: 1120, height: 720 },
+  },
+  {
+    id: "ajedrez",
+    name: "Ajedrez",
+    tagline: "Dos jugadores o un rival aleatorio en el mismo tablero.",
+    description: "Ajedrez local para dos jugadores o contra un rival aleatorio, con reglas completas, historial y movimientos por clic, arrastre o teclado.",
+    categories: ["Educación", "Productividad"],
+    subcategory: "Herramientas",
+    cover: "/store/ajedrez.svg",
+    features: ["Dos jugadores locales o rival aleatorio", "Reglas completas: jaque, mate, tablas y coronación", "Movimientos por clic, arrastre o teclado"],
+    appVersion: "1.0.0",
+    upstream: { name: "chess.js", version: "1.4.0" },
+    extras: [{ name: "react-chessboard", version: "5.12.1" }],
+    window: { width: 900, height: 700 },
   },
 ];
 

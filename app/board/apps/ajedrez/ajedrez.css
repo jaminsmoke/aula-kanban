@@ -106,13 +106,13 @@
 
 .ajedrez-board-shell {
   position:relative;
-  width:min(100%,560px);
+  width:min(100%,500px);
 }
 
 .ajedrez-board-shell > div { width:100%; }
 
 .ajedrez-hint {
-  max-width:560px;
+  max-width:500px;
   margin:0;
   color:var(--ui-text-muted);
   font-size:11.5px;

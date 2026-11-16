@@ -1,12 +1,12 @@
 # Cobertura MCP de las apps nativas
 
-Estado de la superficie MCP de las cinco apps de Aula Store. La fuente de las
+Estado de la superficie MCP de las seis apps de Aula Store. La fuente de las
 herramientas es `lib/server/mcp/apps/registro.ts`; la instalación y los permisos
 se resuelven con `lib/server/mcp/apps/contrato.ts`.
 
 **Última revisión:** 2026-11-16 · **Catálogo:** `0.28.0` · **59 herramientas**
 
-**Estado:** MCP-05B, MCP-05C, MCP-05D y MCP-05E cerrados; las cinco apps tienen cobertura MCP.
+**Estado:** MCP-05B, MCP-05C, MCP-05D y MCP-05E cerrados; las seis apps tienen declaración MCP. Ajedrez y Calculadora no exponen herramientas propias porque su estado vive en el navegador.
 
 ## Herramientas comunes
 
@@ -45,6 +45,7 @@ reglas de cada app.
 | **Tabla periódica** (`tabla-periodica`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `consultar_elemento` | No | No | Cualquier cuenta autenticada, incluidas invitadas y cuentas sin proyecto, si la app está instalada. La consulta no usa proyecto. | Una ficha por llamada entre 118 elementos. Los datos de referencia viven en el cliente. |
 | **Programación por bloques** (`blockly`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_programa_bloques` | Sí, `guardar_programa_bloques` | No; la ventana descarga JSON | Lectura: cualquier miembro. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Estado JSON de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. |
 | **Diagramas** (`mermaid`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_diagrama` y `listar_plantillas_diagrama` | Sí, `guardar_diagrama` | No; la ventana exporta SVG | Lectura y plantillas: cualquier miembro con acceso, o cualquier cuenta autenticada para las plantillas si la app está instalada. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Código de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. La validación y el render de Mermaid se quedan en el navegador. |
+| **Ajedrez** (`ajedrez`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Cualquier miembro con acceso al proyecto; las cuentas invitadas lo usan en local. | Sin estado de servidor: el tablero y la partida viven en el navegador. |
 
 ## Qué falta en cada app
 
@@ -88,6 +89,15 @@ reglas de cada app.
 - Cobertura funcional cerrada: no quedan huecos MCP para esta app. El resumen
   del roadmap está en el changelog.
 
+### Ajedrez — sin herramientas
+
+- La partida, el tablero y el rival aleatorio viven en el navegador; no hay
+  estado de servidor que leer o escribir.
+- `abrir_app`, `listar_ventanas` y el control de ventanas siguen disponibles por
+  las herramientas genéricas de MCP-04.
+- No se añaden herramientas específicas: no hay documento de proyecto que
+  guardar ni exportación que el servidor pueda producir.
+
 ### Calculadora y Tabla periódica — MCP-05C (completado)
 
 - `consultar_elemento` cubre la única consulta estable de Tabla periódica.
@@ -97,7 +107,7 @@ reglas de cada app.
 ## Revisión de huecos
 
 - **Instalación y catálogo:** cubiertos por MCP-03.
-- **Abrir y controlar ventanas:** cubiertos por MCP-04 para las cinco apps.
+- **Abrir y controlar ventanas:** cubiertos por MCP-04 para las seis apps.
 - **Lectura y escritura de contenido:** MCP-05B, MCP-05D y MCP-05E (completados).
 - **Exportación:** no hay una herramienta dedicada. Excalidraw necesita render
   de imagen; Mermaid necesita render de SVG, aunque `leer_diagrama` ya devuelve

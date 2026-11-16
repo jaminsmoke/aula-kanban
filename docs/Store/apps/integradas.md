@@ -9,6 +9,7 @@
 | Calculadora | Integración propia · `@cortex-js/compute-engine` 0.188.0 | MIT | ✅ Integrada | Calculadora en el centro con chips de modo (Básica / Científica con dos páginas de funciones / Ecuaciones), memoria M+/M−/MR, historial persistente y resultado decimal y exacto; al activar **Ecuaciones** aparece su panel al lado, con varias líneas, variables compartidas, teclado matemático y resultado por fila |
 | Tabla periódica | Integración propia | — | ✅ Integrada | Tabla periódica propia en español con búsqueda, filtros por categoría y bloque, modelo atómico animado, descripción e historia. No usa paquete upstream |
 | Diagramas | `mermaid` 12.3.0 | MIT | ✅ Integrada | Diagramas de flujo, secuencia, Gantt, clases, estados y líneas de tiempo; editor y vista previa, plantillas, guardado por proyecto en D1 (`app_documents`) y exportación SVG |
+| Ajedrez | `chess.js` 1.4.0 + `react-chessboard` 5.12.1 | BSD-2 / MIT | ✅ Integrada | Tablero local para dos jugadores o rival aleatorio; reglas completas, historial, coronación con elección y movimientos por clic, arrastre o teclado. Sin estado de servidor |
 
 ## Versiones por app
 
@@ -19,8 +20,9 @@
 | Tabla periódica | `1.0.0` | Integración propia |
 | Programación por bloques | `1.0.0` | `blockly 13.4.0` |
 | Diagramas | `1.0.0` | `mermaid 12.3.0` |
+| Ajedrez | `1.0.0` | `chess.js 1.4.0` + `react-chessboard 5.12.1` |
 
-La tienda empieza en `1.0.0`. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
+La tienda está en `1.1.0`: la incorporación de Ajedrez subió la versión menor. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
 
 ## Transición de `edu-tools`
 
@@ -28,4 +30,4 @@ La transición de datos del servicio separa una instalación antigua de `edu-too
 
 ## Portadas
 
-Las cinco apps usan portadas SVG de 1200×675 en `public/store/`, con la misma composición visual. La integración y el cierre de esa unificación están documentados en [`../../historial/roadmap-store-05.md`](../../historial/roadmap-store-05.md).
+Las seis apps usan portadas SVG de 1200×675 en `public/store/`, con la misma composición visual. La integración y el cierre de esa unificación están documentados en [`../../historial/roadmap-store-05.md`](../../historial/roadmap-store-05.md); Ajedrez añade su portada en el roadmap STORE-06, ya completado.

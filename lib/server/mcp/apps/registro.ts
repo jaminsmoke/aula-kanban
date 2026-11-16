@@ -42,6 +42,11 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     appId: "mermaid",
     herramientas: herramientasMermaid,
   },
+  ajedrez: {
+    appId: "ajedrez",
+    herramientas: [],
+    pendiente: "El tablero y la partida viven en el navegador y no tienen estado de servidor.",
+  },
 };
 
 /** Herramientas de todas las apps, en el orden de sus declaraciones. */

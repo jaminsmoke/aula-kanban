@@ -64,6 +64,7 @@ export const workspaceSections: DocSection[] = [
           { term: "Tabla periódica (1.0.0)", text: "Los 118 elementos con búsqueda y filtros por categoría y bloque; cada ficha incluye Ficha, Descripción e Historia, y modelo atómico animado." },
           { term: "Programación por bloques (1.0.0)", text: "Editor de bloques con «Guardar», «Cargar», «Ejemplo», «Descargar», «Limpiar» y «Código»: genera el programa en JavaScript o Python, permite ejecutarlo y copiarlo. Se guarda por proyecto en la base de datos; las cuentas invitadas solo pueden consultarlo." },
           { term: "Diagramas (1.0.0)", text: "Escribes el diagrama en texto y ves la vista previa al instante, con plantillas listas. «Guardar» y «Cargar» trabajan por proyecto en la base de datos, y «Exportar SVG» descarga la imagen." },
+          { term: "Ajedrez (1.0.0)", text: "Tablero local para dos jugadores o contra un rival aleatorio. Aplica las reglas completas, muestra el turno, el jaque, el jaque mate, las tablas y el historial, y permite mover con clic, arrastre o el formulario de teclado." },
         ],
       },
       { type: "note", tone: "info", text: "El historial de la calculadora se guarda en este navegador, no en el proyecto: no lo ves desde otro equipo y puedes vaciarlo con «Borrar» en el panel del historial. La memoria de la calculadora vive solo mientras la ventana está abierta. Los documentos de Programación por bloques y Diagramas sí se guardan en el proyecto, con el botón «Guardar»." },

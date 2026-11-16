@@ -1,10 +1,33 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-06 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-16 — Roadmap STORE-06 · Ajedrez en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Ajedrez se incorpora a Aula Store con `chess.js` 1.4.0 y `react-chessboard` 5.12.1: tablero, reglas completas, jaque, mate, tablas, historial, reinicio y coronación con elección de pieza.
+- Dos modos: dos jugadores locales o rival aleatorio que solo elige movimientos legales, con estado «El rival está pensando…».
+- Formulario **Mover con teclado** y foco visible como alternativa al clic y al arrastre.
+- Portada `public/store/ajedrez.svg` en formato 1200×675, con paleta ámbar y área segura para el icono de la tarjeta.
+- Registro en `NATIVE_APP_IDS`, `NATIVE_APPS`, `registry.tsx` y «Mejores aplicaciones»; declaración MCP sin herramientas propias porque la partida vive en el navegador. `AULA_STORE_VERSION` sube a `1.1.0`.
+- Ayuda, matriz de herramientas, documentación del catálogo y pruebas actualizadas. Sin cambios en la demo.
+
+### Verificación
+
+- Tienda y ficha revisadas a 1366, 1024 y 390 px; la app se instaló y abrió desde Aula Store, con la portada y el tablero completos.
+- Suite completa: **162 archivos / 1.183 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `731a1c8` (Fase 1), `68fc249` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites y sin cambio de versión del Site: sigue en **1.1.34**.
+
+### Seguimiento
+
+- El backlog queda con STORE-07 (Física 2D) y STORE-08 (Geometría interactiva). El plan completo está en [`historial/roadmap-store-06.md`](../historial/roadmap-store-06.md).
 
 ## 2026-11-16 — Roadmap STORE-05 · Portadas compuestas de Aula Store
 
@@ -46,7 +69,7 @@
 
 ### Seguimiento
 
-- El backlog queda sin entradas aparcadas. PROMO-01 permanece cerrado y su plan está en [`historial/roadmap-promo-01.md`](historial/roadmap-promo-01.md).
+- El backlog queda sin entradas aparcadas. PROMO-01 permanece cerrado y su plan está en [`historial/roadmap-promo-01.md`](../historial/roadmap-promo-01.md).
 
 ## 2026-11-16 — Publicación 1.1.33
 

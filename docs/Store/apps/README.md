@@ -13,7 +13,7 @@ candidato y qué se ha descartado, con la licencia y la versión comprobadas en 
 | [`candidatas-aula-evaluacion.md`](candidatas-aula-evaluacion.md) | Tarjetas de repaso y evaluación |
 | [`candidatas-stem-ciencias.md`](candidatas-stem-ciencias.md) | Física, geometría, química, música y ciencia |
 | [`candidatas-diagramas-documentos.md`](candidatas-diagramas-documentos.md) | Diagramas, documentos y productividad |
-| [`candidatas-geografia-ajedrez.md`](candidatas-geografia-ajedrez.md) | Mapas y ajedrez |
+| [`candidatas-geografia-ajedrez.md`](candidatas-geografia-ajedrez.md) | Mapas; Ajedrez ya está integrado |
 | [`descartadas.md`](descartadas.md) | Aparcadas, mencionadas y descartadas |
 
 ## Qué es una aplicación nativa
@@ -97,14 +97,13 @@ La tabla de versiones por app está en [`integradas.md#versiones-por-app`](integ
 
 ## Siguientes candidatas
 
-Estas tres son las siguientes incorporaciones por relación valor/coste y por
-cubrir huecos claros del catálogo actual:
+Ajedrez ya está integrado (**STORE-06**). Las siguientes incorporaciones por
+relación valor/coste y por cubrir huecos claros del catálogo son:
 
-1. **Ajedrez** (`chess.js` + `react-chessboard`): ya en el roadmap **STORE-06**.
-2. **Física 2D** (`matter-js`): en el backlog como **STORE-07**.
-3. **Geometría interactiva** (`jsxgraph`): en el backlog como **STORE-08**.
+1. **Física 2D** (`matter-js`): en el backlog como **STORE-07**.
+2. **Geometría interactiva** (`jsxgraph`): en el backlog como **STORE-08**.
 
-Después de esas tres, las candidatas con más encaje son los mapas conceptuales,
+Después de esas dos, las candidatas con más encaje son los mapas conceptuales,
 las presentaciones y las líneas de tiempo. El resto sigue documentado por
 categorías, sin entrada en backlog hasta que se priorice.
 
