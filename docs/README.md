@@ -16,7 +16,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Sin fase activa; plantilla lista para el siguiente roadmap | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | STORE-05 activo: portadas compuestas de Aula Store | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -79,6 +79,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
+- **Roadmap STORE-05 activo:** unificar las portadas de Aula Store con SVG compuestos para Excalidraw, Programación por bloques y Diagramas, retirar las capturas PNG y verificar tarjeta y ficha en 1366, 1024 y 390 px. Plan en [`roadmap.md`](developing/roadmap.md); sin cambio de versión ni publicación.
 - **Roadmap UI-08 completado:** Tienda en Administración, Clase como botón de icono en la cabecera, URL canónica `view=administracion&section=tienda` y alias `view=espacio`; revisado en 1366, 1024, 900, 620 y 390. Catálogo MCP `0.27.0`. Resumen en [`changelog.md`](developing/changelog.md).
 - **Roadmap APP-01 completado:** inventario y matriz de herramientas, roles y alcance en [`matriz-herramientas.md`](Store/matriz-herramientas.md). Resumen en [`changelog.md`](developing/changelog.md).
 - **Roadmap APP-03 completado:** mochila del alumnado y maletín docente (migración 0037 y sección `clase > mochila`); resumen en [`changelog.md`](developing/changelog.md).
