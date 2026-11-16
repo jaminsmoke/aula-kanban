@@ -3,9 +3,10 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
 import { ArrowLeft, Download, LayoutGrid, Package, Play, RefreshCw, Star, Trash2, TriangleAlert } from "lucide-react";
-import { STORE_CATEGORIES, AULA_STORE_VERSION, visibleTools, type StoreCategory, type StoreRole, type StoreTool } from "../tools";
+import { STORE_CATEGORIES, STORE_SUBCATEGORIES, AULA_STORE_VERSION, visibleTools, type StoreCategory, type StoreRole, type StoreTool } from "../tools";
 import { AulaStoreIcon } from "./aula-store-icon";
 import StoreCard from "./store-card";
+import StoreGallery from "./store-gallery";
 import StoreDetail from "./store-detail";
 import StoreFilters from "./store-filters";
 import { CATEGORY_ICONS, FEATURED_APP_IDS, type StoreAction, type StoreApp } from "./store-model";
@@ -134,7 +135,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
 
   /**
    * Una sección física de la vista Aplicaciones: título con icono y
-   * rejilla de tarjetas.
+   * galería horizontal de tarjetas (App Store / Play Store).
    * @param title - Título de la sección.
    * @param titleIcon - Icono del título.
    * @param tools - Apps de la sección.
@@ -145,16 +146,50 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
     <section className="store-section" aria-label={title}>
       <h3 className="store-section-title">{titleIcon} {title}<span className="store-section-count">{tools.length}</span></h3>
       {tools.length ? (
-        <div className="store-grid">
+        <StoreGallery label={title}>
           <AnimatePresence mode="popLayout">
             {tools.map((tool, index) => renderCard(tool, index, scope))}
           </AnimatePresence>
-        </div>
+        </StoreGallery>
       ) : (
         <p className="store-results-empty">Más adelante: habrá más aplicaciones de {title}.</p>
       )}
     </section>
   );
+
+  /**
+   * Una categoría con sus apps repartidas en galerías por subcategoría
+   * (vocabulario compartido, en orden de catálogo; solo subcategorías con
+   * apps). Las categorías vacías muestran el aviso «Más adelante» sin galería.
+   * @param name - Categoría principal.
+   * @param tools - Apps de la categoría (ya filtradas por búsqueda/instaladas).
+   * @returns La sección de la categoría con sus galerías.
+   */
+  const renderCategoryGalleries = (name: StoreCategory, tools: StoreTool[]) => {
+    const CategoryIcon = CATEGORY_ICONS[name];
+    const galleries = STORE_SUBCATEGORIES
+      .map((sub) => ({ sub, items: tools.filter((tool) => tool.subcategory === sub) }))
+      .filter((gallery) => gallery.items.length > 0);
+    return (
+      <section className="store-section" aria-label={name}>
+        <h3 className="store-section-title"><CategoryIcon size={18} aria-hidden /> {name}<span className="store-section-count">{tools.length}</span></h3>
+        {tools.length ? (
+          galleries.map(({ sub, items }) => (
+            <div key={sub} className="store-subgroup">
+              <h4 className="store-subgroup-title">{sub}<span className="store-section-count">{items.length}</span></h4>
+              <StoreGallery label={sub}>
+                <AnimatePresence mode="popLayout">
+                  {items.map((tool, index) => renderCard(tool, index, `${name}-${sub}`))}
+                </AnimatePresence>
+              </StoreGallery>
+            </div>
+          ))
+        ) : (
+          <p className="store-results-empty">Más adelante: habrá más aplicaciones de {name}.</p>
+        )}
+      </section>
+    );
+  };
 
   return (
     <MotionConfig reducedMotion="user">
@@ -189,11 +224,10 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
       ) : isHome ? (
         <>
           {featuredTools.length > 0 ? renderSection("Mejores aplicaciones", <Star size={18} aria-hidden />, featuredTools, "destacadas") : null}
-          {categorySections.map((section) => {
-            const CategoryIcon = CATEGORY_ICONS[section.name];
-            return renderSection(section.name, <CategoryIcon size={18} aria-hidden />, section.tools, section.name);
-          })}
+          {categorySections.map((section) => renderCategoryGalleries(section.name, section.tools))}
         </>
+      ) : category !== "todas" ? (
+        renderCategoryGalleries(category, sectionTools)
       ) : (
         <section className="store-section" aria-label={sectionTitle}>
           <h3 className="store-section-title"><SectionIcon size={18} aria-hidden /> {sectionTitle}<span className="store-section-count">{sectionTools.length}</span></h3>

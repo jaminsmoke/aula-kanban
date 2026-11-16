@@ -45,9 +45,9 @@
 - **Criterios de aceptación:** cambiar de categoría desde la barra sin perder la barra al hacer scroll; búsqueda/instaladas intactos.
 
 ### Fase 2: Galerías horizontales con fade por subcategoría
-- [ ] Dentro de cada categoría, las apps se reparten en galerías por subcategoría (compartida entre categorías).
-- [ ] Fade lateral con máscara CSS, scroll-snap y sin scrollbar visible.
-- [ ] Categorías vacías con su aviso sin galería.
+- [x] Dentro de cada categoría, las apps se reparten en galerías por subcategoría (compartida entre categorías).
+- [x] Fade lateral con máscara CSS, scroll-snap y sin scrollbar visible.
+- [x] Categorías vacías con su aviso sin galería.
 - **Criterios de aceptación:** cada categoría muestra sus subcategorías como galerías horizontales; los fades comunican el desbordamiento; sin barras de scroll visibles.
 
 ### Fase 3: Verificación y cierre
@@ -67,3 +67,4 @@
 
 - 2026-11-16: roadmap creado tras cerrar STORE-03A; la entrada STORE-03B sale del backlog y la de STORE-03A se elimina (regla de flujo).
 - 2026-11-16: Fase 1 completada — `.store-shell` (column flex) con `.store-catalog` de scroll propio y `.store-bottombar` fija (Todo + 3 categorías, `aria-current`); chips de categoría retirados de `StoreFilters` (quedan búsqueda + Instaladas combinable). Suite de catálogo 6/6, `tsc` y ESLint en verde. La entrada STORE-03B se eliminó del backlog al pasar al roadmap.
+- 2026-11-16: Fase 2 completada — `StoreGallery` (scroll nativo + snap, fade con máscara solo si desborda, sin scrollbar) y `renderCategoryGalleries` (Educación: Pizarras/Diagramas/Herramientas; Productividad: Diagramas/Programación; Oficina vacía sin galería); «Mejores» como galería en Todo. Suite de catálogo 7/7, `tsc` y ESLint en verde.

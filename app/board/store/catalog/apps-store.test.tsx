@@ -53,6 +53,28 @@ describe("Aula Store", () => {
     fireEvent.click(screen.getByRole("button", { name: /Instaladas/ }));
     expect(screen.getByText("Excalidraw")).toBeTruthy();
   });
+  it("agrupa cada categoría en galerías por subcategoría (STORE-03B)", () => {
+    const { container } = render(<AppsStore {...props} role="owner" />);
+    // En Todo: «Mejores» (1) + Educación (3) + Productividad (2) = 6 galerías.
+    expect(container.querySelectorAll(".store-gallery")).toHaveLength(6);
+    // Diagramas vive en Educación y en Productividad (vocabulario compartido).
+    expect(screen.getAllByRole("group", { name: "Diagramas" })).toHaveLength(2);
+    expect(screen.getAllByRole("group", { name: "Pizarras" })).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: /^Educación/ }));
+    expect(container.querySelectorAll(".store-gallery")).toHaveLength(3);
+    expect(screen.getByRole("group", { name: "Pizarras" })).toBeTruthy();
+    expect(screen.getByRole("group", { name: "Diagramas" })).toBeTruthy();
+    expect(screen.getByRole("group", { name: "Herramientas" })).toBeTruthy();
+    expect(screen.queryByRole("group", { name: "Programación" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /^Productividad/ }));
+    expect(container.querySelectorAll(".store-gallery")).toHaveLength(2);
+    expect(screen.getByRole("group", { name: "Diagramas" })).toBeTruthy();
+    expect(screen.getByRole("group", { name: "Programación" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /^Oficina/ }));
+    // Oficina nace vacía: aviso sin galería.
+    expect(container.querySelector(".store-gallery")).toBeNull();
+    expect(screen.getByText("Más adelante: habrá más aplicaciones de Oficina.")).toBeTruthy();
+  });
   it("filtra por categoría y abre la ficha de detalle", () => {
     render(<AppsStore {...props} role="owner" />);
     fireEvent.click(screen.getByRole("button", { name: /^Educación/ }));
