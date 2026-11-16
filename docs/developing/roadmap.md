@@ -44,12 +44,13 @@
 
 ## 4. Fases
 
-### Fase 1: Línea base y estado del motor
-- [ ] Reproducir la medición actual sobre la build servida en `127.0.0.1:8791` con `node scripts/perf-latency.mjs --runs 5 --json --out docs/perf-latency.json` y anotar apertura, primer resultado y total de Básica y Científica.
-- [ ] Confirmar que la Básica no descarga `compute-engine` y que Científica/Ecuaciones lo hacen, con la precarga que ya existe desde 2026-11-14.
-- [ ] Exponer el estado del motor en `use-calculator`/`edu-evaluate` (cargando, listo, error) sin cambiar el comportamiento visible.
-- [ ] Añadir pruebas del estado y de que la Básica sigue sin precargar.
+### Fase 1: Línea base y estado del motor — completada (2026-11-16)
+- [x] Reproducir la medición actual sobre la build servida en `127.0.0.1:8791` con `node scripts/perf-latency.mjs --runs 5 --json --out docs/perf-latency.json` y anotar apertura, primer resultado y total de Básica y Científica.
+- [x] Confirmar que la Básica no descarga `compute-engine` y que Científica/Ecuaciones lo hacen, con la precarga que ya existe desde 2026-11-14.
+- [x] Exponer el estado del motor en `use-calculator`/`edu-evaluate` (cargando, listo, error) sin cambiar el comportamiento visible.
+- [x] Añadir pruebas del estado y de que la Básica sigue sin precargar.
 - **Criterios de aceptación:** la línea base queda registrada con los mismos números de partida; el estado del motor se puede observar y probar; `perf:budget` no cambia y la Básica no descarga el motor.
+- **Verificación:** medición sobre la build servida con el proyecto de demo, 5 muestras y Fast 3G: Básica abre en **3.444,9 ms**, primer resultado **141,4 ms**, total **3.592,5 ms**, sin `compute-engine`; Científica abre en **3.428,4 ms**, primer resultado **9.695,2 ms**, total **13.138 ms**, con el motor descargado. `engine-status.ts` publica `idle | loading | ready | error`, `use-calculator` lo expone como `engineStatus` y las pruebas cubren la suscripción, el estado listo tras evaluar y que la Básica no precarga. Suite completa **156 archivos / 1.146 pruebas**, `tsc`, ESLint y build correctos. `perf:budget` sigue en verde: `tablero` 170.708 B, `basica` 132.298 B y `cientifica` 1.960.043 B gzip.
 
 ### Fase 2: Precarga por intención e indicador
 - [ ] Precargar al enfocar o pasar el puntero por Científica/Ecuaciones, con un retardo corto y una sola vez, además del cambio de modo actual.
@@ -85,3 +86,4 @@
 - 2026-11-16: el flujo `cientifica` de `docs/perf-budget.json` tiene un límite de 2.069.960 B y la última medición local quedó en 1.959.897 B; la Básica no incluye `compute-engine`.
 - 2026-11-16: la revisión que originó esta entrada también descartó «GPT con Actions»; el sustituto es el plugin de Sites con MCP y no forma parte de este roadmap.
 - 2026-11-16: no se publica en Sites ni se cambia la versión `1.1.32`; el cierre es local y el push, único, como en los roadmaps anteriores.
+- 2026-11-16: la línea base se midió con el proyecto de demo `2222…` en la build local y se guardó en un JSON temporal; `docs/perf-latency.json` y la tabla de `docs/rendimiento.md` se actualizarán al cerrar la fase 2 o 3, con la comparación definitiva.

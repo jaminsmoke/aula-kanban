@@ -1,4 +1,5 @@
 import type { ComputeEngine } from "@cortex-js/compute-engine";
+import { setEngineStatus } from "./engine-status";
 import { formatNumber, type Evaluation } from "./calculator-evaluation";
 
 export type { Evaluation } from "./calculator-evaluation";
@@ -10,7 +11,20 @@ let engine: Promise<ComputeEngine> | null = null;
  * @returns Promesa con la instancia compartida del motor.
  */
 function getEngine(): Promise<ComputeEngine> {
-  engine ??= import("@cortex-js/compute-engine").then(({ ComputeEngine }) => new ComputeEngine());
+  if (!engine) {
+    setEngineStatus("loading");
+    engine = import("@cortex-js/compute-engine")
+      .then(({ ComputeEngine }) => new ComputeEngine())
+      .then((instance) => {
+        setEngineStatus("ready");
+        return instance;
+      })
+      .catch((error: unknown) => {
+        engine = null;
+        setEngineStatus("error");
+        throw error;
+      });
+  }
   return engine;
 }
 
@@ -18,7 +32,9 @@ function getEngine(): Promise<ComputeEngine> {
  * Empieza a cargar el motor de cálculo antes de que haga falta.
  */
 export function preloadEngine(): void {
-  void getEngine();
+  void getEngine().catch(() => {
+    // El error se conserva en `engine-status`; el siguiente uso reintenta.
+  });
 }
 
 /**

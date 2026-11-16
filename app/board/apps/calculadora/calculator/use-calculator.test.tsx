@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { setEngineStatus } from "./engine-status";
 
 const mocks = vi.hoisted(() => ({
   preload: vi.fn(),
@@ -27,6 +28,16 @@ describe("carga de la calculadora", () => {
   it("no precarga al abrir la calculadora básica", () => {
     renderHook(() => useCalculator());
     expect(mocks.preload).not.toHaveBeenCalled();
+  });
+
+  it("expone el estado del motor y lo actualiza", () => {
+    const { result } = renderHook(() => useCalculator());
+    expect(result.current.engineStatus).toBe("idle");
+
+    act(() => setEngineStatus("loading"));
+    expect(result.current.engineStatus).toBe("loading");
+
+    act(() => setEngineStatus("idle"));
   });
 
   it("precarga al entrar en Científica o abrir Ecuaciones", () => {

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { evaluateBasic } from "./basic-evaluate";
+import { getEngineStatus, subscribeEngineStatus, type EngineStatus } from "./engine-status";
 import { evaluateLatex, preloadEngine } from "./edu-evaluate";
 import { HISTORY_KEY, type HistoryEntry, type Key } from "./calculator-keys";
 
@@ -20,6 +21,7 @@ export function useCalculator() {
   const [sciPage, setSciPage] = useState(0);
   const [showEquations, setShowEquations] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [engineStatus, setEngineStatus] = useState<EngineStatus>(getEngineStatus);
   const [memory, setMemory] = useState(0);
   const [history, setHistory] = useState<HistoryEntry[]>(() => {
     if (typeof window === "undefined") return [];
@@ -33,6 +35,9 @@ export function useCalculator() {
   const [showHistory, setShowHistory] = useState(false);
   const justEvaluated = useRef(false);
   const lastAnswer = useRef("");
+
+  // El estado del motor se comparte entre la calculadora y el editor de ecuaciones.
+  useEffect(() => subscribeEngineStatus(setEngineStatus), []);
 
   // El motor solo se adelanta en las vistas que lo necesitan; la calculadora
   // básica sigue abriendo sin descargar compute-engine.
@@ -200,6 +205,7 @@ export function useCalculator() {
     sciPage,
     showEquations,
     busy,
+    engineStatus,
     memory,
     history,
     showHistory,

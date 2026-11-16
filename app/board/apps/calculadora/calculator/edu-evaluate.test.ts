@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { evaluateLatex, evaluateLines } from "./edu-evaluate";
+import { getEngineStatus } from "./engine-status";
 
 describe("Evaluación de ecuaciones", () => {
+  it("marca el motor como listo después de evaluar", async () => {
+    await evaluateLatex("1+1");
+    expect(getEngineStatus()).toBe("ready");
+  });
+
   it("calcula una operación aritmética", async () => {
     const result = await evaluateLatex("2+3\\times4");
     expect(result).toMatchObject({ kind: "value", exact: "14", numeric: "14" });
