@@ -1,10 +1,31 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** PROMO-07 · Preparar la demo para producción · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-16 — Roadmap PROMO-07 · Preparar la demo para producción
+
+**Estado:** Completada · Pendiente de publicación
+
+### Cambios
+
+- `lib/domain/demo-data.ts` centraliza los datos ficticios con ids fijos; `scripts/seed-demo.mjs` los comparte y `npm run seed:demo` sigue igual.
+- `lib/domain/demo-sql.ts` y `npm run seed:demo:sql` generan un SQL idempotente, limitado al proyecto demo, sin `instance_apps` y sin tocar otros proyectos. README documenta la copia, la revisión, la ejecución por Codex y la verificación.
+- La portada oculta «Probar la demo» cuando el proyecto no existe (`lib/server/demo-availability.ts`), y `/demo` distingue la siembra local de la preparación autorizada de una instancia publicada.
+- El SQL se probó dos veces en una D1 limpia con un proyecto ajeno; la demo abrió sin sesión, las escrituras respondieron 403 y el proyecto real y `instance_apps` no cambiaron.
+
+### Verificación
+
+- Suite completa: **159 archivos / 1.159 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde (`tablero` 170.714 B, `basica` 132.608 B, `cientifica` 1.960.353 B gzip).
+- Portada y demo revisadas a 1366, 1024 y 390 px; sin demo la portada no muestra un enlace roto y `/demo` explica cómo prepararla.
+- Commits: `d306551` (roadmap), `ce10d7c` (Fase 1), `bd59390` (Fase 2) y el commit de cierre. Push de cierre a `github main`; **publicación pendiente de Codex**: el Site sigue en **1.1.32**.
+
+### Seguimiento
+
+- El backlog queda solo con PROMO-01 pausado; no hay roadmap activo. Codex debe aplicar el SQL en la D1 publicada, verificar la demo sin sesión y publicar la versión.
 
 ## 2026-11-16 — Roadmap PROMO-06 · Primer resultado de la calculadora científica
 

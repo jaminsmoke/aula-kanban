@@ -16,7 +16,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | PROMO-07 · Preparar la demo para producción | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | Sin fase activa; plantilla lista para el siguiente roadmap | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -89,7 +89,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap STORE-03B completado:** barra inferior fija (Todo + categorías) y subcategorías como galerías horizontales con fade en Aula Store; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-03b.md`](historial/roadmap-store-03b.md).
 - **Roadmap PERM-01 completado:** matriz y delegación de permisos (capacidades con ámbito, roles y concesiones revocables, con control autoritativo de servidor); resumen en [`changelog.md`](developing/changelog.md), matriz en [`Store/matriz-permisos.md`](Store/matriz-permisos.md) y plan archivado en [`historial/roadmap-perm-01.md`](historial/roadmap-perm-01.md).
 - **Roadmap PROMO-02 completado:** portada pública nueva de `/` centrada en el producto y el plugin de ChatGPT, con CTA de acceso, enlace a documentación y previsualización estática del tablero; verificada a 1366, 1024 y 390 px en claro y oscuro. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-promo-02.md`](historial/roadmap-promo-02.md).
-- **Roadmap PROMO-07 activo:** preparación autorizada e idempotente de la demo para la instancia publicada, con SQL revisado, sin tocar apps globales ni proyectos reales; plan en [`roadmap.md`](developing/roadmap.md).
+- **Roadmap PROMO-07 completado (publicación pendiente):** demo preparada para producción con datos compartidos, SQL idempotente sin `instance_apps`, portada que oculta la demo si falta y procedimiento autorizado para Codex; verificada en una D1 limpia. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-promo-07.md`](historial/roadmap-promo-07.md).
 - **Roadmap PROMO-06 completado:** estado del motor y aviso «Preparando el motor…», precarga por intención y modo recordado en la calculadora científica, con la decisión de mantener `compute-engine` y la nueva línea base de latencia. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-promo-06.md`](historial/roadmap-promo-06.md).
 - **Roadmap PROMO-05 completado:** modo demo sin cuenta y de solo lectura sobre el proyecto ficticio de PROMO-03, con identidad de servidor, cookie `__demo`, entrada desde la portada, banner y bloqueo de escrituras; verificado con D1 limpia y seed. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-promo-05.md`](historial/roadmap-promo-05.md).
 - **Roadmap PROMO-04 completado:** páginas públicas de privacidad y condiciones, enlaces desde la portada y la ayuda, y archivos de rastreo (`robots.txt`, `sitemap.xml`, `manifest.webmanifest`) con iconos; verificadas sin sesión a 1366, 1024 y 390 px. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-promo-04.md`](historial/roadmap-promo-04.md).
