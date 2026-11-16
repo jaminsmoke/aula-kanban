@@ -2,30 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** APP-02 aparcada; PERM-01 pendiente como prerequisito de APP-03; STORE-02, STORE-03 y APP-03 (carpetas) pendientes de priorizar
+> **Roadmap:** STORE-02 · Vista Libros con persistencia propia · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** APP-02 aparcada; PERM-01 pendiente como prerequisito de APP-03; STORE-03 y APP-03 (carpetas) pendientes de priorizar
 
 ---
-
-## 2026-11-15 — STORE-02 · Familias descargables en la Tienda: libros escolares
-
-- Contexto: además de las apps, se valora una familia de contenido descargable en la Tienda: libros escolares por curso y materia (matemáticas, lengua, inglés…), para descargar y tener disponibles en el aula.
-- Investigación (2026-11-15): los libros de texto comerciales (Santillana, Anaya, SM, Oxford, Burlington…) están protegidos por derechos de autor y no hay descarga gratuita legal; solo existen programas de préstamo (p. ej. ACCEDE). No se deben incorporar desde fuentes pirata. Las vías legales con licencia abierta encontradas:
-  - **Textos Marea Verde** (vía portal de Recursos Educativos Abiertos de Canarias): libros de Matemáticas de ESO (1º–4º ESO) en PDF, versión fotocopiable y capítulos sueltos; licencia CC BY-NC-SA. Cobertura por curso y materia, en español.
-  - **INTEF / Ministerio**: «Matemáticas para la ESO» (libro interactivo, CC BY-NC-SA, 1º–4º ESO); **Proyecto EDIA** (CeDeC) con inglés de ESO por proyectos (1º «English in my daily life», 2º «What a digital world!», 3º «English Speaking Cities», 4º «Teens crafting communities»), REA de descarga libre; agregador **Procomún**.
-  - **OpenStax**: licencia CC BY-NC-SA (migración de todo el catálogo en 2026), PDF gratuitos y revisados por pares, pero con currículo estadounidense (Prealgebra, Algebra 1/2, Calculus, Statistics, humanidades); no alineado con el currículo español de ESO. Algunos títulos en español.
-  - **CK-12 FlexBooks**: licencia propia «Curriculum Materials License» (solo fines educativos, atribución, cambios bajo la misma licencia); interactivos de Matemáticas y Ciencias con estándares EE. UU. (CCSS), con traducciones al español.
-  - **Hueco**: no se ha encontrado un libro completo de Lengua castellana y Literatura de ESO en abierto equivalente a los de matemáticas; habría que buscarlo en Procomún/INTEF o decidir si se cubre con REA sueltos.
-- Cobertura por nivel (investigación ampliada 2026-11-16): **sí hay libros/material descargable legal para Primaria, ESO y Bachillerato**, no solo ESO:
-  - **Primaria (1º–6º):** Textos Marea Verde declara material para primaria, ESO y Bachillerato (principalmente Matemáticas, ajustado al currículo oficial y LOMLOE, CC BY-NC-SA, libros completos y capítulos en PDF); **INTEF · Situaciones de aprendizaje** ofrece SdA de Primaria por ciclos (CC BY-SA 4.0, con fuente descargable, HTML/SCORM/PDF).
-  - **ESO (1º–4º):** Marea Verde, libros completos de Matemáticas de 1º a 4º ESO (PDF, fotocopiable y capítulos); INTEF/EDIA con SdA de todas las materias, incluido Inglés por proyectos (1º–4º) y Lengua («Hacemos cosas con palabras», series de 1º–4º).
-  - **Bachillerato (1º–2º):** Marea Verde, Matemáticas I y II más Matemáticas aplicadas a CCSS I y II (PDF LOMLOE, con soluciones); INTEF/EDIA con SdA de Bachillerato (Geografía/Historia, Lengua, Matemáticas…).
-  - Agregador: **Procomún** (repositorio oficial del INTEF) para localizar REA por etapa y materia.
-  - Huecos: no hay libro completo de Lengua Castellana y Literatura de ESO/Bachillerato en abierto equivalente a los de Matemáticas (solo SdA/REA sueltos de EDIA); Inglés tampoco es un libro completo, sino proyectos REA. OpenStax/CK-12 siguen fuera del currículo español (EE. UU.).
-- Cómo lo haríamos (propuesta, sin implementar): catálogo de títulos con fuente, licencia, nivel (Primaria/ESO/Bachillerato), curso, materia y formato (PDF/HTML/SCORM); ficha con atribución y licencia visibles; vista «Libros» de la Tienda (STORE-01 ya dejó la pestaña preparada); decidir si el contenido se copia a R2 (acceso offline y estable, pero peso y mantenimiento) o se enlaza a la fuente (ligero, depende de terceros, y las licencias CC permiten enlazar); y si los libros entran en mochila/maletín.
-- Al retomar: elegir 2–3 fuentes con licencia verificable (Marea Verde e INTEF/EDIA como base en español), empezar por Matemáticas de Primaria/ESO/Bachillerato y dejar Lengua/Inglés como fase posterior salvo que se acepte el formato SdA.
-- Criterios: licencia de cada fuente verificada y visible en la ficha; formato y peso dentro del presupuesto; atribución correcta (CC BY-NC-SA / CK-12); sin contenido con copyright de editoriales comerciales; pruebas de descarga y lectura en el escritorio personal y en Tienda; decidir cobertura MCP (probablemente fuera de alcance inicial).
-- Dependencias: STORE-01 (taxonomía: las familias conviven con las categorías de apps); APP-03 (si los libros entran en mochila/maletín). No bloquear el resto de la Tienda.
 
 ## 2026-11-15 — STORE-03 · Renombrar la taxonomía de categorías de la Tienda
 
