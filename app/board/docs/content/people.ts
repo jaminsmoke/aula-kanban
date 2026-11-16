@@ -7,6 +7,7 @@ export const peopleSections: DocSection[] = [
     lead: "Administración reúne Alumnos y Profesores, con las fichas del grupo y sus tareas asignadas. Gestionar miembros decide qué cuenta de ChatGPT entra al proyecto y con qué rol.",
     blocks: [
       { type: "paragraph", text: "Las dos secciones se abren desde «Administración», en la cabecera, con el sidebar de la vista. Comparten aspecto: un contador («n alumnos» o «n profesores»), dos disposiciones («Vista mosaico» y «Vista lista») y una tarjeta por ficha con su nombre, su puesto y el estado de su cuenta. Al abrir una tarjeta ves la ficha completa; si eres alumno, tu propia ficha se abre directamente al entrar en Alumnos." },
+      { type: "paragraph", text: "Quien gestiona el proyecto ve tres pestañas: «Miembros», «Herramientas» y «Permisos». La de «Permisos» es de solo lectura: muestra la matriz de capacidades del proyecto (Administración, Profesorado, Alumnado e Invitado) y el rol efectivo de cada ficha con cuántas de las cuatro capacidades cuenta. No hay casillas que marcar porque los permisos se conceden por rol; las capacidades de instancia se consultan en Ajustes > Permisos." },
       {
         type: "definitions",
         items: [
@@ -76,7 +77,7 @@ export const peopleSections: DocSection[] = [
       {
         type: "steps",
         items: [
-          "Abre el engranaje de la cabecera. La barra lateral de Ajustes tiene «Cuenta», «Apariencia», «Documentación» y «Tokens MCP» y, si eres propietario o administrador, «Administradores» y «Almacenamiento».",
+          "Abre el engranaje de la cabecera. La barra lateral de Ajustes tiene «Cuenta», «Apariencia», «Documentación» y «Tokens MCP» y, si eres propietario o administrador, «Administradores», «Permisos» y «Almacenamiento».",
           "En «Cuenta» ves tu «Cuenta de ChatGPT» con nombre y correo, tu «Permiso en la aplicación», el «Proyecto activo» y tu «Rol en el proyecto» (Propietario, Administrador, Profesor, Alumno o Invitado).",
           "El mismo panel avisa de que los permisos de la aplicación son independientes de la propiedad del Site en Sites, y ofrece «Cerrar sesión».",
         ],

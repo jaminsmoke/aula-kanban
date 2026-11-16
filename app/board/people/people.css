@@ -94,6 +94,7 @@
 /* Pestaña «Herramientas» (STORE-04) de Profesores y Alumnos. */
 .people-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin: 4px 0 16px;
 }

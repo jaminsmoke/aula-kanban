@@ -6,6 +6,27 @@
 
 ---
 
+## 2026-11-16 — Roadmap PERM-02 · Secciones de permisos en Ajustes y Administración
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- La matriz PERM-01 deja de ser solo documentación y se ve en la aplicación desde una **fuente única**, `lib/domain/permisos.ts` (ocho capacidades con ámbito, título, descripción y roles), que evalúa el servidor en `lib/server/capabilities.ts` y consumen ambas superficies.
+- Ajustes gana la sección **«Permisos»** (entre Administradores y Almacenamiento, solo dueño/administración): matriz de instancia de solo lectura con quién posee cada capacidad y notas de no delegación. `permisos` se añade a `SettingsSection`/`SETTINGS_SECTIONS` y `obtener_enlace` la acepta; una cuenta sin rol global no la ve y su URL vuelve a Cuenta con `replaceState`.
+- Profesores y Alumnos ganan la pestaña **«Permisos»** junto a Miembros y Herramientas, con su misma visibilidad y estado local, y un panel compartido (`permissions/project-permissions-panel.tsx`): matriz de proyecto (Administración, Profesorado, Alumnado e Invitado) y rol efectivo de las fichas con cuántas de las cuatro capacidades tiene cada una. Sin controles editables: no hay concesiones que persistir.
+- Ayuda, `docs/Store/matriz-permisos.md` y snapshot del catálogo MCP actualizados. Sin migraciones, sin cambio de versión (`1.1.31`) y sin publicación en Sites.
+
+### Verificación
+
+- Suite completa: 140 archivos / 1.101 pruebas; `tsc`, ESLint completo y build en verde.
+- Navegador local con identidad de desarrollo a 1366×900 y 390×844, en claro y oscuro: pestaña «Permisos» con `aria-current` y las tres pestañas visibles; matriz completa a 1366 (860 px) y sin desbordamiento de página a 390 (`scrollWidth` = 390), con la tabla desplazándose dentro de su contenedor. La revisión encontró que la tercera pestaña se cortaba a 390 px y se corrigió con `flex-wrap` en `.people-tabs`. Sin errores de consola.
+- Commits: `093c130` (apertura), `33589b8` (Fase 1), `088e0f5` (Fase 2) y `ef71b73` (Fase 3); el cierre queda en el commit de documentación.
+
+### Seguimiento
+
+- **APP-03** (carpetas e iconos de mochila/maletín) sigue pendiente de priorizar; **APP-02** sigue aparcada. No hay más entradas.
+
 ## 2026-11-16 — Roadmap PERM-01 · Matriz y delegación de permisos
 
 **Estado:** Completada · Sin publicación

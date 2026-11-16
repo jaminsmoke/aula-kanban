@@ -99,8 +99,8 @@ titularidad de Sites sigue fuera de la aplicación.
 ## Ubicación
 
 - **Permisos por proyecto:** pestaña «Permisos» de Administración > Profesores y
-  Administración > Alumnos, junto a Miembros y Herramientas (roadmap PERM-02),
-  con la gestión de miembros existente como parte de la matriz.
+  Administración > Alumnos, junto a Miembros y Herramientas (implementada en
+  PERM-02, Fase 3), con la gestión de miembros existente como parte de la matriz.
 - **Permisos de instancia:** sección «Permisos» del sidebar de Ajustes, junto a
   Administradores (implementada en PERM-02, Fase 2), solo para dueño y
   administradores.
