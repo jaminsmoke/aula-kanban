@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 2 entradas: PROMO-01 pausado y PROMO-03..06 pendientes de debate
+> **Roadmap:** PROMO-03 · Proyecto de demo versionado y capturas nuevas · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas: PROMO-01 pausado y PROMO-04..06 pendientes de debate
 
 ---
 
@@ -13,7 +13,7 @@
 - Falta antes de retomarlo: publicar una versión que incluya los metadatos, pasar LinkedIn Post Inspector, Facebook Sharing Debugger, X Card Validator y WhatsApp, y entonces añadir el changelog y archivar el plan.
 - Notas: producción sigue en `1.1.32` y `/og/aula-kanban.png` responde 404; commits `ad73cf2`, `c7338cf` y `2f7e242`. El plan completo se conserva en [`historial/roadmap-promo-01.md`](../historial/roadmap-promo-01.md).
 
-## 2026-11-16 — PROMO-03..06 · Preparar la promoción (demo, legal y rendimiento)
+## 2026-11-16 — PROMO-04..06 · Preparar la promoción (legal, demo y rendimiento)
 
 > Origen: revisión de solo lectura del 16 nov 2026 sobre la 1.1.32 (web en vivo y repo). Veredicto: lista para promocionar **con arreglos**; lo que falla es la entrada pública. El vídeo será una presentación animada con fragmentos cortos de la app integrados. Orden = impacto.
 >
@@ -24,13 +24,6 @@
 > - Pruebas junto al código (`*.test.ts(x)`, Vitest + Testing Library + jsdom). Checks de CI (`.github/workflows/ci.yml`): `npm run lint`, `npx tsc --noEmit`, `npm test`, `npm run build`, `npm run perf:budget`.
 > - Reglas de `AGENTS.md`: commits locales por fase y **un único push** al cerrar el roadmap; **solo Codex publica en Sites**, aplica migraciones remotas y verifica la versión publicada (`npm run release:prepare -- --published-version X.Y.Z`). Que haya push no significa que esté publicado.
 > - Al llevar una PROMO al roadmap, seguir `docs/developing/templates/roadmap-template.md` y cerrar en `docs/developing/changelog.md` como el resto.
-
-### PROMO-03 · Proyecto de demo para grabar y capturas nuevas
-- Contexto: el «Proyecto de demostración» de DOC-11 (6 alumnos y 2 profesores ficticios, 8 tareas, apps instaladas) se sembró **por la API en la D1 local, sin versionar**: no hay script en el repo y en producción no existe. Las capturas `public/capturas/{tareas,calendario,ajustes}.webp` son de la 1.1.25, con la cabecera antigua (Clase/Alumnos/Profesores arriba), y `espacio.webp` es de la 1.1.31, con el proyecto «pruebas» y el usuario «Seedy».
-- Alcance: script versionado e idempotente que siembre el proyecto de demo (por ejemplo `scripts/seed-demo.mjs`, contra la API o la D1 local como `scripts/perf-latency.mjs`, que ya usa un proyecto fijo `11111111-1111-4111-8111-111111111111`), con tareas en las cuatro columnas, prioridades, fechas en el mes visible, alumnado y profesorado ficticios, escritorio con las cinco apps y una pizarra, un diagrama y un programa de bloques con contenido. Volver a hacer las cuatro capturas sobre la versión actual.
-- Archivos: `public/capturas/*.webp` (mismo nombre; 1200 px, WebP, 16–46 KB, Chrome headless a 1440×950, según DOC-11 en el changelog); referencias y textos `alt`/pie en `app/board/docs/content/tasks.ts` (tareas, calendario), `app/board/docs/content/people.ts` (ajustes) y `app/board/docs/content/workspace.ts` (espacio). Si cambia lo que se ve, actualizar el `alt` y el pie. `app/board/docs/content-coverage.test.ts` vigila la cobertura de la ayuda.
-- Criterios: todos los fragmentos del vídeo salen de este proyecto; sin datos reales de alumnado ni tokens visibles (Ajustes se recorta a Cuenta, como en DOC-11); capturas con la cabecera actual (Clase como icono, Administración con Tienda en el sidebar); no grabar mientras se publica una versión.
-- Notas: el escritorio de mochila y maletín ya incluye carpetas personales (APP-03B, completado): grabar o capturar esa parte con el cierre ya aplicado. Sembrar en producción exige que Codex publique y lo autorice; el script no debe tocar la D1 remota.
 
 ### PROMO-04 · Privacidad, condiciones y archivos de rastreo
 - Contexto: `/privacy`, `robots.txt`, `sitemap.xml` y `manifest.json` dan 404; en `app/` no hay ninguna página legal y `public/` solo tiene `_headers`, `favicon.svg`, fuentes y recursos de apps. Es una app con alumnado y un plugin publicado.

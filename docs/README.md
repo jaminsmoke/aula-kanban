@@ -16,7 +16,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Sin fase activa; plantilla lista para el siguiente roadmap | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | PROMO-03 · Proyecto de demo versionado y capturas nuevas | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -88,7 +88,8 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap STORE-03A completado:** taxonomía por familias de uso (Educación/Oficina/Productividad) con multi-categoría y subcategorías compartidas, filtros y secciones coherentes, vacíos con «Más adelante» y contrato MCP (`categorias`+`subcategoria`); resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-03a.md`](historial/roadmap-store-03a.md).
 - **Roadmap STORE-03B completado:** barra inferior fija (Todo + categorías) y subcategorías como galerías horizontales con fade en Aula Store; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-03b.md`](historial/roadmap-store-03b.md).
 - **Roadmap PERM-01 completado:** matriz y delegación de permisos (capacidades con ámbito, roles y concesiones revocables, con control autoritativo de servidor); resumen en [`changelog.md`](developing/changelog.md), matriz en [`Store/matriz-permisos.md`](Store/matriz-permisos.md) y plan archivado en [`historial/roadmap-perm-01.md`](historial/roadmap-perm-01.md).
-- **Roadmap PROMO-02 completado:** portada pública nueva de `/` centrada en el producto y el plugin de ChatGPT, con CTA de acceso, enlace a documentación y previsualización estática del tablero; verificada a 1366, 1024 y 390 px en claro y oscuro. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-promo-02.md`](historial/roadmap-promo-02.md). Sin roadmap activo.
+- **Roadmap PROMO-02 completado:** portada pública nueva de `/` centrada en el producto y el plugin de ChatGPT, con CTA de acceso, enlace a documentación y previsualización estática del tablero; verificada a 1366, 1024 y 390 px en claro y oscuro. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-promo-02.md`](historial/roadmap-promo-02.md).
+- **Roadmap PROMO-03 activo:** proyecto de demostración versionado e idempotente y capturas nuevas para la ayuda; plan en [`roadmap.md`](developing/roadmap.md).
 - **PROMO-01 pausado:** metadatos Open Graph, Twitter Card y tarjeta 1200×630 ya implementados y verificados en local; el cierre externo queda pendiente de publicar. Plan pausado en [`historial/roadmap-promo-01.md`](historial/roadmap-promo-01.md).
 - **Roadmap APP-03B completado:** carpetas personales en la mochila del alumnado y el maletín docente, con organizador y ventanas de carpeta por usuario y proyecto; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-app-03b.md`](historial/roadmap-app-03b.md).
 - **Roadmap APP-02 completado:** Calculadora y Tabla periódica como apps independientes, sin Medir ni Lectura; transición de datos idempotente, alias `edu-tools` y catálogo MCP `0.28.0`. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-app-02.md`](historial/roadmap-app-02.md).
