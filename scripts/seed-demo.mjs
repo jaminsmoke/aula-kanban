@@ -20,6 +20,12 @@ const LOCAL_USER = {
   email: "seedy@sites.test",
   fullName: "Seedy Local",
 };
+/**
+ * Cookie que el servidor de desarrollo reconoce para inyectar la sesión
+ * local. El middleware sustituye las cabeceras `oai-authenticated-user-*`
+ * por las suyas, así que sin esta cookie la siembra recibe 401.
+ */
+const LOCAL_AUTH_COOKIE = "__sites_local_auth=1";
 
 export const DEMO_STUDENTS = [
   {
@@ -540,6 +546,7 @@ export class HttpError extends Error {
 export function createClient(baseUrl) {
   const sessionHeaders = {
     origin: baseUrl,
+    cookie: LOCAL_AUTH_COOKIE,
     "oai-authenticated-user-id": LOCAL_USER.id,
     "oai-authenticated-user-email": LOCAL_USER.email,
     "oai-authenticated-user-full-name": encodeURIComponent(LOCAL_USER.fullName),
