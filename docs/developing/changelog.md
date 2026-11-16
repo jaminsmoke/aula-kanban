@@ -6,6 +6,22 @@
 
 ---
 
+## 2026-11-16 — Roadmap STORE-01 · Vistas y secciones físicas en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Aula Store tiene vistas: «Aplicaciones» activa y «Libros» deshabilitada con «Próximamente» (STORE-02, sin contenido fingido).
+- En Aplicaciones, el inicio muestra «Mejores aplicaciones» (lista curada `FEATURED_APP_IDS` en `store-model.ts`) y una sección física por categoría (Aula, Pizarras, Programación, Diagramas) con la tarjeta existente; al buscar o filtrar vuelve la rejilla única de resultados.
+- Ficha de detalle, acciones y roles sin cambios; ayuda de workspace actualizada. La taxonomía nueva (Educación, Oficina, Productividad…) queda en el backlog como STORE-03.
+
+### Verificación
+
+- Suite completa: 128 archivos / 1.045 pruebas; `tsc`, ESLint y build en verde.
+- Navegador local: pestañas, «Mejores aplicaciones» (4) y secciones por categoría (1 app cada una).
+- Commits: `78e98ac` (apertura), `c6f97c4` (Fases 1-2); el cierre queda en el commit de documentación.
+
 ## 2026-11-15 — Roadmap APP-03 · Mochila del alumnado y maletín docente
 
 **Estado:** Completada · Sin publicación

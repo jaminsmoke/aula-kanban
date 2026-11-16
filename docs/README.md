@@ -14,7 +14,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | STORE-01 · Vistas y secciones físicas en Aula Store | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | Plantilla en espera de nuevo roadmap | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -80,7 +80,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap UI-08 completado:** Tienda en Administración, Clase como botón de icono en la cabecera, URL canónica `view=administracion&section=tienda` y alias `view=espacio`; revisado en 1366, 1024, 900, 620 y 390. Catálogo MCP `0.27.0`. Resumen en [`changelog.md`](developing/changelog.md).
 - **Roadmap APP-01 completado:** inventario y matriz de herramientas, roles y alcance en [`matriz-herramientas.md`](Store/matriz-herramientas.md). Resumen en [`changelog.md`](developing/changelog.md).
 - **Roadmap APP-03 completado:** mochila del alumnado y maletín docente (migración 0037 y sección `clase > mochila`); resumen en [`changelog.md`](developing/changelog.md).
-- **Roadmap STORE-01 activo:** vistas de Tienda (Aplicaciones / Libros próximamente), «Mejores aplicaciones» y secciones físicas por categoría; plan en [`roadmap.md`](developing/roadmap.md).
+- **Roadmap STORE-01 completado:** vistas de Tienda (Aplicaciones / Libros próximamente), «Mejores aplicaciones» y secciones físicas por categoría; resumen en [`changelog.md`](developing/changelog.md).
 - **Backlog:** APP-02, PERM-01 (prerequisito pendiente de APP-03), STORE-02 (libros escolares descargables, investigado), STORE-03 (renombrar taxonomía de Tienda) y carpetas/iconos propios de mochila y maletín (5 entradas).
 - **Roadmap UI-07 completado:** Documentación como sección de Ajustes, con URL canónica `view=ajustes&section=documentacion` y alias antiguo, y selector de proyecto en el hueco derecho de la cabecera; revisado en 1366, 1024 y 390. Resumen en [`changelog.md`](developing/changelog.md).
 - **Roadmap UI-05 completado:** estados vacíos de alumnado y profesorado con un componente compartido, selector oculto sin fichas y alta conectada a los diálogos existentes; revisado en 1366 y 390. Resumen en [`changelog.md`](developing/changelog.md); roadmap sin fase activa.
