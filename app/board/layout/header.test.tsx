@@ -61,6 +61,29 @@ describe("BoardHeader", () => {
     expect(screen.getByRole("link", { name: /Pruebas/ }).getAttribute("href")).toBe("/?project=p1&view=ajustes&section=administradores");
   });
 
+  it("estructura la cabecera en marca, navegación central y acciones", () => {
+    const { container } = render(<BoardHeader {...props} />);
+
+    const inner = container.querySelector(".topbar-inner");
+    const brand = container.querySelector(".topbar-brand");
+    const nav = container.querySelector(".topbar-nav");
+    const actions = container.querySelector(".topbar-actions");
+    expect(inner?.firstElementChild).toBe(brand);
+    expect(brand?.querySelector(".wordmark")).toBeTruthy();
+    expect(nav?.querySelector("nav.main-nav")).toBeTruthy();
+    expect(nav?.querySelector(".class-action")).toBeTruthy();
+    expect(actions?.querySelector(".project-menu")).toBeTruthy();
+    expect(actions?.querySelector(".header-settings")).toBeTruthy();
+    expect(actions?.querySelector(".account-menu")).toBeTruthy();
+  });
+
+  it("oculta la navegación cuando no hay proyecto", () => {
+    const { container } = render(<BoardHeader {...props} activeProject={undefined} projects={[]} />);
+    expect(container.querySelector("nav.main-nav")).toBeNull();
+    expect(container.querySelector(".topbar-brand .wordmark")).toBeTruthy();
+    expect(container.querySelector(".topbar-actions .account-menu")).toBeTruthy();
+  });
+
   it("abre Clase, Administración y Ajustes y marca sus acciones como activas", () => {
     const onView = vi.fn();
     const onSettings = vi.fn();

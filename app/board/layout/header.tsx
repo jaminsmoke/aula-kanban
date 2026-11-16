@@ -61,40 +61,46 @@ export default function BoardHeader({
   return (
     <header className="topbar">
       <div className={`shell topbar-inner${activeProject ? "" : " no-project"}`}>
-        <span className="wordmark"><span className="brand-icon" aria-hidden><Columns3 size={24} strokeWidth={2.4} /></span><span className="brand-text"><span>Aula Kanban</span><small className="brand-meta">v{appVersion} - {appAuthor}</small></span></span>
-        {activeProject && <nav className="main-nav" aria-label="Vistas">
-          <button type="button" aria-current={view === "administracion" ? "page" : undefined} onClick={() => onView("administracion")}>Administración</button>
-          <button type="button" className="class-action" aria-label="Clase" title="Clase" aria-current={view === "clase" ? "page" : undefined} onClick={() => onView("clase")}><Columns3 size={18} aria-hidden /></button>
-        </nav>}
-        {activeProject && <details className="project-menu">
-          <summary aria-label="Seleccionar proyecto"><FolderKanban size={18} /><span>{activeProject.name}</span><ChevronDown size={16} /></summary>
-          <div className="project-dropdown">
-            <p>Proyectos</p>
-            {projects.map((project) => <a key={project.id} href={projectHref(project.id)} aria-current={project.id === projectId ? "page" : undefined}><span>{project.name}</span>{project.id === projectId && <Check size={16} />}</a>)}
-            <div className="project-menu-actions">
-              {(owner || admin) && <button type="button" onClick={(event) => { close(event); onNewProject(); }}><Plus size={16} /> Nuevo proyecto</button>}
-              {canManage && activeProject && <button type="button" onClick={(event) => { close(event); onShareProject(); }}><Link2 size={16} /> Compartir proyecto</button>}
-              {canManage && <button type="button" onClick={(event) => { close(event); onMembers(); }}><Users size={16} /> Gestionar miembros</button>}
-              {(owner || admin) && activeProject && <button type="button" className="project-delete-action" onClick={(event) => { close(event); onDeleteProject(); }}><Trash2 size={16} /> Eliminar proyecto</button>}
-              <button type="button" className="remix-action" onClick={(event) => { close(event); onRemix(); }}><Plus size={16} /> Haz tu Site de Aula Kanban</button>
+        <div className="topbar-brand">
+          <span className="wordmark"><span className="brand-icon" aria-hidden><Columns3 size={24} strokeWidth={2.4} /></span><span className="brand-text"><span>Aula Kanban</span><small className="brand-meta">v{appVersion} - {appAuthor}</small></span></span>
+        </div>
+        <div className="topbar-nav">
+          {activeProject && <nav className="main-nav" aria-label="Vistas">
+            <button type="button" className="admin-action" aria-current={view === "administracion" ? "page" : undefined} onClick={() => onView("administracion")}>Administración</button>
+            <button type="button" className="class-action" aria-label="Clase" title="Clase" aria-current={view === "clase" ? "page" : undefined} onClick={() => onView("clase")}><Columns3 size={18} aria-hidden /></button>
+          </nav>}
+        </div>
+        <div className="topbar-actions">
+          {activeProject && <details className="project-menu">
+            <summary aria-label="Seleccionar proyecto"><FolderKanban size={18} /><span>{activeProject.name}</span><ChevronDown size={16} /></summary>
+            <div className="project-dropdown">
+              <p>Proyectos</p>
+              {projects.map((project) => <a key={project.id} href={projectHref(project.id)} aria-current={project.id === projectId ? "page" : undefined}><span>{project.name}</span>{project.id === projectId && <Check size={16} />}</a>)}
+              <div className="project-menu-actions">
+                {(owner || admin) && <button type="button" onClick={(event) => { close(event); onNewProject(); }}><Plus size={16} /> Nuevo proyecto</button>}
+                {canManage && activeProject && <button type="button" onClick={(event) => { close(event); onShareProject(); }}><Link2 size={16} /> Compartir proyecto</button>}
+                {canManage && <button type="button" onClick={(event) => { close(event); onMembers(); }}><Users size={16} /> Gestionar miembros</button>}
+                {(owner || admin) && activeProject && <button type="button" className="project-delete-action" onClick={(event) => { close(event); onDeleteProject(); }}><Trash2 size={16} /> Eliminar proyecto</button>}
+                <button type="button" className="remix-action" onClick={(event) => { close(event); onRemix(); }}><Plus size={16} /> Haz tu Site de Aula Kanban</button>
+              </div>
             </div>
-          </div>
-        </details>}
-        <button type="button" className="header-settings" aria-current={view === "ajustes" ? "page" : undefined} onClick={onSettings} aria-label="Ajustes" title="Ajustes">
-          <Settings size={18} aria-hidden />
-        </button>
-        <details className="account-menu">
-          <summary className="account-indicator" aria-label="Ver cuenta de ChatGPT">
-            <span className="account-avatar" aria-hidden>{(user.displayName.trim()[0] || user.email[0]).toUpperCase()}</span>
-            <span className="account-name">{user.displayName}</span>
-          </summary>
-          <div className="account-dropdown">
-            <strong>{demo ? "Cuenta de demostración" : "Cuenta de ChatGPT"}</strong><span>{user.email}</span>
-            {demo
-              ? <a className="account-signout" href="/demo/salir"><LogOut size={16} /> Salir de la demo</a>
-              : <a className="account-signout" href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>}
-          </div>
-        </details>
+          </details>}
+          <button type="button" className="header-settings" aria-current={view === "ajustes" ? "page" : undefined} onClick={onSettings} aria-label="Ajustes" title="Ajustes">
+            <Settings size={18} aria-hidden />
+          </button>
+          <details className="account-menu">
+            <summary className="account-indicator" aria-label="Ver cuenta de ChatGPT">
+              <span className="account-avatar" aria-hidden>{(user.displayName.trim()[0] || user.email[0]).toUpperCase()}</span>
+              <span className="account-name">{user.displayName}</span>
+            </summary>
+            <div className="account-dropdown">
+              <strong>{demo ? "Cuenta de demostración" : "Cuenta de ChatGPT"}</strong><span>{user.email}</span>
+              {demo
+                ? <a className="account-signout" href="/demo/salir"><LogOut size={16} /> Salir de la demo</a>
+                : <a className="account-signout" href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>}
+            </div>
+          </details>
+        </div>
       </div>
     </header>
   );

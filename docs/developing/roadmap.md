@@ -42,12 +42,13 @@
 
 ## 4. Fases
 
-### Fase 1: Cabecera en tres zonas
-- [ ] Reestructurar `app/board/layout/header.tsx` para separar marca, navegación y controles; la marca conserva icono, nombre, versión y autor.
-- [ ] Ajustar `header.css` para que la marca quede pegada a la izquierda, la navegación se centre y el botón de Clase quede en el centro geométrico del header; revisar el caso sin proyecto.
-- [ ] Revisar 1366, 1024 y 390 px: sin desbordes, sin saltos al cambiar de vista y con el selector de proyecto y la cuenta en su zona.
-- [ ] Añadir pruebas de estructura y de que la navegación conserva sus destinos.
+### Fase 1: Cabecera en tres zonas — completada (2026-11-16)
+- [x] Reestructurar `app/board/layout/header.tsx` para separar marca, navegación y controles; la marca conserva icono, nombre, versión y autor.
+- [x] Ajustar `header.css` para que la marca quede pegada a la izquierda, la navegación se centre y el botón de Clase quede en el centro geométrico del header; revisar el caso sin proyecto.
+- [x] Revisar 1366, 1024 y 390 px: sin desbordes, sin saltos al cambiar de vista y con el selector de proyecto y la cuenta en su zona.
+- [x] Añadir pruebas de estructura y de que la navegación conserva sus destinos.
 - **Criterios de aceptación:** la marca no se mueve del borde izquierdo; Clase queda centrado en escritorio; la navegación no desborda en móvil; no hay regresiones en el resto de la cabecera.
+- **Verificación:** la cabecera usa tres zonas (`topbar-brand`, `topbar-nav`, `topbar-actions`) en una rejilla `1fr auto 1fr`; la marca es el primer elemento y Clase queda en el centro geométrico (683 px de 1366, 512 de 1024 y 195 de 390). En 1024 y 390 la navegación pasa a una fila propia centrada y el resto de controles se mantiene a la derecha. El caso sin proyecto oculta la navegación y conserva marca y cuenta. 5 pruebas del header, suite completa **160 archivos / 1.172 pruebas**, `tsc` y ESLint correctos.
 
 ### Fase 2: Remix en Ajustes
 - [ ] Añadir la sección «Tu Site» a `SettingsSection`, `SETTINGS_SECTIONS`, el parser y el constructor de URL, con sus pruebas de ida y vuelta.
