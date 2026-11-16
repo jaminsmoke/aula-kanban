@@ -55,10 +55,12 @@
 
 **Implementado (2026-11-16):** `permisos` en `SettingsSection`/`SETTINGS_SECTIONS` (entre Administradores y Almacenamiento) y entrada con icono `Lock` en el sidebar, restringida a dueño/administración con la misma corrección de URL. Nuevo panel `settings-permissions.tsx` de solo lectura que pinta `capacidadesDe("instancia")` (instalación, administradores, proyectos y consulta sin proyecto) con quién las posee, más notas de no delegación y de ámbito de proyecto. Ayuda actualizada y snapshot del catálogo MCP con `permisos` (una sola línea).
 
-### Fase 3: Pestaña Permisos en Profesores y Alumnos
-- [ ] Tercera pestaña `miembros | herramientas | permisos` en ambas vistas, con la visibilidad que hoy tiene «Herramientas» (`canManage`/`canTools`).
-- [ ] Panel de proyecto: matriz rol × capacidad (profesor, alumno, invitado) y rol efectivo de los miembros del proyecto.
+### Fase 3: Pestaña Permisos en Profesores y Alumnos — completada
+- [x] Tercera pestaña `miembros | herramientas | permisos` en ambas vistas, con la visibilidad que hoy tiene «Herramientas» (`canManage`/`canTools`).
+- [x] Panel de proyecto: matriz rol × capacidad (profesor, alumno, invitado) y rol efectivo de los miembros del proyecto.
 - **Criterios de aceptación:** las tres pestañas conviven con `aria-current` correcto; no hay controles que no persistan.
+
+**Implementado (2026-11-16):** nuevo `permissions/project-permissions-panel.tsx`, de solo lectura, compartido por ambas vistas. Pinta `capacidadesDe("proyecto")` en una tabla rol × capacidad (Administración, Profesorado, Alumnado e Invitado) evaluada con `capacidadConcedida`, y encima el rol efectivo de las fichas cargadas con cuántas de las cuatro capacidades tiene cada una. La pestaña «Permisos» con icono `Lock` se suma a Miembros y Herramientas en `students-view.tsx` y `teachers-view.tsx`, con la misma visibilidad (`canManage`/`canTools`) y estado local, y las notas explican que las concesiones no se editan aquí y que la matriz de instancia está en Ajustes > Permisos.
 
 ### Fase 4: Verificación y cierre
 - [ ] Suite completa, `tsc`, ESLint y build en verde; revisión en navegador local a 1366 y 390 px, en claro y oscuro.
@@ -79,3 +81,4 @@
 - 2026-11-16: el usuario detectó que la Fase 3 de PERM-01 había descartado expresamente las superficies de permisos; esa decisión queda revertida y el trabajo se abre como roadmap PERM-02. La planificación se hace aquí en lugar de duplicarla en el backlog (regla de flujo: lo que entra en el roadmap sale del backlog).
 - 2026-11-16: Fase 1 completada — la matriz vive en `lib/domain/permisos.ts` y `capabilities.ts` solo resuelve roles; 20 pruebas focales, `tsc` y ESLint en verde.
 - 2026-11-16: Fase 2 completada — sección «Permisos» en Ajustes (solo dueño/administración) con la matriz de instancia en solo lectura; `path` de URL y snapshot MCP actualizados.
+- 2026-11-16: Fase 3 completada — pestaña «Permisos» en Profesores y Alumnos con la matriz de proyecto y el rol efectivo de las fichas; panel compartido y sin controles editables.

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Users, Wrench } from "lucide-react";
+import { Lock, Plus, Users, Wrench } from "lucide-react";
 import type { Task } from "../../../../lib/domain/task";
 import type { Student } from "../../../../lib/domain/student";
 import { taskBelongsTo } from "../../../../lib/domain/assignments";
 import LayoutToggle from "../../layout/layout-toggle";
 import BooksToolsPanel from "../tools/books-tools-panel";
+import ProjectPermissionsPanel from "../permissions/project-permissions-panel";
 import ProfileCard from "../profile-card";
 import ProfileDetail from "../profile-detail";
 import PeopleEmptyState from "../empty-state";
@@ -43,7 +44,7 @@ export default function StudentsView({
 }) {
   const student = studentName ? students?.find((item) => item.section === studentName) : undefined;
   const isEmpty = students !== null && students.length === 0;
-  const [tab, setTab] = useState<"miembros" | "herramientas">("miembros");
+  const [tab, setTab] = useState<"miembros" | "herramientas" | "permisos">("miembros");
   return (
     <section className="students-view">
       <div className="students-heading">
@@ -55,10 +56,14 @@ export default function StudentsView({
           <div className="people-tabs" role="group" aria-label="Vistas de alumnos">
             <button type="button" className="people-tab" aria-current={tab === "miembros" ? "page" : undefined} onClick={() => setTab("miembros")}><Users size={16} aria-hidden /> Miembros</button>
             <button type="button" className="people-tab" aria-current={tab === "herramientas" ? "page" : undefined} onClick={() => setTab("herramientas")}><Wrench size={16} aria-hidden /> Herramientas</button>
+            <button type="button" className="people-tab" aria-current={tab === "permisos" ? "page" : undefined} onClick={() => setTab("permisos")}><Lock size={16} aria-hidden /> Permisos</button>
           </div>
         )}
       </div>
-      {tab === "herramientas" && canManage ? (<BooksToolsPanel projectId={projectId} />) : (<>
+      {tab === "permisos" && canManage ? (<ProjectPermissionsPanel
+        contexto="Alumnado de este proyecto"
+        miembros={(students ?? []).map((item) => ({ nombre: item.displayName || item.name, rol: "student" }))}
+      />) : tab === "herramientas" && canManage ? (<BooksToolsPanel projectId={projectId} />) : (<>
       {loadError && <div role="alert" className="alert">{loadError} <button type="button" className="text-button" onClick={onRetryTasks}>Reintentar</button></div>}
       {studentError && <div role="alert" className="alert">{studentError} <button type="button" className="text-button" onClick={onRetryStudents}>Reintentar</button></div>}
       {studentName ? (() => {

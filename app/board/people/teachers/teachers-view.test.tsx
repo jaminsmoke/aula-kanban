@@ -53,6 +53,24 @@ describe("TeachersView", () => {
     expect(screen.queryByRole("button", { name: "Añadir profesor" })).toBeNull();
   });
 
+  it("abre la pestaña Permisos con la matriz y el rol efectivo", async () => {
+    renderTeachers();
+    await screen.findByText("Marta");
+
+    fireEvent.click(screen.getByRole("button", { name: "Permisos" }));
+
+    expect(screen.getByRole("table", { name: "Capacidades del proyecto por rol" })).toBeTruthy();
+    expect(screen.getByText("Profesorado y alumnado de este proyecto")).toBeTruthy();
+    expect(screen.getByText("4 de 4 capacidades")).toBeTruthy();
+  });
+
+  it("oculta la pestaña Permisos sin permiso de herramientas", async () => {
+    renderTeachers({ canTools: false });
+    await screen.findByText("Marta");
+
+    expect(screen.queryByRole("button", { name: "Permisos" })).toBeNull();
+  });
+
   it("explica el vacío y abre el alta con permiso", async () => {
     renderTeachers({}, []);
 

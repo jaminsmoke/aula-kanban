@@ -197,3 +197,154 @@
   color: var(--ui-action-text);
   background: var(--ui-action-soft);
 }
+
+/* Pestaña «Permisos» (PERM-02) de Profesores y Alumnos: solo lectura. */
+.project-permissions {
+  display: grid;
+  gap: 20px;
+  max-width: 860px;
+}
+.project-permissions-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.project-permissions-head h3 {
+  margin: 0 0 2px;
+}
+.project-permissions-head p {
+  margin: 0;
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+.project-permissions-icon {
+  display: grid;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: 12px;
+  color: var(--ui-action-text);
+  background: var(--ui-action-soft);
+}
+.project-permissions-block {
+  display: grid;
+  gap: 8px;
+}
+.project-permissions-block h4 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.project-permissions-scope,
+.project-permissions-empty {
+  margin: 0;
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+}
+.project-permissions-members {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.project-permissions-member {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  padding: 10px 12px;
+  border: var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background: var(--ui-surface-raised);
+}
+.project-permissions-member strong {
+  font-weight: var(--weight-semibold);
+  overflow-wrap: anywhere;
+}
+.project-permissions-role {
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  background: var(--ui-action-soft);
+  color: var(--ui-action-text-hover);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+}
+.project-permissions-count {
+  margin-left: auto;
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+}
+.project-permissions-table-wrap {
+  overflow-x: auto;
+  border: var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-md);
+  background: var(--ui-surface-raised);
+}
+.project-permissions-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: var(--text-base);
+}
+.project-permissions-table caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.project-permissions-table th,
+.project-permissions-table td {
+  padding: 10px 12px;
+  border-bottom: var(--border-width-hairline) solid var(--ui-border-soft);
+  text-align: left;
+  vertical-align: top;
+}
+.project-permissions-table thead th {
+  color: var(--ui-text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
+}
+.project-permissions-table tbody th {
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+}
+.project-permissions-table tbody tr:last-child th,
+.project-permissions-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.project-permissions-table td {
+  text-align: center;
+  font-weight: var(--weight-bold);
+}
+.project-permissions-table td.is-granted {
+  color: var(--ui-success);
+}
+.project-permissions-table td.is-denied {
+  color: var(--ui-text-muted);
+  font-weight: var(--weight-regular);
+}
+.project-permissions-desc {
+  display: block;
+  max-width: 42ch;
+  margin-top: 3px;
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-regular);
+}
+.project-permissions-note {
+  margin: 0;
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+@media (max-width: 480px) {
+  .project-permissions-count { margin-left: 0; }
+}

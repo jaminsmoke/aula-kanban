@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { GraduationCap, Plus, Users, Wrench } from "lucide-react";
+import { GraduationCap, Lock, Plus, Users, Wrench } from "lucide-react";
 import type { Task } from "../../../../lib/domain/task";
 import type { Student } from "../../../../lib/domain/student";
 import { taskBelongsTo } from "../../../../lib/domain/assignments";
@@ -12,6 +12,7 @@ import ProfileDetail from "../profile-detail";
 import PeopleEmptyState from "../empty-state";
 import { TeacherDeleteDialog, TeacherFormDialog } from "./teacher-dialogs";
 import BooksToolsPanel from "../tools/books-tools-panel";
+import ProjectPermissionsPanel from "../permissions/project-permissions-panel";
 import { blankTeacher } from "./model";
 import { listTeachers, saveTeacher } from "./api";
 import type { Teacher } from "./model";
@@ -28,7 +29,7 @@ export default function TeachersView({ projectId, isAdmin, canTools, ownTeacherI
   const [form, setForm] = useState<Teacher | null>(null);
   const [removing, setRemoving] = useState<Teacher | null>(null);
   const [layout, setLayout] = useState<"grid" | "list">("grid");
-  const [tab, setTab] = useState<"miembros" | "herramientas">("miembros");
+  const [tab, setTab] = useState<"miembros" | "herramientas" | "permisos">("miembros");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -74,8 +75,14 @@ export default function TeachersView({ projectId, isAdmin, canTools, ownTeacherI
   const isEmpty = teachers !== null && teachers.length === 0;
 
   return <section className="students-view">
-    <div className="students-heading"><div className="students-title-row"><h2>Profesores</h2>{isAdmin && <button className="primary add-student" type="button" title="Añadir profesor" aria-label="Añadir profesor" onClick={() => { setError(""); setForm(blankTeacher()); }}><Plus size={20} /></button>}</div>{canTools && <div className="people-tabs" role="group" aria-label="Vistas de profesores"><button type="button" className="people-tab" aria-current={tab === "miembros" ? "page" : undefined} onClick={() => setTab("miembros")}><Users size={16} aria-hidden /> Miembros</button><button type="button" className="people-tab" aria-current={tab === "herramientas" ? "page" : undefined} onClick={() => setTab("herramientas")}><Wrench size={16} aria-hidden /> Herramientas</button></div>}</div>
-    {tab === "herramientas" && canTools ? (<BooksToolsPanel projectId={projectId} />) : (<>
+    <div className="students-heading"><div className="students-title-row"><h2>Profesores</h2>{isAdmin && <button className="primary add-student" type="button" title="Añadir profesor" aria-label="Añadir profesor" onClick={() => { setError(""); setForm(blankTeacher()); }}><Plus size={20} /></button>}</div>{canTools && <div className="people-tabs" role="group" aria-label="Vistas de profesores"><button type="button" className="people-tab" aria-current={tab === "miembros" ? "page" : undefined} onClick={() => setTab("miembros")}><Users size={16} aria-hidden /> Miembros</button><button type="button" className="people-tab" aria-current={tab === "herramientas" ? "page" : undefined} onClick={() => setTab("herramientas")}><Wrench size={16} aria-hidden /> Herramientas</button><button type="button" className="people-tab" aria-current={tab === "permisos" ? "page" : undefined} onClick={() => setTab("permisos")}><Lock size={16} aria-hidden /> Permisos</button></div>}</div>
+    {tab === "permisos" && canTools ? (<ProjectPermissionsPanel
+      contexto="Profesorado y alumnado de este proyecto"
+      miembros={[
+        ...(teachers ?? []).map((item) => ({ nombre: item.displayName || item.name, rol: "teacher" as const })),
+        ...(students ?? []).map((item) => ({ nombre: item.displayName || item.name, rol: "student" as const })),
+      ]}
+    />) : tab === "herramientas" && canTools ? (<BooksToolsPanel projectId={projectId} />) : (<>
     {error && !form && !removing && <div className="alert" role="alert">{error} <button className="text-button" onClick={() => void load()}>Reintentar</button></div>}
     {selected ? teacher ? <ProfileDetail
       kicker="Ficha de profesor"

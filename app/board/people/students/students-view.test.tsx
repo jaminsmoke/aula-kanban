@@ -110,6 +110,24 @@ describe("StudentsView", () => {
     expect(screen.queryByRole("button", { name: "Añadir alumno" })).toBeNull();
   });
 
+  it("abre la pestaña Permisos con la matriz y el rol efectivo", () => {
+    renderStudents();
+
+    fireEvent.click(screen.getByRole("button", { name: "Permisos" }));
+
+    expect(screen.getByRole("table", { name: "Capacidades del proyecto por rol" })).toBeTruthy();
+    expect(screen.getByText("Asignar libros")).toBeTruthy();
+    expect(screen.getByText("Alumnado de este proyecto")).toBeTruthy();
+    expect(screen.getByText("1 de 4 capacidades")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Permisos" }).getAttribute("aria-current")).toBe("page");
+  });
+
+  it("oculta la pestaña Permisos sin permiso de gestión", () => {
+    renderStudents({ canManage: false });
+
+    expect(screen.queryByRole("button", { name: "Permisos" })).toBeNull();
+  });
+
   it("conserva el aviso de error en vez del vacío", () => {
     renderStudents({ students: [], tasks: [], all: [], allPeople: [], studentError: "No se pudieron cargar" });
 
