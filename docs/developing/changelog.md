@@ -1,10 +1,33 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** PROMO-02 · Portada pública nueva · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-16 — Roadmap PROMO-02 · Portada pública nueva
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- `app/portada.tsx` pasa de tarjeta de acceso a una portada de producto: héroe, tres bloques (tareas y calendario, personas y materiales, pizarras y apps), panel del plugin y pie con documentación. No muestra datos de cuentas ni proyectos.
+- `app/portada.css` compone la portada con tokens, una previsualización estática del tablero y un panel de conversación; se importa solo desde `portada.tsx` y no añade cliente, `HeroArt` ni `motion`.
+- El acceso conserva `chatGPTSignInPath(returnTo)` y `<a target="_top">`; el enlace a `/documentacion` y el mensaje se mantienen alineados con `SITE_DESCRIPTION`.
+- README documenta la portada y la comprobación pública; se actualiza el inventario de CSS. Sin migraciones ni cambio de versión.
+
+### Verificación
+
+- Suite completa: **144 archivos / 1.113 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde.
+- `perf:budget`: flujo `tablero` **170.136 B gzip** (límite 175.656 B), 18 B menos que la línea base de 170.154 B; el resto de flujos conserva sus límites.
+- Build servida: `/`, el enlace profundo con `returnTo`, `/documentacion` y `/og/aula-kanban.png` responden `200`; la imagen mide 1200×630 y pesa 123.510 bytes; Open Graph y Twitter Card siguen completos.
+- Navegador local a **1366×900**, **1024×900** y **390×900**, en claro y oscuro: `scrollWidth === clientWidth`, sin desbordes; el CTA queda a 543, 535 y 386 px.
+- Commits: `aa7242b` (Fase 1), `12a0ad8` (Fase 2) y el commit de cierre documental. Sin publicación en Sites; el Site sigue en **1.1.32**.
+
+### Seguimiento
+
+- PROMO-01 sigue pausado hasta publicar y validar la tarjeta social; PROMO-03..06 permanecen en el backlog.
 
 ## 2026-11-16 — Roadmap APP-03B · Carpetas personales en mochila y maletín
 

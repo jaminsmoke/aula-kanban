@@ -36,6 +36,8 @@ El propietario y los administradores pueden crear o eliminar proyectos y adminis
 
 La visibilidad del Site (privado o «cualquiera con el enlace») es un ajuste de la plataforma, no del repositorio: `.openai/hosting.json` solo declara los bindings (`d1`, `r2`) y el `project_id`. En un Site **privado**, Sites exige sesión a todo el mundo antes de llegar a la aplicación, aunque la ruta no llame a `requireChatGPTUser`. En un Site **público**, los visitantes anónimos llegan a las rutas que no importan ese helper: en esta instancia, la portada (`/`) y la documentación (`/documentacion`). El tablero, las API y el socket siguen exigiendo sesión en ambos casos.
 
+La portada anónima de `/` presenta el producto y el plugin, con un acceso que conserva la URL solicitada mediante `returnTo` y un enlace a `/documentacion`. No muestra datos de ninguna cuenta ni proyecto.
+
 **Cómo comprobar que el Site es público:**
 
 1. Abre la URL del Site en una ventana privada, sin sesión de ChatGPT iniciada.

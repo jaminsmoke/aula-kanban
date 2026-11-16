@@ -21,11 +21,11 @@ Tras la fase 8, las pantallas de Ajustes, Documentación, Tienda y Aula Store, y
 
 | Ámbito actual | Archivos | Líneas | Usos de hex | Hex distintos |
 |---|---:|---:|---:|---:|
-| Toda la aplicación | 23 | 2.486 | 189 | 161 |
+| Toda la aplicación | 28 | 3.686 | 189 | 161 |
 | `app/globals.css` | 1 | 405 | 189 | 161 |
-| CSS de feature | 22 | 2.081 | 0 | 0 |
+| CSS de feature | 27 | 3.281 | 0 | 0 |
 
-Los 22 CSS de feature quedan a cero hexadecimales. Los 189 usos restantes viven en `app/globals.css`, la única fuente de color crudo; los valores del tema oscuro se añaden al mismo archivo.
+Los 27 CSS de feature quedan a cero hexadecimales. Los 189 usos restantes viven en `app/globals.css`, la única fuente de color crudo; los valores del tema oscuro se añaden al mismo archivo.
 
 La fase 8 retira los 36 alias de compatibilidad y deja 70 primitivas y 93 tokens `--ui-*`; los 189 usos de hex y los 161 colores siguen en `globals.css`. La guarda `app/styles.test.ts` cubre los CSS de feature y la tarjeta OAuth usa `--ui-shadow-float`.
 
