@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 2 entradas: PROMO-01 pausado y PROMO-04..06 pendientes de debate
+> **Roadmap:** PROMO-04 · Privacidad, condiciones y archivos de rastreo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas: PROMO-01 pausado y PROMO-05..06 pendientes de debate
 
 ---
 
@@ -13,7 +13,7 @@
 - Falta antes de retomarlo: publicar una versión que incluya los metadatos, pasar LinkedIn Post Inspector, Facebook Sharing Debugger, X Card Validator y WhatsApp, y entonces añadir el changelog y archivar el plan.
 - Notas: producción sigue en `1.1.32` y `/og/aula-kanban.png` responde 404; commits `ad73cf2`, `c7338cf` y `2f7e242`. El plan completo se conserva en [`historial/roadmap-promo-01.md`](../historial/roadmap-promo-01.md).
 
-## 2026-11-16 — PROMO-04..06 · Preparar la promoción (legal, demo y rendimiento)
+## 2026-11-16 — PROMO-05..06 · Preparar la promoción (demo y rendimiento)
 
 > Origen: revisión de solo lectura del 16 nov 2026 sobre la 1.1.32 (web en vivo y repo). Veredicto: lista para promocionar **con arreglos**; lo que falla es la entrada pública. El vídeo será una presentación animada con fragmentos cortos de la app integrados. Orden = impacto.
 >
@@ -24,13 +24,6 @@
 > - Pruebas junto al código (`*.test.ts(x)`, Vitest + Testing Library + jsdom). Checks de CI (`.github/workflows/ci.yml`): `npm run lint`, `npx tsc --noEmit`, `npm test`, `npm run build`, `npm run perf:budget`.
 > - Reglas de `AGENTS.md`: commits locales por fase y **un único push** al cerrar el roadmap; **solo Codex publica en Sites**, aplica migraciones remotas y verifica la versión publicada (`npm run release:prepare -- --published-version X.Y.Z`). Que haya push no significa que esté publicado.
 > - Al llevar una PROMO al roadmap, seguir `docs/developing/templates/roadmap-template.md` y cerrar en `docs/developing/changelog.md` como el resto.
-
-### PROMO-04 · Privacidad, condiciones y archivos de rastreo
-- Contexto: `/privacy`, `robots.txt`, `sitemap.xml` y `manifest.json` dan 404; en `app/` no hay ninguna página legal y `public/` solo tiene `_headers`, `favicon.svg`, fuentes y recursos de apps. Es una app con alumnado y un plugin publicado.
-- Alcance: páginas públicas (sin sesión) `app/privacidad/page.tsx` y `app/condiciones/page.tsx` (rutas en castellano, como `/documentacion`; opcionalmente con alias `/privacy` y `/terms`), enlazadas desde la portada y desde la ayuda («Pedir ayuda» o el pie). Archivos de rastreo con las convenciones de vinext: `app/robots.ts` o `.txt` → `/robots.txt`, `app/sitemap.ts` o `.xml` → `/sitemap.xml`, `app/manifest.ts`, `.json` o `.webmanifest` → **`/manifest.webmanifest`** (no `/manifest.json`).
-- Archivos: los nuevos de `app/` y `app/board/docs/content/help.ts` para el enlace. Para el texto, revisar qué se guarda de verdad: `db/schema.ts` (`projects`, `project_members`, `tasks`, `students`, `teachers`, `uploads`, `boards`, `app_documents`, `mcp_tokens`, `oauth_*`, `mcp_audit_log`), almacenamiento de archivos en R2 (`app/api/files/[id]/route.ts`), identidad recibida de ChatGPT en `lib/server/auth.ts` (id, correo y nombre por cabeceras `oai-authenticated-*`).
-- Criterios: `/privacidad`, `/condiciones`, `/robots.txt`, `/sitemap.xml` y `/manifest.webmanifest` responden 200 sin sesión; `robots.txt` no indexa `/api/`, `/mcp` ni `/.well-known/`; el sitemap solo lista `/`, `/documentacion` y las páginas legales; el texto describe solo los datos que la app guarda.
-- Notas: APP-03B ya cerró y `app_preferences` incluye `folder` (migración `0040`), además de los datos que la app guarda en el resto de tablas. El texto legal lo revisa Jorge (SiberIA Solutions es autónomo, **no** una S.L.). Esta URL de privacidad es la que se usaría al dar de alta el plugin.
 
 ### PROMO-05 · Modo demo sin cuenta, de solo lectura
 - Contexto: todo pasa por la sesión de Sites. `getChatGPTUser()` lee las cabeceras `oai-authenticated-user-id`/`-email` que inyecta Sites, y unas 33 rutas y módulos de `app/` y `lib/` dependen de ella o de `requireChatGPTUser`. El acceso por proyecto se resuelve en `lib/server/project-access.ts` (`projectAccess`, `resolveProject`, tipo `Access` con rol `owner|admin|teacher|student|guest`), y las capacidades en `lib/domain/permisos.ts` (fuente única PERM-01/02, deniega por defecto) y `lib/server/capabilities.ts`. **El rol `guest` ya existe** y es de solo lectura (por ejemplo `APP_INVITADO_SIN_ESCRITURA` en `lib/server/mcp/apps/contrato.ts`), pero exige una cuenta de ChatGPT invitada al proyecto. Los sockets de `worker/index.ts` (`BoardRoom`/`SpaceRoom`) devuelven 401 sin la cabecera de usuario.
