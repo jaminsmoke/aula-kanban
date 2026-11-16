@@ -1,7 +1,7 @@
 "use client";
 
 import type { MouseEvent } from "react";
-import { Backpack, Check, ChevronDown, Columns3, FolderKanban, Link2, LogOut, Plus, Settings, Trash2, Users } from "lucide-react";
+import { Check, ChevronDown, Columns3, FolderKanban, Link2, LogOut, Plus, Settings, Trash2, Users } from "lucide-react";
 import appPackage from "../../../package.json";
 import type { Project } from "../shared/model";
 import { buildBoardUrl } from "../shared/board-url";
@@ -27,7 +27,6 @@ export default function BoardHeader({
   user, activeProject, projects, projectId, view, onView, owner, admin, canManage,
   onNewProject, onShareProject, onMembers, onDeleteProject, onRemix, onSettings,
   classSection = "tareas", settingsSection = "cuenta", administracionSection = "alumnos",
-  onMochila, mochilaLabel = "Mi mochila",
 }: {
   user: { displayName: string; email: string };
   activeProject?: Project;
@@ -35,8 +34,6 @@ export default function BoardHeader({
   projectId: string;
   view: View;
   onView: (view: View) => void;
-  onMochila?: () => void;
-  mochilaLabel?: string;
   classSection?: ClassSection;
   settingsSection?: SettingsSection;
   administracionSection?: AdministracionSection;
@@ -66,8 +63,7 @@ export default function BoardHeader({
         <span className="wordmark"><span className="brand-icon" aria-hidden><Columns3 size={24} strokeWidth={2.4} /></span><span className="brand-text"><span>Aula Kanban</span><small className="brand-meta">v{appVersion} - {appAuthor}</small></span></span>
         {activeProject && <nav className="main-nav" aria-label="Vistas">
           <button type="button" aria-current={view === "administracion" ? "page" : undefined} onClick={() => onView("administracion")}>Administración</button>
-          <button type="button" className="class-action" aria-label="Clase" title="Clase" aria-current={view === "clase" && classSection !== "mochila" ? "page" : undefined} onClick={() => onView("clase")}><Columns3 size={18} aria-hidden /></button>
-          {onMochila && <button type="button" className="class-action" aria-label={mochilaLabel} title={mochilaLabel} aria-current={view === "clase" && classSection === "mochila" ? "page" : undefined} onClick={onMochila}><Backpack size={18} aria-hidden /></button>}
+          <button type="button" className="class-action" aria-label="Clase" title="Clase" aria-current={view === "clase" ? "page" : undefined} onClick={() => onView("clase")}><Columns3 size={18} aria-hidden /></button>
         </nav>}
         {activeProject && <details className="project-menu">
           <summary aria-label="Seleccionar proyecto"><FolderKanban size={18} /><span>{activeProject.name}</span><ChevronDown size={16} /></summary>

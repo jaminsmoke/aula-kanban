@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
 import { getDb } from "../../db";
 import { appPreferences } from "../../db/schema";
 import { NATIVE_APP_IDS, nativeAppMeta, type NativeAppId } from "../native-apps";
@@ -151,9 +151,18 @@ export async function setPersonalApps(projectId: string, userId: string, items: 
   }
   const db = getDb();
   const now = Date.now();
-  await db
-    .delete(appPreferences)
-    .where(and(eq(appPreferences.projectId, projectId), eq(appPreferences.userId, userId)));
+  // Solo se sustituyen las filas de las apps enviadas: las preferencias de
+  // apps desinstaladas (que la interfaz no envía) se conservan y vuelven a
+  // ser visibles si la app se reinstala.
+  if (items.length > 0) {
+    await db
+      .delete(appPreferences)
+      .where(and(
+        eq(appPreferences.projectId, projectId),
+        eq(appPreferences.userId, userId),
+        inArray(appPreferences.appId, items.map((item) => item.id)),
+      ));
+  }
   if (items.length > 0) {
     await db.insert(appPreferences).values(
       items.map((item) => ({

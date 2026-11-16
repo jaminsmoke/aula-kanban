@@ -85,8 +85,6 @@ export default function Board({ user, initial }: { user: { displayName: string; 
         onDeleteProject={actions.openDeleteProject}
         onRemix={() => setRemixOpen(true)}
         onSettings={() => setView("ajustes")}
-        onMochila={() => { setView("clase"); setClassSection("mochila"); setNotice(""); }}
-        mochilaLabel={activeProject?.role === "teacher" ? "Maletín" : "Mi mochila"}
       />
 
       {remixOpen && <RemixDialog onClose={() => setRemixOpen(false)} />}

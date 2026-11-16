@@ -28,7 +28,7 @@ describe("PersonalSpaceView", () => {
 
     expect(await screen.findByRole("heading", { name: "Mi mochila" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Favoritas" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Todas las disponibles" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Disponibles" })).toBeTruthy();
     expect(await screen.findByText("Excalidraw")).toBeTruthy();
     expect(await screen.findByText("Diagramas")).toBeTruthy();
   });

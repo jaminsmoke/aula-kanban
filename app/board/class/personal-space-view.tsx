@@ -149,13 +149,15 @@ export default function PersonalSpaceView({ role, projectId, onOpenApp }: {
         <p>Organiza tus herramientas favoritas en este proyecto. Esto no instala ni desinstala nada: las aplicaciones se gestionan en Aula Store.</p>
         <p className="personal-note">Los documentos de trabajo se comparten con el proyecto; tu mochila solo organiza tus herramientas.</p>
       </header>
-      {error && <p role="alert" className="personal-error">{error}{" "}<button type="button" className="text-button" onClick={() => void refresh()}>Reintentar</button></p>}
+      {!configured && !error && <p className="personal-empty">Cargando tus herramientas…</p>}
+      {!configured && error && (
+        <p role="alert" className="personal-error">{error}{" "}<button type="button" className="text-button" onClick={() => void refresh()}>Reintentar</button></p>
+      )}
       {saving && <p role="status" className="personal-saving">Guardando…</p>}
-      {!configured && !error ? (
-        <p className="personal-empty">Cargando tus herramientas…</p>
-      ) : configured && apps.length === 0 ? (
+      {configured && apps.length === 0 && (
         <p className="personal-empty">Todavía no hay herramientas instaladas en esta instancia.</p>
-      ) : (
+      )}
+      {configured && apps.length > 0 && (
         <>
           <h3 className="personal-group-title">Favoritas</h3>
           {favorites.length === 0 ? (
@@ -163,8 +165,12 @@ export default function PersonalSpaceView({ role, projectId, onOpenApp }: {
           ) : (
             <ul className="personal-list">{favorites.map((item) => renderRow(item, favorites))}</ul>
           )}
-          <h3 className="personal-group-title">Todas las disponibles</h3>
-          <ul className="personal-list">{rest.map((item) => renderRow(item, rest))}</ul>
+          <h3 className="personal-group-title">Disponibles</h3>
+          {rest.length === 0 ? (
+            <p className="personal-empty">Sin más herramientas disponibles.</p>
+          ) : (
+            <ul className="personal-list">{rest.map((item) => renderRow(item, rest))}</ul>
+          )}
         </>
       )}
     </section>
