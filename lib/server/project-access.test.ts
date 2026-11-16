@@ -2,8 +2,9 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import type { ChatGPTUser } from "./auth";
+import { DEMO_PROJECT_ID, DEMO_USER } from "../domain/demo";
 import { PROJECT_FAILURE_RESPONSES, projectFailureResponse } from "./project-http";
-import { resolveProject, type Access, type ProjectRow } from "./project-access";
+import { projectAccessForUser, isAdministrator, isOwner, resolveProject, type Access, type ProjectRow } from "./project-access";
 
 const user: ChatGPTUser = { userId: "u1", displayName: "Docente", email: "docente@example.com", fullName: null };
 const project: ProjectRow = { id: "p1", name: "Proyecto", createdAt: 1 };
@@ -80,5 +81,28 @@ describe("resolución de proyecto", () => {
     const result = await resolveProject(request(""), dependencies({ findProject }));
     expect(findProject).toHaveBeenCalledWith("default");
     expect(result).toMatchObject({ status: "ok", project: { id: "default" } });
+  });
+});
+
+describe("acceso de la demo", () => {
+  const demo: ChatGPTUser = {
+    userId: DEMO_USER.userId,
+    email: DEMO_USER.email,
+    displayName: DEMO_USER.displayName,
+    fullName: DEMO_USER.fullName,
+  };
+
+  it("es invitada del proyecto demo y de ningún otro", async () => {
+    await expect(projectAccessForUser(DEMO_PROJECT_ID, demo)).resolves.toMatchObject({
+      role: "guest",
+      studentSection: null,
+      teacherId: null,
+    });
+    await expect(projectAccessForUser("p1", demo)).resolves.toBeNull();
+  });
+
+  it("no es propietaria ni administradora de la instancia", async () => {
+    await expect(isOwner(demo)).resolves.toBe(false);
+    await expect(isAdministrator(demo)).resolves.toBe(false);
   });
 });

@@ -9,9 +9,10 @@ import { pathToFileURL } from "node:url";
  * acepta una URL remota: la comprobación ocurre antes de abrir una conexión.
  */
 
+import { DEMO_PROJECT_ID, DEMO_PROJECT_NAME } from "../lib/domain/demo.ts";
+
 /** Identificador fijo y distinto del proyecto que usa `scripts/perf-latency.mjs`. */
-export const DEMO_PROJECT_ID = "22222222-2222-4222-8222-222222222222";
-export const DEMO_PROJECT_NAME = "Proyecto de demostración";
+export { DEMO_PROJECT_ID, DEMO_PROJECT_NAME };
 
 const DEFAULT_BASE_URL = "http://127.0.0.1:5173";
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1"]);

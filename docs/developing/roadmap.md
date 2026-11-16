@@ -46,13 +46,14 @@
 
 ## 4. Fases
 
-### Fase 1: Identidad de demo y acceso al proyecto
-- [ ] Extraer `DEMO_PROJECT_ID` a `lib/domain/demo.ts` para compartirlo entre `scripts/seed-demo.mjs` y el servidor, sin importar el script desde `app/`.
-- [ ] Añadir `lib/server/demo.ts` con la identidad fija (`userId` reservado, nombre «Demo», correo vacío o ficticio), la lectura de la cookie y el rol `guest` limitado al proyecto demo.
-- [ ] Resolver la demo en `getChatGPTUser` solo cuando no haya cabeceras reales de Sites y la cookie esté activa; en `projectAccessForUser`, devolver `Access` de `guest` únicamente para `DEMO_PROJECT_ID`.
-- [ ] Crear la entrada `/demo` (route handler) que fija la cookie y redirige a `/?project=<demo>`, y la salida `/demo/salir` que la borra y vuelve a `/`.
-- [ ] Si el proyecto demo no existe, mostrar un aviso con `npm run seed:demo` en lugar de crear datos desde la demo.
+### Fase 1: Identidad de demo y acceso al proyecto — completada (2026-11-16)
+- [x] Extraer `DEMO_PROJECT_ID` a `lib/domain/demo.ts` para compartirlo entre `scripts/seed-demo.mjs` y el servidor, sin importar el script desde `app/`.
+- [x] Añadir `lib/server/demo.ts` con la identidad fija (`userId` reservado, nombre «Demo», correo vacío o ficticio), la lectura de la cookie y el rol `guest` limitado al proyecto demo.
+- [x] Resolver la demo en `getChatGPTUser` solo cuando no haya cabeceras reales de Sites y la cookie esté activa; en `projectAccessForUser`, devolver `Access` de `guest` únicamente para `DEMO_PROJECT_ID`.
+- [x] Crear la entrada `/demo` (route handler) que fija la cookie y redirige a `/?project=<demo>`, y la salida `/demo/salir` que la borra y vuelve a `/`.
+- [x] Si el proyecto demo no existe, mostrar un aviso con `npm run seed:demo` en lugar de crear datos desde la demo.
 - **Criterios de aceptación:** sin sesión, `/demo` abre el tablero demo; con sesión real, la identidad real manda; cualquier otro `project` devuelve 403/404; la demo no crea filas ni modifica la D1.
+- **Verificación:** `lib/domain/demo.ts` centraliza el id, el nombre, la cookie y la identidad `demo_local`; `getChatGPTUser` devuelve esa identidad solo con `__demo=1` y sin cabeceras de Sites, y `projectAccessForUser` le da `guest` únicamente al proyecto demo. `isOwner`/`isAdministrator` la rechazan sin tocar la base. `loadProjectsOverview` y `listVisibleProjects` devuelven solo el proyecto demo, sin actualizar `user_identities` ni reclamar la instancia. `/demo` responde `303` con `Set-Cookie: __demo=1; Path=/; HttpOnly; SameSite=Lax; Max-Age=28800` y redirige a `/?project=2222…`; `/demo/salir` responde `303` y borra la cookie; sin proyecto, `/demo` sirve una página 404 con `npm run seed:demo`. En navegador, la demo abre el tablero con 25 %, ocho tareas y el rol «Demo»; con `__sites_local_auth` + `__demo` manda «Seedy» y reaparecen los permisos reales; otro proyecto muestra «Este enlace no está disponible». 10 pruebas nuevas; suite completa **154 archivos / 1.137 pruebas**, `tsc` y ESLint correctos; `npm run seed:demo -- --dry-run` sigue funcionando con el id compartido.
 
 ### Fase 2: Solo lectura en API, interfaz y sockets
 - [ ] Auditar las rutas de escritura de `app/api/**` y garantizar 403 para `guest` en todas (crear, editar, borrar, instalar, subir, guardar pizarra o documento).
@@ -90,3 +91,4 @@
 - 2026-11-16: los sockets de `worker/index.ts` leen las cabeceras directamente y devuelven 401 sin usuario; la demo queda estática y no toca esa autenticación.
 - 2026-11-16: el proyecto demo es el `22222222-2222-4222-8222-222222222222` de PROMO-03, con datos ficticios y sin correos reales.
 - 2026-11-16: no se publica en Sites ni se cambia la versión `1.1.32`; el cierre es local y el push, único, como en los roadmaps anteriores.
+- 2026-11-16: la demo no tiene filas en `project_members`; `loadProjectsOverview` y `listVisibleProjects` la resuelven con el proyecto fijo para que el tablero abra sin escribir en `user_identities` ni reclamar la instancia.

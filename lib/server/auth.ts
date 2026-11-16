@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { isDemoRequested, demoUser } from "./demo";
 
 export type ChatGPTUser = {
   userId: string;
@@ -20,13 +21,17 @@ const CALLBACK_PATH = "/callback";
 
 /**
  * Lee la cuenta autenticada desde las cabeceras de ChatGPT.
+ * Si no hay sesión real y la petición activó la demo con su cookie,
+ * devuelve la identidad fija de la demo; la sesión real siempre manda.
  * @returns La cuenta con identificador, correo y nombre, o `null` sin sesión.
  */
 export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
   const requestHeaders = await headers();
   const userId = requestHeaders.get(USER_ID_HEADER);
   const email = requestHeaders.get(USER_EMAIL_HEADER);
-  if (!userId || !email) return null;
+  if (!userId || !email) {
+    return (await isDemoRequested()) ? demoUser : null;
+  }
 
   const encodedFullName = requestHeaders.get(USER_FULL_NAME_HEADER);
   const fullName =

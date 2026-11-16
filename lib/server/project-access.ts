@@ -2,6 +2,7 @@ import { env } from "cloudflare:workers";
 import { and, eq } from "drizzle-orm";
 import { getD1, getDb } from "../../db";
 import { administrators, projectMembers, projects } from "../../db/schema";
+import { DEMO_PROJECT_ID, isDemoUser } from "../domain/demo";
 import { getChatGPTUser, type ChatGPTUser } from "./auth";
 import { ensureInstanceOwner, isBootstrapOwnerEmail, isInstanceOwner, readInstanceOwner } from "./owner";
 import { canonicalProjectId } from "./project-rekey";
@@ -31,6 +32,8 @@ export function isOwnerEmail(email: string) {
  * @returns `true` cuando el identificador estable coincide con el propietario.
  */
 export async function isOwner(user: ChatGPTUser) {
+  // La demo nunca es propietaria ni debe reclamar la instancia.
+  if (isDemoUser(user)) return false;
   const db = env.DB;
   if (!db) return false;
   const owner = await ensureInstanceOwner(db, user, env.OWNER_EMAIL);
@@ -59,6 +62,7 @@ export async function isOwnerContactEmail(email: string) {
  * @returns `true` cuando existe una ficha de administrador vinculada.
  */
 export async function isAdministrator(user: ChatGPTUser) {
+  if (isDemoUser(user)) return false;
   const db = getDb();
   const email = user.email.trim().toLowerCase();
   try {
@@ -113,6 +117,12 @@ export async function memberAccess(projectId: string, user: ChatGPTUser): Promis
  * @returns El acceso con rol y ficha vinculada, o `null` sin acceso.
  */
 export async function projectAccessForUser(projectId: string, user: ChatGPTUser): Promise<Access | null> {
+  // La demo es siempre invitada de un único proyecto ficticio.
+  if (isDemoUser(user)) {
+    return projectId === DEMO_PROJECT_ID
+      ? { user, role: "guest", studentSection: null, teacherId: null }
+      : null;
+  }
   const globalRole = await globalRoleForUser(user);
   if (globalRole) return { user, role: globalRole, studentSection: null, teacherId: null };
   return memberAccess(projectId, user);

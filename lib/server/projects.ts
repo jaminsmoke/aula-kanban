@@ -2,6 +2,7 @@ import { count, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "../../db";
 import { appDocuments, boards, deletedStudents, deletedTeachers, projectMembers, projects, students, taskAssignees, tasks, teachers, uploads } from "../../db/schema";
+import { DEMO_PROJECT_ID, isDemoUser } from "../domain/demo";
 import type { ChatGPTUser } from "./auth";
 import { globalRoleForUser, isAdministrator, isOwner, memberAccess, type Access, type ProjectRow } from "./project-access";
 import { PROJECT_FAILURE_MESSAGES } from "./project-contract";
@@ -140,6 +141,12 @@ export async function deleteProject(user: ChatGPTUser, projectId: string): Promi
  * @returns Los proyectos con su rol, en el orden de la tabla.
  */
 export async function listVisibleProjects(user: ChatGPTUser): Promise<ProjectWithAccess[]> {
+  if (isDemoUser(user)) {
+    const [project] = await getDb().select().from(projects).where(eq(projects.id, DEMO_PROJECT_ID));
+    return project
+      ? [{ project, access: { user, role: "guest", studentSection: null, teacherId: null } }]
+      : [];
+  }
   const rows = await getDb().select().from(projects);
   const globalRole = await globalRoleForUser(user);
   const visible: ProjectWithAccess[] = [];

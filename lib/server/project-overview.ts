@@ -1,6 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { getD1, getDb } from "../../db";
 import { projectMembers, projects, userIdentities } from "../../db/schema";
+import { DEMO_PROJECT_ID, isDemoUser } from "../domain/demo";
 import type { ChatGPTUser } from "./auth";
 import { isAdministrator, isOwner, type ProjectRow } from "./project-access";
 import { canonicalProjectId, ensureLegacyProjectUuid } from "./project-rekey";
@@ -34,6 +35,20 @@ export type ProjectsOverviewResult =
  * @returns Los proyectos visibles con su rol, o el fallo de la migración.
  */
 export async function loadProjectsOverview(user: ChatGPTUser): Promise<ProjectsOverviewResult> {
+  if (isDemoUser(user)) {
+    const [project] = await getDb().select().from(projects).where(eq(projects.id, DEMO_PROJECT_ID));
+    return {
+      ok: true,
+      data: {
+        projects: project
+          ? [{ ...project, role: "guest", studentSection: null, teacherId: null }]
+          : [],
+        isOwner: false,
+        isAdmin: false,
+        legacyProjectId: null,
+      },
+    };
+  }
   const owner = await isOwner(user);
   if (owner) {
     try {
