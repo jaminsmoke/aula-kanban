@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa (STORE-04 cerrada) · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** APP-02 aparcada; PERM-01 pendiente como prerequisito de APP-03; STORE-03A (taxonomía) y APP-03 (carpetas) pendientes de priorizar para roadmap; STORE-03B depende de STORE-03A
+> **Roadmap:** STORE-03A · Taxonomía de la Tienda (multi-categoría) · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** APP-02 aparcada; PERM-01 pendiente como prerequisito de APP-03; APP-03 (carpetas) pendiente; STORE-03B depende de STORE-03A
 
 ---
 
@@ -14,9 +14,9 @@
 - Criterios: la barra inferior cambia de categoría y se mantiene visible al hacer scroll; las galerías se desplazan con fade lateral sin scrollbar; sin regresión en búsqueda, instaladas y ficha de app.
 - Dependencias: STORE-03A (taxonomía y modelo multi-categoría).
 
-## 2026-11-16 — STORE-03A · Taxonomía de la Tienda por familias de uso (multi-categoría)
+## 2026-11-16 — STORE-03A · Taxonomía de la Tienda por familias de uso (multi-categoría) → en roadmap
 
-- Contexto (decidido en revisión 2026-11-16; listo para roadmap cuando se elija): las categorías principales son **Educación, Oficina, Productividad** — orientadas a familias de uso, no a tipos de app. Casi toda la herramienta actual es de educación; Oficina y Productividad pueden nacer vacías con «más adelante».
+- Contexto (decidido en revisión 2026-11-16; en el roadmap activo): las categorías principales son **Educación, Oficina, Productividad** — orientadas a familias de uso, no a tipos de app. Casi toda la herramienta actual es de educación; Oficina y Productividad pueden nacer vacías con «más adelante».
 - Modelo: `category: string` → `categories: string[]` (multi-categoría: p. ej. Diagramas pertenece a Educación y a Productividad). Las **subcategorías** son vocabulario compartido: la misma «Diagramas» existe dentro de ambas categorías principales. **Programación es subcategoría de Productividad** (y de Educación si encaja). Las categorías actuales (`Aula`, `Pizarras`, `Programación`, `Diagramas` en `STORE_CATEGORIES` de `lib/native-apps.ts`) se reasignan: Pizarras y Diagramas pasan a ser subcategorías; «Aula» desaparece como categoría.
 - Impacto: ficha de la app (`category` en `lib/native-apps.ts`), secciones y filtros de Aula Store (conteos coherentes por ambas categorías), contrato y catálogo MCP (`docs/Store/mcp-apps.md`), documentación de ayuda.
 - Criterios: cada app visible pertenece a ≥1 categoría principal; taxonomía cerrada (nombre, icono, descripción, apps asignadas); filtros y secciones coherentes; sin regresión en búsqueda e instaladas; MCP actualizado si cambia el campo.
