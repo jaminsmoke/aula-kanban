@@ -70,7 +70,6 @@ export const peopleSections: DocSection[] = [
           { term: "Compartir proyecto", text: "Copia el enlace del proyecto. El diálogo avisa: «Comparte este enlace para abrir el proyecto «…». El acceso se gestiona desde Sites.». Puedes copiarlo con «Copiar enlace» o seleccionando el campo «Enlace del proyecto»; el botón pasa a «Enlace copiado»." },
           { term: "Gestionar miembros", text: "Invita cuentas y cambia roles y fichas. Solo aparece para el propietario, la administración y el profesorado; el detalle está en «Personas, miembros e invitaciones»." },
           { term: "Eliminar proyecto", text: "Solo el propietario y la administración. El aviso enumera lo que se pierde —proyecto, tareas, fichas y permisos de acceso— y hay que escribir el nombre exacto para habilitar «Eliminar proyecto». Al borrarlo sales a la pantalla sin proyecto." },
-          { term: "Haz tu Site de Aula Kanban", text: "Copia un mensaje listo para pedir tu propia copia en Sites o clonar el repositorio. Este botón no crea el Site ni cambia variables: solo copia el mensaje y abre ChatGPT." },
         ],
       },
       { type: "note", tone: "warning", text: "«Eliminar proyecto» no tiene papelera: se borran el proyecto, sus tareas, sus fichas y sus permisos de acceso, y no se puede deshacer. Revisa antes que has escrito el nombre exacto del proyecto correcto." },

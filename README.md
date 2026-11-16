@@ -22,7 +22,7 @@ En un remix, el propietario es quien da la orden: el agente de ChatGPT publica l
 
 **Checklist para un remix:**
 
-1. Pide la copia con el botón «Haz tu Site de Aula Kanban» y entrega el mensaje a tu agente de ChatGPT. El propietario es **quien da la orden**: el agente publica la copia en tu cuenta de ChatGPT. Alternativa sin Sites: clona directamente el repo público de GitHub (`git clone https://github.com/jaminsmoke/aula-kanban.git`) y publica esa revisión con el flujo que prefieras; el resto de la lista es igual.
+1. Pide la copia desde **Ajustes > Tu Site** con el botón «Haz tu Site de Aula Kanban» y entrega el mensaje a tu agente de ChatGPT. El propietario es **quien da la orden**: el agente publica la copia en tu cuenta de ChatGPT. Alternativa sin Sites: clona directamente el repo público de GitHub (`git clone https://github.com/jaminsmoke/aula-kanban.git`) y publica esa revisión con el flujo que prefieras; el resto de la lista es igual.
 2. La copia no hereda base de datos, proyectos, fichas, administradores ni variables de entorno. No importes datos de otra instancia: una copia nueva debe empezar vacía.
 3. Antes de compartirla, comprueba que `OWNER_EMAIL` es el correo de esa misma cuenta de ChatGPT y vuelve a publicar.
 4. Entra con esa cuenta: el primer acceso guarda la identidad estable del propietario. Comprueba que aparecen las acciones de propietario.

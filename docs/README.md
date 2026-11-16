@@ -16,7 +16,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | UI-02 · Reorganización de la cabecera y el remix en Ajustes | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | Sin fase activa; plantilla lista para el siguiente roadmap | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -87,7 +87,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap STORE-04 completado:** libros como herramientas asignables por proyecto (pestaña «Herramientas», carpeta «Libros» en mochila/maletín, visor de solo lectura) y retirada de la pestaña de la Tienda; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-04.md`](historial/roadmap-store-04.md).
 - **Roadmap STORE-03A completado:** taxonomía por familias de uso (Educación/Oficina/Productividad) con multi-categoría y subcategorías compartidas, filtros y secciones coherentes, vacíos con «Más adelante» y contrato MCP (`categorias`+`subcategoria`); resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-03a.md`](historial/roadmap-store-03a.md).
 - **Roadmap STORE-03B completado:** barra inferior fija (Todo + categorías) y subcategorías como galerías horizontales con fade en Aula Store; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-03b.md`](historial/roadmap-store-03b.md).
-- **Roadmap UI-02 activo:** reorganizar la cabecera en tres zonas (marca a la izquierda, Clase en el centro, controles a la derecha) y mover «Haz tu Site de Aula Kanban» a una sección de Ajustes; plan en [`roadmap.md`](developing/roadmap.md).
+- **Roadmap UI-02 completado:** cabecera en tres zonas con la marca a la izquierda y Clase centrada, y remix movido a Ajustes > Tu Site; verificado a 1366, 1024 y 390 px. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-ui-02.md`](historial/roadmap-ui-02.md).
 - **Roadmap PERM-01 completado:** matriz y delegación de permisos (capacidades con ámbito, roles y concesiones revocables, con control autoritativo de servidor); resumen en [`changelog.md`](developing/changelog.md), matriz en [`Store/matriz-permisos.md`](Store/matriz-permisos.md) y plan archivado en [`historial/roadmap-perm-01.md`](historial/roadmap-perm-01.md).
 - **Roadmap PROMO-02 completado:** portada pública nueva de `/` centrada en el producto y el plugin de ChatGPT, con CTA de acceso, enlace a documentación y previsualización estática del tablero; verificada a 1366, 1024 y 390 px en claro y oscuro. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-promo-02.md`](historial/roadmap-promo-02.md).
 - **Roadmap PROMO-07 completado (publicación pendiente):** demo preparada para producción con datos compartidos, SQL idempotente sin `instance_apps`, portada que oculta la demo si falta y procedimiento autorizado para Codex; verificada en una D1 limpia. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-promo-07.md`](historial/roadmap-promo-07.md).

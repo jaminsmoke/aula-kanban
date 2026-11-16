@@ -24,7 +24,7 @@ export const helpSections: DocSection[] = [
       {
         type: "steps",
         items: [
-          "Abre el menú del proyecto y pulsa «Haz tu Site de Aula Kanban».",
+          "Abre Ajustes > Tu Site y pulsa «Haz tu Site de Aula Kanban».",
           "Copia el mensaje de `@Sites` con «Copiar mensaje» y pégalo en ChatGPT: el agente publica la copia en tu cuenta.",
           "Si prefieres clonar, «Copiar mensaje (git)» parte de `https://github.com/jaminsmoke/aula-kanban.git` y publica esa revisión como tu Site.",
           "El propietario de la copia es quien da la orden: la cuenta de ChatGPT que la pide. Antes de publicar, `OWNER_EMAIL` se configura con el correo de esa misma cuenta.",

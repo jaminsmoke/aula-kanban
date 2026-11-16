@@ -1,10 +1,31 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** UI-02 · Reorganización de la cabecera y el remix en Ajustes · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-16 — Roadmap UI-02 · Reorganización de la cabecera y el remix en Ajustes
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- La cabecera se divide en tres zonas: marca anclada a la izquierda, navegación centrada con el botón de Clase en el centro geométrico y controles de proyecto/cuenta a la derecha. En 1024 y 390 la navegación pasa a una fila propia centrada.
+- El remix deja el menú de proyecto y pasa a **Ajustes > Tu Site**, con una sección nueva de `SettingsSection`, URL canónica, tarjeta contextual y el mismo `RemixDialog` abierto desde `Board`.
+- Se retiran `onRemix` y `.remix-action` del header y del desplegable de proyecto; la ayuda y el README remiten a Ajustes > Tu Site.
+- El snapshot del catálogo MCP se actualiza porque el enum de secciones de Ajustes incluye `sitio`.
+
+### Verificación
+
+- Cabecera y Ajustes revisados a 1366, 1024 y 390 px; sin desbordes y con Clase centrada.
+- Suite completa: **160 archivos / 1.173 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde (`tablero` 170.870 B, `basica` 132.650 B, `cientifica` 1.960.394 B gzip).
+- Commits: `f78ef0f` (Fase 1), `1ff8771` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites y sin cambio de versión: la instancia sigue en **1.1.34**.
+
+### Seguimiento
+
+- El backlog queda sin entradas aparcadas. PROMO-01 permanece cerrado y su plan está en [`historial/roadmap-promo-01.md`](historial/roadmap-promo-01.md).
 
 ## 2026-11-16 — Publicación 1.1.33
 
