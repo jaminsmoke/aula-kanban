@@ -19,6 +19,14 @@
 .settings-section dd { margin:0; text-align:right; font-weight: var(--weight-bold); overflow-wrap:anywhere; }
 .settings-section dd span { color:var(--ui-text-muted); font-weight: var(--weight-regular); }
 .settings-note { font-size: var(--text-sm); }
+
+.settings-site-card { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:16px 18px; border:var(--border-width-hairline) solid var(--ui-border-default); border-radius: var(--radius-md); background:var(--ui-surface-muted); }
+.settings-site-card strong { display:block; font-size: var(--text-lg); }
+.settings-site-card p { margin:5px 0 0; color:var(--ui-text-muted); line-height: var(--leading-normal); font-size: var(--text-base); }
+.settings-site-card .primary { flex:none; display:inline-flex; align-items:center; gap:7px; }
+@media (max-width: 720px) {
+  .settings-site-card { flex-direction:column; align-items:flex-start; }
+}
 .settings-signout { justify-self:start; text-decoration:none; }
 
 .settings-section > div > h2 { margin:0; font-size: var(--text-4xl); letter-spacing: var(--tracking-tight); }

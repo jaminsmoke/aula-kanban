@@ -20,6 +20,7 @@ describe("parseBoardUrl", () => {
     expect(parseBoardUrl("?project=p1&view=administracion&section=tienda")).toEqual({ ...defaults, view: "administracion", administracionSection: "tienda", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=administradores")).toEqual({ ...defaults, view: "ajustes", settingsSection: "administradores", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=apariencia")).toEqual({ ...defaults, view: "ajustes", settingsSection: "apariencia", app: null });
+    expect(parseBoardUrl("?project=p1&view=ajustes&section=sitio")).toEqual({ ...defaults, view: "ajustes", settingsSection: "sitio", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=tokens")).toEqual({ ...defaults, view: "ajustes", settingsSection: "tokens", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=permisos")).toEqual({ ...defaults, view: "ajustes", settingsSection: "permisos", app: null });
     expect(parseBoardUrl("?project=p1&view=ajustes&section=almacenamiento")).toEqual({ ...defaults, view: "ajustes", settingsSection: "almacenamiento", app: null });
@@ -74,6 +75,7 @@ describe("buildBoardUrl", () => {
     expect(buildBoardUrl("?project=p1", { ...defaults, view: "administracion", administracionSection: "tienda" })).toBe("?project=p1&view=administracion&section=tienda");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=administradores", { ...defaults, view: "ajustes", settingsSection: "administradores" })).toBe("?project=p1&view=ajustes&section=administradores");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=apariencia", { ...defaults, view: "ajustes", settingsSection: "apariencia" })).toBe("?project=p1&view=ajustes&section=apariencia");
+    expect(buildBoardUrl("?project=p1&view=ajustes&section=sitio", { ...defaults, view: "ajustes", settingsSection: "sitio" })).toBe("?project=p1&view=ajustes&section=sitio");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=tokens", { ...defaults, view: "ajustes", settingsSection: "tokens" })).toBe("?project=p1&view=ajustes&section=tokens");
     expect(buildBoardUrl("?project=p1", { ...defaults, view: "ajustes", settingsSection: "permisos" })).toBe("?project=p1&view=ajustes&section=permisos");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=almacenamiento", { ...defaults, view: "ajustes", settingsSection: "almacenamiento" })).toBe("?project=p1&view=ajustes&section=almacenamiento");

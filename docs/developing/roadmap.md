@@ -50,12 +50,13 @@
 - **Criterios de aceptación:** la marca no se mueve del borde izquierdo; Clase queda centrado en escritorio; la navegación no desborda en móvil; no hay regresiones en el resto de la cabecera.
 - **Verificación:** la cabecera usa tres zonas (`topbar-brand`, `topbar-nav`, `topbar-actions`) en una rejilla `1fr auto 1fr`; la marca es el primer elemento y Clase queda en el centro geométrico (683 px de 1366, 512 de 1024 y 195 de 390). En 1024 y 390 la navegación pasa a una fila propia centrada y el resto de controles se mantiene a la derecha. El caso sin proyecto oculta la navegación y conserva marca y cuenta. 5 pruebas del header, suite completa **160 archivos / 1.172 pruebas**, `tsc` y ESLint correctos.
 
-### Fase 2: Remix en Ajustes
-- [ ] Añadir la sección «Tu Site» a `SettingsSection`, `SETTINGS_SECTIONS`, el parser y el constructor de URL, con sus pruebas de ida y vuelta.
-- [ ] Renderizar la entrada en el sidebar de Ajustes y una tarjeta que explique el remix y abra `RemixDialog` mediante un callback desde `Board`.
-- [ ] Quitar «Haz tu Site de Aula Kanban» del menú de proyecto, retirar `onRemix` del header y limpiar los estilos del desplegable.
-- [ ] Añadir pruebas de la nueva sección, del callback y de que el menú de proyecto ya no ofrece el remix.
+### Fase 2: Remix en Ajustes — completada (2026-11-16)
+- [x] Añadir la sección «Tu Site» a `SettingsSection`, `SETTINGS_SECTIONS`, el parser y el constructor de URL, con sus pruebas de ida y vuelta.
+- [x] Renderizar la entrada en el sidebar de Ajustes y una tarjeta que explique el remix y abra `RemixDialog` mediante un callback desde `Board`.
+- [x] Quitar «Haz tu Site de Aula Kanban» del menú de proyecto, retirar `onRemix` del header y limpiar los estilos del desplegable.
+- [x] Añadir pruebas de la nueva sección, del callback y de que el menú de proyecto ya no ofrece el remix.
 - **Criterios de aceptación:** el remix solo se ofrece desde Ajustes; la sección tiene URL canónica y funciona con atrás/adelante; el diálogo se abre una sola vez y el menú de proyecto queda limpio.
+- **Verificación:** `SettingsSection` incluye `sitio` y `SETTINGS_SECTIONS` lo coloca tras Cuenta; `/?project=…&view=ajustes&section=sitio` se parsea y reconstruye igual. La sección «Tu Site» muestra la tarjeta y abre el mismo `RemixDialog` desde `Board`; el menú de proyecto ya no contiene `.remix-action` y el header no recibe `onRemix`. Se actualizó el snapshot del catálogo MCP porque el enum de secciones incluye `sitio`. Revisión visual a 1366 y 390 px. Suite completa **160 archivos / 1.173 pruebas**, `tsc` y ESLint correctos.
 
 ### Fase 3: Verificación y cierre
 - [ ] Pasar suite completa, `tsc`, ESLint, build y `perf:budget`; revisar la cabecera y Ajustes a 1366, 1024 y 390 px.

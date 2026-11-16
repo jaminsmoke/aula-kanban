@@ -1,13 +1,14 @@
 "use client";
 
 import { Suspense, lazy, useEffect, useState } from "react";
-import { BookOpen, HardDrive, KeyRound, Lock, Palette, ShieldCheck, UserRound } from "lucide-react";
+import { BookOpen, Globe, HardDrive, KeyRound, Lock, Palette, ShieldCheck, UserRound } from "lucide-react";
 import WorkspaceLayout, { type WorkspaceItem } from "../layout/workspace-layout";
 import type { Project } from "../shared/model";
 import SettingsAccount from "./settings-account";
 import SettingsAdmins from "./settings-admins";
 import SettingsAppearance from "./settings-appearance";
 import SettingsPermissions from "./settings-permissions";
+import SettingsSite from "./settings-site";
 import SettingsStorage from "./settings-storage";
 import SettingsTokens from "./settings-tokens";
 import "./settings-view.css";
@@ -24,7 +25,7 @@ import type { SettingsSection } from "../../../lib/domain/board-url";
  * @param props - Cuenta, permisos, proyecto activo y recarga de proyectos.
  * @returns La página de ajustes.
  */
-export default function SettingsView({ user, projectsLoaded, owner, admin, guest = false, activeProject, onProjectsChanged, section: controlledSection, onSection }: {
+export default function SettingsView({ user, projectsLoaded, owner, admin, guest = false, activeProject, onProjectsChanged, onRemix, section: controlledSection, onSection }: {
   user: { displayName: string; email: string };
   projectsLoaded: boolean;
   owner: boolean;
@@ -32,6 +33,7 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, guest
   guest?: boolean;
   activeProject?: Project;
   onProjectsChanged: () => void;
+  onRemix: () => void;
   section?: SettingsSection;
   onSection?: (section: SettingsSection) => void;
 }) {
@@ -43,6 +45,7 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, guest
     || (guest && section === "tokens");
   const sections: WorkspaceItem<SettingsSection>[] = [
     { id: "cuenta", label: "Cuenta", icon: UserRound },
+    { id: "sitio", label: "Tu Site", icon: Globe },
     { id: "apariencia", label: "Apariencia", icon: Palette },
     { id: "documentacion", label: "Documentación", icon: BookOpen },
     { id: "tokens", label: "Tokens MCP", icon: KeyRound },
@@ -71,6 +74,8 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, guest
       <div className="settings-content">
         {active === "cuenta" ? (
           <SettingsAccount user={user} projectsLoaded={projectsLoaded} owner={owner} admin={admin} activeProject={activeProject} />
+        ) : active === "sitio" ? (
+          <SettingsSite onRemix={onRemix} />
         ) : active === "apariencia" ? (
           <SettingsAppearance />
         ) : active === "documentacion" ? (

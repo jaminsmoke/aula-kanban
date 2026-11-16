@@ -20,6 +20,7 @@ const props = {
   admin: false,
   activeProject: project,
   onProjectsChanged: vi.fn(),
+  onRemix: vi.fn(),
 };
 
 /**
@@ -155,5 +156,17 @@ describe("SettingsView", () => {
     expect(screen.getByRole("heading", { name: "Cuenta" })).toBeTruthy();
     await waitFor(() => expect(onSection).toHaveBeenCalledWith("cuenta"));
     expect(window.location.search).toBe("?project=p1&view=ajustes");
+  });
+
+  it("abre Tu Site y lanza el remix", () => {
+    const onRemix = vi.fn();
+    mockRequests();
+    render(<SettingsView {...props} owner={false} admin={false} onRemix={onRemix} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Tu Site" }));
+    expect(screen.getByRole("heading", { name: "Tu Site" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: /Haz tu Site de Aula Kanban/ }));
+    expect(onRemix).toHaveBeenCalledTimes(1);
   });
 });

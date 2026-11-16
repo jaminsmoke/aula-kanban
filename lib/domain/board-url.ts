@@ -13,7 +13,7 @@ import { normalizeNativeAppId } from "../native-apps";
  *   defecto), `calendario` o `mochila` (el espacio personal de la
  *   mochila del alumnado y el maletín docente, APP-03); en
  *   `administracion` es `alumnos` (por defecto),
- *   `profesores` o `tienda`; en `ajustes` es `cuenta | apariencia |
+ *   `profesores` o `tienda`; en `ajustes` es `cuenta | sitio | apariencia |
  *   documentacion | tokens | administradores | permisos | almacenamiento`
  *   (por defecto `cuenta`). En el resto de vistas no tiene significado y se omite.
  *
@@ -42,7 +42,7 @@ export type AdministracionSection = "alumnos" | "profesores" | "tienda";
 export type ClassSection = "tareas" | "calendario" | "mochila";
 
 /** Secciones válidas dentro de Ajustes. */
-export type SettingsSection = "cuenta" | "apariencia" | "documentacion" | "tokens" | "administradores" | "permisos" | "almacenamiento";
+export type SettingsSection = "cuenta" | "sitio" | "apariencia" | "documentacion" | "tokens" | "administradores" | "permisos" | "almacenamiento";
 
 /** Vistas válidas del tablero. */
 export const BOARD_VIEWS: readonly BoardView[] = [
@@ -65,6 +65,7 @@ export const CLASS_SECTIONS: readonly ClassSection[] = ["tareas", "calendario", 
 /** Secciones válidas dentro de Ajustes, en el orden de navegación. */
 export const SETTINGS_SECTIONS: readonly SettingsSection[] = [
   "cuenta",
+  "sitio",
   "apariencia",
   "documentacion",
   "tokens",

@@ -62,7 +62,6 @@
 .header-settings[aria-current="page"] { background:var(--ui-action-primary); color:var(--ui-text-inverse); }
 
 /* Acciones de proyecto en el menú de cabecera */
-.project-dropdown .remix-action { border-top:var(--border-width-hairline) solid var(--ui-border-default); border-radius:0; margin-top:6px; padding-top:13px; color:var(--ui-action-text-hover); }
 .project-dropdown .project-delete-action, .project-dropdown .project-delete-action svg { color:var(--ui-danger-text); }
 
 /* Responsive de cabecera */

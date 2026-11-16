@@ -2083,6 +2083,7 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
                 "tareas",
                 "calendario",
                 "cuenta",
+                "sitio",
                 "apariencia",
                 "documentacion",
                 "tokens",

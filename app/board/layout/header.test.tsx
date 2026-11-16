@@ -26,7 +26,6 @@ const props = {
   onShareProject: vi.fn(),
   onMembers: vi.fn(),
   onDeleteProject: vi.fn(),
-  onRemix: vi.fn(),
   onSettings: vi.fn(),
 };
 
@@ -75,6 +74,7 @@ describe("BoardHeader", () => {
     expect(actions?.querySelector(".project-menu")).toBeTruthy();
     expect(actions?.querySelector(".header-settings")).toBeTruthy();
     expect(actions?.querySelector(".account-menu")).toBeTruthy();
+    expect(actions?.querySelector(".remix-action")).toBeNull();
   });
 
   it("oculta la navegación cuando no hay proyecto", () => {

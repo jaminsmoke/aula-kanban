@@ -25,7 +25,7 @@ type View = BoardView;
  */
 export default function BoardHeader({
   user, demo = false, activeProject, projects, projectId, view, onView, owner, admin, canManage,
-  onNewProject, onShareProject, onMembers, onDeleteProject, onRemix, onSettings,
+  onNewProject, onShareProject, onMembers, onDeleteProject, onSettings,
   classSection = "tareas", settingsSection = "cuenta", administracionSection = "alumnos",
 }: {
   user: { displayName: string; email: string };
@@ -45,7 +45,6 @@ export default function BoardHeader({
   onShareProject: () => void;
   onMembers: () => void;
   onDeleteProject: () => void;
-  onRemix: () => void;
   onSettings: () => void;
 }) {
   function close(event: MouseEvent<HTMLButtonElement>) {
@@ -81,7 +80,6 @@ export default function BoardHeader({
                 {canManage && activeProject && <button type="button" onClick={(event) => { close(event); onShareProject(); }}><Link2 size={16} /> Compartir proyecto</button>}
                 {canManage && <button type="button" onClick={(event) => { close(event); onMembers(); }}><Users size={16} /> Gestionar miembros</button>}
                 {(owner || admin) && activeProject && <button type="button" className="project-delete-action" onClick={(event) => { close(event); onDeleteProject(); }}><Trash2 size={16} /> Eliminar proyecto</button>}
-                <button type="button" className="remix-action" onClick={(event) => { close(event); onRemix(); }}><Plus size={16} /> Haz tu Site de Aula Kanban</button>
               </div>
             </div>
           </details>}

@@ -84,7 +84,6 @@ export default function Board({ user, initial, demo = false, demoSignInHref = "/
         onShareProject={actions.openShare}
         onMembers={() => setMembersOpen(true)}
         onDeleteProject={actions.openDeleteProject}
-        onRemix={() => setRemixOpen(true)}
         onSettings={() => setView("ajustes")}
       />
 
@@ -113,6 +112,7 @@ export default function Board({ user, initial, demo = false, demoSignInHref = "/
               guest={Boolean(isGuest)}
               activeProject={activeProject}
               onProjectsChanged={() => void projectState.refreshProjects()}
+              onRemix={() => setRemixOpen(true)}
               section={settingsSection}
               onSection={setSettingsSection}
             />
