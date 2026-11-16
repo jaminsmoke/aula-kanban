@@ -1,6 +1,7 @@
 "use client";
 
 import { LogOut } from "lucide-react";
+import { useState } from "react";
 import type { Project } from "../shared/model";
 
 const roleNames = { owner: "Propietario", admin: "Administrador", teacher: "Profesor", student: "Alumno", guest: "Invitado" } as const;
@@ -17,6 +18,23 @@ export default function SettingsAccount({ user, projectsLoaded, owner, admin, ac
   admin: boolean;
   activeProject?: Project;
 }) {
+  const [preparing, setPreparing] = useState(false);
+  const [demoMessage, setDemoMessage] = useState("");
+
+  async function prepareDemo() {
+    setPreparing(true);
+    setDemoMessage("");
+    try {
+      const response = await fetch("/api/admin/demo", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      const result = await response.json() as { message?: string };
+      setDemoMessage(result.message ?? (response.ok ? "La demo está preparada." : "No se pudo preparar la demo."));
+    } catch {
+      setDemoMessage("No se pudo conectar para preparar la demo.");
+    } finally {
+      setPreparing(false);
+    }
+  }
+
   return (
     <section className="settings-section" aria-labelledby="settings-account-title">
       <h2 id="settings-account-title">Cuenta</h2>
@@ -28,6 +46,12 @@ export default function SettingsAccount({ user, projectsLoaded, owner, admin, ac
         <div><dt>Rol en el proyecto</dt><dd>{!projectsLoaded ? "Consultando…" : activeProject ? roleNames[activeProject.role] : "Sin acceso a un proyecto activo"}</dd></div>
       </dl>
       <p className="settings-note">Los permisos de esta aplicación son independientes de la propiedad del Site en Sites.</p>
+      {owner && <div>
+        <h3>Demostración pública</h3>
+        <p>Prepara un proyecto ficticio de solo lectura. Si ya existe, se restablecerán sus datos de ejemplo.</p>
+        <button className="secondary" type="button" onClick={prepareDemo} disabled={preparing}>{preparing ? "Preparando…" : "Preparar demo"}</button>
+        {demoMessage && <p role="status">{demoMessage}</p>}
+      </div>}
       <a className="secondary settings-signout" href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
     </section>
   );
