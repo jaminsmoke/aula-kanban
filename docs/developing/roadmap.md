@@ -56,12 +56,12 @@
   - La app funciona sin red y sin estado de servidor.
   - Pasa las pruebas de la app y se revisa a 1366, 1024 y 390 px.
 
-### Fase 2 — Rival, acabado y portada
+### Fase 2 — Rival, acabado y portada (completada)
 
-- [ ] Añadir un rival aleatorio que elija únicamente entre movimientos legales.
-- [ ] Completar la accesibilidad: coordenadas, turno, selección, alternativa por teclado y foco visible.
-- [ ] Crear `public/store/ajedrez.svg` con el formato de las portadas actuales y área segura para el icono de la tarjeta.
-- [ ] Revisar el tablero en ventana pequeña y en móvil, sin piezas cortadas ni scroll horizontal.
+- [x] Añadir un rival aleatorio que elija únicamente entre movimientos legales.
+- [x] Completar la accesibilidad: coordenadas, turno, selección, alternativa por teclado y foco visible.
+- [x] Crear `public/store/ajedrez.svg` con el formato de las portadas actuales y área segura para el icono de la tarjeta.
+- [x] Revisar el tablero en ventana pequeña y en móvil, sin piezas cortadas ni scroll horizontal.
 - **Criterios de aceptación:**
   - El rival no puede hacer movimientos ilegales ni bloquear la partida.
   - La partida se puede jugar con teclado y con puntero.
@@ -100,4 +100,5 @@
 - La app no necesita persistencia en la primera versión. Si se añade guardado, el camino es `app_documents`, no una tabla nueva.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales. Añadir Ajedrez a la demo sería una tarea aparte.
 - 2026-11-16: Fase 1 completada. La app tiene tablero, reglas completas, jaque, mate, tablas, historial, reinicio, coronación con elección de pieza y dos jugadores locales. Se revisó a 1366, 1024 y 390 px con un contenedor de ventana; el tablero usa colores propios claros para mantener el contraste de las piezas en ambos temas. Pruebas de la app y del modelo: 8 correctas; suite completa: 162 archivos / 1.181 pruebas.
+- 2026-11-16: Fase 2 completada. El rival aleatorio elige entre los movimientos legales de `chess.js`, con una pausa breve y estado «El rival está pensando…». Se añadió el formulario «Mover con teclado», foco visible y una portada SVG ámbar con área segura para el icono de la tarjeta. Revisada a 1366, 1024 y 390 px y en tarjeta 16:9/ficha 16:7. Pruebas de la app y del modelo: 10 correctas; suite completa: 162 archivos / 1.183 pruebas.
 - No se cambia la versión del Site (`1.1.34`) ni se publica en Sites desde este roadmap.
