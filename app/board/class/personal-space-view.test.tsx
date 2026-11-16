@@ -8,8 +8,22 @@ const installed = [
   { id: "mermaid", name: "Diagramas", tagline: "Escribe el diagrama en texto y míralo al instante.", category: "Diagramas", favorite: false, position: 1 },
 ];
 
-function mockFetch() {
-  return vi.fn(async () => jsonResponse({ apps: installed }));
+const catalog = [
+  { id: "eso-matematicas-1", title: "Matemáticas 1º ESO", level: "ESO", course: "1º", subject: "Matemáticas", sizeBytes: 12_094_989, available: true, url: "/api/books/eso-matematicas-1/file?project=p1", coverUrl: "/api/books/eso-matematicas-1/image?kind=cover&project=p1", attribution: "Textos Marea Verde", license: "CC BY-NC-SA 3.0", source: { name: "Textos Marea Verde", url: "https://apuntesmareaverde.org.es" }, version: "2026-11-16", storageKey: "books/eso-matematicas-1/2026-11-16.pdf" },
+  { id: "bach-generales", title: "Matemáticas Generales", level: "Bachillerato", course: "1º", subject: "Generales", sizeBytes: 13_800_639, available: false, url: null, coverUrl: null, attribution: "Textos Marea Verde", license: "CC BY-NC-SA 3.0", source: { name: "Textos Marea Verde", url: "https://apuntesmareaverde.org.es" }, version: null, storageKey: null },
+];
+
+const assignment = [
+  { id: "eso-matematicas-1", enabled: true },
+  { id: "bach-generales", enabled: true },
+];
+
+function mockFetch(enabledBooks = assignment) {
+  return vi.fn(async (url: string) => {
+    if (String(url).includes("project-books")) return jsonResponse({ books: enabledBooks });
+    if (String(url).includes("/api/books")) return jsonResponse({ books: catalog });
+    return jsonResponse({ apps: installed });
+  });
 }
 
 describe("PersonalSpaceView", () => {
@@ -46,8 +60,36 @@ describe("PersonalSpaceView", () => {
     expect(await screen.findByLabelText("Maletín docente")).toBeTruthy();
   });
 
+  it("muestra el icono Libros cuando hay libros habilitados", async () => {
+    vi.stubGlobal("fetch", mockFetch());
+    render(<PersonalSpaceView role="student" projectId="p1" />);
+    expect(await screen.findByRole("button", { name: /Libros/ })).toBeTruthy();
+  });
+
+  it("no muestra el icono Libros sin libros habilitados", async () => {
+    vi.stubGlobal("fetch", mockFetch([]));
+    render(<PersonalSpaceView role="student" projectId="p1" />);
+    await screen.findByRole("button", { name: /Excalidraw/ });
+    expect(screen.queryByRole("button", { name: /Libros/ })).toBeNull();
+  });
+
+  it("abre la carpeta Libros y el visor de solo lectura sin descarga", async () => {
+    vi.stubGlobal("fetch", mockFetch());
+    render(<PersonalSpaceView role="student" projectId="p1" />);
+    fireEvent.click(await screen.findByRole("button", { name: /Libros/ }));
+    await screen.findByRole("dialog", { name: "Libros" });
+    fireEvent.click(await screen.findByRole("button", { name: /Matemáticas 1º ESO/ }));
+    const frame = await screen.findByTitle("Lector de Matemáticas 1º ESO", {}, { timeout: 3000 });
+    expect(frame.getAttribute("src")).toBe("/api/books/eso-matematicas-1/file?project=p1");
+    // Solo lectura: no hay botón ni enlace de descarga en el visor.
+    expect(frame.closest(".store-window")?.querySelectorAll("[download]")).toHaveLength(0);
+    expect(screen.queryByRole("link", { name: /Descargar|descargar/ })).toBeNull();
+  });
+
   it("muestra el estado vacío sin herramientas instaladas", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => jsonResponse({ apps: [] })));
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => String(url).includes("project-books")
+      ? jsonResponse({ books: [] })
+      : jsonResponse({ apps: [] })));
     render(<PersonalSpaceView role="student" projectId="p1" />);
     expect(await screen.findByText(/Todavía no hay herramientas instaladas/)).toBeTruthy();
   });

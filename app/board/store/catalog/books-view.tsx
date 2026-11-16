@@ -13,11 +13,12 @@ import type { StoreTool } from "../tools";
 /**
  * Adapta un libro a la forma de herramienta que usa la ventana del
  * desktop (solo importan id, nombre, descripción e icono; el tamaño cae
- * al de ventana estándar).
+ * al de ventana estándar). Lo comparten la vista Libros y la carpeta
+ * «Libros» del escritorio personal (STORE-04).
  * @param book - Libro del catálogo con su disponibilidad y URL.
  * @returns La herramienta simulada para abrir la ventana del visor.
  */
-function bookTool(book: BookWithAvailability): StoreTool {
+export function bookTool(book: BookWithAvailability): StoreTool {
   return {
     id: `book-${book.id}`,
     name: book.title,

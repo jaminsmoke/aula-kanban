@@ -2,11 +2,16 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
+import { BookOpen } from "lucide-react";
 import StoreWindow from "../store/store-window";
 import { storeTools, toolApps } from "../apps/registry";
 import { visibleTools, type StoreRole, type StoreTool } from "../store/tools";
 import { useDesktopWindows } from "../store/use-desktop-windows";
+import { bookTool } from "../store/catalog/books-view";
+import BooksFolder from "./books-folder";
+import BookViewer from "./book-viewer";
 import "../store/store-desktop.css";
+import "../store/catalog/store.css";
 
 type PersonalAppRow = {
   id: string;
@@ -37,6 +42,8 @@ export default function PersonalSpaceView({ role, projectId }: {
   projectId: string;
 }) {
   const [apps, setApps] = useState<PersonalAppRow[]>([]);
+  const [bookIds, setBookIds] = useState<string[]>([]);
+  const [openBookIds, setOpenBookIds] = useState<string[]>([]);
   const [configured, setConfigured] = useState<boolean | null>(null);
   const [error, setError] = useState("");
   const title = role === "teacher" ? "Maletín docente" : "Mi mochila";
@@ -44,10 +51,19 @@ export default function PersonalSpaceView({ role, projectId }: {
 
   const refresh = useCallback(async () => {
     try {
-      const response = await fetch(`/api/personal-apps?project=${encodeURIComponent(projectId)}`, { cache: "no-store" });
-      if (!response.ok) throw new Error();
-      const data = (await response.json()) as { apps: PersonalAppRow[] };
+      const [personal, assignment] = await Promise.all([
+        fetch(`/api/personal-apps?project=${encodeURIComponent(projectId)}`, { cache: "no-store" }),
+        fetch(`/api/project-books?project=${encodeURIComponent(projectId)}`, { cache: "no-store" }),
+      ]);
+      if (!personal.ok) throw new Error();
+      const data = (await personal.json()) as { apps: PersonalAppRow[] };
       setApps(data.apps);
+      if (assignment.ok) {
+        const books = (await assignment.json()) as { books: { id: string; enabled: boolean }[] };
+        setBookIds(books.books.filter((book) => book.enabled).map((book) => book.id));
+      } else {
+        setBookIds([]);
+      }
       setConfigured(true);
       setError("");
     } catch {
@@ -70,7 +86,30 @@ export default function PersonalSpaceView({ role, projectId }: {
     .map((app) => storeTools.find((tool) => tool.id === app.id))
     .filter((tool): tool is StoreTool => Boolean(tool));
   const desktopIds = new Set(desktopTools.map((tool) => tool.id));
-  const shownWindows = configured === null ? windows : windows.filter((item) => desktopIds.has(item.tool.id));
+  // La carpeta «Libros» es una herramienta más del escritorio (STORE-04):
+  // icono propio cuando el proyecto tiene libros habilitados, y las
+  // ventanas de sus libros solo mientras sigan habilitados.
+  const booksTool: StoreTool = {
+    id: "books",
+    name: "Libros",
+    tagline: "Libros escolares del proyecto",
+    description: "Libros habilitados por el docente para este proyecto.",
+    category: "Aula",
+    cover: "",
+    features: [],
+    appVersion: "1.0.0",
+    versionLabel: "Libros",
+    upstream: { name: "Aula Kanban", version: "" },
+    window: { width: 920, height: 640 },
+    icon: BookOpen,
+    roles: ["owner", "admin", "teacher", "student", "guest"],
+  };
+  const bookWindowIds = new Set(openBookIds.filter((id) => bookIds.includes(id)));
+  const shownWindows = configured === null ? windows : windows.filter((item) =>
+    desktopIds.has(item.tool.id)
+    || (item.tool.id === "books" && bookIds.length > 0)
+    || item.tool.id.startsWith("book-") && bookWindowIds.has(item.tool.id.slice(5)),
+  );
 
   return (
     <MotionConfig reducedMotion="user">
@@ -95,6 +134,14 @@ export default function PersonalSpaceView({ role, projectId }: {
               </div>
             );
           })}
+          {bookIds.length > 0 && (
+            <div key="books">
+              <button type="button" className="store-tool" onClick={() => open(booksTool)} title={booksTool.description}>
+                <span className="store-tool-icon" aria-hidden><BookOpen size={28} strokeWidth={2} /></span>
+                <span className="store-tool-name">Libros</span>
+              </button>
+            </div>
+          )}
         </div>
         <nav className="store-dock" aria-label="Ventanas minimizadas">
           {shownWindows.filter((item) => item.minimized).map((item) => {
@@ -109,6 +156,8 @@ export default function PersonalSpaceView({ role, projectId }: {
         <AnimatePresence>
         {shownWindows.map((item) => {
           const App = toolApps[item.tool.id];
+          const isBooks = item.tool.id === "books";
+          const isBookViewer = item.tool.id.startsWith("book-");
           return (
             <StoreWindow
               key={item.tool.id}
@@ -126,7 +175,11 @@ export default function PersonalSpaceView({ role, projectId }: {
               onMinimize={() => minimize(item.tool.id)}
               onZoom={() => zoom(item.tool.id)}
             >
-              {App ? <Suspense fallback={<p className="store-loading">Cargando {item.tool.name}…</p>}><App projectId={projectId} role={role} /></Suspense> : <p className="store-loading">Próximamente.</p>}
+              {isBooks ? (
+                <BooksFolder projectId={projectId} onOpen={(book) => { open(bookTool(book)); setOpenBookIds((current) => [...new Set([...current, book.id])]); }} />
+              ) : isBookViewer ? (
+                <BookViewer projectId={projectId} bookId={item.tool.id.slice(5)} />
+              ) : App ? <Suspense fallback={<p className="store-loading">Cargando {item.tool.name}…</p>}><App projectId={projectId} role={role} /></Suspense> : <p className="store-loading">Próximamente.</p>}
             </StoreWindow>
           );
         })}

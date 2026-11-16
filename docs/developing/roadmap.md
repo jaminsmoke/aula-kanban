@@ -53,10 +53,12 @@
 
 **Implementado (2026-11-16):** pestañas «Miembros»/«Herramientas» en las vistas de Profesores y Alumnos (`app/board/people/administration`), con el panel compartido `BooksToolsPanel`: toggle maestro «Todos los libros», selección por nivel, guardado con confirmación y reintento si falla. Solo visible para owner/admin/profesor del proyecto. Verificado en el navegador: pestaña visible en Alumnos, 10 filas por nivel y guardado con retorno «Guardado».
 
-### Fase 3: Carpeta «Libros» en la mochila y el maletín con visor de solo lectura
-- [ ] Carpeta «Libros» con los libros asignados en la mochila del alumnado y el maletín docente (la carpeta general de personal sigue en backlog).
-- [ ] Visor embebido de solo lectura (ventana con el PDF); retirada del botón de descarga de la herramienta.
+### Fase 3: Carpeta «Libros» en la mochila y el maletín con visor de solo lectura — completada
+- [x] Carpeta «Libros» con los libros asignados en la mochila del alumnado y el maletín docente (la carpeta general de personal sigue en backlog).
+- [x] Visor embebido de solo lectura (ventana con el PDF); retirada del botón de descarga de la herramienta.
 - **Criterios de aceptación:** el alumno ve sus libros en la carpeta «Libros» de su mochila y los lee en ventana propia; sin botón de descarga.
+
+**Implementado (2026-11-16):** icono «Libros» en el escritorio personal cuando el proyecto tiene libros habilitados (`PersonalSpaceView`), con carpeta por niveles (`BooksFolder`: portada, título, materia; no ingeridos deshabilitados) y ventanas de visor embebido (`BookViewer`: iframe del PDF con la atribución, sin descarga). Al deshabilitarse un libro, su icono y ventana desaparecen. Verificado en el navegador: mochila con icono Libros, 10 filas en carpeta y visor del PDF a pantalla completa.
 
 ### Fase 4: Retirada de la Tienda, verificación y cierre
 - [ ] Se retiran la vista y la pestaña «Libros» de Aula Store (la carpeta «Libros» queda como única puerta).
