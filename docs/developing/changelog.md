@@ -6,6 +6,22 @@
 
 ---
 
+## 2026-11-16 — Roadmap STORE-03B · Barra inferior y galerías horizontales en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Aula Store se navega con una **barra inferior fija** (Todo + Educación/Oficina/Productividad, en `.store-shell` con el catálogo en scroll propio): la categoría activa se marca con `aria-current`, la barra no se pierde al hacer scroll y los chips de categoría superiores se retiran; arriba quedan solo búsqueda e Instaladas, combinable con cualquier categoría.
+- Cada categoría presenta sus apps en **galerías horizontales por subcategoría** (`StoreGallery`: scroll nativo con snap, fade lateral con máscara CSS solo si desborda y sin scrollbar visible). Educación: Pizarras/Diagramas/Herramientas; Productividad: Diagramas/Programación (Diagramas en ambas, vocabulario compartido); Oficina, vacía, muestra «Más adelante» sin galería. «Mejores aplicaciones» es la galería de cabecera de Todo; la búsqueda en Todo sigue en rejilla.
+- Sin cambios de taxonomía, apps, libros ni versión (`1.1.31`); la publicación en Sites la realiza Codex.
+
+### Verificación
+
+- Suite completa: 137 archivos / 1.079 pruebas; `tsc`, ESLint completo y build en verde.
+- Dev local en `http://127.0.0.1:5173` responde 200; a 390 px la barra cabe (4 tabs flex) y las tarjetas de galería (272 px, `max-width: 78vw`) se desplazan sin desbordar; el cambio de categoría y las galerías quedan cubiertos por tests (suite de catálogo 7/7).
+- Commits: `7805049` (Fase 1), `959ac48` (Fase 2); el cierre queda en el commit de documentación.
+
 ## 2026-11-16 — Roadmap STORE-03A · Taxonomía de la Tienda por familias de uso (multi-categoría)
 
 **Estado:** Completada · Sin publicación
