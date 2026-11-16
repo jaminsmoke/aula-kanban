@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** APP-02 aparcada; APP-03 (carpetas) lista para roadmap (matriz PERM-01 aplicada)
+> **Roadmap:** PERM-02 · Secciones de permisos en Ajustes y Administración · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** APP-02 aparcada; APP-03 (carpetas) pendiente de priorizar
 
 ---
 

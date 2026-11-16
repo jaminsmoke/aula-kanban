@@ -91,15 +91,16 @@ titularidad de Sites sigue fuera de la aplicación.
   proyecto; no se acumulan ni se trasladan entre proyectos, ni se
   convierten en capacidades globales.
 
-## Ubicación validada (Fase 3)
+## Ubicación
 
-- **Permisos por proyecto:** Administración (Alumnos/Profesores) con su
-  gestión de miembros existente; sin sección nueva.
-- **Permisos de instancia:** Ajustes > Administradores con su gestión de
-  administradores existente. La sección nueva «Ajustes > Permisos» queda
-  descartada mientras no exista almacenamiento de concesiones
-  individuales (una UI sin datos sería un placeholder); si se añade la
-  tabla de concesiones, la sección lo acogerá.
+- **Permisos por proyecto:** pestaña «Permisos» de Administración > Profesores y
+  Administración > Alumnos, junto a Miembros y Herramientas (roadmap PERM-02),
+  con la gestión de miembros existente como parte de la matriz.
+- **Permisos de instancia:** sección «Permisos» del sidebar de Ajustes, junto a
+  Administradores (roadmap PERM-02), solo para dueño y administradores.
+- Ambas superficies son de **solo lectura** mientras no exista almacenamiento de
+  concesiones individuales: muestran la matriz efectiva desde la misma fuente que
+  evalúa el servidor, sin controles que no persistan.
 
 ## Verificación de la matriz (Fase 1)
 
