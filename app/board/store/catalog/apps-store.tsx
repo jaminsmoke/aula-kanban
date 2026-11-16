@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation } from "motion/react";
-import { ArrowLeft, Download, Package, Play, RefreshCw, Trash2, TriangleAlert } from "lucide-react";
-import { AULA_STORE_VERSION, visibleTools, type StoreCategory, type StoreRole, type StoreTool } from "../tools";
+import { ArrowLeft, BookOpen, Download, LayoutGrid, Package, Play, RefreshCw, Star, Trash2, TriangleAlert } from "lucide-react";
+import { STORE_CATEGORIES, AULA_STORE_VERSION, visibleTools, type StoreCategory, type StoreRole, type StoreTool } from "../tools";
 import { AulaStoreIcon } from "./aula-store-icon";
 import StoreCard from "./store-card";
 import StoreDetail from "./store-detail";
 import StoreFilters from "./store-filters";
-import { CATEGORY_ICONS, type StoreAction, type StoreApp } from "./store-model";
+import { CATEGORY_ICONS, FEATURED_APP_IDS, type StoreAction, type StoreApp } from "./store-model";
 import "./store.css";
 
 export type { StoreAction, StoreApp } from "./store-model";
@@ -31,6 +31,9 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<StoreCategory | "todas">("todas");
   const [installedOnly, setInstalledOnly] = useState(false);
+  // Vista de la tienda: «Aplicaciones» es la única con contenido por ahora;
+  // «Libros» llegará con STORE-02 y está deshabilitada hasta entonces.
+  const [storeView, setStoreView] = useState<"apps" | "libros">("apps");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [justInstalled, setJustInstalled] = useState<string | null>(null);
   const prevStatuses = useRef<Map<string, string>>(new Map());
@@ -81,6 +84,16 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
   const sectionTitle = category !== "todas" ? category : installedOnly ? "Instaladas" : "Todas las aplicaciones";
   const SectionIcon = category !== "todas" ? CATEGORY_ICONS[category] : Package;
 
+  // Sin buscador ni filtros, la vista Aplicaciones muestra secciones
+  // físicas: «Mejores aplicaciones» y una sección por categoría.
+  const isHome = storeView === "apps" && query.trim() === "" && category === "todas" && !installedOnly;
+  const featuredTools = FEATURED_APP_IDS
+    .map((id) => allTools.find((tool) => tool.id === id))
+    .filter((tool): tool is StoreTool => Boolean(tool));
+  const categorySections = STORE_CATEGORIES
+    .map((name) => ({ name, tools: allTools.filter((tool) => tool.category === name) }))
+    .filter((section) => section.tools.length > 0);
+
   /**
    * Acciones de una app (abrir, instalar o desinstalar).
    * @param tool - Herramienta del catálogo.
@@ -100,6 +113,49 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
     </>
   );
 
+  /**
+   * Tarjeta de una app dentro de una sección. La misma app puede aparecer
+   * en «Mejores aplicaciones» y en su categoría, con claves distintas.
+   * @param tool - Herramienta del catálogo.
+   * @param index - Posición dentro de la sección, para la animación.
+   * @param scope - Sección que la contiene, para la clave.
+   * @returns La tarjeta animada.
+   */
+  const renderCard = (tool: StoreTool, index: number, scope: string) => {
+    const status = statusOf(tool.id);
+    return (
+      <StoreCard
+        key={`${scope}-${tool.id}`}
+        tool={tool}
+        index={index}
+        status={status}
+        justInstalled={justInstalled === tool.id}
+        actions={actions(tool, status === "installed")}
+        onDetails={() => setSelectedId(tool.id)}
+      />
+    );
+  };
+
+  /**
+   * Una sección física de la vista Aplicaciones: título con icono y
+   * rejilla de tarjetas.
+   * @param title - Título de la sección.
+   * @param titleIcon - Icono del título.
+   * @param tools - Apps de la sección.
+   * @param scope - Identificador de la sección, para las claves.
+   * @returns La sección completa.
+   */
+  const renderSection = (title: string, titleIcon: ReactNode, tools: StoreTool[], scope: string) => (
+    <section className="store-section" aria-label={title}>
+      <h3 className="store-section-title">{titleIcon} {title}<span className="store-section-count">{tools.length}</span></h3>
+      <div className="store-grid">
+        <AnimatePresence mode="popLayout">
+          {tools.map((tool, index) => renderCard(tool, index, scope))}
+        </AnimatePresence>
+      </div>
+    </section>
+  );
+
   return (
     <MotionConfig reducedMotion="user">
     <LazyMotion features={domAnimation}>
@@ -116,6 +172,10 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
           </div>
           <button type="button" className="store-refresh" onClick={onRefresh} title="Actualizar estado"><RefreshCw size={16} aria-hidden /> Actualizar</button>
         </div>
+        <div className="store-views" role="group" aria-label="Vistas de la tienda">
+          <button type="button" className={`store-view-tab${storeView === "apps" ? " store-view-tab--active" : ""}`} aria-current={storeView === "apps" ? "page" : undefined} onClick={() => setStoreView("apps")}><LayoutGrid size={16} aria-hidden /> Aplicaciones</button>
+          <button type="button" className="store-view-tab" disabled title="Próximamente (STORE-02)"><BookOpen size={16} aria-hidden /> Libros <span className="store-view-soon">Próximamente</span></button>
+        </div>
         <StoreFilters
           tools={allTools}
           query={query}
@@ -131,26 +191,21 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
       {error ? <p role="alert" className="store-alert"><TriangleAlert size={16} aria-hidden /> {error}</p> : null}
 
       {visibleCount === 0 ? (
-        <p className="store-results-empty">Sin resultados para «{query}».</p>
+        <p className="store-results-empty">{query.trim() ? <>Sin resultados para «{query}».</> : "Sin resultados."}</p>
+      ) : isHome ? (
+        <>
+          {featuredTools.length > 0 ? renderSection("Mejores aplicaciones", <Star size={18} aria-hidden />, featuredTools, "destacadas") : null}
+          {categorySections.map((section) => {
+            const CategoryIcon = CATEGORY_ICONS[section.name];
+            return renderSection(section.name, <CategoryIcon size={18} aria-hidden />, section.tools, section.name);
+          })}
+        </>
       ) : (
         <section className="store-section" aria-label={sectionTitle}>
           <h3 className="store-section-title"><SectionIcon size={18} aria-hidden /> {sectionTitle}<span className="store-section-count">{sectionTools.length}</span></h3>
           <div className="store-grid">
             <AnimatePresence mode="popLayout">
-              {sectionTools.map((tool, index) => {
-                const status = statusOf(tool.id);
-                return (
-                  <StoreCard
-                    key={tool.id}
-                    tool={tool}
-                    index={index}
-                    status={status}
-                    justInstalled={justInstalled === tool.id}
-                    actions={actions(tool, status === "installed")}
-                    onDetails={() => setSelectedId(tool.id)}
-                  />
-                );
-              })}
+              {sectionTools.map((tool, index) => renderCard(tool, index, "resultados"))}
             </AnimatePresence>
           </div>
         </section>

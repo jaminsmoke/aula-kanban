@@ -50,7 +50,7 @@ export const workspaceSections: DocSection[] = [
         type: "steps",
         items: [
           "Abre «Aula Store» desde el icono de la bolsa, en la parte inferior del escritorio.",
-          "Busca en Aula Store o filtra por categoría (Aula, Pizarras, Programación, Diagramas) y por «Instaladas».",
+          "En la vista Aplicaciones, las apps aparecen en «Mejores aplicaciones» y en secciones por categoría (Aula, Pizarras, Programación, Diagramas). Busca o filtra por categoría y por «Instaladas» para ver una única rejilla de resultados.",
           "Abre la ficha de una aplicación: descripción, características, su versión, el paquete upstream y las ampliaciones que añade Aula Kanban.",
           "Pulsa «Instalar» o «Desinstalar». Solo el propietario o un administrador puede hacerlo, y el cambio vale para todos los miembros.",
         ],

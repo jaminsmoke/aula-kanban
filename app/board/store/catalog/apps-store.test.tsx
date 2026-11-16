@@ -13,15 +13,38 @@ describe("Aula Store", () => {
     const { container } = render(<AppsStore {...props} role="owner" onManage={manage} />);
     expect(container.querySelector(".store-catalog")).toBeTruthy();
     expect(container.querySelector(".store-view")).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: /Desinstalar/ }));
+    // Excalidraw está en «Mejores aplicaciones» y en su categoría.
+    expect(screen.getAllByRole("button", { name: /Desinstalar/ })).toHaveLength(2);
+    fireEvent.click(screen.getAllByRole("button", { name: /Desinstalar/ })[0]);
     expect(manage).toHaveBeenCalledWith("excalidraw", "uninstall");
     expect(screen.getByText(`v${AULA_STORE_VERSION}`)).toBeTruthy();
     expect(screen.queryByText(/VPS/)).toBeNull();
   });
   it("permite al alumnado abrir sin gestionar", () => {
     render(<AppsStore {...props} role="student" />);
-    expect(screen.getByRole("button", { name: /Abrir/ })).toBeTruthy();
+    expect(screen.getAllByRole("button", { name: /Abrir/ }).length).toBeGreaterThan(0);
     expect(screen.queryByRole("button", { name: /Desinstalar/ })).toBeNull();
+  });
+
+  it("muestra las vistas de la tienda con Libros próximamente", () => {
+    render(<AppsStore {...props} role="owner" />);
+    const appsTab = screen.getByRole("button", { name: "Aplicaciones" });
+    expect(appsTab.getAttribute("aria-current")).toBe("page");
+    const booksTab = screen.getByRole("button", { name: /Libros/ });
+    expect((booksTab as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByText("Próximamente")).toBeTruthy();
+  });
+
+  it("muestra «Mejores aplicaciones» y las secciones por categoría en el inicio", () => {
+    render(<AppsStore {...props} role="owner" />);
+    expect(screen.getByRole("region", { name: "Mejores aplicaciones" })).toBeTruthy();
+    for (const category of ["Aula", "Pizarras", "Programación", "Diagramas"]) {
+      expect(screen.getByRole("region", { name: category })).toBeTruthy();
+    }
+    // Cada app aparece en «Mejores aplicaciones» y en su categoría.
+    for (const name of ["Herramientas de aula", "Programación por bloques", "Diagramas"]) {
+      expect(screen.getAllByText(name).length).toBeGreaterThan(0);
+    }
   });
   it("busca por descripción y filtra instaladas", () => {
     render(<AppsStore {...props} role="owner" />);

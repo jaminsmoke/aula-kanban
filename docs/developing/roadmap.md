@@ -34,16 +34,16 @@
 
 ## 4. Fases
 
-### Fase 1: Vistas y secciones físicas
-- [ ] Vista de Tienda con pestañas «Aplicaciones» (activa) y «Libros» (deshabilitada, «Próximamente»).
-- [ ] En Aplicaciones, modo inicio con «Mejores aplicaciones» y una sección por categoría visible, con la tarjeta existente.
-- [ ] Lista curada `FEATURED_APP_IDS` en `store-model.ts`.
+### Fase 1: Vistas y secciones físicas — completada
+- [x] Vista de Tienda con pestañas «Aplicaciones» (activa) y «Libros» (deshabilitada, «Próximamente»).
+- [x] En Aplicaciones, modo inicio con «Mejores aplicaciones» y una sección por categoría visible, con la tarjeta existente.
+- [x] Lista curada `FEATURED_APP_IDS` en `store-model.ts`.
 - **Criterios de aceptación:** al abrir Aula Store se ven las pestañas, «Mejores aplicaciones» y las secciones por categoría con sus tarjetas; «Libros» no abre contenido.
 
-### Fase 2: Compatibilidad y acabado
-- [ ] Al buscar o filtrar (categoría/instaladas), una única rejilla de resultados como hasta ahora.
-- [ ] Ficha de detalle, acciones Abrir/Instalar/Desinstalar y roles sin regresión; claves únicas al repetir una app en destacadas y su categoría.
-- [ ] Responsive y accesibilidad (pestañas, foco visible); ayuda de workspace actualizada.
+### Fase 2: Compatibilidad y acabado — completada
+- [x] Al buscar o filtrar (categoría/instaladas), una única rejilla de resultados como hasta ahora.
+- [x] Ficha de detalle, acciones Abrir/Instalar/Desinstalar y roles sin regresión; claves únicas al repetir una app en destacadas y su categoría.
+- [x] Responsive y accesibilidad (pestañas, foco visible); ayuda de workspace actualizada.
 - **Criterios de aceptación:** buscador, filtros, ficha y gestión funcionan igual que antes; sin errores de consola ni desbordes a 390 px.
 
 ### Fase 3: Verificación y cierre

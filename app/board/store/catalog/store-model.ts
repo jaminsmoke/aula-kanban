@@ -15,6 +15,12 @@ export type StoreApp = {
 /** Acciones de gestión disponibles en la tienda. */
 export type StoreAction = "install" | "uninstall";
 
+/**
+ * Aplicaciones destacadas de «Mejores aplicaciones», en orden editorial.
+ * Con el catálogo actual todas las apps lo son; al crecer, curar la lista.
+ */
+export const FEATURED_APP_IDS = ["excalidraw", "edu-tools", "blockly", "mermaid"] as const;
+
 /** Icono de cada categoría del catálogo. */
 export const CATEGORY_ICONS = {
   Aula: GraduationCap,
