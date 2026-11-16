@@ -41,10 +41,12 @@
 
 ## 4. Fases
 
-### Fase 1: Fuente única de la matriz
-- [ ] Crear `lib/domain/permisos.ts` con capacidades, ámbito, descripción y roles que las poseen (incluidas las que hoy solo viven en `project-access.ts`/`members.ts`).
-- [ ] `lib/server/capabilities.ts` evalúa desde esa fuente sin cambiar la semántica actual.
+### Fase 1: Fuente única de la matriz — completada
+- [x] Crear `lib/domain/permisos.ts` con capacidades, ámbito, descripción y roles que las poseen (incluidas las que hoy solo viven en `project-access.ts`/`members.ts`).
+- [x] `lib/server/capabilities.ts` evalúa desde esa fuente sin cambiar la semántica actual.
 - **Criterios de aceptación:** una sola definición de la matriz; `capabilities.test.ts` y la suite MCP siguen verdes sin tocar aserciones.
+
+**Implementado (2026-11-16):** `lib/domain/permisos.ts` declara las ocho capacidades (instalación, administradores, proyectos, consulta sin proyecto, libros, miembros, documentos y pizarra) con ámbito, título, descripción, roles globales/proyecto y el indicador `publica` para la consulta sin proyecto; expone `CAPACIDADES`, `definicionCapacidad`, `capacidadesDe` y `capacidadConcedida`. `capabilities.ts` queda como adaptador (resuelve roles y delega en la matriz) y reexporta los tipos. Sin cambios de comportamiento: `capabilities.test.ts` intacto, pruebas nuevas de invariantes (instancia nunca por rol de proyecto, proyecto nunca por rol global suelto, solo la consulta es pública) y `tsc`/ESLint en verde.
 
 ### Fase 2: Ajustes > Permisos (instancia)
 - [ ] Añadir `permisos` a `SettingsSection`, `SETTINGS_SECTIONS` y al sidebar de `SettingsView` (mismo patrón `restricted` + corrección de URL con `replaceState`).
@@ -73,3 +75,4 @@
 ## 6. Notas de sesión
 
 - 2026-11-16: el usuario detectó que la Fase 3 de PERM-01 había descartado expresamente las superficies de permisos; esa decisión queda revertida y el trabajo se abre como roadmap PERM-02. La planificación se hace aquí en lugar de duplicarla en el backlog (regla de flujo: lo que entra en el roadmap sale del backlog).
+- 2026-11-16: Fase 1 completada — la matriz vive en `lib/domain/permisos.ts` y `capabilities.ts` solo resuelve roles; 20 pruebas focales, `tsc` y ESLint en verde.

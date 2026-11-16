@@ -4,13 +4,18 @@ Matriz aprobada para el roadmap PERM-01 (Fase 1). Define capacidades
 explícitas con ámbito, roles predeterminados y concesiones revocables. Es
 el contrato que aplica el control autoritativo de servidor (Fase 2).
 
-Aplicación actual (Fase 2): `lib/server/capabilities.ts` evalúa de forma
-centralizada `instalar-app` y `asignar-libros` en HTTP y MCP, y `SpaceRoom`
-revalida la pertenencia por mensaje. Las demás capacidades se apoyan en el
-acceso por proyecto (`project-access.ts`), ya centralizado. Las concesiones
-individuales con tabla de datos aún no existen: sin concesiones creadas no
-se concede nada nuevo (se deniega por defecto), así que el contrato se
-cumple sin necesitar una migración.
+Aplicación actual (Fase 2 de PERM-01): `lib/server/capabilities.ts` evalúa de
+forma centralizada `instalar-app` y `asignar-libros` en HTTP y MCP, y
+`SpaceRoom` revalida la pertenencia por mensaje. Las demás capacidades se
+apoyan en el acceso por proyecto (`project-access.ts`), ya centralizado. Las
+concesiones individuales con tabla de datos aún no existen: sin concesiones
+creadas no se concede nada nuevo (se deniega por defecto), así que el
+contrato se cumple sin necesitar una migración.
+
+**Fuente única (Fase 1 de PERM-02):** la tabla de abajo se declara en
+`lib/domain/permisos.ts` (`CAPACIDADES`), que también usa el servidor para
+evaluar. Si una fila cambia, cambia la regla aplicada y la matriz que verá
+la interfaz; no hay una segunda copia que pueda desalinearse.
 
 La matriz de herramientas de APP-01 (`matriz-herramientas.md`) se conserva
 como audiencia y alcance por app; esta matriz añade quién puede conceder,
