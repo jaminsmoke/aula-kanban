@@ -57,13 +57,13 @@
   - El estado vacío explica cómo crear el primer mazo.
   - Pruebas del modelo y de la app en verde.
 
-### Fase 2 — Repaso FSRS, acabado y portada
+### Fase 2 — Repaso FSRS, acabado y portada (completada)
 
-- [ ] Integrar el scheduler de `ts-fsrs` y convertir las fechas del documento a `Date` al cargar.
-- [ ] Implementar la cola de repaso, las cuatro valoraciones, la siguiente fecha y el resumen de sesión.
-- [ ] Guardar el progreso en `localStorage` por proyecto y navegador; mostrar la limitación en la interfaz.
-- [ ] Añadir navegación por teclado, foco visible y adaptación a 1366, 1024 y 390 px.
-- [ ] Crear `public/store/tarjetas.svg` con el formato de las portadas actuales.
+- [x] Integrar el scheduler de `ts-fsrs` y convertir las fechas del documento a `Date` al cargar.
+- [x] Implementar la cola de repaso, las cuatro valoraciones, la siguiente fecha y el resumen de sesión.
+- [x] Guardar el progreso en `localStorage` por proyecto y navegador; mostrar la limitación en la interfaz.
+- [x] Añadir navegación por teclado, foco visible y adaptación a 1366, 1024 y 390 px.
+- [x] Crear `public/store/tarjetas.svg` con el formato de las portadas actuales.
 - **Criterios de aceptación:**
   - Una tarjeta nueva se puede valorar y vuelve a aparecer según FSRS.
   - El progreso sobrevive a recargar en el mismo navegador.
@@ -100,5 +100,6 @@
 - 2026-11-16: STORE-09 sale del catálogo de candidatas y pasa a ser el roadmap activo. `ts-fsrs` 6.0.0 es MIT, requiere Node >=24 y el proyecto usa Node 24.19.
 - La app guarda mazos y tarjetas en `app_documents`; el progreso de repaso empieza en `localStorage` para no abrir una tabla por usuario antes de validar el producto.
 - 2026-11-16: Fase 1 completada. La app permite crear mazos, añadir/editar/eliminar tarjetas y guardar el documento; los invitados quedan en solo lectura. El modelo y la UI se revisaron a 1366 y 390 px con datos simulados; la ruta real se validará al registrar el id en la fase 3. Pruebas de modelo y app: 8 correctas.
+- 2026-11-16: Fase 2 completada. El repaso usa FSRS-7, guarda la programación en `localStorage` por proyecto y navegador, ofrece las cuatro valoraciones, resumen de sesión y atajos de teclado. La portada `public/store/tarjetas.svg` sigue el formato de Aula Store. Revisada a 1366 y 390 px; pruebas de repaso, modelo y app: 10 correctas.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.
 - No se cambia la versión del Site (`1.1.34`) ni se publica en Sites desde este roadmap.

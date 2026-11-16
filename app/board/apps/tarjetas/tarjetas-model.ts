@@ -37,6 +37,12 @@ export type TarjetasDocument = {
   decks: ReviewDeck[];
 };
 
+/** Progreso local de repaso por proyecto y navegador. */
+export type TarjetasProgress = {
+  version: 1;
+  schedules: Record<string, StoredSchedule>;
+};
+
 /**
  * Identificador local para mazos y tarjetas.
  * @returns Un UUID si el navegador lo ofrece; si no, un id con marca de tiempo.
@@ -51,6 +57,26 @@ function newId(): string {
  */
 export function emptyDocument(): TarjetasDocument {
   return { version: 1, decks: [] };
+}
+
+/**
+ * Progreso local vacío.
+ * @returns Un progreso sin programaciones.
+ */
+export function emptyProgress(): TarjetasProgress {
+  return { version: 1, schedules: {} };
+}
+
+/**
+ * Valida el progreso guardado en `localStorage`.
+ * @param value - Estado desconocido.
+ * @returns Un progreso válido o el vacío.
+ */
+export function parseProgress(value: unknown): TarjetasProgress {
+  if (!value || typeof value !== "object") return emptyProgress();
+  const candidate = value as { version?: unknown; schedules?: unknown };
+  if (candidate.version !== 1 || !candidate.schedules || typeof candidate.schedules !== "object") return emptyProgress();
+  return { version: 1, schedules: candidate.schedules as Record<string, StoredSchedule> };
 }
 
 /**

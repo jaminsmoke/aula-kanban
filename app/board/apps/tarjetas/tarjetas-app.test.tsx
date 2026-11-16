@@ -4,7 +4,10 @@ import { jsonResponse } from "../../../../vitest.setup";
 import TarjetasApp from "./tarjetas-app";
 
 describe("Tarjetas de repaso", () => {
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    window.localStorage.clear();
+  });
 
   it("crea un mazo, añade una tarjeta y guarda el documento", async () => {
     const fetchMock = vi.fn()
@@ -30,6 +33,35 @@ describe("Tarjetas de repaso", () => {
       expect.objectContaining({ method: "POST" }),
     ));
     expect(await screen.findByText("Guardado en el proyecto.")).toBeTruthy();
+  });
+
+  it("repasa una tarjeta y guarda el progreso en el navegador", async () => {
+    const state = {
+      version: 1,
+      decks: [{
+        id: "d1",
+        name: "Vocabulario",
+        createdAt: "2026-11-16T00:00:00.000Z",
+        cards: [{ id: "c1", front: "casa", back: "house", createdAt: "2026-11-16T00:00:00.000Z" }],
+      }],
+    };
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ state, updatedAt: 1 })));
+    const { unmount } = render(<TarjetasApp projectId="p1" role="owner" />);
+
+    const review = await screen.findByRole("button", { name: /Repasar/ });
+    await waitFor(() => expect((review as HTMLButtonElement).disabled).toBe(false));
+    fireEvent.click(review);
+    fireEvent.click(await screen.findByRole("button", { name: "Mostrar respuesta" }));
+    fireEvent.click(await screen.findByRole("button", { name: /Bien/ }));
+
+    expect(await screen.findByText("Buen trabajo")).toBeTruthy();
+    const raw = window.localStorage.getItem("aula-kanban-tarjetas:p1");
+    expect(raw).toContain("c1");
+
+    unmount();
+    render(<TarjetasApp projectId="p1" role="owner" />);
+    const again = await screen.findByRole("button", { name: /Repasar/ });
+    expect((again as HTMLButtonElement).disabled).toBe(true);
   });
 
   it("deja la app en solo lectura para invitados", async () => {

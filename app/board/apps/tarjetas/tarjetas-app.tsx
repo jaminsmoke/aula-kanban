@@ -1,20 +1,35 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { BookOpen, Layers3, Pencil, Plus, Save, Trash2, X } from "lucide-react";
+import { DefaultScheduler, Rating, type Grade } from "ts-fsrs";
 import type { StoreRole } from "../types";
 import { useAppDocument } from "../use-app-document";
 import {
   createCard,
   createDeck,
   emptyDocument,
+  emptyProgress,
   parseDocument,
+  parseProgress,
   removeCard,
   upsertCard,
   type ReviewCard,
   type TarjetasDocument,
+  type TarjetasProgress,
 } from "./tarjetas-model";
+import { dueCards, RATING_OPTIONS, serializeSchedule, toSchedulerCard, type Scheduler, type SchedulerCard } from "./tarjetas-review";
 import "./tarjetas.css";
+
+type SessionStats = {
+  reviewed: number;
+  again: number;
+  hard: number;
+  good: number;
+  easy: number;
+};
+
+const EMPTY_SESSION: SessionStats = { reviewed: 0, again: 0, hard: 0, good: 0, easy: 0 };
 
 /**
  * Tarjetas de repaso: mazos compartidos por proyecto y editor de tarjetas.
@@ -31,9 +46,27 @@ export default function TarjetasApp({ projectId, role }: { projectId: string; ro
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
+  const storageKey = `aula-kanban-tarjetas:${projectId}`;
+  const [progress, setProgress] = useState<TarjetasProgress>(() => {
+    if (typeof window === "undefined") return emptyProgress();
+    try {
+      return parseProgress(JSON.parse(window.localStorage.getItem(storageKey) ?? "null"));
+    } catch {
+      return emptyProgress();
+    }
+  });
+  const [scheduler, setScheduler] = useState<Scheduler | null>(null);
+  const [reviewMode, setReviewMode] = useState(false);
+  const [reviewQueue, setReviewQueue] = useState<ReviewCard[]>([]);
+  const [reviewCard, setReviewCard] = useState<ReviewCard | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const [session, setSession] = useState<SessionStats>(EMPTY_SESSION);
+  const [summary, setSummary] = useState<SessionStats | null>(null);
+  const reviewRef = useRef<HTMLDivElement>(null);
   const { load, save, loading, error } = useAppDocument<TarjetasDocument>(projectId, "tarjetas");
   const readOnly = role === "guest";
   const selectedDeck = doc.decks.find((deck) => deck.id === selectedId) ?? null;
+  const dueCount = selectedDeck ? dueCards(selectedDeck.cards, progress).length : 0;
 
   useEffect(() => {
     let active = true;
@@ -46,6 +79,20 @@ export default function TarjetasApp({ projectId, role }: { projectId: string; ro
     });
     return () => { active = false; };
   }, [load]);
+
+  useEffect(() => {
+    let active = true;
+    void DefaultScheduler({ version: "FSRS-7" }).then((value) => {
+      if (active) setScheduler(value);
+    }).catch(() => {
+      if (active) setStatus("No se pudo preparar el repaso.");
+    });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    if (reviewMode && reviewCard) reviewRef.current?.focus();
+  }, [reviewCard, reviewMode]);
 
   function markDirty() {
     setDirty(true);
@@ -75,6 +122,7 @@ export default function TarjetasApp({ projectId, role }: { projectId: string; ro
   }
 
   function handleSelectDeck(id: string) {
+    if (reviewMode) return;
     setSelectedId(id);
     setEditingId(null);
     setFront("");
@@ -132,6 +180,80 @@ export default function TarjetasApp({ projectId, role }: { projectId: string; ro
     setDirty(!ok);
     setStatus(ok ? "Guardado en el proyecto." : "No se pudo guardar. Inténtalo de nuevo.");
   }
+
+  const saveProgress = useCallback((next: TarjetasProgress) => {
+    setProgress(next);
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(next));
+    } catch {
+      setStatus("El progreso no se pudo guardar en este navegador.");
+    }
+  }, [storageKey]);
+
+  function startReview() {
+    if (!selectedDeck || !scheduler) {
+      setStatus("Preparando el repaso…");
+      return;
+    }
+    const queue = dueCards(selectedDeck.cards, progress);
+    if (!queue.length) {
+      setStatus("No hay tarjetas pendientes en este mazo.");
+      return;
+    }
+    setReviewMode(true);
+    setReviewQueue(queue);
+    setReviewCard(queue[0]);
+    setRevealed(false);
+    setSession(EMPTY_SESSION);
+    setSummary(null);
+  }
+
+  function exitReview() {
+    setReviewMode(false);
+    setReviewQueue([]);
+    setReviewCard(null);
+    setRevealed(false);
+    setSummary(null);
+  }
+
+  const handleRate = useCallback((grade: Grade) => {
+    if (!reviewCard || !scheduler) return;
+    const result = scheduler.review({ card: toSchedulerCard(scheduler, reviewCard), grade, now: new Date() });
+    saveProgress({
+      ...progress,
+      schedules: { ...progress.schedules, [reviewCard.id]: serializeSchedule(result.card as SchedulerCard) },
+    });
+    const nextStats: SessionStats = { ...session, reviewed: session.reviewed + 1 };
+    if (grade === Rating.Again) nextStats.again += 1;
+    else if (grade === Rating.Hard) nextStats.hard += 1;
+    else if (grade === Rating.Good) nextStats.good += 1;
+    else nextStats.easy += 1;
+    setSession(nextStats);
+    const remaining = reviewQueue.slice(1);
+    setReviewQueue(remaining);
+    setReviewCard(remaining[0] ?? null);
+    setRevealed(false);
+    if (!remaining.length) setSummary(nextStats);
+  }, [progress, reviewCard, reviewQueue, saveProgress, scheduler, session]);
+
+  useEffect(() => {
+    if (!reviewMode || !reviewCard || summary) return;
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (!revealed && (event.code === "Space" || event.key === "Enter")) {
+        event.preventDefault();
+        setRevealed(true);
+        return;
+      }
+      if (!revealed) return;
+      const option = RATING_OPTIONS.find((item) => item.shortcut === event.key);
+      if (option) {
+        event.preventDefault();
+        handleRate(option.grade);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [handleRate, revealed, reviewCard, reviewMode, summary]);
 
   return (
     <div className="tarjetas-app">
@@ -193,18 +315,75 @@ export default function TarjetasApp({ projectId, role }: { projectId: string; ro
         </aside>
 
         <section className="tarjetas-main" aria-label="Mazo seleccionado">
-          {loading ? (
+          {reviewMode ? (
+            <div className="tarjetas-review" ref={reviewRef} tabIndex={-1} aria-label="Sesión de repaso">
+              <div className="tarjetas-review-head">
+                <button type="button" className="tarjetas-secondary" onClick={exitReview}>Volver al mazo</button>
+                <span>{summary ? "Sesión completada" : `${reviewQueue.length} pendientes`}</span>
+              </div>
+              {summary ? (
+                <div className="tarjetas-summary" role="status">
+                  <BookOpen size={28} aria-hidden />
+                  <h3>Buen trabajo</h3>
+                  <p>{summary.reviewed} {summary.reviewed === 1 ? "tarjeta repasada" : "tarjetas repasadas"}</p>
+                  <ul>
+                    <li>Otra vez <strong>{summary.again}</strong></li>
+                    <li>Difícil <strong>{summary.hard}</strong></li>
+                    <li>Bien <strong>{summary.good}</strong></li>
+                    <li>Fácil <strong>{summary.easy}</strong></li>
+                  </ul>
+                  <button type="button" onClick={exitReview}>Volver al mazo</button>
+                </div>
+              ) : reviewCard ? (
+                <>
+                  <div className="tarjetas-review-progress">
+                    Tarjeta {session.reviewed + 1} de {session.reviewed + reviewQueue.length}
+                  </div>
+                  <div className="tarjetas-review-card">
+                    <span className="tarjetas-review-label">Anverso</span>
+                    <p>{reviewCard.front}</p>
+                    {revealed ? (
+                      <>
+                        <span className="tarjetas-review-label">Reverso</span>
+                        <p>{reviewCard.back}</p>
+                      </>
+                    ) : null}
+                  </div>
+                  {revealed ? (
+                    <div className="tarjetas-ratings" aria-label="Valorar tarjeta">
+                      {RATING_OPTIONS.map((option) => (
+                        <button key={option.grade} type="button" className={`tarjetas-rating is-${option.tone}`} onClick={() => handleRate(option.grade)}>
+                          <span>{option.label}</span>
+                          <small>{option.shortcut}</small>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <button type="button" className="tarjetas-reveal" onClick={() => setRevealed(true)}>Mostrar respuesta</button>
+                  )}
+                  <p className="tarjetas-review-hint">Espacio para mostrar · 1 Otra vez · 2 Difícil · 3 Bien · 4 Fácil</p>
+                </>
+              ) : (
+                <p className="tarjetas-empty">No quedan tarjetas pendientes.</p>
+              )}
+            </div>
+          ) : loading ? (
             <p className="tarjetas-loading" role="status">Cargando mazos…</p>
           ) : selectedDeck ? (
             <>
               <div className="tarjetas-deck-head">
                 <div>
                   <h3>{selectedDeck.name}</h3>
-                  <p>{selectedDeck.cards.length} {selectedDeck.cards.length === 1 ? "tarjeta" : "tarjetas"}</p>
+                  <p>{selectedDeck.cards.length} {selectedDeck.cards.length === 1 ? "tarjeta" : "tarjetas"} · {dueCount} pendientes</p>
                 </div>
-                <button type="button" className="tarjetas-danger" onClick={handleDeleteDeck} disabled={readOnly}>
-                  <Trash2 size={15} aria-hidden /> Borrar mazo
-                </button>
+                <div className="tarjetas-deck-actions">
+                  <button type="button" className="tarjetas-review-button" onClick={startReview} disabled={!scheduler || dueCount === 0}>
+                    <BookOpen size={15} aria-hidden /> Repasar {dueCount ? `(${dueCount})` : ""}
+                  </button>
+                  <button type="button" className="tarjetas-danger" onClick={handleDeleteDeck} disabled={readOnly}>
+                    <Trash2 size={15} aria-hidden /> Borrar mazo
+                  </button>
+                </div>
               </div>
 
               <form className="tarjetas-card-form" onSubmit={handleSubmitCard}>

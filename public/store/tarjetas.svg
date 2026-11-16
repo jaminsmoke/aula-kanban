@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Portada de Tarjetas de repaso">
+  <defs>
+    <linearGradient id="ta-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff0f5"/>
+      <stop offset="1" stop-color="#ffd7e3"/>
+    </linearGradient>
+    <linearGradient id="ta-card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#fff8fb"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#ta-bg)"/>
+  <circle cx="1080" cy="80" r="220" fill="#ffc1d3" opacity=".5"/>
+  <circle cx="100" cy="630" r="190" fill="#ffffff" opacity=".42"/>
+  <g transform="translate(0 50)" font-family="Instrument Sans, system-ui, sans-serif">
+    <text x="86" y="250" fill="#5a1f32" font-size="66" font-weight="700">Tarjetas</text>
+    <text x="88" y="306" fill="#8a4a60" font-size="28">de repaso, a tu ritmo</text>
+    <text x="88" y="352" fill="#8a4a60" font-size="28">con repetición espaciada</text>
+    <g transform="translate(88 408)">
+      <rect width="320" height="52" rx="26" fill="#ffffff" opacity=".84"/>
+      <text x="24" y="34" fill="#7a2e49" font-size="20" font-weight="600">Aprende · repasa · recuerda</text>
+    </g>
+  </g>
+  <g transform="translate(724 88) rotate(3 180 250)" font-family="Instrument Sans, system-ui, sans-serif">
+    <rect width="360" height="500" rx="30" fill="url(#ta-card)" opacity=".97"/>
+    <rect x="18" y="18" width="324" height="42" rx="14" fill="#fff4f7" stroke="#f4c2d1" stroke-width="2"/>
+    <text x="36" y="45" fill="#a13a5b" font-size="13" font-weight="700" letter-spacing="2">MAZOS</text>
+    <circle cx="300" cy="39" r="8" fill="#c2476d"/>
+    <circle cx="318" cy="39" r="8" fill="#fff4f7" stroke="#c2476d" stroke-width="2"/>
+
+    <g transform="translate(82 108) rotate(-6 110 95)">
+      <rect width="220" height="190" rx="18" fill="#ffd7e3" stroke="#f0aec2" stroke-width="2"/>
+    </g>
+    <g transform="translate(72 116) rotate(3 110 95)">
+      <rect width="220" height="190" rx="18" fill="#ffe8ef" stroke="#f0aec2" stroke-width="2"/>
+    </g>
+    <g transform="translate(62 124)">
+      <rect width="220" height="190" rx="18" fill="#ffffff" stroke="#e7a7ba" stroke-width="2"/>
+      <text x="20" y="32" fill="#a13a5b" font-size="11" font-weight="800" letter-spacing="1.5">ANVERSO</text>
+      <text x="20" y="78" fill="#5a1f32" font-size="34" font-weight="700">casa</text>
+      <line x1="20" y1="96" x2="200" y2="96" stroke="#f4d3dc" stroke-width="2"/>
+      <text x="20" y="122" fill="#a13a5b" font-size="11" font-weight="800" letter-spacing="1.5">REVERSO</text>
+      <text x="20" y="164" fill="#8a4a60" font-size="28" font-weight="700">house</text>
+    </g>
+
+    <g transform="translate(62 340)">
+      <circle cx="10" cy="10" r="5" fill="#c2476d"/>
+      <circle cx="28" cy="10" r="5" fill="#f0aec2"/>
+      <circle cx="46" cy="10" r="5" fill="#f0aec2"/>
+      <text x="62" y="15" fill="#8a4a60" font-size="14" font-weight="600">3 tarjetas en este mazo</text>
+    </g>
+
+    <rect x="40" y="410" width="280" height="52" rx="16" fill="#fff4f7" stroke="#f4c2d1" stroke-width="2"/>
+    <circle cx="64" cy="436" r="6" fill="#c2476d"/>
+    <text x="80" y="442" fill="#7a2e49" font-size="17" font-weight="700">3 pendientes hoy</text>
+  </g>
+</svg>
