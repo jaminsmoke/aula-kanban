@@ -51,11 +51,11 @@
 - [x] Quitar el `style={{...}}` en línea de los botones y mantener el inicio de sesión como `<a target="_top">`.
 - **Criterios de aceptación:** `/` sin sesión muestra la nueva portada; con sesión sigue mostrando el tablero; el enlace de acceso conserva el `returnTo`; los tests cubren los CTA y la ruta de documentación.
 
-### Fase 2: Diseño visual, temas y responsive — pendiente
-- [ ] Crear `app/portada.css` junto a `portada.tsx`, usando solo tokens y sin modificar `.session-card`, que comparten otras pantallas.
-- [ ] Componer el héroe y los bloques con la tipografía, el color y la ilustración de la marca; reutilizar `HeroArt` solo si el coste de cliente y movimiento es aceptable.
-- [ ] Revisar 1366, 1024 y 390 px en tema claro y oscuro, foco de teclado, contraste y ausencia de desbordamiento horizontal.
-- [ ] Respetar `prefers-reduced-motion` si hay animación y evitar imágenes o vídeos que empeoren la carga inicial.
+### Fase 2: Diseño visual, temas y responsive — completada
+- [x] Crear `app/portada.css` junto a `portada.tsx`, usando solo tokens y sin modificar `.session-card`, que comparten otras pantallas.
+- [x] Componer el héroe y los bloques con la tipografía, el color y la ilustración de la marca; se usa una vista previa estática de tablero, sin `HeroArt` ni cliente adicional.
+- [x] Revisar 1366, 1024 y 390 px en tema claro y oscuro, foco de teclado, contraste y ausencia de desbordamiento horizontal.
+- [x] Respetar `prefers-reduced-motion` si hay animación y evitar imágenes o vídeos que empeoren la carga inicial.
 - **Criterios de aceptación:** la portada se entiende y se recorre en las tres anchuras; no aparecen colores crudos ni desbordes; la entrada principal es visible sin hacer scroll en escritorio y alcanzable en móvil.
 
 ### Fase 3: Verificación y cierre — pendiente
@@ -81,3 +81,4 @@
 - 2026-11-16: la primera versión no espera a PROMO-03; se apoyará en la ilustración y el mensaje ya existentes. Las capturas de la demo se incorporarán cuando estén disponibles.
 - 2026-11-16: el botón de demo sin cuenta, las páginas legales y el vídeo quedan fuera de este roadmap.
 - 2026-11-16: Fase 1 completada. La portada presenta la propuesta, tres bloques de producto, el plugin y un pie con documentación; el acceso conserva `returnTo` y las pruebas cubren los CTA y la ruta de documentación. El diseño visual queda para la Fase 2.
+- 2026-11-16: Fase 2 completada. `app/portada.css` compone el héroe, la vista estática del tablero, los bloques y el panel del plugin con tokens; se revisó en 1366, 1024 y 390 px en claro y oscuro, sin desbordamiento ni cambio de tema entre capturas. No hay animación ni recursos externos que cargar.
