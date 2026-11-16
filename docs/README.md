@@ -16,7 +16,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Sin fase activa; plantilla lista para el siguiente roadmap | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | PROMO-05 · Modo demo sin cuenta, de solo lectura | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -89,6 +89,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap STORE-03B completado:** barra inferior fija (Todo + categorías) y subcategorías como galerías horizontales con fade en Aula Store; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-03b.md`](historial/roadmap-store-03b.md).
 - **Roadmap PERM-01 completado:** matriz y delegación de permisos (capacidades con ámbito, roles y concesiones revocables, con control autoritativo de servidor); resumen en [`changelog.md`](developing/changelog.md), matriz en [`Store/matriz-permisos.md`](Store/matriz-permisos.md) y plan archivado en [`historial/roadmap-perm-01.md`](historial/roadmap-perm-01.md).
 - **Roadmap PROMO-02 completado:** portada pública nueva de `/` centrada en el producto y el plugin de ChatGPT, con CTA de acceso, enlace a documentación y previsualización estática del tablero; verificada a 1366, 1024 y 390 px en claro y oscuro. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-promo-02.md`](historial/roadmap-promo-02.md).
+- **Roadmap PROMO-05 activo:** modo demo sin cuenta y de solo lectura sobre el proyecto ficticio de PROMO-03, con entrada desde la portada; plan en [`roadmap.md`](developing/roadmap.md).
 - **Roadmap PROMO-04 completado:** páginas públicas de privacidad y condiciones, enlaces desde la portada y la ayuda, y archivos de rastreo (`robots.txt`, `sitemap.xml`, `manifest.webmanifest`) con iconos; verificadas sin sesión a 1366, 1024 y 390 px. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-promo-04.md`](historial/roadmap-promo-04.md).
 - **Roadmap PROMO-03 completado:** proyecto de demostración versionado e idempotente (`npm run seed:demo`, `--dry-run` y guarda local) y capturas nuevas de la ayuda desde esa demo a 1200 px y menos de 50 KB; verificada a 1366, 1024 y 390 px. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-promo-03.md`](historial/roadmap-promo-03.md).
 - **PROMO-01 pausado:** metadatos Open Graph, Twitter Card y tarjeta 1200×630 ya implementados y verificados en local; el cierre externo queda pendiente de publicar. Plan pausado en [`historial/roadmap-promo-01.md`](historial/roadmap-promo-01.md).
