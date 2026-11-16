@@ -12,7 +12,7 @@
   <rect width="1200" height="675" fill="url(#calc-bg)"/>
   <circle cx="1060" cy="90" r="210" fill="#c9b8ff" opacity=".45"/>
   <circle cx="120" cy="620" r="180" fill="#ffffff" opacity=".35"/>
-  <g font-family="Instrument Sans, system-ui, sans-serif">
+  <g transform="translate(0 50)" font-family="Instrument Sans, system-ui, sans-serif">
     <text x="86" y="250" fill="#2b1d52" font-size="66" font-weight="700">Calculadora</text>
     <text x="88" y="306" fill="#5a4a80" font-size="28">Básica, científica y ecuaciones</text>
     <text x="88" y="352" fill="#5a4a80" font-size="28">con memoria e historial</text>

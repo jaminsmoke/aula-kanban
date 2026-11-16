@@ -12,7 +12,7 @@
   <rect width="1200" height="675" fill="url(#ex-bg)"/>
   <circle cx="1080" cy="80" r="220" fill="#b9d5ff" opacity=".5"/>
   <circle cx="100" cy="630" r="190" fill="#ffffff" opacity=".4"/>
-  <g font-family="Instrument Sans, system-ui, sans-serif">
+  <g transform="translate(0 50)" font-family="Instrument Sans, system-ui, sans-serif">
     <text x="86" y="250" fill="#17325c" font-size="66" font-weight="700">Excalidraw</text>
     <text x="88" y="306" fill="#3f5f8f" font-size="28">Dibuja, explica y anota</text>
     <text x="88" y="352" fill="#3f5f8f" font-size="28">en una pizarra infinita</text>

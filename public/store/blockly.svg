@@ -12,7 +12,7 @@
   <rect width="1200" height="675" fill="url(#bl-bg)"/>
   <circle cx="1080" cy="90" r="210" fill="#b3e3c2" opacity=".5"/>
   <circle cx="110" cy="620" r="180" fill="#ffffff" opacity=".38"/>
-  <g font-family="Instrument Sans, system-ui, sans-serif">
+  <g transform="translate(0 50)" font-family="Instrument Sans, system-ui, sans-serif">
     <text x="86" y="250" fill="#23421d" font-size="66" font-weight="700">Programación</text>
     <text x="88" y="306" fill="#456b3c" font-size="28">por bloques, paso a paso</text>
     <text x="88" y="352" fill="#456b3c" font-size="28">JavaScript y Python</text>

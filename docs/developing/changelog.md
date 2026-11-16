@@ -1,10 +1,31 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-05 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-16 — Roadmap STORE-05 · Portadas compuestas de Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Las cinco apps de Aula Store usan portadas SVG de 1200×675 con la misma jerarquía visual: degradado, título, subtítulo, píldora y una pieza de interfaz estilizada.
+- Excalidraw, Programación por bloques y Diagramas dejan las capturas PNG con marco de macOS y estrenan SVG propios en azul, verde y coral; los tres PNG antiguos se retiraron.
+- `cover` en `lib/native-apps.ts` apunta a los nuevos SVG. No cambian nombres, versiones, datos ni lógica de la Tienda.
+- El bloque de texto de las cinco portadas se desplazó 50 px para que el icono de la tarjeta no tapara el nombre; también se corrigieron el texto desbordado de un bloque y las flechas del diagrama.
+
+### Verificación
+
+- Tienda y ficha revisadas a 1366, 1024 y 390 px: las cinco portadas cargan, el recorte 16:7 conserva título y arte, y no quedan referencias a los PNG.
+- Suite completa: **160 archivos / 1.173 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `7066de6` (Fase 1) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites y sin cambio de versión: la instancia sigue en **1.1.34**.
+
+### Seguimiento
+
+- El backlog queda sin entradas aparcadas. El plan completo está en [`historial/roadmap-store-05.md`](../historial/roadmap-store-05.md).
 
 ## 2026-11-16 — Roadmap UI-02 · Reorganización de la cabecera y el remix en Ajustes
 

@@ -12,7 +12,7 @@
   <rect width="1200" height="675" fill="url(#me-bg)"/>
   <circle cx="1090" cy="90" r="220" fill="#ffc2b5" opacity=".48"/>
   <circle cx="100" cy="630" r="190" fill="#ffffff" opacity=".4"/>
-  <g font-family="Instrument Sans, system-ui, sans-serif">
+  <g transform="translate(0 50)" font-family="Instrument Sans, system-ui, sans-serif">
     <text x="86" y="250" fill="#5a221b" font-size="66" font-weight="700">Diagramas</text>
     <text x="88" y="306" fill="#8a4a40" font-size="28">Escribe el diagrama</text>
     <text x="88" y="352" fill="#8a4a40" font-size="28">y míralo al instante</text>

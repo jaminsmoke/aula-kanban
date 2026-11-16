@@ -12,7 +12,7 @@
   <rect width="1200" height="675" fill="url(#tabla-bg)"/>
   <circle cx="1090" cy="600" r="230" fill="#a8ded0" opacity=".5"/>
   <circle cx="80" cy="80" r="170" fill="#ffffff" opacity=".35"/>
-  <g font-family="Instrument Sans, system-ui, sans-serif">
+  <g transform="translate(0 50)" font-family="Instrument Sans, system-ui, sans-serif">
     <text x="86" y="250" fill="#123f36" font-size="66" font-weight="700">Tabla periódica</text>
     <text x="88" y="306" fill="#356b60" font-size="28">Los 118 elementos con ficha,</text>
     <text x="88" y="352" fill="#356b60" font-size="28">modelo atómico e historia</text>
