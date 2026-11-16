@@ -354,6 +354,17 @@ node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1
 
 Wrangler registra las migraciones aplicadas en esa base; es seguro repetir el comando y no debe aplicarse cada archivo con `d1 execute --file` en esta misma base, porque ese comando no actualiza el registro. No sustituyas `--local` por `--remote`. No compartas una misma carpeta de estado entre varias instancias activas; detén el servidor antes de migrar.
 
+### Proyecto de demostración
+
+La ayuda y las capturas usan un proyecto ficticio e idempotente que se puede recrear con un comando. Con el servidor de desarrollo abierto en `http://127.0.0.1:5173`:
+
+```sh
+npm run seed:demo -- --dry-run
+npm run seed:demo
+```
+
+`scripts/seed-demo.mjs` solo acepta `localhost` o `127.0.0.1` y rechaza cualquier URL remota antes de abrir una conexión. Crea o actualiza el proyecto fijo `22222222-2222-4222-8222-222222222222` con seis alumnos, dos profesores, ocho tareas repartidas en las cuatro columnas (25 % completadas), las cinco apps instaladas, una pizarra, un diagrama y un programa de bloques. Es seguro repetirlo: no duplica tareas ni fichas y no toca otros proyectos. Usa las cabeceras de la sesión local de desarrollo (`local_seedy`), así que no necesita una cuenta real ni tokens. **No lo ejecutes contra producción ni cambies `--local` por `--remote`:** sembrar la D1 remota requiere autorización y la ejecuta Codex.
+
 Para un cambio nuevo:
 
 1. Parte de la última versión publicada y comprueba `git status`. No sobrescribas cambios ajenos.

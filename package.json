@@ -9,6 +9,7 @@
   "scripts": {
     "install:ci": "node scripts/install-ci.mjs",
     "dev": "node scripts/run-framework.mjs dev",
+    "seed:demo": "node scripts/seed-demo.mjs",
     "build": "node scripts/run-framework.mjs build",
     "perf:report": "node scripts/perf-report.mjs",
     "perf:budget": "node scripts/perf-budget.mjs",

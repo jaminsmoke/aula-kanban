@@ -45,11 +45,12 @@
 
 ## 4. Fases
 
-### Fase 1: Semilla versionada e idempotente — pendiente
-- [ ] Crear `scripts/seed-demo.mjs` con `--dry-run`, `--base-url` limitado a `localhost`/`127.0.0.1`, proyecto de demo fijo y cabeceras de sesión local.
-- [ ] Definir los datos ficticios y los upserts: proyecto, 6 alumnos, 2 profesores, 8 tareas en cuatro columnas, 5 apps, 1 pizarra, 1 diagrama y 1 programa de bloques.
-- [ ] Sembrar desde una D1 local limpia, ejecutar dos veces y comprobar que los recuentos no cambian; documentar el comando.
+### Fase 1: Semilla versionada e idempotente — completada (2026-11-16)
+- [x] Crear `scripts/seed-demo.mjs` con `--dry-run`, `--base-url` limitado a `localhost`/`127.0.0.1`, proyecto de demo fijo y cabeceras de sesión local.
+- [x] Definir los datos ficticios y los upserts: proyecto, 6 alumnos, 2 profesores, 8 tareas en cuatro columnas, 5 apps, 1 pizarra, 1 diagrama y 1 programa de bloques.
+- [x] Sembrar desde una D1 local limpia, ejecutar dos veces y comprobar que los recuentos no cambian; documentar el comando.
 - **Criterios de aceptación:** el dry-run muestra el plan sin escribir; la primera ejecución crea exactamente los datos previstos; la segunda no duplica ni pisa datos ajenos; cualquier URL remota se rechaza antes de abrir una conexión.
+- **Verificación:** `npm run seed:demo -- --base-url http://127.0.0.1:8792 --dry-run` mostró el plan sobre una D1 limpia; la siembra dejó 1 proyecto, 6 alumnos, 2 profesores, 8 tareas (2 por columna), 15 asignaciones, 5 apps, 1 pizarra y 2 documentos; la tercera ejecución respondió «sin cambios». `http://192.168.1.10:5173` se rechazó antes de conectar. La D1 de prueba se creó con `--persist-to` temporal fuera del repositorio.
 
 ### Fase 2: Capturas actuales y textos — pendiente
 - [ ] Capturar las cuatro vistas del proyecto de demo a 1200 px y WebP, con la cabecera actual, el escritorio de apps y sin datos reales ni tokens.
@@ -80,3 +81,5 @@
 - 2026-11-16: PROMO-03 sale del grupo PROMO-03..06 del backlog y pasa a ser el roadmap activo; PROMO-04..06 permanecen pendientes de debate.
 - 2026-11-16: la entrada original describe una demo sembrada a mano en la D1 local, sin script versionado y con capturas antiguas; esta fase convierte esa base en una semilla reproducible.
 - 2026-11-16: el servidor de desarrollo está en `http://localhost:5173`; no se publica ni se modifica la versión `1.1.32`.
+- 2026-11-16: la fase 1 usa el proyecto fijo `22222222-2222-4222-8222-222222222222`, distinto del `11111111-…` de `perf-latency.mjs`. La demo antigua sembrada a mano en la D1 local no se borra ni se modifica; la semilla nueva se validó en una D1 temporal limpia.
+- 2026-11-16: la instalación de las cinco apps se hace por `POST /api/space-apps?project=…`; no hace falta tocar `instance_apps` con SQL directo.
