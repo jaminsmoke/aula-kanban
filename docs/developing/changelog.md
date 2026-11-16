@@ -6,6 +6,23 @@
 
 ---
 
+## 2026-11-16 — Roadmap PERM-01 · Matriz y delegación de permisos
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Matriz aprobada en [`matriz-permisos.md`](../Store/matriz-permisos.md): capacidades con ámbito (instancia/proyecto/app/sujeto), roles predeterminados y concesiones revocables, con denegación por defecto, control del servidor y revocación inmediata. La instalación global sigue reservada al dueño y a administradores de instancia; el profesor por sí solo nunca la concede.
+- Control autoritativo centralizado en `lib/server/capabilities.ts` (`evaluarCapacidad` pura + `tieneCapacidad` por petición, sin caché) y conectado a `POST /api/space-apps`, MCP `instalar_app`/`desinstalar_app` y `PUT /api/project-books`; `SpaceRoom` revalida la pertenencia por mensaje (como `BoardRoom`), así que una baja revoca en la siguiente llamada. Sin esquema nuevo y sin permisos nuevos que conceder.
+- Ubicación validada sin UI nueva: proyectos en Administración (miembros existentes) e instancia en Ajustes > Administradores (existente); se descarta la sección «Ajustes > Permisos» por falta de almacenamiento de concesiones. Revisión de la matriz en `fef94dc`.
+- Sin cambios de versión (`1.1.31`); la publicación en Sites la realiza Codex. APP-03 (seguimiento) queda pendiente en el backlog; APP-02 sigue aparcada.
+
+### Verificación
+
+- Suite completa: 138 archivos / 1.085 pruebas (nueva `capabilities.test.ts` con la matriz, profesor denegado/profesor-administrador permitido y sin privilegios cruzados); `tsc`, ESLint completo y build en verde.
+- Dev local en `http://127.0.0.1:5173` responde 200; controles existentes sin cambios de UI (nada que comprobar a 390 px en código nuevo).
+- Commits: `7e3a8e5` (Fase 1), `2a09836` (Fase 2), `fef94dc` (revisión); el cierre queda en el commit de documentación.
+
 ## 2026-11-16 — Roadmap STORE-03B · Barra inferior y galerías horizontales en Aula Store
 
 **Estado:** Completada · Sin publicación
