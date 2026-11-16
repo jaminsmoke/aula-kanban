@@ -1,7 +1,7 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** APP-02 · Separar Herramientas de aula en Calculadora y Tabla periódica · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
