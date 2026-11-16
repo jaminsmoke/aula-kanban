@@ -1,53 +1,74 @@
-# Plantilla de Roadmap
+# Roadmap STORE-04 · Herramientas asignables por proyecto (Libros como herramienta)
 
-> **Uso:** Copia esta plantilla para crear un nuevo `docs/developing/roadmap.md`. Al completar un roadmap, muévelo a `docs/developing/changelog.md` (arriba del todo) y reinicia `docs/developing/roadmap.md` desde esta plantilla.
-> **Backlog:** Lo que se aparca del roadmap se anota en `docs/developing/backlog.md` (también lo nuevo arriba). Lo que sale del backlog entra aquí como fase.
-> **Estado:** `Activo` · `En curso` · `Completado`
+> **Estado:** Activo
+> **Inicio:** 2026-11-16
+> **Entrada:** STORE-04 — Los libros dejan de ser una sección de la Tienda y pasan a ser una herramienta asignable por proyecto en la mochila del alumnado y el maletín docente.
+> **Backlog:** STORE-03 (taxonomía de la Tienda) y APP-03 (carpetas e iconos propios en mochila y maletín, con la carpeta «Libros» como piloto), APP-02, PERM-01.
+> **Changelog:** [`changelog.md`](changelog.md)
 
 ---
 
 ## 1. Objetivo
 
-- [ ] Definir el objetivo en una frase.
-- [ ] Criterio de éxito: cómo sabremos que funciona.
+- [ ] Que el docente de cada proyecto habilite los libros (y futuras herramientas) para sus alumnos y para sí mismo, y que los libros aparezcan en su mochila/maletín en una carpeta «Libros» con visor de solo lectura.
+- [ ] Criterio de éxito: un profesor asigna libros desde Administración → Alumnos → pestaña «Herramientas», los alumnos los ven en su mochila dentro de la carpeta «Libros», y la pestaña Libros desaparece de Aula Store.
 
 ## 2. Alcance
 
 **Dentro:**
--
+- Tabla `project_books` (proyecto × libro habilitado) con su migración local y API de lectura/escritura con permisos por rol y proyecto.
+- Pestaña «Herramientas» en las vistas de Administración de Profesores y de Alumnos: toggle «Libros» y selección de títulos (todos o individuales).
+- Carpeta «Libros» como herramienta en la mochila del alumnado y el maletín docente, con visor embebido de solo lectura (sin botón de descarga).
+- Retirada de la vista y la pestaña «Libros» de Aula Store al final del roadmap.
 
 **Fuera de alcance:**
--
+- Desplegar o ingerir en producción (lo hace Codex al publicar con los scripts ya existentes).
+- Carpetas generales de mochila y maletín (backlog APP-03; aquí se crea solo la carpeta «Libros» como piloto).
+- Taxonomía de la Tienda (STORE-03) y extracción de EduTools (APP-02).
 
 ## 3. Decisiones de arquitectura
 
 | Decisión | Alternativa descartada | Motivo |
 |---|---|---|
-|  |  |  |
+| Asignación **por proyecto** (cada curso decide sus libros) | Global para toda la instancia | Es el patrón real de uso (curso/profesor) y reutiliza la membresía por proyecto que ya existe. |
+| UI como **pestaña «Herramientas»** en Profesores y Alumnos | Submenú en el sidebar | Es donde ya vive la asignación de miembros; menos navegación nueva y coherente con el resto de Administración. |
+| **Solo lectura** embebida, sin botón de descarga | Lectura + descarga | Un visor embebido basta para leer; enlazar el PDF solo añade peso y custodia sin uso real. |
+| Seguir persistiendo en **R2** (opción A de la revisión) | Leer desde la fuente externa y eliminar las copias | La copia propia garantiza la licencia/versionado con independencia de la fuente; la divergencia se gestiona con `version` + re-ingesta documentada, no borrando. |
+| La pestaña de la Tienda se retira **al final** | Retirarla ahora | Transición segura: la vista actual sigue disponible hasta que la herramienta funciona. |
 
 ## 4. Fases
 
-### Fase 1:
-- [ ] Tarea
-- [ ] Tarea
-- **Criterios de aceptación:**
+### Fase 1: Modelo de datos y API de asignación
+- [ ] Migración local de `project_books` (proyecto × libro habilitado).
+- [ ] Endpoints de lectura y guardado con permisos: profesor solo su proyecto; owner/administrador, cualquiera.
+- [ ] Pruebas de modelo y de permisos.
+- **Criterios de aceptación:** un proyecto puede listar y guardar qué libros tiene habilitados; un profesor no puede tocar otro proyecto.
 
-### Fase 2:
-- [ ] Tarea
-- [ ] Tarea
-- **Criterios de aceptación:**
+### Fase 2: Pestaña «Herramientas» en Profesores y Alumnos
+- [ ] Toggle «Libros» y selección de títulos (todos o individuales) por proyecto, en cada vista.
+- [ ] Estados de carga/error y guardado visible.
+- **Criterios de aceptación:** un docente habilita los libros de su curso y un administrador, los de cualquier proyecto, sin salir de su vista.
 
-### Fase 3:
-- [ ] Tarea
-- [ ] Tarea
-- **Criterios de aceptación:**
+### Fase 3: Carpeta «Libros» en la mochila y el maletín con visor de solo lectura
+- [ ] Carpeta «Libros» con los libros asignados en la mochila del alumnado y el maletín docente (la carpeta general de personal sigue en backlog).
+- [ ] Visor embebido de solo lectura (ventana con el PDF); retirada del botón de descarga de la herramienta.
+- **Criterios de aceptación:** el alumno ve sus libros en la carpeta «Libros» de su mochila y los lee en ventana propia; sin botón de descarga.
+
+### Fase 4: Retirada de la Tienda, verificación y cierre
+- [ ] Se retiran la vista y la pestaña «Libros» de Aula Store (la carpeta «Libros» queda como única puerta).
+- [ ] Suite completa, `tsc`, ESLint y build en verde; revisión en navegador local y en 390 px.
+- [ ] Resumen arriba de `changelog.md`, roadmap archivado y reiniciado y push único a `github main`.
+- **Criterios de aceptación:** todo verificado y el roadmap cerrado en local y en GitHub, sin publicar en Sites.
 
 ## 5. Riesgos y bloqueos
 
 | Riesgo | Impacto | Mitigación |
 |---|---|---|
-|  |  |  |
+| Permisos mal aplicados (un profesor ve o toca otro proyecto) | Filtración entre cursos | Permisos centralizados por proyecto, con pruebas por rol. |
+| La carpeta «Libros» queda fuera del sistema general de carpetas (APP-03) | Dos modelos de carpetas | Solo «Libros» vive aquí; cuando APP-03 llegue, absorbe la carpeta existente sin duplicar modelo. |
+| Libros deshabilitados pero ya en mochilas abiertas | Ventanas con libros ya no asignados | Al cerrar/actualizar la mochila se filtran por la asignación vigente; no hay datos que limpiar (la carpeta es lectura). |
+| PDF pesados en muchos alumnos | Carga del visor | Visor con carga progresiva del navegador; caché inmutable ya en servido. |
 
 ## 6. Notas de sesión
 
--
+- 2026-11-16: roadmap creado tras la revisión con el usuario. Decisions de alcance (proyecto), UI (pestaña), lectura (solo lectura con R2) y transición (retiro al final) tomadas en sesión.
