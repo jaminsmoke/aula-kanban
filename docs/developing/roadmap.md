@@ -38,12 +38,12 @@
 
 ## 4. Fases
 
-### Fase 1 — Portadas SVG
+### Fase 1 — Portadas SVG (completada)
 
-- [ ] Crear `public/store/excalidraw.svg`: fondo degradado azul, nombre, subtítulo, píldora y una pieza de lienzo con formas y flechas; sin chrome de ventana.
-- [ ] Crear `public/store/blockly.svg`: fondo degradado verde, nombre, subtítulo, píldora y bloques estilizados; sin chrome de ventana.
-- [ ] Crear `public/store/mermaid.svg`: fondo degradado coral, nombre, subtítulo, píldora y un diagrama de flujo estilizado; sin chrome de ventana.
-- [ ] Revisar las tres junto a Calculadora y Tabla periódica, y comprobar el texto y la pieza principal a tamaño de tarjeta y de ficha.
+- [x] Crear `public/store/excalidraw.svg`: fondo degradado azul, nombre, subtítulo, píldora y una pieza de lienzo con formas y flechas; sin chrome de ventana.
+- [x] Crear `public/store/blockly.svg`: fondo degradado verde, nombre, subtítulo, píldora y bloques estilizados; sin chrome de ventana.
+- [x] Crear `public/store/mermaid.svg`: fondo degradado coral, nombre, subtítulo, píldora y un diagrama de flujo estilizado; sin chrome de ventana.
+- [x] Revisar las tres junto a Calculadora y Tabla periódica, y comprobar el texto y la pieza principal a tamaño de tarjeta y de ficha.
 - **Criterios de aceptación:**
   - Las tres son SVG válidos de 1200×675, sin recursos externos.
   - Comparten la jerarquía de las portadas actuales: título, dos líneas de subtítulo, píldora y arte a la derecha.
@@ -76,5 +76,6 @@
 ## 6. Notas de sesión
 
 - 2026-11-16: STORE-05 sale del backlog y pasa a ser el roadmap activo. Calculadora y Tabla periódica ya usan SVG de 1200×675; Excalidraw, Programación por bloques y Diagramas usan PNG de 792×504, 972×648 y 1008×648, con proporciones 1,50–1,57 frente a la tarjeta 16:9 y la ficha 16:7.
+- 2026-11-16: Fase 1 completada. Las tres portadas nuevas son SVG de 1200×675 (2,9–3,4 KB) con la misma composición que Calculadora y Tabla periódica; se revisaron las cinco juntas en tarjeta (272×153) y ficha (700×306) con el recorte real. Se corrigieron el texto desbordado de un bloque y las flechas del diagrama antes de dar la fase por cerrada.
 - La tarjeta superpone el icono arriba a la izquierda y la categoría arriba a la derecha, y la imagen escala al pasar el ratón; las portadas deben dejar libres esas zonas.
 - No se cambia la versión `1.1.34` ni se publica en Sites desde este roadmap.
