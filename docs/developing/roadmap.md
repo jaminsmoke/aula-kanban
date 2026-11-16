@@ -1,53 +1,80 @@
-# Plantilla de Roadmap
+# Roadmap UI-02 · Reorganización de la cabecera y el remix en Ajustes
 
-> **Uso:** Copia esta plantilla para crear un nuevo `docs/developing/roadmap.md`. Al completar un roadmap, muévelo a `docs/developing/changelog.md` (arriba del todo) y reinicia `docs/developing/roadmap.md` desde esta plantilla.
-> **Backlog:** Lo que se aparca del roadmap se anota en `docs/developing/backlog.md` (también lo nuevo arriba). Lo que sale del backlog entra aquí como fase.
-> **Estado:** `Activo` · `En curso` · `Completado`
+> **Estado:** Activo
+> **Inicio:** 2026-11-16
+> **Entrada:** revisión visual de la 1.1.34 — la marca no queda anclada a la izquierda, la navegación no está centrada y «Haz tu Site de Aula Kanban» vive en el menú de proyecto en vez de en Ajustes.
+> **Dependencias:** ninguna funcional; no toca la demo, los datos ni el backend.
+> **Backlog:** sin entradas aparcadas.
+> **Changelog:** [`changelog.md`](changelog.md)
 
 ---
 
 ## 1. Objetivo
 
-- [ ] Definir el objetivo en una frase.
-- [ ] Criterio de éxito: cómo sabremos que funciona.
+- [ ] Reorganizar la cabecera en tres zonas estables y mover el remix a una sección contextual de Ajustes.
+- [ ] Criterio de éxito: la marca queda siempre pegada al borde izquierdo, el botón de Clase ocupa el centro geométrico del header, la navegación no desborda en móvil y «Haz tu Site de Aula Kanban» solo se ofrece desde Ajustes con su propia URL y pruebas.
 
 ## 2. Alcance
 
 **Dentro:**
--
+- Cabecera con tres zonas: marca a la izquierda, navegación centrada y controles de proyecto/cuenta a la derecha.
+- El botón de Clase como ancla central; Administración y el resto de vistas se colocan alrededor sin desplazarlo.
+- Revisión del caso sin proyecto y de 1366, 1024 y 390 px.
+- Nueva sección de Ajustes para el remix (por ejemplo «Tu Site»), con su entrada en el sidebar, su URL canónica y el mismo diálogo.
+- Retirada de «Haz tu Site de Aula Kanban» del menú de proyecto y de sus estilos asociados.
+- Pruebas de estructura, navegación y URL; actualización de ayuda, README y changelog.
 
 **Fuera de alcance:**
--
+- Cambiar la demo, sus datos, la siembra o la seguridad de la instancia.
+- Cambiar permisos de cuentas o el comportamiento del remix más allá de su ubicación.
+- Rediseñar otras vistas, el sidebar de Administración o la portada.
 
 ## 3. Decisiones de arquitectura
 
 | Decisión | Alternativa descartada | Motivo |
 |---|---|---|
-|  |  |  |
+| **Cabecera en tres zonas** | Mantener `justify-content: space-between` con márgenes sueltos | Los extremos y el centro quedan definidos por la estructura, no por el contenido. |
+| **Clase como ancla central** | Centrar el grupo de navegación completo | El requisito es que el botón de Clase quede en el centro geométrico; Administración se coloca alrededor sin moverlo. |
+| **Sección nueva `SettingsSection` para el remix** | Entrada dentro de Cuenta | Da URL propia, navegación atrás/adelante y un lugar contextual; se prueba como el resto de secciones. |
+| **Mantener `RemixDialog` en `Board` y pasar un callback a Ajustes** | Montar el diálogo dentro de `SettingsView` | Conserva un único estado de diálogo y evita duplicar su ciclo de vida. |
+| **Mantener la visibilidad actual del remix** | Restringirlo a propietario/administrador | El botón actual no restringía por rol; este roadmap solo cambia su ubicación. |
+| **Sin cambios en demo ni datos** | Aprovechar para tocar la siembra | Es una reorganización de interfaz; mezclar datos añadiría riesgo y alcance. |
 
 ## 4. Fases
 
-### Fase 1:
-- [ ] Tarea
-- [ ] Tarea
-- **Criterios de aceptación:**
+### Fase 1: Cabecera en tres zonas
+- [ ] Reestructurar `app/board/layout/header.tsx` para separar marca, navegación y controles; la marca conserva icono, nombre, versión y autor.
+- [ ] Ajustar `header.css` para que la marca quede pegada a la izquierda, la navegación se centre y el botón de Clase quede en el centro geométrico del header; revisar el caso sin proyecto.
+- [ ] Revisar 1366, 1024 y 390 px: sin desbordes, sin saltos al cambiar de vista y con el selector de proyecto y la cuenta en su zona.
+- [ ] Añadir pruebas de estructura y de que la navegación conserva sus destinos.
+- **Criterios de aceptación:** la marca no se mueve del borde izquierdo; Clase queda centrado en escritorio; la navegación no desborda en móvil; no hay regresiones en el resto de la cabecera.
 
-### Fase 2:
-- [ ] Tarea
-- [ ] Tarea
-- **Criterios de aceptación:**
+### Fase 2: Remix en Ajustes
+- [ ] Añadir la sección «Tu Site» a `SettingsSection`, `SETTINGS_SECTIONS`, el parser y el constructor de URL, con sus pruebas de ida y vuelta.
+- [ ] Renderizar la entrada en el sidebar de Ajustes y una tarjeta que explique el remix y abra `RemixDialog` mediante un callback desde `Board`.
+- [ ] Quitar «Haz tu Site de Aula Kanban» del menú de proyecto, retirar `onRemix` del header y limpiar los estilos del desplegable.
+- [ ] Añadir pruebas de la nueva sección, del callback y de que el menú de proyecto ya no ofrece el remix.
+- **Criterios de aceptación:** el remix solo se ofrece desde Ajustes; la sección tiene URL canónica y funciona con atrás/adelante; el diálogo se abre una sola vez y el menú de proyecto queda limpio.
 
-### Fase 3:
-- [ ] Tarea
-- [ ] Tarea
-- **Criterios de aceptación:**
+### Fase 3: Verificación y cierre
+- [ ] Pasar suite completa, `tsc`, ESLint, build y `perf:budget`; revisar la cabecera y Ajustes a 1366, 1024 y 390 px.
+- [ ] Actualizar README, ayuda, changelog y archivar este roadmap.
+- **Criterios de aceptación:** la cabecera cumple las tres zonas, el remix está contextualizado y probado, no hay regresiones ni cambios de datos, y el roadmap se cierra con todas las fases verificadas.
 
 ## 5. Riesgos y bloqueos
 
 | Riesgo | Impacto | Mitigación |
 |---|---|---|
-|  |  |  |
+| El centrado depende del ancho del nombre del proyecto | El botón de Clase se desplaza | Zonas de ancho flexible con la navegación anclada al centro y truncado del selector. |
+| Con solo dos elementos, «centrar la navegación» no centra Clase | No se cumple el requisito | Anclar Clase al centro y colocar Administración alrededor sin afectar al eje. |
+| La nueva sección rompe atrás/adelante o los enlaces | Navegación inconsistente | Añadirla al esquema de URL con pruebas de parse/build y de historial. |
+| El remix se duplica o queda visible en proyectos | Dos puntos de entrada | Quitar la acción del header y probar que el menú ya no la muestra. |
+| La cabecera se rompe en móvil o sin proyecto | Desbordes o saltos | Revisar 390 px y el estado sin proyecto; pruebas de estructura. |
+| El diálogo pierde estado al cambiar de vista | Remix no abre o se cierra solo | Mantener el diálogo en `Board` y pasar el callback a Ajustes. |
 
 ## 6. Notas de sesión
 
--
+- 2026-11-16: UI-02 sale del backlog y pasa a ser el roadmap activo; el backlog queda sin entradas aparcadas.
+- 2026-11-16: el feedback se tomó sobre la 1.1.34; la cabecera usa `justify-content: space-between` y `.main-nav` tiene `margin-left:24px`, por eso la navegación queda a la izquierda.
+- 2026-11-16: el remix actual es `button.remix-action` dentro del desplegable de proyecto y abre `RemixDialog` desde `app/board.tsx`.
+- 2026-11-16: no se publica en Sites ni se cambia la versión en este roadmap; el cierre es local y el push, único, como en los anteriores.
