@@ -52,11 +52,12 @@
 - **Criterios de aceptación:** el SQL se puede revisar y aplicar dos veces sin duplicar; no escribe en `instance_apps` ni en otros proyectos; el seed local sigue pasando su verificación.
 - **Verificación:** `lib/domain/demo-data.ts` centraliza los datos con ids fijos y `scripts/seed-demo.mjs` los importa; `npm run seed:demo -- --dry-run` sigue respondiendo «sin cambios». `lib/domain/demo-sql.ts` y `scripts/seed-demo-sql.mjs` generan un SQL de 99 líneas con upserts por id, borrado acotado de asignaciones del proyecto demo y sin `INSERT INTO instance_apps`. Sobre una D1 limpia con migraciones y un proyecto ajeno `3333…`, el SQL se aplicó dos veces: quedaron 6 alumnos, 2 profesores, 8 tareas, 15 asignaciones, 1 pizarra y 2 documentos, `instance_apps` siguió vacío y el proyecto ajeno conservó su nombre. 7 pruebas nuevas; suite completa **158 archivos / 1.156 pruebas**, `tsc` y ESLint correctos.
 
-### Fase 2: Experiencia sin demo y procedimiento autorizado
-- [ ] Hacer que la portada compruebe si el proyecto demo existe y oculte «Probar la demo» cuando falte; `/demo` conserva su página 404 con la explicación.
-- [ ] Documentar en README el procedimiento para una instancia publicada: backup, revisión del SQL, ejecución por Codex, verificación sin sesión y qué hacer si la demo no está preparada.
-- [ ] Añadir pruebas del estado de la portada con y sin proyecto demo, y del SQL generado (contenido, alcance e idempotencia).
+### Fase 2: Experiencia sin demo y procedimiento autorizado — completada (2026-11-16)
+- [x] Hacer que la portada compruebe si el proyecto demo existe y oculte «Probar la demo» cuando falte; `/demo` conserva su página 404 con la explicación.
+- [x] Documentar en README el procedimiento para una instancia publicada: backup, revisión del SQL, ejecución por Codex, verificación sin sesión y qué hacer si la demo no está preparada.
+- [x] Añadir pruebas del estado de la portada con y sin proyecto demo, y del SQL generado (contenido, alcance e idempotencia).
 - **Criterios de aceptación:** sin demo, la portada no muestra un enlace roto; con demo, el enlace aparece; el procedimiento deja claro que la ejecución remota es de Codex y que no se tocan apps globales.
+- **Verificación:** `lib/server/demo-availability.ts` comprueba el proyecto demo y devuelve `false` si la base falla; `app/page.tsx` pasa el resultado a `Portada`, que oculta el botón y la frase de la demo cuando falta. `/demo` conserva su 404 y ahora distingue la siembra local de la preparación autorizada de una instancia publicada. README añade los cinco pasos (copia, generación y revisión del SQL, ejecución por Codex, verificación y apps desde Aula Store). 3 pruebas nuevas de disponibilidad y portada, más las 7 del SQL de la fase 1; suite completa **159 archivos / 1.159 pruebas**, `tsc` y ESLint correctos.
 
 ### Fase 3: Verificación previa y entrega a Codex
 - [ ] Pasar suite completa, `tsc`, ESLint, build y `perf:budget`; revisar la portada y `/demo` a 1366, 1024 y 390 px.

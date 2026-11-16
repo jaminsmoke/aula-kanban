@@ -28,4 +28,12 @@ describe("Portada", () => {
     expect(screen.getByRole("link", { name: "Privacidad" }).getAttribute("href")).toBe("/privacidad");
     expect(screen.getByRole("link", { name: "Condiciones" }).getAttribute("href")).toBe("/condiciones");
   });
+
+  it("oculta la demo cuando la instancia no la tiene preparada", () => {
+    render(<Portada signInHref="/signin-with-chatgpt?return_to=%2F" demoAvailable={false} />);
+
+    expect(screen.queryByRole("link", { name: "Probar la demo" })).toBeNull();
+    expect(screen.queryByText(/La demo no necesita cuenta/)).toBeNull();
+    expect(screen.getByRole("link", { name: "Ver documentación" })).toBeTruthy();
+  });
 });

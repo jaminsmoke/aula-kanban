@@ -4,10 +4,10 @@ import "./portada.css";
  * Portada pública de Aula Kanban: propuesta del producto, bloques de valor,
  * plugin de ChatGPT e inicio de sesión. Sin sesión no exige login; con sesión
  * se muestra el tablero en su lugar (ver `app/page.tsx`).
- * @param props - Ruta de inicio de sesión con retorno a la URL pedida.
+ * @param props - Ruta de inicio de sesión y si la instancia tiene demo.
  * @returns La portada visible sin sesión.
  */
-export default function Portada({ signInHref }: { signInHref: string }) {
+export default function Portada({ signInHref, demoAvailable = true }: { signInHref: string; demoAvailable?: boolean }) {
   return (
     <main className="portada">
       <div className="portada-shell">
@@ -21,10 +21,10 @@ export default function Portada({ signInHref }: { signInHref: string }) {
             <p className="portada-lead">Aula Kanban es un tablero colaborativo para el grupo de clase. Organiza tareas y entregas, reúne a las personas y comparte pizarras y materiales en un mismo espacio.</p>
             <div className="portada-actions">
               <a className="primary portada-action" href={signInHref} target="_top">Iniciar sesión con ChatGPT</a>
-              <a className="secondary portada-action" href="/demo">Probar la demo</a>
+              {demoAvailable && <a className="secondary portada-action" href="/demo">Probar la demo</a>}
               <a className="secondary portada-action" href="/documentacion">Ver documentación</a>
             </div>
-            <p className="portada-note"><span className="portada-note-dot" aria-hidden="true" /> La cuenta de ChatGPT abre tus proyectos con los permisos que ya tienes. La demo no necesita cuenta y es de solo lectura.</p>
+            <p className="portada-note"><span className="portada-note-dot" aria-hidden="true" /> La cuenta de ChatGPT abre tus proyectos con los permisos que ya tienes.{demoAvailable ? " La demo no necesita cuenta y es de solo lectura." : ""}</p>
           </div>
 
           <div className="portada-preview" aria-hidden="true">

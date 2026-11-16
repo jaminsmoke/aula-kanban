@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { chatGPTSignInPath, getChatGPTUser } from "../lib/server/auth";
 import { isDemoUser } from "../lib/domain/demo";
+import { isDemoAvailable } from "../lib/server/demo-availability";
 import Board from "./board";
 import Portada from "./portada";
 import { buildBoardUrl, parseBoardUrl } from "./board/shared/board-url";
@@ -29,7 +30,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   const user = await getChatGPTUser();
   if (!user) {
     if (params.view === "documentacion" || state.view === "documentacion") redirect("/documentacion");
-    return <Portada signInHref={chatGPTSignInPath(returnTo)} />;
+    return <Portada signInHref={chatGPTSignInPath(returnTo)} demoAvailable={await isDemoAvailable()} />;
   }
 
   return <Board user={{ displayName: user.displayName, email: user.email }} demo={isDemoUser(user)} demoSignInHref={chatGPTSignInPath("/")} initial={state} />;

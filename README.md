@@ -377,6 +377,14 @@ Sin sesión se sirven `/`, `/documentacion`, `/privacidad`, `/condiciones`, `/ro
 
 La portada ofrece «Probar la demo» (`/demo`), que activa la cookie `__demo` y abre el proyecto ficticio de `npm run seed:demo` en solo lectura. La identidad es fija y se resuelve en el servidor (`lib/domain/demo.ts` y `lib/server/demo.ts`), nunca desde cabeceras del cliente; la sesión real de ChatGPT tiene prioridad. En la demo, todas las escrituras responden 403, no se muestran correos ni ajustes sensibles y las pizarras no abren sockets. `/demo/salir` borra la cookie. Si el proyecto no está sembrado, `/demo` lo explica con la orden de siembra; no crea datos.
 
+#### Preparar la demo en una instancia publicada
+
+1. Haz una copia de la D1 de esa instancia antes de tocar nada.
+2. Genera el SQL con `npm run seed:demo:sql -- --out demo-seed.sql` y revísalo. Es idempotente, solo escribe en el proyecto demo y no toca `instance_apps` ni otros proyectos.
+3. Codex lo aplica sobre la D1 publicada con autorización; ningún script local acepta un host remoto.
+4. Verifica sin sesión que `/demo` abre el tablero, que las escrituras responden 403 y que los proyectos reales y las apps de la instancia no han cambiado.
+5. Si la instancia no tiene la demo, la portada oculta «Probar la demo» y `/demo` explica cómo prepararla. Las apps se instalan aparte desde Aula Store, como cualquier decisión de la instancia.
+
 Para un cambio nuevo:
 
 1. Parte de la última versión publicada y comprueba `git status`. No sobrescribas cambios ajenos.

@@ -9,6 +9,7 @@ vi.mock("../lib/server/auth", () => ({
   getChatGPTUser: () => getChatGPTUser(),
   chatGPTSignInPath: (returnTo: string) => `/signin-with-chatgpt?return_to=${encodeURIComponent(returnTo)}`,
 }));
+vi.mock("../lib/server/demo-availability", () => ({ isDemoAvailable: async () => true }));
 vi.mock("next/navigation", () => ({ redirect: (url: string) => redirectMock(url) }));
 vi.mock("./board", () => ({ default: ({ user: u, initial }: { user: { displayName: string }; initial?: { app?: string | null } }) => <div>Tablero de {u.displayName}<span>{initial?.app ?? "sin-app"}</span></div> }));
 vi.mock("./portada", () => ({ default: ({ signInHref }: { signInHref: string }) => <div>Portada <a href={signInHref}>Iniciar sesión con ChatGPT</a> <a href="/documentacion">Ver documentación</a></div> }));

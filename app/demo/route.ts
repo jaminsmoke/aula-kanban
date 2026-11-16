@@ -26,7 +26,7 @@ function missingDemoPage(): Response {
 <body>
 <main>
   <h1>La demo aún no está sembrada</h1>
-  <p>Esta instancia no tiene el proyecto de demostración. Con el servidor local abierto, ejecuta <code>npm run seed:demo</code> y vuelve a abrir la demo.</p>
+  <p>Esta instancia no tiene el proyecto de demostración. En local, ejecuta <code>npm run seed:demo</code> y vuelve a abrir la demo. En una instancia publicada, quien la administra puede prepararlo con el SQL de la demo y Codex lo aplica con autorización.</p>
   <p><a href="/">Volver a la portada</a></p>
 </main>
 </body>
