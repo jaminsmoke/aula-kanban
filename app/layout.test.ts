@@ -47,4 +47,8 @@ describe("metadatos sociales", () => {
     expect(metadata.title).toBe(SITE_NAME);
     expect(metadata.description).toBe(SITE_DESCRIPTION);
   });
+
+  it("enlaza el manifest de la aplicación instalable", () => {
+    expect(metadata.manifest).toBe("/manifest.webmanifest");
+  });
 });

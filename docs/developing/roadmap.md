@@ -54,12 +54,13 @@
 - **Criterios de aceptación:** `/privacidad` y `/condiciones` responden 200 sin sesión; no llaman a `requireChatGPTUser` ni muestran datos de una cuenta; los enlaces existen en la portada y en la ayuda; la guarda de estilos pasa y hay pruebas de render y de contenido.
 - **Verificación:** ambas rutas responden `200` en el servidor de desarrollo sin sesión y sirven título, descripción y canónica absoluta (`https://aula-kanban.doubleoak32.chatgpt.site/privacidad` y `/condiciones`). Ninguna importa `lib/server/auth`. El componente compartido `app/legal/legal-page.tsx` y su `legal.css` usan solo tokens; se revisaron a 1366, 1024 y 390 px en claro y oscuro sin desbordes. Enlaces en el pie de la portada y en «Pedir ayuda» (nuevo bloque `links` de la ayuda). 11 pruebas nuevas y la guarda de estilos en verde; suite completa **147 archivos / 1.119 pruebas**, `tsc` y ESLint correctos. Contacto legal: `jorgemd@siberia.solutions`.
 
-### Fase 2: Archivos de rastreo y manifest
-- [ ] `app/robots.ts` → `/robots.txt` con `Allow: /`, `Disallow: /api/`, `/mcp`, `/.well-known/`, `/oauth/` y `/sesion`, y la línea `Sitemap` con la URL absoluta.
-- [ ] `app/sitemap.ts` → `/sitemap.xml` con `/`, `/documentacion`, `/privacidad` y `/condiciones`, construidas desde `siteUrl` de `lib/domain/site.ts`.
-- [ ] `app/manifest.ts` → `/manifest.webmanifest` con `name`, `short_name`, `description`, `start_url`, `display`, colores de tema y fondo, e iconos (el `favicon.svg` con `sizes: "any"` y, si se quiere instalar en Android, PNG 192 y 512 generados del mismo glifo).
-- [ ] Enlazar el manifest desde `app/layout.tsx` (`metadata.manifest`) para que el navegador lo descubra.
+### Fase 2: Archivos de rastreo y manifest — completada (2026-11-16)
+- [x] `app/robots.ts` → `/robots.txt` con `Allow: /`, `Disallow: /api/`, `/mcp`, `/.well-known/`, `/oauth/` y `/sesion`, y la línea `Sitemap` con la URL absoluta.
+- [x] `app/sitemap.ts` → `/sitemap.xml` con `/`, `/documentacion`, `/privacidad` y `/condiciones`, construidas desde `siteUrl` de `lib/domain/site.ts`.
+- [x] `app/manifest.ts` → `/manifest.webmanifest` con `name`, `short_name`, `description`, `start_url`, `display`, colores de tema y fondo, e iconos (PNG 192 y 512 generados del `favicon.svg` y el SVG con `sizes: "any"`).
+- [x] Enlazar el manifest desde `app/layout.tsx` (`metadata.manifest`) para que el navegador lo descubra.
 - **Criterios de aceptación:** las tres rutas responden 200 con `text/plain`, `application/xml` y `application/manifest+json`; `robots.txt` excluye `/api/`, `/mcp` y `/.well-known/`; el sitemap solo lista las cuatro rutas públicas; el manifest es JSON válido con nombre, `start_url`, `display` e iconos.
+- **Verificación:** `/robots.txt` responde `200 text/plain` (181 B) con las cinco exclusiones y `Sitemap: https://aula-kanban.doubleoak32.chatgpt.site/sitemap.xml`; `/sitemap.xml` responde `200 application/xml` (653 B) con exactamente las cuatro rutas públicas; `/manifest.webmanifest` responde `200 application/manifest+json` (618 B), es JSON válido y el HTML de `/` incluye `<link rel="manifest" href="/manifest.webmanifest">`. Iconos `icon-192.png` (2.324 B) e `icon-512.png` (10.630 B) responden `200 image/png` y miden 192×192 y 512×512. 8 pruebas nuevas; suite completa **150 archivos / 1.127 pruebas**, `tsc` y ESLint correctos.
 
 ### Fase 3: Verificación y cierre
 - [ ] Comprobar sin sesión `/privacidad`, `/condiciones`, `/robots.txt`, `/sitemap.xml` y `/manifest.webmanifest` en el servidor de desarrollo y en la build servida en local.
@@ -90,3 +91,5 @@
 - 2026-11-16: contacto legal confirmado por el propietario: `jorgemd@siberia.solutions`; el texto lo usa en privacidad y condiciones.
 - 2026-11-16: la ayuda estrena un bloque `links` (`DocBlock`) para enlazar las dos páginas legales con pastillas; `content-coverage.test.ts` extrae sus etiquetas como texto.
 - 2026-11-16: la privacidad describe esta instancia y recuerda que cada copia o remix tiene su propio responsable; el texto parte del esquema completo y de D1/R2, no de una plantilla genérica.
+- 2026-11-16: los iconos 192 y 512 del manifest se generaron desde `public/favicon.svg` con sharp y se guardan en `public/icons/`; `/icons/*` se sirve con caché de un día.
+- 2026-11-16: vinext publica `/robots.txt`, `/sitemap.xml` y `/manifest.webmanifest` desde `app/robots.ts`, `app/sitemap.ts` y `app/manifest.ts`; `/manifest.json` no existe a propósito.
