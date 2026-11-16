@@ -39,10 +39,12 @@ Motivos de la decisión (revisado 2026-11-16):
 
 ## 4. Fases
 
-### Fase 1: Modelo y catálogo de libros
-- [ ] `lib/books.ts` con el catálogo curado (id, título, nivel, curso, materia, fuente, URL original, licencia, atribución, formato, tamaño, clave de almacenamiento, versión/fecha).
-- [ ] Reglas de ingesta documentadas: qué títulos, qué formato (libro completo o capítulos) y cómo se verifica la licencia antes de copiar.
-- **Criterios de aceptación:** el catálogo cubre Matemáticas de Primaria, ESO y Bachillerato con su procedencia; ningún título sin licencia verificada.
+### Fase 1: Modelo y catálogo de libros — completada
+- [x] `lib/books.ts` con el catálogo curado (id, título, nivel, curso, materia, fuente, URL original, licencia, atribución, formato, tamaño, clave de almacenamiento, versión/fecha).
+- [x] Reglas de ingesta documentadas: qué títulos, qué formato (libro completo o capítulos) y cómo se verifica la licencia antes de copiar.
+- **Criterios de aceptación:** el catálogo cubre Matemáticas de ESO y Bachillerato con su procedencia; ningún título sin licencia verificada.
+
+**Implementado (2026-11-16):** 10 títulos de Marea Verde (CC BY-NC-SA): ESO 1º–4º (4ºA/4ºB) y Bachillerato (Matemáticas I/II, CCSS I/II y Generales), con URLs originales y tamaños verificados (8–32 MB; 4ºB, con 32 MB, se valora por capítulos en una fase posterior). **Corrección de alcance:** el grupo de Matemáticas de Marea Verde cubre ESO y Bachillerato, no Primaria; Primaria queda para una fase posterior con INTEF/EDIA (HTML/SCORM, CC BY-SA).
 
 ### Fase 2: Persistencia y servido
 - [ ] Ingesta de los PDF a R2 y servido por la ruta de archivos existente, con atribución y licencia en los metadatos.
