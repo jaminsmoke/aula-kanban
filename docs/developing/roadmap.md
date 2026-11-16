@@ -47,11 +47,13 @@
 
 **Implementado (2026-11-16):** categorías principales Educación/Oficina/Productividad (`STORE_TOP_CATEGORIES`) y subcategorías Pizarras/Diagramas/Programación/Herramientas (`STORE_SUBCATEGORIES`); `category` → `categories: string[]` + `subcategory` en cada ficha, con los consumidores migrados (filtros, secciones, tarjeta con subcategoría, ficha con categorías, preferencias personales, contrato MCP `categorias`+`subcategoria` e iconos por categoría). Verificado en el navegador: «Mejores aplicaciones» (4), Educación (3) y Productividad (2, con Diagramas en ambas); Oficina sin sección por estar vacía.
 
-### Fase 2: Tienda según la nueva taxonomía
-- [ ] Ficha de app con su(s) categoría(s) principal(es) y subcategoría.
-- [ ] Secciones y filtros de Aula Store por categoría principal (conteos coherentes con apps multi-categoría).
-- [ ] Estados vacíos para Oficina y Productividad («más adelante»).
+### Fase 2: Tienda según la nueva taxonomía — completada
+- [x] Ficha de app con su(s) categoría(s) principal(es) y subcategoría.
+- [x] Secciones y filtros de Aula Store por categoría principal (conteos coherentes con apps multi-categoría).
+- [x] Estados vacíos para Oficina y Productividad («más adelante»).
 - **Criterios de aceptación:** cada app visible aparece en ≥1 categoría principal con su subcategoría; sin regresión en búsqueda e instaladas.
+
+**Implementado (2026-11-16):** filtros siempre con las tres categorías y sus conteos (Oficina aparece con 0); en la vista principal se renderizan también las secciones vacías con el aviso «Más adelante: habrá más aplicaciones de …»; filtrando por una categoría vacía se muestra el mismo aviso al no haber resultados; la tarjeta lleva la subcategoría y la ficha, las categorías principales separadas por «·» más la subcategoría. Verificado en el navegador: secciones Educación (3, Diagramas incluida), Oficina (0 con aviso) y Productividad (2); filtro Oficina con su vacío.
 
 ### Fase 3: MCP, documentación, verificación y cierre
 - [ ] Contrato MCP (`categoria` → multi-categoría) con docs (`docs/Store/mcp-apps.md`) y tests/snapshots actualizados.

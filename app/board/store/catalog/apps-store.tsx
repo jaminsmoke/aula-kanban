@@ -88,8 +88,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
     .map((id) => allTools.find((tool) => tool.id === id))
     .filter((tool): tool is StoreTool => Boolean(tool));
   const categorySections = STORE_CATEGORIES
-    .map((name) => ({ name, tools: allTools.filter((tool) => tool.categories.includes(name)) }))
-    .filter((section) => section.tools.length > 0);
+    .map((name) => ({ name, tools: allTools.filter((tool) => tool.categories.includes(name)) }));
 
   /**
    * Acciones de una app (abrir, instalar o desinstalar).
@@ -145,11 +144,15 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
   const renderSection = (title: string, titleIcon: ReactNode, tools: StoreTool[], scope: string) => (
     <section className="store-section" aria-label={title}>
       <h3 className="store-section-title">{titleIcon} {title}<span className="store-section-count">{tools.length}</span></h3>
-      <div className="store-grid">
-        <AnimatePresence mode="popLayout">
-          {tools.map((tool, index) => renderCard(tool, index, scope))}
-        </AnimatePresence>
-      </div>
+      {tools.length ? (
+        <div className="store-grid">
+          <AnimatePresence mode="popLayout">
+            {tools.map((tool, index) => renderCard(tool, index, scope))}
+          </AnimatePresence>
+        </div>
+      ) : (
+        <p className="store-results-empty">Más adelante: habrá más aplicaciones de {title}.</p>
+      )}
     </section>
   );
 
@@ -184,7 +187,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
       {error ? <p role="alert" className="store-alert"><TriangleAlert size={16} aria-hidden /> {error}</p> : null}
 
       {visibleCount === 0 ? (
-        <p className="store-results-empty">{query.trim() ? <>Sin resultados para «{query}».</> : "Sin resultados."}</p>
+        <p className="store-results-empty">{query.trim() ? <>Sin resultados para «{query}».</> : (category !== "todas" && !installedOnly ? <>Más adelante: habrá más aplicaciones de {category}.</> : "Sin resultados.")}</p>
       ) : isHome ? (
         <>
           {featuredTools.length > 0 ? renderSection("Mejores aplicaciones", <Star size={18} aria-hidden />, featuredTools, "destacadas") : null}

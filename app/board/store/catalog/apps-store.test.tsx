@@ -36,9 +36,11 @@ describe("Aula Store", () => {
   it("muestra «Mejores aplicaciones» y las secciones por categoría en el inicio", () => {
     render(<AppsStore {...props} role="owner" />);
     expect(screen.getByRole("region", { name: "Mejores aplicaciones" })).toBeTruthy();
-    for (const category of ["Educación", "Productividad"]) {
+    for (const category of ["Educación", "Productividad", "Oficina"]) {
       expect(screen.getByRole("region", { name: category })).toBeTruthy();
     }
+    // Oficina nace vacía, con el aviso «Más adelante».
+    expect(screen.getByText("Más adelante: habrá más aplicaciones de Oficina.")).toBeTruthy();
     // Cada app aparece en «Mejores aplicaciones» y en su categoría.
     for (const name of ["Herramientas de aula", "Programación por bloques", "Diagramas"]) {
       expect(screen.getAllByText(name).length).toBeGreaterThan(0);
