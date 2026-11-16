@@ -1,10 +1,32 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** PROMO-04 · Privacidad, condiciones y archivos de rastreo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-16 — Roadmap PROMO-04 · Privacidad, condiciones y archivos de rastreo
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Páginas públicas `/privacidad` y `/condiciones` sin sesión, con metadatos propios, canónica y un componente compartido `app/legal/legal-page.tsx` y `app/legal/legal.css` con tokens. El texto describe los datos reales del esquema (identidad de ChatGPT, proyectos y miembros, tareas y asignaciones, fichas, archivos en R2, pizarras, documentos de apps, preferencias, tokens MCP/OAuth y auditoría) y las condiciones de uso, con contacto `jorgemd@siberia.solutions`.
+- Enlaces a las dos páginas desde el pie de la portada y desde la ayuda («Pedir ayuda»), con un bloque `links` nuevo en la documentación.
+- `app/robots.ts` sirve `/robots.txt` con `Allow: /` y exclusiones de `/api/`, `/mcp`, `/.well-known/`, `/oauth/` y `/sesion`; `app/sitemap.ts` sirve `/sitemap.xml` con solo `/`, `/documentacion`, `/privacidad` y `/condiciones`; `app/manifest.ts` sirve `/manifest.webmanifest` con iconos PNG 192 y 512 en `public/icons/`, generados desde el favicon. El layout enlaza el manifest.
+- README documenta las rutas públicas, dónde vive el texto legal y cómo añadir una ruta al sitemap y al manifest.
+
+### Verificación
+
+- Build servida en `127.0.0.1:8791` con una D1 limpia temporal: `/privacidad` (31.408 B) y `/condiciones` (26.714 B) responden `200 text/html` con canónica absoluta y `<link rel="manifest">`; `/robots.txt` (181 B), `/sitemap.xml` (653 B) y `/manifest.webmanifest` (618 B) responden `200` con su `Content-Type`, y los iconos pesan 2.324 y 10.630 B.
+- Suite completa: **150 archivos / 1.127 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde. Flujo `tablero` **170.233 B gzip** (límite 175.656 B).
+- Páginas legales revisadas a 1366, 1024 y 390 px en claro y oscuro, sin desbordes.
+- Commits: `1b0cdeb` (roadmap), `feecb0f` (Fase 1), `371b17b` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites: el Site sigue en **1.1.32**.
+
+### Seguimiento
+
+- PROMO-05 (modo demo sin cuenta) y PROMO-06 (primer resultado de la calculadora) siguen en el backlog; PROMO-01 permanece pausado hasta publicar y validar la tarjeta social.
 
 ## 2026-11-16 — Roadmap PROMO-03 · Proyecto de demo versionado y capturas nuevas
 

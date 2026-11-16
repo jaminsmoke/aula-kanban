@@ -365,6 +365,12 @@ npm run seed:demo
 
 `scripts/seed-demo.mjs` solo acepta `localhost` o `127.0.0.1` y rechaza cualquier URL remota antes de abrir una conexión. Crea o actualiza el proyecto fijo `22222222-2222-4222-8222-222222222222` con seis alumnos, dos profesores, ocho tareas repartidas en las cuatro columnas (25 % completadas), las cinco apps instaladas, una pizarra, un diagrama y un programa de bloques. Es seguro repetirlo: no duplica tareas ni fichas y no toca otros proyectos. Usa la sesión local de desarrollo (la cookie `__sites_local_auth` y las cabeceras `local_seedy`), así que no necesita una cuenta real ni tokens. **No lo ejecutes contra producción ni cambies `--local` por `--remote`:** sembrar la D1 remota requiere autorización y la ejecuta Codex. Las capturas de `public/capturas/` para la ayuda se toman de este proyecto con Chrome headless a 1440×950 y se guardan a 1200 px en WebP.
 
+### Páginas públicas y rastreo
+
+Sin sesión se sirven `/`, `/documentacion`, `/privacidad`, `/condiciones`, `/robots.txt`, `/sitemap.xml` y `/manifest.webmanifest`. Las dos páginas legales comparten `app/legal/legal-page.tsx` y `app/legal/legal.css`; su texto vive en `app/privacidad/page.tsx` y `app/condiciones/page.tsx`. Al cambiarlo, actualiza la fecha visible y el contacto (`jorgemd@siberia.solutions`) y pide la revisión de Jorge antes de publicar: el texto debe describir los datos que guarda de verdad el esquema (`db/schema.ts`), R2 y las cabeceras de Sites.
+
+`app/robots.ts` y `app/sitemap.ts` generan `/robots.txt` y `/sitemap.xml`. Si añades una ruta pública indexable, añádela a `PUBLIC_PATHS` en `app/sitemap.ts` y revisa las exclusiones de `robots.ts`. El manifest se publica en `/manifest.webmanifest` desde `app/manifest.ts` (no en `/manifest.json`); sus iconos están en `public/icons/`, generados desde `public/favicon.svg`, y el layout ya lo enlaza, así que no dupliques el archivo en `public/`.
+
 Para un cambio nuevo:
 
 1. Parte de la última versión publicada y comprueba `git status`. No sobrescribas cambios ajenos.
