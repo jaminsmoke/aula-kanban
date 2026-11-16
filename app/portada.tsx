@@ -21,9 +21,10 @@ export default function Portada({ signInHref }: { signInHref: string }) {
             <p className="portada-lead">Aula Kanban es un tablero colaborativo para el grupo de clase. Organiza tareas y entregas, reúne a las personas y comparte pizarras y materiales en un mismo espacio.</p>
             <div className="portada-actions">
               <a className="primary portada-action" href={signInHref} target="_top">Iniciar sesión con ChatGPT</a>
+              <a className="secondary portada-action" href="/demo">Probar la demo</a>
               <a className="secondary portada-action" href="/documentacion">Ver documentación</a>
             </div>
-            <p className="portada-note"><span className="portada-note-dot" aria-hidden="true" /> La cuenta de ChatGPT abre tus proyectos con los permisos que ya tienes.</p>
+            <p className="portada-note"><span className="portada-note-dot" aria-hidden="true" /> La cuenta de ChatGPT abre tus proyectos con los permisos que ya tienes. La demo no necesita cuenta y es de solo lectura.</p>
           </div>
 
           <div className="portada-preview" aria-hidden="true">

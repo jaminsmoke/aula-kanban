@@ -1,10 +1,31 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** PROMO-05 · Modo demo sin cuenta, de solo lectura · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-16 — Roadmap PROMO-05 · Modo demo sin cuenta, de solo lectura
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Identidad fija de demo resuelta en el servidor (`lib/domain/demo.ts` y `lib/server/demo.ts`), nunca desde cabeceras del cliente. La cookie `__demo` la activa; la sesión real de ChatGPT tiene prioridad y la demo solo existe en el proyecto ficticio `22222222-…` con rol `guest`.
+- Entrada `/demo` que fija la cookie y abre el tablero, salida `/demo/salir`, aviso con `npm run seed:demo` si falta el proyecto y banner «Estás viendo una demo» con enlace a la cuenta real.
+- Solo lectura: todas las escrituras de la API responden 403 para la demo (tareas, pizarras, documentos, subidas, tokens MCP, preferencias, invitaciones, apps, libros, administradores, almacenamiento, MCP y proyectos); la interfaz oculta acciones, Tokens MCP y ajustes sensibles, no muestra correos y no abre sockets de presencia.
+- «Probar la demo» en la portada, enlace en la ayuda, mención en privacidad y condiciones, y sección «Modo demo» en README.
+
+### Verificación
+
+- D1 limpia temporal: `/demo` respondió `404` con la orden de siembra; tras sembrar, `303` con cookie y tablero `200` con el banner. Recorridas tareas, calendario y administración a 1366, 1024 y 390 px en claro y en oscuro, sin desbordes ni acciones de escritura.
+- `POST /api/tasks`, `PUT /api/personal-apps`, `POST /api/mcp/tokens` y `POST /api/projects` respondieron 403; las lecturas, 200. Suite completa: **155 archivos / 1.143 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde. Flujo `tablero` **170.706 B gzip** (límite 175.656 B).
+- Commits: `f32c060` (roadmap), `b212e98` (Fase 1), `825d149` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites: el Site sigue en **1.1.32**.
+
+### Seguimiento
+
+- PROMO-06 (primer resultado de la calculadora) sigue en el backlog; PROMO-01 permanece pausado hasta publicar y validar la tarjeta social.
 
 ## 2026-11-16 — Roadmap PROMO-04 · Privacidad, condiciones y archivos de rastreo
 

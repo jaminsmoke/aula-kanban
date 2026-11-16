@@ -13,6 +13,7 @@ const sections: LegalSection[] = [
     title: "Objeto",
     paragraphs: [
       "Estas condiciones regulan el uso de esta instancia de Aula Kanban, un tablero colaborativo para grupos de clase, de sus apps nativas y de su plugin de ChatGPT. Al usarla aceptas estas condiciones y la política de privacidad.",
+      "La demo de la portada es una muestra ficticia y de solo lectura: no representa un proyecto real ni permite modificar datos.",
     ],
   },
   {

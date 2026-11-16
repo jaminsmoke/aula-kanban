@@ -27,7 +27,7 @@ const invitationRoleNames = { teacher: "Profesor", student: "Alumno", guest: "In
  * @param props - Cuenta autenticada de ChatGPT y estado inicial de la URL.
  * @returns La aplicación completa del tablero.
  */
-export default function Board({ user, initial, demo = false }: { user: { displayName: string; email: string }; initial?: BoardUrlState; demo?: boolean }) {
+export default function Board({ user, initial, demo = false, demoSignInHref = "/signin-with-chatgpt?return_to=%2F" }: { user: { displayName: string; email: string }; initial?: BoardUrlState; demo?: boolean; demoSignInHref?: string }) {
   const projectState = useProjects();
   const invitations = useInvitations();
   const data = useBoardData(projectState.activeProject);
@@ -87,6 +87,14 @@ export default function Board({ user, initial, demo = false }: { user: { display
         onRemix={() => setRemixOpen(true)}
         onSettings={() => setView("ajustes")}
       />
+
+      {demo && (
+        <div className="demo-banner" role="note">
+          <span className="demo-banner-badge">Demo</span>
+          <p><strong>Estás viendo una demo.</strong> Datos ficticios y solo lectura.</p>
+          <a className="demo-banner-link" href={demoSignInHref} target="_top">Entrar con ChatGPT</a>
+        </div>
+      )}
 
       {remixOpen && <RemixDialog onClose={() => setRemixOpen(false)} />}
 

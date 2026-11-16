@@ -32,5 +32,5 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
     return <Portada signInHref={chatGPTSignInPath(returnTo)} />;
   }
 
-  return <Board user={{ displayName: user.displayName, email: user.email }} demo={isDemoUser(user)} initial={state} />;
+  return <Board user={{ displayName: user.displayName, email: user.email }} demo={isDemoUser(user)} demoSignInHref={chatGPTSignInPath("/")} initial={state} />;
 }

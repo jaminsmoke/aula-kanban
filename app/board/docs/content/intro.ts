@@ -8,6 +8,8 @@ export const introSections: DocSection[] = [
     blocks: [
       { type: "paragraph", text: "Cada proyecto es un tablero independiente. Las tareas, los alumnos, los profesores y las aplicaciones de Tienda pertenecen a ese proyecto: si cambias de proyecto en el selector de la cabecera, cambias de tablero." },
       { type: "paragraph", text: "La cabecera separa el trabajo en Clase y Administración, con Clase en su botón de icono y el selector de proyecto a la derecha. Tienda está en el sidebar de Administración. El engranaje abre los ajustes generales, con Cuenta, Apariencia, Documentación, Tokens MCP, Administradores y Almacenamiento." },
+      { type: "paragraph", text: "Si quieres verlo antes de entrar, la portada ofrece «Probar la demo»: abre un proyecto ficticio de solo lectura, sin cuenta y sin tocar datos reales." },
+      { type: "links", items: [{ label: "Probar la demo", href: "/demo" }] },
     ],
   },
   {

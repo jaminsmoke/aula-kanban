@@ -21,6 +21,7 @@ const sections: LegalSection[] = [
     title: "Qué datos guarda",
     paragraphs: [
       "Aula Kanban guarda solo lo necesario para el tablero y las herramientas del aula. No hay analítica, publicidad ni cookies de terceros.",
+      "La demo pública no usa datos reales: abre un proyecto ficticio con alumnado inventado y no guarda nada de la visita.",
     ],
     items: [
       "Identidad de la cuenta: el identificador estable, el correo y el nombre visible que Sites envía al iniciar sesión. No se guardan contraseñas.",

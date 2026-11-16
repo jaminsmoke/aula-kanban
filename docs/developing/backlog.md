@@ -2,7 +2,7 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** PROMO-05 · Modo demo sin cuenta, de solo lectura · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** 2 entradas: PROMO-01 pausado y PROMO-06 pendiente de debate
 
 ---

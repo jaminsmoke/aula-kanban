@@ -371,6 +371,10 @@ Sin sesión se sirven `/`, `/documentacion`, `/privacidad`, `/condiciones`, `/ro
 
 `app/robots.ts` y `app/sitemap.ts` generan `/robots.txt` y `/sitemap.xml`. Si añades una ruta pública indexable, añádela a `PUBLIC_PATHS` en `app/sitemap.ts` y revisa las exclusiones de `robots.ts`. El manifest se publica en `/manifest.webmanifest` desde `app/manifest.ts` (no en `/manifest.json`); sus iconos están en `public/icons/`, generados desde `public/favicon.svg`, y el layout ya lo enlaza, así que no dupliques el archivo en `public/`.
 
+### Modo demo
+
+La portada ofrece «Probar la demo» (`/demo`), que activa la cookie `__demo` y abre el proyecto ficticio de `npm run seed:demo` en solo lectura. La identidad es fija y se resuelve en el servidor (`lib/domain/demo.ts` y `lib/server/demo.ts`), nunca desde cabeceras del cliente; la sesión real de ChatGPT tiene prioridad. En la demo, todas las escrituras responden 403, no se muestran correos ni ajustes sensibles y las pizarras no abren sockets. `/demo/salir` borra la cookie. Si el proyecto no está sembrado, `/demo` lo explica con la orden de siembra; no crea datos.
+
 Para un cambio nuevo:
 
 1. Parte de la última versión publicada y comprueba `git status`. No sobrescribas cambios ajenos.
