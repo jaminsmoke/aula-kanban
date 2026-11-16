@@ -46,10 +46,12 @@
 
 **Implementado (2026-11-16):** tabla `project_books` en `db/schema.ts` con migración `drizzle/0038_crazy_puck.sql` aplicada en local; `lib/server/project-books.ts` (validación de ids de catálogo, lectura con `enabled` y guardado que sustituye el conjunto); ruta `app/api/project-books` (`GET` para cualquier miembro con acceso, `PUT` solo owner/admin/profesor del proyecto, alumnos e invitados 403). Verificado en el navegador: guardado y relectura de habilitados con 200.
 
-### Fase 2: Pestaña «Herramientas» en Profesores y Alumnos
-- [ ] Toggle «Libros» y selección de títulos (todos o individuales) por proyecto, en cada vista.
-- [ ] Estados de carga/error y guardado visible.
+### Fase 2: Pestaña «Herramientas» en Profesores y Alumnos — completada
+- [x] Toggle «Libros» y selección de títulos (todos o individuales) por proyecto, en cada vista.
+- [x] Estados de carga/error y guardado visible.
 - **Criterios de aceptación:** un docente habilita los libros de su curso y un administrador, los de cualquier proyecto, sin salir de su vista.
+
+**Implementado (2026-11-16):** pestañas «Miembros»/«Herramientas» en las vistas de Profesores y Alumnos (`app/board/people/administration`), con el panel compartido `BooksToolsPanel`: toggle maestro «Todos los libros», selección por nivel, guardado con confirmación y reintento si falla. Solo visible para owner/admin/profesor del proyecto. Verificado en el navegador: pestaña visible en Alumnos, 10 filas por nivel y guardado con retorno «Guardado».
 
 ### Fase 3: Carpeta «Libros» en la mochila y el maletín con visor de solo lectura
 - [ ] Carpeta «Libros» con los libros asignados en la mochila del alumnado y el maletín docente (la carpeta general de personal sigue en backlog).

@@ -131,6 +131,7 @@ export default function Board({ user, initial }: { user: { displayName: string; 
                 projectId: projectState.projectId,
               }}
               students={{
+                projectId: projectState.projectId,
                 students: data.students,
                 tasks: data.tasks,
                 all: data.tasks ?? [],
@@ -153,6 +154,7 @@ export default function Board({ user, initial }: { user: { displayName: string; 
               teachers={{
                 projectId: projectState.projectId,
                 isAdmin: projectState.owner || projectState.admin,
+                canTools: Boolean(canManage),
                 ownTeacherId: activeProject.teacherId,
                 tasks: data.tasks,
                 students: data.students,

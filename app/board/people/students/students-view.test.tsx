@@ -30,6 +30,7 @@ const task: Task = {
 
 function renderStudents(overrides: Partial<Parameters<typeof StudentsView>[0]> = {}) {
   const props = {
+    projectId: "p1",
     students: [student],
     tasks: [task],
     all: [task],

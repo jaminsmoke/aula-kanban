@@ -1,10 +1,12 @@
 "use client";
 
-import { Plus, Users } from "lucide-react";
+import { useState } from "react";
+import { Plus, Users, Wrench } from "lucide-react";
 import type { Task } from "../../../../lib/domain/task";
 import type { Student } from "../../../../lib/domain/student";
 import { taskBelongsTo } from "../../../../lib/domain/assignments";
 import LayoutToggle from "../../layout/layout-toggle";
+import BooksToolsPanel from "../tools/books-tools-panel";
 import ProfileCard from "../profile-card";
 import ProfileDetail from "../profile-detail";
 import PeopleEmptyState from "../empty-state";
@@ -16,9 +18,10 @@ import "../people.css";
  * @returns La vista completa de alumnos.
  */
 export default function StudentsView({
-  students, tasks, all, allPeople, ownStudent, canManage, loadError, studentError, onRetryTasks, onRetryStudents,
+  projectId, students, tasks, all, allPeople, ownStudent, canManage, loadError, studentError, onRetryTasks, onRetryStudents,
   studentName, onSelectStudent, layout, onLayout, onCreate, onEdit, onDelete, onOpenTask,
 }: {
+  projectId: string;
   students: Student[] | null;
   tasks: Task[] | null;
   all: Task[];
@@ -40,6 +43,7 @@ export default function StudentsView({
 }) {
   const student = studentName ? students?.find((item) => item.section === studentName) : undefined;
   const isEmpty = students !== null && students.length === 0;
+  const [tab, setTab] = useState<"miembros" | "herramientas">("miembros");
   return (
     <section className="students-view">
       <div className="students-heading">
@@ -47,7 +51,14 @@ export default function StudentsView({
           <h2>Alumnos</h2>
           {canManage && <button type="button" className="primary add-student" aria-label="Añadir alumno" title="Añadir alumno" onClick={onCreate}><Plus size={20} aria-hidden /></button>}
         </div>
+        {canManage && (
+          <div className="people-tabs" role="group" aria-label="Vistas de alumnos">
+            <button type="button" className="people-tab" aria-current={tab === "miembros" ? "page" : undefined} onClick={() => setTab("miembros")}><Users size={16} aria-hidden /> Miembros</button>
+            <button type="button" className="people-tab" aria-current={tab === "herramientas" ? "page" : undefined} onClick={() => setTab("herramientas")}><Wrench size={16} aria-hidden /> Herramientas</button>
+          </div>
+        )}
       </div>
+      {tab === "herramientas" && canManage ? (<BooksToolsPanel projectId={projectId} />) : (<>
       {loadError && <div role="alert" className="alert">{loadError} <button type="button" className="text-button" onClick={onRetryTasks}>Reintentar</button></div>}
       {studentError && <div role="alert" className="alert">{studentError} <button type="button" className="text-button" onClick={onRetryStudents}>Reintentar</button></div>}
       {studentName ? (() => {
@@ -79,6 +90,7 @@ export default function StudentsView({
           {students?.map((item) => <ProfileCard key={item.section} name={item.displayName || item.name} role={item.role} accountStatus={item.accountStatus} onOpen={() => onSelectStudent(item.section)} />)}
         </div>
       </>}
+      </>)}
     </section>
   );
 }

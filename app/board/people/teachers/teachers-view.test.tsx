@@ -20,6 +20,7 @@ function renderTeachers(overrides: Partial<Parameters<typeof TeachersView>[0]> =
   const props = {
     projectId: "p1",
     isAdmin: true,
+    canTools: true,
     ownTeacherId: null,
     tasks: [],
     students: [],
