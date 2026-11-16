@@ -2,9 +2,9 @@
 
 Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
-> **Estado:** sin entrada en backlog. Después de Ajedrez, Física 2D y Geometría,
-> las candidatas con más encaje son los mapas conceptuales, las presentaciones y
-> las líneas de tiempo.
+> **En backlog:** Mapas conceptuales como **STORE-10**, Presentaciones como
+> **STORE-11** y Líneas de tiempo como **STORE-13**. El resto sigue como
+> candidato hasta que se priorice.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|

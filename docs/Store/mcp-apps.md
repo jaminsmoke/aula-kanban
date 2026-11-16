@@ -123,7 +123,7 @@ reglas de cada app.
 - [`roadmap.md`](../developing/roadmap.md): plantilla del próximo roadmap.
 - [`changelog.md`](../developing/changelog.md): resumen de los roadmaps MCP-05B, MCP-05D y
   MCP-05E.
-- [`backlog.md`](../developing/backlog.md): STORE-07 y STORE-08.
+- [`backlog.md`](../developing/backlog.md): STORE-07, STORE-08 y STORE-10 a STORE-13.
 - [`apps/README.md`](apps/README.md): catálogo, licencias y
   versiones de las apps.
 - [`../../app/board/apps/README.md`](../../app/board/apps/README.md): cómo se declara

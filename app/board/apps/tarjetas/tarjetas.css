@@ -1,0 +1,430 @@
+/* ==========================================================================
+   Tarjetas de repaso: mazos y tarjetas del proyecto
+   ========================================================================== */
+
+.tarjetas-app {
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  background:var(--ui-surface-hover);
+  color:var(--ui-text-primary);
+  container-type:inline-size;
+  container-name:tarjetasapp;
+}
+
+.tarjetas-toolbar {
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 14px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-surface-faint);
+}
+
+.tarjetas-heading {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+
+.tarjetas-mark {
+  display:grid;
+  place-items:center;
+  flex:none;
+  width:34px;
+  height:34px;
+  border-radius: var(--radius-sm);
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+}
+
+.tarjetas-heading strong {
+  display:block;
+  font-size:14px;
+  line-height:1.2;
+}
+
+.tarjetas-heading small {
+  display:block;
+  margin-top:2px;
+  color:var(--ui-text-muted);
+  font-size:11px;
+  font-weight:600;
+  line-height:1.25;
+}
+
+.tarjetas-actions {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex:none;
+  margin-left:auto;
+}
+
+.tarjetas-actions button,
+.tarjetas-card-form button,
+.tarjetas-deck-form button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:7px 11px;
+  border:var(--border-width-hairline) solid var(--ui-action-text);
+  border-radius: var(--radius-sm);
+  background:var(--ui-action-primary);
+  color:var(--ui-text-inverse);
+  font:inherit;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.tarjetas-actions button:hover:not(:disabled),
+.tarjetas-card-form button:hover:not(:disabled),
+.tarjetas-deck-form button:hover:not(:disabled) { background:var(--ui-action-primary-hover); }
+
+.tarjetas-actions button:disabled,
+.tarjetas-card-form button:disabled,
+.tarjetas-deck-form button:disabled,
+.tarjetas-deck-form input:disabled,
+.tarjetas-card-form textarea:disabled { opacity:var(--ui-opacity-disabled); cursor:not-allowed; }
+
+.tarjetas-actions button:focus-visible,
+.tarjetas-card-form button:focus-visible,
+.tarjetas-deck-form button:focus-visible,
+.tarjetas-deck-form input:focus-visible,
+.tarjetas-card-form textarea:focus-visible,
+.tarjetas-deck-list button:focus-visible,
+.tarjetas-card-actions button:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:2px;
+}
+
+.tarjetas-readonly,
+.tarjetas-unsaved {
+  padding:3px 8px;
+  border-radius: var(--radius-pill);
+  font-size:10.5px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.tarjetas-readonly { background:var(--ui-surface-muted); color:var(--ui-text-muted); }
+.tarjetas-unsaved { background:var(--ui-warning-pale); color:var(--ui-warning-deep); }
+
+.tarjetas-alert,
+.tarjetas-status {
+  flex:none;
+  margin:8px 14px 0;
+  padding:8px 10px;
+  border-radius: var(--radius-sm);
+  font-size:12px;
+  line-height:1.4;
+}
+
+.tarjetas-alert { background:var(--ui-danger-soft); color:var(--ui-danger-ink); }
+.tarjetas-status { background:var(--ui-success-soft); color:var(--ui-success); }
+
+.tarjetas-layout {
+  flex:1 1 auto;
+  min-height:0;
+  display:grid;
+  grid-template-columns:230px minmax(0,1fr);
+  gap:14px;
+  padding:14px;
+  overflow:auto;
+}
+
+.tarjetas-decks {
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:10px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+}
+
+.tarjetas-section-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.tarjetas-section-head h4 {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:var(--tracking-caps);
+  text-transform:uppercase;
+}
+
+.tarjetas-section-head span {
+  display:inline-grid;
+  place-items:center;
+  min-width:22px;
+  height:20px;
+  padding:0 6px;
+  border-radius: var(--radius-pill);
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+  font-size:11px;
+  font-weight:800;
+}
+
+.tarjetas-deck-form {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.tarjetas-deck-form label,
+.tarjetas-card-form label {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  color:var(--ui-text-secondary);
+  font-size:10.5px;
+  font-weight:700;
+}
+
+.tarjetas-deck-form > div {
+  display:flex;
+  gap:5px;
+}
+
+.tarjetas-deck-form input,
+.tarjetas-card-form textarea {
+  width:100%;
+  min-width:0;
+  padding:7px 8px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-primary);
+  font:inherit;
+  font-size:11.5px;
+}
+
+.tarjetas-deck-form button {
+  flex:none;
+  width:34px;
+  padding:0;
+}
+
+.tarjetas-deck-list {
+  flex:1 1 auto;
+  min-height:0;
+  margin:0;
+  padding:0;
+  overflow:auto;
+  list-style:none;
+  display:grid;
+  align-content:start;
+  gap:3px;
+}
+
+.tarjetas-deck-list button {
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:7px 8px;
+  border:var(--border-width-hairline) solid transparent;
+  border-radius: var(--radius-xs);
+  background:transparent;
+  color:var(--ui-text-secondary);
+  font:inherit;
+  font-size:12px;
+  font-weight:650;
+  text-align:left;
+  cursor:pointer;
+}
+
+.tarjetas-deck-list button:hover { background:var(--ui-surface-hover); }
+.tarjetas-deck-list button[aria-pressed="true"] { border-color:var(--ui-border-accent); background:var(--ui-action-soft); color:var(--ui-action-text); }
+.tarjetas-deck-list small { color:var(--ui-text-muted); font-size:10.5px; font-weight:800; }
+
+.tarjetas-empty-small {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+  line-height:1.4;
+}
+
+.tarjetas-main {
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.tarjetas-loading {
+  margin:0;
+  padding:18px;
+  color:var(--ui-text-muted);
+  font-size:12px;
+}
+
+.tarjetas-deck-head {
+  flex:none;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.tarjetas-deck-head h3 {
+  margin:0;
+  color:var(--ui-text-primary);
+  font-size:18px;
+  line-height:1.2;
+}
+
+.tarjetas-deck-head p {
+  margin:3px 0 0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+}
+
+.tarjetas-danger {
+  flex:none;
+  padding:6px 9px;
+  border:var(--border-width-hairline) solid var(--ui-border-danger);
+  border-radius: var(--radius-xs);
+  background:var(--ui-danger-soft);
+  color:var(--ui-danger-ink);
+  font:inherit;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.tarjetas-danger:hover:not(:disabled) { background:var(--ui-danger-soft); filter:brightness(1.04); }
+.tarjetas-danger:disabled { opacity:var(--ui-opacity-disabled); cursor:not-allowed; }
+
+.tarjetas-card-form {
+  flex:none;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:11px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+}
+
+.tarjetas-card-form textarea { resize:vertical; min-height:64px; }
+
+.tarjetas-form-actions {
+  grid-column:1 / -1;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.tarjetas-card-form .tarjetas-secondary {
+  border-color:var(--ui-border-strong);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+}
+
+.tarjetas-card-form .tarjetas-secondary:hover:not(:disabled) { background:var(--ui-surface-hover); }
+
+.tarjetas-card-list {
+  flex:1 1 auto;
+  min-height:0;
+  margin:0;
+  padding:0;
+  overflow:auto;
+  list-style:none;
+  display:grid;
+  align-content:start;
+  gap:6px;
+}
+
+.tarjetas-card-list li {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 11px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+}
+
+.tarjetas-card-list li > div:first-child { min-width:0; }
+.tarjetas-card-list strong { display:block; color:var(--ui-text-primary); font-size:12.5px; line-height:1.4; }
+.tarjetas-card-list p { margin:3px 0 0; color:var(--ui-text-muted); font-size:11.5px; line-height:1.4; overflow-wrap:anywhere; }
+
+.tarjetas-card-actions {
+  display:flex;
+  gap:4px;
+  flex:none;
+}
+
+.tarjetas-card-actions button {
+  display:grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  padding:0;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-muted);
+  cursor:pointer;
+}
+
+.tarjetas-card-actions button:hover:not(:disabled) { background:var(--ui-surface-hover); color:var(--ui-text-primary); }
+.tarjetas-card-actions button:disabled { opacity:var(--ui-opacity-disabled); cursor:not-allowed; }
+
+.tarjetas-empty,
+.tarjetas-empty-state {
+  margin:0;
+  padding:18px;
+  color:var(--ui-text-muted);
+  font-size:12px;
+  line-height:1.45;
+}
+
+.tarjetas-empty-state {
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  text-align:center;
+}
+
+.tarjetas-empty-state svg { color:var(--ui-action-text); }
+.tarjetas-empty-state h3 { margin:0; color:var(--ui-text-primary); font-size:16px; }
+.tarjetas-empty-state p { margin:0; max-width:300px; }
+
+@container tarjetasapp (max-width: 700px) {
+  .tarjetas-layout { grid-template-columns:1fr; gap:10px; padding:10px; }
+  .tarjetas-decks { max-height:220px; }
+  .tarjetas-card-form { grid-template-columns:1fr; }
+  .tarjetas-card-form textarea { min-height:52px; }
+}
+
+@container tarjetasapp (max-width: 480px) {
+  .tarjetas-toolbar { padding:8px 10px; }
+  .tarjetas-heading small { display:none; }
+  .tarjetas-actions { gap:5px; }
+  .tarjetas-actions button { padding:6px 8px; }
+  .tarjetas-unsaved { display:none; }
+}

@@ -2,9 +2,9 @@
 
 Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
-> **Estado:** sin entrada en backlog. La evaluación es un hueco claro, pero antes
-> hay que definir mazos, progreso por alumnado y permisos; no es una app de un
-> solo documento compartido sin más.
+> **En roadmap:** Tarjetas de repaso (`ts-fsrs`) como **STORE-09**. Los mazos se
+> guardan en `app_documents`; el progreso de repaso empieza en `localStorage` y
+> la sincronización por usuario queda como seguimiento.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|
@@ -21,5 +21,5 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 - **`srs-kit`** no es una app: aporta contratos y esquema; habría que construir
   toda la interfaz y la persistencia.
 
-No se selecciona todavía para no abrir un frente de evaluación sin haber cerrado
-antes el modelo de datos y permisos.
+El modelo de datos se limita en la primera versión a mazos y tarjetas en
+`app_documents`; el progreso por usuario en servidor queda fuera de alcance.
