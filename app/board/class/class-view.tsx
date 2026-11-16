@@ -42,20 +42,19 @@ function sectionsFor(role: StoreRole): WorkspaceItem<ClassSection>[] {
  *   datos del espacio personal (mochila del alumnado y maletín docente).
  * @returns La vista de clase.
  */
-export default function ClassView({ section, onSection, kanban, role, projectId, onOpenApp }: {
+export default function ClassView({ section, onSection, kanban, role, projectId }: {
   section: ClassSection;
   onSection: (section: ClassSection) => void;
   kanban: ComponentProps<typeof KanbanView>;
   role: StoreRole;
   projectId: string;
-  onOpenApp: (appId: string) => void;
 }) {
   return (
     <WorkspaceLayout title="Clase" label="Secciones de clase" items={sectionsFor(role)} active={section} onSelect={onSection}>
-      <div className="class-content">
+      <div className={section === "mochila" ? "class-content class-content--desktop" : "class-content"}>
         {section === "mochila" ? (
           <Suspense fallback={<div className="class-section-loading" role="status">Cargando tu espacio…</div>}>
-            <PersonalSpaceView role={role} projectId={projectId} onOpenApp={onOpenApp} />
+            <PersonalSpaceView role={role} projectId={projectId} />
           </Suspense>
         ) : section === "tareas" ? (
           <KanbanView {...kanban} />

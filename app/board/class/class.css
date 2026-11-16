@@ -5,6 +5,10 @@
 .class-content { padding:24px clamp(24px, 3.5vw, 56px) 32px; }
 .class-content .hero { margin-top:0; }
 
+/* La mochila/maletín es un escritorio como el de Tienda: ocupa todo el
+   contenido, sin el padding de las secciones de texto. */
+.class-content--desktop { height:100%; min-height:0; padding:0; overflow:hidden; }
+
 /* Fallback de la sección en carga diferida; el CSS del calendario aún no está. */
 .class-section-loading {
   padding:48px 20px;
@@ -22,4 +26,5 @@
 
 @media (max-width: 720px) {
   .class-content { padding:16px 16px 24px; }
+  .class-content--desktop { padding:0; }
 }

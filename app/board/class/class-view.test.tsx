@@ -33,7 +33,7 @@ const kanban: ComponentProps<typeof KanbanView> = {
   progress: 0,
 };
 
-const mochilaProps = { role: "student" as const, projectId: "p1", onOpenApp: vi.fn() };
+const mochilaProps = { role: "student" as const, projectId: "p1" };
 
 describe("ClassView", () => {
   it("muestra Tareas como sección activa y el tablero actual", () => {
