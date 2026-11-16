@@ -59,7 +59,7 @@ export default function BoardHeader({
 
   return (
     <header className="topbar">
-      <div className={`shell topbar-inner${activeProject ? "" : " no-project"}`}>
+      <div className={`topbar-inner${activeProject ? "" : " no-project"}`}>
         <div className="topbar-brand">
           <span className="wordmark"><span className="brand-icon" aria-hidden><Columns3 size={24} strokeWidth={2.4} /></span><span className="brand-text"><span>Aula Kanban</span><small className="brand-meta">v{appVersion} - {appAuthor}</small></span></span>
         </div>
