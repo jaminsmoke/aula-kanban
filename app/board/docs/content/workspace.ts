@@ -60,7 +60,7 @@ export const workspaceSections: DocSection[] = [
         type: "definitions",
         items: [
           { term: "Excalidraw (1.0.0)", text: "Pizarra del espacio de trabajo del proyecto, independiente de la pizarra de cada tarea. Se guarda en el proyecto y se comparte en directo: el alumnado y las cuentas invitadas la ven en modo lectura, y todos ven el puntero de los demás mientras dibujan." },
-          { term: "Calculadora (1.0.0)", text: "Básica, Científica, Ecuaciones e Historial, con memoria MC/M+/M−/MR, resultado decimal y exacto y ecuaciones por líneas con variables compartidas." },
+          { term: "Calculadora (1.0.0)", text: "Básica, Científica, Ecuaciones e Historial, con memoria MC/M+/M−/MR, resultado decimal y exacto y ecuaciones por líneas con variables compartidas. La primera vez que abres Científica o Ecuaciones se descarga el motor de cálculo: verás «Preparando el motor…» y la precarga se adelanta al enfocar el modo." },
           { term: "Tabla periódica (1.0.0)", text: "Los 118 elementos con búsqueda y filtros por categoría y bloque; cada ficha incluye Ficha, Descripción e Historia, y modelo atómico animado." },
           { term: "Programación por bloques (1.0.0)", text: "Editor de bloques con «Guardar», «Cargar», «Ejemplo», «Descargar», «Limpiar» y «Código»: genera el programa en JavaScript o Python, permite ejecutarlo y copiarlo. Se guarda por proyecto en la base de datos; las cuentas invitadas solo pueden consultarlo." },
           { term: "Diagramas (1.0.0)", text: "Escribes el diagrama en texto y ves la vista previa al instante, con plantillas listas. «Guardar» y «Cargar» trabajan por proyecto en la base de datos, y «Exportar SVG» descarga la imagen." },

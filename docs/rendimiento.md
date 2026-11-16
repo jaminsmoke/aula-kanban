@@ -36,19 +36,19 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 
 | Flujo | Bruto | Gzip | Presupuesto vigente | Archivos |
 |---|---:|---:|---:|---:|
-| Tablero | 558,1 KiB | 166,2 KiB (170.154 B) | 175.656 B | 28 |
-| Calculadora · abrir Básica | 432,2 KiB | 128,9 KiB (131.984 B) | 150.827 B | 16 |
-| Calculadora · primer `=` en Básica | 432,2 KiB | 128,9 KiB (131.984 B) | 150.827 B | 16 |
-| Calculadora · Científica/Ecuaciones | 6.598,5 KiB | 1.913,8 KiB (1.959.729 B) | 2.069.960 B | 18 |
-| Diagramas · flujo inicial | 1.139,7 KiB | 309,1 KiB (316.509 B) | 331.923 B | 42 |
-| Diagramas · con ELK | 2.578,4 KiB | 750,3 KiB (768.263 B) | 806.262 B | 40 |
-| Tienda · abrir | 523,7 KiB | 163,8 KiB (167.713 B) | 174.779 B | 20 |
-| Pizarra · abrir | 3.437,0 KiB | 1.213,3 KiB (1.242.436 B) | 1.348.890 B | 21 |
-| Pizarra · conversión Mermaid | 4.200,9 KiB | 1.410,6 KiB (1.444.450 B) | 1.560.999 B | 48 |
-| Blockly · abrir | 1.150,1 KiB | 321,8 KiB (329.553 B) | 345.631 B | 17 |
-| Blockly · panel de código | 1.284,3 KiB | 356,8 KiB (365.404 B) | 383.275 B | 20 |
+| Tablero | 561,1 KiB | 166,7 KiB (170.713 B) | 175.656 B | 28 |
+| Calculadora · abrir Básica | 435,3 KiB | 129,5 KiB (132.617 B) | 150.827 B | 16 |
+| Calculadora · primer `=` en Básica | 435,3 KiB | 129,5 KiB (132.617 B) | 150.827 B | 16 |
+| Calculadora · Científica/Ecuaciones | 6.601,6 KiB | 1.914,4 KiB (1.960.363 B) | 2.069.960 B | 18 |
+| Diagramas · flujo inicial | 1.141,5 KiB | 309,3 KiB (316.683 B) | 331.923 B | 42 |
+| Diagramas · con ELK | 2.580,2 KiB | 750,4 KiB (768.431 B) | 806.262 B | 40 |
+| Tienda · abrir | 525,7 KiB | 164,0 KiB (167.926 B) | 174.779 B | 20 |
+| Pizarra · abrir | 3.438,8 KiB | 1.213,5 KiB (1.242.609 B) | 1.348.890 B | 21 |
+| Pizarra · conversión Mermaid | 4.202,7 KiB | 1.410,8 KiB (1.444.615 B) | 1.560.999 B | 48 |
+| Blockly · abrir | 1.151,9 KiB | 322,0 KiB (329.717 B) | 345.631 B | 17 |
+| Blockly · panel de código | 1.286,1 KiB | 357,0 KiB (365.568 B) | 383.275 B | 20 |
 
-Línea base regenerada el 2026-11-16 con la build de cierre de APP-02. La raíz de los flujos de la calculadora es `app/board/apps/calculadora/calculadora-app.tsx`; la Tienda sigue midiendo desde `app/board/store/store-desktop.tsx` y las secciones «Cambio de fase 2» y «Cambio de fase 3» conservan las cifras históricas de sus mediciones.
+Línea base regenerada el 2026-11-16 con la build de cierre de PROMO-06. La raíz de los flujos de la calculadora es `app/board/apps/calculadora/calculadora-app.tsx`; la Tienda sigue midiendo desde `app/board/store/store-desktop.tsx` y las secciones «Cambio de fase 2», «Cambio de fase 3» y «Cambio PROMO-06» conservan las cifras históricas de sus mediciones.
 
 Los totales incluyen el framework y la entrada compartida. La comparación útil es entre flujos del mismo informe, no contra una medición externa con otra build.
 
@@ -77,10 +77,17 @@ Medición sobre `npm start` (build servida), Chrome headless, red **Fast 3G** (1
 
 | Modo | Apertura (mediana) | Primer resultado (mediana) | Total (mediana) | Motor |
 |---|---:|---:|---:|---|
-| Básica | 3.409,4 ms | 125,9 ms | 3.535,7 ms | No |
-| Científica | 3.368,2 ms | 9.657,4 ms | 13.051,2 ms | Sí |
+| Básica | 3.442,6 ms | 147,8 ms | 3.594,9 ms | No |
+| Científica | 3.416,9 ms | 9.685,4 ms | 13.124,3 ms | Sí |
 
-La apertura es prácticamente la misma en ambos modos (unos 3,4 s). La diferencia de **9.531,5 ms** está en el primer resultado de Científica y coincide con la descarga de `compute-engine`; la Básica no lo solicita. Es una medición local, no una promesa de latencia de producción.
+La apertura es prácticamente la misma en ambos modos (unos 3,4 s). La diferencia de **9.537,6 ms** está en el primer resultado de Científica y coincide con la descarga de `compute-engine`; la Básica no lo solicita. Es una medición local, no una promesa de latencia de producción.
+
+## Cambio PROMO-06
+
+- La calculadora muestra el estado del motor y avisa con «Preparando el motor…» mientras descarga; «Calculando…» sigue apareciendo al evaluar.
+- La precarga se adelanta a la intención: al enfocar o pasar el puntero por Científica/Ecuaciones espera 120 ms; si el último modo fue Científica, empieza al abrir la calculadora. La Básica sigue sin precargar por defecto.
+- Esta medición no refleja esas mejoras: `perf-latency` limpia `localStorage` en cada muestra y pulsa Científica sin simular hover, así que la descarga empieza al cambiar de modo, como antes. El aviso sí se comprobó en navegador con Fast 3G.
+- Se mantiene `@cortex-js/compute-engine` 0.188.0. El subpath `core` importa los mismos chunks grandes y falla 6 pruebas de la calculadora porque no incluye el diccionario LaTeX; `mathjs` ya se descartó por no cubrir LaTeX nativo ni la exactitud simbólica, y un worker no reduciría la descarga.
 
 ## Presupuestos
 

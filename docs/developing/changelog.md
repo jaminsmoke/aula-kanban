@@ -1,10 +1,32 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** PROMO-06 · Primer resultado de la calculadora científica · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-16 — Roadmap PROMO-06 · Primer resultado de la calculadora científica
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- `engine-status.ts` publica `idle | loading | ready | error` y `use-calculator` lo expone; el motor avisa al empezar, al terminar y al fallar, y la precarga ya no deja rechazos sin manejar.
+- La calculadora muestra «Preparando el motor…» mientras descarga (con un retardo visual para no parpadear) y mantiene «Calculando…» al evaluar.
+- La precarga se adelanta a la intención: 120 ms al enfocar o pasar por Científica/Ecuaciones, con cancelación al salir, y al abrir la calculadora si el último modo fue Científica. La Básica sigue sin precargar por defecto.
+- Se evaluó el subpath `core` de `compute-engine`: importa los mismos chunks y falla 6 pruebas por no incluir el diccionario LaTeX, así que se revirtió. Se mantiene el motor completo; `mathjs` ya estaba descartado y un worker no reduce la descarga.
+- `docs/rendimiento.md` recoge la nueva línea base y la decisión; README y ayuda explican el aviso y la precarga.
+
+### Verificación
+
+- Línea base con 5 muestras: Básica **3.442,6 / 147,8 / 3.594,9 ms**; Científica **3.416,9 / 9.685,4 / 13.124,3 ms**. `perf-latency` limpia `localStorage` y no simula hover, así que no mide la precarga por intención ni el modo recordado; el aviso sí se comprobó en navegador con Fast 3G.
+- Suite completa: **156 archivos / 1.149 pruebas**; `tsc`, ESLint, build y `perf:budget` en verde (`tablero` 170.713 B, `basica` 132.617 B, `cientifica` 1.960.363 B gzip).
+- Commits: `4e81069` (roadmap), `6737579` (Fase 1), `9c0b120` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites: el Site sigue en **1.1.32**.
+
+### Seguimiento
+
+- El backlog queda solo con PROMO-01 pausado; no hay roadmap activo. PROMO-01 espera publicar y validar la tarjeta social.
 
 ## 2026-11-16 — Roadmap PROMO-05 · Modo demo sin cuenta, de solo lectura
 
