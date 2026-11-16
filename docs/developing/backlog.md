@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** APP-02 aparcada; PERM-01 pendiente como prerequisito de APP-03; STORE-01, STORE-02 y APP-03 (carpetas) investigadas y pendientes de priorizar
+> **Roadmap:** STORE-01 · Vistas y secciones físicas en Aula Store · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** APP-02 aparcada; PERM-01 pendiente como prerequisito de APP-03; STORE-02, STORE-03 y APP-03 (carpetas) pendientes de priorizar
 
 ---
 
@@ -21,13 +21,13 @@
 - Criterios: licencia de cada fuente verificada y visible en la ficha; formato y peso dentro del presupuesto; atribución correcta (CC BY-NC-SA / CK-12); sin contenido con copyright de editoriales comerciales; pruebas de descarga y lectura en el escritorio personal y en Tienda; decidir cobertura MCP (probablemente fuera de alcance inicial).
 - Dependencias: STORE-01 (taxonomía: las familias conviven con las categorías de apps); APP-03 (si los libros entran en mochila/maletín). No bloquear el resto de la Tienda.
 
-## 2026-11-15 — STORE-01 · Categorías y secciones en la Tienda
+## 2026-11-15 — STORE-03 · Renombrar la taxonomía de categorías de la Tienda
 
-- Contexto: la Tienda filtra hoy por las categorías del catálogo (`Aula`, `Pizarras`, `Programación`, `Diagramas` en `STORE_CATEGORIES` de `lib/native-apps.ts`, con iconos en `store-model.ts`) y por búsqueda e instaladas. Se quiere una taxonomía más orientada a familias de uso, p. ej. Educación, Oficina, Productividad y Programación.
-- Diseño pendiente: decidir si las categorías agrupan apps, familias descargables (STORE-02) o ambas; si la categoría es un campo único por app o admite varias; y qué categorías iniciales se adoptan (las actuales no encajan del todo: «Pizarras» y «Diagramas» son tipos de app, «Aula» es genérica). Revisar el impacto en la ficha de la app (`category` en `lib/native-apps.ts`), los filtros de Aula Store, la cobertura MCP (`docs/Store/mcp-apps.md`) y la documentación de ayuda.
-- Al retomar: definir la taxonomía cerrada (nombre, icono, descripción y apps asignadas), decidir el destino de las categorías actuales y si hay secciones fijas además de filtros.
-- Criterios: cada app visible pertenece a una categoría; filtros con conteos coherentes; sin regresión en búsqueda e instaladas; documentación y catálogo MCP actualizados si cambia el campo.
-- Dependencias: STORE-02 (familias) si la taxonomía las incluye; ninguna para reordenar solo apps.
+- Contexto: STORE-01 crea las secciones físicas con las categorías actuales (`Aula`, `Pizarras`, `Programación`, `Diagramas` en `STORE_CATEGORIES` de `lib/native-apps.ts`). Se valora una taxonomía más orientada a familias de uso, p. ej. Educación, Oficina, Productividad y Programación.
+- Diseño pendiente: decidir si las categorías agrupan apps, familias descargables (STORE-02) o ambas; si la categoría es un campo único por app o admite varias; y qué categorías iniciales se adoptan (las actuales no encajan del todo: «Pizarras» y «Diagramas» son tipos de app, «Aula» es genérica). Revisar el impacto en la ficha de la app (`category` en `lib/native-apps.ts`), las secciones y filtros de Aula Store, la cobertura MCP (`docs/Store/mcp-apps.md`) y la documentación de ayuda.
+- Al retomar: definir la taxonomía cerrada (nombre, icono, descripción y apps asignadas) y decidir el destino de las categorías actuales.
+- Criterios: cada app visible pertenece a una categoría; filtros y secciones con conteos coherentes; sin regresión en búsqueda e instaladas; documentación y catálogo MCP actualizados si cambia el campo.
+- Dependencias: STORE-01 (secciones, ya en roadmap); STORE-02 (familias) si la taxonomía las incluye.
 
 ## 2026-11-15 — APP-03 (seguimiento) · Carpetas e iconos propios en mochila y maletín
 
