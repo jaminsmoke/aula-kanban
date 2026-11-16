@@ -164,6 +164,20 @@ export const appPreferences = sqliteTable("app_preferences", {
   index("app_preferences_user").on(table.projectId, table.userId),
 ]);
 
+// Libros habilitados por proyecto (STORE-04): una fila por proyecto y
+// libro con el que el docente (o un administrador) habilita como herra-
+// mienta en la mochila del alumnado y el maletín docente. La ausencia
+// de fila equivale a «no habilitado». Solo quién es quién: el catálogo
+// de libros vive en código (`lib/books.ts`).
+export const projectBooks = sqliteTable("project_books", {
+  projectId: text("project_id").notNull(),
+  bookId: text("book_id").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+}, (table) => [
+  primaryKey({ columns: [table.projectId, table.bookId] }),
+  index("project_books_book").on(table.bookId),
+]);
+
 // Documentos de las apps nativas: un estado JSON por proyecto y app. Es la
 // forma común de guardar el trabajo de cualquier app que lo necesite.
 export const appDocuments = sqliteTable("app_documents", {

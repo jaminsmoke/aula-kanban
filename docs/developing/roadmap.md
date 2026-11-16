@@ -38,11 +38,13 @@
 
 ## 4. Fases
 
-### Fase 1: Modelo de datos y API de asignación
-- [ ] Migración local de `project_books` (proyecto × libro habilitado).
-- [ ] Endpoints de lectura y guardado con permisos: profesor solo su proyecto; owner/administrador, cualquiera.
-- [ ] Pruebas de modelo y de permisos.
+### Fase 1: Modelo de datos y API de asignación — completada
+- [x] Migración local de `project_books` (proyecto × libro habilitado).
+- [x] Endpoints de lectura y guardado con permisos: profesor solo su proyecto; owner/administrador, cualquiera.
+- [x] Pruebas de modelo y de permisos.
 - **Criterios de aceptación:** un proyecto puede listar y guardar qué libros tiene habilitados; un profesor no puede tocar otro proyecto.
+
+**Implementado (2026-11-16):** tabla `project_books` en `db/schema.ts` con migración `drizzle/0038_crazy_puck.sql` aplicada en local; `lib/server/project-books.ts` (validación de ids de catálogo, lectura con `enabled` y guardado que sustituye el conjunto); ruta `app/api/project-books` (`GET` para cualquier miembro con acceso, `PUT` solo owner/admin/profesor del proyecto, alumnos e invitados 403). Verificado en el navegador: guardado y relectura de habilitados con 200.
 
 ### Fase 2: Pestaña «Herramientas» en Profesores y Alumnos
 - [ ] Toggle «Libros» y selección de títulos (todos o individuales) por proyecto, en cada vista.
