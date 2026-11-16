@@ -66,6 +66,20 @@
 .storage-inventory-status.fila_sin_objeto { background:var(--ui-danger-soft); color:var(--ui-danger-text); }
 .storage-inventory-status.clave_revisar { background:var(--ui-info-soft); color:var(--ui-info-ink); }
 
+/* Permisos (PERM-02): matriz de instancia en solo lectura, pintada desde
+   lib/domain/permisos.ts (la misma fuente que evalúa el servidor). */
+.permissions-list { display:grid; gap:0; margin:0; padding:0; list-style:none; }
+.permissions-row { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:var(--border-width-hairline) solid var(--ui-border-default); }
+.permissions-row > div { flex:1; min-width:0; }
+.permissions-row h3 { margin:0 0 3px; font-size: var(--text-base); }
+.permissions-row p { margin:0; color:var(--ui-text-muted); font-size: var(--text-sm); line-height: var(--leading-normal); }
+.permissions-icon { display:grid; place-items:center; flex:none; width:36px; height:36px; border-radius: var(--radius-sm); background:var(--ui-action-soft); color:var(--ui-action-text); }
+.permissions-row p.permissions-roles { flex:none; max-width:38%; text-align:right; color:var(--ui-text-secondary); font-weight: var(--weight-semibold); }
+@media (max-width: 620px) {
+  .permissions-row { flex-wrap:wrap; }
+  .permissions-row p.permissions-roles { max-width:none; width:100%; margin-left:48px; text-align:left; }
+}
+
 /* Tokens del MCP */
 .token-panel { gap:14px; }
 .token-panel h2 { display:flex; align-items:center; gap:9px; margin:0; font-size: var(--text-4xl); letter-spacing: var(--tracking-tight); }

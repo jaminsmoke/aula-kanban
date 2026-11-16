@@ -2087,6 +2087,7 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
                 "documentacion",
                 "tokens",
                 "administradores",
+                "permisos",
                 "almacenamiento",
               ],
               "type": "string",

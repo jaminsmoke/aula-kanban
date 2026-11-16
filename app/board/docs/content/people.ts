@@ -58,7 +58,7 @@ export const peopleSections: DocSection[] = [
   {
     id: "proyectos",
     title: "Proyectos y ajustes",
-    lead: "El menú del proyecto reúne crear, compartir, gestionar miembros y eliminar. El engranaje de la cabecera abre Ajustes: Cuenta, Apariencia, Documentación, Tokens MCP y, si te corresponde, Administradores y Almacenamiento.",
+    lead: "El menú del proyecto reúne crear, compartir, gestionar miembros y eliminar. El engranaje de la cabecera abre Ajustes: Cuenta, Apariencia, Documentación, Tokens MCP y, si te corresponde, Administradores, Permisos y Almacenamiento.",
     blocks: [
       { type: "image", src: "/capturas/ajustes.webp", alt: "Ajustes de Cuenta con el permiso en la aplicación, el proyecto activo y el rol", caption: "Ajustes > Cuenta: permiso en la aplicación, proyecto activo y rol, con los datos ficticios de la demostración." },
       { type: "paragraph", text: "La cabecera muestra el proyecto activo en «Seleccionar proyecto»: al desplegarlo ves la lista «Proyectos» con una marca en el actual y las acciones de abajo. Cambiar de proyecto cambia de tablero: tareas, fichas y aplicaciones son las de ese proyecto." },

@@ -12,8 +12,8 @@
  *   mochila del alumnado y el maletín docente, APP-03); en
  *   `administracion` es `alumnos` (por defecto),
  *   `profesores` o `tienda`; en `ajustes` es `cuenta | apariencia |
- *   documentacion | tokens | administradores | almacenamiento` (por defecto
- *   `cuenta`). En el resto de vistas no tiene significado y se omite.
+ *   documentacion | tokens | administradores | permisos | almacenamiento`
+ *   (por defecto `cuenta`). En el resto de vistas no tiene significado y se omite.
  *
  * La forma canónica omite los valores por defecto: `/?project=p1` ya es
  * Clase > Tareas, `/?project=p1&view=administracion` ya es Administración >
@@ -40,7 +40,7 @@ export type AdministracionSection = "alumnos" | "profesores" | "tienda";
 export type ClassSection = "tareas" | "calendario" | "mochila";
 
 /** Secciones válidas dentro de Ajustes. */
-export type SettingsSection = "cuenta" | "apariencia" | "documentacion" | "tokens" | "administradores" | "almacenamiento";
+export type SettingsSection = "cuenta" | "apariencia" | "documentacion" | "tokens" | "administradores" | "permisos" | "almacenamiento";
 
 /** Vistas válidas del tablero. */
 export const BOARD_VIEWS: readonly BoardView[] = [
@@ -67,6 +67,7 @@ export const SETTINGS_SECTIONS: readonly SettingsSection[] = [
   "documentacion",
   "tokens",
   "administradores",
+  "permisos",
   "almacenamiento",
 ];
 

@@ -1,12 +1,13 @@
 "use client";
 
 import { Suspense, lazy, useEffect, useState } from "react";
-import { BookOpen, HardDrive, KeyRound, Palette, ShieldCheck, UserRound } from "lucide-react";
+import { BookOpen, HardDrive, KeyRound, Lock, Palette, ShieldCheck, UserRound } from "lucide-react";
 import WorkspaceLayout, { type WorkspaceItem } from "../layout/workspace-layout";
 import type { Project } from "../shared/model";
 import SettingsAccount from "./settings-account";
 import SettingsAdmins from "./settings-admins";
 import SettingsAppearance from "./settings-appearance";
+import SettingsPermissions from "./settings-permissions";
 import SettingsStorage from "./settings-storage";
 import SettingsTokens from "./settings-tokens";
 import "./settings-view.css";
@@ -37,7 +38,7 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, activ
   const section = controlledSection ?? innerSection;
   const setSection = onSection ?? setInnerSection;
   const privileged = owner || admin;
-  const restricted = section === "administradores" || section === "almacenamiento";
+  const restricted = section === "administradores" || section === "permisos" || section === "almacenamiento";
   const sections: WorkspaceItem<SettingsSection>[] = [
     { id: "cuenta", label: "Cuenta", icon: UserRound },
     { id: "apariencia", label: "Apariencia", icon: Palette },
@@ -45,6 +46,7 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, activ
     { id: "tokens", label: "Tokens MCP", icon: KeyRound },
     ...(privileged ? [
       { id: "administradores" as const, label: "Administradores", icon: ShieldCheck },
+      { id: "permisos" as const, label: "Permisos", icon: Lock },
       { id: "almacenamiento" as const, label: "Almacenamiento", icon: HardDrive },
     ] : []),
   ];
@@ -76,6 +78,8 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, activ
           <SettingsTokens />
         ) : active === "administradores" ? (
           <SettingsAdmins onProjectsChanged={onProjectsChanged} />
+        ) : active === "permisos" ? (
+          <SettingsPermissions />
         ) : (
           <SettingsStorage />
         )}

@@ -48,10 +48,12 @@
 
 **Implementado (2026-11-16):** `lib/domain/permisos.ts` declara las ocho capacidades (instalación, administradores, proyectos, consulta sin proyecto, libros, miembros, documentos y pizarra) con ámbito, título, descripción, roles globales/proyecto y el indicador `publica` para la consulta sin proyecto; expone `CAPACIDADES`, `definicionCapacidad`, `capacidadesDe` y `capacidadConcedida`. `capabilities.ts` queda como adaptador (resuelve roles y delega en la matriz) y reexporta los tipos. Sin cambios de comportamiento: `capabilities.test.ts` intacto, pruebas nuevas de invariantes (instancia nunca por rol de proyecto, proyecto nunca por rol global suelto, solo la consulta es pública) y `tsc`/ESLint en verde.
 
-### Fase 2: Ajustes > Permisos (instancia)
-- [ ] Añadir `permisos` a `SettingsSection`, `SETTINGS_SECTIONS` y al sidebar de `SettingsView` (mismo patrón `restricted` + corrección de URL con `replaceState`).
-- [ ] Panel de instancia: capacidades globales, quién las posee (dueño y administradores) y enlace a Administradores.
+### Fase 2: Ajustes > Permisos (instancia) — completada
+- [x] Añadir `permisos` a `SettingsSection`, `SETTINGS_SECTIONS` y al sidebar de `SettingsView` (mismo patrón `restricted` + corrección de URL con `replaceState`).
+- [x] Panel de instancia: capacidades globales, quién las posee (dueño y administradores) y nota hacia Administración.
 - **Criterios de aceptación:** `?view=ajustes&section=permisos` abre la sección; una cuenta sin rol global no la ve y su URL se corrige; `obtener_enlace` la acepta con snapshot actualizado.
+
+**Implementado (2026-11-16):** `permisos` en `SettingsSection`/`SETTINGS_SECTIONS` (entre Administradores y Almacenamiento) y entrada con icono `Lock` en el sidebar, restringida a dueño/administración con la misma corrección de URL. Nuevo panel `settings-permissions.tsx` de solo lectura que pinta `capacidadesDe("instancia")` (instalación, administradores, proyectos y consulta sin proyecto) con quién las posee, más notas de no delegación y de ámbito de proyecto. Ayuda actualizada y snapshot del catálogo MCP con `permisos` (una sola línea).
 
 ### Fase 3: Pestaña Permisos en Profesores y Alumnos
 - [ ] Tercera pestaña `miembros | herramientas | permisos` en ambas vistas, con la visibilidad que hoy tiene «Herramientas» (`canManage`/`canTools`).
@@ -76,3 +78,4 @@
 
 - 2026-11-16: el usuario detectó que la Fase 3 de PERM-01 había descartado expresamente las superficies de permisos; esa decisión queda revertida y el trabajo se abre como roadmap PERM-02. La planificación se hace aquí en lugar de duplicarla en el backlog (regla de flujo: lo que entra en el roadmap sale del backlog).
 - 2026-11-16: Fase 1 completada — la matriz vive en `lib/domain/permisos.ts` y `capabilities.ts` solo resuelve roles; 20 pruebas focales, `tsc` y ESLint en verde.
+- 2026-11-16: Fase 2 completada — sección «Permisos» en Ajustes (solo dueño/administración) con la matriz de instancia en solo lectura; `path` de URL y snapshot MCP actualizados.

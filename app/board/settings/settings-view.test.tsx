@@ -55,13 +55,13 @@ afterEach(() => {
 });
 
 describe("SettingsView", () => {
-  it("muestra las seis secciones y separa Tokens de Cuenta", async () => {
+  it("muestra las siete secciones y separa Tokens de Cuenta", async () => {
     const calls = mockRequests();
 
     render(<SettingsView {...props} />);
 
     const navigation = screen.getByRole("navigation", { name: "Secciones de ajustes" });
-    for (const name of ["Cuenta", "Apariencia", "Documentación", "Tokens MCP", "Administradores", "Almacenamiento"]) {
+    for (const name of ["Cuenta", "Apariencia", "Documentación", "Tokens MCP", "Administradores", "Permisos", "Almacenamiento"]) {
       expect(within(navigation).getByRole("button", { name })).toBeTruthy();
     }
     expect(screen.getByRole("button", { name: "Cuenta" }).getAttribute("aria-current")).toBe("page");
@@ -76,6 +76,11 @@ describe("SettingsView", () => {
     await waitFor(() => expect(screen.getByRole("heading", { name: "Administradores" })).toBeTruthy());
     expect(screen.getByRole("button", { name: "Administradores" }).getAttribute("aria-current")).toBe("page");
 
+    fireEvent.click(screen.getByRole("button", { name: "Permisos" }));
+    expect(screen.getByRole("heading", { name: "Permisos" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Permisos" }).getAttribute("aria-current")).toBe("page");
+    expect(screen.getByRole("heading", { name: "Instalar y desinstalar apps" })).toBeTruthy();
+
     fireEvent.click(screen.getByRole("button", { name: "Almacenamiento" }));
     await waitFor(() => expect(screen.getByText("Disponible")).toBeTruthy());
     expect(screen.getByRole("heading", { name: "Almacenamiento de archivos" })).toBeTruthy();
@@ -86,6 +91,7 @@ describe("SettingsView", () => {
     render(<SettingsView {...props} owner={false} admin={false} />);
 
     expect(screen.queryByRole("button", { name: "Administradores" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Permisos" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Almacenamiento" })).toBeNull();
     expect(screen.getByRole("button", { name: "Tokens MCP" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Cuenta" }).getAttribute("aria-current")).toBe("page");
@@ -106,6 +112,18 @@ describe("SettingsView", () => {
     window.history.replaceState({}, "", "/?project=p1&view=ajustes&section=almacenamiento");
 
     render(<SettingsView {...props} owner={false} admin={false} section="almacenamiento" onSection={onSection} />);
+
+    expect(screen.getByRole("heading", { name: "Cuenta" })).toBeTruthy();
+    await waitFor(() => expect(onSection).toHaveBeenCalledWith("cuenta"));
+    expect(window.location.search).toBe("?project=p1&view=ajustes");
+  });
+
+  it("vuelve a Cuenta si Permisos se abre sin permiso", async () => {
+    const onSection = vi.fn();
+    mockRequests();
+    window.history.replaceState({}, "", "/?project=p1&view=ajustes&section=permisos");
+
+    render(<SettingsView {...props} owner={false} admin={false} section="permisos" onSection={onSection} />);
 
     expect(screen.getByRole("heading", { name: "Cuenta" })).toBeTruthy();
     await waitFor(() => expect(onSection).toHaveBeenCalledWith("cuenta"));

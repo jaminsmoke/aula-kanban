@@ -102,7 +102,8 @@ titularidad de Sites sigue fuera de la aplicación.
   Administración > Alumnos, junto a Miembros y Herramientas (roadmap PERM-02),
   con la gestión de miembros existente como parte de la matriz.
 - **Permisos de instancia:** sección «Permisos» del sidebar de Ajustes, junto a
-  Administradores (roadmap PERM-02), solo para dueño y administradores.
+  Administradores (implementada en PERM-02, Fase 2), solo para dueño y
+  administradores.
 - Ambas superficies son de **solo lectura** mientras no exista almacenamiento de
   concesiones individuales: muestran la matriz efectiva desde la misma fuente que
   evalúa el servidor, sin controles que no persistan.
