@@ -54,7 +54,7 @@ En desarrollo, `npm run dev` simula la sesión al visitar `/signin-with-chatgpt`
 
 ## Tienda y Aula Store
 
-La cabecera organiza el trabajo en **Clase** y **Administración** (con Alumnos, Profesores y Tienda en su sidebar), con Clase en su botón de icono y el selector de proyecto a la derecha. **Tienda** es el escritorio de aplicaciones del proyecto; el engranaje abre los **ajustes generales**, con Cuenta, Apariencia, Documentación, Tokens MCP, Administradores y Almacenamiento. Incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, Herramientas de aula, Programación por bloques y Diagramas. Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Tienda no elimina las pizarras de las tareas ni sus datos.
+La cabecera organiza el trabajo en **Clase** y **Administración** (con Alumnos, Profesores y Tienda en su sidebar), con Clase en su botón de icono y el selector de proyecto a la derecha. **Tienda** es el escritorio de aplicaciones del proyecto; el engranaje abre los **ajustes generales**, con Cuenta, Apariencia, Documentación, Tokens MCP, Administradores y Almacenamiento. Incluye Excalidraw, una pizarra colaborativa independiente de las pizarras de las tareas, Calculadora, Tabla periódica, Programación por bloques y Diagramas. Las aplicaciones se instalan **por instancia**: el propietario y los administradores deciden desde Aula Store qué está disponible para todos los proyectos, y el estado se guarda en la tabla `instance_apps`. Desinstalarlas de Tienda no elimina las pizarras de las tareas ni sus datos.
 Dentro de **Clase**, **Tareas** y **Calendario** comparten el mismo tablero: el calendario coloca cada tarea en su fecha de vencimiento, abre la tarea al pulsar su evento y solo se descarga al entrar en la sección.
 
 La lista de aplicaciones integradas, candidatas y descartadas, con licencias y versiones comprobadas, está en [`docs/Store/aplicaciones-nativas.md`](docs/Store/aplicaciones-nativas.md). El índice de documentación y el flujo de roadmap, backlog y changelog están en [`docs/README.md`](docs/README.md).
@@ -70,7 +70,7 @@ El **plugin de Aula Kanban para Sites** es la vía recomendada para ChatGPT y Co
 La lista siguiente se genera desde `lib/domain/mcp-catalogo.ts`; las dos puertas publican las mismas herramientas y cada descripción incluye un ejemplo de argumentos y su regla de rol.
 
 <!-- inicio catálogo MCP: generado desde lib/domain/mcp-catalogo.ts -->
-**59 herramientas · catálogo `0.27.0`:** 26 de lectura y 33 de escritura; 8 destructivas.
+**59 herramientas · catálogo `0.28.0`:** 26 de lectura y 33 de escritura; 8 destructivas.
 
 **Proyectos**
 
@@ -136,7 +136,7 @@ La lista siguiente se genera desde `lib/domain/mcp-catalogo.ts`; las dos puertas
 - **`leer_pizarra`** — Leer pizarra. Cualquier miembro con acceso al proyecto; la app Excalidraw debe estar instalada.
 - **`guardar_pizarra`** — Guardar pizarra. Profesorado, administración y propietario; el alumnado solo en sus tareas; las cuentas invitadas no escriben. Exige la revisión leída.
 - **`anadir_a_pizarra`** — Añadir a pizarra. Profesorado, administración y propietario; el alumnado solo en sus tareas; las cuentas invitadas no escriben. Exige la revisión leída y conserva la escena existente.
-- **`consultar_elemento`** — Consultar elemento. Cualquier cuenta autenticada; la app Herramientas de aula debe estar instalada. No requiere proyecto.
+- **`consultar_elemento`** — Consultar elemento. Cualquier cuenta autenticada; la app Tabla periódica debe estar instalada. No requiere proyecto.
 - **`leer_programa_bloques`** — Leer programa de bloques. Cualquier miembro con acceso al proyecto; la app Blockly debe estar instalada.
 - **`guardar_programa_bloques`** — Guardar programa de bloques. Cualquier miembro con acceso al proyecto; las cuentas invitadas no escriben. No hay revisión optimista: la última escritura gana.
 - **`leer_diagrama`** — Leer diagrama. Cualquier miembro con acceso al proyecto; la app Diagramas debe estar instalada.

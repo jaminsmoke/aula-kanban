@@ -72,21 +72,21 @@ const FLOWS = [
   },
   {
     id: "basica",
-    label: "Herramientas de aula · abrir Básica",
-    roots: ["app/board/apps/edu-tools/edu-tools-app.tsx"],
+    label: "Calculadora · abrir Básica",
+    roots: ["app/board/apps/calculadora/calculadora-app.tsx"],
   },
   {
     id: "basica-evalua",
-    label: "Herramientas de aula · primer = en Básica",
-    roots: ["app/board/apps/edu-tools/edu-tools-app.tsx"],
+    label: "Calculadora · primer = en Básica",
+    roots: ["app/board/apps/calculadora/calculadora-app.tsx"],
   },
   {
     id: "cientifica",
-    label: "Herramientas de aula · Científica/Ecuaciones",
+    label: "Calculadora · Científica/Ecuaciones",
     roots: [
-      "app/board/apps/edu-tools/edu-tools-app.tsx",
+      "app/board/apps/calculadora/calculadora-app.tsx",
       "node_modules/@cortex-js/compute-engine/dist/esm-min/compute-engine.js",
-      "app/board/apps/edu-tools/calculator/multi-equation.tsx",
+      "app/board/apps/calculadora/calculator/multi-equation.tsx",
     ],
   },
   {

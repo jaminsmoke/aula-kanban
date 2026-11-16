@@ -21,8 +21,8 @@ type AppView = {
   subcategoria: string;
   tagline: string;
   appVersion: string;
-  paquete: string;
-  versionPaquete: string;
+  paquete: string | null;
+  versionPaquete: string | null;
   estado: string;
   versionInstalada: string | null;
 };
@@ -41,8 +41,8 @@ function vista(meta: NativeAppMeta, estado: AppInstalledState): AppView {
     subcategoria: meta.subcategory,
     tagline: meta.tagline,
     appVersion: meta.appVersion,
-    paquete: meta.upstream.name,
-    versionPaquete: meta.upstream.version,
+    paquete: meta.upstream?.name ?? null,
+    versionPaquete: meta.upstream?.version ?? null,
     estado: estado.status,
     versionInstalada: estado.version,
   };

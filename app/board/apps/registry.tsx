@@ -1,5 +1,5 @@
 import { lazy, type ComponentType } from "react";
-import { Calculator, GitBranch, PencilRuler, Puzzle } from "lucide-react";
+import { Atom, Calculator, GitBranch, PencilRuler, Puzzle } from "lucide-react";
 import { NATIVE_APPS, nativeAppMeta, type NativeAppId } from "../../../lib/native-apps";
 import type { StoreIconProps, StoreRole, StoreTool } from "./types";
 
@@ -10,7 +10,8 @@ const ROLES: StoreRole[] = ["owner", "admin", "teacher", "student", "guest"];
 
 const ICONS: Record<NativeAppId, ComponentType<StoreIconProps>> = {
   excalidraw: PencilRuler,
-  "edu-tools": Calculator,
+  calculadora: Calculator,
+  "tabla-periodica": Atom,
   blockly: Puzzle,
   mermaid: GitBranch,
 };
@@ -19,7 +20,8 @@ const ICONS: Record<NativeAppId, ComponentType<StoreIconProps>> = {
 // primera vez. Añadir una app = crear su carpeta y registrarla aquí.
 const APPS: Record<NativeAppId, ComponentType<StoreAppProps>> = {
   excalidraw: lazy(() => import("./excalidraw/excalidraw-app")),
-  "edu-tools": lazy(() => import("./edu-tools/edu-tools-app")),
+  calculadora: lazy(() => import("./calculadora/calculadora-app")),
+  "tabla-periodica": lazy(() => import("./tabla-periodica/tabla-periodica-app")),
   blockly: lazy(() => import("./blockly/blockly-app")),
   mermaid: lazy(() => import("./mermaid/mermaid-app")),
 };

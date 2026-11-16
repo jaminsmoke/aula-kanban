@@ -207,7 +207,7 @@ El bloque `[data-theme="dark"]` va después de `:root` y solo redefine tokens y 
 | Tracking | `--tracking-tighter` a `--tracking-caps` | Títulos, cuerpo, metadatos y etiquetas en mayúsculas. |
 | Pesos | `--weight-regular` a `--weight-extrabold` | 400, 500, 600, 700 y 800. |
 
-La fase 4 mantiene dos familias —Bricolage Grotesque para display e Instrument Sans para UI— y añade una pila mono para código y datos. El CSS propio usa solo estos tokens; las apps internas (`edu-tools`, `periodic-table`, `blockly` y `mermaid`) conservan su escala compacta como excepción documentada.
+La fase 4 mantiene dos familias —Bricolage Grotesque para display e Instrument Sans para UI— y añade una pila mono para código y datos. El CSS propio usa solo estos tokens; las apps internas (`calculadora`, `tabla-periodica`, `blockly` y `mermaid`) conservan su escala compacta como excepción documentada.
 
 ### Iconografía
 
@@ -226,10 +226,10 @@ Los iconos de lucide usan `strokeWidth={2}`; la marca conserva `2.4` para no per
 
 | Archivo | Tokens locales | Tratamiento |
 |---|---|---|
-| `edu-tools.css` | `--background`, `--card`, `--surface`, `--border`, `--rule` y `--calc-*` | Alias locales de la app, ya derivados de `--ui-*`; no queda ninguna librería externa que los exija. |
+| `edu-base.css`, `calculadora.css` y `tabla-periodica.css` | `--background`, `--card`, `--surface`, `--border`, `--rule` y `--calc-*` | Alias locales de las apps, ya derivados de `--ui-*`; no queda ninguna librería externa que los exija. |
 | `docs.css` | `--docs-radius-lg`, `--docs-radius`, `--docs-radius-sm`, `--docs-gap`, `--docs-index-width`, `--docs-art-width` y `--docs-sticky-top` | Solo medidas; los radios ya derivan de `--radius-*` y los colores pasan a `--ui-*`. |
 | `kanban.css` | `--accent` y `--accent-bg` por carril | Se conservan como variables locales, pero ya derivan de `--ui-*`; no queda ningún hexadecimal. |
-| Apps internas | Escala compacta de `edu-tools`, `periodic-table`, `blockly` y `mermaid` | Excepción de fase 4: sus controles densos conservan medidas propias; desde la fase 7.1 sus bordes y radios usan la escala global y desde la fase 6 todos sus colores usan tokens. |
+| Apps internas | Escala compacta de `calculadora`, `tabla-periodica`, `blockly` y `mermaid` | Excepción de fase 4: sus controles densos conservan medidas propias; desde la fase 7.1 sus bordes y radios usan la escala global y desde la fase 6 todos sus colores usan tokens. |
 
 ## 5. Reglas de uso
 

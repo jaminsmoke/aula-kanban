@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Herramientas de aula: calculadora y tabla periódica.
-   Paleta derivada del tema activo del Site y tamaño de ventana.
+   Calculadora: teclado, pantalla, memoria, historial y ecuaciones.
+   La base de la ventana (edu-app, edu-view y edu-card) es compartida.
    ========================================================================== */
 
 .edu-app {
@@ -16,7 +16,7 @@
   /* Las vistas responden al ancho de la ventana, no al del navegador. */
   container-type:inline-size;
   container-name:eduapp;
-  /* Paleta de edu-tools, derivada del tema activo del Site. */
+  /* Paleta local derivada del tema activo del Site. */
   --background:var(--ui-surface-pale);
   --foreground:var(--ui-text-primary);
   --card:var(--ui-surface-raised);
@@ -33,31 +33,7 @@
   --calc-func-foreground:var(--ui-text-strong);
 }
 
-.edu-app-tabs { display:flex; flex:none; gap:4px; padding:8px 10px; overflow-x:auto; background:var(--ui-surface-recessed); border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle); }
-
-.edu-app-tab { flex:none; padding:7px 13px; border:0; border-radius: var(--radius-sm); background:transparent; color:var(--ui-text-secondary); font:inherit; font-size:12.5px; font-weight:650; cursor:pointer; white-space:nowrap; transition:background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
-
-.edu-app-tab:hover { background:color-mix(in srgb, var(--ui-surface-raised) 70%, transparent); }
-
-.edu-app-tab[aria-selected="true"] { background:var(--ui-surface-raised); color:var(--ui-action-text); box-shadow:var(--ui-shadow-control); }
-
-.edu-app-tab:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
-
-.edu-app-body { flex:1 1 auto; min-height:0; display:flex; }
-
-.edu-view { flex:1 1 auto; min-width:0; min-height:0; display:flex; flex-direction:column; gap:14px; padding:16px; overflow:auto; }
-
-.edu-view--fill { align-items:stretch; }
-
-.edu-card { display:flex; flex-direction:column; gap:10px; min-width:0; padding:16px 18px; border:var(--border-width-hairline) solid var(--ui-border-soft); border-radius: var(--radius); background:var(--ui-surface-raised); box-shadow:var(--ui-shadow-card-hover); }
-
-.edu-card-title { margin:0; font-size:13px; font-weight:750; letter-spacing:.01em; color:var(--ui-text-secondary); }
-
-.edu-hint { margin:0; color:var(--ui-text-muted); font-size:12px; line-height:1.45; }
-
 .edu-card--calc { width:min(360px, 100%); align-items:center; text-align:center; }
-
-.edu-card--periodic { flex:1 1 auto; min-height:0; gap:14px; }
 
 /* Calculadora: una sola vista con teclado ampliable. */
 .calc { width:100%; display:flex; flex-direction:column; gap:8px; }
@@ -209,11 +185,6 @@
 
 .multi-eq-hint { flex:1 1 220px; color:var(--ui-text-muted); font-size:11.5px; }
 
-@media (max-width: 560px) {
-  .edu-view { padding:12px; }
-  .edu-card { padding:14px; }
-}
-
 /* ==========================================================================
    Responsividad por ancho de ventana (container queries)
    La tabla periódica usa breakpoints de viewport, que no sirven dentro de una
@@ -222,19 +193,10 @@
    ========================================================================== */
 
 @container eduapp (max-width: 760px) {
-  .edu-view { padding:10px; gap:10px; }
-  .edu-card { padding:12px 13px; }
-  .edu-card-title { font-size:12px; }
-  .edu-hint { font-size:11.5px; }
   .calc-layout { flex-direction:column; align-items:center; }
   .calc-history, .calc-equations { flex:0 0 auto; width:min(380px, 100%); max-height:240px; }
 }
 
-@container eduapp (max-width: 700px) {
-  .edu-hint { display:none; }
-}
-
 @container eduapp (max-width: 620px) {
-  .edu-app-tab { padding:6px 10px; font-size:12px; }
   .edu-card--calc { width:100%; }
 }

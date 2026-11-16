@@ -27,7 +27,7 @@ export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Pro
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
 export const AULA_STORE_VERSION = "1.0.0";
 
-export const NATIVE_APP_IDS = ["excalidraw", "edu-tools", "blockly", "mermaid"] as const;
+export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid"] as const;
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
 
@@ -52,8 +52,8 @@ export type NativeAppMeta = {
   appVersion: string;
   /** Etiqueta opcional para la versión; por defecto, el nombre de la app. */
   versionLabel?: string;
-  /** Paquete upstream principal y versión instalada. */
-  upstream: NativeAppPackage;
+  /** Paquete upstream principal y versión instalada; ausente en integración propia. */
+  upstream?: NativeAppPackage;
   /** Piezas adicionales que añade nuestra integración. */
   extras?: readonly NativeAppPackage[];
   /** Tamaño inicial de la ventana en Tienda. */
@@ -75,16 +75,28 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     window: { width: 880, height: 560 },
   },
   {
-    id: "edu-tools",
-    name: "Herramientas de aula",
-    tagline: "Calculadora científica con ecuaciones y tabla periódica.",
-    description: "Calculadora con pantalla, modo científico, memoria e historial; ecuaciones por líneas con variables compartidas y tabla periódica en español.",
+    id: "calculadora",
+    name: "Calculadora",
+    tagline: "Científica, con memoria, historial y ecuaciones por líneas.",
+    description: "Calculadora básica y científica con memoria e historial, y ecuaciones por líneas con variables compartidas, con resultado decimal y exacto.",
     categories: ["Educación"],
     subcategory: "Herramientas",
-    cover: "/store/edu-tools.png",
-    features: ["Calculadora básica y científica con memoria e historial", "Ecuaciones por líneas con variables compartidas", "Tabla periódica con ficha, modelo atómico e historia"],
+    cover: "/store/calculadora.svg",
+    features: ["Básica y científica con memoria e historial", "Ecuaciones por líneas con variables compartidas", "Resultado decimal y exacto"],
     appVersion: "1.0.0",
     upstream: { name: "@cortex-js/compute-engine", version: "0.188.0" },
+    window: { width: 1000, height: 720 },
+  },
+  {
+    id: "tabla-periodica",
+    name: "Tabla periódica",
+    tagline: "Los 118 elementos con ficha, modelo atómico e historia.",
+    description: "Tabla periódica en español con búsqueda, filtros por categoría y bloque, ficha del elemento, modelo atómico e historia.",
+    categories: ["Educación"],
+    subcategory: "Herramientas",
+    cover: "/store/tabla-periodica.svg",
+    features: ["Los 118 elementos con búsqueda y filtros", "Ficha, descripción e historia de cada elemento", "Modelo atómico animado"],
+    appVersion: "1.0.0",
     window: { width: 1120, height: 760 },
   },
   {

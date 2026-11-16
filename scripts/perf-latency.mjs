@@ -129,13 +129,13 @@ async function measure(cdp, mode, pageUrl) {
     const loaded = cdp.waitEvent("Page.loadEventFired", timeoutMs).catch(() => null);
     await cdp.send("Page.navigate", { url: pageUrl });
     await loaded;
-    await cdp.waitFor(`[...document.querySelectorAll(".store-tool")].some((button) => button.textContent?.includes("Herramientas de aula"))`, timeoutMs);
+    await cdp.waitFor(`[...document.querySelectorAll(".store-tool")].some((button) => button.textContent?.includes("Calculadora"))`, timeoutMs);
     const opened = await cdp.eval(`(() => {
-      const button = [...document.querySelectorAll(".store-tool")].find((item) => item.textContent?.includes("Herramientas de aula"));
+      const button = [...document.querySelectorAll(".store-tool")].find((item) => item.textContent?.includes("Calculadora"));
       button?.click();
       return !!button;
     })()`);
-    if (!opened) throw new Error("No se encontró el acceso a Herramientas de aula.");
+    if (!opened) throw new Error("No se encontró el acceso a Calculadora.");
     await cdp.waitFor(
       `!!document.querySelector(".calc") && [...document.querySelectorAll(".calc-modes button")].some((button) => button.textContent?.trim() === "Científica")`,
       timeoutMs,

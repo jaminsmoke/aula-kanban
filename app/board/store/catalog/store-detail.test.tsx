@@ -40,13 +40,13 @@ describe("ficha técnica de Aula Store", () => {
     render(<StoreDetail
       tool={{
         ...tool,
-        name: "Herramientas de aula",
+        name: "Tabla periódica",
         upstream: { name: "@cortex-js/compute-engine", version: "0.188.0" },
         extras: [{ name: "blockly", version: "13.4.0" }],
       }}
       {...props}
     />);
-    expect(screen.getByText("Versión de Herramientas de aula")).toBeTruthy();
+    expect(screen.getByText("Versión de Tabla periódica")).toBeTruthy();
     expect(screen.getByText("@cortex-js/compute-engine 0.188.0")).toBeTruthy();
     expect(screen.getByText("Ampliaciones")).toBeTruthy();
     expect(screen.getByText("blockly 13.4.0")).toBeTruthy();
@@ -55,5 +55,10 @@ describe("ficha técnica de Aula Store", () => {
   it("permite una etiqueta de versión distinta del nombre de la app", () => {
     render(<StoreDetail tool={{ ...tool, versionLabel: "EduTools" }} {...props} />);
     expect(screen.getByText("Versión de EduTools")).toBeTruthy();
+  });
+
+  it("omite upstream cuando la integración es propia", () => {
+    render(<StoreDetail tool={{ ...tool, upstream: undefined }} {...props} />);
+    expect(screen.queryByText("Upstream")).toBeNull();
   });
 });

@@ -11,7 +11,7 @@ export const MCP_DOMINIOS = ["Proyectos", "Archivos", "Tareas", "Personas", "Con
 export type McpDominio = (typeof MCP_DOMINIOS)[number];
 
 /** Versión del contrato de herramientas. */
-export const MCP_CATALOG_VERSION = "0.27.0";
+export const MCP_CATALOG_VERSION = "0.28.0";
 
 /** Metadatos de una herramienta del catálogo. */
 export type McpCatalogoEntry = {
@@ -357,7 +357,7 @@ export const MCP_CATALOGO: McpCatalogoEntry[] = [
     domain: "Apps",
     name: "consultar_elemento",
     title: "Consultar elemento",
-    description: "Devuelve la ficha de un elemento de la tabla periódica por símbolo o número atómico. Requiere que Herramientas de aula esté instalada; no necesita proyecto.",
+    description: "Devuelve la ficha de un elemento de la tabla periódica por símbolo o número atómico. Requiere que Tabla periódica esté instalada; no necesita proyecto.",
     scope: "mcp:read",
     annotations: {"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false},
   },

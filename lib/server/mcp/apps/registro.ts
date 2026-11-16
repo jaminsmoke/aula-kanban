@@ -1,9 +1,9 @@
 import type { NativeAppId } from "../../../native-apps";
 import type { McpToolDefinicion } from "../dominios/tipos";
 import { herramientasBlockly } from "./blockly";
-import { herramientasEduTools } from "./edu-tools";
 import { herramientasExcalidraw } from "./excalidraw";
 import { herramientasMermaid } from "./mermaid";
+import { herramientasTablaPeriodica } from "./tabla-periodica";
 
 /**
  * Manifiesto MCP de las apps nativas (MCP-05A).
@@ -25,9 +25,14 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     appId: "excalidraw",
     herramientas: herramientasExcalidraw,
   },
-  "edu-tools": {
-    appId: "edu-tools",
-    herramientas: herramientasEduTools,
+  calculadora: {
+    appId: "calculadora",
+    herramientas: [],
+    pendiente: "La calculadora, su memoria y las ecuaciones viven en el navegador y no tienen estado de servidor.",
+  },
+  "tabla-periodica": {
+    appId: "tabla-periodica",
+    herramientas: herramientasTablaPeriodica,
   },
   blockly: {
     appId: "blockly",

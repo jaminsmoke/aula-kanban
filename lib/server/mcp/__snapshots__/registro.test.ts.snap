@@ -2153,7 +2153,8 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
           "description": "App de Tienda a abrir",
           "enum": [
             "excalidraw",
-            "edu-tools",
+            "calculadora",
+            "tabla-periodica",
             "blockly",
             "mermaid",
           ],
@@ -2405,7 +2406,8 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
           "description": "Id de la app del catálogo",
           "enum": [
             "excalidraw",
-            "edu-tools",
+            "calculadora",
+            "tabla-periodica",
             "blockly",
             "mermaid",
           ],
@@ -2450,7 +2452,8 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
           "description": "Id de la app del catálogo",
           "enum": [
             "excalidraw",
-            "edu-tools",
+            "calculadora",
+            "tabla-periodica",
             "blockly",
             "mermaid",
           ],
@@ -2495,7 +2498,8 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
           "description": "Id de la app del catálogo",
           "enum": [
             "excalidraw",
-            "edu-tools",
+            "calculadora",
+            "tabla-periodica",
             "blockly",
             "mermaid",
           ],
@@ -3318,7 +3322,8 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
           "description": "App de Tienda",
           "enum": [
             "excalidraw",
-            "edu-tools",
+            "calculadora",
+            "tabla-periodica",
             "blockly",
             "mermaid",
           ],
@@ -3380,7 +3385,8 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
           "description": "App de Tienda",
           "enum": [
             "excalidraw",
-            "edu-tools",
+            "calculadora",
+            "tabla-periodica",
             "blockly",
             "mermaid",
           ],
@@ -3442,7 +3448,8 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
           "description": "App de Tienda",
           "enum": [
             "excalidraw",
-            "edu-tools",
+            "calculadora",
+            "tabla-periodica",
             "blockly",
             "mermaid",
           ],
@@ -3504,7 +3511,8 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
           "description": "App de Tienda",
           "enum": [
             "excalidraw",
-            "edu-tools",
+            "calculadora",
+            "tabla-periodica",
             "blockly",
             "mermaid",
           ],

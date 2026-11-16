@@ -1,12 +1,12 @@
 # Cobertura MCP de las apps nativas
 
-Estado de la superficie MCP de las cuatro apps de Aula Store. La fuente de las
+Estado de la superficie MCP de las cinco apps de Aula Store. La fuente de las
 herramientas es `lib/server/mcp/apps/registro.ts`; la instalación y los permisos
 se resuelven con `lib/server/mcp/apps/contrato.ts`.
 
-**Última revisión:** 2026-11-15 · **Catálogo:** `0.27.0` · **59 herramientas**
+**Última revisión:** 2026-11-16 · **Catálogo:** `0.28.0` · **59 herramientas**
 
-**Estado:** MCP-05B, MCP-05D y MCP-05E cerrados; las cuatro apps tienen cobertura MCP.
+**Estado:** MCP-05B, MCP-05C, MCP-05D y MCP-05E cerrados; las cinco apps tienen cobertura MCP.
 
 ## Herramientas comunes
 
@@ -20,7 +20,8 @@ entrada:
   acceso al proyecto y una app instalada; los controles solo actúan sobre las
   pestañas conectadas de la propia cuenta.
 - **Excalidraw (MCP-05B):** `leer_pizarra`, `guardar_pizarra` y `anadir_a_pizarra`. Leer requiere acceso al proyecto; escribir exige revisión y sigue las reglas de la pizarra.
-- **Herramientas de aula (MCP-05C):** `consultar_elemento`.
+- **Calculadora:** sin herramientas MCP; su estado de trabajo vive en el navegador.
+- **Tabla periódica (MCP-05C):** `consultar_elemento`.
 - **Programación por bloques (MCP-05D):** `leer_programa_bloques` y
   `guardar_programa_bloques`. Leer requiere acceso al proyecto; escribir exige
   permiso y los invitados no escriben.
@@ -38,7 +39,8 @@ reglas de cada app.
 | App | Abrir | Ventana | Leer por MCP | Escribir por MCP | Exportar por MCP | Permisos | Límites |
 |---|---|---|---|---|---|---|---|
 | **Excalidraw** (`excalidraw`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_pizarra` | Sí, `guardar_pizarra` y `anadir_a_pizarra` | No; la ventana exporta imagen | Leer: cualquier miembro. Escribir: no invitados; el alumnado solo en pizarras de sus tareas. La ventana de Tienda es de solo lectura para alumnado e invitados. | Snapshot de hasta 2 MB con revisión optimista; `409` con `revisionActual` si cambió. La publicación en vivo admite hasta 1 MB; las escenas mayores se recogen por sondeo. |
-| **Herramientas de aula** (`edu-tools`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `consultar_elemento` | No | No | Cualquier cuenta autenticada, incluidas invitadas y cuentas sin proyecto, si la app está instalada. La consulta no usa proyecto. | Una ficha por llamada entre 118 elementos. No hay estado de trabajo en el servidor; la calculadora y su memoria viven en el navegador. |
+| **Calculadora** (`calculadora`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Cualquier miembro con acceso al proyecto; las cuentas invitadas la usan en local. | Sin estado de servidor: la calculadora, su memoria y su historial viven en el navegador. |
+| **Tabla periódica** (`tabla-periodica`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `consultar_elemento` | No | No | Cualquier cuenta autenticada, incluidas invitadas y cuentas sin proyecto, si la app está instalada. La consulta no usa proyecto. | Una ficha por llamada entre 118 elementos. Los datos de referencia viven en el cliente. |
 | **Programación por bloques** (`blockly`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_programa_bloques` | Sí, `guardar_programa_bloques` | No; la ventana descarga JSON | Lectura: cualquier miembro. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Estado JSON de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. |
 | **Diagramas** (`mermaid`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_diagrama` y `listar_plantillas_diagrama` | Sí, `guardar_diagrama` | No; la ventana exporta SVG | Lectura y plantillas: cualquier miembro con acceso, o cualquier cuenta autenticada para las plantillas si la app está instalada. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Código de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. La validación y el render de Mermaid se quedan en el navegador. |
 
@@ -84,16 +86,16 @@ reglas de cada app.
 - Cobertura funcional cerrada: no quedan huecos MCP para esta app. El resumen
   del roadmap está en el changelog.
 
-### Herramientas de aula — sin entrada nueva
+### Calculadora y Tabla periódica — MCP-05C (completado)
 
-- `consultar_elemento` cubre la única consulta estable de la app.
-- Calculadora y ecuaciones son interactivas, usan `compute-engine` y no
+- `consultar_elemento` cubre la única consulta estable de Tabla periódica.
+- La calculadora y las ecuaciones son interactivas, usan `compute-engine` y no
   tienen estado de servidor. No se trasladan al Worker en este roadmap.
 
 ## Revisión de huecos
 
 - **Instalación y catálogo:** cubiertos por MCP-03.
-- **Abrir y controlar ventanas:** cubiertos por MCP-04 para las cuatro apps.
+- **Abrir y controlar ventanas:** cubiertos por MCP-04 para las cinco apps.
 - **Lectura y escritura de contenido:** MCP-05B, MCP-05D y MCP-05E (completados).
 - **Exportación:** no hay una herramienta dedicada. Excalidraw necesita render
   de imagen; Mermaid necesita render de SVG, aunque `leer_diagrama` ya devuelve

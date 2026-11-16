@@ -55,7 +55,7 @@ Cada ficha de `lib/native-apps.ts` declara:
 
 - `appVersion`: versión de nuestra integración; empieza en `1.0.0`.
 - `versionLabel`: etiqueta opcional para la ficha; si falta, se usa el nombre de la app.
-- `upstream`: paquete principal y versión exacta instalada.
+- `upstream`: paquete principal y versión exacta instalada; opcional si la integración es propia.
 - `extras`: librerías adicionales que añade nuestra integración, si las hay.
 
 La versión de Aula Store vive en `AULA_STORE_VERSION` y se muestra en la cabecera de la tienda. La versión del Site es independiente. La política de incremento y la tabla de versiones están en [`docs/Store/aplicaciones-nativas.md`](../../../docs/Store/aplicaciones-nativas.md#versiones).

@@ -13,6 +13,6 @@ describe("catálogo nativo", () => {
     expect(visibleTools("admin", catalog)).toEqual(catalog);
   });
   it("solo incluye aplicaciones nativas", () => {
-    expect(visibleTools("owner").map(tool => tool.id)).toEqual(["excalidraw", "edu-tools", "blockly", "mermaid"]);
+    expect(visibleTools("owner").map(tool => tool.id)).toEqual(["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid"]);
   });
 });

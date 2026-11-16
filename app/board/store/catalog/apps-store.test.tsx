@@ -42,7 +42,7 @@ describe("Aula Store", () => {
     // Oficina nace vacía, con el aviso «Más adelante».
     expect(screen.getByText("Más adelante: habrá más aplicaciones de Oficina.")).toBeTruthy();
     // Cada app aparece en «Mejores aplicaciones» y en su categoría.
-    for (const name of ["Herramientas de aula", "Programación por bloques", "Diagramas"]) {
+    for (const name of ["Calculadora", "Tabla periódica", "Programación por bloques", "Diagramas"]) {
       expect(screen.getAllByText(name).length).toBeGreaterThan(0);
     }
   });
@@ -78,7 +78,8 @@ describe("Aula Store", () => {
   it("filtra por categoría y abre la ficha de detalle", () => {
     render(<AppsStore {...props} role="owner" />);
     fireEvent.click(screen.getByRole("button", { name: /^Educación/ }));
-    expect(screen.getByText("Herramientas de aula")).toBeTruthy();
+    expect(screen.getByText("Calculadora")).toBeTruthy();
+    expect(screen.getByText("Tabla periódica")).toBeTruthy();
     expect(screen.getByText("Excalidraw")).toBeTruthy();
     expect(screen.queryByText("Programación por bloques")).toBeNull();
     fireEvent.click(screen.getAllByRole("button", { name: /Detalles/ })[0]);

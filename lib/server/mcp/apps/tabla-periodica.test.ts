@@ -4,9 +4,9 @@ const mocks = vi.hoisted(() => ({ resolverAppInstalada: vi.fn() }));
 
 vi.mock("./contrato", () => ({ resolverAppInstalada: mocks.resolverAppInstalada }));
 
-import { herramientasEduTools } from "./edu-tools";
+import { herramientasTablaPeriodica } from "./tabla-periodica";
 
-const tool = herramientasEduTools[0];
+const tool = herramientasTablaPeriodica[0];
 const caller = { userId: "u1", email: "docente@example.com" };
 
 /**
@@ -26,7 +26,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.resolverAppInstalada.mockResolvedValue({
     ok: true,
-    app: { id: "edu-tools", name: "Herramientas de aula" },
+    app: { id: "tabla-periodica", name: "Tabla periódica" },
   });
 });
 
@@ -34,7 +34,7 @@ describe("consultar_elemento", () => {
   it("consulta por símbolo sin distinguir mayúsculas", async () => {
     const body = await consultar({ simbolo: "na" });
     expect(body.elemento).toMatchObject({ numero: 11, simbolo: "Na", nombre: "Sodio" });
-    expect(mocks.resolverAppInstalada).toHaveBeenCalledWith("edu-tools");
+    expect(mocks.resolverAppInstalada).toHaveBeenCalledWith("tabla-periodica");
   });
 
   it("consulta por número atómico", async () => {

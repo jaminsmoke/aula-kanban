@@ -53,12 +53,14 @@
 
 **Implementado (2026-11-16):** el shell queda con dos pestañas, Calculadora y Tabla periódica, con atajos Alt+1 y Alt+2. Se eliminan `measure-tools.tsx`, `use-measure-tools.ts`, `edu-tts.tsx`, `types/edu-tools.d.ts` y sus reglas CSS y pruebas. `@smst/edu-tools` sale de `package.json`, del lock (180 paquetes menos), del import de estilos, de `vitest` y de la documentación; la calculadora conserva `@cortex-js/compute-engine` como upstream. La ayuda, la matriz, MCP y la ficha de la app describen solo las dos vistas. Verificación: 18 pruebas focales, `tsc` y ESLint en verde; suite completa y build en la verificación final de la fase.
 
-### Fase 2: Dos aplicaciones en el catálogo
-- [ ] Añadir `calculadora` y `tabla-periodica` a `NATIVE_APP_IDS` con ficha, categorías, subcategoría, ventana y versión `1.0.0`; `upstream` opcional para la tabla (integración propia).
-- [ ] Crear portadas en `public/store/` e iconos en el registro; ambas entran en `FEATURED_APP_IDS`.
-- [ ] Mover el código a carpetas propias (`apps/calculadora/`, `apps/tabla-periodica/`) y registrar sus componentes lazy.
-- [ ] Declarar la superficie MCP: `consultar_elemento` en `tabla-periodica` y la calculadora con motivo `pendiente`; subir el catálogo a `0.28.0`, actualizar snapshot, matriz y paridad.
+### Fase 2: Dos aplicaciones en el catálogo — completada
+- [x] Añadir `calculadora` y `tabla-periodica` a `NATIVE_APP_IDS` con ficha, categorías, subcategoría, ventana y versión `1.0.0`; `upstream` opcional para la tabla (integración propia).
+- [x] Crear portadas en `public/store/` e iconos en el registro; ambas entran en `FEATURED_APP_IDS`.
+- [x] Mover el código a carpetas propias (`apps/calculadora/`, `apps/tabla-periodica/`) y registrar sus componentes lazy.
+- [x] Declarar la superficie MCP: `consultar_elemento` en `tabla-periodica` y la calculadora con motivo `pendiente`; subir el catálogo a `0.28.0`, actualizar snapshot, matriz y paridad.
 - **Criterios de aceptación:** la Tienda lista cinco apps; cada una abre en su ventana; la ficha de la tabla no atribuye un paquete que no usa; las pruebas de catálogo, registro y MCP están en verde.
+
+**Implementado (2026-11-16):** el catálogo pasa a cinco apps: Excalidraw, Calculadora, Tabla periódica, Programación por bloques y Diagramas. Cada una tiene ficha propia (`1.0.0`), ventana, icono (`Calculator` y `Atom`) y portada SVG en `public/store/`; `upstream` es opcional y la tabla no atribuye ningún paquete. El código se mueve a `apps/calculadora/` y `apps/tabla-periodica/`, con una base CSS compartida y pruebas separadas. MCP declara `consultar_elemento` en `tabla-periodica` y la calculadora con motivo `pendiente`; el catálogo sube a `0.28.0`, con snapshot, matriz, paridad y guía actualizados. `listar_apps` y `obtener_app` devuelven `paquete` y `versionPaquete` nulos para integraciones propias. Verificación: 1.097 pruebas en 141 archivos, `tsc`, ESLint y build en verde.
 
 ### Fase 3: Migración y compatibilidad
 - [ ] Migración local `0039`: si `edu-tools` estaba instalada, insertar `calculadora` y `tabla-periodica` instaladas; si no, ninguna; conservar versión y limpiar la fila vieja.
@@ -87,3 +89,4 @@
 ## 6. Notas de sesión
 
 - 2026-11-16: el usuario decide separar EduTools en Calculadora y Tabla periódica y retirar Medir y Lectura; APP-02 sale del backlog y pasa a roadmap activo. Se confirman el nombre «Tabla periódica», el borrado definitivo de las dos herramientas y el alias temporal de `edu-tools`.
+- 2026-11-16: fase 2 cerrada con cinco apps en el catálogo, carpetas y portadas propias y catálogo MCP `0.28.0`. La tabla no declara upstream; sigue la fase 3 (migración local y alias).

@@ -65,7 +65,8 @@ los de las futuras apps que usen este modelo.
 |---|---|---|---|---|
 | Pizarra Excalidraw | `@excalidraw/excalidraw` 0.18.1 | MIT | ✅ Integrada | Pizarras de tareas, proyecto y Tienda, con sincronización en vivo y superficie MCP de lectura, escritura y adición de formas; instalable desde Aula Store |
 | Programación por bloques | `blockly` 13.4.0 | Apache-2.0 | ✅ Integrada | Caja de herramientas en español, bloques de lógica, bucles, matemáticas, texto, variables y funciones; guardado por proyecto en D1 (`app_documents`), ejemplo inicial, descarga en JSON y **panel de código** JavaScript/Python con copia y **ejecución de JavaScript** (salida, errores y tiempo agotado). Los recursos (`media/`) se sirven desde `public/blockly-media` |
-| Herramientas de aula | Integración propia · `@cortex-js/compute-engine` 0.188.0 | — | ✅ Integrada | **Calculadora** en el centro con chips de modo (Básica / Científica con dos páginas de funciones / Ecuaciones), memoria M+/M−/MR, historial persistente y resultado decimal y exacto; al activar **Ecuaciones** aparece su panel al lado, con varias líneas, variables compartidas, teclado matemático y resultado por fila. **Tabla periódica** propia en español con búsqueda, filtros, modelo atómico animado, descripción e historia. Atajos Alt+1 y Alt+2 |
+| Calculadora | Integración propia · `@cortex-js/compute-engine` 0.188.0 | MIT | ✅ Integrada | Calculadora en el centro con chips de modo (Básica / Científica con dos páginas de funciones / Ecuaciones), memoria M+/M−/MR, historial persistente y resultado decimal y exacto; al activar **Ecuaciones** aparece su panel al lado, con varias líneas, variables compartidas, teclado matemático y resultado por fila |
+| Tabla periódica | Integración propia | — | ✅ Integrada | Tabla periódica propia en español con búsqueda, filtros por categoría y bloque, modelo atómico animado, descripción e historia. No usa paquete upstream |
 | Diagramas | `mermaid` 12.3.0 | MIT | ✅ Integrada | Diagramas de flujo, secuencia, Gantt, clases, estados y líneas de tiempo; editor y vista previa, plantillas, guardado por proyecto en D1 (`app_documents`) y exportación SVG |
 
 ## Versiones
@@ -77,7 +78,7 @@ Cada aplicación y la propia tienda tienen versiones independientes:
 | Site | `package.json` | Cabecera de Aula Kanban |
 | Aula Store | `AULA_STORE_VERSION` en `lib/native-apps.ts` | Cabecera de Aula Store |
 | App | `NativeAppMeta.appVersion` | Ficha de la app |
-| Upstream | `NativeAppMeta.upstream` y `extras` | Ficha de la app |
+| Upstream | `NativeAppMeta.upstream` (opcional) y `extras` | Ficha de la app |
 
 La versión de la app empieza en `1.0.0` y describe **nuestra integración**, no la librería original. La versión upstream se toma del paquete instalado; `lib/native-apps.test.ts` comprueba que coincide con `package-lock.json`.
 
@@ -92,7 +93,8 @@ Aula Store usa la misma política para su propia versión. La versión del Site 
 | App | Versión de la app | Upstream |
 |---|---|---|
 | Excalidraw | `1.0.0` | `@excalidraw/excalidraw 0.18.1` |
-| Herramientas de aula | `1.0.0` | `@cortex-js/compute-engine 0.188.0` |
+| Calculadora | `1.0.0` | `@cortex-js/compute-engine 0.188.0` |
+| Tabla periódica | `1.0.0` | Integración propia |
 | Programación por bloques | `1.0.0` | `blockly 13.4.0` |
 | Diagramas | `1.0.0` | `mermaid 12.3.0` |
 

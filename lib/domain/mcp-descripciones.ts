@@ -110,7 +110,7 @@ export const MCP_ROLES: Record<string, string> = {
   leer_pizarra: "Cualquier miembro con acceso al proyecto; la app Excalidraw debe estar instalada.",
   guardar_pizarra: "Profesorado, administración y propietario; el alumnado solo en sus tareas; las cuentas invitadas no escriben. Exige la revisión leída.",
   anadir_a_pizarra: "Profesorado, administración y propietario; el alumnado solo en sus tareas; las cuentas invitadas no escriben. Exige la revisión leída y conserva la escena existente.",
-  consultar_elemento: "Cualquier cuenta autenticada; la app Herramientas de aula debe estar instalada. No requiere proyecto.",
+  consultar_elemento: "Cualquier cuenta autenticada; la app Tabla periódica debe estar instalada. No requiere proyecto.",
   leer_programa_bloques: "Cualquier miembro con acceso al proyecto; la app Blockly debe estar instalada.",
   guardar_programa_bloques: "Cualquier miembro con acceso al proyecto; las cuentas invitadas no escriben. No hay revisión optimista: la última escritura gana.",
   leer_diagrama: "Cualquier miembro con acceso al proyecto; la app Diagramas debe estar instalada.",

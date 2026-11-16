@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Portada de Tabla periódica">
+  <defs>
+    <linearGradient id="tabla-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e8f7f3"/>
+      <stop offset="1" stop-color="#cfeee5"/>
+    </linearGradient>
+    <linearGradient id="tabla-accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2f8f7c"/>
+      <stop offset="1" stop-color="#1d6b5c"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#tabla-bg)"/>
+  <circle cx="1090" cy="600" r="230" fill="#a8ded0" opacity=".5"/>
+  <circle cx="80" cy="80" r="170" fill="#ffffff" opacity=".35"/>
+  <g font-family="Instrument Sans, system-ui, sans-serif">
+    <text x="86" y="250" fill="#123f36" font-size="66" font-weight="700">Tabla periódica</text>
+    <text x="88" y="306" fill="#356b60" font-size="28">Los 118 elementos con ficha,</text>
+    <text x="88" y="352" fill="#356b60" font-size="28">modelo atómico e historia</text>
+    <g transform="translate(88 408)">
+      <rect width="262" height="52" rx="26" fill="#ffffff" opacity=".8"/>
+      <text x="24" y="34" fill="#245c50" font-size="20" font-weight="600">Busca, filtra y explora</text>
+    </g>
+  </g>
+  <g transform="translate(646 120) rotate(-3 220 220)" font-family="Instrument Sans, system-ui, sans-serif">
+    <g fill="#ffffff" stroke="#b9dfd6" stroke-width="3">
+      <rect x="0" y="0" width="96" height="96" rx="18"/><rect x="108" y="0" width="96" height="96" rx="18"/>
+      <rect x="216" y="0" width="96" height="96" rx="18"/><rect x="324" y="0" width="96" height="96" rx="18"/>
+      <rect x="0" y="108" width="96" height="96" rx="18"/><rect x="108" y="108" width="96" height="96" rx="18"/>
+      <rect x="216" y="108" width="96" height="96" rx="18"/><rect x="324" y="108" width="96" height="96" rx="18"/>
+      <rect x="0" y="216" width="96" height="96" rx="18"/><rect x="108" y="216" width="96" height="96" rx="18"/>
+      <rect x="216" y="216" width="96" height="96" rx="18"/><rect x="324" y="216" width="96" height="96" rx="18"/>
+      <rect x="0" y="324" width="96" height="96" rx="18"/><rect x="108" y="324" width="96" height="96" rx="18"/>
+      <rect x="216" y="324" width="96" height="96" rx="18"/><rect x="324" y="324" width="96" height="96" rx="18"/>
+    </g>
+    <rect x="108" y="108" width="96" height="96" rx="18" fill="url(#tabla-accent)"/>
+    <g font-size="36" font-weight="700" text-anchor="middle" fill="#173f36">
+      <text x="48" y="62">H</text><text x="156" y="62">Na</text><text x="264" y="62">Fe</text><text x="372" y="62">O</text>
+      <text x="48" y="170">C</text><text x="264" y="170">Au</text><text x="372" y="170">Ag</text>
+      <text x="48" y="278">N</text><text x="156" y="278">Mg</text><text x="264" y="278">Ca</text><text x="372" y="278">Cl</text>
+      <text x="48" y="386">Si</text><text x="156" y="386">Cu</text><text x="264" y="386">Zn</text><text x="372" y="386">He</text>
+    </g>
+    <text x="156" y="170" font-size="36" font-weight="700" text-anchor="middle" fill="#ffffff">Na</text>
+    <g transform="translate(470 20)">
+      <circle cx="60" cy="60" r="54" fill="none" stroke="#7cc4b3" stroke-width="3"/>
+      <circle cx="60" cy="60" r="34" fill="none" stroke="#7cc4b3" stroke-width="3"/>
+      <circle cx="60" cy="60" r="12" fill="#2f8f7c"/>
+      <circle cx="60" cy="6" r="6" fill="#2f8f7c"/>
+      <circle cx="106" cy="60" r="6" fill="#2f8f7c"/>
+      <circle cx="60" cy="94" r="6" fill="#2f8f7c"/>
+    </g>
+  </g>
+</svg>

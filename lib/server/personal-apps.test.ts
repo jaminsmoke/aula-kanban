@@ -27,9 +27,9 @@ describe("orderPersonalApps", () => {
       { id: "mermaid", favorite: false, position: null, installed: true },
       { id: "blockly", favorite: true, position: 5, installed: true },
       { id: "excalidraw", favorite: true, position: 1, installed: true },
-      { id: "edu-tools", favorite: false, position: 0, installed: true },
+      { id: "calculadora", favorite: false, position: 0, installed: true },
     ]);
-    expect(ordered.map((item) => item.id)).toEqual(["excalidraw", "blockly", "edu-tools", "mermaid"]);
+    expect(ordered.map((item) => item.id)).toEqual(["excalidraw", "blockly", "calculadora", "mermaid"]);
   });
 });
 

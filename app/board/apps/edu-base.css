@@ -1,0 +1,61 @@
+/* ==========================================================================
+   Base compartida por Calculadora y Tabla periódica.
+   Paleta derivada del tema activo del Site y tamaño de ventana.
+   ========================================================================== */
+
+.edu-app {
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  background:var(--ui-surface-hover);
+  color:var(--ui-text-primary);
+  font-family:"Instrument Sans",system-ui,sans-serif;
+  /* Las vistas responden al ancho de la ventana, no al del navegador. */
+  container-type:inline-size;
+  container-name:eduapp;
+  --background:var(--ui-surface-pale);
+  --foreground:var(--ui-text-primary);
+  --card:var(--ui-surface-raised);
+  --surface:var(--ui-surface-hover);
+  --border:var(--ui-border-default);
+  --rule:var(--ui-border-strong);
+  --muted-foreground:var(--ui-text-muted);
+  --accent:var(--ui-action-text);
+  --accent-foreground:var(--ui-text-inverse);
+  --calc-key:var(--ui-action-soft);
+  --calc-operator:var(--ui-action-primary);
+  --calc-operator-foreground:var(--ui-text-inverse);
+  --calc-func:var(--ui-action-soft);
+  --calc-func-foreground:var(--ui-text-strong);
+}
+
+.edu-app-body { flex:1 1 auto; min-height:0; display:flex; }
+
+.edu-view { flex:1 1 auto; min-width:0; min-height:0; display:flex; flex-direction:column; gap:14px; padding:16px; overflow:auto; }
+
+.edu-view--fill { align-items:stretch; }
+
+.edu-card { display:flex; flex-direction:column; gap:10px; min-width:0; padding:16px 18px; border:var(--border-width-hairline) solid var(--ui-border-soft); border-radius: var(--radius); background:var(--ui-surface-raised); box-shadow:var(--ui-shadow-card-hover); }
+
+.edu-card-title { margin:0; font-size:13px; font-weight:750; letter-spacing:.01em; color:var(--ui-text-secondary); }
+
+.edu-hint { margin:0; color:var(--ui-text-muted); font-size:12px; line-height:1.45; }
+
+@media (max-width: 560px) {
+  .edu-view { padding:12px; }
+  .edu-card { padding:14px; }
+}
+
+@container eduapp (max-width: 760px) {
+  .edu-view { padding:10px; gap:10px; }
+  .edu-card { padding:12px 13px; }
+  .edu-card-title { font-size:12px; }
+  .edu-hint { font-size:11.5px; }
+}
+
+@container eduapp (max-width: 700px) {
+  .edu-hint { display:none; }
+}

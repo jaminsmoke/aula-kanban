@@ -11,13 +11,15 @@ const lockfile = JSON.parse(readFileSync("package-lock.json", "utf8")) as Lockfi
 const dependencies = packageJson.dependencies as Record<string, string>;
 
 describe("catálogo de apps nativas", () => {
-  it("declara una versión de la tienda, una de app y una base upstream", () => {
+  it("declara una versión de la tienda, una de app y su base upstream cuando existe", () => {
     expect(AULA_STORE_VERSION).toMatch(/^\d+\.\d+\.\d+$/);
     for (const app of NATIVE_APPS) {
       expect(app.appVersion, `${app.id} no declara versión`).toMatch(/^\d+\.\d+\.\d+$/);
       expect(app.versionLabel ?? app.name, `${app.id} no declara etiqueta de versión`).toBeTruthy();
-      expect(app.upstream.name, `${app.id} no declara paquete upstream`).toBeTruthy();
-      expect(app.upstream.version, `${app.id} no declara versión upstream`).toMatch(/^\d+\.\d+\.\d+$/);
+      if (app.upstream) {
+        expect(app.upstream.name, `${app.id} no declara paquete upstream`).toBeTruthy();
+        expect(app.upstream.version, `${app.id} no declara versión upstream`).toMatch(/^\d+\.\d+\.\d+$/);
+      }
     }
   });
 
@@ -41,6 +43,7 @@ describe("catálogo de apps nativas", () => {
 
   it("mantiene las versiones upstream sincronizadas con package-lock.json", () => {
     for (const app of NATIVE_APPS) {
+      if (!app.upstream) continue;
       for (const dependency of [app.upstream, ...(app.extras ?? [])]) {
         const installed = lockfile.packages[`node_modules/${dependency.name}`]?.version;
         expect(dependencies[dependency.name], `${app.id}: ${dependency.name} no está en package.json`).toBeDefined();

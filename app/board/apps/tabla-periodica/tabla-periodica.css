@@ -1,0 +1,10 @@
+/* ==========================================================================
+   Tabla periódica: la tabla ocupa el alto disponible de la ventana.
+   Los estilos de la cuadrícula y la ficha viven en periodic-table-es.css.
+   ========================================================================== */
+
+.edu-card--periodic { flex:1 1 auto; min-height:0; gap:14px; }
+
+@container eduapp (max-width: 760px) {
+  .edu-card--periodic { gap:10px; }
+}

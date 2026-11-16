@@ -5,7 +5,7 @@ import { resolverAppInstalada } from "./contrato";
 import type { McpToolDefinicion } from "../dominios/tipos";
 
 /**
- * Herramientas MCP de Herramientas de aula (MCP-05C).
+ * Herramientas MCP de Tabla periódica (MCP-05C).
  *
  * La app no guarda estado de trabajo en el servidor: la calculadora, su
  * memoria y la tabla viven en el navegador. La única superficie estable para
@@ -54,7 +54,7 @@ async function consultarElemento(_caller: unknown, args: Record<string, unknown>
     return errorHerramienta("invalid", "Indica exactamente un símbolo o un número atómico.");
   }
 
-  const app = await resolverAppInstalada("edu-tools");
+  const app = await resolverAppInstalada("tabla-periodica");
   if (!app.ok) return app.resultado;
 
   const element = findPeriodicElement(a);
@@ -63,12 +63,12 @@ async function consultarElemento(_caller: unknown, args: Record<string, unknown>
   return payloadResult({ elemento: elementoVista(element) });
 }
 
-/** Herramientas del dominio de apps: Herramientas de aula. */
-export const herramientasEduTools: McpToolDefinicion[] = [
+/** Herramientas del dominio de apps: Tabla periódica. */
+export const herramientasTablaPeriodica: McpToolDefinicion[] = [
   {
     name: "consultar_elemento",
     title: "Consultar elemento",
-    description: "Devuelve la ficha de un elemento de la tabla periódica por símbolo o número atómico. Requiere que Herramientas de aula esté instalada; no necesita proyecto.",
+    description: "Devuelve la ficha de un elemento de la tabla periódica por símbolo o número atómico. Requiere que Tabla periódica esté instalada; no necesita proyecto.",
     inputSchema: {
       simbolo: z.string().trim().min(1).max(3).optional().describe("Símbolo químico, por ejemplo Na"),
       numero: z.number().int().min(1).max(118).optional().describe("Número atómico, por ejemplo 11"),

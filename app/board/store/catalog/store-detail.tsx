@@ -41,10 +41,12 @@ export default function StoreDetail({ tool, status, isAdmin, actions, onClose }:
               <dt>Versión de {tool.versionLabel ?? tool.name}</dt>
               <dd>{tool.appVersion}</dd>
             </div>
-            <div>
-              <dt>Upstream</dt>
-              <dd>{tool.upstream.name} {tool.upstream.version}</dd>
-            </div>
+            {tool.upstream ? (
+              <div>
+                <dt>Upstream</dt>
+                <dd>{tool.upstream.name} {tool.upstream.version}</dd>
+              </div>
+            ) : null}
             {tool.extras?.length ? (
               <div>
                 <dt>Ampliaciones</dt>

@@ -45,7 +45,7 @@ export const workspaceSections: DocSection[] = [
         ],
       },
       { type: "note", tone: "info", text: "Cerrar una ventana no borra nada: lo guardado sigue en el proyecto y vuelve a aparecer al abrir la aplicación otra vez." },
-      { type: "image", src: "/capturas/espacio.webp", alt: "Tienda con las cuatro aplicaciones instaladas y el botón de Aula Store", caption: "Tienda con Excalidraw, Herramientas de aula, Programación por bloques y Diagramas instaladas." },
+      { type: "image", src: "/capturas/espacio.webp", alt: "Tienda con las cinco aplicaciones instaladas y el botón de Aula Store", caption: "Tienda con Excalidraw, Calculadora, Tabla periódica, Programación por bloques y Diagramas instaladas." },
       {
         type: "steps",
         items: [
@@ -60,7 +60,8 @@ export const workspaceSections: DocSection[] = [
         type: "definitions",
         items: [
           { term: "Excalidraw (1.0.0)", text: "Pizarra del espacio de trabajo del proyecto, independiente de la pizarra de cada tarea. Se guarda en el proyecto y se comparte en directo: el alumnado y las cuentas invitadas la ven en modo lectura, y todos ven el puntero de los demás mientras dibujan." },
-          { term: "Herramientas de aula (1.0.0)", text: "Dos pestañas: Calculadora (Básica, Científica, Ecuaciones e Historial, con memoria MC/M+/M−/MR) y Tabla periódica (con pestañas Ficha, Descripción e Historia, y modelo atómico del elemento). Atajos Alt+1 y Alt+2." },
+          { term: "Calculadora (1.0.0)", text: "Básica, Científica, Ecuaciones e Historial, con memoria MC/M+/M−/MR, resultado decimal y exacto y ecuaciones por líneas con variables compartidas." },
+          { term: "Tabla periódica (1.0.0)", text: "Los 118 elementos con búsqueda y filtros por categoría y bloque; cada ficha incluye Ficha, Descripción e Historia, y modelo atómico animado." },
           { term: "Programación por bloques (1.0.0)", text: "Editor de bloques con «Guardar», «Cargar», «Ejemplo», «Descargar», «Limpiar» y «Código»: genera el programa en JavaScript o Python, permite ejecutarlo y copiarlo. Se guarda por proyecto en la base de datos; las cuentas invitadas solo pueden consultarlo." },
           { term: "Diagramas (1.0.0)", text: "Escribes el diagrama en texto y ves la vista previa al instante, con plantillas listas. «Guardar» y «Cargar» trabajan por proyecto en la base de datos, y «Exportar SVG» descarga la imagen." },
         ],

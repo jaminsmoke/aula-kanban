@@ -276,7 +276,7 @@ describe("paridad MCP ↔ HTTP", () => {
     const result = await llamar("listar_apps", identidad.owner, {});
     expect(result.isError).toBeUndefined();
     const apps = (result.structuredContent as { apps: Array<{ id: string; estado: string }> }).apps;
-    expect(apps.map((app) => app.id)).toEqual(["excalidraw", "edu-tools", "blockly", "mermaid"]);
+    expect(apps.map((app) => app.id)).toEqual(["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid"]);
     for (const app of apps) {
       expect(["installed", "not_installed"]).toContain(app.estado);
     }

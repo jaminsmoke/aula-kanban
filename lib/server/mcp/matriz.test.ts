@@ -98,7 +98,7 @@ vi.mock("../../../db", () => ({
           { id: "m-t1", projectId, userId: "u-teacher", email: "teacher@example.com", role: "teacher", studentSection: null, teacherId: "t1", status: "active" },
           { id: "m-t2", projectId, userId: "u-other", email: "otro@example.com", role: "teacher", studentSection: null, teacherId: "t2", status: "pending" },
         ]);
-        if (table === instanceAppsTable) return chain([{ appId: "excalidraw", installed: 1, version: "1.0.0" }, { appId: "mermaid", installed: 1, version: "1.0.0" }, { appId: "edu-tools", installed: 1, version: "1.0.0" }, { appId: "blockly", installed: 1, version: "1.0.0" }]);
+        if (table === instanceAppsTable) return chain([{ appId: "excalidraw", installed: 1, version: "1.0.0" }, { appId: "calculadora", installed: 1, version: "1.0.0" }, { appId: "tabla-periodica", installed: 1, version: "1.0.0" }, { appId: "mermaid", installed: 1, version: "1.0.0" }, { appId: "blockly", installed: 1, version: "1.0.0" }]);
         if (table === administratorsTable) return chain([administratorRow]);
         return chain([]);
       },

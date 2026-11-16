@@ -65,15 +65,15 @@ function errorOf(result: { ok: boolean } & Record<string, unknown>) {
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.listInstalledApps.mockResolvedValue([
-    { id: "edu-tools", status: "installed", version: "1.0.0" },
+    { id: "tabla-periodica", status: "installed", version: "1.0.0" },
   ]);
 });
 
 describe("contrato MCP de apps", () => {
   it("acepta una app instalada", async () => {
-    const result = await resolverAppInstalada("edu-tools");
+    const result = await resolverAppInstalada("tabla-periodica");
     expect(result.ok).toBe(true);
-    if (result.ok) expect(result.app.id).toBe("edu-tools");
+    if (result.ok) expect(result.app.id).toBe("tabla-periodica");
   });
 
   it("responde not_found si la app no existe, sin consultar la instalación", async () => {
@@ -83,32 +83,32 @@ describe("contrato MCP de apps", () => {
   });
 
   it("responde not_found si la app existe pero no está instalada", async () => {
-    mocks.listInstalledApps.mockResolvedValue([{ id: "edu-tools", status: "not_installed", version: null }]);
-    const result = await resolverAppInstalada("edu-tools");
+    mocks.listInstalledApps.mockResolvedValue([{ id: "tabla-periodica", status: "not_installed", version: null }]);
+    const result = await resolverAppInstalada("tabla-periodica");
     expect(errorOf(result)).toMatchObject({ codigo: "not_found", estado: 404, mensaje: APP_NO_INSTALADA });
   });
 
   it("devuelve el fallo del proyecto antes de comprobar la app", async () => {
     mocks.resolve.mockResolvedValue({ ok: false, codigo: "forbidden", mensaje: "No tienes acceso a este proyecto." });
-    const result = await resolverAppEnProyecto(caller, { proyectoId: projectId, appId: "edu-tools" });
+    const result = await resolverAppEnProyecto(caller, { proyectoId: projectId, appId: "tabla-periodica" });
     expect(errorOf(result)).toMatchObject({ codigo: "forbidden", estado: 403 });
     expect(mocks.listInstalledApps).not.toHaveBeenCalled();
   });
 
   it("devuelve proyecto, acceso y app cuando todo está resuelto", async () => {
     mocks.resolve.mockResolvedValue({ ok: true, project, access });
-    const result = await resolverAppEnProyecto(caller, { proyectoId: projectId, appId: "edu-tools" });
-    expect(result).toMatchObject({ ok: true, project, access, app: { id: "edu-tools" } });
+    const result = await resolverAppEnProyecto(caller, { proyectoId: projectId, appId: "tabla-periodica" });
+    expect(result).toMatchObject({ ok: true, project, access, app: { id: "tabla-periodica" } });
   });
 
   it("deja leer a un invitado, pero no escribir", async () => {
     const guest = { ...access, role: "guest" as const };
     mocks.resolve.mockResolvedValue({ ok: true, project, access: guest });
 
-    const lectura = await resolverAppEnProyecto(caller, { proyectoId: projectId, appId: "edu-tools" });
+    const lectura = await resolverAppEnProyecto(caller, { proyectoId: projectId, appId: "tabla-periodica" });
     expect(lectura.ok).toBe(true);
 
-    const escritura = await resolverAppEnProyecto(caller, { proyectoId: projectId, appId: "edu-tools", escritura: true });
+    const escritura = await resolverAppEnProyecto(caller, { proyectoId: projectId, appId: "tabla-periodica", escritura: true });
     expect(errorOf(escritura)).toMatchObject({ codigo: "forbidden", estado: 403, mensaje: APP_INVITADO_SIN_ESCRITURA });
   });
 });
