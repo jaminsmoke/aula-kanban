@@ -62,12 +62,14 @@
 
 **Implementado (2026-11-16):** el catálogo pasa a cinco apps: Excalidraw, Calculadora, Tabla periódica, Programación por bloques y Diagramas. Cada una tiene ficha propia (`1.0.0`), ventana, icono (`Calculator` y `Atom`) y portada SVG en `public/store/`; `upstream` es opcional y la tabla no atribuye ningún paquete. El código se mueve a `apps/calculadora/` y `apps/tabla-periodica/`, con una base CSS compartida y pruebas separadas. MCP declara `consultar_elemento` en `tabla-periodica` y la calculadora con motivo `pendiente`; el catálogo sube a `0.28.0`, con snapshot, matriz, paridad y guía actualizados. `listar_apps` y `obtener_app` devuelven `paquete` y `versionPaquete` nulos para integraciones propias. Verificación: 1.097 pruebas en 141 archivos, `tsc`, ESLint y build en verde.
 
-### Fase 3: Migración y compatibilidad
-- [ ] Migración local `0039`: si `edu-tools` estaba instalada, insertar `calculadora` y `tabla-periodica` instaladas; si no, ninguna; conservar versión y limpiar la fila vieja.
-- [ ] Copiar las filas de `app_preferences` de `edu-tools` a los dos ids nuevos, conservando favorito y posición, y retirar las antiguas.
-- [ ] Alias `edu-tools` → `calculadora` en la URL de Tienda y en `abrir_app`; `consultar_elemento` exige `tabla-periodica` instalada.
-- [ ] Pruebas de migración con instalada/no instalada, con y sin preferencias, y ejecución repetida; actualizar la dependencia de APP-03 en el backlog.
+### Fase 3: Migración y compatibilidad — completada
+- [x] Migración local `0039`: si `edu-tools` estaba instalada, insertar `calculadora` y `tabla-periodica` instaladas; si no, ninguna; conservar versión y limpiar la fila vieja.
+- [x] Copiar las filas de `app_preferences` de `edu-tools` a los dos ids nuevos, conservando favorito y posición, y retirar las antiguas.
+- [x] Alias `edu-tools` → `calculadora` en la URL de Tienda y en `abrir_app`; `consultar_elemento` exige `tabla-periodica` instalada.
+- [x] Pruebas de migración con instalada/no instalada, con y sin preferencias, y ejecución repetida; actualizar la dependencia de APP-03 en el backlog.
 - **Criterios de aceptación:** no se pierde ninguna instalación ni preferencia; una app desinstalada no reaparece; la migración se puede ejecutar dos veces sin duplicar filas; el enlace antiguo abre la calculadora.
+
+**Implementado (2026-11-16):** `drizzle/0039_split_edu_tools.sql` usa `INSERT OR IGNORE` para copiar la instalación y las preferencias a `calculadora` y `tabla-periodica` solo si la fila vieja está instalada, conserva `version`, `favorite` y `position`, y retira la fila de `edu-tools`. La repetición no duplica datos ni pisa filas nuevas. Se añaden el snapshot `0039` y cuatro pruebas con instalada/desinstalada, filas nuevas preexistentes y ejecución doble. El alias se centraliza en `normalizeNativeAppId`: la URL y `buildBoardUrl` escriben `calculadora`, `abrir_app` acepta `edu-tools` y devuelve el enlace canónico, y el canal en vivo también resuelve el id viejo. Verificación: 1.104 pruebas en 142 archivos, `tsc`, ESLint y build en verde. La migración no se aplicó en remoto.
 
 ### Fase 4: Verificación y cierre
 - [ ] Suite completa, `tsc`, ESLint, build y `perf:budget` en verde; revisión en navegador a 1366 y 390 px, en claro y oscuro.
@@ -90,3 +92,4 @@
 
 - 2026-11-16: el usuario decide separar EduTools en Calculadora y Tabla periódica y retirar Medir y Lectura; APP-02 sale del backlog y pasa a roadmap activo. Se confirman el nombre «Tabla periódica», el borrado definitivo de las dos herramientas y el alias temporal de `edu-tools`.
 - 2026-11-16: fase 2 cerrada con cinco apps en el catálogo, carpetas y portadas propias y catálogo MCP `0.28.0`. La tabla no declara upstream; sigue la fase 3 (migración local y alias).
+- 2026-11-16: fase 3 cerrada con la migración local `0039`, preferencias copiadas y alias `edu-tools` → `calculadora` en URL, enlaces y MCP. La migración queda sin aplicar en remoto; sigue la fase 4 (verificación y cierre).

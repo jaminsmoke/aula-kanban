@@ -75,7 +75,7 @@ vi.mock("../../../db", () => ({
         };
         if (table === projectsTable) return chain([projectRow]);
         if (table === taskRowsTable) return chain([taskRow]);
-        if (table === instanceAppsTable) return chain([{ appId: "mermaid", installed: 1, version: "1.0.0" }]);
+        if (table === instanceAppsTable) return chain([{ appId: "mermaid", installed: 1, version: "1.0.0" }, { appId: "calculadora", installed: 1, version: "1.0.0" }]);
         return chain([]);
       },
     }),
@@ -246,6 +246,15 @@ describe("paridad MCP ↔ HTTP", () => {
     const enlace = (result.structuredContent as { enlace: string }).enlace;
     expect(enlace).toContain("view=administracion&section=tienda");
     expect(enlace).toContain("app=mermaid");
+  });
+
+  it("abrir_app acepta el alias edu-tools y devuelve el id nuevo", async () => {
+    rolActual = "owner";
+    const result = await llamar("abrir_app", identidad.owner, { proyectoId: projectId, appId: "edu-tools" });
+    expect(result.isError).toBeUndefined();
+    const enlace = (result.structuredContent as { enlace: string }).enlace;
+    expect(enlace).toContain("app=calculadora");
+    expect(enlace).not.toContain("app=edu-tools");
   });
 
   it("ventanas sin pestaña conectada: unavailable con enlace, sin error", async () => {

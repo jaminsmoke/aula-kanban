@@ -29,6 +29,8 @@ entrada:
   `listar_plantillas_diagrama`. Leer y listar plantillas no requieren escritura;
   guardar exige permiso y los invitados no escriben.
 
+`abrir_app` acepta el alias `edu-tools` y lo resuelve como `calculadora`
+durante un ciclo de compatibilidad; los enlaces nuevos usan el id canónico.
 `abrir_app` y `listar_ventanas` son de lectura; cerrar, minimizar, restaurar y
 ampliar son de escritura, pero no destructivas. Los invitados pueden abrir y
 controlar sus propias ventanas; la escritura de contenido de las apps sigue las

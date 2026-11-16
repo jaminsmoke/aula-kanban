@@ -50,6 +50,10 @@ describe("parseBoardUrl", () => {
     expect(parseBoardUrl("?project=p1&view=clase&app=mermaid")).toEqual({ ...defaults, app: null });
   });
 
+  it("resuelve el alias edu-tools como calculadora", () => {
+    expect(parseBoardUrl("?project=p1&view=administracion&section=tienda&app=edu-tools")).toEqual({ ...defaults, view: "administracion", administracionSection: "tienda", app: "calculadora" });
+  });
+
   it("resuelve valores inválidos al defecto de la vista", () => {
     expect(parseBoardUrl("?view=inexistente")).toEqual({ ...defaults, app: null });
     expect(parseBoardUrl("?view=ajustes&section=tareas")).toEqual({ ...defaults, view: "ajustes", app: null });
@@ -76,6 +80,10 @@ describe("buildBoardUrl", () => {
     expect(buildBoardUrl("?project=p1&view=ajustes&section=documentacion", { ...defaults, view: "ajustes", settingsSection: "documentacion" })).toBe("?project=p1&view=ajustes&section=documentacion");
     expect(buildBoardUrl("?project=p1&view=documentacion", { ...defaults, view: "documentacion" })).toBe("?project=p1&view=ajustes&section=documentacion");
     expect(buildBoardUrl("?project=p1&view=ajustes&section=administradores", { ...defaults, view: "administracion" })).toBe("?project=p1&view=administracion");
+  });
+
+  it("escribe el alias de app con su id canónico", () => {
+    expect(buildBoardUrl("?project=p1", { ...defaults, view: "administracion", administracionSection: "tienda", app: "edu-tools" })).toBe("?project=p1&view=administracion&section=tienda&app=calculadora");
   });
 
   it("canoniza las URLs antiguas de alumnado y profesorado", () => {

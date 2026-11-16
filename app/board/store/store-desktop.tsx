@@ -9,6 +9,7 @@ import { AulaStoreIcon } from "./catalog/aula-store-icon";
 // La tienda solo se descarga al abrirla.
 const AppsStore = lazy(() => import("./catalog/apps-store"));
 import { visibleTools, type StoreRole } from "./tools";
+import { normalizeNativeAppId } from "../../../lib/native-apps";
 import { parseBoardUrl } from "../shared/board-url";
 import { useSpaceSocket } from "./use-space-socket";
 import { toolApps } from "../apps/registry";
@@ -83,14 +84,15 @@ export default function StoreDesktop({ role, projectId }: { role: StoreRole; pro
   useEffect(() => {
     return alComando((cmd) => {
       const state = latest.current;
-      const tool = state.desktopTools.find((item) => item.id === cmd.appId);
+      const appId = normalizeNativeAppId(cmd.appId);
+      const tool = state.desktopTools.find((item) => item.id === appId);
       if (!tool) return;
       switch (cmd.accion) {
         case "abrir": state.open(tool); break;
-        case "cerrar": state.close(cmd.appId); break;
-        case "minimizar": state.minimize(cmd.appId); break;
-        case "restaurar": state.restore(cmd.appId); break;
-        case "ampliar": state.zoom(cmd.appId); break;
+        case "cerrar": state.close(appId); break;
+        case "minimizar": state.minimize(appId); break;
+        case "restaurar": state.restore(appId); break;
+        case "ampliar": state.zoom(appId); break;
       }
     });
   }, [alComando]);

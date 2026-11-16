@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getDb } from "../../../../db";
 import { instanceApps, students, tasks as taskRows, teachers, userIdentities } from "../../../../db/schema";
 import { ADMINISTRACION_SECTIONS, BOARD_VIEWS, SETTINGS_SECTIONS, type AdministracionSection, type BoardView, type ClassSection, type SettingsSection } from "../../../domain/board-url";
-import { NATIVE_APP_IDS } from "../../../native-apps";
+import { NATIVE_APP_IDS, normalizeNativeAppId } from "../../../native-apps";
 import { listInstalledApps } from "../../apps";
 import { comandarVentana } from "../../space-control";
 import { isAdministrator, isOwner } from "../../project-access";
@@ -27,6 +27,7 @@ const vistas = z.enum(BOARD_VIEWS as unknown as [BoardView, ...BoardView[]]).des
 const seccionClase = z.enum(["tareas", "calendario"]).describe("Sección dentro de Clase");
 const seccionAjustes = z.enum(SETTINGS_SECTIONS as unknown as [SettingsSection, ...SettingsSection[]]).describe("Sección dentro de Ajustes");
 const seccionAdministracion = z.enum(ADMINISTRACION_SECTIONS as unknown as [AdministracionSection, ...AdministracionSection[]]).describe("Sección dentro de Administración");
+const appIdApertura = z.enum([...NATIVE_APP_IDS, "edu-tools"] as unknown as [string, ...string[]]).describe("App de Tienda a abrir; edu-tools se resuelve como calculadora");
 
 /**
  * Nombre visible de la cuenta: identidad guardada o el correo.
@@ -81,7 +82,7 @@ async function obtenerEnlace(caller: McpCaller, args: Record<string, unknown>) {
   const classSection = (view === "clase" && (a.seccion === "calendario" || a.seccion === "tareas") ? a.seccion : "tareas") as ClassSection;
   const settingsSection = (view === "ajustes" && SETTINGS_SECTIONS.includes(a.seccion as SettingsSection) ? a.seccion : "cuenta") as SettingsSection;
   const administracionSection = (view === "administracion" && ADMINISTRACION_SECTIONS.includes(a.seccion as AdministracionSection) ? a.seccion : "alumnos") as AdministracionSection;
-  return payloadResult({ enlace: enlace(caller.origen, a.proyectoId, view, classSection, settingsSection, a.app, administracionSection) });
+  return payloadResult({ enlace: enlace(caller.origen, a.proyectoId, view, classSection, settingsSection, a.app ? normalizeNativeAppId(a.app) : undefined, administracionSection) });
 }
 
 /**
@@ -93,14 +94,15 @@ async function obtenerEnlace(caller: McpCaller, args: Record<string, unknown>) {
  * @returns El resultado con el enlace o el error del contrato.
  */
 async function abrirApp(caller: McpCaller, args: Record<string, unknown>) {
-  const { proyectoId, appId } = args as { proyectoId: string; appId: string };
+  const { proyectoId, appId: rawAppId } = args as { proyectoId: string; appId: string };
+  const appId = normalizeNativeAppId(rawAppId);
   const resolved = await resolve(toChatGPTUser(caller), proyectoId);
   if (!resolved.ok) return falloResolucion(resolved);
   const instalada = (await listInstalledApps()).some((estado) => estado.id === appId && estado.status === "installed");
   if (!instalada) return errorHerramienta("not_found", "La aplicación no está instalada");
-  const resultado = await comandarVentana(proyectoId, caller.userId, "abrir", appId as string);
+  const resultado = await comandarVentana(proyectoId, caller.userId, "abrir", appId);
   return payloadResult({
-    enlace: enlace(caller.origen, proyectoId, "administracion", "tareas", "cuenta", appId as string, "tienda"),
+    enlace: enlace(caller.origen, proyectoId, "administracion", "tareas", "cuenta", appId, "tienda"),
     ventana_conectada: resultado.conectada,
     ventana_entregada: resultado.entregada,
   });
@@ -193,7 +195,7 @@ export const herramientasContexto: McpToolDefinicion[] = [
     description: "Devuelve la URL absoluta de Tienda con la app indicada abierta (paso A de MCP-04). Falla con not_found si la app no está instalada.",
     inputSchema: {
       proyectoId: projectId,
-      appId: z.enum(NATIVE_APP_IDS as unknown as [string, ...string[]]).describe("App de Tienda a abrir"),
+      appId: appIdApertura,
     },
     outputSchema: { enlace: z.string(), ventana_conectada: z.boolean(), ventana_entregada: z.boolean() },
     scope: "mcp:read",

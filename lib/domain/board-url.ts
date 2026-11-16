@@ -1,3 +1,5 @@
+import { normalizeNativeAppId } from "../native-apps";
+
 /**
  * Esquema de URL del tablero (Fase 1 del roadmap de URLs por vista y sección).
  *
@@ -130,7 +132,8 @@ export function parseBoardUrl(search: string): BoardUrlState {
       ? (rawSection as SettingsSection)
       : DEFAULT_STATE.settingsSection;
 
-  const app = view === "administracion" && administracionSection === "tienda" ? params.get("app") : null;
+  const rawApp = view === "administracion" && administracionSection === "tienda" ? params.get("app") : null;
+  const app = rawApp ? normalizeNativeAppId(rawApp) : null;
   return { view, classSection, settingsSection, administracionSection, app };
 }
 
@@ -167,8 +170,11 @@ export function buildBoardUrl(search: string, state: BoardUrlState): string {
 
   // `app` solo pertenece a Administración > Tienda: fuera de esa sección se
   // retira y, dentro, se reinserta al final para mantener una query estable.
+  // El alias antiguo se escribe ya con su id canónico.
   params.delete("app");
-  if (view === "administracion" && administracionSection === "tienda" && state.app) params.set("app", state.app);
+  if (view === "administracion" && administracionSection === "tienda" && state.app) {
+    params.set("app", normalizeNativeAppId(state.app));
+  }
 
   const query = params.toString();
   return query ? `?${query}` : "";

@@ -31,6 +31,20 @@ export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
 
+/** Alias de ids retirados que se siguen aceptando durante un ciclo. */
+export const LEGACY_NATIVE_APP_ALIASES: Readonly<Record<string, NativeAppId>> = {
+  "edu-tools": "calculadora",
+};
+
+/**
+ * Resuelve un id heredado a su app actual sin tocar los ids válidos.
+ * @param id - Identificador recibido por URL, MCP o canal en vivo.
+ * @returns El id canónico del catálogo o el mismo id si no es un alias.
+ */
+export function normalizeNativeAppId(id: string): string {
+  return LEGACY_NATIVE_APP_ALIASES[id] ?? id;
+}
+
 /** Paquete npm y versión exacta que forma parte de una app. */
 export type NativeAppPackage = {
   name: string;

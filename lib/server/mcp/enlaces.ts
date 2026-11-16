@@ -1,4 +1,5 @@
 import { buildBoardUrl, type AdministracionSection, type BoardUrlState, type BoardView, type ClassSection, type SettingsSection } from "../../domain/board-url";
+import { normalizeNativeAppId } from "../../native-apps";
 
 /**
  * Enlaces canónicos del Site para las respuestas MCP.
@@ -34,7 +35,7 @@ export function enlace(
   let query = buildBoardUrl(`?project=${encodeURIComponent(projectId)}`, state);
   if (app) {
     const params = new URLSearchParams(query.startsWith("?") ? query.slice(1) : query);
-    params.set("app", app);
+    params.set("app", normalizeNativeAppId(app));
     query = `?${params.toString()}`;
   }
   const ruta = `/${query}`;
