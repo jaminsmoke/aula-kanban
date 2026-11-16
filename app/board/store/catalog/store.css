@@ -174,9 +174,12 @@
   background: var(--ui-surface-page);
 }
 .book-viewer {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
-  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
   padding: 12px 16px 16px;
 }
 .book-viewer-note {
@@ -190,6 +193,7 @@
   -webkit-line-clamp: 2;
 }
 .book-viewer-frame {
+  flex: 1 1 auto;
   width: 100%;
   min-height: 0;
   border: var(--border-width-hairline) solid var(--ui-border-default);
