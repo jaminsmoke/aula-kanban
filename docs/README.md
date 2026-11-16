@@ -15,7 +15,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Sin fase activa (reiniciado desde la plantilla) | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | PERM-01 · Matriz y delegación de permisos | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -86,7 +86,8 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap STORE-04 completado:** libros como herramientas asignables por proyecto (pestaña «Herramientas», carpeta «Libros» en mochila/maletín, visor de solo lectura) y retirada de la pestaña de la Tienda; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-04.md`](historial/roadmap-store-04.md).
 - **Roadmap STORE-03A completado:** taxonomía por familias de uso (Educación/Oficina/Productividad) con multi-categoría y subcategorías compartidas, filtros y secciones coherentes, vacíos con «Más adelante» y contrato MCP (`categorias`+`subcategoria`); resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-03a.md`](historial/roadmap-store-03a.md).
 - **Roadmap STORE-03B completado:** barra inferior fija (Todo + categorías) y subcategorías como galerías horizontales con fade en Aula Store; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-03b.md`](historial/roadmap-store-03b.md).
-- **Backlog:** APP-02, PERM-01 (prerequisito pendiente de APP-03), STORE-03 (renombrar taxonomía de Tienda) y carpetas/iconos propios de mochila y maletín (4 entradas).
+- **Roadmap PERM-01 activo:** matriz y delegación de permisos (capacidades con ámbito, roles y concesiones revocables, con control autoritativo de servidor); plan en [`roadmap.md`](developing/roadmap.md).
+- **Backlog:** APP-03 (seguimiento: carpetas e iconos propios de mochila y maletín, pendiente de PERM-01) y APP-02 (aparcada) (2 entradas).
 - **Roadmap UI-07 completado:** Documentación como sección de Ajustes, con URL canónica `view=ajustes&section=documentacion` y alias antiguo, y selector de proyecto en el hueco derecho de la cabecera; revisado en 1366, 1024 y 390. Resumen en [`changelog.md`](developing/changelog.md).
 - **Roadmap UI-05 completado:** estados vacíos de alumnado y profesorado con un componente compartido, selector oculto sin fichas y alta conectada a los diálogos existentes; revisado en 1366 y 390. Resumen en [`changelog.md`](developing/changelog.md); roadmap sin fase activa.
 - **Roadmap UI-04 completado:** Alumnos y Profesores en una sola vista de administración con sidebar, URL canónica `view=administracion` y alias antiguos, revisada en 1366, 1024 y 390. Resumen en [`changelog.md`](developing/changelog.md).
