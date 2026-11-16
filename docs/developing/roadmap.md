@@ -44,12 +44,13 @@
 
 ## 4. Fases
 
-### Fase 1: Datos compartidos y SQL idempotente
-- [ ] Extraer los datos ficticios de `scripts/seed-demo.mjs` a un módulo compartido (`lib/domain/demo-data.ts` o equivalente) con ids fijos para proyecto, alumnos, profesores, tareas, asignaciones, pizarra y documentos.
-- [ ] Añadir un generador (`npm run seed:demo:sql` o `node scripts/seed-demo-sql.mjs`) que escriba un SQL de datos idempotente, limitado al proyecto demo y sin `instance_apps`.
-- [ ] Aplicar el SQL en una D1 local limpia, repetirlo y comprobar que los recuentos no cambian y que un proyecto ajeno permanece intacto.
-- [ ] Mantener `npm run seed:demo` local funcionando con la misma fuente de datos.
+### Fase 1: Datos compartidos y SQL idempotente — completada (2026-11-16)
+- [x] Extraer los datos ficticios de `scripts/seed-demo.mjs` a un módulo compartido (`lib/domain/demo-data.ts` o equivalente) con ids fijos para proyecto, alumnos, profesores, tareas, asignaciones, pizarra y documentos.
+- [x] Añadir un generador (`npm run seed:demo:sql` o `node scripts/seed-demo-sql.mjs`) que escriba un SQL de datos idempotente, limitado al proyecto demo y sin `instance_apps`.
+- [x] Aplicar el SQL en una D1 local limpia, repetirlo y comprobar que los recuentos no cambian y que un proyecto ajeno permanece intacto.
+- [x] Mantener `npm run seed:demo` local funcionando con la misma fuente de datos.
 - **Criterios de aceptación:** el SQL se puede revisar y aplicar dos veces sin duplicar; no escribe en `instance_apps` ni en otros proyectos; el seed local sigue pasando su verificación.
+- **Verificación:** `lib/domain/demo-data.ts` centraliza los datos con ids fijos y `scripts/seed-demo.mjs` los importa; `npm run seed:demo -- --dry-run` sigue respondiendo «sin cambios». `lib/domain/demo-sql.ts` y `scripts/seed-demo-sql.mjs` generan un SQL de 99 líneas con upserts por id, borrado acotado de asignaciones del proyecto demo y sin `INSERT INTO instance_apps`. Sobre una D1 limpia con migraciones y un proyecto ajeno `3333…`, el SQL se aplicó dos veces: quedaron 6 alumnos, 2 profesores, 8 tareas, 15 asignaciones, 1 pizarra y 2 documentos, `instance_apps` siguió vacío y el proyecto ajeno conservó su nombre. 7 pruebas nuevas; suite completa **158 archivos / 1.156 pruebas**, `tsc` y ESLint correctos.
 
 ### Fase 2: Experiencia sin demo y procedimiento autorizado
 - [ ] Hacer que la portada compruebe si el proyecto demo existe y oculte «Probar la demo» cuando falte; `/demo` conserva su página 404 con la explicación.
