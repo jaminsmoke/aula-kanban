@@ -14,7 +14,14 @@ export type BookWithAvailability = BookMeta & {
   available: boolean;
   /** URL interna del archivo con el proyecto, o `null` si no está ingerido. */
   url: string | null;
+  /** URL interna de la imagen de portada, o `null` si aún no se extrajo. */
+  coverUrl: string | null;
+  /** URL interna de la imagen de contraportada, o `null` si aún no se extrajo. */
+  backUrl: string | null;
 };
+
+/** Kinds of book images served from R2. */
+export type BookImageKind = "cover" | "back";
 
 /**
  * Lista el catálogo de libros para la vista Libros, con disponibilidad.
@@ -22,10 +29,13 @@ export type BookWithAvailability = BookMeta & {
  * @returns Las fichas con `available` y `url`.
  */
 export function listBooks(projectId: string): BookWithAvailability[] {
+  const project = encodeURIComponent(projectId);
   return BOOKS.map((book) => ({
     ...book,
     available: book.storageKey !== null,
-    url: book.storageKey ? `/api/books/${book.id}/file?project=${encodeURIComponent(projectId)}` : null,
+    url: book.storageKey ? `/api/books/${book.id}/file?project=${project}` : null,
+    coverUrl: book.coverKey ? `/api/books/${book.id}/image?kind=cover&project=${project}` : null,
+    backUrl: book.backKey ? `/api/books/${book.id}/image?kind=back&project=${project}` : null,
   }));
 }
 
@@ -46,4 +56,25 @@ export async function readBookFile(id: string): Promise<BookFileResult> {
   const object = await env.BUCKET.get(book.storageKey);
   if (!object) return { status: "object_missing" };
   return { status: "ok", book, object };
+}
+
+/** Resultado tipado de intentar leer una imagen de portada. */
+export type BookImageResult =
+  | { status: "ok"; object: R2ObjectBody }
+  | { status: "not_found" | "storage_unavailable" | "object_missing" };
+
+/**
+ * Lee la imagen de portada o contraportada de un libro del catálogo.
+ * @param id - Identificador del libro.
+ * @param kind - Tipo de imagen (`cover` o `back`).
+ * @returns El objeto, o el motivo concreto por el que no se puede servir.
+ */
+export async function readBookImage(id: string, kind: BookImageKind): Promise<BookImageResult> {
+  const book = bookById(id);
+  const storageKey = kind === "cover" ? book?.coverKey : book?.backKey;
+  if (!storageKey) return { status: "not_found" };
+  if (!env.BUCKET) return { status: "storage_unavailable" };
+  const object = await env.BUCKET.get(storageKey);
+  if (!object) return { status: "object_missing" };
+  return { status: "ok", object };
 }

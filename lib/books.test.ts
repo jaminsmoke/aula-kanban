@@ -16,6 +16,9 @@ describe("catálogo de libros", () => {
       // Ingeridos: clave versionada en R2 y versión registrada.
       expect(book.storageKey).toBe(`books/${book.id}/${book.version}.pdf`);
       expect(book.version).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      // Portada y contraportada extraídas de la misma versión.
+      expect(book.coverKey).toBe(`books/${book.id}/${book.version}-cover.jpg`);
+      expect(book.backKey).toBe(`books/${book.id}/${book.version}-back.jpg`);
     }
   });
 

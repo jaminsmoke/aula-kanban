@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element -- Portadas servidas desde R2 con la sesión del proyecto; next/image no puede optimizar rutas autenticadas */
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, LazyMotion, MotionConfig, domAnimation, m } from "motion/react";
@@ -83,14 +84,18 @@ export default function BooksView({ projectId }: { projectId: string }) {
   const shownWindows = configured === null ? windows : windows.filter((item) => byId.has(item.tool.id));
 
   /**
-   * Una tarjeta de libro: icono, título, datos y acciones.
+   * Una tarjeta de libro: portada, título, datos y acciones.
    * @param book - Libro con su disponibilidad y URL.
    * @returns La tarjeta.
    */
   const renderCard = (book: BookWithAvailability) => (
     <article key={book.id} className="book-card">
       <button type="button" className="book-card-cover" onClick={() => setSelectedId(book.id)} aria-label={`Ver detalles de ${book.title}`}>
-        <span className="book-card-icon" aria-hidden><BookOpen size={28} strokeWidth={2} /></span>
+        {book.coverUrl ? (
+          <img src={book.coverUrl} alt={`Portada de ${book.title}`} className="book-card-img" />
+        ) : (
+          <span className="book-card-icon" aria-hidden><BookOpen size={28} strokeWidth={2} /></span>
+        )}
         <span className="store-card-category">{book.level} · {book.course}</span>
       </button>
       <div className="store-card-body">
@@ -195,6 +200,22 @@ export default function BooksView({ projectId }: { projectId: string }) {
                 </div>
               </div>
               <p className="store-detail-description">{selected.description}</p>
+              {(selected.coverUrl || selected.backUrl) ? (
+                <div className="book-detail-covers" aria-label="Portada y contraportada">
+                  {selected.coverUrl ? (
+                    <figure>
+                      <img src={selected.coverUrl} alt={`Portada de ${selected.title}`} />
+                      <figcaption>Portada</figcaption>
+                    </figure>
+                  ) : null}
+                  {selected.backUrl ? (
+                    <figure>
+                      <img src={selected.backUrl} alt={`Contraportada de ${selected.title}`} />
+                      <figcaption>Contraportada</figcaption>
+                    </figure>
+                  ) : null}
+                </div>
+              ) : null}
               <dl className="store-detail-tech" aria-label="Procedencia y licencia">
                 <div>
                   <dt>Fuente</dt>

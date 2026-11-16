@@ -58,6 +58,10 @@ export type BookMeta = {
   version: string | null;
   /** Clave del archivo en R2; `null` hasta la ingesta (Fase 2). */
   storageKey: string | null;
+  /** Clave de la imagen de portada en R2; `null` hasta extraerla. */
+  coverKey: string | null;
+  /** Clave de la imagen de contraportada en R2; `null` hasta extraerla. */
+  backKey: string | null;
 };
 
 const MAREA_VERDE: BookSource = {
@@ -84,6 +88,8 @@ export const BOOKS: readonly BookMeta[] = [
     sizeBytes: 12094989,
     version: "2026-11-16",
     storageKey: "books/eso-matematicas-1/2026-11-16.pdf",
+    coverKey: "books/eso-matematicas-1/2026-11-16-cover.jpg",
+    backKey: "books/eso-matematicas-1/2026-11-16-back.jpg",
   },
   {
     id: "eso-matematicas-2",
@@ -100,6 +106,8 @@ export const BOOKS: readonly BookMeta[] = [
     sizeBytes: 11552118,
     version: "2026-11-16",
     storageKey: "books/eso-matematicas-2/2026-11-16.pdf",
+    coverKey: "books/eso-matematicas-2/2026-11-16-cover.jpg",
+    backKey: "books/eso-matematicas-2/2026-11-16-back.jpg",
   },
   {
     id: "eso-matematicas-3",
@@ -116,6 +124,8 @@ export const BOOKS: readonly BookMeta[] = [
     sizeBytes: 17699845,
     version: "2026-11-16",
     storageKey: "books/eso-matematicas-3/2026-11-16.pdf",
+    coverKey: "books/eso-matematicas-3/2026-11-16-cover.jpg",
+    backKey: "books/eso-matematicas-3/2026-11-16-back.jpg",
   },
   {
     id: "eso-matematicas-4a",
@@ -132,6 +142,8 @@ export const BOOKS: readonly BookMeta[] = [
     sizeBytes: 11176947,
     version: "2026-11-16",
     storageKey: "books/eso-matematicas-4a/2026-11-16.pdf",
+    coverKey: "books/eso-matematicas-4a/2026-11-16-cover.jpg",
+    backKey: "books/eso-matematicas-4a/2026-11-16-back.jpg",
   },
   {
     id: "eso-matematicas-4b",
@@ -148,6 +160,8 @@ export const BOOKS: readonly BookMeta[] = [
     sizeBytes: 32582859,
     version: "2026-11-16",
     storageKey: "books/eso-matematicas-4b/2026-11-16.pdf",
+    coverKey: "books/eso-matematicas-4b/2026-11-16-cover.jpg",
+    backKey: "books/eso-matematicas-4b/2026-11-16-back.jpg",
   },
   {
     id: "bach-matematicas-1",
@@ -164,6 +178,8 @@ export const BOOKS: readonly BookMeta[] = [
     sizeBytes: 15335470,
     version: "2026-11-16",
     storageKey: "books/bach-matematicas-1/2026-11-16.pdf",
+    coverKey: "books/bach-matematicas-1/2026-11-16-cover.jpg",
+    backKey: "books/bach-matematicas-1/2026-11-16-back.jpg",
   },
   {
     id: "bach-matematicas-2",
@@ -180,6 +196,8 @@ export const BOOKS: readonly BookMeta[] = [
     sizeBytes: 13244574,
     version: "2026-11-16",
     storageKey: "books/bach-matematicas-2/2026-11-16.pdf",
+    coverKey: "books/bach-matematicas-2/2026-11-16-cover.jpg",
+    backKey: "books/bach-matematicas-2/2026-11-16-back.jpg",
   },
   {
     id: "bach-sociales-1",
@@ -196,6 +214,8 @@ export const BOOKS: readonly BookMeta[] = [
     sizeBytes: 11160616,
     version: "2026-11-16",
     storageKey: "books/bach-sociales-1/2026-11-16.pdf",
+    coverKey: "books/bach-sociales-1/2026-11-16-cover.jpg",
+    backKey: "books/bach-sociales-1/2026-11-16-back.jpg",
   },
   {
     id: "bach-sociales-2",
@@ -212,6 +232,8 @@ export const BOOKS: readonly BookMeta[] = [
     sizeBytes: 8682942,
     version: "2026-11-16",
     storageKey: "books/bach-sociales-2/2026-11-16.pdf",
+    coverKey: "books/bach-sociales-2/2026-11-16-cover.jpg",
+    backKey: "books/bach-sociales-2/2026-11-16-back.jpg",
   },
   {
     id: "bach-generales",
@@ -228,6 +250,8 @@ export const BOOKS: readonly BookMeta[] = [
     sizeBytes: 13800639,
     version: "2026-11-16",
     storageKey: "books/bach-generales/2026-11-16.pdf",
+    coverKey: "books/bach-generales/2026-11-16-cover.jpg",
+    backKey: "books/bach-generales/2026-11-16-back.jpg",
   },
 ];
 

@@ -10,8 +10,9 @@ salir de Aula Kanban.
 
 La fuente única es [`lib/books.ts`](../../lib/books.ts): cada ficha tiene
 `id`, título, nivel (`ESO`/`Bachillerato`), curso, materia, fuente con su
-URL original, licencia, atribución, formato (`pdf`), tamaño, y
-`storageKey`/`version` de la copia persistida (`null` hasta la ingesta).
+URL original, licencia, atribución, formato (`pdf`), tamaño,
+`storageKey`/`version` de la copia persistida y `coverKey`/`backKey` de
+la portada y la contraportada (`null` hasta la ingesta/extracción).
 
 Cobertura inicial: Matemáticas de **Textos Marea Verde** (CC BY-NC-SA 3.0;
 atribución «Textos Marea Verde (apuntesmareaverde.org.es)»):
@@ -49,6 +50,23 @@ node scripts/ingest-books.mjs <bookId> --remote   # bucket de producción
   junto con el resto del trabajo.
 - `--force` reingiere un libro ya ingerido (nueva versión y nueva clave).
 
+## Portadas y contraportadas
+
+El script [`scripts/extract-book-covers.mjs`](../../scripts/extract-book-covers.mjs)
+rasteriza la página 1 (portada) y la 2 (contraportada legal) del PDF a
+JPEG de 480 px con `scripts/rasterize-pages.py` (PyMuPDF):
+
+```bash
+node scripts/extract-book-covers.mjs <bookId>        # un libro, R2 local
+node scripts/extract-book-covers.mjs --all           # todos los pendientes
+node scripts/extract-book-covers.mjs <bookId> --remote   # bucket de producción
+```
+
+Sube `books/<id>/<versión>-cover.jpg` y `-back.jpg` y marca `coverKey`/
+`backKey` en el catálogo. Sin `--remote` escribe en local; la ingesta
+remota la hace Codex al publicar. La tarjeta de cada libro muestra la
+portada y la ficha de detalle, la portada y la contraportada.
+
 ## Servido
 
 - `GET /api/books?project=…` — catálogo con procedencia y disponibilidad
@@ -56,3 +74,6 @@ node scripts/ingest-books.mjs <bookId> --remote   # bucket de producción
 - `GET /api/books/<id>/file?project=…` — el PDF con su tamaño y caché
   inmutable de un año (clave versionada); 404 si no está ingerido, 503 si
   R2 no está configurado.
+- `GET /api/books/<id>/image?kind=cover|back&project=…` — portada o
+  contraportada JPEG (mismo esquema de errores); `GET /api/books` las
+  incluye como `coverUrl`/`backUrl` cuando están extraídas.

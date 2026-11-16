@@ -12,7 +12,7 @@ vi.mock("cloudflare:workers", () => ({
   },
 }));
 
-import { listBooks, readBookFile } from "./books";
+import { listBooks, readBookFile, readBookImage } from "./books";
 
 describe("listBooks", () => {
   it("marca disponibles solo los libros con clave de almacenamiento", () => {
@@ -22,6 +22,12 @@ describe("listBooks", () => {
       expect(book.available).toBe(book.storageKey !== null);
       expect(book.url).toBe(
         book.storageKey ? `/api/books/${book.id}/file?project=p1` : null,
+      );
+      expect(book.coverUrl).toBe(
+        book.coverKey ? `/api/books/${book.id}/image?kind=cover&project=p1` : null,
+      );
+      expect(book.backUrl).toBe(
+        book.backKey ? `/api/books/${book.id}/image?kind=back&project=p1` : null,
       );
       // La procedencia viaja siempre, esté ingerido o no.
       expect(book.license).toContain("CC BY-NC-SA");
@@ -46,6 +52,16 @@ describe("readBookFile", () => {
     const ingested = listBooks("p1").find((book) => book.available);
     if (!ingested) return;
     expect(await readBookFile(ingested.id)).toEqual({ status: "storage_unavailable" });
+  });
+
+  it("lee la portada de R2 cuando está extraída", async () => {
+    const withCover = listBooks("p1").find((book) => book.coverUrl);
+    if (!withCover) return;
+    const object = { body: "jpg", size: 42 };
+    mocks.bucket = { get: vi.fn(async () => object) };
+    const found = await readBookImage(withCover.id, "cover");
+    expect(mocks.bucket.get).toHaveBeenCalledWith(withCover.coverKey);
+    expect(found.status).toBe("ok");
   });
 
   it("lee el objeto de R2 cuando el libro está ingerido", async () => {

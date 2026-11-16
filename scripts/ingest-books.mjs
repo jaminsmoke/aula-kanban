@@ -59,7 +59,7 @@ function allIds(source) {
 /** Marca la ficha como ingerida con su clave y versión. */
 function patchCatalog(bookId, storageKey, version) {
   const source = catalog();
-  const pattern = new RegExp(`(id: "${bookId}"[\\s\\S]*?)(version: null,\\n(\\s*)storageKey: null,)`);
+  const pattern = new RegExp(`(id: "${bookId}"[\\s\\S]*?)(version: null,\\r?\\n(\\s*)storageKey: null,)`);
   if (!pattern.test(source)) throw new Error(`la ficha ${bookId} ya está ingerida o no tiene el estado pendiente`);
   const next = source.replace(pattern, (_match, head, _tail, indent) => `${head}version: "${version}",\n${indent}storageKey: "${storageKey}",`);
   writeFileSync(catalogPath, next, "utf8");
@@ -117,7 +117,7 @@ async function ingest(bookId) {
   // Si se reingiere con --force, la ficha ya tiene clave: se actualiza la versión.
   const current = catalog();
   if (current.includes(`id: "${bookId}"`) && bookFields(current, bookId).ingested) {
-    const pattern = new RegExp(`(id: "${bookId}"[\\s\\S]*?)version: "[^"]+",\\n(\\s*)storageKey: "[^"]+",`);
+    const pattern = new RegExp(`(id: "${bookId}"[\\s\\S]*?)version: "[^"]+",\\r?\\n(\\s*)storageKey: "[^"]+",`);
     const next = current.replace(pattern, (_match, head, indent) => `${head}version: "${version}",\n${indent}storageKey: "${storageKey}",`);
     writeFileSync(catalogPath, next, "utf8");
   } else {

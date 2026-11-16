@@ -18,8 +18,12 @@ const books = [
     sizeBytes: 12_094_989,
     version: "2026-11-16",
     storageKey: "books/eso-matematicas-1/2026-11-16.pdf",
+    coverKey: "books/eso-matematicas-1/2026-11-16-cover.jpg",
+    backKey: "books/eso-matematicas-1/2026-11-16-back.jpg",
     available: true,
     url: "/api/books/eso-matematicas-1/file?project=p1",
+    coverUrl: "/api/books/eso-matematicas-1/image?kind=cover&project=p1",
+    backUrl: "/api/books/eso-matematicas-1/image?kind=back&project=p1",
   },
   {
     id: "bach-matematicas-1",
@@ -36,8 +40,12 @@ const books = [
     sizeBytes: 15_335_470,
     version: null,
     storageKey: null,
+    coverKey: null,
+    backKey: null,
     available: false,
     url: null,
+    coverUrl: null,
+    backUrl: null,
   },
 ];
 
@@ -54,6 +62,22 @@ describe("BooksView", () => {
     await waitFor(() => expect(screen.getByText("Matemáticas 1º ESO")).toBeTruthy());
     expect(screen.getByRole("region", { name: "Libros de ESO" })).toBeTruthy();
     expect(screen.getByRole("region", { name: "Libros de Bachillerato" })).toBeTruthy();
+  });
+
+  it("muestra la portada en la tarjeta", async () => {
+    render(<BooksView projectId="p1" />);
+    await waitFor(() => expect(screen.getByText("Matemáticas 1º ESO")).toBeTruthy());
+    const cover = screen.getByAltText("Portada de Matemáticas 1º ESO");
+    expect(cover.getAttribute("src")).toBe("/api/books/eso-matematicas-1/image?kind=cover&project=p1");
+  });
+
+  it("muestra portada y contraportada en la ficha", async () => {
+    render(<BooksView projectId="p1" />);
+    await waitFor(() => expect(screen.getByText("Matemáticas 1º ESO")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: /Ver detalles de Matemáticas 1º ESO/ }));
+    const dialog = await screen.findByRole("dialog", { name: "Matemáticas 1º ESO" });
+    expect(within(dialog).getByAltText("Portada de Matemáticas 1º ESO")).toBeTruthy();
+    expect(within(dialog).getByAltText("Contraportada de Matemáticas 1º ESO")).toBeTruthy();
   });
 
   it("muestra la procedencia en la ficha y abre el visor en ventana", async () => {
