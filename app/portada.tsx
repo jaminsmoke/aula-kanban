@@ -145,7 +145,11 @@ export default function Portada({ signInHref }: { signInHref: string }) {
         <footer className="portada-footer">
           <p className="portada-footer-brand"><span className="portada-footer-mark" aria-hidden="true"><i /><i /><i /><i /></span> Aula Kanban</p>
           <p>Cada instancia conserva sus propios proyectos y datos.</p>
-          <a href="/documentacion">Documentación y guía del plugin</a>
+          <nav className="portada-footer-links" aria-label="Enlaces del pie">
+            <a href="/documentacion">Documentación y guía del plugin</a>
+            <a href="/privacidad">Privacidad</a>
+            <a href="/condiciones">Condiciones</a>
+          </nav>
         </footer>
       </div>
     </main>

@@ -636,6 +636,13 @@
 
 .portada-footer a:hover { color: var(--ui-action-text-hover); }
 
+.portada-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 18px;
+}
+
 /* --- Responsive ----------------------------------------------------------- */
 @media (max-width: 1100px) {
   .portada-hero { gap: 36px; }
@@ -713,6 +720,8 @@
   }
 
   .portada-footer p:nth-child(2) { text-align: left; }
+
+  .portada-footer-links { justify-content: flex-start; }
 }
 
 @media (max-width: 420px) {

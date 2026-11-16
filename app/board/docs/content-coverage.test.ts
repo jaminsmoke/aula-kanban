@@ -19,6 +19,8 @@ function textoDe(seccion: DocSection): string {
         return bloque.items;
       case "image":
         return [bloque.alt, bloque.caption];
+      case "links":
+        return bloque.items.map((item) => item.label);
       default:
         return [bloque.text];
     }

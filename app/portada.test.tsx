@@ -24,5 +24,7 @@ describe("Portada", () => {
 
     expect(screen.getByRole("link", { name: "Ver documentación" }).getAttribute("href")).toBe("/documentacion");
     expect(screen.getByRole("link", { name: "Documentación y guía del plugin" }).getAttribute("href")).toBe("/documentacion");
+    expect(screen.getByRole("link", { name: "Privacidad" }).getAttribute("href")).toBe("/privacidad");
+    expect(screen.getByRole("link", { name: "Condiciones" }).getAttribute("href")).toBe("/condiciones");
   });
 });

@@ -56,6 +56,16 @@ export function DocBlockView({ block }: { block: DocBlock }) {
           <code className={`language-${block.language}`}>{block.text}</code>
         </m.pre>
       );
+    case "links":
+      return (
+        <m.ul className="doc-links" variants={revealItem}>
+          {block.items.map((item) => (
+            <m.li key={item.href}>
+              <a href={item.href}>{item.label}</a>
+            </m.li>
+          ))}
+        </m.ul>
+      );
     default:
       return <m.p className="doc-paragraph" variants={revealItem}>{block.text}</m.p>;
   }

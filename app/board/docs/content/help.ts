@@ -115,6 +115,14 @@ export const helpSections: DocSection[] = [
           "Para cambios en el propio Aula Kanban (funciones, textos, correcciones), el canal es Codex: quien gestiona el proyecto puede pedir el cambio allí.",
         ],
       },
+      { type: "paragraph", text: "La privacidad y las condiciones de uso de esta instancia se explican en dos páginas públicas que se abren sin sesión:" },
+      {
+        type: "links",
+        items: [
+          { label: "Privacidad", href: "/privacidad" },
+          { label: "Condiciones de uso", href: "/condiciones" },
+        ],
+      },
       { type: "note", tone: "warning", text: "Nunca pegues contraseñas ni tokens en el chat: si una función pide credenciales, configúralas en el panel de Sites." },
     ],
   },

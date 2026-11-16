@@ -45,13 +45,14 @@
 
 ## 4. Fases
 
-### Fase 1: Páginas legales públicas
-- [ ] Crear `app/privacidad/page.tsx` y `app/condiciones/page.tsx` como componentes de servidor públicos, sin `requireChatGPTUser`, con `metadata` propia y una cabecera mínima con el nombre de la app y el enlace de vuelta a `/`.
-- [ ] Redactar privacidad: identidad recibida de ChatGPT (id, correo y nombre), proyectos y miembros, tareas y asignaciones, alumnos y profesores, archivos en R2, pizarras, documentos de apps, preferencias, tokens MCP/OAuth y registro de auditoría; para qué se usan, dónde viven (D1 y R2 de Cloudflare), cuánto se conservan y cómo se eliminan.
-- [ ] Redactar condiciones: uso aceptable, cuentas y permisos, contenido del alumnado, propiedad del contenido, disponibilidad y límites, y contacto.
-- [ ] Enlazar ambas páginas desde el pie de `app/portada.tsx` y desde `app/board/docs/content/help.ts` (sección «Pedir ayuda» o el pie), con textos claros y sin duplicar la navegación.
-- [ ] Añadir estilos propios con tokens y revisar a 1366, 1024 y 390 px en claro y oscuro.
+### Fase 1: Páginas legales públicas — completada (2026-11-16)
+- [x] Crear `app/privacidad/page.tsx` y `app/condiciones/page.tsx` como componentes de servidor públicos, sin `requireChatGPTUser`, con `metadata` propia y una cabecera mínima con el nombre de la app y el enlace de vuelta a `/`.
+- [x] Redactar privacidad: identidad recibida de ChatGPT (id, correo y nombre), proyectos y miembros, tareas y asignaciones, alumnos y profesores, archivos en R2, pizarras, documentos de apps, preferencias, tokens MCP/OAuth y registro de auditoría; para qué se usan, dónde viven (D1 y R2 de Cloudflare), cuánto se conservan y cómo se eliminan.
+- [x] Redactar condiciones: uso aceptable, cuentas y permisos, contenido del alumnado, propiedad del contenido, disponibilidad y límites, y contacto.
+- [x] Enlazar ambas páginas desde el pie de `app/portada.tsx` y desde `app/board/docs/content/help.ts` (sección «Pedir ayuda» o el pie), con textos claros y sin duplicar la navegación.
+- [x] Añadir estilos propios con tokens y revisar a 1366, 1024 y 390 px en claro y oscuro.
 - **Criterios de aceptación:** `/privacidad` y `/condiciones` responden 200 sin sesión; no llaman a `requireChatGPTUser` ni muestran datos de una cuenta; los enlaces existen en la portada y en la ayuda; la guarda de estilos pasa y hay pruebas de render y de contenido.
+- **Verificación:** ambas rutas responden `200` en el servidor de desarrollo sin sesión y sirven título, descripción y canónica absoluta (`https://aula-kanban.doubleoak32.chatgpt.site/privacidad` y `/condiciones`). Ninguna importa `lib/server/auth`. El componente compartido `app/legal/legal-page.tsx` y su `legal.css` usan solo tokens; se revisaron a 1366, 1024 y 390 px en claro y oscuro sin desbordes. Enlaces en el pie de la portada y en «Pedir ayuda» (nuevo bloque `links` de la ayuda). 11 pruebas nuevas y la guarda de estilos en verde; suite completa **147 archivos / 1.119 pruebas**, `tsc` y ESLint correctos. Contacto legal: `jorgemd@siberia.solutions`.
 
 ### Fase 2: Archivos de rastreo y manifest
 - [ ] `app/robots.ts` → `/robots.txt` con `Allow: /`, `Disallow: /api/`, `/mcp`, `/.well-known/`, `/oauth/` y `/sesion`, y la línea `Sitemap` con la URL absoluta.
@@ -86,3 +87,6 @@
 - 2026-11-16: vinext sirve rutas de metadatos desde `app/robots.ts`, `app/sitemap.ts` y `app/manifest.ts`; el manifest se publica en `/manifest.webmanifest`, no en `/manifest.json`.
 - 2026-11-16: SiberIA Solutions es autónomo, **no** una S.L.; la URL de privacidad es la que se usará al dar de alta el plugin.
 - 2026-11-16: no se publica en Sites ni se cambia la versión `1.1.32` en este roadmap; el cierre es local y el push, único, como en los anteriores.
+- 2026-11-16: contacto legal confirmado por el propietario: `jorgemd@siberia.solutions`; el texto lo usa en privacidad y condiciones.
+- 2026-11-16: la ayuda estrena un bloque `links` (`DocBlock`) para enlazar las dos páginas legales con pastillas; `content-coverage.test.ts` extrae sus etiquetas como texto.
+- 2026-11-16: la privacidad describe esta instancia y recuerda que cada copia o remix tiene su propio responsable; el texto parte del esquema completo y de D1/R2, no de una plantilla genérica.

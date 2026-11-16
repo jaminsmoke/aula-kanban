@@ -9,14 +9,15 @@ export type DocSectionId = (typeof docSectionIds)[number];
 /** Tono de una nota: información, consejo o advertencia. */
 export type DocNoteTone = "info" | "tip" | "warning";
 
-/** Bloque de contenido: párrafo, pasos ordenados, definiciones, nota, imagen o código. */
+/** Bloque de contenido: párrafo, pasos ordenados, definiciones, nota, imagen, código o enlaces. */
 export type DocBlock =
   | { type: "paragraph"; text: string }
   | { type: "steps"; items: string[] }
   | { type: "definitions"; items: { term: string; text: string }[] }
   | { type: "note"; tone: DocNoteTone; text: string }
   | { type: "image"; src: string; alt: string; caption: string }
-  | { type: "code"; language: string; text: string };
+  | { type: "code"; language: string; text: string }
+  | { type: "links"; items: { label: string; href: string }[] };
 
 /** Sección de la documentación: entradilla (junto a la ilustración) y cuerpo. */
 export type DocSection = {
