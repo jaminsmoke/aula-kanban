@@ -24,11 +24,12 @@ type View = BoardView;
  * @returns La cabecera con selector de proyecto y menú de cuenta.
  */
 export default function BoardHeader({
-  user, activeProject, projects, projectId, view, onView, owner, admin, canManage,
+  user, demo = false, activeProject, projects, projectId, view, onView, owner, admin, canManage,
   onNewProject, onShareProject, onMembers, onDeleteProject, onRemix, onSettings,
   classSection = "tareas", settingsSection = "cuenta", administracionSection = "alumnos",
 }: {
   user: { displayName: string; email: string };
+  demo?: boolean;
   activeProject?: Project;
   projects: Project[];
   projectId: string;
@@ -72,7 +73,7 @@ export default function BoardHeader({
             {projects.map((project) => <a key={project.id} href={projectHref(project.id)} aria-current={project.id === projectId ? "page" : undefined}><span>{project.name}</span>{project.id === projectId && <Check size={16} />}</a>)}
             <div className="project-menu-actions">
               {(owner || admin) && <button type="button" onClick={(event) => { close(event); onNewProject(); }}><Plus size={16} /> Nuevo proyecto</button>}
-              {activeProject && <button type="button" onClick={(event) => { close(event); onShareProject(); }}><Link2 size={16} /> Compartir proyecto</button>}
+              {canManage && activeProject && <button type="button" onClick={(event) => { close(event); onShareProject(); }}><Link2 size={16} /> Compartir proyecto</button>}
               {canManage && <button type="button" onClick={(event) => { close(event); onMembers(); }}><Users size={16} /> Gestionar miembros</button>}
               {(owner || admin) && activeProject && <button type="button" className="project-delete-action" onClick={(event) => { close(event); onDeleteProject(); }}><Trash2 size={16} /> Eliminar proyecto</button>}
               <button type="button" className="remix-action" onClick={(event) => { close(event); onRemix(); }}><Plus size={16} /> Haz tu Site de Aula Kanban</button>
@@ -88,8 +89,10 @@ export default function BoardHeader({
             <span className="account-name">{user.displayName}</span>
           </summary>
           <div className="account-dropdown">
-            <strong>Cuenta de ChatGPT</strong><span>{user.email}</span>
-            <a className="account-signout" href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>
+            <strong>{demo ? "Cuenta de demostración" : "Cuenta de ChatGPT"}</strong><span>{user.email}</span>
+            {demo
+              ? <a className="account-signout" href="/demo/salir"><LogOut size={16} /> Salir de la demo</a>
+              : <a className="account-signout" href="/signout-with-chatgpt?return_to=%2Fsesion" target="_top"><LogOut size={16} /> Cerrar sesión</a>}
           </div>
         </details>
       </div>

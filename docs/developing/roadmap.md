@@ -55,13 +55,14 @@
 - **Criterios de aceptación:** sin sesión, `/demo` abre el tablero demo; con sesión real, la identidad real manda; cualquier otro `project` devuelve 403/404; la demo no crea filas ni modifica la D1.
 - **Verificación:** `lib/domain/demo.ts` centraliza el id, el nombre, la cookie y la identidad `demo_local`; `getChatGPTUser` devuelve esa identidad solo con `__demo=1` y sin cabeceras de Sites, y `projectAccessForUser` le da `guest` únicamente al proyecto demo. `isOwner`/`isAdministrator` la rechazan sin tocar la base. `loadProjectsOverview` y `listVisibleProjects` devuelven solo el proyecto demo, sin actualizar `user_identities` ni reclamar la instancia. `/demo` responde `303` con `Set-Cookie: __demo=1; Path=/; HttpOnly; SameSite=Lax; Max-Age=28800` y redirige a `/?project=2222…`; `/demo/salir` responde `303` y borra la cookie; sin proyecto, `/demo` sirve una página 404 con `npm run seed:demo`. En navegador, la demo abre el tablero con 25 %, ocho tareas y el rol «Demo»; con `__sites_local_auth` + `__demo` manda «Seedy» y reaparecen los permisos reales; otro proyecto muestra «Este enlace no está disponible». 10 pruebas nuevas; suite completa **154 archivos / 1.137 pruebas**, `tsc` y ESLint correctos; `npm run seed:demo -- --dry-run` sigue funcionando con el id compartido.
 
-### Fase 2: Solo lectura en API, interfaz y sockets
-- [ ] Auditar las rutas de escritura de `app/api/**` y garantizar 403 para `guest` en todas (crear, editar, borrar, instalar, subir, guardar pizarra o documento).
-- [ ] Ocultar o desactivar en la interfaz las acciones de escritura: nueva tarea, editar o arrastrar tarjetas, fichas, miembros, ajustes de proyecto, pizarras y documentos de apps; mantener la navegación de lectura y el calendario.
-- [ ] Bloquear Ajustes > Tokens MCP, Administradores, Almacenamiento y cualquier ajuste de instancia para la demo, además de la lista de proyectos reales.
-- [ ] Mantener ocultos los correos de miembros (`maySeeStudentEmail`/`maySeeTeacherEmail`) y no exponer tokens ni datos de auditoría.
-- [ ] Rechazar la identidad de demo en `worker/index.ts` (sockets) y evitar que el tablero demo intente abrirlos; las pizarras se leen desde la instantánea.
+### Fase 2: Solo lectura en API, interfaz y sockets — completada (2026-11-16)
+- [x] Auditar las rutas de escritura de `app/api/**` y garantizar 403 para `guest` en todas (crear, editar, borrar, instalar, subir, guardar pizarra o documento).
+- [x] Ocultar o desactivar en la interfaz las acciones de escritura: nueva tarea, editar o arrastrar tarjetas, fichas, miembros, ajustes de proyecto, pizarras y documentos de apps; mantener la navegación de lectura y el calendario.
+- [x] Bloquear Ajustes > Tokens MCP, Administradores, Almacenamiento y cualquier ajuste de instancia para la demo, además de la lista de proyectos reales.
+- [x] Mantener ocultos los correos de miembros (`maySeeStudentEmail`/`maySeeTeacherEmail`) y no exponer tokens ni datos de auditoría.
+- [x] Rechazar la identidad de demo en `worker/index.ts` (sockets) y evitar que el tablero demo intente abrirlos; las pizarras se leen desde la instantánea.
 - **Criterios de aceptación:** ninguna escritura posible (403 con pruebas en todas las rutas); sin acceso a otros proyectos ni a ajustes sensibles; sin correos ni tokens; el tablero demo no falla por el socket.
+- **Verificación:** con la cookie de demo, 14 escrituras responden 403 (`tasks`, `boards`, `app-documents`, `uploads`, `mcp/tokens`, `personal-apps`, `invitations`, `space-apps`, `project-books`, `administrators`, `storage/purge`, `/mcp`, y `projects` POST/DELETE) y las lecturas de tareas y alumnos responden 200. En el HTML servido no aparecen «Nueva tarea», «Añadir alumno/profesor», «Gestionar miembros», «Compartir/Eliminar/Nuevo proyecto» ni «Tokens MCP»; la cuenta de demo ofrece «Salir de la demo» en vez de «Cerrar sesión». `SettingsView` oculta Tokens MCP a `guest` y `Whiteboard` no abre presencia cuando `live` es falso (prueba con WebSocket espía). Los sockets del worker siguen devolviendo 401 sin cabeceras de Sites. Suite completa **155 archivos / 1.143 pruebas**, `tsc` y ESLint correctos.
 
 ### Fase 3: Entrada, textos y verificación
 - [ ] Añadir «Probar la demo» en la portada y el enlace desde la ayuda, con textos que expliquen que es ficticia y de solo lectura.
@@ -92,3 +93,4 @@
 - 2026-11-16: el proyecto demo es el `22222222-2222-4222-8222-222222222222` de PROMO-03, con datos ficticios y sin correos reales.
 - 2026-11-16: no se publica en Sites ni se cambia la versión `1.1.32`; el cierre es local y el push, único, como en los roadmaps anteriores.
 - 2026-11-16: la demo no tiene filas en `project_members`; `loadProjectsOverview` y `listVisibleProjects` la resuelven con el proyecto fijo para que el tablero abra sin escribir en `user_identities` ni reclamar la instancia.
+- 2026-11-16: al reutilizar `guest`, las cuentas invitadas reales también pierden Tokens MCP y la presencia en vivo de las pizarras; es coherente con su rol de solo lectura y evita ramas nuevas en la interfaz.

@@ -51,4 +51,22 @@ describe("Whiteboard", () => {
     expect(screen.queryByRole("alert")).toBeNull();
     expect(attempts).toBe(2);
   });
+
+  it("no abre presencia en vivo cuando live es false", async () => {
+    const sockets: FakeWebSocket[] = [];
+    class CountingWebSocket extends FakeWebSocket {
+      constructor(url: string) {
+        super(url);
+        sockets.push(this);
+      }
+    }
+    vi.stubGlobal("WebSocket", CountingWebSocket);
+    vi.stubGlobal("fetch", vi.fn(async () => jsonResponse(board)));
+
+    const Whiteboard = (await import("./whiteboard")).default;
+    render(<Whiteboard readOnly live={false} ownerType="space" ownerId="board-2" />);
+
+    expect(await screen.findByTestId("whiteboard-canvas")).toBeTruthy();
+    expect(sockets).toHaveLength(0);
+  });
 });

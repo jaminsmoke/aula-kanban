@@ -143,4 +143,17 @@ describe("SettingsView", () => {
     expect(document.documentElement.dataset.theme).toBe("dark");
     expect(within(group).getByRole("button", { name: "Oscuro" }).getAttribute("aria-pressed")).toBe("true");
   });
+
+  it("oculta Tokens MCP a la demo y vuelve a Cuenta", async () => {
+    const onSection = vi.fn();
+    mockRequests();
+    window.history.replaceState({}, "", "/?project=p1&view=ajustes&section=tokens");
+
+    render(<SettingsView {...props} owner={false} admin={false} guest section="tokens" onSection={onSection} />);
+
+    expect(screen.queryByRole("button", { name: "Tokens MCP" })).toBeNull();
+    expect(screen.getByRole("heading", { name: "Cuenta" })).toBeTruthy();
+    await waitFor(() => expect(onSection).toHaveBeenCalledWith("cuenta"));
+    expect(window.location.search).toBe("?project=p1&view=ajustes");
+  });
 });

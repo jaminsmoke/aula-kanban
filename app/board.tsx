@@ -27,7 +27,7 @@ const invitationRoleNames = { teacher: "Profesor", student: "Alumno", guest: "In
  * @param props - Cuenta autenticada de ChatGPT y estado inicial de la URL.
  * @returns La aplicación completa del tablero.
  */
-export default function Board({ user, initial }: { user: { displayName: string; email: string }; initial?: BoardUrlState }) {
+export default function Board({ user, initial, demo = false }: { user: { displayName: string; email: string }; initial?: BoardUrlState; demo?: boolean }) {
   const projectState = useProjects();
   const invitations = useInvitations();
   const data = useBoardData(projectState.activeProject);
@@ -68,6 +68,7 @@ export default function Board({ user, initial }: { user: { displayName: string; 
     <div className={`app-frame${view === "ajustes" || view === "administracion" || (activeProject && view === "clase") ? " app-frame--viewport" : ""}`}>
       <BoardHeader
         user={user}
+        demo={demo}
         activeProject={activeProject}
         projects={projectState.projects}
         projectId={projectState.projectId}
@@ -101,6 +102,7 @@ export default function Board({ user, initial }: { user: { displayName: string; 
               projectsLoaded={projectState.projectsLoaded}
               owner={projectState.owner}
               admin={projectState.admin}
+              guest={Boolean(isGuest)}
               activeProject={activeProject}
               onProjectsChanged={() => void projectState.refreshProjects()}
               section={settingsSection}

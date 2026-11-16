@@ -1,3 +1,4 @@
+import { isDemoUser } from "../../../lib/domain/demo";
 import { json } from "../../../lib/server/http";
 import { withJsonMutation, withProjectRoute } from "../../../lib/server/route-helpers";
 import {
@@ -35,6 +36,7 @@ export const GET = withProjectRoute(async (_request, project) => {
  */
 export const PUT = withJsonMutation(
   withProjectRoute(async (request, project) => {
+    if (isDemoUser(project.access.user)) return json({ message: "La demo es de solo lectura." }, 403);
     let items;
     try {
       items = parsePersonalItems(await request.json().catch(() => null));

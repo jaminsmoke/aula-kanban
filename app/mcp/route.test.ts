@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DEMO_USER } from "../../lib/domain/demo";
 
 const mocks = vi.hoisted(() => ({ user: null as null | { userId: string; email: string }, handler: vi.fn() }));
 vi.mock("../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user }));
@@ -39,6 +40,14 @@ describe("plugin MCP de Sites", () => {
   it("rechaza un prompt desconocido", async () => {
     const prompt = await (await POST(request("prompts/get", { name: "inexistente" }))).json() as { error: { code: number } };
     expect(prompt.error.code).toBe(-32602);
+  });
+  it("rechaza el MCP para la identidad de demo", async () => {
+    mocks.user = { userId: DEMO_USER.userId, email: DEMO_USER.email };
+
+    const response = await POST(request("tools/call", { name: "listar_proyectos", arguments: {} }));
+
+    expect(response.status).toBe(403);
+    expect(mocks.handler).not.toHaveBeenCalled();
   });
   it("sirve el recurso ui:// de apertura y rechaza URIs desconocidas", async () => {
     const lista = await (await POST(request("resources/list"))).json() as { result: { resources: Array<{ uri: string; mimeType: string }> } };

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isDemoUser } from "../../../lib/domain/demo";
 import { getChatGPTUser } from "../../../lib/server/auth";
 import { acceptInvitation, listPendingInvitations } from "../../../lib/server/invitaciones";
 import { projectFailureResponse } from "../../../lib/server/project-http";
@@ -19,6 +20,7 @@ export async function GET() {
 /** Acepta una invitación pendiente y activa el acceso de la cuenta. */
 export const POST = withJsonMutation(async (request) => {
   const user = await getChatGPTUser(); if (!user) return projectFailureResponse("unauthenticated");
+  if (isDemoUser(user)) return json({ message: "La demo es de solo lectura." }, 403);
   const parsed = z.object({ id: z.string().uuid(), scope: z.enum(["project", "site"]).default("project") }).safeParse(await request.json().catch(() => null));
   if (!parsed.success) return json({ message: "Invitación no válida." }, 400);
   const result = await acceptInvitation(user, parsed.data.id, parsed.data.scope);

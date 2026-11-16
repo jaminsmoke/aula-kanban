@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
+import { isDemoUser } from "../../lib/domain/demo";
 import { getChatGPTUser } from "../../lib/server/auth";
 import { promptByName, promptListEntries } from "../../lib/domain/mcp-prompts";
 import { MCP_INSTRUCTIONS } from "../../lib/server/mcp/instrucciones";
@@ -62,6 +63,7 @@ export async function POST(request: Request): Promise<Response> {
   if (call.method !== "tools/call") return failure(-32601, "Método desconocido");
   const user = await getChatGPTUser();
   if (!user) return Response.json({ jsonrpc: "2.0", id, error: { code: -32001, message: "Se necesita una sesión autenticada" } }, { status: 401 });
+  if (isDemoUser(user)) return Response.json({ jsonrpc: "2.0", id, error: { code: -32001, message: "La demo no puede usar el servidor MCP" } }, { status: 403 });
   const tools = pluginCatalog();
   const tool = typeof call.params?.name === "string" ? tools.get(call.params.name) : undefined;
   if (!tool) return failure(-32602, "Herramienta desconocida");

@@ -23,7 +23,7 @@ export default function TaskWhiteboard({ taskId, readOnly, active }: { taskId: s
           </button>
         </div>
         <Suspense fallback={<p className="board-loading" role="status">Cargando la pizarra…</p>}>
-          <Whiteboard taskId={taskId} readOnly={readOnly} />
+          <Whiteboard taskId={taskId} readOnly={readOnly} live={!readOnly} />
         </Suspense>
       </div>
     </div>

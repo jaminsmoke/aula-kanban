@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DEMO_USER } from "../../../../lib/domain/demo";
 import type { ChatGPTUser } from "../../../../lib/server/auth";
 
 const mocks = vi.hoisted(() => ({
@@ -68,5 +69,12 @@ describe("API de tokens del MCP", () => {
     mocks.revoked = false;
     const missing = await DELETE(new Request("https://site.test/api/mcp/tokens?id=00000000-0000-4000-8000-000000000000"));
     expect(missing.status).toBe(404);
+  });
+
+  it("rechaza toda la gestión de tokens para la demo", async () => {
+    mocks.user = { ...DEMO_USER };
+    expect((await GET()).status).toBe(403);
+    expect((await POST(createRequest({ label: "Demo" }))).status).toBe(403);
+    expect((await DELETE(new Request("https://site.test/api/mcp/tokens?id=00000000-0000-4000-8000-000000000000"))).status).toBe(403);
   });
 });

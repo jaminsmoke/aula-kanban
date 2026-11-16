@@ -24,11 +24,12 @@ import type { SettingsSection } from "../../../lib/domain/board-url";
  * @param props - Cuenta, permisos, proyecto activo y recarga de proyectos.
  * @returns La página de ajustes.
  */
-export default function SettingsView({ user, projectsLoaded, owner, admin, activeProject, onProjectsChanged, section: controlledSection, onSection }: {
+export default function SettingsView({ user, projectsLoaded, owner, admin, guest = false, activeProject, onProjectsChanged, section: controlledSection, onSection }: {
   user: { displayName: string; email: string };
   projectsLoaded: boolean;
   owner: boolean;
   admin: boolean;
+  guest?: boolean;
   activeProject?: Project;
   onProjectsChanged: () => void;
   section?: SettingsSection;
@@ -38,7 +39,8 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, activ
   const section = controlledSection ?? innerSection;
   const setSection = onSection ?? setInnerSection;
   const privileged = owner || admin;
-  const restricted = section === "administradores" || section === "permisos" || section === "almacenamiento";
+  const restricted = section === "administradores" || section === "permisos" || section === "almacenamiento"
+    || (guest && section === "tokens");
   const sections: WorkspaceItem<SettingsSection>[] = [
     { id: "cuenta", label: "Cuenta", icon: UserRound },
     { id: "apariencia", label: "Apariencia", icon: Palette },
@@ -50,6 +52,7 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, activ
       { id: "almacenamiento" as const, label: "Almacenamiento", icon: HardDrive },
     ] : []),
   ];
+  const visibleSections = guest ? sections.filter((item) => item.id !== "tokens") : sections;
   const active = !privileged && restricted ? "cuenta" : section;
 
   useEffect(() => {
@@ -64,7 +67,7 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, activ
   }, [privileged, restricted, setSection]);
 
   return (
-    <WorkspaceLayout title="Ajustes" label="Secciones de ajustes" items={sections} active={active} onSelect={setSection}>
+    <WorkspaceLayout title="Ajustes" label="Secciones de ajustes" items={visibleSections} active={active} onSelect={setSection}>
       <div className="settings-content">
         {active === "cuenta" ? (
           <SettingsAccount user={user} projectsLoaded={projectsLoaded} owner={owner} admin={admin} activeProject={activeProject} />

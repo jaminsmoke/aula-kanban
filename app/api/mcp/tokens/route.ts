@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { getD1 } from "../../../../db";
 import { getChatGPTUser } from "../../../../lib/server/auth";
+import { isDemoUser } from "../../../../lib/domain/demo";
 import { isJsonRequest, isSameOrigin, json } from "../../../../lib/server/http";
 import { createMcpToken, listMcpTokens, revokeMcpToken } from "../../../../lib/server/mcp/tokens";
 
@@ -21,6 +22,7 @@ const createBody = z.object({ label: z.string().trim().max(80).optional() });
 export async function GET() {
   const user = await getChatGPTUser();
   if (!user) return json({ message: "Inicia sesión para gestionar tus tokens." }, 401);
+  if (isDemoUser(user)) return json({ message: "La demo no puede gestionar tokens." }, 403);
   let db;
   try {
     db = getD1();
@@ -38,6 +40,7 @@ export async function GET() {
 export async function POST(request: Request) {
   const user = await getChatGPTUser();
   if (!user) return json({ message: "Inicia sesión para gestionar tus tokens." }, 401);
+  if (isDemoUser(user)) return json({ message: "La demo no puede gestionar tokens." }, 403);
   if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
   if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
   const parsed = createBody.safeParse(await request.json().catch(() => null));
@@ -60,6 +63,7 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   const user = await getChatGPTUser();
   if (!user) return json({ message: "Inicia sesión para gestionar tus tokens." }, 401);
+  if (isDemoUser(user)) return json({ message: "La demo no puede gestionar tokens." }, 403);
   const id = new URL(request.url).searchParams.get("id") ?? "";
   if (!z.string().uuid().safeParse(id).success) return json({ message: "Identificador no válido." }, 400);
   let db;

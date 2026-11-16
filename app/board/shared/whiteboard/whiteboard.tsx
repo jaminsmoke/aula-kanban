@@ -13,9 +13,9 @@ import "./whiteboard.css";
  * @param props - Tarea dueña, tipo de dueño, identificador del dueño y bandera de solo lectura.
  * @returns La pizarra con sus estados de carga y error.
  */
-export default function Whiteboard({ taskId, readOnly, ownerType = "task", ownerId }: { taskId?: string; readOnly: boolean; ownerType?: "task" | "project" | "space"; ownerId?: string }) {
+export default function Whiteboard({ taskId, readOnly, ownerType = "task", ownerId, live = true }: { taskId?: string; readOnly: boolean; ownerType?: "task" | "project" | "space"; ownerId?: string; live?: boolean }) {
   const boardId = ownerId ?? taskId ?? "";
-  const { initial, error, status, retry, setApi, handleChange, handlePointer } = useWhiteboard({ boardId, ownerType, readOnly });
+  const { initial, error, status, retry, setApi, handleChange, handlePointer } = useWhiteboard({ boardId, ownerType, readOnly, live });
 
   if (error) {
     return (

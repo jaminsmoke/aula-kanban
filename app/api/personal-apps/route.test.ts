@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DEMO_USER } from "../../../lib/domain/demo";
 
 const mocks = vi.hoisted(() => ({
   status: "ok" as "ok" | "unauthenticated" | "forbidden",
+  user: { userId: "u1", displayName: "Ada", email: "ada@example.com", fullName: null as string | null },
   list: vi.fn(),
   set: vi.fn(),
   describe: vi.fn(),
@@ -9,7 +11,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("../../../lib/server/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
-    ? { status: "ok", project: { id: "p1", access: { user: { userId: "u1", displayName: "Ada", email: "ada@example.com", fullName: null }, role: "student", studentSection: "s1", teacherId: null } } }
+    ? { status: "ok", project: { id: "p1", access: { user: mocks.user, role: "student", studentSection: "s1", teacherId: null } } }
     : { status: mocks.status },
   projectFailureResponse: (status: string) => new Response(JSON.stringify({ message: status }), {
     status: status === "unauthenticated" ? 401 : 403,
@@ -81,5 +83,12 @@ describe("ruta del espacio personal", () => {
       mocks.status = status;
       expect((await GET(new Request(endpoint))).status).toBe(code);
     }
+  });
+
+  it("rechaza guardar preferencias desde la demo", async () => {
+    mocks.user = { ...DEMO_USER };
+    const response = await PUT(request("PUT", { items: [] }));
+    expect(response.status).toBe(403);
+    expect(mocks.set).not.toHaveBeenCalled();
   });
 });

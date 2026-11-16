@@ -23,7 +23,7 @@ import { createWhiteboardPresence, type WhiteboardPresence } from "./whiteboard-
  * @param props - Dueño, tipo, solo lectura e identificador de pizarra.
  * @returns Estado inicial, carga, guardado y handlers para Excalidraw.
  */
-export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: string; ownerType: "task" | "project" | "space"; readOnly: boolean }) {
+export function useWhiteboard({ boardId, ownerType, readOnly, live = true }: { boardId: string; ownerType: "task" | "project" | "space"; readOnly: boolean; live?: boolean }) {
   const [initial, setInitial] = useState<BoardSnapshot | null>(null);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("La pizarra se está guardando…");
@@ -164,7 +164,7 @@ export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: strin
   }, []);
 
   useEffect(() => {
-    if (!initial) return;
+    if (!initial || !live) return;
     const connection = createWhiteboardPresence({
       boardId,
       ownerType,
@@ -184,7 +184,7 @@ export function useWhiteboard({ boardId, ownerType, readOnly }: { boardId: strin
       connection.stop();
       if (presence.current === connection) presence.current = null;
     };
-  }, [applyScene, pushPresence, initial, boardId, ownerType]);
+  }, [applyScene, pushPresence, initial, boardId, ownerType, live]);
 
   useEffect(() => {
     const tick = () => {

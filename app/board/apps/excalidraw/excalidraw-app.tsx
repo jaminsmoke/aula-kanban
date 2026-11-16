@@ -14,7 +14,7 @@ import type { StoreRole } from "../types";
 export default function ExcalidrawApp({ projectId, role }: { projectId: string; role: StoreRole }) {
   return (
     <div className="hub-board">
-      <Whiteboard readOnly={role === "student" || role === "guest"} ownerType="space" ownerId={projectId} />
+      <Whiteboard readOnly={role === "student" || role === "guest"} live={role !== "guest"} ownerType="space" ownerId={projectId} />
     </div>
   );
 }
