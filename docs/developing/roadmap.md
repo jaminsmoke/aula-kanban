@@ -40,11 +40,13 @@
 
 ## 4. Fases
 
-### Fase 1: Matriz de capacidades y reglas
-- [ ] Definir capacidades explícitas con ámbito (instancia, proyecto, app, sujeto), roles predeterminados y concesiones individuales revocables.
-- [ ] Fijar la regla de instalación global (owner/admin de instancia; profesor por sí solo nunca) y la denegación por defecto.
-- [ ] Definir quién concede/revoca cada capacidad, ámbito, duración, auditoría, resolución de conflictos y qué ocurre al salir de un proyecto.
+### Fase 1: Matriz de capacidades y reglas — completada
+- [x] Definir capacidades explícitas con ámbito (instancia, proyecto, app, sujeto), roles predeterminados y concesiones individuales revocables.
+- [x] Fijar la regla de instalación global (owner/admin de instancia; profesor por sí solo nunca) y la denegación por defecto.
+- [x] Definir quién concede/revoca cada capacidad, ámbito, duración, auditoría, resolución de conflictos y qué ocurre al salir de un proyecto.
 - **Criterios de aceptación:** matriz documentada y aprobable; profesor sin rol global denegado y profesor también administrador permitido.
+
+**Implementado (2026-11-16):** matriz en `docs/Store/matriz-permisos.md` (principios, roles/sujetos, capacidades por ámbito con otorgante, regla de instalación global, concesiones, ubicación propuesta y casos obligatorios). Sin cambios de código: el control de servidor llega en la Fase 2.
 
 ### Fase 2: Control autoritativo de servidor
 - [ ] Centralizar la evaluación de permisos en servidor para UI, HTTP, MCP y sockets (sin basarse en ocultar botones ni en `roles` del catálogo).
@@ -69,3 +71,4 @@
 ## 6. Notas de sesión
 
 - 2026-11-16: roadmap PERM-01 creado desde el backlog (prerequisito de APP-03 seguimiento); la entrada PERM-01 sale del backlog en el mismo acto (regla de flujo). APP-03 (seguimiento) permanece en el backlog hasta que este roadmap defina los permisos.
+- 2026-11-16: Fase 1 completada — matriz aprobada en `docs/Store/matriz-permisos.md`; sin cambios de código (el control autoritativo llega en la Fase 2).
