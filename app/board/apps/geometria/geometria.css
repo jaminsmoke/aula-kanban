@@ -1,0 +1,190 @@
+/* ==========================================================================
+   Geometría interactiva: lienzo JSXGraph y construcciones
+   ========================================================================== */
+
+.geometria-app {
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  background:var(--ui-surface-hover);
+  color:var(--ui-text-primary);
+  container-type:inline-size;
+  container-name:geometriaapp;
+}
+
+.geometria-toolbar {
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:9px 12px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-surface-faint);
+}
+
+.geometria-heading {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+  margin-right:auto;
+}
+
+.geometria-mark {
+  display:grid;
+  place-items:center;
+  flex:none;
+  width:34px;
+  height:34px;
+  border-radius: var(--radius-sm);
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+}
+
+.geometria-heading strong {
+  display:block;
+  font-size:14px;
+  line-height:1.2;
+}
+
+.geometria-heading small {
+  display:block;
+  margin-top:2px;
+  color:var(--ui-text-muted);
+  font-size:11px;
+  font-weight:600;
+  line-height:1.25;
+}
+
+.geometria-actions {
+  display:flex;
+  align-items:center;
+  gap:4px;
+  flex-wrap:wrap;
+}
+
+.geometria-actions button {
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:6px 8px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+  font:inherit;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.geometria-actions button:hover { background:var(--ui-surface-hover); }
+.geometria-actions button.is-active { border-color:var(--ui-action-text); background:var(--ui-action-primary); color:var(--ui-text-inverse); }
+.geometria-actions button:focus-visible { outline:var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
+
+.geometria-layout {
+  flex:1 1 auto;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 220px;
+  align-content:start;
+  gap:14px;
+  padding:14px;
+  overflow:auto;
+}
+
+.geometria-stage {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  padding-top:8px;
+}
+
+.geometria-board {
+  width:100%;
+  max-width:760px;
+  aspect-ratio:3 / 2;
+  overflow:hidden;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-md);
+  background:var(--ui-surface-pale);
+  box-shadow:var(--ui-shadow-card);
+}
+
+.geometria-hint {
+  max-width:760px;
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+  line-height:1.45;
+  text-align:center;
+}
+
+.geometria-side {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.geometria-info,
+.geometria-tip {
+  padding:11px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+}
+
+.geometria-info h4 {
+  margin:0 0 5px;
+  color:var(--ui-text-primary);
+  font-size:13px;
+}
+
+.geometria-info p {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+  line-height:1.45;
+}
+
+.geometria-status {
+  margin-top:7px !important;
+  color:var(--ui-text-secondary) !important;
+}
+
+.geometria-tip {
+  display:flex;
+  align-items:flex-start;
+  gap:7px;
+  color:var(--ui-action-text);
+}
+
+.geometria-tip svg { flex:none; margin-top:1px; }
+.geometria-tip p { margin:0; color:var(--ui-text-muted); font-size:11.5px; line-height:1.45; }
+
+/* JSXGraph usa este contenedor para el SVG; el tamaño lo fija el wrapper. */
+.geometria-board .jxgbox { width:100%; height:100%; }
+
+@container geometriaapp (max-width: 760px) {
+  .geometria-layout { grid-template-columns:1fr; gap:10px; padding:10px; }
+  .geometria-stage { justify-content:flex-start; }
+  .geometria-side { display:grid; grid-template-columns:1fr 1fr; align-items:start; }
+  .geometria-hint { display:none; }
+}
+
+@container geometriaapp (max-width: 560px) {
+  .geometria-toolbar { padding:8px 10px; }
+  .geometria-heading small { display:none; }
+  .geometria-actions { gap:3px; }
+  .geometria-actions button { padding:5px 6px; font-size:10.5px; }
+  .geometria-side { grid-template-columns:1fr; }
+}

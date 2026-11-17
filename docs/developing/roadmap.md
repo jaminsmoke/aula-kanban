@@ -45,10 +45,10 @@
 
 ### Fase 1 — Lienzo y construcciones
 
-- [ ] Instalar `jsxgraph` y fijar la versión, conservando el aviso MIT.
-- [ ] Crear `app/board/apps/geometria/` con el componente, estilos y prueba del modelo de construcción.
-- [ ] Montar el lienzo, la barra de herramientas y el arrastre de puntos.
-- [ ] Implementar puntos, segmentos, rectas, circunferencias, etiquetas y medidas.
+- [x] Instalar `jsxgraph` y fijar la versión, conservando el aviso MIT.
+- [x] Crear `app/board/apps/geometria/` con el componente, estilos y prueba del modelo de construcción.
+- [x] Montar el lienzo, la barra de herramientas y el arrastre de puntos.
+- [x] Implementar puntos, segmentos, rectas, circunferencias, etiquetas y medidas.
 - **Criterios de aceptación:**
   - Se pueden crear y mover las construcciones básicas.
   - Las etiquetas y medidas se actualizan al arrastrar.
@@ -95,6 +95,7 @@
 ## 6. Notas de sesión
 
 - 2026-11-17: STORE-08 sale del backlog y pasa a ser el roadmap activo. `jsxgraph` 1.14.3 tiene licencia dual MIT/LGPL-3.0; se usará la opción MIT.
+- 2026-11-17: fase 1 completada. El CSS de JSXGraph se copia a `public/jsxgraph/jsxgraph.css` porque sus `exports` no exponen el archivo; la app lo carga con un `<link>`. El modo Punto usa `board.getUsrCoordsOfMouse` para colocar el punto donde se hace clic. Verificado en navegador a 1366, 1024 y 390 px; pruebas focalizadas en verde (6).
 - La primera versión no guarda construcciones: abrir, manipular y cerrar. Si se añade persistencia, el camino es `app_documents`.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.
 - No se cambia la versión del Site (`1.1.34`) ni se publica en Sites desde este roadmap.
