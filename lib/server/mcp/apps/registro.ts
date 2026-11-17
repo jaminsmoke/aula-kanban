@@ -72,6 +72,11 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     herramientas: [],
     pendiente: "La presentación se guarda en app_documents, pero el editor, la vista previa y el modo presentación viven en el navegador; no hay herramientas MCP específicas en esta versión.",
   },
+  moleculas: {
+    appId: "moleculas",
+    herramientas: [],
+    pendiente: "La vista y la selección de moléculas viven en el navegador; no hay un documento persistente ni herramientas MCP específicas en esta versión.",
+  },
 };
 
 /** Herramientas de todas las apps, en el orden de sus declaraciones. */

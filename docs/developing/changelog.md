@@ -1,10 +1,34 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-12 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-17 — Roadmap STORE-12 · Moléculas 3D en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Moléculas 3D se incorpora con `3Dmol` 2.5.5 (BSD-3): visor local con rotación, zoom, etiquetas y ficha con fórmula.
+- Biblioteca curada de ocho estructuras SDF (agua, metano, amoniaco, etanol, benceno, cafeína, aspirina y glucosa), servida desde el bundle y con atribución de PubChem.
+- Control por teclado con flechas, `+`/`−` y `0`; foco visible, reducción de movimiento y estados de carga, error y WebGL no disponible.
+- Portada `public/store/moleculas.svg`, ficha, registro lazy y entrada en «Mejores aplicaciones». `AULA_STORE_VERSION` sube a `1.7.0`.
+- Declaración MCP sin herramientas propias porque la vista vive en el navegador; ayuda, matriz de herramientas, catálogo y documentación actualizados. Aviso BSD-3 de `3Dmol` añadido. Sin cambios en la demo.
+
+### Verificación
+
+- Tienda y ficha revisadas a 1366, 1024 y 390 px, con la portada, versión `1.0.0` y upstream `3Dmol 2.5.5`. La demo es de solo lectura y no permite instalar; la apertura queda cubierta por el registro lazy y la prueba de sincronización del catálogo.
+- La app se revisó a pantalla completa a 1366, 1024 y 390 px: ocho moléculas, rotación, zoom, etiquetas, teclado y glucosa en móvil.
+- Chunk diferido: `3Dmol` 561,2 KB / 158,1 KB gzip, app 18,5 KB / 5,4 KB gzip, CSS 5,6 KB / 1,5 KB gzip y portada 5,28 KB; todo se sirve desde `dist/client`.
+- Suite completa: **174 archivos / 1.246 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `89a5301` (roadmap), `a958462` (Fase 1), `b796a06` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites y sin cambio de versión del Site: sigue en **1.1.34**.
+
+### Seguimiento
+
+- El backlog queda con STORE-13. El plan completo está en [`historial/roadmap-store-12.md`](../historial/roadmap-store-12.md).
 
 ## 2026-11-17 — Roadmap STORE-11 · Presentaciones en Aula Store
 

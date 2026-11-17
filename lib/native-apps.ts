@@ -25,9 +25,9 @@ export type NativeCategory = StoreTopCategory;
 export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
-export const AULA_STORE_VERSION = "1.6.0";
+export const AULA_STORE_VERSION = "1.7.0";
 
-export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "presentaciones"] as const;
+export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "presentaciones", "moleculas"] as const;
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
 
@@ -216,6 +216,19 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     features: ["Editor Markdown y vista previa", "Modo presentación con teclado", "Plantillas, guardado y exportación HTML"],
     appVersion: "1.0.0",
     upstream: { name: "reveal.js", version: "6.0.2" },
+    window: { width: 1120, height: 720 },
+  },
+  {
+    id: "moleculas",
+    name: "Moléculas 3D",
+    tagline: "Gira, amplía y explora estructuras moleculares.",
+    description: "Moléculas 3D con 3Dmol (BSD-3): visor local con rotación, zoom y etiquetas; biblioteca curada de ocho estructuras con nombre, fórmula y atribución, sin red ni recursos externos.",
+    categories: ["Educación"],
+    subcategory: "Herramientas",
+    cover: "/store/moleculas.svg",
+    features: ["Ocho moléculas locales", "Rotación, zoom y etiquetas", "Teclado y ficha con fórmula"],
+    appVersion: "1.0.0",
+    upstream: { name: "3dmol", version: "2.5.5" },
     window: { width: 1120, height: 720 },
   },
 ];

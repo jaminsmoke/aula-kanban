@@ -99,8 +99,8 @@ La tabla de versiones por app está en [`integradas.md#versiones-por-app`](integ
 
 Ajedrez (**STORE-06**), Tarjetas de repaso (**STORE-09**), Física 2D
 (**STORE-07**), Geometría interactiva (**STORE-08**), Mapas conceptuales
-(**STORE-10**) y Presentaciones (**STORE-11**) ya están integrados. Moléculas 3D
-(`3dmol`) está en el roadmap activo como **STORE-12**. En el backlog queda:
+(**STORE-10**), Presentaciones (**STORE-11**) y Moléculas 3D (**STORE-12**) ya
+están integrados. En el backlog queda:
 
 1. **Líneas de tiempo** (`vis-timeline`): **STORE-13**.
 

@@ -1,12 +1,12 @@
 # Cobertura MCP de las apps nativas
 
-Estado de la superficie MCP de las once apps de Aula Store. La fuente de las
+Estado de la superficie MCP de las doce apps de Aula Store. La fuente de las
 herramientas es `lib/server/mcp/apps/registro.ts`; la instalación y los permisos
 se resuelven con `lib/server/mcp/apps/contrato.ts`.
 
 **Última revisión:** 2026-11-17 · **Catálogo:** `0.28.0` · **59 herramientas**
 
-**Estado:** MCP-05B, MCP-05C, MCP-05D y MCP-05E cerrados; las once apps tienen declaración MCP. Ajedrez, Tarjetas, Física, Geometría, Mapas, Presentaciones y Calculadora no exponen herramientas propias porque su estado de trabajo vive en el navegador o en `app_documents` sin herramientas específicas.
+**Estado:** MCP-05B, MCP-05C, MCP-05D y MCP-05E cerrados; las doce apps tienen declaración MCP. Ajedrez, Tarjetas, Física, Geometría, Mapas, Presentaciones, Moléculas 3D y Calculadora no exponen herramientas propias porque su estado de trabajo vive en el navegador o en `app_documents` sin herramientas específicas.
 
 ## Herramientas comunes
 
@@ -51,6 +51,7 @@ reglas de cada app.
 | **Geometría interactiva** (`geometria`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Cualquier miembro con acceso al proyecto; las cuentas invitadas la usan en local. | Sin estado de servidor: las construcciones, presets y funciones viven en el navegador. |
 | **Mapas conceptuales** (`mapas`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | El mapa se guarda en `app_documents`; la edición, el zoom y la disposición viven en el navegador. Sin herramientas MCP específicas en esta versión. |
 | **Presentaciones** (`presentaciones`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | El documento se guarda en `app_documents`; el editor, la vista previa y el modo presentación viven en el navegador. Sin herramientas MCP específicas en esta versión. |
+| **Moléculas 3D** (`moleculas`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Todos los roles; la vista y la selección son locales. | La vista y la selección viven en el navegador; no hay documento persistente. Sin herramientas MCP específicas en esta versión. |
 
 ## Qué falta en cada app
 
@@ -140,6 +141,14 @@ reglas de cada app.
 - `abrir_app` y el control de ventanas siguen disponibles por MCP-04.
 - La exportación HTML se queda en la ventana; no se genera desde MCP.
 
+### Moléculas 3D — sin herramientas
+
+- La vista, la molécula seleccionada y las etiquetas viven en el navegador; no
+  hay un documento persistente ni herramientas MCP específicas en esta versión.
+- `abrir_app` y el control de ventanas siguen disponibles por MCP-04.
+- La biblioteca de estructuras se sirve desde el bundle; no se consulta ningún
+  servicio externo.
+
 ### Calculadora y Tabla periódica — MCP-05C (completado)
 
 - `consultar_elemento` cubre la única consulta estable de Tabla periódica.
@@ -149,7 +158,7 @@ reglas de cada app.
 ## Revisión de huecos
 
 - **Instalación y catálogo:** cubiertos por MCP-03.
-- **Abrir y controlar ventanas:** cubiertos por MCP-04 para las once apps.
+- **Abrir y controlar ventanas:** cubiertos por MCP-04 para las doce apps.
 - **Lectura y escritura de contenido:** MCP-05B, MCP-05D y MCP-05E (completados).
 - **Exportación:** no hay una herramienta dedicada. Excalidraw necesita render
   de imagen; Mermaid necesita render de SVG, aunque `leer_diagrama` ya devuelve
