@@ -1,5 +1,5 @@
 import { lazy, type ComponentType } from "react";
-import { Atom, Calculator, GitBranch, Layers3, Orbit, PencilRuler, Puzzle, Ruler, Swords } from "lucide-react";
+import { Atom, Calculator, GitBranch, Layers3, Network, Orbit, PencilRuler, Puzzle, Ruler, Swords } from "lucide-react";
 import { NATIVE_APPS, nativeAppMeta, type NativeAppId } from "../../../lib/native-apps";
 import type { StoreIconProps, StoreRole, StoreTool } from "./types";
 
@@ -18,6 +18,7 @@ const ICONS: Record<NativeAppId, ComponentType<StoreIconProps>> = {
   tarjetas: Layers3,
   fisica: Orbit,
   geometria: Ruler,
+  mapas: Network,
 };
 
 // El código de cada app solo se descarga cuando su ventana se abre por
@@ -32,6 +33,7 @@ const APPS: Record<NativeAppId, ComponentType<StoreAppProps>> = {
   tarjetas: lazy(() => import("./tarjetas/tarjetas-app")),
   fisica: lazy(() => import("./fisica/fisica-app")),
   geometria: lazy(() => import("./geometria/geometria-app")),
+  mapas: lazy(() => import("./mapas/mapas-app")),
 };
 
 /** Componente de cada app, indexado por id, para abrir su ventana. */

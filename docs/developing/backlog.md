@@ -2,7 +2,7 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** STORE-10 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** 3 entradas: STORE-11 a STORE-13 pendientes
 
 ---

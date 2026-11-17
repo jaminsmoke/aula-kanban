@@ -1,10 +1,33 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-10 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-17 — Roadmap STORE-10 · Mapas conceptuales en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Mapas conceptuales se incorpora con `@xyflow/react` 12.12.1 (MIT): nodos y conexiones editables, zoom, paneo y controles de React Flow.
+- Plantillas de mapa conceptual y mapa mental; guardado y carga por proyecto en `app_documents`, aviso de cambios sin guardar y modo lectura para invitados.
+- Portada `public/store/mapas.svg`, ficha, registro lazy y entrada en «Mejores aplicaciones». `AULA_STORE_VERSION` sube a `1.5.0`.
+- Declaración MCP sin herramientas propias porque la edición vive en el navegador; ayuda, matriz de herramientas, catálogo y documentación actualizados. Sin cambios en la demo.
+
+### Verificación
+
+- Tienda y ficha revisadas a 1366, 1024 y 390 px, con la portada, versión `1.0.0` y upstream `@xyflow/react 12.12.1`. La demo es de solo lectura y no permite instalar; la apertura queda cubierta por el registro lazy y la prueba de sincronización del catálogo.
+- La app se revisó a pantalla completa a 1366, 1024 y 390 px: nodos, conexiones, edición de etiquetas, plantillas, guardado/carga y modo invitado.
+- Chunk `mapas-app`: 161,0 KB sin comprimir / 50,5 KB gzip. El CSS de React Flow y de la app suma 21,1 KB y la portada 4,05 KB; todo se sirve desde `dist/client`.
+- Suite completa: **170 archivos / 1.222 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `7cbbc65` (Fase 1), `c91d1b0` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites y sin cambio de versión del Site: sigue en **1.1.34**.
+
+### Seguimiento
+
+- El backlog queda con STORE-11 a STORE-13. El plan completo está en [`historial/roadmap-store-10.md`](../historial/roadmap-store-10.md).
 
 ## 2026-11-17 — Roadmap STORE-08 · Geometría interactiva en Aula Store
 

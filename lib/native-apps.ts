@@ -25,9 +25,9 @@ export type NativeCategory = StoreTopCategory;
 export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
-export const AULA_STORE_VERSION = "1.4.0";
+export const AULA_STORE_VERSION = "1.5.0";
 
-export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria"] as const;
+export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas"] as const;
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
 
@@ -191,6 +191,19 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     appVersion: "1.0.0",
     upstream: { name: "jsxgraph", version: "1.14.3" },
     window: { width: 1000, height: 720 },
+  },
+  {
+    id: "mapas",
+    name: "Mapas conceptuales",
+    tagline: "Nodos y conexiones para ordenar ideas.",
+    description: "Mapas conceptuales con React Flow (MIT): nodos y conexiones editables, zoom, paneo, plantillas y guardado por proyecto en app_documents; invitados en solo lectura.",
+    categories: ["Educación", "Productividad"],
+    subcategory: "Diagramas",
+    cover: "/store/mapas.svg",
+    features: ["Nodos y conexiones editables", "Plantillas de mapa conceptual y mental", "Guardado por proyecto y modo lectura"],
+    appVersion: "1.0.0",
+    upstream: { name: "@xyflow/react", version: "12.12.1" },
+    window: { width: 1120, height: 720 },
   },
 ];
 

@@ -17,7 +17,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | STORE-10 activo: Mapas conceptuales | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | Sin fase activa; plantilla lista para el siguiente roadmap | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -80,7 +80,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
-- **Roadmap STORE-10 activo:** Mapas conceptuales con `@xyflow/react`, nodos y conexiones editables, presets y guardado por proyecto en `app_documents`; plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.34` y sin publicación.
+- **Roadmap STORE-10 completado:** Mapas conceptuales integrados con `@xyflow/react` 12.12.1: nodos y conexiones editables, plantillas, guardado por proyecto en `app_documents` y modo lectura para invitados; `AULA_STORE_VERSION` sube a `1.5.0`. Verificado en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-10.md`](historial/roadmap-store-10.md). Sin cambio de versión del Site ni publicación.
 - **Roadmap STORE-08 completado:** Geometría interactiva integrada con `jsxgraph` 1.14.3 en su opción MIT: construcciones, presets, medidas y funciones; `AULA_STORE_VERSION` sube a `1.4.0`. Verificada en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-08.md`](historial/roadmap-store-08.md). Sin cambio de versión del Site ni publicación.
 - **Roadmap STORE-07 completado:** Física 2D integrada con `matter-js`, cuatro presets, controles, arrastre y portada SVG; `AULA_STORE_VERSION` sube a `1.3.0`. Verificada en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-07.md`](historial/roadmap-store-07.md). Sin cambio de versión del Site ni publicación.
 - **Roadmap STORE-09 completado:** Tarjetas de repaso integrada con mazos en `app_documents`, repaso FSRS, cuatro valoraciones, progreso local por navegador y portada SVG; `AULA_STORE_VERSION` sube a `1.2.0`. Verificada en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-09.md`](historial/roadmap-store-09.md). Sin cambio de versión del Site ni publicación.
