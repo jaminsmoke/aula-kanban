@@ -57,10 +57,10 @@
 
 ### Fase 2 — Presets, funciones, acabado y portada
 
-- [ ] Añadir presets de construcción y representación de funciones.
-- [ ] Revisar la interacción táctil, el foco de los controles y la reducción de movimiento.
-- [ ] Crear `public/store/geometria.svg` con el formato de las portadas actuales.
-- [ ] Medir el chunk y confirmar que JSXGraph y su CSS se sirven desde el Site.
+- [x] Añadir presets de construcción y representación de funciones.
+- [x] Revisar la interacción táctil, el foco de los controles y la reducción de movimiento.
+- [x] Crear `public/store/geometria.svg` con el formato de las portadas actuales.
+- [x] Medir el chunk y confirmar que JSXGraph y su CSS se sirven desde el Site.
 - **Criterios de aceptación:**
   - Los presets son distinguibles y reiniciables.
   - Las funciones se representan y se pueden ocultar o reiniciar.
@@ -96,6 +96,8 @@
 
 - 2026-11-17: STORE-08 sale del backlog y pasa a ser el roadmap activo. `jsxgraph` 1.14.3 tiene licencia dual MIT/LGPL-3.0; se usará la opción MIT.
 - 2026-11-17: fase 1 completada. El CSS de JSXGraph se copia a `public/jsxgraph/jsxgraph.css` porque sus `exports` no exponen el archivo; la app lo carga con un `<link>`. El modo Punto usa `board.getUsrCoordsOfMouse` para colocar el punto donde se hace clic. Verificado en navegador a 1366, 1024 y 390 px; pruebas focalizadas en verde (6).
+- 2026-11-17: fase 2 completada. Presets Libre, Triángulo, Circunferencia y Rectas; funciones Parábola, Seno y Recta con visibilidad independiente. Portada `public/store/geometria.svg` creada. El chunk de comprobación de la app mide 1.029,1 KB sin comprimir y 255,9 KB gzip; `jsxgraph.css` (4,71 KB) y la portada (4,11 KB) se copian a `dist/client`. Verificado a 1366, 1024 y 390 px sin scroll horizontal, con foco visible, `touch-action` y reducción de movimiento.
+- El build avisa de un `eval` directo dentro del parser JessieCode de JSXGraph. La app no evalúa código introducido por el usuario; el aviso queda como riesgo de la dependencia, no como ejecución de la escena.
 - La primera versión no guarda construcciones: abrir, manipular y cerrar. Si se añade persistencia, el camino es `app_documents`.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.
 - No se cambia la versión del Site (`1.1.34`) ni se publica en Sites desde este roadmap.

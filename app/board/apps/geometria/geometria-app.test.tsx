@@ -3,11 +3,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("jsxgraph", () => {
   const create = vi.fn((type: string) => (
-    type === "point" ? { X: () => 0, Y: () => 0 } : {}
+    type === "point"
+      ? { X: () => 0, Y: () => 0 }
+      : { show: vi.fn(), hide: vi.fn(), setAttribute: vi.fn() }
   ));
   const board = {
     create,
     on: vi.fn(),
+    removeObject: vi.fn(),
     getUsrCoordsOfMouse: vi.fn(() => [0, 0]),
   };
   return {
@@ -44,5 +47,27 @@ describe("Geometría interactiva", () => {
 
     expect(screen.getByText("2 puntos · 1 elemento")).toBeTruthy();
     expect(screen.getByRole("status").textContent).toContain("Lienzo reiniciado");
+  });
+
+  it("cambia de preset y conserva sus recuentos", () => {
+    render(<GeometriaApp />);
+
+    fireEvent.change(screen.getByLabelText("Construcción"), { target: { value: "triangulo" } });
+
+    expect(screen.getByText("3 puntos · 3 elementos")).toBeTruthy();
+    expect(screen.getByRole("status").textContent).toContain("Preset Triángulo cargado");
+  });
+
+  it("superpone una función y permite ocultarla", () => {
+    render(<GeometriaApp />);
+
+    fireEvent.change(screen.getByLabelText("Función"), { target: { value: "parabola" } });
+    expect(screen.getByText("y = 0,15x² − 2")).toBeTruthy();
+
+    const toggle = screen.getByLabelText("Mostrar función") as HTMLInputElement;
+    expect(toggle.checked).toBe(true);
+    fireEvent.click(toggle);
+
+    expect(screen.getByRole("status").textContent).toContain("Función oculta");
   });
 });

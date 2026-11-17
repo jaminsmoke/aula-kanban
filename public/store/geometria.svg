@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Portada de Geometría interactiva">
+  <defs>
+    <linearGradient id="geo-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7f3ff"/>
+      <stop offset="1" stop-color="#d8d0ff"/>
+    </linearGradient>
+    <linearGradient id="geo-card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#faf8ff"/>
+    </linearGradient>
+    <clipPath id="geo-grid-clip">
+      <rect x="40" y="90" width="280" height="280" rx="18"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#geo-bg)"/>
+  <circle cx="1080" cy="80" r="220" fill="#b9adff" opacity=".42"/>
+  <circle cx="100" cy="630" r="190" fill="#ffffff" opacity=".38"/>
+
+  <g transform="translate(0 30)" font-family="Instrument Sans, system-ui, sans-serif">
+    <text x="86" y="230" fill="#1c2a5a" font-size="68" font-weight="700">Geometría</text>
+    <text x="86" y="300" fill="#2e438c" font-size="68" font-weight="700">interactiva</text>
+    <text x="88" y="360" fill="#4b5f96" font-size="27">Puntos, rectas y circunferencias</text>
+    <text x="88" y="400" fill="#4b5f96" font-size="27">que responden al arrastre</text>
+    <g transform="translate(88 452)">
+      <rect width="326" height="52" rx="26" fill="#ffffff" opacity=".84"/>
+      <text x="24" y="34" fill="#2e438c" font-size="19" font-weight="600">Construye · mide · experimenta</text>
+    </g>
+  </g>
+
+  <g transform="translate(724 88) rotate(3 180 250)" font-family="Instrument Sans, system-ui, sans-serif">
+    <rect width="360" height="500" rx="30" fill="url(#geo-card)" opacity=".97"/>
+    <rect x="18" y="18" width="324" height="42" rx="14" fill="#f5f1ff" stroke="#d9d1fa" stroke-width="2"/>
+    <text x="36" y="45" fill="#5b45b8" font-size="13" font-weight="700" letter-spacing="2">LIENZO</text>
+    <circle cx="300" cy="39" r="8" fill="#5b45b8"/>
+    <circle cx="318" cy="39" r="8" fill="#f5f1ff" stroke="#5b45b8" stroke-width="2"/>
+
+    <rect x="40" y="90" width="280" height="280" rx="18" fill="#fbfaff" stroke="#d9d1fa" stroke-width="3"/>
+    <g clip-path="url(#geo-grid-clip)" stroke="#e3def5" stroke-width="1.5">
+      <path d="M75 90V370M110 90V370M145 90V370M180 90V370M215 90V370M250 90V370M285 90V370"/>
+      <path d="M40 125H320M40 160H320M40 195H320M40 230H320M40 265H320M40 300H320M40 335H320"/>
+    </g>
+    <g clip-path="url(#geo-grid-clip)" stroke="#9f94c9" stroke-width="2.5" fill="none">
+      <path d="M40 230H312M180 370V98"/>
+      <path d="M312 230l-10 -5v10z" fill="#9f94c9" stroke="none"/>
+      <path d="M180 98l-5 10h10z" fill="#9f94c9" stroke="none"/>
+    </g>
+
+    <path d="M60 300 Q180 105 300 300" fill="none" stroke="#d9688a" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+    <circle cx="180" cy="230" r="92" fill="#e5a62e" fill-opacity=".08" stroke="#e5a62e" stroke-width="4"/>
+    <path d="M110 300 L250 300 L150 150 Z" fill="#7c5cff" fill-opacity=".08" stroke="#7c5cff" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M150 150 L250 300" fill="none" stroke="#2f9e8f" stroke-width="4" stroke-linecap="round"/>
+    <path d="M110 300 L150 150" fill="none" stroke="#e5a62e" stroke-width="4" stroke-linecap="round"/>
+
+    <g font-size="19" font-weight="700">
+      <circle cx="110" cy="300" r="7" fill="#7c5cff" stroke="#ffffff" stroke-width="2"/>
+      <text x="88" y="327" fill="#4b3a78">A</text>
+      <circle cx="250" cy="300" r="7" fill="#7c5cff" stroke="#ffffff" stroke-width="2"/>
+      <text x="260" y="327" fill="#4b3a78">B</text>
+      <circle cx="150" cy="150" r="7" fill="#7c5cff" stroke="#ffffff" stroke-width="2"/>
+      <text x="128" y="141" fill="#4b3a78">C</text>
+    </g>
+
+    <rect x="198" y="245" width="82" height="28" rx="9" fill="#ffffff" stroke="#e7c3cf" stroke-width="1.5"/>
+    <text x="211" y="265" fill="#a13a5b" font-size="15" font-weight="700">d = 4,2</text>
+
+    <rect x="40" y="410" width="280" height="52" rx="16" fill="#f5f1ff" stroke="#d9d1fa" stroke-width="2"/>
+    <circle cx="64" cy="436" r="6" fill="#e5a62e"/>
+    <text x="80" y="442" fill="#2e438c" font-size="17" font-weight="700">Arrastra los puntos</text>
+  </g>
+</svg>

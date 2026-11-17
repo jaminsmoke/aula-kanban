@@ -86,6 +86,7 @@
 .geometria-actions button:hover { background:var(--ui-surface-hover); }
 .geometria-actions button.is-active { border-color:var(--ui-action-text); background:var(--ui-action-primary); color:var(--ui-text-inverse); }
 .geometria-actions button:focus-visible { outline:var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
+.geometria-actions button { touch-action:manipulation; }
 
 .geometria-layout {
   flex:1 1 auto;
@@ -117,6 +118,7 @@
   border-radius: var(--radius-md);
   background:var(--ui-surface-pale);
   box-shadow:var(--ui-shadow-card);
+  touch-action:none;
 }
 
 .geometria-hint {
@@ -133,6 +135,69 @@
   display:flex;
   flex-direction:column;
   gap:10px;
+}
+
+.geometria-controls {
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  padding:11px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+}
+
+.geometria-controls label {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  color:var(--ui-text-secondary);
+  font-size:10.5px;
+  font-weight:700;
+}
+
+.geometria-controls select {
+  width:100%;
+  padding:7px 8px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-primary);
+  font:inherit;
+  font-size:11.5px;
+}
+
+.geometria-controls select:focus-visible,
+.geometria-check input:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:2px;
+}
+
+.geometria-expression {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11px;
+  font-variant-numeric:tabular-nums;
+  line-height:1.4;
+}
+
+.geometria-check {
+  flex-direction:row !important;
+  align-items:center;
+  gap:6px !important;
+  color:var(--ui-text-secondary);
+  font-size:11px !important;
+  font-weight:600 !important;
+}
+
+.geometria-check input {
+  accent-color:var(--ui-action-primary);
+  cursor:pointer;
+}
+
+.geometria-check input:disabled {
+  cursor:not-allowed;
+  opacity:.45;
 }
 
 .geometria-info,
@@ -154,6 +219,12 @@
   color:var(--ui-text-muted);
   font-size:11.5px;
   line-height:1.45;
+}
+
+.geometria-counts {
+  margin-top:7px !important;
+  color:var(--ui-text-secondary) !important;
+  font-variant-numeric:tabular-nums;
 }
 
 .geometria-status {
@@ -187,4 +258,11 @@
   .geometria-actions { gap:3px; }
   .geometria-actions button { padding:5px 6px; font-size:10.5px; }
   .geometria-side { grid-template-columns:1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .geometria-app { scroll-behavior:auto; }
+  .geometria-actions button,
+  .geometria-controls select,
+  .geometria-check input { transition:none; animation:none; }
 }
