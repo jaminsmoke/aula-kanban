@@ -48,10 +48,10 @@
 
 ### Fase 1 — Lienzo y edición de nodos
 
-- [ ] Instalar `@xyflow/react` 12.12.1 y fijar la versión.
-- [ ] Crear `app/board/apps/mapas/` con componente, estilos y modelo de mapa.
-- [ ] Montar el lienzo con nodos, conectores, zoom y paneo.
-- [ ] Implementar añadir, mover, conectar, seleccionar, editar etiquetas y eliminar.
+- [x] Instalar `@xyflow/react` 12.12.1 y fijar la versión.
+- [x] Crear `app/board/apps/mapas/` con componente, estilos y modelo de mapa.
+- [x] Montar el lienzo con nodos, conectores, zoom y paneo.
+- [x] Implementar añadir, mover, conectar, seleccionar, editar etiquetas y eliminar.
 - **Criterios de aceptación:**
   - Se pueden crear y mover nodos y conectar dos nodos existentes.
   - Se pueden editar etiquetas y eliminar nodos o conexiones.
@@ -100,6 +100,7 @@
 ## 6. Notas de sesión
 
 - 2026-11-17: STORE-10 sale del backlog y pasa a ser el roadmap activo. `@xyflow/react` 12.12.1 es MIT y el estado cabe en `app_documents`.
+- 2026-11-17: fase 1 completada. Lienzo React Flow con mapa de ejemplo, nodos arrastrables, conexiones desde los handles, selección, edición de etiqueta, eliminación y reinicio; zoom, paneo, controles y minimapa. Verificado en navegador a 1366, 1024 y 390 px sin scroll horizontal; modelo y ventana con 9 pruebas focalizadas en verde.
 - La primera versión no tiene colaboración en vivo ni IA generativa: se edita un mapa por proyecto y se guarda explícitamente.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.
 - No se cambia la versión del Site (`1.1.34`) ni se publica en Sites desde este roadmap.

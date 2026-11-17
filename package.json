@@ -30,6 +30,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@excalidraw/excalidraw": "^0.18.1",
     "@modelcontextprotocol/sdk": "^1.32.2",
+    "@xyflow/react": "12.12.1",
     "blockly": "^13.4.0",
     "chess.js": "1.4.0",
     "date-fns": "^4.4.0",

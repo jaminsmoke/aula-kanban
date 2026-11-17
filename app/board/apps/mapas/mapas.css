@@ -1,0 +1,309 @@
+/* ==========================================================================
+   Mapas conceptuales: lienzo React Flow y panel de edición
+   ========================================================================== */
+
+.mapas-app {
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  background:var(--ui-surface-hover);
+  color:var(--ui-text-primary);
+  container-type:inline-size;
+  container-name:mapasapp;
+}
+
+.mapas-toolbar {
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:9px 12px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-surface-faint);
+}
+
+.mapas-heading {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+  margin-right:auto;
+}
+
+.mapas-mark {
+  display:grid;
+  place-items:center;
+  flex:none;
+  width:34px;
+  height:34px;
+  border-radius: var(--radius-sm);
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+}
+
+.mapas-heading strong {
+  display:block;
+  font-size:14px;
+  line-height:1.2;
+}
+
+.mapas-heading small {
+  display:block;
+  margin-top:2px;
+  color:var(--ui-text-muted);
+  font-size:11px;
+  font-weight:600;
+  line-height:1.25;
+}
+
+.mapas-actions {
+  display:flex;
+  align-items:center;
+  gap:4px;
+  flex-wrap:wrap;
+}
+
+.mapas-actions button,
+.mapas-secondary {
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:6px 8px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+  font:inherit;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.mapas-actions button:hover,
+.mapas-secondary:hover { background:var(--ui-surface-hover); }
+.mapas-actions button:disabled { cursor:not-allowed; opacity:.45; }
+.mapas-actions button:focus-visible,
+.mapas-secondary:focus-visible,
+.mapas-editor input:focus-visible { outline:var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
+
+.mapas-layout {
+  flex:1 1 auto;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 240px;
+  align-content:stretch;
+  gap:14px;
+  padding:14px;
+  overflow:auto;
+}
+
+.mapas-stage {
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  height:100%;
+}
+
+.mapas-canvas {
+  flex:1 1 auto;
+  min-height:420px;
+  width:100%;
+  overflow:hidden;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-md);
+  background:var(--ui-surface-pale);
+  box-shadow:var(--ui-shadow-card);
+  touch-action:none;
+}
+
+.mapas-canvas .react-flow {
+  width:100%;
+  height:100%;
+}
+
+.mapas-hint {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+  line-height:1.45;
+  text-align:center;
+}
+
+.mapas-side {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.mapas-info,
+.mapas-editor,
+.mapas-tip {
+  padding:11px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+}
+
+.mapas-info h4,
+.mapas-editor h4 {
+  margin:0 0 5px;
+  color:var(--ui-text-primary);
+  font-size:13px;
+}
+
+.mapas-info p,
+.mapas-editor p {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+  line-height:1.45;
+}
+
+.mapas-status {
+  margin-top:7px !important;
+  color:var(--ui-text-secondary) !important;
+}
+
+.mapas-editor {
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.mapas-editor label {
+  color:var(--ui-text-secondary);
+  font-size:10.5px;
+  font-weight:700;
+}
+
+.mapas-editor input {
+  width:100%;
+  padding:7px 8px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-primary);
+  font:inherit;
+  font-size:11.5px;
+}
+
+.mapas-secondary {
+  align-self:flex-start;
+  margin-top:3px;
+}
+
+.mapas-muted {
+  color:var(--ui-text-muted) !important;
+}
+
+.mapas-tip {
+  display:flex;
+  align-items:flex-start;
+  gap:7px;
+  color:var(--ui-action-text);
+}
+
+.mapas-tip svg { flex:none; margin-top:1px; }
+.mapas-tip p { margin:0; color:var(--ui-text-muted); font-size:11.5px; line-height:1.45; }
+
+/* Nodos y conexiones de React Flow con los tokens del Site. */
+.react-flow__node.mapa-nodo {
+  width:170px;
+  padding:10px 12px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-primary);
+  font-size:12px;
+  font-weight:700;
+  line-height:1.3;
+  text-align:center;
+  box-shadow:var(--ui-shadow-card);
+}
+
+.react-flow__node.mapa-nodo.selected {
+  border-color:var(--ui-action-text);
+  box-shadow:0 0 0 2px var(--ui-focus-ring);
+}
+
+.react-flow__node.mapa-nodo--central {
+  border-color:var(--ui-action-text);
+  background:var(--ui-action-primary);
+  color:var(--ui-text-inverse);
+}
+
+.react-flow__handle {
+  width:9px;
+  height:9px;
+  border:2px solid var(--ui-surface-raised);
+  background:var(--ui-action-text);
+}
+
+.react-flow__edge-path {
+  stroke:var(--ui-border-strong);
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke:var(--ui-action-text);
+  stroke-width:3;
+}
+
+.react-flow__controls {
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-xs);
+  overflow:hidden;
+  box-shadow:var(--ui-shadow-card);
+}
+
+.react-flow__controls-button {
+  border-bottom-color:var(--ui-border-subtle);
+  background:var(--ui-surface-raised);
+  fill:var(--ui-text-secondary);
+}
+
+.react-flow__controls-button:hover { background:var(--ui-surface-hover); }
+
+.mapas-minimap {
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-raised) !important;
+}
+
+.react-flow__attribution {
+  background:var(--ui-surface-raised) !important;
+  color:var(--ui-text-muted) !important;
+}
+
+@container mapasapp (max-width: 760px) {
+  .mapas-layout { grid-template-columns:1fr; gap:10px; padding:10px; }
+  .mapas-stage { height:auto; }
+  .mapas-canvas { flex:none; height:420px; min-height:420px; }
+  .mapas-side { display:grid; grid-template-columns:1fr 1fr; align-items:start; }
+  .mapas-tip { grid-column:1 / -1; }
+  .mapas-hint { display:none; }
+}
+
+@container mapasapp (max-width: 560px) {
+  .mapas-toolbar { padding:8px 10px; }
+  .mapas-heading small { display:none; }
+  .mapas-actions { gap:3px; }
+  .mapas-actions button { padding:5px 6px; font-size:10.5px; }
+  .mapas-canvas { height:360px; min-height:360px; }
+  .mapas-side { grid-template-columns:1fr; }
+  .mapas-minimap { display:none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mapas-app { scroll-behavior:auto; }
+  .mapas-actions button,
+  .mapas-secondary,
+  .mapas-editor input { transition:none; animation:none; }
+}
