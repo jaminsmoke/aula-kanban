@@ -49,10 +49,10 @@
 
 ### Fase 1 — Editor, parser y vista previa
 
-- [ ] Instalar `reveal.js` 6.0.2 y fijar la versión.
-- [ ] Crear `app/board/apps/presentaciones/` con modelo, parser de Markdown y estilos.
-- [ ] Montar el editor, el separador de diapositivas y la vista previa.
-- [ ] Añadir el modo presentación con navegación por teclado y reinicio.
+- [x] Instalar `reveal.js` 6.0.2 y fijar la versión.
+- [x] Crear `app/board/apps/presentaciones/` con modelo, parser de Markdown y estilos.
+- [x] Montar el editor, el separador de diapositivas y la vista previa.
+- [x] Añadir el modo presentación con navegación por teclado y reinicio.
 - **Criterios de aceptación:**
   - Se escriben varias diapositivas y la vista previa coincide con el editor.
   - El modo presentación avanza y retrocede con teclado.
@@ -103,6 +103,7 @@
 ## 6. Notas de sesión
 
 - 2026-11-17: STORE-11 sale del backlog y pasa a ser el roadmap activo. `reveal.js` 6.0.2 es MIT y el estado cabe en `app_documents`.
+- 2026-11-17: fase 1 completada. Editor Markdown con separador `---`, parser seguro sin HTML crudo, vista previa de todas las diapositivas, modo presentación con reveal.js y navegación por teclado. Verificado en navegador a 1366, 1024 y 390 px sin scroll horizontal; modelo y ventana con 10 pruebas focalizadas en verde.
 - La primera versión no importa PPTX ni genera PDF; el Markdown limitado evita HTML crudo.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.
 - No se cambia la versión del Site (`1.1.34`) ni se publica en Sites desde este roadmap.
