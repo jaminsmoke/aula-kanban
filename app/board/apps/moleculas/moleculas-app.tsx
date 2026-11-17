@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import type { GLModel, GLViewer } from "3dmol";
 import { Atom, RotateCcw, Tags, ZoomIn, ZoomOut } from "lucide-react";
 import { MOLECULES, getMolecule } from "./moleculas-data";
@@ -65,6 +65,16 @@ function preferredZoomFactor(model: GLModel): number {
 }
 
 /**
+ * Devuelve la duración de una animación respetando la reducción de movimiento.
+ * @param duration - Duración normal en milisegundos.
+ * @returns La duración efectiva.
+ */
+function motionDuration(duration: number): number {
+  if (typeof window === "undefined") return 0;
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ? 0 : duration;
+}
+
+/**
  * Moléculas 3D: visor local con rotación, zoom y etiquetas.
  * @returns La ventana con el visor y la biblioteca de moléculas.
  */
@@ -74,16 +84,20 @@ export default function MoleculasApp() {
   const modelRef = useRef<GLModel | null>(null);
   const [selectedId, setSelectedId] = useState(DEFAULT_MOLECULE_ID);
   const [labels, setLabels] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [initError, setInitError] = useState<string | null>(null);
   const [actionStatus, setActionStatus] = useState("");
   const [viewerVersion, setViewerVersion] = useState(0);
   const molecule = getMolecule(selectedId);
   const counts = countSdfAtoms(molecule.sdf);
-  const status = failed
-    ? "No se pudo iniciar WebGL en este navegador."
-    : !isRenderableMolecule(molecule)
-      ? "La molécula seleccionada no tiene una estructura válida."
-      : actionStatus || `${molecule.name}: ${counts.atoms} átomos y ${counts.bonds} enlaces.`;
+  const loading = !initError && viewerVersion === 0;
+  const viewerReady = viewerVersion > 0 && !initError;
+  const status = initError
+    ? initError
+    : loading
+      ? "Cargando visor molecular…"
+      : !isRenderableMolecule(molecule)
+        ? "La molécula seleccionada no tiene una estructura válida."
+        : actionStatus || `${molecule.name}: ${counts.atoms} átomos y ${counts.bonds} enlaces.`;
 
   useEffect(() => {
     const element = canvasRef.current;
@@ -100,14 +114,16 @@ export default function MoleculasApp() {
             antialias: true,
           });
         } catch {
-          setFailed(true);
+          setInitError("No se pudo iniciar WebGL. Prueba con otro navegador o activa la aceleración gráfica.");
           return;
         }
         viewerRef.current = viewer;
         setViewerVersion((value) => value + 1);
       })
       .catch(() => {
-        if (active) setFailed(true);
+        if (active) {
+          setInitError("No se pudo cargar el visor 3D. Recarga la página para intentarlo de nuevo.");
+        }
       });
 
     return () => {
@@ -120,7 +136,7 @@ export default function MoleculasApp() {
   }, []);
 
   useEffect(() => {
-    if (failed) return;
+    if (initError) return;
     const viewer = viewerRef.current;
     if (!viewer) return;
 
@@ -145,10 +161,10 @@ export default function MoleculasApp() {
         setActionStatus("No se pudo cargar la molécula seleccionada.");
       }, 0);
     }
-  }, [failed, molecule, viewerVersion]);
+  }, [initError, molecule, viewerVersion]);
 
   useEffect(() => {
-    if (failed) return;
+    if (initError) return;
     const viewer = viewerRef.current;
     const model = modelRef.current;
     if (!viewer || !model) return;
@@ -156,7 +172,7 @@ export default function MoleculasApp() {
     viewer.removeAllLabels();
     if (labels) addAtomLabels(viewer, model);
     viewer.render();
-  }, [failed, labels, selectedId, viewerVersion]);
+  }, [initError, labels, selectedId, viewerVersion]);
 
   /**
    * Aplica un factor de zoom al visor.
@@ -165,7 +181,7 @@ export default function MoleculasApp() {
   function zoom(factor: number) {
     const viewer = viewerRef.current;
     if (!viewer) return;
-    viewer.zoom(factor, 250);
+    viewer.zoom(factor, motionDuration(250));
     viewer.render();
     setActionStatus(factor > 1 ? "Vista ampliada." : "Vista reducida.");
   }
@@ -181,6 +197,53 @@ export default function MoleculasApp() {
     setActionStatus("Vista reajustada.");
   }
 
+  /**
+   * Gira o amplía el visor con el teclado.
+   * @param event - Evento de teclado del lienzo.
+   */
+  function handleViewerKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const viewer = viewerRef.current;
+    if (!viewer || !viewerReady) return;
+
+    const rotation = 15;
+    const duration = motionDuration(120);
+
+    switch (event.key) {
+      case "ArrowLeft":
+        viewer.rotate(rotation, "y", duration);
+        break;
+      case "ArrowRight":
+        viewer.rotate(-rotation, "y", duration);
+        break;
+      case "ArrowUp":
+        viewer.rotate(rotation, "x", duration);
+        break;
+      case "ArrowDown":
+        viewer.rotate(-rotation, "x", duration);
+        break;
+      case "+":
+      case "=":
+        event.preventDefault();
+        zoom(1.2);
+        return;
+      case "-":
+      case "_":
+        event.preventDefault();
+        zoom(0.8);
+        return;
+      case "0":
+        event.preventDefault();
+        resetView();
+        return;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    viewer.render();
+    setActionStatus("Vista girada.");
+  }
+
   return (
     <div className="moleculas-app">
       <header className="moleculas-toolbar">
@@ -194,15 +257,15 @@ export default function MoleculasApp() {
           </span>
         </div>
         <div className="moleculas-actions" role="group" aria-label="Controles del visor">
-          <button type="button" onClick={() => zoom(1.2)} aria-label="Acercar">
+          <button type="button" onClick={() => zoom(1.2)} aria-label="Acercar" disabled={!viewerReady}>
             <ZoomIn size={15} aria-hidden />
             <span>Acercar</span>
           </button>
-          <button type="button" onClick={() => zoom(0.8)} aria-label="Alejar">
+          <button type="button" onClick={() => zoom(0.8)} aria-label="Alejar" disabled={!viewerReady}>
             <ZoomOut size={15} aria-hidden />
             <span>Alejar</span>
           </button>
-          <button type="button" onClick={resetView} aria-label="Recentrar vista">
+          <button type="button" onClick={resetView} aria-label="Recentrar vista" disabled={!viewerReady}>
             <RotateCcw size={15} aria-hidden />
             <span>Recentrar</span>
           </button>
@@ -211,6 +274,7 @@ export default function MoleculasApp() {
             onClick={() => setLabels((value) => !value)}
             aria-pressed={labels}
             aria-label="Mostrar etiquetas de átomos"
+            disabled={!viewerReady}
           >
             <Tags size={15} aria-hidden />
             <span>Etiquetas</span>
@@ -225,16 +289,23 @@ export default function MoleculasApp() {
               ref={canvasRef}
               className="moleculas-canvas"
               role="img"
-              aria-label={`Modelo 3D de ${molecule.name}`}
+              aria-label={`Modelo 3D de ${molecule.name}. Usa las flechas para girar y más o menos para ampliar.`}
+              aria-describedby="moleculas-hint"
+              tabIndex={0}
+              onKeyDown={handleViewerKeyDown}
             />
-            {failed ? (
-              <p className="moleculas-fallback" role="alert">
-                No se pudo iniciar WebGL. Prueba con otro navegador o activa la aceleración gráfica.
+            {loading ? (
+              <p className="moleculas-loading" aria-hidden="true">
+                <span className="moleculas-spinner" />
+                Cargando visor…
               </p>
             ) : null}
+            {initError ? (
+              <p className="moleculas-fallback" role="alert">{initError}</p>
+            ) : null}
           </div>
-          <p className="moleculas-hint">
-            Arrastra para girar. Usa la rueda o los botones para ampliar y recentrar.
+          <p className="moleculas-hint" id="moleculas-hint">
+            Arrastra para girar. Usa la rueda o los botones para ampliar. Con el visor enfocado, las flechas giran y + / − amplían.
           </p>
         </section>
 

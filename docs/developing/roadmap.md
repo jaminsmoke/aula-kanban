@@ -65,11 +65,11 @@
 
 ### Fase 2 — Catálogo curado, accesibilidad y portada
 
-- [ ] Completar la biblioteca con 6 a 10 moléculas y revisar coordenadas y atribución.
-- [ ] Revisar foco, teclado, contraste y reducción de movimiento.
-- [ ] Añadir estados de carga, error y WebGL no disponible.
-- [ ] Crear `public/store/moleculas.svg` con el formato de las portadas actuales.
-- [ ] Medir el chunk y confirmar que `3dmol` y los datos se sirven desde el Site.
+- [x] Completar la biblioteca con 6 a 10 moléculas y revisar coordenadas y atribución.
+- [x] Revisar foco, teclado, contraste y reducción de movimiento.
+- [x] Añadir estados de carga, error y WebGL no disponible.
+- [x] Crear `public/store/moleculas.svg` con el formato de las portadas actuales.
+- [x] Medir el chunk y confirmar que `3dmol` y los datos se sirven desde el Site.
 - **Criterios de aceptación:**
   - Todas las moléculas de la biblioteca cargan y muestran su información.
   - La atribución es visible y no hay recursos de red.
@@ -106,6 +106,7 @@
 
 ## 6. Notas de sesión
 
+- 2026-11-17: fase 2 completada. La biblioteca se amplió a ocho moléculas (agua, metano, amoniaco, etanol, benceno, cafeína, aspirina y glucosa) con SDF locales y atribución de PubChem. Se añadieron teclado (flechas, + / − y 0), foco visible, reducción de movimiento, estados de carga, error y WebGL no disponible, y la portada `public/store/moleculas.svg`. Chunk diferido: `3Dmol` 561,2 KB / 158,1 KB gzip, app 18,5 KB / 5,3 KB gzip, CSS 5,6 KB / 1,5 KB gzip y portada 5,28 KB. Revisado a 1366, 1024 y 390 px; 10 pruebas focalizadas en verde.
 - 2026-11-17: fase 1 completada. `3dmol` 2.5.5 se carga dinámicamente solo en el cliente para no romper la SSR; el visor incluye cuatro estructuras SDF locales (agua, metano, etanol y cafeína), rotación, zoom, etiquetas y ficha con átomos, enlaces y atribución de PubChem. Verificado en navegador a 1366, 1024 y 390 px sin scroll horizontal; 9 pruebas focalizadas en verde.
 - 2026-11-17: STORE-12 sale del backlog y pasa a ser el roadmap activo. `3dmol` 2.5.5 es BSD-3 y la biblioteca se servirá localmente.
 - La primera versión no descarga estructuras ni guarda la vista: es un visor de referencia, no un editor.

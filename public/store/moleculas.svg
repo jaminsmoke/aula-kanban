@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Portada de Moléculas 3D">
+  <defs>
+    <linearGradient id="mol-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f2f8ff"/>
+      <stop offset="1" stop-color="#d8e7ff"/>
+    </linearGradient>
+    <linearGradient id="mol-card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f8fbff"/>
+    </linearGradient>
+    <radialGradient id="mol-c" cx=".34" cy=".28" r=".78">
+      <stop offset="0" stop-color="#8d93a6"/>
+      <stop offset=".55" stop-color="#555b6e"/>
+      <stop offset="1" stop-color="#343846"/>
+    </radialGradient>
+    <radialGradient id="mol-n" cx=".34" cy=".28" r=".78">
+      <stop offset="0" stop-color="#7fa8ff"/>
+      <stop offset=".55" stop-color="#3569d6"/>
+      <stop offset="1" stop-color="#1e3f94"/>
+    </radialGradient>
+    <radialGradient id="mol-o" cx=".34" cy=".28" r=".78">
+      <stop offset="0" stop-color="#ff9a8f"/>
+      <stop offset=".55" stop-color="#e34b43"/>
+      <stop offset="1" stop-color="#a32424"/>
+    </radialGradient>
+    <radialGradient id="mol-h" cx=".34" cy=".28" r=".78">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".6" stop-color="#e5e8f1"/>
+      <stop offset="1" stop-color="#b8bfd0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#mol-bg)"/>
+  <circle cx="1080" cy="80" r="220" fill="#a9c5ff" opacity=".45"/>
+  <circle cx="100" cy="630" r="190" fill="#ffffff" opacity=".4"/>
+
+  <g transform="translate(0 30)" font-family="Instrument Sans, system-ui, sans-serif">
+    <text x="86" y="230" fill="#1c2a5a" font-size="68" font-weight="700">Moléculas</text>
+    <text x="86" y="300" fill="#2e438c" font-size="68" font-weight="700">en 3D</text>
+    <text x="88" y="360" fill="#4b5f96" font-size="27">Gira, amplía y descubre</text>
+    <text x="88" y="400" fill="#4b5f96" font-size="27">la geometría de la materia</text>
+    <g transform="translate(88 452)">
+      <rect width="326" height="52" rx="26" fill="#ffffff" opacity=".84"/>
+      <text x="24" y="34" fill="#2e438c" font-size="19" font-weight="600">Explora · gira · comprende</text>
+    </g>
+  </g>
+
+  <g transform="translate(724 88) rotate(3 180 250)" font-family="Instrument Sans, system-ui, sans-serif">
+    <rect width="360" height="500" rx="30" fill="url(#mol-card)" opacity=".97"/>
+    <rect x="18" y="18" width="324" height="42" rx="14" fill="#eef5ff" stroke="#d4e2fb" stroke-width="2"/>
+    <text x="36" y="45" fill="#3355c8" font-size="13" font-weight="700" letter-spacing="2">VISOR 3D</text>
+    <circle cx="300" cy="39" r="8" fill="#3355c8"/>
+    <circle cx="318" cy="39" r="8" fill="#eef5ff" stroke="#3355c8" stroke-width="2"/>
+
+    <g stroke="#8fa6d9" stroke-width="10" stroke-linecap="round">
+      <path d="M120 210 L165 175 L215 190 L235 235 L200 272 L145 262 Z"/>
+      <path d="M235 235 L280 218 L298 258 L262 292 L200 272"/>
+      <path d="M165 175 L130 140"/>
+      <path d="M120 210 L82 238"/>
+      <path d="M280 218 L320 190"/>
+      <path d="M145 262 L120 300"/>
+    </g>
+    <g stroke="#6f86bd" stroke-width="4" stroke-linecap="round">
+      <path d="M120 210 L82 238"/>
+      <path d="M280 218 L320 190"/>
+    </g>
+
+    <g>
+      <circle cx="120" cy="210" r="22" fill="url(#mol-c)"/>
+      <circle cx="165" cy="175" r="22" fill="url(#mol-c)"/>
+      <circle cx="215" cy="190" r="23" fill="url(#mol-n)"/>
+      <circle cx="235" cy="235" r="22" fill="url(#mol-c)"/>
+      <circle cx="200" cy="272" r="23" fill="url(#mol-n)"/>
+      <circle cx="145" cy="262" r="22" fill="url(#mol-c)"/>
+      <circle cx="280" cy="218" r="22" fill="url(#mol-c)"/>
+      <circle cx="298" cy="258" r="23" fill="url(#mol-n)"/>
+      <circle cx="262" cy="292" r="22" fill="url(#mol-c)"/>
+      <circle cx="130" cy="140" r="18" fill="url(#mol-c)"/>
+      <circle cx="82" cy="238" r="24" fill="url(#mol-o)"/>
+      <circle cx="320" cy="190" r="24" fill="url(#mol-o)"/>
+      <circle cx="120" cy="300" r="16" fill="url(#mol-h)"/>
+      <circle cx="153" cy="132" r="13" fill="url(#mol-h)"/>
+      <circle cx="110" cy="128" r="13" fill="url(#mol-h)"/>
+      <circle cx="58" cy="230" r="13" fill="url(#mol-h)"/>
+      <circle cx="338" cy="182" r="13" fill="url(#mol-h)"/>
+    </g>
+
+    <g fill="#ffffff" opacity=".55">
+      <circle cx="113" cy="202" r="6"/>
+      <circle cx="158" cy="167" r="6"/>
+      <circle cx="208" cy="182" r="6"/>
+      <circle cx="228" cy="227" r="6"/>
+      <circle cx="193" cy="264" r="6"/>
+      <circle cx="138" cy="254" r="6"/>
+      <circle cx="273" cy="210" r="6"/>
+      <circle cx="291" cy="250" r="6"/>
+      <circle cx="255" cy="284" r="6"/>
+      <circle cx="76" cy="230" r="7"/>
+      <circle cx="314" cy="182" r="7"/>
+    </g>
+
+    <rect x="38" y="380" width="284" height="64" rx="16" fill="#f5f9ff" stroke="#d4e2fb" stroke-width="2"/>
+    <text x="58" y="406" fill="#1c2a5a" font-size="19" font-weight="700">Cafeína</text>
+    <text x="58" y="428" fill="#4b5f96" font-size="15">C₈H₁₀N₄O₂ · 24 átomos</text>
+
+    <rect x="38" y="454" width="284" height="34" rx="17" fill="#3355c8"/>
+    <text x="70" y="476" fill="#ffffff" font-size="12.5" font-weight="700">Arrastra para girar</text>
+    <path d="M250 464l8 8-8 8" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

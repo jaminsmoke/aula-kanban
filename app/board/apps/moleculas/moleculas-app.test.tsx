@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { MOLECULES } from "./moleculas-data";
+import { MOLECULES, getMolecule } from "./moleculas-data";
 
 const threeDmolMock = vi.hoisted(() => {
   const atoms = [
@@ -16,6 +16,7 @@ const threeDmolMock = vi.hoisted(() => {
     setStyle: vi.fn(),
     zoomTo: vi.fn(),
     zoom: vi.fn(),
+    rotate: vi.fn(),
     render: vi.fn(),
     addLabel: vi.fn(),
     clear: vi.fn(),
@@ -45,6 +46,7 @@ describe("Moléculas 3D", () => {
 
     expect(screen.getByText("Moléculas 3D")).toBeTruthy();
     expect(screen.getByLabelText("Molécula")).toHaveProperty("value", "agua");
+    expect(screen.getAllByRole("option")).toHaveLength(8);
     expect(screen.getByRole("heading", { name: "Agua" })).toBeTruthy();
     expect(screen.getByText("H₂O")).toBeTruthy();
 
@@ -65,7 +67,7 @@ describe("Moléculas 3D", () => {
     expect(screen.getByText("24")).toBeTruthy();
     expect(screen.getByText("25")).toBeTruthy();
     await waitFor(() => {
-      expect(threeDmolMock.viewer.addModel).toHaveBeenLastCalledWith(MOLECULES[3].sdf, "sdf");
+      expect(threeDmolMock.viewer.addModel).toHaveBeenLastCalledWith(getMolecule("cafeina").sdf, "sdf");
     });
   });
 
@@ -84,6 +86,19 @@ describe("Moléculas 3D", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Recentrar vista" }));
     expect(threeDmolMock.viewer.zoomTo).toHaveBeenCalled();
+  });
+
+  it("gira y amplía con el teclado", async () => {
+    render(<MoleculasApp />);
+    await waitFor(() => expect(threeDmolMock.viewer.addModel).toHaveBeenCalled());
+
+    const viewport = screen.getByRole("img", { name: /Modelo 3D de Agua/ });
+    viewport.focus();
+    fireEvent.keyDown(viewport, { key: "ArrowLeft" });
+    expect(threeDmolMock.viewer.rotate).toHaveBeenCalledWith(15, "y", expect.any(Number));
+
+    fireEvent.keyDown(viewport, { key: "+" });
+    expect(threeDmolMock.viewer.zoom).toHaveBeenCalledWith(1.2, expect.any(Number));
   });
 
   it("muestra un aviso cuando WebGL no está disponible", async () => {
