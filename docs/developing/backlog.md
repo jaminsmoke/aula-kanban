@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 5 entradas: STORE-08 y STORE-10 a STORE-13 pendientes
+> **Roadmap:** STORE-08 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 4 entradas: STORE-10 a STORE-13 pendientes
 
 ---
 
@@ -46,16 +46,3 @@
   3. Plantillas de línea temporal histórica y de proyecto.
 - Criterios: crear/editar eventos y épocas, mover y hacer zoom, guardar/cargar, sin red; revisar a 1366, 1024 y 390 px.
 - Notas: elegir explícitamente la opción MIT; no usar recursos de red ni mapas. Mantener el estado como JSON validado.
-
-## 2026-11-16 — STORE-08 · Geometría interactiva
-
-- Contexto: `jsxgraph` 1.14.3 tiene licencia dual MIT/LGPL-3.0 y permite construcciones, funciones y lugares geométricos con arrastre. Usando la opción MIT encaja con la política de licencias y complementa la calculadora y la tabla periódica.
-- Alcance:
-  1. Crear `app/board/apps/geometria/` con puntos, segmentos, rectas, circunferencias, etiquetas y medidas.
-  2. Añadir presets de construcción y representación de funciones; permitir arrastrar y reiniciar.
-  3. Revisar el tamaño del chunk y el CSS de JSXGraph, sirviendo todos los assets desde el Site.
-- Antes de retomarlo:
-  - [ ] Confirmar la opción MIT y conservar el aviso de licencia.
-  - [ ] Decidir si las construcciones se guardan o si la primera versión es efímera.
-- Criterios: construcciones manipulables y reiniciables, sin CDN ni red, con aviso MIT; funciona a 1366, 1024 y 390 px y pasa pruebas, tipos, lint y build.
-- Notas: no usar la opción LGPL. JSXGraph es más grande que Matter.js (~400 KB): medir el chunk antes de integrarlo y valorar si conviene dividir la app en una carga aún más específica.
