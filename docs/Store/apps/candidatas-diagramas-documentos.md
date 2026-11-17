@@ -3,10 +3,9 @@
 Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
 > **Integradas:** Mapas conceptuales como **STORE-10**, Presentaciones como
-> **STORE-11**, Líneas de tiempo como **STORE-13** y Hoja de cálculo como
-> **STORE-14**. **En roadmap:** Notas y documentos como **STORE-15**. **En
-> backlog:** Visor Office como **STORE-16**. El resto sigue como candidato hasta
-> que se priorice.
+> **STORE-11**, Líneas de tiempo como **STORE-13**, Hoja de cálculo como
+> **STORE-14** y Notas y documentos como **STORE-15**. **En backlog:** Visor
+> Office como **STORE-16**. El resto sigue como candidato hasta que se priorice.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|
@@ -14,7 +13,6 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 | Código | `codemirror` 6.0.2 | MIT | Editor con resaltado y autocompletado | ~300 KB | Alternativa ligera a Monaco |
 | Código (completo) | `monaco-editor` 0.57.0 | MIT | Editor de VS Code | ~2 MB+ | Solo si hace falta IntelliSense real |
 | Playground web | `@codesandbox/sandpack-react` 2.20.0 | Apache-2.0 | HTML/CSS/JS editable con vista previa | ~300 KB | Comprobar que no depende de su CDN en producción |
-| Texto enriquecido | `@tiptap/core` 3.34.0 | MIT | Apuntes con formato | ~250 KB + extensiones | En roadmap STORE-15; usar solo extensiones MIT |
 | Gráficas | `chart.js` 4.6.1 | MIT | Barras, líneas, sectores | ~200 KB | Pieza de apoyo |
 | Gráficas | `@observablehq/plot` 0.6.19 | ISC | Gráficas declarativas | ~250 KB | Alternativa a Chart.js |
 | Funciones | `function-plot` 1.26.0 | MIT | Representación de funciones | ~150 KB | Matemáticas |
@@ -25,11 +23,10 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
 ## Valoración
 
-- **Mapas conceptuales**, **Presentaciones**, **Líneas de tiempo** y **Hoja de
-  cálculo** ya están integradas y cubren edición de mapas, diapositivas,
-  secuencias temporales y hojas de cálculo.
-- **Notas y documentos** está en roadmap como **STORE-15**; **Visor Office** es
-  la entrada abierta en el backlog.
+- **Mapas conceptuales**, **Presentaciones**, **Líneas de tiempo**, **Hoja de
+  cálculo** y **Notas y documentos** ya están integradas y cubren edición de
+  mapas, diapositivas, secuencias temporales, hojas de cálculo y documentos.
+- **Visor Office** es la entrada abierta en el backlog.
 - **Mapas mentales** es una variante más estrecha de los mapas conceptuales; puede
   esperar a que se priorice una necesidad concreta.
 - **Texto enriquecido**, **documentos Office** y **visores PDF** amplían el trabajo

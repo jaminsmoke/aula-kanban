@@ -17,7 +17,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | STORE-15 activo: Notas y documentos | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | Plantilla limpia: sin roadmap activo | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -80,7 +80,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
-- **Roadmap STORE-15 activo:** Notas y documentos con `@tiptap/core` 3.34.0 (MIT), editor de texto enriquecido, guardado JSON por proyecto en `app_documents`, invitados en solo lectura y exportación HTML local; plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.35` y sin publicación.
+- **Roadmap STORE-15 completado:** Notas y documentos integrada con `@tiptap/core` 3.34.0 (MIT): editor de texto enriquecido, título, listas, citas, código, enlaces, guardado por proyecto en `app_documents`, invitados en solo lectura y exportación HTML local. `AULA_STORE_VERSION` sube a `1.10.0`. Verificado en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-15.md`](historial/roadmap-store-15.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap STORE-14 completado:** Hoja de cálculo integrada con `jspreadsheet-ce` 5.0.4 (MIT): celdas editables, fórmulas, formato esencial, filas y columnas ampliables, CSV local protegido y guardado por proyecto en `app_documents`; invitados en solo lectura. `AULA_STORE_VERSION` sube a `1.9.0`. Verificado en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-14.md`](historial/roadmap-store-14.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap STORE-13 completado:** Líneas de tiempo integrada con `vis-timeline` 8.5.6 en su opción MIT: eventos, épocas, grupos, zoom, plantillas, guardado por proyecto en `app_documents`, rango visible persistido y modo lectura para invitados. `AULA_STORE_VERSION` sube a `1.8.0`. Verificado en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-13.md`](historial/roadmap-store-13.md). Sin cambio de versión del Site ni publicación.
 - **Roadmap STORE-12 completado:** Moléculas 3D integrada con `3Dmol` 2.5.5: visor local con rotación, zoom, etiquetas, ficha con fórmula y ocho estructuras SDF con atribución de PubChem, sin red; control por teclado y portada propia. `AULA_STORE_VERSION` sube a `1.7.0`. Verificado en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-12.md`](historial/roadmap-store-12.md). Sin cambio de versión del Site ni publicación.

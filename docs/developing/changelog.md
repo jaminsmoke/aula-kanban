@@ -1,8 +1,34 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-15 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-17 — Roadmap STORE-15 · Notas y documentos en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Notas y documentos se incorpora con `@tiptap/core` 3.34.0 y sus extensiones MIT: título, texto enriquecido, listas, citas, código, enlaces y deshacer/rehacer.
+- El documento se guarda por proyecto en `app_documents` con validación defensiva de nodos, marcas, tamaño, profundidad y enlaces; invitados en solo lectura.
+- Exportación HTML autónoma y local, con título y estilos incluidos y sin scripts, imágenes ni recursos externos.
+- Portada `public/store/documentos.svg`, ficha, registro lazy y entrada en «Mejores aplicaciones». `AULA_STORE_VERSION` sube a `1.10.0`; el Site sigue en `1.1.35`.
+- Declaración MCP sin herramientas propias; ayuda, matriz de herramientas, catálogo y documentación actualizados. Aviso MIT de Tiptap añadido. La demo no cambia.
+
+### Verificación
+
+- Tienda y ficha revisadas a 1366, 1024 y 390 px con la portada, versión `1.0.0`, upstream `@tiptap/core 3.34.0` y sus extensiones; la app se instaló, abrió, guardó y recuperó con datos reales en un proyecto local.
+- La app se revisó a pantalla completa a 1366, 1024 y 390 px: formato, edición de enlaces, guardado/carga, exportación HTML y modo invitado cubiertos por pruebas.
+- Chunk diferido: `documentos-app` 421.016 B / 131.430 B gzip, CSS 8.581 B / 1.874 B gzip y portada 3.926 B; todo se sirve desde `dist/client`.
+- Suite completa: **180 archivos / 1.289 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `1a8a386` (Fase 1), `a456931` (Fase 2) y el commit de cierre. Push único a `github main`; sin publicación en Sites ni cambio de versión del Site: sigue en **1.1.35**.
+
+### Seguimiento
+
+- El backlog queda con DEV-01 (evaluación de pnpm) y STORE-16 (Visor Office). El plan completo está en [`historial/roadmap-store-15.md`](../historial/roadmap-store-15.md).
 
 ---
 

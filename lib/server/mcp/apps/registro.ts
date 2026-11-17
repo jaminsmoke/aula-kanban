@@ -87,6 +87,11 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     herramientas: [],
     pendiente: "La hoja se guarda en app_documents, pero la edición, el cálculo y la exportación CSV viven en el navegador; no hay herramientas MCP específicas en esta versión.",
   },
+  documentos: {
+    appId: "documentos",
+    herramientas: [],
+    pendiente: "El documento se guarda en app_documents, pero la edición, los enlaces y la exportación HTML viven en el navegador; no hay herramientas MCP específicas en esta versión.",
+  },
 };
 
 /** Herramientas de todas las apps, en el orden de sus declaraciones. */

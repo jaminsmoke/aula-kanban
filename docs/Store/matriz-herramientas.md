@@ -30,6 +30,7 @@ comporten las apps de Tienda; no cambia por sí misma los permisos actuales.
 | Moléculas 3D | Todos los roles del proyecto; invitados en local | Sí | No, visor local | No | Dispositivo / navegador | Sin herramienta |
 | Líneas de tiempo | Todos los roles; invitados en solo lectura | Sí | Owner, admin, teacher y student editan; guest no | Documento compartido de proyecto | `app_documents` | Sin herramienta |
 | Hoja de cálculo | Todos los roles; invitados en solo lectura | Sí | Owner, admin, teacher y student editan; guest no | Documento compartido de proyecto | `app_documents` | Sin herramienta |
+| Notas y documentos | Todos los roles; invitados en solo lectura | Sí | Owner, admin, teacher y student editan; guest no | Documento compartido de proyecto | `app_documents` | Sin herramienta |
 | Apertura y ventanas | Cualquier miembro con acceso al proyecto y la app instalada | Sí, sobre sus propias pestañas | No cambia contenido | No | Estado efímero de ventanas | `abrir_app`, `listar_ventanas`, `cerrar_app`, `minimizar_app`, `restaurar_app`, `ampliar_app` |
 | Instalación global | Solo owner y admin de instancia | Ver catálogo e instalar/desinstalar | No aplica | No | Instancia / `instance_apps` | `listar_apps`, `obtener_app`, `instalar_app`, `desinstalar_app` |
 
