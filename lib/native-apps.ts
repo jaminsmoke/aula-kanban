@@ -25,9 +25,9 @@ export type NativeCategory = StoreTopCategory;
 export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
-export const AULA_STORE_VERSION = "1.3.0";
+export const AULA_STORE_VERSION = "1.4.0";
 
-export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica"] as const;
+export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria"] as const;
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
 
@@ -178,6 +178,19 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     appVersion: "1.0.0",
     upstream: { name: "matter-js", version: "0.20.0" },
     window: { width: 900, height: 700 },
+  },
+  {
+    id: "geometria",
+    name: "Geometría interactiva",
+    tagline: "Construcciones y funciones que responden al arrastre.",
+    description: "Geometría interactiva con JSXGraph (MIT): puntos, segmentos, rectas, circunferencias, medidas dinámicas y funciones superpuestas; presets y escena efímera sin red ni servidor.",
+    categories: ["Educación"],
+    subcategory: "Herramientas",
+    cover: "/store/geometria.svg",
+    features: ["Puntos, segmentos, rectas y circunferencias", "Presets de triángulo, circunferencia y rectas", "Funciones y medidas dinámicas"],
+    appVersion: "1.0.0",
+    upstream: { name: "jsxgraph", version: "1.14.3" },
+    window: { width: 1000, height: 720 },
   },
 ];
 

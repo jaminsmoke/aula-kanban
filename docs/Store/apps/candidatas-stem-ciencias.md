@@ -2,9 +2,9 @@
 
 Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
-> **Integrada:** Física 2D (`matter-js`) cerró como **STORE-07**. **En roadmap:**
-> Geometría interactiva (`jsxgraph`) como **STORE-08**. **En backlog:** Moléculas
-> 3D (`3dmol`) como **STORE-12**. El resto sigue como candidato hasta que se
+> **Integradas:** Física 2D (`matter-js`) como **STORE-07** y Geometría
+> interactiva (`jsxgraph`) como **STORE-08**. **En backlog:** Moléculas 3D
+> (`3dmol`) como **STORE-12**. El resto sigue como candidato hasta que se
 > priorice.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |
@@ -12,7 +12,7 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 | Laboratorio STEM | `@itkdm/open-lab-components` 0.1.1 | MIT | 210+ fragmentos interactivos de física, química, biología y matemáticas | ~3 MB sin empaquetar | Fragmentos HTML/CSS/JS, no componentes React: hay que aislarlos en `iframe` con `sandbox` o sanearlos. Versión 0.1.x muy joven (febrero 2026) |
 | Física 2D | `matter-js` 0.20.0 | MIT | Gravedad, colisiones, muelles, péndulos | ~90 KB gzip | Sandbox manipulable; UI propia |
 | Física 2D (WASM) | `@dimforge/rapier2d` 0.21.0 | Apache-2.0 | Motor de física más preciso | ~1 MB WASM | Alternativa a Matter.js si hace falta precisión |
-| Geometría interactiva | `jsxgraph` 1.14.3 | MIT **o** LGPL-3.0 | Construcciones, funciones, lugares geométricos | ~400 KB | Elegir la opción MIT de la licencia dual |
+| Geometría interactiva | `jsxgraph` 1.14.3 | MIT **o** LGPL-3.0 | Construcciones, funciones, lugares geométricos | ~400 KB | Integrada en STORE-08 con la opción MIT |
 | Editor de fórmulas | `mathlive` 0.111.4 | MIT | Teclado matemático, exportación a LaTeX | ~500 KB + fuentes | Candidata si hace falta un teclado matemático más rico |
 | Render de fórmulas | `katex` 0.19.1 | MIT | Render de LaTeX en cualquier app | ~280 KB + fuentes | Pieza de apoyo, no app por sí sola |
 | Calculadora científica | `mathjs` 15.2.0 | Apache-2.0 | Evaluación simbólica y unidades | ~350 KB | Detrás de una UI propia |
@@ -27,9 +27,9 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
 - **Física 2D** es el mejor primer laboratorio: paquete pequeño, licencia limpia,
   sin red y con una UI acotada.
-- **Geometría interactiva** aporta otro tipo de manipulación matemática y encaja
-  con la calculadora y la tabla periódica; el paquete es más grande y hay que
-  elegir explícitamente la opción MIT.
+- **Geometría interactiva** quedó integrada en STORE-08 con la opción MIT de su
+  licencia dual; aporta otro tipo de manipulación matemática y encaja con la
+  calculadora y la tabla periódica.
 - **Laboratorio STEM** tiene mucho contenido, pero su formato HTML/CSS/JS y su
   madurez lo convierten en un proyecto de aislamiento y revisión, no en una
   integración directa.

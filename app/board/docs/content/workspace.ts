@@ -54,7 +54,7 @@ export const workspaceSections: DocSection[] = [
           "Pulsa «Instalar» o «Desinstalar». Solo el propietario o un administrador puede hacerlo, y el cambio vale para todos los miembros.",
         ],
       },
-      { type: "image", src: "/capturas/espacio.webp", alt: "Aula Store abierto con las cinco aplicaciones instaladas y el filtro Instaladas activo", caption: "Aula Store en Administración > Tienda: las cinco aplicaciones del proyecto aparecen como instaladas y se pueden abrir, desinstalar o consultar en Detalles." },
+      { type: "image", src: "/capturas/espacio.webp", alt: "Aula Store abierto con las aplicaciones instaladas y el filtro Instaladas activo", caption: "Aula Store en Administración > Tienda: las aplicaciones del proyecto aparecen como instaladas y se pueden abrir, desinstalar o consultar en Detalles." },
       { type: "note", tone: "info", text: "Instalar o desinstalar una aplicación solo registra su estado en Tienda: no borra paquetes ni datos, y las pizarras de las tareas no se ven afectadas. Al desinstalar, Aula Store pide confirmación." },
       {
         type: "definitions",
@@ -67,6 +67,7 @@ export const workspaceSections: DocSection[] = [
           { term: "Ajedrez (1.0.0)", text: "Tablero local para dos jugadores o contra un rival aleatorio. Aplica las reglas completas, muestra el turno, el jaque, el jaque mate, las tablas y el historial, y permite mover con clic, arrastre o el formulario de teclado." },
           { term: "Tarjetas de repaso (1.0.0)", text: "Mazos de anverso y reverso compartidos por proyecto. El repaso usa FSRS, ofrece Otra vez, Difícil, Bien y Fácil, y guarda el progreso en este navegador; los mazos se guardan en el proyecto." },
           { term: "Física 2D (1.0.0)", text: "Laboratorio de movimiento con cuatro experimentos: gravedad, colisiones, muelle y péndulo. Reproduce, pausa, reinicia, ajusta la gravedad y arrastra los cuerpos; la escena es efímera y no se guarda." },
+          { term: "Geometría interactiva (1.0.0)", text: "Lienzo con puntos, segmentos, rectas y circunferencias; presets de triángulo, circunferencia y rectas, medidas dinámicas y funciones de parábola, seno y recta. La construcción es efímera y no se guarda." },
         ],
       },
       { type: "note", tone: "info", text: "El historial de la calculadora se guarda en este navegador, no en el proyecto: no lo ves desde otro equipo y puedes vaciarlo con «Borrar» en el panel del historial. La memoria de la calculadora vive solo mientras la ventana está abierta. Los documentos de Programación por bloques y Diagramas sí se guardan en el proyecto, con el botón «Guardar»." },

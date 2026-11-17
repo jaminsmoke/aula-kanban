@@ -1,10 +1,33 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-08 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-17 — Roadmap STORE-08 · Geometría interactiva en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Geometría interactiva se incorpora con `jsxgraph` 1.14.3 en su opción MIT: puntos, segmentos, rectas, circunferencias, etiquetas y medidas dinámicas.
+- Presets Libre, Triángulo, Circunferencia y Rectas; funciones Parábola, Seno y Recta con visibilidad independiente; arrastre de puntos y reinicio del lienzo.
+- Portada `public/store/geometria.svg`, ficha, registro lazy y entrada en «Mejores aplicaciones». `AULA_STORE_VERSION` sube a `1.4.0`.
+- Declaración MCP sin herramientas propias porque la escena es efímera; ayuda, matriz de herramientas, catálogo y documentación actualizados. Sin cambios en la demo.
+
+### Verificación
+
+- Tienda y ficha revisadas a 1366, 1024 y 390 px, con la portada, versión `1.0.0` y upstream `jsxgraph 1.14.3`. La demo es de solo lectura y no permite instalar; la apertura queda cubierta por el registro lazy y la prueba de sincronización del catálogo.
+- La app se revisó a pantalla completa a 1366, 1024 y 390 px: presets, funciones, medidas, ocultación y reinicio.
+- Chunk `geometria-app`: 1.028,6 KB sin comprimir / 255,7 KB gzip. `jsxgraph.css` (4,71 KB) y la portada (4,11 KB) se sirven desde `dist/client`.
+- Suite completa: **168 archivos / 1.208 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `1986ff1` (Fase 1), `935995b` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites y sin cambio de versión del Site: sigue en **1.1.34**.
+
+### Seguimiento
+
+- El backlog queda con STORE-10 a STORE-13. El plan completo está en [`historial/roadmap-store-08.md`](../historial/roadmap-store-08.md).
 
 ## 2026-11-17 — Roadmap STORE-07 · Física 2D en Aula Store
 

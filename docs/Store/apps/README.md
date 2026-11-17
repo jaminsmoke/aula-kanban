@@ -3,7 +3,7 @@
 Lista viva de las aplicaciones nativas de Aula Kanban: qué está integrado, qué es
 candidato y qué se ha descartado, con la licencia y la versión comprobadas en npm.
 
-Última verificación: **2026-11-16**.
+Última verificación: **2026-11-17**.
 
 ## Índice
 
@@ -97,9 +97,9 @@ La tabla de versiones por app está en [`integradas.md#versiones-por-app`](integ
 
 ## Siguientes candidatas
 
-Ajedrez (**STORE-06**), Tarjetas de repaso (**STORE-09**) y Física 2D
-(**STORE-07**) ya están integrados. Geometría interactiva (`jsxgraph`) está en
-el roadmap activo como **STORE-08**. En el backlog quedan, por orden de encaje:
+Ajedrez (**STORE-06**), Tarjetas de repaso (**STORE-09**), Física 2D
+(**STORE-07**) y Geometría interactiva (**STORE-08**) ya están integrados. En el
+backlog quedan, por orden de encaje:
 
 1. **Mapas conceptuales** (`@xyflow/react`): **STORE-10**.
 2. **Presentaciones** (`reveal.js`): **STORE-11**.

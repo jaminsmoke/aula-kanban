@@ -57,6 +57,11 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     herramientas: [],
     pendiente: "La simulación y las escenas viven en el navegador y no tienen estado de servidor.",
   },
+  geometria: {
+    appId: "geometria",
+    herramientas: [],
+    pendiente: "Las construcciones, presets y funciones viven en el navegador y no tienen estado de servidor.",
+  },
 };
 
 /** Herramientas de todas las apps, en el orden de sus declaraciones. */
