@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 6 entradas: STORE-07, STORE-08 y STORE-10 a STORE-13 pendientes
+> **Roadmap:** STORE-07 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 5 entradas: STORE-08 y STORE-10 a STORE-13 pendientes
 
 ---
 
@@ -46,19 +46,6 @@
   3. Plantillas de línea temporal histórica y de proyecto.
 - Criterios: crear/editar eventos y épocas, mover y hacer zoom, guardar/cargar, sin red; revisar a 1366, 1024 y 390 px.
 - Notas: elegir explícitamente la opción MIT; no usar recursos de red ni mapas. Mantener el estado como JSON validado.
-
-## 2026-11-16 — STORE-07 · Física 2D
-
-- Contexto: `matter-js` 0.20.0 (MIT, ~90 KB gzip) permite construir un laboratorio STEM manipulable sin servidor: gravedad, colisiones, muelles y péndulos. Es el primer paso natural para experimentar con física dentro de la Tienda.
-- Alcance:
-  1. Crear `app/board/apps/fisica/` con un lienzo propio, controles de reproducir/pausar/reiniciar y cuerpos arrastrables.
-  2. Incluir presets de gravedad, colisiones, muelle y péndulo, con parámetros básicos visibles.
-  3. Adaptar el lienzo y los controles a 1366, 1024 y 390 px; sin assets externos.
-- Antes de retomarlo:
-  - [ ] Definir si el estado se guarda o si la app es efímera.
-  - [ ] Acordar la superficie de controles para que no parezca un editor técnico.
-- Criterios: simulación estable y reiniciable, controles claros, sin red, sin servidor y sin dependencia de Rapier/WASM; pruebas de la ventana y de la ficha.
-- Notas: usar `requestAnimationFrame` y el motor de Matter.js; no cargar `@dimforge/rapier2d` en esta fase. Si más adelante se guarda una escena, hacerlo como documento JSON con `app_documents`.
 
 ## 2026-11-16 — STORE-08 · Geometría interactiva
 

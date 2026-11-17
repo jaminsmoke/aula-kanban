@@ -1,0 +1,234 @@
+/* ==========================================================================
+   Física 2D: laboratorio de movimiento con Matter.js
+   ========================================================================== */
+
+.fisica-app {
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  background:var(--ui-surface-hover);
+  color:var(--ui-text-primary);
+  container-type:inline-size;
+  container-name:fisicaapp;
+}
+
+.fisica-toolbar {
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 14px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-surface-faint);
+}
+
+.fisica-heading {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+
+.fisica-mark {
+  display:grid;
+  place-items:center;
+  flex:none;
+  width:34px;
+  height:34px;
+  border-radius: var(--radius-sm);
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+}
+
+.fisica-heading strong {
+  display:block;
+  font-size:14px;
+  line-height:1.2;
+}
+
+.fisica-heading small {
+  display:block;
+  margin-top:2px;
+  color:var(--ui-text-muted);
+  font-size:11px;
+  font-weight:600;
+  line-height:1.25;
+}
+
+.fisica-actions {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex:none;
+  margin-left:auto;
+}
+
+.fisica-actions button,
+.fisica-controls button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:7px 11px;
+  border:var(--border-width-hairline) solid var(--ui-action-text);
+  border-radius: var(--radius-sm);
+  background:var(--ui-action-primary);
+  color:var(--ui-text-inverse);
+  font:inherit;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.fisica-actions button:hover,
+.fisica-controls button:hover { background:var(--ui-action-primary-hover); }
+
+.fisica-actions button:focus-visible,
+.fisica-controls button:focus-visible,
+.fisica-controls select:focus-visible,
+.fisica-controls input:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:2px;
+}
+
+.fisica-layout {
+  flex:1 1 auto;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 250px;
+  gap:14px;
+  padding:14px;
+  overflow:auto;
+}
+
+.fisica-stage {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.fisica-canvas-wrap {
+  width:100%;
+  max-width:800px;
+  aspect-ratio:8 / 5;
+  overflow:hidden;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-md);
+  background:var(--ui-surface-faint);
+  box-shadow:var(--ui-shadow-card);
+}
+
+.fisica-canvas {
+  display:block;
+  width:100%;
+  height:100%;
+  touch-action:none;
+}
+
+.fisica-hint {
+  max-width:800px;
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+  line-height:1.45;
+  text-align:center;
+}
+
+.fisica-side {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.fisica-controls {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:11px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+}
+
+.fisica-controls label {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  color:var(--ui-text-secondary);
+  font-size:10.5px;
+  font-weight:700;
+}
+
+.fisica-controls label span {
+  align-self:flex-end;
+  color:var(--ui-text-muted);
+  font-size:10.5px;
+  font-variant-numeric:tabular-nums;
+}
+
+.fisica-controls select {
+  width:100%;
+  padding:7px 8px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-primary);
+  font:inherit;
+  font-size:11.5px;
+}
+
+.fisica-controls input[type="range"] {
+  width:100%;
+  accent-color:var(--ui-action-primary);
+}
+
+.fisica-controls button {
+  align-self:flex-start;
+  border-color:var(--ui-border-strong);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+}
+
+.fisica-controls button:hover { background:var(--ui-surface-hover); }
+
+.fisica-info {
+  padding:11px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+}
+
+.fisica-info h4 {
+  margin:0 0 4px;
+  color:var(--ui-text-primary);
+  font-size:13px;
+}
+
+.fisica-info p {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+  line-height:1.45;
+}
+
+@container fisicaapp (max-width: 700px) {
+  .fisica-layout { grid-template-columns:1fr; gap:10px; padding:10px; }
+  .fisica-stage { justify-content:flex-start; }
+  .fisica-side { display:grid; grid-template-columns:1fr 1fr; align-items:start; }
+  .fisica-hint { display:none; }
+}
+
+@container fisicaapp (max-width: 480px) {
+  .fisica-toolbar { padding:8px 10px; }
+  .fisica-heading small { display:none; }
+  .fisica-actions button { padding:6px 8px; }
+  .fisica-side { grid-template-columns:1fr; }
+}

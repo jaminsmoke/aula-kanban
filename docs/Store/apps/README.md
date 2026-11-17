@@ -98,14 +98,14 @@ La tabla de versiones por app está en [`integradas.md#versiones-por-app`](integ
 ## Siguientes candidatas
 
 Ajedrez (**STORE-06**) y Tarjetas de repaso (**STORE-09**) ya están integrados.
-En el backlog quedan, por orden de encaje:
+Física 2D (`matter-js`) está en el roadmap activo como **STORE-07**. En el
+backlog quedan, por orden de encaje:
 
-1. **Física 2D** (`matter-js`): **STORE-07**.
-2. **Geometría interactiva** (`jsxgraph`): **STORE-08**.
-3. **Mapas conceptuales** (`@xyflow/react`): **STORE-10**.
-4. **Presentaciones** (`reveal.js`): **STORE-11**.
-5. **Moléculas 3D** (`3dmol`): **STORE-12**.
-6. **Líneas de tiempo** (`vis-timeline`): **STORE-13**.
+1. **Geometría interactiva** (`jsxgraph`): **STORE-08**.
+2. **Mapas conceptuales** (`@xyflow/react`): **STORE-10**.
+3. **Presentaciones** (`reveal.js`): **STORE-11**.
+4. **Moléculas 3D** (`3dmol`): **STORE-12**.
+5. **Líneas de tiempo** (`vis-timeline`): **STORE-13**.
 
 El resto sigue documentado por categorías, sin entrada en backlog hasta que se
 priorice.
