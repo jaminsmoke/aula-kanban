@@ -2,20 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 4 entradas: STORE-10 a STORE-13 pendientes
+> **Roadmap:** STORE-10 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 3 entradas: STORE-11 a STORE-13 pendientes
 
 ---
-
-## 2026-11-16 — STORE-10 · Mapas conceptuales
-
-- Contexto: `@xyflow/react` 12.12.1 (MIT, ~150 KB) permite nodos y conexiones arrastrables. Es el complemento natural de Diagramas: allí se escribe el diagrama; aquí se construye directamente. El estado cabe en `app_documents` y no necesita servidor.
-- Alcance:
-  1. Crear `app/board/apps/mapas/` con lienzo, nodos, conectores, zoom, paneo y edición de etiquetas.
-  2. Guardar y cargar el mapa por proyecto con `useAppDocument`; invitados en solo lectura.
-  3. Presets de mapa conceptual y mapa mental; sin imágenes ni recursos externos.
-- Criterios: crear, mover, conectar y eliminar nodos; guardar y recuperar el mapa; responsive a 1366, 1024 y 390 px; sin red.
-- Notas: no usar IA generativa en la primera versión. Mantener el JSON pequeño y validado; no crear tabla ni endpoint nuevos.
 
 ## 2026-11-16 — STORE-11 · Presentaciones
 

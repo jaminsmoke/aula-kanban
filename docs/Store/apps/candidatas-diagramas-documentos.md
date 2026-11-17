@@ -2,13 +2,13 @@
 
 Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
-> **En backlog:** Mapas conceptuales como **STORE-10**, Presentaciones como
-> **STORE-11** y Líneas de tiempo como **STORE-13**. El resto sigue como
-> candidato hasta que se priorice.
+> **En roadmap:** Mapas conceptuales como **STORE-10**. **En backlog:**
+> Presentaciones como **STORE-11** y Líneas de tiempo como **STORE-13**. El resto
+> sigue como candidato hasta que se priorice.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|
-| Mapas conceptuales | `@xyflow/react` 12.12.1 | MIT | Nodos y conexiones arrastrables | ~150 KB | Vista propia de mapas |
+| Mapas conceptuales | `@xyflow/react` 12.12.1 | MIT | Nodos y conexiones arrastrables | ~150 KB | En roadmap STORE-10; vista propia de mapas |
 | Mapas mentales | `markmap-lib` 0.18.13 | MIT | Markdown a mapa mental | ~200 KB | Con `markmap-view` |
 | Código | `codemirror` 6.0.2 | MIT | Editor con resaltado y autocompletado | ~300 KB | Alternativa ligera a Monaco |
 | Código (completo) | `monaco-editor` 0.57.0 | MIT | Editor de VS Code | ~2 MB+ | Solo si hace falta IntelliSense real |
