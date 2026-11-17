@@ -104,10 +104,11 @@ Las trece apps actuales (Ajedrez **STORE-06**, Física 2D **STORE-07**, Geometr�
 interactiva **STORE-08**, Tarjetas de repaso **STORE-09**, Mapas conceptuales
 **STORE-10**, Presentaciones **STORE-11**, Moléculas 3D **STORE-12** y Líneas de
 tiempo **STORE-13**, además de las cinco iniciales) ya están integradas. No hay
-entradas pendientes en el backlog.
+apps en roadmap.
 
-Las candidatas sin priorizar siguen documentadas por categorías en los documentos
-anteriores, sin entrada en backlog hasta que se decida abordarlas.
+En el backlog hay tres apps pendientes: **STORE-14** Hoja de cálculo,
+**STORE-15** Notas y documentos y **STORE-16** Visor Office. El resto de
+candidatas sigue documentado por categorías, sin entrada hasta que se priorice.
 
 ## Cómo reverificar una licencia
 
