@@ -52,10 +52,10 @@
 
 ### Fase 1 — Rejilla, edición y fórmulas
 
-- [ ] Instalar `jspreadsheet-ce` 5.0.4 y fijar la versión.
-- [ ] Crear `app/board/apps/hoja-calculo/` con modelo, rejilla, barra de herramientas y estilos.
-- [ ] Permitir editar celdas, añadir filas y columnas y seleccionar rangos.
-- [ ] Añadir fórmulas básicas y formato esencial de texto y números.
+- [x] Instalar `jspreadsheet-ce` 5.0.4 y fijar la versión.
+- [x] Crear `app/board/apps/hoja-calculo/` con modelo, rejilla, barra de herramientas y estilos.
+- [x] Permitir editar celdas, añadir filas y columnas y seleccionar rangos.
+- [x] Añadir fórmulas básicas y formato esencial de texto y números.
 - **Criterios de aceptación:**
   - Se crea y edita una hoja con varias filas y columnas.
   - Las fórmulas se recalculan al cambiar una celda.
@@ -107,6 +107,7 @@
 
 ## 6. Notas de sesión
 
+- 2026-11-17: fase 1 completada. `jspreadsheet-ce` 5.0.4 se carga con la hoja de ejemplo de presupuesto; la rejilla permite editar celdas, fórmulas (`=B3*C3`, `=SUM(D3:D5)`), añadir filas y columnas y aplicar formato esencial. Verificado en navegador a 1366, 1024 y 390 px con scroll interno de la rejilla y sin scroll horizontal de página; 10 pruebas focalizadas en verde.
 - 2026-11-17: STORE-14 sale del backlog y pasa a ser el roadmap activo. `jspreadsheet-ce` 5.0.4 es MIT y el documento cabe en `app_documents`.
 - La primera versión no importa `.xlsx` ni crea varias hojas: prioriza editar, calcular y guardar.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.
