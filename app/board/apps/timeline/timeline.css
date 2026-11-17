@@ -93,11 +93,25 @@
   background:var(--ui-surface-hover);
 }
 
+.timeline-actions button:disabled,
+.timeline-form-actions button:disabled,
+.timeline-list-actions button:disabled {
+  cursor:not-allowed;
+  opacity:.5;
+}
+
+.timeline-actions button:disabled:hover,
+.timeline-form-actions button:disabled:hover,
+.timeline-list-actions button:disabled:hover {
+  background:var(--ui-surface-raised);
+}
+
 .timeline-actions button:focus-visible,
 .timeline-form-actions button:focus-visible,
 .timeline-list-actions button:focus-visible,
 .timeline-form input:focus-visible,
-.timeline-form select:focus-visible {
+.timeline-form select:focus-visible,
+.timeline-canvas:focus-visible {
   outline:var(--border-width-strong) solid var(--ui-focus-ring);
   outline-offset:2px;
 }
@@ -119,6 +133,16 @@
   gap:14px;
   padding:14px;
   overflow:auto;
+}
+
+.timeline-readonly {
+  margin:0;
+  padding:8px 14px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-warning-soft);
+  color:var(--ui-warning-ink);
+  font-size:11px;
+  line-height:1.4;
 }
 
 .timeline-stage {
@@ -275,6 +299,44 @@
   font-size:13px;
 }
 
+.timeline-template-card .timeline-primary {
+  width:100%;
+  margin-top:8px;
+}
+
+.timeline-template-card label {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  color:var(--ui-text-secondary);
+  font-size:10.5px;
+  font-weight:700;
+}
+
+.timeline-template-card select {
+  width:100%;
+  min-width:0;
+  padding:7px 8px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-primary);
+  font:inherit;
+  font-size:11.5px;
+}
+
+.timeline-template-card select:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:2px;
+}
+
+.timeline-template-description {
+  margin:7px 0 0;
+  color:var(--ui-text-muted);
+  font-size:10.5px;
+  line-height:1.4;
+}
+
 .timeline-form {
   display:flex;
   flex-direction:column;
@@ -301,6 +363,12 @@
   color:var(--ui-text-primary);
   font:inherit;
   font-size:11.5px;
+}
+
+.timeline-form input:disabled,
+.timeline-form select:disabled {
+  cursor:not-allowed;
+  opacity:.55;
 }
 
 .timeline-date-row {

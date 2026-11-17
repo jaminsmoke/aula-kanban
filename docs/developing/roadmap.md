@@ -66,12 +66,12 @@
 
 ### Fase 2 — Persistencia, plantillas, accesibilidad y portada
 
-- [ ] Integrar `useAppDocument(projectId, "timeline")` con guardar, cargar y estados de error.
-- [ ] Validar el JSON guardado y descartar documentos incompletos sin romper la app.
-- [ ] Añadir plantillas histórica y de proyecto, con reinicio explícito.
-- [ ] Revisar foco, teclado, contraste, reducción de movimiento y gestos táctiles.
-- [ ] Crear `public/store/timeline.svg` con el formato de las portadas actuales.
-- [ ] Medir el chunk y confirmar que `vis-timeline`, su CSS y los datos se sirven desde el Site.
+- [x] Integrar `useAppDocument(projectId, "timeline")` con guardar, cargar y estados de error.
+- [x] Validar el JSON guardado y descartar documentos incompletos sin romper la app.
+- [x] Añadir plantillas histórica y de proyecto, con reinicio explícito.
+- [x] Revisar foco, teclado, contraste, reducción de movimiento y gestos táctiles.
+- [x] Crear `public/store/timeline.svg` con el formato de las portadas actuales.
+- [x] Medir el chunk y confirmar que `vis-timeline`, su CSS y los datos se sirven desde el Site.
 - **Criterios de aceptación:**
   - Guardar y recuperar conserva eventos, épocas, grupos y rango visible.
   - Los invitados ven el documento y no pueden editarlo ni guardarlo.
@@ -109,6 +109,7 @@
 
 ## 6. Notas de sesión
 
+- 2026-11-17: fase 2 completada. Guardado y carga con `useAppDocument(projectId, "timeline")`, validación del JSON, rango visible persistido, plantillas «Carrera espacial» y «Proyecto de aula», modo lectura para invitados, teclado y reducción de movimiento. Portada `public/store/timeline.svg` creada. Chunk diferido: `vis-timeline` 541,6 KB / 154,8 KB gzip, app 18,2 KB / 5,7 KB gzip, CSS 26,6 KB / 4,8 KB gzip y portada 4,47 KB. Revisado a 1366, 1024 y 390 px; 15 pruebas focalizadas en verde.
 - 2026-11-17: fase 1 completada. `vis-timeline` 8.5.6 se carga dinámicamente solo en el cliente; el lienzo muestra cinco eventos en tres grupos y dos épocas de fondo, con rango ajustado a los datos. El panel lateral permite añadir, editar y eliminar eventos y épocas, y la barra superior controla zoom y recentrado. Verificado en navegador a 1366, 1024 y 390 px sin scroll horizontal de página; 10 pruebas focalizadas en verde.
 - 2026-11-17: STORE-13 sale del backlog y pasa a ser el roadmap activo; el backlog queda sin entradas pendientes. `vis-timeline` 8.5.6 tiene licencia dual y se usará la opción MIT.
 - La primera versión no importa ni exporta archivos: el foco es crear, organizar y guardar la línea temporal.

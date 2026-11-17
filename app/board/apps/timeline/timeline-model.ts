@@ -7,6 +7,12 @@ export type TimelineGroup = {
 /** Color disponible para una época. */
 export type TimelineEpochColor = "violet" | "teal" | "amber";
 
+/** Rango visible guardado junto al documento. */
+export type TimelineRange = {
+  start: string;
+  end: string;
+};
+
 /** Evento situado en una fecha o en un rango de fechas. */
 export type TimelineEvent = {
   id: string;
@@ -30,6 +36,7 @@ export type TimelineEpoch = {
 export type TimelineDocument = {
   events: TimelineEvent[];
   epochs: TimelineEpoch[];
+  range?: TimelineRange;
 };
 
 /** Elemento que consume vis-timeline, ya convertido a fechas. */
@@ -44,11 +51,22 @@ export type TimelineRenderItem = {
   title?: string;
 };
 
+/** Plantilla disponible en el panel lateral. */
+export type TimelineTemplateId = "espacial" | "proyecto";
+
+/** Plantilla con su documento de ejemplo. */
+export type TimelineTemplate = {
+  id: TimelineTemplateId;
+  label: string;
+  description: string;
+  document: TimelineDocument;
+};
+
 /** Grupos fijos de la primera versión. */
 export const TIMELINE_GROUPS: TimelineGroup[] = [
   { id: "hitos", label: "Hitos" },
-  { id: "misiones", label: "Misiones" },
-  { id: "pioneras", label: "Pioneras" },
+  { id: "procesos", label: "Procesos" },
+  { id: "personas", label: "Personas" },
 ];
 
 /** Colores disponibles para las épocas. */
@@ -71,28 +89,28 @@ export const STARTER_TIMELINE: TimelineDocument = {
     {
       id: "gagarin",
       title: "Yuri Gagarin orbita la Tierra",
-      groupId: "misiones",
+      groupId: "procesos",
       start: "1961-04-12",
       description: "Primer vuelo tripulado alrededor del planeta.",
     },
     {
       id: "tereshkova",
       title: "Valentina Tereshkova",
-      groupId: "pioneras",
+      groupId: "personas",
       start: "1963-06-16",
       description: "Primera mujer en el espacio.",
     },
     {
       id: "apolo",
       title: "Apolo 11 llega a la Luna",
-      groupId: "misiones",
+      groupId: "procesos",
       start: "1969-07-20",
       description: "Primer alunizaje tripulado.",
     },
     {
       id: "columbia",
       title: "Primer vuelo del transbordador",
-      groupId: "misiones",
+      groupId: "procesos",
       start: "1981-04-12",
       description: "Comienza la era de los transbordadores reutilizables.",
     },
@@ -115,6 +133,80 @@ export const STARTER_TIMELINE: TimelineDocument = {
   ],
 };
 
+/** Plantilla de planificación de un proyecto de aula. */
+export const PROJECT_TIMELINE: TimelineDocument = {
+  events: [
+    {
+      id: "presentacion-proyecto",
+      title: "Presentación del proyecto",
+      groupId: "hitos",
+      start: "2026-09-15",
+      description: "Explicación del reto y reparto inicial de tareas.",
+    },
+    {
+      id: "investigacion",
+      title: "Investigación y fuentes",
+      groupId: "procesos",
+      start: "2026-09-21",
+      end: "2026-10-09",
+      description: "Búsqueda de información y selección de fuentes.",
+    },
+    {
+      id: "primera-entrega",
+      title: "Primera entrega",
+      groupId: "hitos",
+      start: "2026-10-16",
+      description: "Revisión del borrador y ajustes del equipo.",
+    },
+    {
+      id: "revision-clase",
+      title: "Revisión en clase",
+      groupId: "procesos",
+      start: "2026-10-30",
+      description: "Puesta en común y comentarios de los compañeros.",
+    },
+    {
+      id: "exposicion-final",
+      title: "Exposición final",
+      groupId: "hitos",
+      start: "2026-11-27",
+      description: "Presentación del resultado ante el grupo.",
+    },
+  ],
+  epochs: [
+    {
+      id: "preparacion",
+      label: "Preparación",
+      start: "2026-09-10",
+      end: "2026-10-15",
+      color: "violet",
+    },
+    {
+      id: "cierre",
+      label: "Cierre",
+      start: "2026-11-01",
+      end: "2026-12-05",
+      color: "amber",
+    },
+  ],
+};
+
+/** Plantillas en el orden del selector. */
+export const TIMELINE_TEMPLATES: TimelineTemplate[] = [
+  {
+    id: "espacial",
+    label: "Carrera espacial",
+    description: "Hitos, misiones y personas de la exploración del espacio.",
+    document: STARTER_TIMELINE,
+  },
+  {
+    id: "proyecto",
+    label: "Proyecto de aula",
+    description: "Fases, entregas y cierre de un proyecto en equipo.",
+    document: PROJECT_TIMELINE,
+  },
+];
+
 /**
  * Convierte una fecha ISO (`YYYY-MM-DD`) en una fecha local estable.
  * @param value - Fecha en formato ISO corto.
@@ -125,6 +217,18 @@ export function parseTimelineDate(value: string): Date {
 }
 
 /**
+ * Convierte una fecha local en una fecha ISO corta (`YYYY-MM-DD`).
+ * @param value - Fecha que se quiere serializar.
+ * @returns La fecha sin hora ni zona horaria.
+ */
+export function toTimelineIsoDate(value: Date): string {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/**
  * Comprueba que una fecha ISO corta existe y es válida.
  * @param value - Fecha candidata.
  * @returns `true` si el calendario la acepta.
@@ -132,7 +236,7 @@ export function parseTimelineDate(value: string): Date {
 export function isValidTimelineDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const parsed = parseTimelineDate(value);
-  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+  return !Number.isNaN(parsed.getTime()) && toTimelineIsoDate(parsed) === value;
 }
 
 /**
@@ -211,10 +315,87 @@ export function timelineWindow(document: TimelineDocument): { start: Date; end: 
 }
 
 /**
+ * Convierte el rango calculado en fechas ISO para guardarlo.
+ * @param document - Eventos y épocas.
+ * @returns El rango visible o `undefined` si no hay elementos.
+ */
+export function timelineRange(document: TimelineDocument): TimelineRange | undefined {
+  const windowRange = timelineWindow(document);
+  if (!windowRange) return undefined;
+  return {
+    start: toTimelineIsoDate(windowRange.start),
+    end: toTimelineIsoDate(windowRange.end),
+  };
+}
+
+/**
  * Devuelve el grupo solicitado o el primero de la lista.
  * @param id - Identificador del grupo.
  * @returns El grupo correspondiente.
  */
 export function timelineGroupLabel(id: string): string {
   return TIMELINE_GROUPS.find((group) => group.id === id)?.label ?? TIMELINE_GROUPS[0].label;
+}
+
+/**
+ * Valida una época leída de la base de datos.
+ * @param value - Valor candidato.
+ * @returns La época normalizada o `null`.
+ */
+function parseEpoch(value: unknown): TimelineEpoch | null {
+  if (typeof value !== "object" || value === null) return null;
+  const candidate = value as Record<string, unknown>;
+  const id = typeof candidate.id === "string" ? candidate.id : "";
+  const label = typeof candidate.label === "string" ? candidate.label.trim() : "";
+  const start = typeof candidate.start === "string" ? candidate.start : "";
+  const end = typeof candidate.end === "string" ? candidate.end : "";
+  const color = candidate.color;
+  if (!id || !label || !isValidTimelineRange(start, end)) return null;
+  if (color !== "violet" && color !== "teal" && color !== "amber") return null;
+  return { id, label, start, end, color };
+}
+
+/**
+ * Valida un evento leído de la base de datos.
+ * @param value - Valor candidato.
+ * @returns El evento normalizado o `null`.
+ */
+function parseEvent(value: unknown): TimelineEvent | null {
+  if (typeof value !== "object" || value === null) return null;
+  const candidate = value as Record<string, unknown>;
+  const id = typeof candidate.id === "string" ? candidate.id : "";
+  const title = typeof candidate.title === "string" ? candidate.title.trim() : "";
+  const groupId = typeof candidate.groupId === "string" ? candidate.groupId : "";
+  const start = typeof candidate.start === "string" ? candidate.start : "";
+  const end = typeof candidate.end === "string" ? candidate.end : undefined;
+  const description = typeof candidate.description === "string" ? candidate.description : undefined;
+  if (!id || !title || !TIMELINE_GROUPS.some((group) => group.id === groupId)) return null;
+  if (!isValidTimelineRange(start, end)) return null;
+  return { id, title, groupId, start, end, description };
+}
+
+/**
+ * Valida un documento guardado y descarta cualquier dato incompleto.
+ * @param value - Estado leído de `app_documents`.
+ * @returns El documento o `null` si no es utilizable.
+ */
+export function parseTimelineDocument(value: unknown): TimelineDocument | null {
+  if (typeof value !== "object" || value === null) return null;
+  const candidate = value as Record<string, unknown>;
+  if (!Array.isArray(candidate.events) || !Array.isArray(candidate.epochs)) return null;
+  if (candidate.events.length > 200 || candidate.epochs.length > 100) return null;
+
+  const events = candidate.events.map(parseEvent);
+  const epochs = candidate.epochs.map(parseEpoch);
+  if (events.some((event) => event === null) || epochs.some((epoch) => epoch === null)) return null;
+
+  let range: TimelineRange | undefined;
+  if (typeof candidate.range === "object" && candidate.range !== null) {
+    const rawRange = candidate.range as Record<string, unknown>;
+    const start = typeof rawRange.start === "string" ? rawRange.start : "";
+    const end = typeof rawRange.end === "string" ? rawRange.end : "";
+    if (isValidTimelineRange(start, end)) range = { start, end };
+  }
+
+  return { events: events as TimelineEvent[], epochs: epochs as TimelineEpoch[], range };
 }

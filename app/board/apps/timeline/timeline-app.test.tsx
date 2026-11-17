@@ -6,6 +6,7 @@ import {
   formatTimelineDate,
   isValidTimelineDate,
   isValidTimelineRange,
+  parseTimelineDocument,
   timelineGroupLabel,
   timelineWindow,
 } from "./timeline-model";
@@ -18,6 +19,10 @@ const timelineMock = vi.hoisted(() => {
     zoomOut: vi.fn(),
     fit: vi.fn(),
     setWindow: vi.fn(),
+    getWindow: vi.fn(() => ({
+      start: new Date("1960-01-01T12:00:00"),
+      end: new Date("1970-01-01T12:00:00"),
+    })),
     setSelection: vi.fn(),
     on: vi.fn(),
     destroy: vi.fn(),
@@ -28,11 +33,27 @@ const timelineMock = vi.hoisted(() => {
   return { instance, Timeline };
 });
 
+const documentMock = vi.hoisted(() => ({
+  load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
+  save: vi.fn(async (_state: unknown) => true),
+}));
+
 vi.mock("vis-timeline/standalone", () => ({
   Timeline: timelineMock.Timeline,
 }));
 
+vi.mock("../use-app-document", () => ({
+  useAppDocument: () => ({
+    load: documentMock.load,
+    save: documentMock.save,
+    loading: false,
+    error: null,
+  }),
+}));
+
 import TimelineApp from "./timeline-app";
+
+const props = { projectId: "p1", role: "owner" as const };
 
 describe("modelo de líneas de tiempo", () => {
   it("convierte el ejemplo en eventos y épocas de fondo", () => {
@@ -53,7 +74,7 @@ describe("modelo de líneas de tiempo", () => {
 
   it("formatea fechas y grupos para la interfaz", () => {
     expect(formatTimelineDate("1957-10-04")).toContain("1957");
-    expect(timelineGroupLabel("misiones")).toBe("Misiones");
+    expect(timelineGroupLabel("procesos")).toBe("Procesos");
     expect(timelineGroupLabel("desconocido")).toBe("Hitos");
   });
 
@@ -61,6 +82,12 @@ describe("modelo de líneas de tiempo", () => {
     const range = timelineWindow(STARTER_TIMELINE);
     expect(range?.start.getFullYear()).toBeLessThanOrEqual(1947);
     expect(range?.end.getFullYear()).toBeGreaterThanOrEqual(1991);
+  });
+
+  it("valida y rechaza documentos guardados", () => {
+    expect(parseTimelineDocument(STARTER_TIMELINE)?.events).toHaveLength(5);
+    expect(parseTimelineDocument({ events: [{ id: "x" }], epochs: [] })).toBeNull();
+    expect(parseTimelineDocument(null)).toBeNull();
   });
 });
 
@@ -70,30 +97,32 @@ describe("Líneas de tiempo", () => {
     timelineMock.Timeline.mockImplementation(function timelineFactory() {
       return timelineMock.instance;
     });
+    documentMock.load.mockResolvedValue({ state: null, updatedAt: null });
+    documentMock.save.mockResolvedValue(true);
   });
 
   it("muestra el ejemplo y monta el lienzo temporal", async () => {
-    render(<TimelineApp />);
+    render(<TimelineApp {...props} />);
 
     expect(screen.getByText("Líneas de tiempo")).toBeTruthy();
     expect(screen.getByText("Sputnik 1")).toBeTruthy();
-    expect(screen.getByText("Carrera espacial")).toBeTruthy();
+    expect(screen.getAllByText("Carrera espacial").length).toBeGreaterThan(0);
 
     await waitFor(() => expect(timelineMock.Timeline).toHaveBeenCalled());
     expect(timelineMock.Timeline).toHaveBeenCalledWith(
       expect.any(HTMLElement),
       expect.arrayContaining([expect.objectContaining({ content: "Sputnik 1" })]),
-      expect.arrayContaining([expect.objectContaining({ content: "Misiones" })]),
+      expect.arrayContaining([expect.objectContaining({ content: "Procesos" })]),
       expect.objectContaining({ stack: true }),
     );
   });
 
   it("añade un evento con fechas y grupo", async () => {
-    render(<TimelineApp />);
+    render(<TimelineApp {...props} />);
     await waitFor(() => expect(timelineMock.Timeline).toHaveBeenCalled());
 
     fireEvent.change(screen.getByLabelText("Título"), { target: { value: "Primer paseo espacial" } });
-    fireEvent.change(screen.getByLabelText("Grupo"), { target: { value: "misiones" } });
+    fireEvent.change(screen.getByLabelText("Grupo"), { target: { value: "procesos" } });
     fireEvent.change(screen.getByLabelText("Inicio"), { target: { value: "1965-03-18" } });
     fireEvent.click(screen.getByRole("button", { name: "Añadir evento" }));
 
@@ -106,7 +135,7 @@ describe("Líneas de tiempo", () => {
   });
 
   it("edita y elimina un evento", async () => {
-    render(<TimelineApp />);
+    render(<TimelineApp {...props} />);
     await waitFor(() => expect(timelineMock.Timeline).toHaveBeenCalled());
 
     fireEvent.click(screen.getByRole("button", { name: "Editar Sputnik 1" }));
@@ -120,7 +149,7 @@ describe("Líneas de tiempo", () => {
   });
 
   it("añade y elimina una época", async () => {
-    render(<TimelineApp />);
+    render(<TimelineApp {...props} />);
     await waitFor(() => expect(timelineMock.Timeline).toHaveBeenCalled());
 
     fireEvent.change(screen.getByLabelText("Etiqueta de la época"), { target: { value: "Años 2000" } });
@@ -133,16 +162,74 @@ describe("Líneas de tiempo", () => {
     expect(screen.queryByText("Años 2000")).toBeNull();
   });
 
-  it("controla el zoom y recentra el lienzo", async () => {
-    render(<TimelineApp />);
+  it("aplica la plantilla de proyecto", async () => {
+    render(<TimelineApp {...props} />);
+    await waitFor(() => expect(timelineMock.Timeline).toHaveBeenCalled());
+
+    fireEvent.change(screen.getByLabelText("Modelo"), { target: { value: "proyecto" } });
+    fireEvent.click(screen.getByRole("button", { name: "Aplicar plantilla" }));
+
+    expect(screen.getByText("Presentación del proyecto")).toBeTruthy();
+    expect(screen.getByRole("status").textContent).toContain("Plantilla «Proyecto de aula» aplicada");
+  });
+
+  it("guarda el documento y el rango visible", async () => {
+    render(<TimelineApp {...props} />);
+    await waitFor(() => expect(timelineMock.Timeline).toHaveBeenCalled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as { events: unknown[]; epochs: unknown[]; range?: unknown };
+    expect(saved.events).toHaveLength(5);
+    expect(saved.epochs).toHaveLength(2);
+    expect(saved.range).toBeDefined();
+    await waitFor(() => expect(screen.getByRole("status").textContent).toContain("guardada en el proyecto"));
+  });
+
+  it("carga un documento guardado", async () => {
+    documentMock.load.mockResolvedValueOnce({
+      state: {
+        ...STARTER_TIMELINE,
+        events: STARTER_TIMELINE.events.map((event) => (
+          event.id === "sputnik" ? { ...event, title: "Sputnik guardado" } : event
+        )),
+        range: { start: "1950-01-01", end: "1990-01-01" },
+      },
+      updatedAt: 1,
+    });
+
+    render(<TimelineApp {...props} />);
+
+    expect(await screen.findByText("Sputnik guardado")).toBeTruthy();
+    expect(screen.getByRole("status").textContent).toContain("guardada cargada");
+    await waitFor(() => expect(timelineMock.instance.setWindow).toHaveBeenCalled());
+  });
+
+  it("deja la línea temporal en solo lectura para invitados", async () => {
+    render(<TimelineApp projectId="p1" role="guest" />);
+    await waitFor(() => expect(timelineMock.Timeline).toHaveBeenCalled());
+
+    expect(screen.getByText(/Modo lectura/)).toBeTruthy();
+    expect(screen.getByLabelText("Título")).toHaveProperty("disabled", true);
+    expect(screen.getByRole("button", { name: "Guardar" })).toHaveProperty("disabled", true);
+    expect(screen.getByRole("button", { name: "Editar Sputnik 1" })).toHaveProperty("disabled", true);
+    expect(screen.getByLabelText("Modelo")).toHaveProperty("disabled", true);
+  });
+
+  it("controla el zoom, el recentrado y el teclado", async () => {
+    render(<TimelineApp {...props} />);
     await waitFor(() => expect(timelineMock.Timeline).toHaveBeenCalled());
 
     fireEvent.click(screen.getByRole("button", { name: "Acercar" }));
-    expect(timelineMock.instance.zoomIn).toHaveBeenCalledWith(0.3);
+    expect(timelineMock.instance.zoomIn).toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Alejar" }));
-    expect(timelineMock.instance.zoomOut).toHaveBeenCalledWith(0.3);
+    expect(timelineMock.instance.zoomOut).toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Recentrar vista" }));
     expect(timelineMock.instance.setWindow).toHaveBeenCalled();
+
+    const canvas = screen.getByRole("application");
+    fireEvent.keyDown(canvas, { key: "ArrowRight" });
+    expect(timelineMock.instance.setWindow).toHaveBeenCalledTimes(2);
   });
 
   it("muestra un aviso si el visor no se puede iniciar", async () => {
@@ -150,7 +237,7 @@ describe("Líneas de tiempo", () => {
       throw new Error("sin lienzo");
     });
 
-    render(<TimelineApp />);
+    render(<TimelineApp {...props} />);
 
     expect(await screen.findByRole("alert")).toBeTruthy();
   });

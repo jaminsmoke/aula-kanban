@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Portada de Líneas de tiempo">
+  <defs>
+    <linearGradient id="line-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7f4ff"/>
+      <stop offset="1" stop-color="#dfe9ff"/>
+    </linearGradient>
+    <linearGradient id="line-card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#fafbff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#line-bg)"/>
+  <circle cx="1080" cy="80" r="220" fill="#b9c9ff" opacity=".42"/>
+  <circle cx="100" cy="630" r="190" fill="#ffffff" opacity=".4"/>
+
+  <g transform="translate(0 30)" font-family="Instrument Sans, system-ui, sans-serif">
+    <text x="86" y="230" fill="#1c2a5a" font-size="68" font-weight="700">Líneas</text>
+    <text x="86" y="300" fill="#2e438c" font-size="68" font-weight="700">de tiempo</text>
+    <text x="88" y="360" fill="#4b5f96" font-size="27">Ordena historias, proyectos</text>
+    <text x="88" y="400" fill="#4b5f96" font-size="27">y secuencias en el tiempo</text>
+    <g transform="translate(88 452)">
+      <rect width="326" height="52" rx="26" fill="#ffffff" opacity=".84"/>
+      <text x="24" y="34" fill="#2e438c" font-size="19" font-weight="600">Crea · organiza · comprende</text>
+    </g>
+  </g>
+
+  <g transform="translate(724 88) rotate(3 180 250)" font-family="Instrument Sans, system-ui, sans-serif">
+    <rect width="360" height="500" rx="30" fill="url(#line-card)" opacity=".97"/>
+    <rect x="18" y="18" width="324" height="42" rx="14" fill="#f2f5ff" stroke="#d5e0fb" stroke-width="2"/>
+    <text x="36" y="45" fill="#3355c8" font-size="13" font-weight="700" letter-spacing="2">LÍNEA TEMPORAL</text>
+    <circle cx="300" cy="39" r="8" fill="#3355c8"/>
+    <circle cx="318" cy="39" r="8" fill="#f2f5ff" stroke="#3355c8" stroke-width="2"/>
+
+    <g transform="translate(38 84)">
+      <rect width="284" height="236" rx="18" fill="#fbfcff" stroke="#d5e0fb" stroke-width="2"/>
+
+      <g stroke="#e3e9f7" stroke-width="1.5">
+        <path d="M38 28V214M88 28V214M138 28V214M188 28V214M238 28V214"/>
+      </g>
+      <g fill="#5b6d9b" font-size="10.5" font-weight="600">
+        <text x="30" y="18">1950</text>
+        <text x="80" y="18">1960</text>
+        <text x="130" y="18">1970</text>
+        <text x="180" y="18">1980</text>
+        <text x="230" y="18">1990</text>
+      </g>
+
+      <rect x="28" y="30" width="100" height="184" fill="#f0d7a4" opacity=".36"/>
+      <rect x="70" y="30" width="104" height="184" fill="#c9bdf7" opacity=".36"/>
+
+      <path d="M18 70H272M18 126H272M18 182H272" stroke="#b7c4e2" stroke-width="1.5"/>
+      <g fill="#4b5f96" font-size="10.5" font-weight="700">
+        <text x="16" y="63">Hitos</text>
+        <text x="16" y="119">Procesos</text>
+        <text x="16" y="175">Personas</text>
+      </g>
+
+      <g>
+        <rect x="63" y="82" width="58" height="24" rx="7" fill="#5b45b8"/>
+        <text x="72" y="98" fill="#ffffff" font-size="9.5" font-weight="700">Sputnik</text>
+
+        <rect x="92" y="110" width="86" height="24" rx="7" fill="#5b45b8"/>
+        <text x="100" y="126" fill="#ffffff" font-size="9.5" font-weight="700">Gagarin</text>
+
+        <rect x="124" y="138" width="78" height="24" rx="7" fill="#5b45b8"/>
+        <text x="132" y="154" fill="#ffffff" font-size="9.5" font-weight="700">Tereshkova</text>
+
+        <rect x="166" y="110" width="76" height="24" rx="7" fill="#5b45b8"/>
+        <text x="175" y="126" fill="#ffffff" font-size="9.5" font-weight="700">Apolo 11</text>
+
+        <rect x="216" y="82" width="48" height="24" rx="7" fill="#5b45b8"/>
+        <text x="224" y="98" fill="#ffffff" font-size="9.5" font-weight="700">1981</text>
+      </g>
+
+      <g fill="#7b8bb3" font-size="9.5">
+        <text x="40" y="206">Guerra Fría</text>
+        <text x="112" y="206">Carrera espacial</text>
+      </g>
+    </g>
+
+    <rect x="38" y="340" width="284" height="58" rx="15" fill="#f2f5ff" stroke="#d5e0fb" stroke-width="2"/>
+    <text x="56" y="364" fill="#1c2a5a" font-size="17" font-weight="700">5 eventos · 2 épocas</text>
+    <text x="56" y="384" fill="#5b6d9b" font-size="11.5">Plantillas y guardado por proyecto</text>
+
+    <rect x="38" y="414" width="284" height="34" rx="17" fill="#3355c8"/>
+    <text x="58" y="436" fill="#ffffff" font-size="12.5" font-weight="700">Arrastra para explorar</text>
+    <path d="M286 424l7 7-7 7" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
