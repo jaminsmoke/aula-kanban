@@ -17,6 +17,25 @@ try {
   throw error;
 }
 
+// Vite puede resolver node_modules fuera del checkout cuando se usa una unión.
+// Normalizamos solo esas rutas y también sus referencias, sin fusionar claves.
+function normalizeDependencyKey(key) {
+  const dependency = key.indexOf("node_modules/");
+  return key.startsWith("../") && dependency >= 0 ? key.slice(dependency) : key;
+}
+
+const normalizedManifest = {};
+for (const [key, entry] of Object.entries(manifest)) {
+  const normalized = normalizeDependencyKey(key);
+  if (normalized in normalizedManifest) throw new Error(`Clave duplicada en el manifiesto: ${normalized}`);
+  normalizedManifest[normalized] = {
+    ...entry,
+    ...(entry.imports ? { imports: entry.imports.map(normalizeDependencyKey) } : {}),
+    ...(entry.dynamicImports ? { dynamicImports: entry.dynamicImports.map(normalizeDependencyKey) } : {}),
+  };
+}
+manifest = normalizedManifest;
+
 const stats = new Map();
 
 /** Lee un archivo del cliente y calcula su tamaño bruto y gzip. */

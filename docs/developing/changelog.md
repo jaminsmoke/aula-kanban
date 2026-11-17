@@ -6,6 +6,17 @@
 
 ---
 
+## 2026-11-17 — Publicación 1.1.35
+
+**Estado:** Publicada en Sites.
+
+- Publicadas las mejoras de cabecera y las ocho apps nuevas de Aula Store: Ajedrez, Tarjetas de repaso, Física 2D, Geometría interactiva, Mapas conceptuales, Presentaciones, Moléculas 3D y Líneas de tiempo.
+- Verificados el tablero de Curso IA Gestorex y el catálogo publicado: 13 apps disponibles, con las dos instalaciones existentes conservadas.
+- Comprobaciones: 1.261 pruebas, TypeScript, ESLint, compilación y presupuesto de rendimiento. El medidor admite rutas de dependencias resueltas mediante una unión de Windows.
+- No hay migraciones de base de datos en esta publicación. PROMO-01 sigue pendiente en el backlog para la validación externa de la tarjeta social.
+
+---
+
 ## 2026-11-17 — Roadmap STORE-13 · Líneas de tiempo en Aula Store
 
 **Estado:** Completada · Sin publicación
@@ -230,7 +241,7 @@
 
 ### Seguimiento
 
-- El backlog queda sin entradas aparcadas. PROMO-01 permanece cerrado y su plan está en [`historial/roadmap-promo-01.md`](../historial/roadmap-promo-01.md).
+- Corrección posterior: PROMO-01 sigue pendiente de validación externa y está de nuevo en el backlog; su plan está en [`historial/roadmap-promo-01.md`](../historial/roadmap-promo-01.md).
 
 ## 2026-11-16 — Publicación 1.1.33
 
