@@ -28,7 +28,7 @@
 
 ### Seguimiento
 
-- El backlog queda con STORE-15 (Notas y documentos) y STORE-16 (Visor Office). El plan completo está en [`historial/roadmap-store-14.md`](../historial/roadmap-store-14.md).
+- El backlog queda con STORE-15 (Notas y documentos) y STORE-16 (Visor Office); después se añade DEV-01 para evaluar pnpm sin cambiar el flujo actual. El plan completo está en [`historial/roadmap-store-14.md`](../historial/roadmap-store-14.md).
 
 ---
 
