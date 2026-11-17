@@ -60,11 +60,11 @@
 
 ### Fase 2 — Persistencia, presets, acabado y portada
 
-- [ ] Integrar `useAppDocument(projectId, "mapas")` con guardar, cargar y estados de error.
-- [ ] Añadir presets de mapa conceptual y mapa mental.
-- [ ] Revisar la interacción táctil, el foco de los controles, el teclado y la reducción de movimiento.
-- [ ] Crear `public/store/mapas.svg` con el formato de las portadas actuales.
-- [ ] Medir el chunk y confirmar que React Flow y su CSS se sirven desde el Site.
+- [x] Integrar `useAppDocument(projectId, "mapas")` con guardar, cargar y estados de error.
+- [x] Añadir presets de mapa conceptual y mapa mental.
+- [x] Revisar la interacción táctil, el foco de los controles, el teclado y la reducción de movimiento.
+- [x] Crear `public/store/mapas.svg` con el formato de las portadas actuales.
+- [x] Medir el chunk y confirmar que React Flow y su CSS se sirven desde el Site.
 - **Criterios de aceptación:**
   - Guardar y recuperar un mapa conserva nodos, conexiones, posiciones y etiquetas.
   - Los invitados ven el mapa y no pueden editarlo ni guardarlo.
@@ -100,7 +100,8 @@
 ## 6. Notas de sesión
 
 - 2026-11-17: STORE-10 sale del backlog y pasa a ser el roadmap activo. `@xyflow/react` 12.12.1 es MIT y el estado cabe en `app_documents`.
-- 2026-11-17: fase 1 completada. Lienzo React Flow con mapa de ejemplo, nodos arrastrables, conexiones desde los handles, selección, edición de etiqueta, eliminación y reinicio; zoom, paneo, controles y minimapa. Verificado en navegador a 1366, 1024 y 390 px sin scroll horizontal; modelo y ventana con 9 pruebas focalizadas en verde.
+- 2026-11-17: fase 1 completada. Lienzo React Flow con mapa de ejemplo, nodos arrastrables, conexiones desde los handles, selección, edición de etiqueta, eliminación y reinicio; zoom, paneo y controles. Verificado en navegador a 1366, 1024 y 390 px sin scroll horizontal; modelo y ventana con 9 pruebas focalizadas en verde.
+- 2026-11-17: fase 2 completada. Guardado y carga con `useAppDocument(projectId, "mapas")`, serialización validada, aviso de cambios sin guardar y modo lectura para invitados. Presets de mapa conceptual y mapa mental; portada `public/store/mapas.svg`; foco, teclado, `touch-action` y reducción de movimiento revisados. Chunk de comprobación 161,4 KB / 50,6 KB gzip; CSS de React Flow y de la app 21,1 KB, servido desde `dist/client`. Pruebas focalizadas: 16 en verde.
 - La primera versión no tiene colaboración en vivo ni IA generativa: se edita un mapa por proyecto y se guarda explícitamente.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.
 - No se cambia la versión del Site (`1.1.34`) ni se publica en Sites desde este roadmap.

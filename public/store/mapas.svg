@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Portada de Mapas conceptuales">
+  <defs>
+    <linearGradient id="map-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f2f7ff"/>
+      <stop offset="1" stop-color="#d8e5ff"/>
+    </linearGradient>
+    <linearGradient id="map-card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f8fbff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#map-bg)"/>
+  <circle cx="1080" cy="80" r="220" fill="#a9c5ff" opacity=".45"/>
+  <circle cx="100" cy="630" r="190" fill="#ffffff" opacity=".4"/>
+
+  <g transform="translate(0 30)" font-family="Instrument Sans, system-ui, sans-serif">
+    <text x="86" y="230" fill="#1c2a5a" font-size="68" font-weight="700">Mapas</text>
+    <text x="86" y="300" fill="#2e438c" font-size="68" font-weight="700">conceptuales</text>
+    <text x="88" y="360" fill="#4b5f96" font-size="27">Conecta ideas y ordena</text>
+    <text x="88" y="400" fill="#4b5f96" font-size="27">lo que estás aprendiendo</text>
+    <g transform="translate(88 452)">
+      <rect width="326" height="52" rx="26" fill="#ffffff" opacity=".84"/>
+      <text x="24" y="34" fill="#2e438c" font-size="19" font-weight="600">Crea · conecta · comprende</text>
+    </g>
+  </g>
+
+  <g transform="translate(724 88) rotate(3 180 250)" font-family="Instrument Sans, system-ui, sans-serif">
+    <rect width="360" height="500" rx="30" fill="url(#map-card)" opacity=".97"/>
+    <rect x="18" y="18" width="324" height="42" rx="14" fill="#eef5ff" stroke="#d4e2fb" stroke-width="2"/>
+    <text x="36" y="45" fill="#3355c8" font-size="13" font-weight="700" letter-spacing="2">MAPA</text>
+    <circle cx="300" cy="39" r="8" fill="#3355c8"/>
+    <circle cx="318" cy="39" r="8" fill="#eef5ff" stroke="#3355c8" stroke-width="2"/>
+
+    <path d="M180 250 C140 200, 120 165, 96 135" fill="none" stroke="#9bb6ef" stroke-width="4" stroke-linecap="round"/>
+    <path d="M180 250 C220 200, 240 165, 264 135" fill="none" stroke="#9bb6ef" stroke-width="4" stroke-linecap="round"/>
+    <path d="M180 250 C140 300, 120 335, 96 365" fill="none" stroke="#9bb6ef" stroke-width="4" stroke-linecap="round"/>
+    <path d="M180 250 C220 300, 240 335, 264 365" fill="none" stroke="#9bb6ef" stroke-width="4" stroke-linecap="round"/>
+
+    <rect x="104" y="218" width="152" height="64" rx="16" fill="#5b45b8"/>
+    <text x="180" y="257" fill="#ffffff" font-size="17" font-weight="700" text-anchor="middle">Idea central</text>
+
+    <g>
+      <rect x="40" y="95" width="112" height="44" rx="12" fill="#ffffff" stroke="#9bb6ef" stroke-width="3"/>
+      <text x="96" y="123" fill="#2e438c" font-size="15" font-weight="700" text-anchor="middle">Concepto</text>
+      <circle cx="96" cy="139" r="6" fill="#3355c8" stroke="#ffffff" stroke-width="2"/>
+    </g>
+    <g>
+      <rect x="208" y="95" width="112" height="44" rx="12" fill="#ffffff" stroke="#9bb6ef" stroke-width="3"/>
+      <text x="264" y="123" fill="#2e438c" font-size="15" font-weight="700" text-anchor="middle">Idea</text>
+      <circle cx="264" cy="139" r="6" fill="#3355c8" stroke="#ffffff" stroke-width="2"/>
+    </g>
+    <g>
+      <rect x="40" y="347" width="112" height="44" rx="12" fill="#ffffff" stroke="#9bb6ef" stroke-width="3"/>
+      <text x="96" y="375" fill="#2e438c" font-size="15" font-weight="700" text-anchor="middle">Rama</text>
+      <circle cx="96" cy="391" r="6" fill="#3355c8" stroke="#ffffff" stroke-width="2"/>
+    </g>
+    <g>
+      <rect x="208" y="347" width="112" height="44" rx="12" fill="#ffffff" stroke="#9bb6ef" stroke-width="3"/>
+      <text x="264" y="375" fill="#2e438c" font-size="15" font-weight="700" text-anchor="middle">Detalle</text>
+      <circle cx="264" cy="391" r="6" fill="#3355c8" stroke="#ffffff" stroke-width="2"/>
+    </g>
+
+    <rect x="40" y="410" width="280" height="52" rx="16" fill="#eef5ff" stroke="#d4e2fb" stroke-width="2"/>
+    <circle cx="64" cy="436" r="6" fill="#3355c8"/>
+    <text x="80" y="442" fill="#2e438c" font-size="17" font-weight="700">Conecta tus ideas</text>
+  </g>
+</svg>

@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
+  PRESETS,
   connectNodes,
   createConceptNode,
+  createPresetMap,
   createStarterMap,
   nextNodeId,
+  parseMapDocument,
   removeNode,
+  serializeMap,
   updateNodeLabel,
 } from "./mapas-model";
 
@@ -46,5 +50,46 @@ describe("modelo de Mapas conceptuales", () => {
     const next = connectNodes(map, "n2", "n3");
     expect(next.edges).toHaveLength(3);
     expect(next.edges[2]).toMatchObject({ source: "n2", target: "n3" });
+  });
+
+  it("ofrece una plantilla conceptual y otra mental", () => {
+    expect(PRESETS.map((preset) => preset.id)).toEqual(["conceptual", "mental"]);
+    expect(createPresetMap("conceptual").nodes).toHaveLength(3);
+    const mental = createPresetMap("mental");
+    expect(mental.nodes).toHaveLength(5);
+    expect(mental.edges).toHaveLength(4);
+    expect(mental.nodes[0].data.label).toBe("Tema central");
+  });
+
+  it("serializa solo los campos persistibles", () => {
+    const map = createStarterMap();
+    const dirtyNode = { ...map.nodes[0], selected: true, measured: { width: 10, height: 10 } };
+    const saved = serializeMap([dirtyNode, ...map.nodes.slice(1)], map.edges);
+    expect(saved.nodes[0]).toEqual({
+      id: "n1",
+      position: { x: 330, y: 40 },
+      data: { label: "Idea central", kind: "central" },
+      className: "mapa-nodo mapa-nodo--central",
+    });
+    expect(saved.edges[0]).toEqual({ id: "e-n1-n2", source: "n1", target: "n2", type: "smoothstep" });
+  });
+
+  it("valida y sanea documentos guardados", () => {
+    const parsed = parseMapDocument({
+      nodes: [
+        { id: "a", position: { x: 0, y: 0 }, data: { label: "A", kind: "central" } },
+        { id: "b", position: { x: 100, y: 50 }, data: { label: "B" } },
+        { id: "roto", position: { x: "no", y: 0 }, data: { label: "X" } },
+      ],
+      edges: [
+        { id: "e1", source: "a", target: "b" },
+        { id: "e2", source: "a", target: "fantasma" },
+      ],
+    });
+    expect(parsed?.nodes).toHaveLength(2);
+    expect(parsed?.nodes[1].data.kind).toBe("concept");
+    expect(parsed?.edges).toEqual([{ id: "e1", source: "a", target: "b", type: "smoothstep" }]);
+    expect(parseMapDocument({ nodes: [] })).toBeNull();
+    expect(parseMapDocument(null)).toBeNull();
   });
 });

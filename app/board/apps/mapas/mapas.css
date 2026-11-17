@@ -86,10 +86,12 @@
 
 .mapas-actions button:hover,
 .mapas-secondary:hover { background:var(--ui-surface-hover); }
-.mapas-actions button:disabled { cursor:not-allowed; opacity:.45; }
+.mapas-actions button:disabled,
+.mapas-secondary:disabled { cursor:not-allowed; opacity:.45; }
 .mapas-actions button:focus-visible,
 .mapas-secondary:focus-visible,
-.mapas-editor input:focus-visible { outline:var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
+.mapas-editor input:focus-visible,
+.mapas-editor select:focus-visible { outline:var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
 
 .mapas-layout {
   flex:1 1 auto;
@@ -167,9 +169,28 @@
   line-height:1.45;
 }
 
+.mapas-dirty {
+  margin-top:7px !important;
+  color:var(--ui-text-secondary) !important;
+}
+
 .mapas-status {
   margin-top:7px !important;
   color:var(--ui-text-secondary) !important;
+}
+
+.mapas-error {
+  margin-top:7px !important;
+  color:var(--ui-danger-text) !important;
+  font-size:11px;
+  line-height:1.4;
+}
+
+.mapas-readonly {
+  margin-top:7px !important;
+  color:var(--ui-warning-ink) !important;
+  font-size:11px;
+  line-height:1.4;
 }
 
 .mapas-editor {
@@ -184,7 +205,8 @@
   font-weight:700;
 }
 
-.mapas-editor input {
+.mapas-editor input,
+.mapas-editor select {
   width:100%;
   padding:7px 8px;
   border:var(--border-width-hairline) solid var(--ui-border-strong);
@@ -193,6 +215,12 @@
   color:var(--ui-text-primary);
   font:inherit;
   font-size:11.5px;
+}
+
+.mapas-editor input:disabled,
+.mapas-editor select:disabled {
+  cursor:not-allowed;
+  opacity:.55;
 }
 
 .mapas-secondary {
@@ -271,12 +299,6 @@
 
 .react-flow__controls-button:hover { background:var(--ui-surface-hover); }
 
-.mapas-minimap {
-  border:var(--border-width-hairline) solid var(--ui-border-default);
-  border-radius: var(--radius-xs);
-  background:var(--ui-surface-raised) !important;
-}
-
 .react-flow__attribution {
   background:var(--ui-surface-raised) !important;
   color:var(--ui-text-muted) !important;
@@ -298,7 +320,6 @@
   .mapas-actions button { padding:5px 6px; font-size:10.5px; }
   .mapas-canvas { height:360px; min-height:360px; }
   .mapas-side { grid-template-columns:1fr; }
-  .mapas-minimap { display:none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
