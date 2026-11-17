@@ -2,20 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 3 entradas: STORE-11 a STORE-13 pendientes
+> **Roadmap:** STORE-11 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas: STORE-12 y STORE-13 pendientes
 
 ---
-
-## 2026-11-16 — STORE-11 · Presentaciones
-
-- Contexto: `reveal.js` 6.0.2 (MIT, ~200 KB) permite diapositivas desde Markdown/HTML y cubre una necesidad docente que hoy no existe. No necesita servidor ni CDN.
-- Alcance:
-  1. Crear `app/board/apps/presentaciones/` con editor Markdown, vista previa y modo presentación.
-  2. Guardar el contenido por proyecto en `app_documents`; invitados en solo lectura.
-  3. Plantillas iniciales y exportación HTML o PDF desde la ventana si no exige servicios externos.
-- Criterios: editar y presentar diapositivas, guardar/cargar, navegar con teclado y revisar a 1366, 1024 y 390 px.
-- Notas: usar solo assets locales; no importar PPTX ni depender de Google Slides. Si la exportación PDF necesita un servicio del navegador, dejar solo HTML en la primera versión.
 
 ## 2026-11-16 — STORE-12 · Moléculas 3D
 

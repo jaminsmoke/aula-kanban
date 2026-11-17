@@ -99,11 +99,11 @@ La tabla de versiones por app está en [`integradas.md#versiones-por-app`](integ
 
 Ajedrez (**STORE-06**), Tarjetas de repaso (**STORE-09**), Física 2D
 (**STORE-07**), Geometría interactiva (**STORE-08**) y Mapas conceptuales
-(**STORE-10**) ya están integrados. En el backlog quedan, por orden de encaje:
+(**STORE-10**) ya están integrados. Presentaciones (`reveal.js`) está en el
+roadmap activo como **STORE-11**. En el backlog quedan, por orden de encaje:
 
-1. **Presentaciones** (`reveal.js`): **STORE-11**.
-2. **Moléculas 3D** (`3dmol`): **STORE-12**.
-3. **Líneas de tiempo** (`vis-timeline`): **STORE-13**.
+1. **Moléculas 3D** (`3dmol`): **STORE-12**.
+2. **Líneas de tiempo** (`vis-timeline`): **STORE-13**.
 
 El resto sigue documentado por categorías, sin entrada en backlog hasta que se
 priorice.

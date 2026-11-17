@@ -2,9 +2,9 @@
 
 Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
-> **Integrada:** Mapas conceptuales como **STORE-10**. **En backlog:**
-> Presentaciones como **STORE-11** y Líneas de tiempo como **STORE-13**. El resto
-> sigue como candidato hasta que se priorice.
+> **Integrada:** Mapas conceptuales como **STORE-10**. **En roadmap:**
+> Presentaciones como **STORE-11**. **En backlog:** Líneas de tiempo como
+> **STORE-13**. El resto sigue como candidato hasta que se priorice.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|
@@ -14,7 +14,7 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 | Código (completo) | `monaco-editor` 0.57.0 | MIT | Editor de VS Code | ~2 MB+ | Solo si hace falta IntelliSense real |
 | Playground web | `@codesandbox/sandpack-react` 2.20.0 | Apache-2.0 | HTML/CSS/JS editable con vista previa | ~300 KB | Comprobar que no depende de su CDN en producción |
 | Texto enriquecido | `@tiptap/core` 3.34.0 | MIT | Apuntes con formato | ~250 KB + extensiones | Extensiones pro son de pago: usar las MIT |
-| Presentaciones | `reveal.js` 6.0.2 | MIT | Diapositivas desde HTML/Markdown | ~200 KB | Ideal para el profesorado |
+| Presentaciones | `reveal.js` 6.0.2 | MIT | Diapositivas desde HTML/Markdown | ~200 KB | En roadmap STORE-11; ideal para el profesorado |
 | Gráficas | `chart.js` 4.6.1 | MIT | Barras, líneas, sectores | ~200 KB | Pieza de apoyo |
 | Gráficas | `@observablehq/plot` 0.6.19 | ISC | Gráficas declarativas | ~250 KB | Alternativa a Chart.js |
 | Funciones | `function-plot` 1.26.0 | MIT | Representación de funciones | ~150 KB | Matemáticas |
