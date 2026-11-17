@@ -51,10 +51,10 @@
 
 ### Fase 1 — Visor 3D y biblioteca local
 
-- [ ] Instalar `3dmol` 2.5.5 y fijar la versión.
-- [ ] Crear `app/board/apps/moleculas/` con modelo, datos, visor y estilos.
-- [ ] Cargar estructuras PDB/SDF locales y mostrar la molécula seleccionada.
-- [ ] Añadir rotación, zoom, etiquetas de átomos y ficha con nombre y fórmula.
+- [x] Instalar `3dmol` 2.5.5 y fijar la versión.
+- [x] Crear `app/board/apps/moleculas/` con modelo, datos, visor y estilos.
+- [x] Cargar estructuras PDB/SDF locales y mostrar la molécula seleccionada.
+- [x] Añadir rotación, zoom, etiquetas de átomos y ficha con nombre y fórmula.
 - **Criterios de aceptación:**
   - La biblioteca local carga sin peticiones externas.
   - La molécula gira y se amplía con ratón, rueda y gestos táctiles básicos.
@@ -106,6 +106,7 @@
 
 ## 6. Notas de sesión
 
+- 2026-11-17: fase 1 completada. `3dmol` 2.5.5 se carga dinámicamente solo en el cliente para no romper la SSR; el visor incluye cuatro estructuras SDF locales (agua, metano, etanol y cafeína), rotación, zoom, etiquetas y ficha con átomos, enlaces y atribución de PubChem. Verificado en navegador a 1366, 1024 y 390 px sin scroll horizontal; 9 pruebas focalizadas en verde.
 - 2026-11-17: STORE-12 sale del backlog y pasa a ser el roadmap activo. `3dmol` 2.5.5 es BSD-3 y la biblioteca se servirá localmente.
 - La primera versión no descarga estructuras ni guarda la vista: es un visor de referencia, no un editor.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.

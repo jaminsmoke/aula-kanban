@@ -1,0 +1,310 @@
+/* ==========================================================================
+   Moléculas 3D: visor local con 3Dmol
+   ========================================================================== */
+
+.moleculas-app {
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  background:var(--ui-surface-hover);
+  color:var(--ui-text-primary);
+  container-type:inline-size;
+  container-name:moleculasapp;
+}
+
+.moleculas-toolbar {
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:10px 14px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-surface-faint);
+}
+
+.moleculas-heading {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+
+.moleculas-mark {
+  display:grid;
+  place-items:center;
+  flex:none;
+  width:34px;
+  height:34px;
+  border-radius: var(--radius-sm);
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+}
+
+.moleculas-heading strong {
+  display:block;
+  font-size:14px;
+  line-height:1.2;
+}
+
+.moleculas-heading small {
+  display:block;
+  margin-top:2px;
+  color:var(--ui-text-muted);
+  font-size:11px;
+  font-weight:600;
+  line-height:1.25;
+}
+
+.moleculas-actions {
+  display:flex;
+  align-items:center;
+  gap:5px;
+  flex-wrap:wrap;
+  margin-left:auto;
+}
+
+.moleculas-actions button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:6px 9px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+  font:inherit;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+.moleculas-actions button:hover { background:var(--ui-surface-hover); }
+.moleculas-actions button[aria-pressed="true"] {
+  border-color:var(--ui-action-text);
+  background:var(--ui-action-primary);
+  color:var(--ui-text-inverse);
+}
+.moleculas-actions button:focus-visible { outline:var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
+
+.moleculas-layout {
+  flex:1 1 auto;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 270px;
+  align-content:start;
+  gap:14px;
+  padding:14px;
+  overflow:auto;
+}
+
+.moleculas-stage {
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.moleculas-canvas-wrap {
+  position:relative;
+  flex:1 1 auto;
+  min-height:380px;
+  overflow:hidden;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(circle at 50% 42%, var(--ui-surface-pale) 0%, var(--ui-surface-faint) 72%);
+  box-shadow:var(--ui-shadow-card);
+  touch-action:none;
+}
+
+.moleculas-canvas {
+  position:absolute;
+  inset:0;
+}
+
+.moleculas-canvas canvas {
+  display:block;
+  width:100% !important;
+  height:100% !important;
+}
+
+.moleculas-fallback {
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  margin:0;
+  padding:24px;
+  background:var(--ui-surface-faint);
+  color:var(--ui-text-muted);
+  font-size:12px;
+  line-height:1.5;
+  text-align:center;
+}
+
+.moleculas-hint {
+  max-width:760px;
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+  line-height:1.45;
+  text-align:center;
+}
+
+.moleculas-side {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.moleculas-controls,
+.moleculas-info {
+  padding:11px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius: var(--radius-sm);
+  background:var(--ui-surface-raised);
+}
+
+.moleculas-controls {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.moleculas-controls label {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  color:var(--ui-text-secondary);
+  font-size:10.5px;
+  font-weight:700;
+}
+
+.moleculas-controls select {
+  width:100%;
+  padding:7px 8px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-primary);
+  font:inherit;
+  font-size:12px;
+}
+
+.moleculas-controls select:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:2px;
+}
+
+.moleculas-status {
+  min-height:2.6em;
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11px;
+  line-height:1.35;
+}
+
+.moleculas-info h3 {
+  margin:0 0 2px;
+  color:var(--ui-text-primary);
+  font-size:16px;
+  line-height:1.2;
+}
+
+.moleculas-formula {
+  margin:0 0 8px;
+  color:var(--ui-action-text);
+  font-size:18px;
+  font-weight:700;
+  letter-spacing:.01em;
+}
+
+.moleculas-description {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+  line-height:1.5;
+}
+
+.moleculas-facts {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin:10px 0 8px;
+}
+
+.moleculas-facts div {
+  padding:7px 8px;
+  border:var(--border-width-hairline) solid var(--ui-border-subtle);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-faint);
+}
+
+.moleculas-facts dt {
+  color:var(--ui-text-muted);
+  font-size:9.5px;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+.moleculas-facts dd {
+  margin:2px 0 0;
+  color:var(--ui-text-primary);
+  font-size:15px;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+
+.moleculas-source {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:10px;
+  line-height:1.4;
+}
+
+@container moleculasapp (max-width:760px) {
+  .moleculas-layout {
+    grid-template-columns:minmax(0,1fr);
+  }
+
+  .moleculas-canvas-wrap {
+    flex:none;
+    aspect-ratio:4 / 3;
+    min-height:260px;
+  }
+}
+
+@container moleculasapp (max-width:560px) {
+  .moleculas-toolbar {
+    padding:9px 10px;
+  }
+
+  .moleculas-actions button span {
+    display:none;
+  }
+
+  .moleculas-actions button {
+    padding:7px;
+  }
+
+  .moleculas-layout {
+    gap:10px;
+    padding:10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moleculas-actions button {
+    transition:none;
+  }
+}
