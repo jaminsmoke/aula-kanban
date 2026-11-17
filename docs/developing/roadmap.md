@@ -67,13 +67,13 @@
 
 ### Fase 2 — Persistencia, exportación, accesibilidad y portada
 
-- [ ] Integrar `useAppDocument(projectId, "documentos")` con guardar, cargar y estados de error.
-- [ ] Validar el JSON guardado: título acotado, nodos y marcas permitidos, profundidad y tamaño máximos.
-- [ ] Sanitizar enlaces (`http`, `https` y `mailto`) y rechazar `javascript:`, `data:` y HTML crudo.
-- [ ] Exportar un HTML autónomo y local con título, contenido y estilos incluidos.
-- [ ] Añadir modo invitado de solo lectura, foco visible, etiquetas accesibles y reducción de movimiento.
-- [ ] Crear `public/store/documentos.svg` con el formato de las portadas actuales.
-- [ ] Medir el chunk y confirmar que Tiptap y sus dependencias se sirven desde el Site.
+- [x] Integrar `useAppDocument(projectId, "documentos")` con guardar, cargar y estados de error.
+- [x] Validar el JSON guardado: título acotado, nodos y marcas permitidos, profundidad y tamaño máximos.
+- [x] Sanitizar enlaces (`http`, `https` y `mailto`) y rechazar `javascript:`, `data:` y HTML crudo.
+- [x] Exportar un HTML autónomo y local con título, contenido y estilos incluidos.
+- [x] Añadir modo invitado de solo lectura, foco visible, etiquetas accesibles y reducción de movimiento.
+- [x] Crear `public/store/documentos.svg` con el formato de las portadas actuales.
+- [x] Medir el chunk y confirmar que Tiptap y sus dependencias se sirven desde el Site.
 - **Criterios de aceptación:**
   - Guardar y recuperar conserva título, texto, marcas y enlaces.
   - Los invitados ven el documento y no pueden editarlo ni guardarlo.
@@ -111,6 +111,7 @@
 ## 6. Notas de sesión
 
 - 2026-11-17: fase 1 completada. Editor Tiptap con título, párrafos, H1–H3, negrita, cursiva, subrayado, listas, citas, código, enlaces normalizados y deshacer/rehacer. La barra muestra estados activos y se adapta a 1366, 1024 y 390 px; el indicador de cambios solo se activa con transacciones que modifican el documento. 6 pruebas focalizadas en verde.
+- 2026-11-17: fase 2 completada. Guardado por proyecto con `useAppDocument`, validación defensiva del JSON, enlaces normalizados, exportación HTML autónoma, modo invitado, foco visible, reducción de movimiento y portada. El ciclo guardar/cargar y la descarga HTML se comprobaron en la vista local; 13 pruebas focalizadas en verde. Chunk `documentos` 421,9 KB / 131,8 KB gzip y CSS 8,6 KB / 1,9 KB gzip, servido desde `dist/client`.
 - 2026-11-17: STORE-15 sale del backlog y pasa a ser el roadmap activo. `@tiptap/core` 3.34.0 y las extensiones previstas son MIT; el documento cabe en `app_documents`.
 - La primera versión no incluye tablas, imágenes ni adjuntos: prioriza editar, guardar y exportar.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.

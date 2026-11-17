@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
+import type { Editor } from "@tiptap/core";
 import {
   Bold,
   Code,
   Code2,
+  Download,
   FileText,
   Heading1,
   Heading2,
@@ -17,15 +19,21 @@ import {
   Pilcrow,
   Quote,
   Redo2,
+  Save,
   Underline,
   Undo2,
 } from "lucide-react";
+import type { StoreRole } from "../types";
+import { useAppDocument } from "../use-app-document";
 import { createDocumentExtensions } from "./documentos-editor";
+import { buildNotesHtml } from "./documentos-export";
 import {
   NOTE_TITLE_MAX_LENGTH,
   countWords,
   createStarterDocument,
   normalizeLinkUrl,
+  parseNotesDocument,
+  type NotesDocument,
 } from "./documentos-model";
 import "./documentos.css";
 
@@ -98,22 +106,30 @@ function ToolButton({ action }: { action: ToolbarAction }) {
 }
 
 /**
- * Notas y documentos: editor de texto enriquecido con formato local.
+ * Notas y documentos: editor de texto enriquecido y guardado por proyecto.
+ * @param props - Proyecto activo y rol del usuario.
  * @returns La ventana con el editor y la barra de formato.
  */
-export default function DocumentosApp() {
+export default function DocumentosApp({ projectId, role }: { projectId: string; role: StoreRole }) {
   const [initialDocument] = useState(createStarterDocument);
   const [title, setTitle] = useState(initialDocument.title);
   const [dirty, setDirty] = useState(false);
   const [wordCount, setWordCount] = useState(0);
-  const [status, setStatus] = useState("Documento de ejemplo listo. Selecciona texto y aplica formato.");
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState("Cargando documento…");
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const [linkError, setLinkError] = useState<string | null>(null);
   const linkInputRef = useRef<HTMLInputElement>(null);
+  const editorRef = useRef<Editor | null>(null);
+  const pendingDocumentRef = useRef<NotesDocument | null>(null);
+  const applyingDocumentRef = useRef(false);
+  const { load, save, loading, error } = useAppDocument<NotesDocument>(projectId, "documentos");
+  const readOnly = role === "guest";
 
   const editor = useEditor({
     immediatelyRender: false,
+    editable: !readOnly,
     extensions: createDocumentExtensions(),
     content: initialDocument.content,
     editorProps: {
@@ -124,13 +140,24 @@ export default function DocumentosApp() {
       },
     },
     onCreate: ({ editor: current }) => {
+      editorRef.current = current;
+      current.setEditable(!readOnly);
       setWordCount(countWords(current.getText()));
+      const pending = pendingDocumentRef.current;
+      if (pending) {
+        applyingDocumentRef.current = true;
+        current.commands.setContent(pending.content, { emitUpdate: false });
+        setWordCount(countWords(current.getText()));
+        setDirty(false);
+        window.setTimeout(() => { applyingDocumentRef.current = false; }, 0);
+      }
     },
     onTransaction: ({ editor: current, transaction }) => {
       if (!transaction.docChanged) return;
       setWordCount(countWords(current.getText()));
+      if (applyingDocumentRef.current) return;
       setDirty(true);
-      setStatus("Cambios sin guardar.");
+      setStatus("Documento modificado.");
     },
   });
 
@@ -159,6 +186,46 @@ export default function DocumentosApp() {
     },
   }) ?? EMPTY_TOOLBAR_STATE;
 
+  /**
+   * Aplica un documento validado al editor y al título.
+   * @param document - Documento que se muestra.
+   */
+  const applyDocument = useCallback((document: NotesDocument) => {
+    pendingDocumentRef.current = document;
+    setTitle(document.title);
+    const current = editorRef.current;
+    if (current) {
+      applyingDocumentRef.current = true;
+      current.commands.setContent(document.content, { emitUpdate: false });
+      setWordCount(countWords(current.getText()));
+      window.setTimeout(() => { applyingDocumentRef.current = false; }, 0);
+    }
+    setDirty(false);
+    setStatus("Documento guardado cargado.");
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    void load().then(({ state }) => {
+      if (!active) return;
+      if (state === null) {
+        setStatus("Documento de ejemplo listo. Guarda para conservarlo.");
+        return;
+      }
+      const parsed = parseNotesDocument(state);
+      if (parsed) {
+        applyDocument(parsed);
+      } else {
+        setStatus("No hay un documento guardado válido; se mantiene el ejemplo.");
+      }
+    });
+    return () => { active = false; };
+  }, [load, applyDocument]);
+
+  useEffect(() => {
+    editor?.setEditable(!readOnly);
+  }, [editor, readOnly]);
+
   useEffect(() => {
     if (linkOpen) linkInputRef.current?.focus();
   }, [linkOpen]);
@@ -177,7 +244,7 @@ export default function DocumentosApp() {
    * Abre el panel de enlace y carga el enlace activo si existe.
    */
   function openLinkPanel() {
-    if (!editor) return;
+    if (!editor || readOnly) return;
     const current = editor.getAttributes("link").href;
     setLinkUrl(typeof current === "string" ? current : "");
     setLinkError(null);
@@ -188,7 +255,7 @@ export default function DocumentosApp() {
    * Aplica el enlace escrito a la selección actual.
    */
   function applyLink() {
-    if (!editor) return;
+    if (!editor || readOnly) return;
     const href = normalizeLinkUrl(linkUrl);
     if (!href) {
       setLinkError("Escribe un enlace http, https o un correo válido.");
@@ -206,7 +273,7 @@ export default function DocumentosApp() {
    * Quita el enlace de la selección actual.
    */
   function removeLink() {
-    if (!editor) return;
+    if (!editor || readOnly) return;
     editor.chain().focus().extendMarkRange("link").unsetLink().run();
     setLinkOpen(false);
     setLinkUrl("");
@@ -215,7 +282,81 @@ export default function DocumentosApp() {
     setStatus("Enlace retirado.");
   }
 
-  const groups: ToolbarAction[][] = editor ? [
+  /**
+   * Obtiene el documento actual ya validado para guardar o exportar.
+   * @returns El documento o `null` si el editor no está disponible.
+   */
+  function currentDocument(): NotesDocument | null {
+    if (!editor) return null;
+    return parseNotesDocument({ title, content: editor.getJSON() });
+  }
+
+  /**
+   * Guarda el documento en el proyecto.
+   */
+  async function saveDocument() {
+    if (readOnly) return;
+    const document = currentDocument();
+    if (!document) {
+      setStatus("No se pudo validar el documento; no se ha guardado.");
+      return;
+    }
+    setSaving(true);
+    const ok = await save(document);
+    setSaving(false);
+    if (ok) {
+      setTitle(document.title);
+      setDirty(false);
+      setStatus("Documento guardado en el proyecto.");
+    } else {
+      setStatus("No se pudo guardar el documento. Revisa la conexión.");
+    }
+  }
+
+  /**
+   * Descarga el documento como HTML autónomo.
+   */
+  function exportHtml() {
+    const note = currentDocument();
+    if (!note) {
+      setStatus("No se pudo preparar el HTML del documento.");
+      return;
+    }
+    try {
+      const blob = new Blob([buildNotesHtml(note)], { type: "text/html;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "notas-documentos.html";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+      setStatus("HTML descargado.");
+    } catch {
+      setStatus("No se pudo preparar el HTML del documento.");
+    }
+  }
+
+  const statusText = loading
+    ? "Cargando documento…"
+    : error ?? (dirty ? `${status} Cambios sin guardar.` : status);
+  const fileActions: ToolbarAction[] = [
+    {
+      label: "Guardar documento",
+      disabled: readOnly || saving || loading || !editor,
+      onClick: () => { void saveDocument(); },
+      icon: <Save size={15} aria-hidden />,
+    },
+    {
+      label: "Exportar HTML",
+      disabled: !editor,
+      onClick: exportHtml,
+      icon: <Download size={15} aria-hidden />,
+    },
+  ];
+
+  const groups: ToolbarAction[][] = editor && !readOnly ? [
     [
       {
         label: "Párrafo",
@@ -334,8 +475,8 @@ export default function DocumentosApp() {
           </span>
         </div>
         <div className="documentos-meta" aria-label="Estado del documento">
-          <span className={dirty ? "documentos-chip is-dirty" : "documentos-chip"}>
-            {dirty ? "Cambios sin guardar" : "Borrador local"}
+          <span className={dirty && !readOnly ? "documentos-chip is-dirty" : "documentos-chip"}>
+            {readOnly ? "Solo lectura" : saving ? "Guardando…" : dirty ? "Cambios sin guardar" : "Documento local"}
           </span>
           <span className="documentos-words">{wordCount} palabras</span>
         </div>
@@ -347,10 +488,19 @@ export default function DocumentosApp() {
             {group.map((action) => <ToolButton action={action} key={action.label} />)}
           </div>
         ))}
+        <div className="documentos-tool-group documentos-file-actions">
+          {fileActions.map((action) => <ToolButton action={action} key={action.label} />)}
+        </div>
         {!editor ? <span className="documentos-loading">Preparando editor…</span> : null}
       </div>
 
-      {linkOpen ? (
+      {readOnly ? (
+        <p className="documentos-readonly" role="note">
+          Modo lectura: puedes consultar y exportar el documento, pero no editarlo ni guardarlo.
+        </p>
+      ) : null}
+
+      {linkOpen && !readOnly ? (
         <form
           className="documentos-link-bar"
           onSubmit={(event) => {
@@ -402,6 +552,7 @@ export default function DocumentosApp() {
               aria-label="Título del documento"
               placeholder="Título del documento"
               spellCheck
+              readOnly={readOnly}
             />
             <div className="documentos-divider" aria-hidden />
             <EditorContent editor={editor} className="documentos-editor" />
@@ -412,8 +563,8 @@ export default function DocumentosApp() {
         <aside className="documentos-side">
           <section className="documentos-info">
             <h3>Documento de ejemplo</h3>
-            <p>Escribe una nota, aplica formato y revisa cómo se lee. En la siguiente fase se guardará en el proyecto.</p>
-            <p className="documentos-status" role="status">{status}</p>
+            <p>Escribe una nota, aplica formato y revisa cómo se lee. Los cambios se guardan en el proyecto.</p>
+            <p className="documentos-status" role="status">{statusText}</p>
           </section>
           <section className="documentos-help">
             <h3>Atajos</h3>

@@ -5,6 +5,7 @@ import {
   countWords,
   createStarterDocument,
   normalizeLinkUrl,
+  parseNotesDocument,
 } from "./documentos-model";
 
 describe("modelo de Notas y documentos", () => {
@@ -33,5 +34,55 @@ describe("modelo de Notas y documentos", () => {
     expect(countWords("  una nota   breve ")).toBe(3);
     expect(countWords("")).toBe(0);
     expect(countWords("una\nnota\nde ejemplo")).toBe(4);
+  });
+
+  it("valida el documento guardado y normaliza los enlaces", () => {
+    const parsed = parseNotesDocument({
+      title: "  Nota segura  ",
+      content: {
+        type: "doc",
+        content: [{
+          type: "paragraph",
+          content: [{
+            type: "text",
+            text: "Enlace",
+            marks: [{ type: "link", attrs: { href: "example.com" } }],
+          }],
+        }],
+      },
+    });
+
+    expect(parsed?.title).toBe("Nota segura");
+    expect(parsed?.content.content?.[0]?.content?.[0]?.marks?.[0]?.attrs?.href).toBe("https://example.com/");
+
+    const unsafe = parseNotesDocument({
+      title: "Nota",
+      content: {
+        type: "doc",
+        content: [{
+          type: "paragraph",
+          content: [{
+            type: "text",
+            text: "Sin enlace",
+            marks: [{ type: "link", attrs: { href: "javascript:alert(1)" } }],
+          }],
+        }],
+      },
+    });
+    expect(unsafe?.content.content?.[0]?.content?.[0]?.marks).toBeUndefined();
+  });
+
+  it("rechaza documentos con estructura, título o profundidad no válidos", () => {
+    expect(parseNotesDocument({ title: "x", content: { type: "doc" } })).not.toBeNull();
+    expect(parseNotesDocument({ title: "x".repeat(NOTE_TITLE_MAX_LENGTH + 1), content: { type: "doc" } })).toBeNull();
+    expect(parseNotesDocument({ title: "x", content: { type: "image" } })).toBeNull();
+    expect(parseNotesDocument({ title: "x", content: { type: "heading", attrs: { level: 7 } } })).toBeNull();
+    expect(parseNotesDocument({ title: "x", content: { type: "text", text: "suelto" } })).toBeNull();
+
+    let deep: Record<string, unknown> = { type: "paragraph", content: [{ type: "text", text: "fin" }] };
+    for (let index = 0; index < 26; index += 1) {
+      deep = { type: "blockquote", content: [deep] };
+    }
+    expect(parseNotesDocument({ title: "x", content: { type: "doc", content: [deep] } })).toBeNull();
   });
 });

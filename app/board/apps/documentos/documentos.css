@@ -149,10 +149,25 @@
   outline-offset:1px;
 }
 
+.documentos-file-actions {
+  margin-left:auto;
+}
+
 .documentos-loading {
   margin-left:4px;
   color:var(--ui-text-muted);
   font-size:11px;
+}
+
+.documentos-readonly {
+  flex:none;
+  margin:0;
+  padding:8px 14px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-warning-soft);
+  color:var(--ui-warning-ink);
+  font-size:11px;
+  line-height:1.4;
 }
 
 .documentos-link-bar {
@@ -277,6 +292,10 @@
   outline:var(--border-width-strong) solid var(--ui-focus-ring);
   outline-offset:4px;
   border-radius:var(--radius-xs);
+}
+
+.documentos-title[readonly] {
+  cursor:default;
 }
 
 .documentos-divider {
