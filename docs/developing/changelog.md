@@ -1,10 +1,32 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-09 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-17 — Roadmap STORE-09 · Tarjetas de repaso en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Tarjetas de repaso se incorpora con `ts-fsrs` 6.0.0: mazos y tarjetas compartidos por proyecto, repaso FSRS-7 y cuatro valoraciones.
+- Los mazos y tarjetas se guardan en `app_documents`; el progreso de repaso vive en `localStorage` por proyecto y navegador, con la limitación visible en la app.
+- Formulario de repaso con teclado (`Espacio` para mostrar, `1–4` para valorar), resumen de sesión y estados vacíos.
+- Portada `public/store/tarjetas.svg`, ficha, registro lazy y entrada en «Mejores aplicaciones». `AULA_STORE_VERSION` sube a `1.2.0`.
+- Declaración MCP sin herramientas propias; ayuda, matriz de herramientas y documentación del catálogo actualizadas. Sin cambios en la demo.
+
+### Verificación
+
+- Tienda, ficha y app revisadas a 1366, 1024 y 390 px; la app se instaló y abrió desde Aula Store.
+- Suite completa: **165 archivos / 1.193 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `0ce21bc` (Fase 1), `6a9923b` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites y sin cambio de versión del Site: sigue en **1.1.34**.
+
+### Seguimiento
+
+- El backlog queda con STORE-07, STORE-08 y STORE-10 a STORE-13. El plan completo está en [`historial/roadmap-store-09.md`](../historial/roadmap-store-09.md).
 
 ## 2026-11-16 — Roadmap STORE-06 · Ajedrez en Aula Store
 

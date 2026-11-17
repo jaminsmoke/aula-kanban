@@ -22,6 +22,7 @@ comporten las apps de Tienda; no cambia por sí misma los permisos actuales.
 | Programación por bloques | Todos los roles; guest en solo lectura | Sí | Sí para owner, admin, teacher y student; no para guest | Documento compartido de proyecto | `app_documents` | `leer_programa_bloques`, `guardar_programa_bloques` |
 | Diagramas | Todos los roles; guest en solo lectura | Sí | Sí para owner, admin, teacher y student; no para guest | Documento compartido de proyecto | `app_documents` | `leer_diagrama`, `guardar_diagrama`, `listar_plantillas_diagrama` |
 | Ajedrez | Todos los roles del proyecto; invitados en local | Sí | No, partida local | No | Dispositivo / navegador | Sin herramienta |
+| Tarjetas de repaso | Todos los roles; invitados en solo lectura | Sí | Owner, admin, teacher y student editan mazos; guest no | Documento compartido de proyecto | `app_documents` + `localStorage` | Sin herramienta |
 | Apertura y ventanas | Cualquier miembro con acceso al proyecto y la app instalada | Sí, sobre sus propias pestañas | No cambia contenido | No | Estado efímero de ventanas | `abrir_app`, `listar_ventanas`, `cerrar_app`, `minimizar_app`, `restaurar_app`, `ampliar_app` |
 | Instalación global | Solo owner y admin de instancia | Ver catálogo e instalar/desinstalar | No aplica | No | Instancia / `instance_apps` | `listar_apps`, `obtener_app`, `instalar_app`, `desinstalar_app` |
 

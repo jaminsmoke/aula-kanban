@@ -97,8 +97,8 @@ La tabla de versiones por app está en [`integradas.md#versiones-por-app`](integ
 
 ## Siguientes candidatas
 
-Ajedrez ya está integrado (**STORE-06**) y Tarjetas de repaso está en el roadmap
-activo como **STORE-09**. En el backlog quedan, por orden de encaje:
+Ajedrez (**STORE-06**) y Tarjetas de repaso (**STORE-09**) ya están integrados.
+En el backlog quedan, por orden de encaje:
 
 1. **Física 2D** (`matter-js`): **STORE-07**.
 2. **Geometría interactiva** (`jsxgraph`): **STORE-08**.

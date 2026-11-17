@@ -25,9 +25,9 @@ export type NativeCategory = StoreTopCategory;
 export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
-export const AULA_STORE_VERSION = "1.1.0";
+export const AULA_STORE_VERSION = "1.2.0";
 
-export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez"] as const;
+export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas"] as const;
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
 
@@ -151,6 +151,19 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     appVersion: "1.0.0",
     upstream: { name: "chess.js", version: "1.4.0" },
     extras: [{ name: "react-chessboard", version: "5.12.1" }],
+    window: { width: 900, height: 700 },
+  },
+  {
+    id: "tarjetas",
+    name: "Tarjetas de repaso",
+    tagline: "Mazos para estudiar con repetición espaciada.",
+    description: "Mazos compartidos por proyecto con tarjetas de anverso y reverso, repaso con FSRS y progreso local por navegador.",
+    categories: ["Educación"],
+    subcategory: "Herramientas",
+    cover: "/store/tarjetas.svg",
+    features: ["Mazos y tarjetas compartidos por proyecto", "Repaso con FSRS y cuatro valoraciones", "Progreso local por navegador"],
+    appVersion: "1.0.0",
+    upstream: { name: "ts-fsrs", version: "6.0.0" },
     window: { width: 900, height: 700 },
   },
 ];

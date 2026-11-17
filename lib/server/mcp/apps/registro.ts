@@ -47,6 +47,11 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     herramientas: [],
     pendiente: "El tablero y la partida viven en el navegador y no tienen estado de servidor.",
   },
+  tarjetas: {
+    appId: "tarjetas",
+    herramientas: [],
+    pendiente: "Los mazos se guardan en app_documents, pero el repaso y el progreso viven en el navegador; no hay herramientas MCP específicas en esta versión.",
+  },
 };
 
 /** Herramientas de todas las apps, en el orden de sus declaraciones. */

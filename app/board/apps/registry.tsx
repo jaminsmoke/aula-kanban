@@ -1,5 +1,5 @@
 import { lazy, type ComponentType } from "react";
-import { Atom, Calculator, GitBranch, PencilRuler, Puzzle, Swords } from "lucide-react";
+import { Atom, Calculator, GitBranch, Layers3, PencilRuler, Puzzle, Swords } from "lucide-react";
 import { NATIVE_APPS, nativeAppMeta, type NativeAppId } from "../../../lib/native-apps";
 import type { StoreIconProps, StoreRole, StoreTool } from "./types";
 
@@ -15,6 +15,7 @@ const ICONS: Record<NativeAppId, ComponentType<StoreIconProps>> = {
   blockly: Puzzle,
   mermaid: GitBranch,
   ajedrez: Swords,
+  tarjetas: Layers3,
 };
 
 // El código de cada app solo se descarga cuando su ventana se abre por
@@ -26,6 +27,7 @@ const APPS: Record<NativeAppId, ComponentType<StoreAppProps>> = {
   blockly: lazy(() => import("./blockly/blockly-app")),
   mermaid: lazy(() => import("./mermaid/mermaid-app")),
   ajedrez: lazy(() => import("./ajedrez/ajedrez-app")),
+  tarjetas: lazy(() => import("./tarjetas/tarjetas-app")),
 };
 
 /** Componente de cada app, indexado por id, para abrir su ventana. */
