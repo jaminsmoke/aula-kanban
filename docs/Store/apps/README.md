@@ -10,11 +10,14 @@ candidato y qué se ha descartado, con la licencia y la versión comprobadas en 
 | Documento | Contenido |
 |---|---|
 | [`integradas.md`](integradas.md) | Apps integradas, versiones y transición de datos |
-| [`candidatas-aula-evaluacion.md`](candidatas-aula-evaluacion.md) | Tarjetas de repaso y evaluación |
-| [`candidatas-stem-ciencias.md`](candidatas-stem-ciencias.md) | Física, geometría, química, música y ciencia |
+| [`candidatas-aula-evaluacion.md`](candidatas-aula-evaluacion.md) | Evaluación y repaso |
+| [`candidatas-stem-ciencias.md`](candidatas-stem-ciencias.md) | Ciencia, matemáticas y sonido |
 | [`candidatas-diagramas-documentos.md`](candidatas-diagramas-documentos.md) | Diagramas, documentos y productividad |
-| [`candidatas-geografia-ajedrez.md`](candidatas-geografia-ajedrez.md) | Mapas; Ajedrez ya está integrado |
+| [`candidatas-geografia-ajedrez.md`](candidatas-geografia-ajedrez.md) | Geografía; Ajedrez ya está integrado |
 | [`descartadas.md`](descartadas.md) | Aparcadas, mencionadas y descartadas |
+
+Las apps ya integradas se documentan solo en [`integradas.md`](integradas.md) y
+no se repiten en las tablas de candidatas.
 
 ## Qué es una aplicación nativa
 
@@ -95,16 +98,16 @@ Aula Store usa la misma política para su propia versión. La versión del Site 
 gestiona aparte con el flujo de publicación y no se incrementa al cambiar una app.
 La tabla de versiones por app está en [`integradas.md#versiones-por-app`](integradas.md#versiones-por-app).
 
-## Siguientes candidatas
+## Estado del catálogo
 
-Ajedrez (**STORE-06**), Tarjetas de repaso (**STORE-09**), Física 2D
-(**STORE-07**), Geometría interactiva (**STORE-08**), Mapas conceptuales
-(**STORE-10**), Presentaciones (**STORE-11**), Moléculas 3D (**STORE-12**) y
-Líneas de tiempo (**STORE-13**) ya están integrados. No hay entradas pendientes
-en el backlog.
+Las trece apps actuales (Ajedrez **STORE-06**, Física 2D **STORE-07**, Geometría
+interactiva **STORE-08**, Tarjetas de repaso **STORE-09**, Mapas conceptuales
+**STORE-10**, Presentaciones **STORE-11**, Moléculas 3D **STORE-12** y Líneas de
+tiempo **STORE-13**, además de las cinco iniciales) ya están integradas. No hay
+entradas pendientes en el backlog.
 
-El resto sigue documentado por categorías, sin entrada en backlog hasta que se
-priorice.
+Las candidatas sin priorizar siguen documentadas por categorías en los documentos
+anteriores, sin entrada en backlog hasta que se decida abordarlas.
 
 ## Cómo reverificar una licencia
 

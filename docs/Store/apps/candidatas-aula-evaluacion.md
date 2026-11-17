@@ -8,7 +8,7 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|
-| Tarjetas (algoritmo SM-2) | `supermemo` 2.0.23 | MIT | Alternativa simple a FSRS | ~15 KB | Solo algoritmo |
+| SM-2 (alternativa a FSRS) | `supermemo` 2.0.23 | MIT | Alternativa simple a FSRS | ~15 KB | Solo algoritmo; no es la app integrada |
 | Conjuntos de preguntas | `@open-spaced-repetition/srs-kit` 1.0.0 | BSD-3 | Contratos y esquema de SRS | ~20 KB | Requiere implementar la UI |
 
 ## Valoración

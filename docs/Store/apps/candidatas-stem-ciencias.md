@@ -9,13 +9,10 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|
 | Laboratorio STEM | `@itkdm/open-lab-components` 0.1.1 | MIT | 210+ fragmentos interactivos de física, química, biología y matemáticas | ~3 MB sin empaquetar | Fragmentos HTML/CSS/JS, no componentes React: hay que aislarlos en `iframe` con `sandbox` o sanearlos. Versión 0.1.x muy joven (febrero 2026) |
-| Física 2D | `matter-js` 0.20.0 | MIT | Gravedad, colisiones, muelles, péndulos | ~90 KB gzip | Sandbox manipulable; UI propia |
-| Física 2D (WASM) | `@dimforge/rapier2d` 0.21.0 | Apache-2.0 | Motor de física más preciso | ~1 MB WASM | Alternativa a Matter.js si hace falta precisión |
-| Geometría interactiva | `jsxgraph` 1.14.3 | MIT **o** LGPL-3.0 | Construcciones, funciones, lugares geométricos | ~400 KB | Integrada en STORE-08 con la opción MIT |
+| Motor de física (WASM) | `@dimforge/rapier2d` 0.21.0 | Apache-2.0 | Motor de física más preciso | ~1 MB WASM | Alternativa a Matter.js; la app Física 2D ya está integrada |
 | Editor de fórmulas | `mathlive` 0.111.4 | MIT | Teclado matemático, exportación a LaTeX | ~500 KB + fuentes | Candidata si hace falta un teclado matemático más rico |
 | Render de fórmulas | `katex` 0.19.1 | MIT | Render de LaTeX en cualquier app | ~280 KB + fuentes | Pieza de apoyo, no app por sí sola |
-| Calculadora científica | `mathjs` 15.2.0 | Apache-2.0 | Evaluación simbólica y unidades | ~350 KB | Detrás de una UI propia |
-| Moléculas 3D | `3dmol` 2.5.5 | BSD-3 | Modelos moleculares giratorios | ~1 MB | Integrada en STORE-12 con ocho estructuras PDB/SDF locales |
+| Motor simbólico | `mathjs` 15.2.0 | Apache-2.0 | Evaluación simbólica y unidades | ~350 KB | Alternativa a compute-engine; la Calculadora ya está integrada |
 | Dibujo de moléculas | `kekule` 1.0.4 | ⚠️ sin declarar | Editor de estructuras químicas | ~1 MB | Licencia sin metadatos en npm: comprobar antes de usar |
 | Cielo nocturno | `d3-celestial` 0.7.35 | BSD-3 | Mapa estelar, constelaciones | ~500 KB + datos | Necesita descargar catálogos; valorar servirlos localmente |
 | Música | `vexflow` 5.0.0 | MIT | Notación musical, escalas, ejercicios | ~500 KB | UI propia |
@@ -24,7 +21,7 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
 ## Valoración
 
-- **Física 2D** es el mejor primer laboratorio: paquete pequeño, licencia limpia,
+- **Física 2D** quedó integrada en STORE-07: paquete pequeño, licencia limpia,
   sin red y con una UI acotada.
 - **Geometría interactiva** quedó integrada en STORE-08 con la opción MIT de su
   licencia dual; aporta otro tipo de manipulación matemática y encaja con la
