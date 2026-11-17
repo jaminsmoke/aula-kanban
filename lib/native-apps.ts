@@ -25,9 +25,9 @@ export type NativeCategory = StoreTopCategory;
 export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
-export const AULA_STORE_VERSION = "1.5.0";
+export const AULA_STORE_VERSION = "1.6.0";
 
-export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas"] as const;
+export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "presentaciones"] as const;
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
 
@@ -203,6 +203,19 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     features: ["Nodos y conexiones editables", "Plantillas de mapa conceptual y mental", "Guardado por proyecto y modo lectura"],
     appVersion: "1.0.0",
     upstream: { name: "@xyflow/react", version: "12.12.1" },
+    window: { width: 1120, height: 720 },
+  },
+  {
+    id: "presentaciones",
+    name: "Presentaciones",
+    tagline: "Escribe diapositivas y preséntalas sin salir del aula.",
+    description: "Presentaciones con reveal.js (MIT): editor Markdown, vista previa, modo presentación, plantillas y exportación HTML; guardado por proyecto en app_documents y modo lectura para invitados.",
+    categories: ["Educación", "Productividad"],
+    subcategory: "Herramientas",
+    cover: "/store/presentaciones.svg",
+    features: ["Editor Markdown y vista previa", "Modo presentación con teclado", "Plantillas, guardado y exportación HTML"],
+    appVersion: "1.0.0",
+    upstream: { name: "reveal.js", version: "6.0.2" },
     window: { width: 1120, height: 720 },
   },
 ];

@@ -19,7 +19,7 @@ export type StoreAction = "install" | "uninstall";
  * Aplicaciones destacadas de «Mejores aplicaciones», en orden editorial.
  * Con el catálogo actual todas las apps lo son; al crecer, curar la lista.
  */
-export const FEATURED_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas"] as const;
+export const FEATURED_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "presentaciones"] as const;
 
 /** Icono de cada categoría principal del catálogo (STORE-03A). */
 export const CATEGORY_ICONS = {

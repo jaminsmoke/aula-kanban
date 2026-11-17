@@ -1,10 +1,34 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-11 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-17 — Roadmap STORE-11 · Presentaciones en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Presentaciones se incorpora con `reveal.js` 6.0.2 (MIT): editor Markdown, vista previa y modo presentación con navegación por teclado.
+- Parser Markdown limitado y seguro, sin HTML crudo; plantillas Clase, Proyecto y En blanco.
+- Guardado y carga por proyecto en `app_documents`, aviso de cambios sin guardar, modo lectura para invitados y exportación HTML autónoma.
+- Portada `public/store/presentaciones.svg`, ficha, registro lazy y entrada en «Mejores aplicaciones». `AULA_STORE_VERSION` sube a `1.6.0`.
+- Declaración MCP sin herramientas propias porque la edición vive en el navegador; ayuda, matriz de herramientas, catálogo y documentación actualizados. Sin cambios en la demo.
+
+### Verificación
+
+- Tienda y ficha revisadas a 1366, 1024 y 390 px, con la portada, versión `1.0.0` y upstream `reveal.js 6.0.2`. La demo es de solo lectura y no permite instalar; la apertura queda cubierta por el registro lazy y la prueba de sincronización del catálogo.
+- La app se revisó a pantalla completa a 1366, 1024 y 390 px: edición, plantillas, guardado/carga, modo invitado, modo presentación y exportación HTML.
+- Chunk `presentaciones-app`: 128,2 KB sin comprimir / 34,5 KB gzip. CSS 61,2 KB / 12,6 KB gzip y portada 3,77 KB; todo se sirve desde `dist/client`.
+- Suite completa: **172 archivos / 1.236 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `041afd4` (Fase 1), `22a8d7a` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites y sin cambio de versión del Site: sigue en **1.1.34**.
+
+### Seguimiento
+
+- El backlog queda con STORE-12 y STORE-13. El plan completo está en [`historial/roadmap-store-11.md`](../historial/roadmap-store-11.md).
 
 ## 2026-11-17 — Roadmap STORE-10 · Mapas conceptuales en Aula Store
 

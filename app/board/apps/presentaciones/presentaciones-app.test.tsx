@@ -90,7 +90,7 @@ describe("Presentaciones", () => {
 
     await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
     expect(documentMock.save.mock.calls[0][0]).toEqual({ markdown: expect.stringContaining("Nuestra presentación") });
-    expect(screen.getByRole("status").textContent).toContain("Presentación guardada");
+    await waitFor(() => expect(screen.getByRole("status").textContent).toContain("Presentación guardada"));
   });
 
   it("deja la presentación en solo lectura para invitados", () => {

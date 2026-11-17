@@ -14,6 +14,7 @@
 | Física 2D | `matter-js` 0.20.0 | MIT | ✅ Integrada | Laboratorio de gravedad, colisiones, muelles y péndulos; reproducir, pausar, reiniciar, ajustar gravedad y arrastrar cuerpos. Escena efímera sin servidor |
 | Geometría interactiva | `jsxgraph` 1.14.3 | MIT | ✅ Integrada | Puntos, segmentos, rectas, circunferencias, etiquetas y medidas dinámicas; presets de triángulo, circunferencia y rectas; funciones de parábola, seno y recta con visibilidad. Escena efímera sin servidor |
 | Mapas conceptuales | `@xyflow/react` 12.12.1 | MIT | ✅ Integrada | Nodos y conexiones editables con zoom y paneo; plantillas de mapa conceptual y mental; guardado por proyecto en `app_documents` y modo lectura para invitados |
+| Presentaciones | `reveal.js` 6.0.2 | MIT | ✅ Integrada | Editor Markdown, vista previa y modo presentación; plantillas, guardado por proyecto en `app_documents`, modo lectura para invitados y exportación HTML local |
 
 ## Versiones por app
 
@@ -29,8 +30,9 @@
 | Física 2D | `1.0.0` | `matter-js 0.20.0` |
 | Geometría interactiva | `1.0.0` | `jsxgraph 1.14.3` |
 | Mapas conceptuales | `1.0.0` | `@xyflow/react 12.12.1` |
+| Presentaciones | `1.0.0` | `reveal.js 6.0.2` |
 
-La tienda está en `1.5.0`: las incorporaciones de Ajedrez, Tarjetas de repaso, Física 2D, Geometría interactiva y Mapas conceptuales subieron la versión menor. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
+La tienda está en `1.6.0`: las incorporaciones de Ajedrez, Tarjetas de repaso, Física 2D, Geometría interactiva, Mapas conceptuales y Presentaciones subieron la versión menor. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
 
 ## Transición de `edu-tools`
 
@@ -38,4 +40,4 @@ La transición de datos del servicio separa una instalación antigua de `edu-too
 
 ## Portadas
 
-Las diez apps usan portadas SVG de 1200×675 en `public/store/`, con la misma composición visual. La integración y el cierre de esa unificación están documentados en [`../../historial/roadmap-store-05.md`](../../historial/roadmap-store-05.md); Ajedrez, Tarjetas, Física, Geometría y Mapas añaden sus portadas en STORE-06, STORE-09, STORE-07, STORE-08 y STORE-10, ya completados.
+Las once apps usan portadas SVG de 1200×675 en `public/store/`, con la misma composición visual. La integración y el cierre de esa unificación están documentados en [`../../historial/roadmap-store-05.md`](../../historial/roadmap-store-05.md); Ajedrez, Tarjetas, Física, Geometría, Mapas y Presentaciones añaden sus portadas en STORE-06, STORE-09, STORE-07, STORE-08, STORE-10 y STORE-11, ya completados.

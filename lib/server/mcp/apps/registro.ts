@@ -67,6 +67,11 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     herramientas: [],
     pendiente: "El mapa se guarda en app_documents, pero la edición, el zoom y la disposición viven en el navegador; no hay herramientas MCP específicas en esta versión.",
   },
+  presentaciones: {
+    appId: "presentaciones",
+    herramientas: [],
+    pendiente: "La presentación se guarda en app_documents, pero el editor, la vista previa y el modo presentación viven en el navegador; no hay herramientas MCP específicas en esta versión.",
+  },
 };
 
 /** Herramientas de todas las apps, en el orden de sus declaraciones. */
