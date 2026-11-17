@@ -52,11 +52,11 @@
 
 ### Fase 1 — Lienzo temporal y editor de eventos
 
-- [ ] Instalar `vis-timeline` 8.5.6 con la opción MIT y fijar la versión.
-- [ ] Crear `app/board/apps/timeline/` con modelo, datos, lienzo y estilos.
-- [ ] Renderizar eventos, grupos y épocas sobre un rango de fechas.
-- [ ] Añadir, editar y eliminar eventos y épocas desde el panel lateral.
-- [ ] Implementar zoom, paneo y recentrado del rango visible.
+- [x] Instalar `vis-timeline` 8.5.6 con la opción MIT y fijar la versión.
+- [x] Crear `app/board/apps/timeline/` con modelo, datos, lienzo y estilos.
+- [x] Renderizar eventos, grupos y épocas sobre un rango de fechas.
+- [x] Añadir, editar y eliminar eventos y épocas desde el panel lateral.
+- [x] Implementar zoom, paneo y recentrado del rango visible.
 - **Criterios de aceptación:**
   - La línea temporal muestra eventos y épocas con sus etiquetas.
   - Se crean, editan y eliminan eventos sin recargar la app.
@@ -109,6 +109,7 @@
 
 ## 6. Notas de sesión
 
+- 2026-11-17: fase 1 completada. `vis-timeline` 8.5.6 se carga dinámicamente solo en el cliente; el lienzo muestra cinco eventos en tres grupos y dos épocas de fondo, con rango ajustado a los datos. El panel lateral permite añadir, editar y eliminar eventos y épocas, y la barra superior controla zoom y recentrado. Verificado en navegador a 1366, 1024 y 390 px sin scroll horizontal de página; 10 pruebas focalizadas en verde.
 - 2026-11-17: STORE-13 sale del backlog y pasa a ser el roadmap activo; el backlog queda sin entradas pendientes. `vis-timeline` 8.5.6 tiene licencia dual y se usará la opción MIT.
 - La primera versión no importa ni exporta archivos: el foco es crear, organizar y guardar la línea temporal.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.

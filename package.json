@@ -48,6 +48,7 @@
     "react-dom": "19.2.6",
     "reveal.js": "6.0.2",
     "ts-fsrs": "6.0.0",
+    "vis-timeline": "8.5.6",
     "zod": "^3.25.76",
     "zod-to-json-schema": "3.25.2"
   },
