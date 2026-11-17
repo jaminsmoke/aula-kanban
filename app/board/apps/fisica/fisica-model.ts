@@ -106,7 +106,7 @@ export function createScene(preset: PresetId): PhysicsScene {
   }
 
   if (preset === "muelle") {
-    const anchor = add(Bodies.circle(400, 80, 13, {
+    add(Bodies.circle(400, 80, 13, {
       isStatic: true,
       label: "anclaje",
       render: { fillStyle: "#4b3a78" },
@@ -126,12 +126,10 @@ export function createScene(preset: PresetId): PhysicsScene {
       label: "muelle",
       render: { visible: true, strokeStyle: "#a78bfa", lineWidth: 3 },
     }));
-    // El anclaje se conserva en la escena para que el render lo muestre.
-    void anchor;
   }
 
   if (preset === "pendulo") {
-    const anchor = add(Bodies.circle(400, 80, 13, {
+    add(Bodies.circle(400, 80, 13, {
       isStatic: true,
       label: "anclaje",
       render: { fillStyle: "#4b3a78" },
@@ -151,7 +149,6 @@ export function createScene(preset: PresetId): PhysicsScene {
       label: "cuerda",
       render: { visible: true, strokeStyle: "#d9688a", lineWidth: 3 },
     }));
-    void anchor;
   }
 
   return { engine, bodies, constraints };

@@ -54,12 +54,12 @@
   - El lienzo mantiene la proporción y no genera scroll horizontal a 1366, 1024 y 390 px.
   - El modelo de presets y la ventana tienen pruebas en verde.
 
-### Fase 2 — Presets, acabado y portada
+### Fase 2 — Presets, acabado y portada (completada)
 
-- [ ] Implementar los presets de gravedad, colisiones, muelle y péndulo.
-- [ ] Añadir control de gravedad, botón de nueva pelota y textos de ayuda.
-- [ ] Revisar la interacción táctil, el foco de los controles y la reducción de movimiento.
-- [ ] Crear `public/store/fisica.svg` con el formato de las portadas actuales.
+- [x] Implementar los presets de gravedad, colisiones, muelle y péndulo.
+- [x] Añadir control de gravedad, botón de nueva pelota y textos de ayuda.
+- [x] Revisar la interacción táctil, el foco de los controles y la reducción de movimiento.
+- [x] Crear `public/store/fisica.svg` con el formato de las portadas actuales.
 - **Criterios de aceptación:**
   - Los cuatro presets son distinguibles y reiniciables.
   - Los controles funcionan con teclado y el lienzo se adapta a móvil.
@@ -94,6 +94,7 @@
 
 - 2026-11-17: STORE-07 sale del backlog y pasa a ser el roadmap activo. `matter-js` 0.20.0 es MIT y no necesita red ni servidor.
 - 2026-11-17: Fase 1 completada. La app monta el motor, el suelo y las paredes, reproduce/pausa/reinicia, permite arrastrar cuerpos y añadir pelotas, y adapta el lienzo con escala de puntero. Revisada a 1366 y 390 px; modelo de escena y estilos: 9 pruebas correctas.
+- 2026-11-17: Fase 2 completada. Los cuatro presets están disponibles, el control de gravedad y el botón de nueva pelota funcionan, el lienzo usa `touch-action:none` y la app arranca pausada si el sistema pide movimiento reducido. Añadida la portada `public/store/fisica.svg`. Revisada a 1366 y 390 px.
 - La primera versión no guarda escenas: abrir, experimentar y cerrar. Si se añade persistencia, el camino es `app_documents`.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.
 - No se cambia la versión del Site (`1.1.34`) ni se publica en Sites desde este roadmap.

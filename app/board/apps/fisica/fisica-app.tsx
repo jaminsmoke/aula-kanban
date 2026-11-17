@@ -18,7 +18,10 @@ export default function FisicaApp() {
   const ballIndex = useRef(0);
   const [preset, setPreset] = useState<PresetId>("gravedad");
   const [gravity, setGravity] = useState(1);
-  const [running, setRunning] = useState(true);
+  const [running, setRunning] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return !window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  });
   const [sceneVersion, setSceneVersion] = useState(0);
   const currentPreset = PRESETS.find((item) => item.id === preset) ?? PRESETS[0];
 
