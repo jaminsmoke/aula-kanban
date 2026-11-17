@@ -106,9 +106,9 @@ interactiva **STORE-08**, Tarjetas de repaso **STORE-09**, Mapas conceptuales
 tiempo **STORE-13**, Hoja de cálculo **STORE-14** y Notas y documentos
 **STORE-15**, además de las cinco iniciales) ya están integradas.
 
-En el backlog quedan **STORE-16** Visor Office y **DEV-01** (evaluación de pnpm,
-fuera del catálogo de apps). El resto de candidatas sigue documentado por
-categorías, sin entrada hasta que se priorice.
+**STORE-16** Visor Office está en roadmap. En el backlog queda **DEV-01**
+(evaluación de pnpm, fuera del catálogo de apps). El resto de candidatas sigue
+documentado por categorías, sin entrada hasta que se priorice.
 
 ## Cómo reverificar una licencia
 
