@@ -17,7 +17,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | STORE-07 activo: Física 2D | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | Sin fase activa; plantilla lista para el siguiente roadmap | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -80,7 +80,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
-- **Roadmap STORE-07 activo:** laboratorio de Física 2D con `matter-js`, presets, controles y escena efímera; plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.34` y sin publicación.
+- **Roadmap STORE-07 completado:** Física 2D integrada con `matter-js`, cuatro presets, controles, arrastre y portada SVG; `AULA_STORE_VERSION` sube a `1.3.0`. Verificada en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-07.md`](historial/roadmap-store-07.md). Sin cambio de versión del Site ni publicación.
 - **Roadmap STORE-09 completado:** Tarjetas de repaso integrada con mazos en `app_documents`, repaso FSRS, cuatro valoraciones, progreso local por navegador y portada SVG; `AULA_STORE_VERSION` sube a `1.2.0`. Verificada en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-09.md`](historial/roadmap-store-09.md). Sin cambio de versión del Site ni publicación.
 - **Roadmap STORE-06 completado:** Ajedrez integrado en Aula Store con tablero, reglas completas, dos jugadores locales, rival aleatorio, formulario de teclado y portada SVG; `AULA_STORE_VERSION` sube a `1.1.0`. Verificado en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-06.md`](historial/roadmap-store-06.md). Sin cambio de versión del Site ni publicación.
 - **Roadmap STORE-05 completado:** las cinco portadas de Aula Store son SVG de 1200×675; Excalidraw, Programación por bloques y Diagramas sustituyen sus capturas PNG y se retiran los archivos antiguos. Verificado en tarjeta y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-05.md`](historial/roadmap-store-05.md). Sin cambio de versión ni publicación.

@@ -25,9 +25,9 @@ export type NativeCategory = StoreTopCategory;
 export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
-export const AULA_STORE_VERSION = "1.2.0";
+export const AULA_STORE_VERSION = "1.3.0";
 
-export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas"] as const;
+export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica"] as const;
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
 
@@ -164,6 +164,19 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     features: ["Mazos y tarjetas compartidos por proyecto", "Repaso con FSRS y cuatro valoraciones", "Progreso local por navegador"],
     appVersion: "1.0.0",
     upstream: { name: "ts-fsrs", version: "6.0.0" },
+    window: { width: 900, height: 700 },
+  },
+  {
+    id: "fisica",
+    name: "Física 2D",
+    tagline: "Gravedad, choques, muelles y péndulos en un laboratorio manipulable.",
+    description: "Laboratorio de física 2D con escenas de gravedad, colisiones, muelles y péndulos; reproduce, pausa, reinicia y arrastra cuerpos sin red ni servidor.",
+    categories: ["Educación"],
+    subcategory: "Herramientas",
+    cover: "/store/fisica.svg",
+    features: ["Cuatro experimentos manipulables", "Reproduce, pausa, reinicia y arrastra cuerpos", "Escena efímera, sin red ni servidor"],
+    appVersion: "1.0.0",
+    upstream: { name: "matter-js", version: "0.20.0" },
     window: { width: 900, height: 700 },
   },
 ];

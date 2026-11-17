@@ -97,9 +97,8 @@ La tabla de versiones por app está en [`integradas.md#versiones-por-app`](integ
 
 ## Siguientes candidatas
 
-Ajedrez (**STORE-06**) y Tarjetas de repaso (**STORE-09**) ya están integrados.
-Física 2D (`matter-js`) está en el roadmap activo como **STORE-07**. En el
-backlog quedan, por orden de encaje:
+Ajedrez (**STORE-06**), Tarjetas de repaso (**STORE-09**) y Física 2D
+(**STORE-07**) ya están integrados. En el backlog quedan, por orden de encaje:
 
 1. **Geometría interactiva** (`jsxgraph`): **STORE-08**.
 2. **Mapas conceptuales** (`@xyflow/react`): **STORE-10**.

@@ -2,7 +2,7 @@
 
 Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
-> **En roadmap:** Física 2D (`matter-js`) como **STORE-07**. **En backlog:**
+> **Integrada:** Física 2D (`matter-js`) cerró como **STORE-07**. **En backlog:**
 > Geometría interactiva (`jsxgraph`) como **STORE-08** y Moléculas 3D (`3dmol`)
 > como **STORE-12**. El resto sigue como candidato hasta que se priorice.
 

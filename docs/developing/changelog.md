@@ -1,10 +1,31 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-07 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-17 — Roadmap STORE-07 · Física 2D en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Física 2D se incorpora con `matter-js` 0.20.0: gravedad, colisiones, muelle y péndulo en un lienzo manipulable.
+- Reproducir/pausar, reiniciar, ajustar la gravedad, añadir pelotas y arrastrar cuerpos; la escena es efímera y no necesita servidor.
+- Portada `public/store/fisica.svg`, ficha, registro lazy y entrada en «Mejores aplicaciones». `AULA_STORE_VERSION` sube a `1.3.0`.
+- Declaración MCP sin herramientas propias; ayuda, matriz de herramientas y documentación del catálogo actualizadas. Sin cambios en la demo.
+
+### Verificación
+
+- Tienda, ficha y app revisadas a 1366, 1024 y 390 px; la app se instaló y abrió desde Aula Store.
+- Suite completa: **166 archivos / 1.200 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `0fcabbc` (Fase 1), `03cc744` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites y sin cambio de versión del Site: sigue en **1.1.34**.
+
+### Seguimiento
+
+- El backlog queda con STORE-08 y STORE-10 a STORE-13. El plan completo está en [`historial/roadmap-store-07.md`](../historial/roadmap-store-07.md).
 
 ## 2026-11-17 — Roadmap STORE-09 · Tarjetas de repaso en Aula Store
 

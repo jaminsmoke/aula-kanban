@@ -66,6 +66,7 @@ export const workspaceSections: DocSection[] = [
           { term: "Diagramas (1.0.0)", text: "Escribes el diagrama en texto y ves la vista previa al instante, con plantillas listas. «Guardar» y «Cargar» trabajan por proyecto en la base de datos, y «Exportar SVG» descarga la imagen." },
           { term: "Ajedrez (1.0.0)", text: "Tablero local para dos jugadores o contra un rival aleatorio. Aplica las reglas completas, muestra el turno, el jaque, el jaque mate, las tablas y el historial, y permite mover con clic, arrastre o el formulario de teclado." },
           { term: "Tarjetas de repaso (1.0.0)", text: "Mazos de anverso y reverso compartidos por proyecto. El repaso usa FSRS, ofrece Otra vez, Difícil, Bien y Fácil, y guarda el progreso en este navegador; los mazos se guardan en el proyecto." },
+          { term: "Física 2D (1.0.0)", text: "Laboratorio de movimiento con cuatro experimentos: gravedad, colisiones, muelle y péndulo. Reproduce, pausa, reinicia, ajusta la gravedad y arrastra los cuerpos; la escena es efímera y no se guarda." },
         ],
       },
       { type: "note", tone: "info", text: "El historial de la calculadora se guarda en este navegador, no en el proyecto: no lo ves desde otro equipo y puedes vaciarlo con «Borrar» en el panel del historial. La memoria de la calculadora vive solo mientras la ventana está abierta. Los documentos de Programación por bloques y Diagramas sí se guardan en el proyecto, con el botón «Guardar»." },
