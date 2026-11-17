@@ -39,10 +39,10 @@ describe("Aula Store", () => {
     for (const category of ["Educación", "Productividad", "Oficina"]) {
       expect(screen.getByRole("region", { name: category })).toBeTruthy();
     }
-    // Oficina nace vacía, con el aviso «Más adelante».
-    expect(screen.getByText("Más adelante: habrá más aplicaciones de Oficina.")).toBeTruthy();
+    // Oficina ya tiene Hoja de cálculo; no muestra el aviso de categoría vacía.
+    expect(screen.queryByText("Más adelante: habrá más aplicaciones de Oficina.")).toBeNull();
     // Cada app aparece en «Mejores aplicaciones» y en su categoría.
-    for (const name of ["Calculadora", "Tabla periódica", "Programación por bloques", "Diagramas", "Ajedrez"]) {
+    for (const name of ["Calculadora", "Tabla periódica", "Programación por bloques", "Diagramas", "Ajedrez", "Hoja de cálculo"]) {
       expect(screen.getAllByText(name).length).toBeGreaterThan(0);
     }
   });
@@ -55,8 +55,8 @@ describe("Aula Store", () => {
   });
   it("agrupa cada categoría en galerías por subcategoría (STORE-03B)", () => {
     const { container } = render(<AppsStore {...props} role="owner" />);
-    // En Todo: «Mejores» (1) + Educación (3) + Productividad (3) = 7 galerías.
-    expect(container.querySelectorAll(".store-gallery")).toHaveLength(7);
+    // En Todo: «Mejores» (1) + Educación (3) + Productividad (3) + Oficina (1) = 8 galerías.
+    expect(container.querySelectorAll(".store-gallery")).toHaveLength(8);
     // Diagramas vive en Educación y en Productividad (vocabulario compartido).
     expect(screen.getAllByRole("group", { name: "Diagramas" })).toHaveLength(2);
     expect(screen.getAllByRole("group", { name: "Pizarras" })).toHaveLength(1);
@@ -71,9 +71,9 @@ describe("Aula Store", () => {
     expect(screen.getByRole("group", { name: "Diagramas" })).toBeTruthy();
     expect(screen.getByRole("group", { name: "Programación" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /^Oficina/ }));
-    // Oficina nace vacía: aviso sin galería.
-    expect(container.querySelector(".store-gallery")).toBeNull();
-    expect(screen.getByText("Más adelante: habrá más aplicaciones de Oficina.")).toBeTruthy();
+    expect(container.querySelectorAll(".store-gallery")).toHaveLength(1);
+    expect(screen.getByRole("group", { name: "Herramientas" })).toBeTruthy();
+    expect(screen.getByText("Hoja de cálculo")).toBeTruthy();
   });
   it("filtra por categoría y abre la ficha de detalle", () => {
     render(<AppsStore {...props} role="owner" />);

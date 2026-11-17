@@ -34,11 +34,11 @@ describe("catálogo de apps nativas", () => {
       }
       expect(STORE_SUBCATEGORIES, `${app.id} usa una subcategoría fuera del vocabulario`).toContain(app.subcategory);
     }
-    // La cobertura actual: Educación y Productividad tienen apps; Oficina nace vacía.
+    // La cobertura actual: Educación, Productividad y Oficina tienen apps.
     const covered = new Set(NATIVE_APPS.flatMap((app) => [...app.categories]));
     expect(covered.has("Educación")).toBe(true);
     expect(covered.has("Productividad")).toBe(true);
-    expect(covered.has("Oficina")).toBe(false);
+    expect(covered.has("Oficina")).toBe(true);
   });
 
   it("mantiene las versiones upstream sincronizadas con package-lock.json", () => {

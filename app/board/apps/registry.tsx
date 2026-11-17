@@ -1,5 +1,5 @@
 import { lazy, type ComponentType } from "react";
-import { Atom, CalendarClock, Calculator, FlaskConical, GitBranch, Layers3, Network, Orbit, PencilRuler, Presentation, Puzzle, Ruler, Swords } from "lucide-react";
+import { Atom, CalendarClock, Calculator, FlaskConical, GitBranch, Layers3, Network, Orbit, PencilRuler, Presentation, Puzzle, Ruler, Sheet, Swords } from "lucide-react";
 import { NATIVE_APPS, nativeAppMeta, type NativeAppId } from "../../../lib/native-apps";
 import type { StoreIconProps, StoreRole, StoreTool } from "./types";
 
@@ -22,6 +22,7 @@ const ICONS: Record<NativeAppId, ComponentType<StoreIconProps>> = {
   presentaciones: Presentation,
   moleculas: FlaskConical,
   timeline: CalendarClock,
+  "hoja-calculo": Sheet,
 };
 
 // El código de cada app solo se descarga cuando su ventana se abre por
@@ -40,6 +41,7 @@ const APPS: Record<NativeAppId, ComponentType<StoreAppProps>> = {
   presentaciones: lazy(() => import("./presentaciones/presentaciones-app")),
   moleculas: lazy(() => import("./moleculas/moleculas-app")),
   timeline: lazy(() => import("./timeline/timeline-app")),
+  "hoja-calculo": lazy(() => import("./hoja-calculo/hoja-calculo-app")),
 };
 
 /** Componente de cada app, indexado por id, para abrir su ventana. */

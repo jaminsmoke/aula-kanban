@@ -25,6 +25,7 @@ import {
   SHEET_HEADERS,
   SHEET_ROWS,
   STARTER_SHEET,
+  cloneSheet,
   normalizeSheet,
   parseSpreadsheetDocument,
   selectionToRange,
@@ -44,7 +45,7 @@ type Worksheet = jspreadsheet.WorksheetInstance;
 export default function HojaCalculoApp({ projectId, role }: { projectId: string; role: StoreRole }) {
   const gridRef = useRef<HTMLDivElement>(null);
   const worksheetRef = useRef<Worksheet | null>(null);
-  const [documentValue, setDocumentValue] = useState<SpreadsheetDocument>({ data: STARTER_SHEET });
+  const [documentValue, setDocumentValue] = useState<SpreadsheetDocument>(() => ({ data: cloneSheet(STARTER_SHEET) }));
   const initialDataRef = useRef(documentValue.data);
   const initialStylesRef = useRef(documentValue.styles);
   const pendingDocumentRef = useRef<SpreadsheetDocument | null>(null);
@@ -241,9 +242,10 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
     const worksheet = worksheetRef.current;
     if (!worksheet || readOnly) return;
     const oldStyles = worksheet.getStyle() as Record<string, string>;
-    worksheet.setData(STARTER_SHEET.map((row) => [...row]));
+    const starter = cloneSheet(STARTER_SHEET);
+    worksheet.setData(starter);
     if (Object.keys(oldStyles).length) worksheet.resetStyle(oldStyles);
-    setDocumentValue({ data: STARTER_SHEET.map((row) => [...row]), styles: {} });
+    setDocumentValue({ data: starter, styles: {} });
     setDirty(true);
     setStatus("Hoja reiniciada con el ejemplo.");
   }

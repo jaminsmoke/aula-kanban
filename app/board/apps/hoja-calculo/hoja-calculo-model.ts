@@ -36,6 +36,15 @@ export function createEmptySheet(rows = SHEET_ROWS, columns = SHEET_COLUMNS): Sp
 }
 
 /**
+ * Copia una hoja para que la rejilla no mute la fuente original.
+ * @param data - Filas de origen.
+ * @returns Una copia independiente de cada fila.
+ */
+export function cloneSheet(data: SpreadsheetCell[][]): SpreadsheetCell[][] {
+  return data.map((row) => [...row]);
+}
+
+/**
  * Copia una hoja y garantiza un tamaño mínimo de filas y columnas.
  * @param data - Datos de origen.
  * @param rows - Filas mínimas.

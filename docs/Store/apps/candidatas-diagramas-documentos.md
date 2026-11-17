@@ -3,14 +3,12 @@
 Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
 > **Integradas:** Mapas conceptuales como **STORE-10**, Presentaciones como
-> **STORE-11** y Líneas de tiempo como **STORE-13**. **En roadmap:** Hoja de
-> cálculo como **STORE-14**. **En backlog:** Notas y documentos como **STORE-15**
-> y Visor Office como **STORE-16**. El resto sigue como candidato hasta que se
-> priorice.
+> **STORE-11**, Líneas de tiempo como **STORE-13** y Hoja de cálculo como
+> **STORE-14**. **En backlog:** Notas y documentos como **STORE-15** y Visor
+> Office como **STORE-16**. El resto sigue como candidato hasta que se priorice.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|
-| Hoja de cálculo | `jspreadsheet-ce` 5.0.4 | MIT | Celdas, fórmulas y formato básico | ~310 KB sin empaquetar | En roadmap STORE-14; validar fórmulas de la edición community |
 | Mapas mentales | `markmap-lib` 0.18.13 | MIT | Markdown a mapa mental | ~200 KB | Con `markmap-view` |
 | Código | `codemirror` 6.0.2 | MIT | Editor con resaltado y autocompletado | ~300 KB | Alternativa ligera a Monaco |
 | Código (completo) | `monaco-editor` 0.57.0 | MIT | Editor de VS Code | ~2 MB+ | Solo si hace falta IntelliSense real |
@@ -26,10 +24,11 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
 ## Valoración
 
-- **Mapas conceptuales**, **Presentaciones** y **Líneas de tiempo** ya están
-  integradas y cubren edición de mapas, diapositivas y secuencias temporales.
-- **Hoja de cálculo** está en roadmap como **STORE-14**; **Notas y documentos** y
-  **Visor Office** son las dos entradas abiertas en el backlog.
+- **Mapas conceptuales**, **Presentaciones**, **Líneas de tiempo** y **Hoja de
+  cálculo** ya están integradas y cubren edición de mapas, diapositivas,
+  secuencias temporales y hojas de cálculo.
+- **Notas y documentos** y **Visor Office** son las dos entradas abiertas en el
+  backlog.
 - **Mapas mentales** es una variante más estrecha de los mapas conceptuales; puede
   esperar a que se priorice una necesidad concreta.
 - **Texto enriquecido**, **documentos Office** y **visores PDF** amplían el trabajo

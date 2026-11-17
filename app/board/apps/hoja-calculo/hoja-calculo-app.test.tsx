@@ -105,6 +105,21 @@ describe("Hoja de cálculo", () => {
     expect(screen.getByRole("status").textContent).toContain("Hoja reiniciada");
   });
 
+  it("reinicia desde una copia aunque la rejilla mute la hoja inicial", async () => {
+    render(<HojaCalculoApp {...props} />);
+    await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
+
+    const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
+      worksheets: Array<{ data: Array<Array<string | number | boolean>> }>;
+    };
+    options.worksheets[0].data[3][1] = 5;
+
+    fireEvent.click(screen.getByRole("button", { name: "Reiniciar hoja" }));
+
+    const reset = spreadsheetMock.worksheet.setData.mock.calls.at(-1)?.[0] as Array<Array<string | number | boolean>>;
+    expect(reset[3][1]).toBe(1);
+  });
+
   it("guarda la hoja y su formato", async () => {
     render(<HojaCalculoApp {...props} />);
     await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());

@@ -82,6 +82,11 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     herramientas: [],
     pendiente: "La línea temporal se guarda en app_documents, pero el lienzo, el zoom y la edición viven en el navegador; no hay herramientas MCP específicas en esta versión.",
   },
+  "hoja-calculo": {
+    appId: "hoja-calculo",
+    herramientas: [],
+    pendiente: "La hoja se guarda en app_documents, pero la edición, el cálculo y la exportación CSV viven en el navegador; no hay herramientas MCP específicas en esta versión.",
+  },
 };
 
 /** Herramientas de todas las apps, en el orden de sus declaraciones. */

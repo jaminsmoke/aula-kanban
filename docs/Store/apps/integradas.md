@@ -17,6 +17,7 @@
 | Presentaciones | `reveal.js` 6.0.2 | MIT | ✅ Integrada | Editor Markdown, vista previa y modo presentación; plantillas, guardado por proyecto en `app_documents`, modo lectura para invitados y exportación HTML local |
 | Moléculas 3D | `3dmol` 2.5.5 | BSD-3 | ✅ Integrada | Visor molecular con ocho estructuras SDF locales, rotación, zoom, etiquetas, ficha con fórmula y control por teclado; sin red ni estado de servidor |
 | Líneas de tiempo | `vis-timeline` 8.5.6 | MIT | ✅ Integrada | Eventos, épocas y grupos sobre un lienzo temporal con zoom y plantillas; guardado por proyecto en `app_documents` y modo lectura para invitados |
+| Hoja de cálculo | `jspreadsheet-ce` 5.0.4 | MIT | ✅ Integrada | Celdas editables, fórmulas, formato esencial, filas y columnas ampliables; exportación CSV protegida, guardado por proyecto en `app_documents` y modo lectura para invitados |
 
 ## Versiones por app
 
@@ -35,8 +36,9 @@
 | Presentaciones | `1.0.0` | `reveal.js 6.0.2` |
 | Moléculas 3D | `1.0.0` | `3dmol 2.5.5` |
 | Líneas de tiempo | `1.0.0` | `vis-timeline 8.5.6` |
+| Hoja de cálculo | `1.0.0` | `jspreadsheet-ce 5.0.4` |
 
-La tienda está en `1.8.0`: las incorporaciones de Ajedrez, Tarjetas de repaso, Física 2D, Geometría interactiva, Mapas conceptuales, Presentaciones, Moléculas 3D y Líneas de tiempo subieron la versión menor. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
+La tienda está en `1.9.0`: las incorporaciones de Ajedrez, Tarjetas de repaso, Física 2D, Geometría interactiva, Mapas conceptuales, Presentaciones, Moléculas 3D, Líneas de tiempo y Hoja de cálculo subieron la versión menor. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
 
 ## Transición de `edu-tools`
 
@@ -44,4 +46,4 @@ La transición de datos del servicio separa una instalación antigua de `edu-too
 
 ## Portadas
 
-Las trece apps usan portadas SVG de 1200×675 en `public/store/`, con la misma composición visual. La integración y el cierre de esa unificación están documentados en [`../../historial/roadmap-store-05.md`](../../historial/roadmap-store-05.md); Ajedrez, Tarjetas, Física, Geometría, Mapas, Presentaciones, Moléculas 3D y Líneas de tiempo añaden sus portadas en STORE-06, STORE-09, STORE-07, STORE-08, STORE-10, STORE-11, STORE-12 y STORE-13, ya completados.
+Las catorce apps usan portadas SVG de 1200×675 en `public/store/`, con la misma composición visual. La integración y el cierre de esa unificación están documentados en [`../../historial/roadmap-store-05.md`](../../historial/roadmap-store-05.md); Ajedrez, Tarjetas, Física, Geometría, Mapas, Presentaciones, Moléculas 3D, Líneas de tiempo y Hoja de cálculo añaden sus portadas en STORE-06, STORE-09, STORE-07, STORE-08, STORE-10, STORE-11, STORE-12, STORE-13 y STORE-14, ya completados.

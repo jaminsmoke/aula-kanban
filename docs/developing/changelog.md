@@ -1,8 +1,34 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-14 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-17 — Roadmap STORE-14 · Hoja de cálculo en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Hoja de cálculo se incorpora con `jspreadsheet-ce` 5.0.4 (MIT): celdas editables, fórmulas, formato esencial, filas y columnas ampliables y presupuesto de ejemplo.
+- Datos, fórmulas y estilos se guardan por proyecto en `app_documents`; la carga valida el documento, descarta estados incompletos y los invitados quedan en solo lectura.
+- Exportación CSV local con protección de celdas que empiezan por `=`, `+`, `-` o `@`; navegación por teclado, foco visible y adaptación a móvil.
+- Portada `public/store/hoja-calculo.svg`, ficha, registro lazy y entrada en «Mejores aplicaciones». `AULA_STORE_VERSION` sube a `1.9.0`; el Site sigue en `1.1.35`.
+- Declaración MCP sin herramientas propias; ayuda, matriz de herramientas, catálogo y documentación actualizados. Aviso MIT de `jspreadsheet-ce` añadido. La demo no cambia.
+
+### Verificación
+
+- Tienda y ficha revisadas a 1366, 1024 y 390 px con la portada, versión `1.0.0` y upstream `jspreadsheet-ce 5.0.4`; la app se instaló, abrió, guardó y recuperó con datos y formato en un proyecto local.
+- La app se revisó a pantalla completa a 1366, 1024 y 390 px: fórmulas, formato, CSV, reinicio desde la copia canónica y modo invitado cubiertos por pruebas.
+- Chunk diferido: `hoja-calculo-app` 487.452 B / 128.764 B gzip, CSS 21.140 B / 5.405 B gzip y portada 4.292 B; todo se sirve desde `dist/client`.
+- Suite completa: **177 archivos / 1.276 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `d4ca41e` (Fase 1), `74c5ccb` (Fase 2) y el commit de cierre. Push único a `github main`; sin publicación en Sites ni cambio de versión del Site: sigue en **1.1.35**.
+
+### Seguimiento
+
+- El backlog queda con STORE-15 (Notas y documentos) y STORE-16 (Visor Office). El plan completo está en [`historial/roadmap-store-14.md`](../historial/roadmap-store-14.md).
 
 ---
 
