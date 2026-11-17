@@ -62,11 +62,11 @@
 
 ### Fase 2 — Persistencia, plantillas, acabado y portada
 
-- [ ] Integrar `useAppDocument(projectId, "presentaciones")` con guardar, cargar y estados de error.
-- [ ] Añadir plantillas iniciales y exportación HTML local.
-- [ ] Revisar la interacción táctil, el foco, el teclado y la reducción de movimiento.
-- [ ] Crear `public/store/presentaciones.svg` con el formato de las portadas actuales.
-- [ ] Medir el chunk y confirmar que reveal.js y su CSS se sirven desde el Site.
+- [x] Integrar `useAppDocument(projectId, "presentaciones")` con guardar, cargar y estados de error.
+- [x] Añadir plantillas iniciales y exportación HTML local.
+- [x] Revisar la interacción táctil, el foco, el teclado y la reducción de movimiento.
+- [x] Crear `public/store/presentaciones.svg` con el formato de las portadas actuales.
+- [x] Medir el chunk y confirmar que reveal.js y su CSS se sirven desde el Site.
 - **Criterios de aceptación:**
   - Guardar y recuperar conserva el Markdown y las diapositivas.
   - Los invitados ven el documento y no pueden editarlo ni guardarlo.
@@ -104,6 +104,7 @@
 
 - 2026-11-17: STORE-11 sale del backlog y pasa a ser el roadmap activo. `reveal.js` 6.0.2 es MIT y el estado cabe en `app_documents`.
 - 2026-11-17: fase 1 completada. Editor Markdown con separador `---`, parser seguro sin HTML crudo, vista previa de todas las diapositivas, modo presentación con reveal.js y navegación por teclado. Verificado en navegador a 1366, 1024 y 390 px sin scroll horizontal; modelo y ventana con 10 pruebas focalizadas en verde.
+- 2026-11-17: fase 2 completada. Guardado y carga con `useAppDocument(projectId, "presentaciones")`, serialización validada, aviso de cambios sin guardar y modo lectura para invitados. Plantillas Clase, Proyecto y En blanco; exportación HTML autónoma; portada `public/store/presentaciones.svg`; foco, teclado, táctil y reducción de movimiento revisados. Chunk de comprobación 128,6 KB / 34,6 KB gzip; CSS 61,2 KB / 12,6 KB gzip con reveal.js servido desde `dist/client`. Pruebas focalizadas: 16 en verde.
 - La primera versión no importa PPTX ni genera PDF; el Markdown limitado evita HTML crudo.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.
 - No se cambia la versión del Site (`1.1.34`) ni se publica en Sites desde este roadmap.

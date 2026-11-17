@@ -3,28 +3,59 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Reveal from "reveal.js";
 import "reveal.js/reveal.css";
-import "reveal.js/theme/white.css";
-import { Play, Presentation, RotateCcw } from "lucide-react";
+import { Download, FolderOpen, Play, Presentation, RotateCcw, Save } from "lucide-react";
+import type { StoreRole } from "../types";
+import { useAppDocument } from "../use-app-document";
 import {
   DEFAULT_MARKDOWN,
+  PRESETS,
+  exportPresentationHtml,
   parseInline,
+  parsePresentationDocument,
   parseSlides,
+  presetInfo,
+  serializePresentation,
   type InlineSegment,
+  type PresentationDocument,
   type PresentationSlide,
+  type PresetId,
   type SlideBlock,
 } from "./presentaciones-model";
 import "./presentaciones.css";
 
 /**
  * Presentaciones: editor Markdown, vista previa y modo presentación.
+ * @param props - Proyecto activo y rol del usuario.
  * @returns La ventana de la app.
  */
-export default function PresentacionesApp() {
+export default function PresentacionesApp({ projectId, role }: { projectId: string; role: StoreRole }) {
   const [markdown, setMarkdown] = useState(DEFAULT_MARKDOWN);
+  const [selectedPreset, setSelectedPreset] = useState<PresetId>("clase");
   const [presenting, setPresenting] = useState(false);
-  const [status, setStatus] = useState("Edita el Markdown y revisa la vista previa.");
+  const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState("Cargando presentación…");
   const revealRef = useRef<HTMLDivElement>(null);
+  const { load, save, loading, error } = useAppDocument<PresentationDocument>(projectId, "presentaciones");
+  const readOnly = role === "guest";
   const slides = useMemo(() => parseSlides(markdown), [markdown]);
+  const currentPreset = presetInfo(selectedPreset);
+
+  useEffect(() => {
+    let active = true;
+    void load().then(({ state }) => {
+      if (!active) return;
+      const parsed = parsePresentationDocument(state);
+      if (parsed) {
+        setMarkdown(parsed.markdown);
+        setDirty(false);
+        setStatus("Presentación guardada cargada.");
+      } else {
+        setStatus("Presentación de ejemplo lista. Guarda para conservarla.");
+      }
+    });
+    return () => { active = false; };
+  }, [load]);
 
   useEffect(() => {
     if (!presenting) return;
@@ -56,9 +87,68 @@ export default function PresentacionesApp() {
     };
   }, [presenting]);
 
+  function markDirty() {
+    setDirty(true);
+  }
+
+  function editMarkdown(value: string) {
+    if (readOnly) return;
+    setMarkdown(value);
+    markDirty();
+    setStatus("");
+  }
+
+  function applyPreset() {
+    if (readOnly) return;
+    if (dirty && !window.confirm("Se reemplazará la presentación actual. ¿Continuar?")) return;
+    setMarkdown(currentPreset.markdown);
+    markDirty();
+    setStatus(`Plantilla «${currentPreset.label}» aplicada.`);
+  }
+
+  async function savePresentation() {
+    if (readOnly) return;
+    setSaving(true);
+    const ok = await save(serializePresentation(markdown));
+    setSaving(false);
+    if (ok) {
+      setDirty(false);
+      setStatus("Presentación guardada en el proyecto.");
+    } else {
+      setStatus("No se pudo guardar la presentación. Revisa la conexión.");
+    }
+  }
+
+  async function loadPresentation() {
+    if (loading) return;
+    setStatus("Cargando presentación…");
+    const { state } = await load();
+    const parsed = parsePresentationDocument(state);
+    if (parsed) {
+      setMarkdown(parsed.markdown);
+      setDirty(false);
+      setStatus("Presentación cargada.");
+    } else {
+      setStatus("No hay una presentación guardada válida; se mantiene la actual.");
+    }
+  }
+
   function reset() {
-    setMarkdown(DEFAULT_MARKDOWN);
+    if (readOnly) return;
+    setMarkdown(currentPreset.markdown);
+    markDirty();
     setStatus("Presentación reiniciada.");
+  }
+
+  function exportHtml() {
+    const blob = new Blob([exportPresentationHtml(markdown)], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "presentacion.html";
+    anchor.click();
+    URL.revokeObjectURL(url);
+    setStatus("HTML descargado.");
   }
 
   return (
@@ -73,7 +163,12 @@ export default function PresentacionesApp() {
         </div>
         <div className="presentaciones-actions">
           <button type="button" onClick={() => setPresenting(true)}><Play size={15} aria-hidden /> Presentar</button>
-          <button type="button" onClick={reset}><RotateCcw size={15} aria-hidden /> Reiniciar</button>
+          <button type="button" onClick={savePresentation} disabled={readOnly || saving || loading}>
+            <Save size={15} aria-hidden /> {saving ? "Guardando…" : "Guardar"}
+          </button>
+          <button type="button" onClick={loadPresentation} disabled={loading}><FolderOpen size={15} aria-hidden /> Cargar</button>
+          <button type="button" onClick={exportHtml}><Download size={15} aria-hidden /> Exportar HTML</button>
+          <button type="button" onClick={reset} disabled={readOnly}><RotateCcw size={15} aria-hidden /> Reiniciar</button>
         </div>
       </header>
 
@@ -99,19 +194,32 @@ export default function PresentacionesApp() {
               <h2>Markdown</h2>
               <span>Separa diapositivas con <code>---</code></span>
             </div>
+            <div className="presentaciones-preset">
+              <label htmlFor="presentaciones-preset">Plantilla</label>
+              <select
+                id="presentaciones-preset"
+                value={selectedPreset}
+                onChange={(event) => setSelectedPreset(event.target.value as PresetId)}
+                disabled={readOnly}
+              >
+                {PRESETS.map((preset) => <option key={preset.id} value={preset.id}>{preset.label}</option>)}
+              </select>
+              <button type="button" onClick={applyPreset} disabled={readOnly}>Aplicar</button>
+              <span>{currentPreset.description}</span>
+            </div>
             <textarea
               className="presentaciones-textarea"
               value={markdown}
-              onChange={(event) => {
-                setMarkdown(event.target.value);
-                setStatus("");
-              }}
+              onChange={(event) => editMarkdown(event.target.value)}
               aria-label="Editor de diapositivas"
+              readOnly={readOnly}
               spellCheck={false}
             />
             <p className="presentaciones-status" role="status">
-              {status || `${slides.length} ${slides.length === 1 ? "diapositiva" : "diapositivas"}.`}
+              {loading ? "Cargando…" : status || (dirty ? "Cambios sin guardar." : `${slides.length} ${slides.length === 1 ? "diapositiva" : "diapositivas"}.`)}
             </p>
+            {error && <p className="presentaciones-error" role="alert">{error}</p>}
+            {readOnly && <p className="presentaciones-readonly">Modo lectura: no puedes editar ni guardar esta presentación.</p>}
           </section>
 
           <section className="presentaciones-preview" aria-label="Vista previa de diapositivas">

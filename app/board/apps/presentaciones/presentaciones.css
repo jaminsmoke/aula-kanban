@@ -142,6 +142,59 @@
   font-size:10px;
 }
 
+.presentaciones-preset {
+  flex:none;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
+  padding:7px 8px;
+  border:var(--border-width-hairline) solid var(--ui-border-subtle);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-faint);
+}
+
+.presentaciones-preset label {
+  color:var(--ui-text-secondary);
+  font-size:10.5px;
+  font-weight:700;
+}
+
+.presentaciones-preset select {
+  padding:5px 7px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-primary);
+  font:inherit;
+  font-size:11px;
+}
+
+.presentaciones-preset button {
+  padding:5px 7px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius: var(--radius-xs);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+  font:inherit;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.presentaciones-preset button:hover { background:var(--ui-surface-hover); }
+.presentaciones-preset button:disabled { cursor:not-allowed; opacity:.45; }
+.presentaciones-preset button:focus-visible,
+.presentaciones-preset select:focus-visible { outline:var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:2px; }
+
+.presentaciones-preset span {
+  flex:1 1 160px;
+  min-width:0;
+  color:var(--ui-text-muted);
+  font-size:10.5px;
+  line-height:1.35;
+}
+
 .presentaciones-textarea {
   flex:1 1 auto;
   width:100%;
@@ -157,10 +210,29 @@
   resize:none;
 }
 
+.presentaciones-textarea[readonly] {
+  color:var(--ui-text-secondary);
+  opacity:.85;
+}
+
 .presentaciones-status {
   flex:none;
   margin:0;
   color:var(--ui-text-muted);
+  font-size:11px;
+  line-height:1.4;
+}
+
+.presentaciones-error {
+  margin:0;
+  color:var(--ui-danger-text);
+  font-size:11px;
+  line-height:1.4;
+}
+
+.presentaciones-readonly {
+  margin:0;
+  color:var(--ui-warning-ink);
   font-size:11px;
   line-height:1.4;
 }
@@ -260,10 +332,32 @@
   flex:1 1 auto;
   width:100%;
   height:100%;
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-primary);
+  font-family:"Instrument Sans", system-ui, sans-serif;
 }
 
 .presentaciones-reveal .slides {
+  color:var(--ui-text-primary);
   text-align:left;
+}
+
+.presentaciones-reveal .slides section {
+  color:var(--ui-text-primary);
+  background:var(--ui-surface-pale);
+}
+
+.presentaciones-reveal .progress {
+  color:var(--ui-action-primary);
+}
+
+.presentaciones-reveal .controls {
+  color:var(--ui-text-secondary);
+}
+
+.presentaciones-reveal .slide-number {
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
 }
 
 .presentaciones-reveal .slides section {

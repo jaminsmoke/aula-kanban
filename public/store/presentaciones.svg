@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Portada de Presentaciones">
+  <defs>
+    <linearGradient id="pres-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6f2ff"/>
+      <stop offset="1" stop-color="#dcd6fb"/>
+    </linearGradient>
+    <linearGradient id="pres-card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#fbf9ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#pres-bg)"/>
+  <circle cx="1080" cy="80" r="220" fill="#b7adf4" opacity=".42"/>
+  <circle cx="100" cy="630" r="190" fill="#ffffff" opacity=".4"/>
+
+  <g transform="translate(0 30)" font-family="Instrument Sans, system-ui, sans-serif">
+    <text x="86" y="230" fill="#1c2a5a" font-size="68" font-weight="700">Presentaciones</text>
+    <text x="88" y="292" fill="#4b5f96" font-size="27">Tus ideas, diapositiva a diapositiva,</text>
+    <text x="88" y="332" fill="#4b5f96" font-size="27">sin salir del aula</text>
+    <g transform="translate(88 394)">
+      <rect width="326" height="52" rx="26" fill="#ffffff" opacity=".84"/>
+      <text x="24" y="34" fill="#2e438c" font-size="19" font-weight="600">Escribe · presenta · comparte</text>
+    </g>
+  </g>
+
+  <g transform="translate(724 88) rotate(3 180 250)" font-family="Instrument Sans, system-ui, sans-serif">
+    <rect width="360" height="500" rx="30" fill="url(#pres-card)" opacity=".97"/>
+    <rect x="18" y="18" width="324" height="42" rx="14" fill="#f5f1ff" stroke="#ddd5fb" stroke-width="2"/>
+    <text x="36" y="45" fill="#5b45b8" font-size="13" font-weight="700" letter-spacing="2">DIAPOSITIVAS</text>
+    <circle cx="300" cy="39" r="8" fill="#5b45b8"/>
+    <circle cx="318" cy="39" r="8" fill="#f5f1ff" stroke="#5b45b8" stroke-width="2"/>
+
+    <rect x="38" y="86" width="284" height="180" rx="18" fill="#ffffff" stroke="#d9d1fa" stroke-width="3"/>
+    <rect x="58" y="108" width="86" height="8" rx="4" fill="#b9adff"/>
+    <text x="58" y="154" fill="#1c2a5a" font-size="24" font-weight="700">Nuestra idea</text>
+    <path d="M58 170h88" stroke="#e5a62e" stroke-width="5" stroke-linecap="round"/>
+    <g fill="#4b5f96" font-size="15">
+      <circle cx="64" cy="194" r="4" fill="#7c5cff"/>
+      <text x="78" y="199">Lo que queremos contar</text>
+      <circle cx="64" cy="220" r="4" fill="#2f9e8f"/>
+      <text x="78" y="225">Cómo lo vamos a hacer</text>
+      <circle cx="64" cy="246" r="4" fill="#e5a62e"/>
+      <text x="78" y="251">Lo que hemos aprendido</text>
+    </g>
+    <text x="292" y="252" fill="#8d83b7" font-size="12">1 / 4</text>
+
+    <g transform="translate(38 284)">
+      <rect width="284" height="118" rx="16" fill="#f5f1ff" stroke="#ddd5fb" stroke-width="2"/>
+      <rect x="18" y="18" width="120" height="82" rx="10" fill="#ffffff" stroke="#d9d1fa" stroke-width="2"/>
+      <rect x="28" y="31" width="38" height="5" rx="2.5" fill="#b9adff"/>
+      <rect x="28" y="45" width="80" height="4" rx="2" fill="#d8d2ee"/>
+      <rect x="28" y="56" width="66" height="4" rx="2" fill="#d8d2ee"/>
+      <rect x="28" y="69" width="74" height="4" rx="2" fill="#d8d2ee"/>
+      <rect x="158" y="18" width="108" height="34" rx="9" fill="#ffffff" stroke="#d9d1fa" stroke-width="2"/>
+      <rect x="168" y="29" width="44" height="5" rx="2.5" fill="#b9adff"/>
+      <rect x="158" y="60" width="108" height="40" rx="9" fill="#5b45b8"/>
+      <path d="M204 73v14l12-7z" fill="#ffffff"/>
+      <text x="212" y="85" fill="#ffffff" font-size="10.5" font-weight="700">Presentar</text>
+    </g>
+
+    <rect x="38" y="410" width="284" height="52" rx="16" fill="#f5f1ff" stroke="#ddd5fb" stroke-width="2"/>
+    <circle cx="62" cy="436" r="6" fill="#5b45b8"/>
+    <text x="78" y="442" fill="#2e438c" font-size="17" font-weight="700">Presenta sin salir del aula</text>
+  </g>
+</svg>

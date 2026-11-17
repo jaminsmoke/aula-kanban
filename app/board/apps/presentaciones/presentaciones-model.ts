@@ -174,3 +174,206 @@ function firstTitle(blocks: SlideBlock[]): string | null {
   if (paragraph?.type === "paragraph") return paragraph.text.slice(0, 80);
   return null;
 }
+
+/** Documento que se guarda en `app_documents`. */
+export type PresentationDocument = {
+  markdown: string;
+};
+
+/** Plantillas disponibles. */
+export type PresetId = "clase" | "proyecto" | "blanco";
+
+/** Ficha visible de una plantilla. */
+export type PresetInfo = {
+  id: PresetId;
+  label: string;
+  description: string;
+  markdown: string;
+};
+
+/** Límite defensivo del documento. */
+export const MAX_MARKDOWN_LENGTH = 200_000;
+
+/** Plantillas en el orden del selector. */
+export const PRESETS: PresetInfo[] = [
+  {
+    id: "clase",
+    label: "Clase",
+    description: "Una presentación breve con introducción, ideas y cierre.",
+    markdown: DEFAULT_MARKDOWN,
+  },
+  {
+    id: "proyecto",
+    label: "Proyecto",
+    description: "Objetivos, pasos y resultado para presentar un proyecto.",
+    markdown: `# Presentación del proyecto
+
+## Qué vamos a contar
+
+- El problema que hemos elegido
+- Por qué nos importa
+- Qué queremos conseguir
+
+---
+
+## Nuestro plan
+
+1. Investigar
+2. Diseñar una solución
+3. Probarla y mejorarla
+
+---
+
+## Resultado
+
+**Gracias por escuchar.**
+
+---
+
+## Preguntas
+
+¿Qué queréis saber?
+`,
+  },
+  {
+    id: "blanco",
+    label: "En blanco",
+    description: "Una diapositiva vacía para empezar desde cero.",
+    markdown: "# Nueva presentación\n",
+  },
+];
+
+/**
+ * Ficha de una plantilla.
+ * @param id - Identificador de la plantilla.
+ * @returns La ficha correspondiente o la primera.
+ */
+export function presetInfo(id: PresetId): PresetInfo {
+  return PRESETS.find((preset) => preset.id === id) ?? PRESETS[0];
+}
+
+/**
+ * Serializa el editor para `app_documents`.
+ * @param markdown - Documento actual.
+ * @returns El estado JSON que se guarda.
+ */
+export function serializePresentation(markdown: string): PresentationDocument {
+  return { markdown };
+}
+
+/**
+ * Valida y normaliza un documento guardado.
+ * @param value - Valor leído de `app_documents`.
+ * @returns El documento o `null` si no es válido.
+ */
+export function parsePresentationDocument(value: unknown): PresentationDocument | null {
+  if (!value || typeof value !== "object") return null;
+  const markdown = (value as { markdown?: unknown }).markdown;
+  if (typeof markdown !== "string" || markdown.length > MAX_MARKDOWN_LENGTH) return null;
+  return { markdown };
+}
+
+/**
+ * Genera una presentación HTML autónoma y sin red.
+ * @param markdown - Documento actual.
+ * @returns El HTML completo que se descarga.
+ */
+export function exportPresentationHtml(markdown: string): string {
+  const slides = parseSlides(markdown);
+  const sections = slides.map((slide, index) => (
+    `<section class="slide${index === 0 ? " active" : ""}" data-slide="${index}">${blocksToHtml(slide.blocks)}</section>`
+  )).join("\n");
+  return `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presentación</title>
+<style>
+:root{font-family:Georgia,serif;color:#1c2a5a;background:#f6f7fb}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}
+.deck{width:min(960px,100%);aspect-ratio:16/9;position:relative;background:#fff;border:1px solid #d8dcec;border-radius:18px;box-shadow:0 18px 50px #1c2a5a1a;overflow:hidden}
+.slide{display:none;height:100%;padding:9%;overflow:auto}
+.slide.active{display:block}
+h1{font-size:2.4rem;line-height:1.1;margin:0 0 .4em}
+h2{font-size:1.8rem;line-height:1.15;margin:0 0 .4em}
+h3{font-size:1.3rem;margin:0 0 .4em}
+p,li{font-size:1.05rem;line-height:1.55}
+blockquote{border-left:3px solid #5b45b8;padding-left:1rem;color:#4b5f96}
+pre{background:#f2f4fb;padding:1rem;border-radius:8px;overflow:auto}
+code{font-family:ui-monospace,monospace}
+nav{position:fixed;bottom:18px;right:18px;display:flex;gap:8px}
+button{font:inherit;padding:6px 12px;border:1px solid #b9c0d8;border-radius:8px;background:#fff;color:#1c2a5a;cursor:pointer}
+</style>
+</head>
+<body>
+<main class="deck">${sections}</main>
+<nav><button type="button" data-direction="previous">Anterior</button><button type="button" data-direction="next">Siguiente</button></nav>
+<script>
+let current = 0;
+const slides = Array.from(document.querySelectorAll('.slide'));
+function show(index) {
+  current = Math.max(0, Math.min(slides.length - 1, index));
+  slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+}
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowRight' || event.key === ' ') show(current + 1);
+  if (event.key === 'ArrowLeft') show(current - 1);
+});
+document.querySelectorAll('[data-direction]').forEach((button) => {
+  button.addEventListener('click', () => show(current + (button.dataset.direction === 'next' ? 1 : -1)));
+});
+show(0);
+</script>
+</body>
+</html>`;
+}
+
+/**
+ * Convierte bloques a HTML escapado.
+ * @param blocks - Bloques de una diapositiva.
+ * @returns El HTML de esos bloques.
+ */
+function blocksToHtml(blocks: SlideBlock[]): string {
+  return blocks.map((block) => {
+    if (block.type === "heading") return `<h${block.level}>${inlineToHtml(block.text)}</h${block.level}>`;
+    if (block.type === "list") {
+      const tag = block.ordered ? "ol" : "ul";
+      return `<${tag}>${block.items.map((item) => `<li>${inlineToHtml(item)}</li>`).join("")}</${tag}>`;
+    }
+    if (block.type === "quote") return `<blockquote>${inlineToHtml(block.text)}</blockquote>`;
+    if (block.type === "code") return `<pre><code>${escapeHtml(block.text)}</code></pre>`;
+    return `<p>${inlineToHtml(block.text)}</p>`;
+  }).join("\n");
+}
+
+/**
+ * Convierte fragmentos inline a HTML escapado.
+ * @param text - Texto de un bloque.
+ * @returns HTML con marcas seguras.
+ */
+function inlineToHtml(text: string): string {
+  return parseInline(text).map((segment) => {
+    const safe = escapeHtml(segment.text);
+    if (segment.href) return `<a href="${escapeHtml(segment.href)}" rel="noreferrer noopener">${safe}</a>`;
+    if (segment.code) return `<code>${safe}</code>`;
+    if (segment.bold) return `<strong>${safe}</strong>`;
+    if (segment.italic) return `<em>${safe}</em>`;
+    return safe;
+  }).join("");
+}
+
+/**
+ * Escapa texto para insertarlo en HTML.
+ * @param value - Texto sin escapar.
+ * @returns Texto seguro para HTML.
+ */
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}

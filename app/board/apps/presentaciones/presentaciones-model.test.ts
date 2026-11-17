@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_MARKDOWN, parseInline, parseSlides } from "./presentaciones-model";
+import {
+  DEFAULT_MARKDOWN,
+  MAX_MARKDOWN_LENGTH,
+  PRESETS,
+  exportPresentationHtml,
+  parseInline,
+  parsePresentationDocument,
+  parseSlides,
+  presetInfo,
+  serializePresentation,
+} from "./presentaciones-model";
 
 describe("modelo de Presentaciones", () => {
   it("separa las diapositivas del documento inicial", () => {
@@ -41,5 +51,27 @@ describe("modelo de Presentaciones", () => {
   it("no interpreta HTML crudo ni enlaces no seguros", () => {
     expect(parseInline("<script>alert(1)</script>")).toEqual([{ text: "<script>alert(1)</script>" }]);
     expect(parseInline("[malo](javascript:foo)")).toEqual([{ text: "[malo](javascript:foo)" }]);
+  });
+
+  it("ofrece plantillas de clase, proyecto y documento vacío", () => {
+    expect(PRESETS.map((preset) => preset.id)).toEqual(["clase", "proyecto", "blanco"]);
+    expect(presetInfo("proyecto").markdown).toContain("Presentación del proyecto");
+    expect(presetInfo("blanco").markdown).toBe("# Nueva presentación\n");
+  });
+
+  it("serializa y valida el documento guardado", () => {
+    expect(serializePresentation("# Hola")).toEqual({ markdown: "# Hola" });
+    expect(parsePresentationDocument({ markdown: "# Hola" })).toEqual({ markdown: "# Hola" });
+    expect(parsePresentationDocument({ markdown: 4 })).toBeNull();
+    expect(parsePresentationDocument({ markdown: "x".repeat(MAX_MARKDOWN_LENGTH + 1) })).toBeNull();
+  });
+
+  it("exporta HTML autónomo y escapa el contenido", () => {
+    const html = exportPresentationHtml("# Hola\n\n<script>alert(1)</script>\n\n---\n\n## Dos");
+    expect(html).toContain("<!doctype html>");
+    expect(html).toContain("Hola");
+    expect(html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
+    expect(html).not.toContain("<script>alert(1)</script>");
+    expect(html.match(/class="slide/g)).toHaveLength(2);
   });
 });
