@@ -1,7 +1,7 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** STORE-14 activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
@@ -13,7 +13,7 @@
 - Publicadas las mejoras de cabecera y las ocho apps nuevas de Aula Store: Ajedrez, Tarjetas de repaso, Física 2D, Geometría interactiva, Mapas conceptuales, Presentaciones, Moléculas 3D y Líneas de tiempo.
 - Verificados el tablero de Curso IA Gestorex y el catálogo publicado: 13 apps disponibles, con las dos instalaciones existentes conservadas.
 - Comprobaciones: 1.261 pruebas, TypeScript, ESLint, compilación y presupuesto de rendimiento. El medidor admite rutas de dependencias resueltas mediante una unión de Windows.
-- No hay migraciones de base de datos en esta publicación. PROMO-01 sigue pendiente en el backlog para la validación externa de la tarjeta social.
+- No hay migraciones de base de datos en esta publicación. PROMO-01 queda cerrado: la validación externa de la tarjeta social se da por completada.
 
 ---
 

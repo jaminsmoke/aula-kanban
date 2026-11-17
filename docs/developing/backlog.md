@@ -2,21 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin fase activa · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 4 entradas: STORE-14, STORE-15, STORE-16 y PROMO-01 pendientes
+> **Roadmap:** STORE-14 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas: STORE-15 y STORE-16 pendientes
 
 ---
-
-## 2026-11-17 — STORE-14 · Hoja de cálculo
-
-- Contexto: `jspreadsheet-ce` 5.0.4 (MIT, ~310 KB sin empaquetar) ofrece una rejilla editable y fórmulas sin backend; cubre el hueco más claro de la categoría Oficina.
-- Alcance:
-  1. Crear `app/board/apps/hoja-calculo/` con rejilla, filas, columnas y edición de celdas.
-  2. Fórmulas básicas, formato de celda y exportación CSV local; sin `.xlsx` en la primera versión.
-  3. Guardar y cargar por proyecto en `app_documents`; invitados en solo lectura.
-  4. Ficha en categorías Oficina y Productividad, subcategoría Herramientas.
-- Criterios: editar celdas y fórmulas con recálculo, formatear lo esencial, guardar/cargar, exportar CSV, sin red; revisar a 1366, 1024 y 390 px.
-- Notas: validar que la edición community cubra fórmulas y formato; no añadir colaboración en vivo. Si se queda corta, evaluar una alternativa más completa antes de ampliar el alcance.
 
 ## 2026-11-17 — STORE-15 · Notas y documentos
 
@@ -39,7 +28,3 @@
   4. Medir el chunk y el WASM; si el visor PDF entra más adelante, compartir la librería más completa entre apps.
 - Criterios: abrir archivos locales de los tres formatos, mostrar su contenido, no hacer peticiones de red y adaptarse a 1366, 1024 y 390 px.
 - Notas: el paquete ocupa unos 22 MB sin empaquetar y el WASM puede disparar el chunk; priorizar solo si el presupuesto lo permite. No añadir un visor PDF genérico ahora: el lector de libros ya cubre PDF y se decidirá una librería compartida cuando se aborde la fusión.
-
-## PROMO-01 · Validación externa de la vista previa social
-
-Los metadatos y la imagen de producción responden correctamente, pero falta verificar la tarjeta en LinkedIn, Facebook, X y WhatsApp. LinkedIn y Facebook requieren iniciar sesión; X devolvió 403 durante la comprobación anterior. Conservar el plan y los resultados en [`roadmap-promo-01.md`](../historial/roadmap-promo-01.md) y [`roadmap-promo-07b.md`](../historial/roadmap-promo-07b.md). No dar esta fase por completada hasta realizar esas comprobaciones.
