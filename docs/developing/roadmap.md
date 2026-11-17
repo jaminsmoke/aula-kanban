@@ -65,12 +65,12 @@
 
 ### Fase 2 — Persistencia, CSV, accesibilidad y portada
 
-- [ ] Integrar `useAppDocument(projectId, "hoja-calculo")` con guardar, cargar y estados de error.
-- [ ] Validar el JSON guardado y descartar documentos incompletos sin romper la app.
-- [ ] Exportar CSV local y proteger las celdas que empiezan por `=`, `+`, `-` o `@`.
-- [ ] Revisar foco, teclado, contraste, reducción de movimiento y edición táctil.
-- [ ] Crear `public/store/hoja-calculo.svg` con el formato de las portadas actuales.
-- [ ] Medir el chunk y confirmar que la librería y sus dependencias se sirven desde el Site.
+- [x] Integrar `useAppDocument(projectId, "hoja-calculo")` con guardar, cargar y estados de error.
+- [x] Validar el JSON guardado y descartar documentos incompletos sin romper la app.
+- [x] Exportar CSV local y proteger las celdas que empiezan por `=`, `+`, `-` o `@`.
+- [x] Revisar foco, teclado, contraste, reducción de movimiento y edición táctil.
+- [x] Crear `public/store/hoja-calculo.svg` con el formato de las portadas actuales.
+- [x] Medir el chunk y confirmar que la librería y sus dependencias se sirven desde el Site.
 - **Criterios de aceptación:**
   - Guardar y recuperar conserva celdas, fórmulas y formato.
   - Los invitados ven la hoja y no pueden editarla ni guardarla.
@@ -108,6 +108,7 @@
 ## 6. Notas de sesión
 
 - 2026-11-17: fase 1 completada. `jspreadsheet-ce` 5.0.4 se carga con la hoja de ejemplo de presupuesto; la rejilla permite editar celdas, fórmulas (`=B3*C3`, `=SUM(D3:D5)`), añadir filas y columnas y aplicar formato esencial. Verificado en navegador a 1366, 1024 y 390 px con scroll interno de la rejilla y sin scroll horizontal de página; 10 pruebas focalizadas en verde.
+- 2026-11-17: fase 2 completada. La app guarda y carga datos y estilos con `useAppDocument`, descarta documentos incompletos, exporta CSV local protegido y deja la hoja en solo lectura para invitados. La portada está revisada y el chunk de la vista previa pesa 128,9 KB gzip de JS y 5,4 KB gzip de CSS, con `jspreadsheet-ce` y sus dependencias dentro del bundle local. Foco, navegación con teclado, fórmulas al editar y descarga CSV comprobados en navegador a 1366, 1024 y 390 px; 14 pruebas focalizadas en verde.
 - 2026-11-17: STORE-14 sale del backlog y pasa a ser el roadmap activo. `jspreadsheet-ce` 5.0.4 es MIT y el documento cabe en `app_documents`.
 - La primera versión no importa `.xlsx` ni crea varias hojas: prioriza editar, calcular y guardar.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.

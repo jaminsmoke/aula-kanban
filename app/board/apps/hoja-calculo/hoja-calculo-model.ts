@@ -4,6 +4,7 @@ export type SpreadsheetCell = string | number | boolean;
 /** Documento serializable de una hoja de cálculo. */
 export type SpreadsheetDocument = {
   data: SpreadsheetCell[][];
+  styles?: Record<string, string>;
 };
 
 /** Filas y columnas de la hoja inicial. */
@@ -121,5 +122,19 @@ export function parseSpreadsheetDocument(value: unknown): SpreadsheetDocument | 
     }
     data.push(normalizedRow);
   }
-  return { data: normalizeSheet(data) };
+
+  let styles: Record<string, string> | undefined;
+  if (Array.isArray(candidate.styles)) return null;
+  if (typeof candidate.styles === "object" && candidate.styles !== null) {
+    const rawStyles = candidate.styles as Record<string, unknown>;
+    const entries = Object.entries(rawStyles);
+    if (entries.length > 500) return null;
+    styles = {};
+    for (const [cell, style] of entries) {
+      if (typeof style !== "string") return null;
+      styles[cell] = style;
+    }
+  }
+
+  return { data: normalizeSheet(data), styles };
 }

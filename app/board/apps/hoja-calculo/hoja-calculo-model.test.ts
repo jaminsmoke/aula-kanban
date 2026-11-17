@@ -36,6 +36,8 @@ describe("modelo de hoja de cálculo", () => {
     expect(csvCell("hola")).toBe('"hola"');
     expect(csvCell('=SUM(A1:A2)')).toBe("\"'=SUM(A1:A2)\"");
     expect(csvCell("+import")).toBe("\"'+import\"");
+    expect(csvCell("-2+3")).toBe("\"'-2+3\"");
+    expect(csvCell("@cmd")).toBe("\"'@cmd\"");
     expect(toCsv([["a", "b"], ["1", "=A1"]])).toBe('"a","b"\r\n"1","\'=A1"\r\n');
   });
 
@@ -44,6 +46,10 @@ describe("modelo de hoja de cálculo", () => {
     expect(parseSpreadsheetDocument({ data: [["x", 1, true]] })).not.toBeNull();
     expect(parseSpreadsheetDocument({ data: [] })).toBeNull();
     expect(parseSpreadsheetDocument({ data: [[{}]] })).toBeNull();
+    expect(parseSpreadsheetDocument({ data: [["x"]], styles: [] })).toBeNull();
+    expect(parseSpreadsheetDocument({ data: [["x"]], styles: { A1: 1 } })).toBeNull();
+    expect(parseSpreadsheetDocument({ data: [["x"]], styles: { A1: "font-weight:bold" } })?.styles)
+      .toEqual({ A1: "font-weight:bold" });
     expect(parseSpreadsheetDocument(null)).toBeNull();
   });
 });

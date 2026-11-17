@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Portada de Hoja de cálculo">
+  <defs>
+    <linearGradient id="calc-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7f9ff"/>
+      <stop offset="1" stop-color="#dbe7f7"/>
+    </linearGradient>
+    <linearGradient id="calc-card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#fafcff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#calc-bg)"/>
+  <circle cx="1080" cy="80" r="220" fill="#aec8ef" opacity=".42"/>
+  <circle cx="100" cy="630" r="190" fill="#ffffff" opacity=".42"/>
+
+  <g transform="translate(0 30)" font-family="Instrument Sans, system-ui, sans-serif">
+    <text x="86" y="230" fill="#1c2a5a" font-size="68" font-weight="700">Hoja de</text>
+    <text x="86" y="300" fill="#2e438c" font-size="68" font-weight="700">cálculo</text>
+    <text x="88" y="360" fill="#4b5f96" font-size="27">Organiza datos, calcula</text>
+    <text x="88" y="400" fill="#4b5f96" font-size="27">y comparte resultados</text>
+    <g transform="translate(88 452)">
+      <rect width="326" height="52" rx="26" fill="#ffffff" opacity=".84"/>
+      <text x="24" y="34" fill="#2e438c" font-size="19" font-weight="600">Edita · calcula · guarda</text>
+    </g>
+  </g>
+
+  <g transform="translate(724 88) rotate(3 180 250)" font-family="Instrument Sans, system-ui, sans-serif">
+    <rect width="360" height="500" rx="30" fill="url(#calc-card)" opacity=".97"/>
+    <rect x="18" y="18" width="324" height="42" rx="14" fill="#eef4ff" stroke="#d4e2fb" stroke-width="2"/>
+    <text x="36" y="45" fill="#3355c8" font-size="13" font-weight="700" letter-spacing="2">HOJA DE CÁLCULO</text>
+    <circle cx="300" cy="39" r="8" fill="#3355c8"/>
+    <circle cx="318" cy="39" r="8" fill="#eef4ff" stroke="#3355c8" stroke-width="2"/>
+
+    <g transform="translate(38 84)">
+      <rect width="284" height="210" rx="16" fill="#fbfcff" stroke="#d5e0fb" stroke-width="2"/>
+      <rect x="16" y="16" width="252" height="30" rx="8" fill="#5b45b8"/>
+      <g fill="#ffffff" font-size="10.5" font-weight="700">
+        <text x="26" y="36">Concepto</text>
+        <text x="112" y="36">Cantidad</text>
+        <text x="194" y="36">Precio</text>
+      </g>
+
+      <g stroke="#e1e8f6" stroke-width="1.5">
+        <path d="M16 46H268M16 76H268M16 106H268M16 136H268M16 166H268M16 196H268"/>
+        <path d="M104 16V226M184 16V226"/>
+      </g>
+      <g fill="#4b5f96" font-size="10.5">
+        <text x="26" y="67">Materiales</text>
+        <text x="112" y="67">3</text>
+        <text x="194" y="67">4,50</text>
+        <text x="26" y="97">Impresión</text>
+        <text x="112" y="97">1</text>
+        <text x="194" y="97">12,00</text>
+        <text x="26" y="127">Transporte</text>
+        <text x="112" y="127">2</text>
+        <text x="194" y="127">3,25</text>
+        <text x="26" y="157" font-weight="700">Total</text>
+        <text x="194" y="157" fill="#1c2a5a" font-weight="700">32,00</text>
+      </g>
+
+      <rect x="16" y="180" width="150" height="28" rx="7" fill="#eef4ff" stroke="#d5e0fb" stroke-width="1.5"/>
+      <text x="27" y="199" fill="#3355c8" font-size="11" font-weight="700">=SUMA(D3:D5)</text>
+    </g>
+
+    <rect x="38" y="312" width="284" height="52" rx="14" fill="#f1f6ff" stroke="#d5e0fb" stroke-width="2"/>
+    <text x="56" y="334" fill="#1c2a5a" font-size="15" font-weight="700">Fórmulas que responden</text>
+    <text x="56" y="351" fill="#5b6d9b" font-size="11">Celdas, formato y cambios guardados</text>
+
+    <rect x="38" y="382" width="284" height="34" rx="17" fill="#3355c8"/>
+    <text x="58" y="404" fill="#ffffff" font-size="12.5" font-weight="700">Haz clic en una celda</text>
+    <path d="M286 392l7 7-7 7" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <g transform="translate(38 438)" fill="#8b9bc0" font-size="10.5">
+      <rect width="128" height="28" rx="7" fill="#f7f9ff" stroke="#d5e0fb" stroke-width="1.5"/>
+      <text x="12" y="18">Añadir fila</text>
+      <rect x="140" width="144" height="28" rx="7" fill="#f7f9ff" stroke="#d5e0fb" stroke-width="1.5"/>
+      <text x="152" y="18">Añadir columna</text>
+    </g>
+  </g>
+</svg>
