@@ -1,10 +1,34 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-13 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin fase activa · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
+
+## 2026-11-17 — Roadmap STORE-13 · Líneas de tiempo en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Líneas de tiempo se incorpora con `vis-timeline` 8.5.6 en su opción MIT: eventos, épocas, grupos, zoom, paneo y plantillas histórica y de proyecto.
+- Documento por proyecto en `app_documents` con eventos, épocas y rango visible; validación defensiva y modo lectura para invitados.
+- Control por teclado, foco visible, reducción de movimiento y estados de carga, error y visor no disponible.
+- Portada `public/store/timeline.svg`, ficha, registro lazy y entrada en «Mejores aplicaciones». `AULA_STORE_VERSION` sube a `1.8.0`.
+- Declaración MCP sin herramientas propias porque la edición vive en el navegador; ayuda, matriz de herramientas, catálogo y documentación actualizados. Aviso MIT de `vis-timeline` añadido. Sin cambios en la demo.
+
+### Verificación
+
+- Tienda y ficha revisadas a 1366, 1024 y 390 px, con la portada, versión `1.0.0` y upstream `vis-timeline 8.5.6`. La demo es de solo lectura y no permite instalar; la apertura queda cubierta por el registro lazy y la prueba de sincronización del catálogo.
+- La app se revisó a pantalla completa a 1366, 1024 y 390 px: plantillas, eventos, épocas, guardado, modo invitado y teclado.
+- Chunk diferido: `vis-timeline` 541,6 KB / 154,8 KB gzip, app 17,9 KB / 5,6 KB gzip, CSS 26,6 KB / 4,8 KB gzip y portada 4,47 KB; todo se sirve desde `dist/client`.
+- Suite completa: **175 archivos / 1.261 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `7264567` (roadmap), `e17847b` (Fase 1), `fc7b12a` (Fase 2) y el commit de cierre. Push de cierre a `github main`; sin publicación en Sites y sin cambio de versión del Site: sigue en **1.1.34**.
+
+### Seguimiento
+
+- El backlog queda sin entradas pendientes. El plan completo está en [`historial/roadmap-store-13.md`](../historial/roadmap-store-13.md).
 
 ## 2026-11-17 — Roadmap STORE-12 · Moléculas 3D en Aula Store
 

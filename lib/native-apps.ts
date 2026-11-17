@@ -25,9 +25,9 @@ export type NativeCategory = StoreTopCategory;
 export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
-export const AULA_STORE_VERSION = "1.7.0";
+export const AULA_STORE_VERSION = "1.8.0";
 
-export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "presentaciones", "moleculas"] as const;
+export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "presentaciones", "moleculas", "timeline"] as const;
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
 
@@ -230,6 +230,19 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     appVersion: "1.0.0",
     upstream: { name: "3dmol", version: "2.5.5" },
     window: { width: 1120, height: 720 },
+  },
+  {
+    id: "timeline",
+    name: "Líneas de tiempo",
+    tagline: "Ordena historias, proyectos y secuencias en el tiempo.",
+    description: "Líneas de tiempo con vis-timeline (MIT): eventos, épocas, grupos, zoom y plantillas; guardado por proyecto en app_documents y modo lectura para invitados.",
+    categories: ["Educación", "Productividad"],
+    subcategory: "Herramientas",
+    cover: "/store/timeline.svg",
+    features: ["Eventos, épocas y grupos", "Zoom, paneo y plantillas", "Guardado por proyecto y modo lectura"],
+    appVersion: "1.0.0",
+    upstream: { name: "vis-timeline", version: "8.5.6" },
+    window: { width: 1200, height: 720 },
   },
 ];
 

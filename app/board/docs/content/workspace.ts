@@ -71,6 +71,7 @@ export const workspaceSections: DocSection[] = [
           { term: "Mapas conceptuales (1.0.0)", text: "Lienzo de nodos y conexiones con zoom y paneo; plantillas de mapa conceptual y mapa mental, guardado por proyecto y modo lectura para invitados." },
           { term: "Presentaciones (1.0.0)", text: "Editor Markdown con vista previa y modo presentación; plantillas de clase, proyecto y documento vacío, guardado por proyecto y exportación HTML." },
           { term: "Moléculas 3D (1.0.0)", text: "Visor molecular con ocho estructuras locales, rotación, zoom, etiquetas y ficha con fórmula; sin red ni recursos externos." },
+          { term: "Líneas de tiempo (1.0.0)", text: "Eventos y épocas en un lienzo temporal con zoom y agrupación; plantillas histórica y de proyecto, guardado por proyecto y modo lectura para invitados." },
         ],
       },
       { type: "note", tone: "info", text: "El historial de la calculadora se guarda en este navegador, no en el proyecto: no lo ves desde otro equipo y puedes vaciarlo con «Borrar» en el panel del historial. La memoria de la calculadora vive solo mientras la ventana está abierta. Los documentos de Programación por bloques y Diagramas sí se guardan en el proyecto, con el botón «Guardar»." },

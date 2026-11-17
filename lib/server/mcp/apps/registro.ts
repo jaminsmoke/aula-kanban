@@ -77,6 +77,11 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     herramientas: [],
     pendiente: "La vista y la selección de moléculas viven en el navegador; no hay un documento persistente ni herramientas MCP específicas en esta versión.",
   },
+  timeline: {
+    appId: "timeline",
+    herramientas: [],
+    pendiente: "La línea temporal se guarda en app_documents, pero el lienzo, el zoom y la edición viven en el navegador; no hay herramientas MCP específicas en esta versión.",
+  },
 };
 
 /** Herramientas de todas las apps, en el orden de sus declaraciones. */

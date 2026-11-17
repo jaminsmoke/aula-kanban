@@ -2,9 +2,9 @@
 
 Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
-> **Integradas:** Mapas conceptuales como **STORE-10** y Presentaciones como
-> **STORE-11**. **En roadmap:** Líneas de tiempo como **STORE-13**. El resto
-> sigue como candidato hasta que se priorice.
+> **Integradas:** Mapas conceptuales como **STORE-10**, Presentaciones como
+> **STORE-11** y Líneas de tiempo como **STORE-13**. El resto sigue como
+> candidato hasta que se priorice.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|
@@ -19,7 +19,7 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 | Gráficas | `@observablehq/plot` 0.6.19 | ISC | Gráficas declarativas | ~250 KB | Alternativa a Chart.js |
 | Funciones | `function-plot` 1.26.0 | MIT | Representación de funciones | ~150 KB | Matemáticas |
 | Lienzo 2D | `konva` 10.9.1 | MIT | Capas, formas y arrastre | ~250 KB | Base para editores propios |
-| Líneas de tiempo | `vis-timeline` 8.5.6 | Apache-2.0 **o** MIT | Historia: eventos, épocas, zoom | ~200 KB | En roadmap STORE-13; se elige MIT |
+| Líneas de tiempo | `vis-timeline` 8.5.6 | Apache-2.0 **o** MIT | Historia: eventos, épocas, zoom | ~200 KB | Integrada en STORE-13 con la opción MIT |
 | Documentos Office | `@silurus/ooxml` 0.89.10 | MIT | Ver docx/xlsx/pptx en el navegador | ~1 MB WASM | Útil para adjuntos de tareas |
 | Visor PDF | `pdfjs-dist` 6.5.438 | Apache-2.0 | Leer PDF | ~1,5 MB | Worker servido desde el propio Site |
 | Visor PDF (React) | `@embedpdf/react-pdf-viewer` 2.15.1 | MIT | Envoltorio listo sobre PDF | ~300 KB + motor | Alternativa a montar PDF.js a mano |
