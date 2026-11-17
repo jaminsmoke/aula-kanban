@@ -53,11 +53,11 @@
 
 ### Fase 1 — Editor y formato
 
-- [ ] Instalar y fijar `@tiptap/core`, `@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit` y `@tiptap/extension-link` 3.34.0.
-- [ ] Crear `app/board/apps/documentos/` con modelo, editor, barra de formato y estilos.
-- [ ] Añadir título editable, párrafos, H1–H3, negrita, cursiva, listas, citas, código y enlaces.
-- [ ] Incorporar deshacer/rehacer, atajos de teclado y estados activos de la barra.
-- [ ] Revisar el layout a 1366, 1024 y 390 px, con toolbar adaptable y sin scroll horizontal de página.
+- [x] Instalar y fijar `@tiptap/core`, `@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit` y `@tiptap/extension-link` 3.34.0.
+- [x] Crear `app/board/apps/documentos/` con modelo, editor, barra de formato y estilos.
+- [x] Añadir título editable, párrafos, H1–H3, negrita, cursiva, listas, citas, código y enlaces.
+- [x] Incorporar deshacer/rehacer, atajos de teclado y estados activos de la barra.
+- [x] Revisar el layout a 1366, 1024 y 390 px, con toolbar adaptable y sin scroll horizontal de página.
 - **Criterios de aceptación:**
   - Se crea y edita una nota con varios bloques y marcas.
   - Los atajos y los botones aplican el formato correcto.
@@ -110,6 +110,7 @@
 
 ## 6. Notas de sesión
 
+- 2026-11-17: fase 1 completada. Editor Tiptap con título, párrafos, H1–H3, negrita, cursiva, subrayado, listas, citas, código, enlaces normalizados y deshacer/rehacer. La barra muestra estados activos y se adapta a 1366, 1024 y 390 px; el indicador de cambios solo se activa con transacciones que modifican el documento. 6 pruebas focalizadas en verde.
 - 2026-11-17: STORE-15 sale del backlog y pasa a ser el roadmap activo. `@tiptap/core` 3.34.0 y las extensiones previstas son MIT; el documento cabe en `app_documents`.
 - La primera versión no incluye tablas, imágenes ni adjuntos: prioriza editar, guardar y exportar.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.

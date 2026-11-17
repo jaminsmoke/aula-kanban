@@ -1,0 +1,532 @@
+/* ==========================================================================
+   Notas y documentos: editor Tiptap, barra de formato y papel
+   ========================================================================== */
+
+.documentos-app {
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  background:var(--ui-surface-hover);
+  color:var(--ui-text-primary);
+  container-type:inline-size;
+  container-name:documentosapp;
+}
+
+.documentos-top {
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 14px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-surface-faint);
+}
+
+.documentos-heading {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+
+.documentos-mark {
+  display:grid;
+  place-items:center;
+  flex:none;
+  width:34px;
+  height:34px;
+  border-radius:var(--radius-sm);
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+}
+
+.documentos-heading strong {
+  display:block;
+  font-size:14px;
+  line-height:1.2;
+}
+
+.documentos-heading small {
+  display:block;
+  margin-top:2px;
+  color:var(--ui-text-muted);
+  font-size:11px;
+  font-weight:600;
+  line-height:1.25;
+}
+
+.documentos-meta {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-left:auto;
+  font-size:11px;
+}
+
+.documentos-chip {
+  padding:4px 8px;
+  border-radius:var(--radius-pill);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-muted);
+  font-weight:700;
+}
+
+.documentos-chip.is-dirty {
+  background:var(--ui-warning-soft);
+  color:var(--ui-warning-ink);
+}
+
+.documentos-words {
+  color:var(--ui-text-muted);
+  font-variant-numeric:tabular-nums;
+}
+
+.documentos-toolbar {
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  flex-wrap:wrap;
+  padding:7px 14px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-surface-faint);
+}
+
+.documentos-tool-group {
+  display:flex;
+  align-items:center;
+  gap:2px;
+  padding-right:6px;
+  border-right:var(--border-width-hairline) solid var(--ui-border-subtle);
+}
+
+.documentos-tool-group:last-of-type {
+  padding-right:0;
+  border-right:0;
+}
+
+.documentos-tool {
+  display:grid;
+  place-items:center;
+  width:29px;
+  height:29px;
+  padding:0;
+  border:var(--border-width-hairline) solid transparent;
+  border-radius:var(--radius-xs);
+  background:transparent;
+  color:var(--ui-text-secondary);
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+.documentos-tool:hover {
+  background:var(--ui-surface-hover);
+  color:var(--ui-text-primary);
+}
+
+.documentos-tool.is-active {
+  border-color:var(--ui-border-accent);
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+}
+
+.documentos-tool:disabled {
+  cursor:not-allowed;
+  opacity:.4;
+}
+
+.documentos-tool:disabled:hover {
+  background:transparent;
+  color:var(--ui-text-secondary);
+}
+
+.documentos-tool:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:1px;
+}
+
+.documentos-loading {
+  margin-left:4px;
+  color:var(--ui-text-muted);
+  font-size:11px;
+}
+
+.documentos-link-bar {
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  padding:8px 14px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-surface-raised);
+}
+
+.documentos-link-label {
+  color:var(--ui-text-secondary);
+  font-size:11px;
+  font-weight:700;
+}
+
+.documentos-link-input {
+  min-width:220px;
+  flex:1 1 280px;
+  padding:6px 8px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-primary);
+  font:inherit;
+  font-size:12px;
+}
+
+.documentos-link-input:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:1px;
+}
+
+.documentos-link-action,
+.documentos-link-close {
+  padding:6px 9px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius:var(--radius-xs);
+  background:var(--ui-action-primary);
+  color:var(--ui-action-text);
+  font:inherit;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.documentos-link-action.secondary,
+.documentos-link-close {
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+}
+
+.documentos-link-action:disabled {
+  cursor:not-allowed;
+  opacity:.5;
+}
+
+.documentos-link-action:focus-visible,
+.documentos-link-close:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:2px;
+}
+
+.documentos-link-hint,
+.documentos-link-error {
+  color:var(--ui-text-muted);
+  font-size:11px;
+}
+
+.documentos-link-error {
+  color:var(--ui-danger-ink);
+}
+
+.documentos-layout {
+  flex:1 1 auto;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 250px;
+  align-content:start;
+  gap:14px;
+  padding:14px;
+  overflow:auto;
+}
+
+.documentos-stage {
+  min-width:0;
+}
+
+.documentos-paper {
+  width:min(100%, 840px);
+  min-height:520px;
+  margin:0 auto;
+  padding:28px 34px 42px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-md);
+  background:var(--ui-surface-raised);
+  box-shadow:var(--ui-shadow-card);
+}
+
+.documentos-title {
+  display:block;
+  width:100%;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--ui-text-primary);
+  font:inherit;
+  font-size:28px;
+  font-weight:700;
+  line-height:1.2;
+  letter-spacing:-.02em;
+}
+
+.documentos-title::placeholder {
+  color:var(--ui-text-muted);
+}
+
+.documentos-title:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:4px;
+  border-radius:var(--radius-xs);
+}
+
+.documentos-divider {
+  height:var(--border-width-hairline);
+  margin:16px 0 20px;
+  background:var(--ui-border-subtle);
+}
+
+.documentos-editor {
+  min-height:410px;
+}
+
+.documentos-prose {
+  min-height:410px;
+  outline:none;
+  color:var(--ui-text-primary);
+  font-size:14px;
+  line-height:1.7;
+}
+
+.documentos-prose:focus-visible {
+  outline:none;
+}
+
+.documentos-prose > * + * {
+  margin-top:12px;
+}
+
+.documentos-prose h1,
+.documentos-prose h2,
+.documentos-prose h3 {
+  color:var(--ui-text-primary);
+  line-height:1.25;
+}
+
+.documentos-prose h1 {
+  margin-top:0;
+  font-size:23px;
+  letter-spacing:-.015em;
+}
+
+.documentos-prose h2 {
+  margin-top:22px;
+  font-size:18px;
+}
+
+.documentos-prose h3 {
+  margin-top:18px;
+  font-size:15.5px;
+}
+
+.documentos-prose p {
+  margin:0;
+}
+
+.documentos-prose strong {
+  color:var(--ui-text-primary);
+  font-weight:700;
+}
+
+.documentos-prose em {
+  color:var(--ui-text-secondary);
+}
+
+.documentos-prose a {
+  color:var(--ui-action-text);
+  font-weight:600;
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+
+.documentos-prose a:hover {
+  color:var(--ui-action-primary);
+}
+
+.documentos-prose ul,
+.documentos-prose ol {
+  padding-left:24px;
+}
+
+.documentos-prose li + li {
+  margin-top:4px;
+}
+
+.documentos-prose blockquote {
+  margin:16px 0;
+  padding:6px 0 6px 16px;
+  border-left:3px solid var(--ui-action-primary);
+  color:var(--ui-text-secondary);
+  font-style:italic;
+}
+
+.documentos-prose code {
+  padding:2px 5px;
+  border-radius:4px;
+  background:var(--ui-surface-faint);
+  color:var(--ui-text-secondary);
+  font-family:var(--font-mono);
+  font-size:.92em;
+}
+
+.documentos-prose pre {
+  overflow:auto;
+  padding:13px 15px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-sm);
+  background:var(--ui-surface-faint);
+  color:var(--ui-text-primary);
+  font-family:var(--font-mono);
+  font-size:12px;
+  line-height:1.6;
+  white-space:pre-wrap;
+}
+
+.documentos-prose pre code {
+  padding:0;
+  background:transparent;
+  font-size:inherit;
+}
+
+.documentos-prose hr {
+  border:0;
+  border-top:var(--border-width-hairline) solid var(--ui-border-default);
+}
+
+.documentos-editor-loading {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:12px;
+}
+
+.documentos-side {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.documentos-info,
+.documentos-help {
+  padding:11px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-sm);
+  background:var(--ui-surface-raised);
+}
+
+.documentos-info h3,
+.documentos-help h3 {
+  margin:0 0 7px;
+  color:var(--ui-text-primary);
+  font-size:13px;
+}
+
+.documentos-info p,
+.documentos-help ul {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+  line-height:1.5;
+}
+
+.documentos-help ul {
+  padding-left:17px;
+}
+
+.documentos-help li + li {
+  margin-top:5px;
+}
+
+.documentos-status {
+  min-height:2.8em;
+  margin-top:8px !important;
+  color:var(--ui-text-secondary) !important;
+}
+
+.documentos-help kbd {
+  padding:1px 4px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:4px;
+  background:var(--ui-surface-faint);
+  color:var(--ui-text-secondary);
+  font-family:inherit;
+  font-size:10px;
+}
+
+@container documentosapp (max-width:860px) {
+  .documentos-layout {
+    grid-template-columns:minmax(0,1fr);
+  }
+
+  .documentos-side {
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0,1fr));
+  }
+}
+
+@container documentosapp (max-width:560px) {
+  .documentos-top {
+    padding:9px 10px;
+  }
+
+  .documentos-meta {
+    gap:5px;
+  }
+
+  .documentos-words {
+    display:none;
+  }
+
+  .documentos-toolbar {
+    padding:7px 9px;
+  }
+
+  .documentos-tool {
+    width:31px;
+    height:31px;
+  }
+
+  .documentos-link-bar {
+    padding:8px 10px;
+  }
+
+  .documentos-link-input {
+    flex-basis:100%;
+    min-width:0;
+  }
+
+  .documentos-layout {
+    gap:10px;
+    padding:10px;
+  }
+
+  .documentos-paper {
+    min-height:0;
+    padding:20px 18px 30px;
+  }
+
+  .documentos-title {
+    font-size:23px;
+  }
+
+  .documentos-side {
+    display:flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .documentos-tool,
+  .documentos-link-action,
+  .documentos-link-close {
+    transition:none;
+  }
+}
