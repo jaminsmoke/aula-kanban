@@ -43,6 +43,45 @@ describe("importadores de Aula Documentos", () => {
     expect(source).toEqual(original);
   });
 
+  it("quita el H1 que repite el título al importar Notas y lo avisa", () => {
+    const source = {
+      title: "Introducción de clase",
+      content: {
+        type: "doc",
+        content: [
+          { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "  introduccion DE CLASE " }] },
+          { type: "paragraph", content: [{ type: "text", text: "Contenido." }] },
+        ],
+      },
+    };
+    const original = structuredClone(source);
+    const result = importNotesDocument(source);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.preview.document.content.content).toEqual([
+      { type: "paragraph", content: [{ type: "text", text: "Contenido." }] },
+    ]);
+    expect(result.preview.warnings).toContain("Se quitó el H1 inicial porque repetía el título.");
+    expect(source).toEqual(original);
+  });
+
+  it("conserva un H1 distinto al importar Notas", () => {
+    const result = importNotesDocument({
+      title: "Documento",
+      content: {
+        type: "doc",
+        content: [
+          { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Otro título" }] },
+          { type: "paragraph" },
+        ],
+      },
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.preview.document.content.content?.[0]).toMatchObject({ type: "heading" });
+    expect(result.preview.warnings).toHaveLength(0);
+  });
+
   it("convierte un diagrama en un documento de un solo bloque", () => {
     const result = importMermaidDocument({ code: "flowchart TD\nA --> B" });
     expect(result.ok).toBe(true);

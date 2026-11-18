@@ -43,10 +43,10 @@
 
 ### Fase 1 — Normalización del título
 
-- [ ] Extraer un helper de dominio que compare el primer H1 con el título y devuelva contenido y advertencia sin mutar el original.
-- [ ] Aplicarlo en la importación de Notas y en el Markdown con `stripTitleHeading`, reutilizando una sola comparación normalizada.
-- [ ] Conservar el H1 cuando no coincida, esté vacío o aparezca después de otro bloque.
-- [ ] Añadir pruebas de título igual, distinto, con espacios, mayúsculas, acentos, H1 vacío y contenido sin encabezado.
+- [x] Extraer un helper de dominio que compare el primer H1 con el título y devuelva contenido y advertencia sin mutar el original.
+- [x] Aplicarlo en la importación de Notas y en el Markdown con `stripTitleHeading`, reutilizando una sola comparación normalizada.
+- [x] Conservar el H1 cuando no coincida, esté vacío o aparezca después de otro bloque.
+- [x] Añadir pruebas de título igual, distinto, con espacios, mayúsculas, acentos, H1 vacío y contenido sin encabezado.
 - **Criterios de aceptación:**
   - El primer H1 equivalente al título se retira solo en la importación.
   - Un H1 legítimo distinto permanece intacto.
@@ -92,3 +92,4 @@
 - 2026-11-18: ADOC-03 sale del backlog y pasa a ser el roadmap activo. Prioridad P1; no se implementa nada en este paso.
 - Puntos de partida: `lib/domain/aula-documentos/importers.ts`, `lib/domain/aula-documentos/markdown.ts`, `app/board/apps/aula-documentos/aula-documentos-app.tsx` y sus pruebas.
 - ADOC-01 y ADOC-02 ya están cerrados. La app conserva un único documento por proyecto y no escribe en `documentos`, `mermaid` ni `presentaciones`.
+- 2026-11-18: Fase 1 completada. `title-heading.ts` normaliza mayúsculas, acentos y espacios, retira solo el primer H1 equivalente y devuelve un aviso sin mutar el original. Se aplica a Notas y al Markdown con `stripTitleHeading`; los H1 distintos, vacíos o posteriores se conservan. 5 pruebas nuevas en el helper y casos añadidos a importadores y Markdown; 1.363 en la suite completa; `tsc` y ESLint en verde.

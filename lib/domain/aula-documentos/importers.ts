@@ -6,6 +6,7 @@ import {
   type AulaDocumentStats,
 } from "./document";
 import { markdownToDocument } from "./markdown";
+import { stripDuplicateTitleHeading } from "./title-heading";
 
 /** Apps antiguas con datos que se pueden previsualizar en Aula Documentos. */
 export type AulaDocumentImportSource = "documentos" | "mermaid" | "presentaciones";
@@ -80,11 +81,13 @@ export function importNotesDocument(value: unknown): AulaDocumentImportResult {
   const warnings: string[] = [];
   const title = candidate.title.trim() || "Notas importadas";
   if (!candidate.title.trim()) warnings.push("El documento original no tenía título.");
+  const stripped = stripDuplicateTitleHeading(candidate.content as AulaDocument["content"], title);
+  if (stripped.warning) warnings.push(stripped.warning);
 
   return finishImport("documentos", {
     schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
     title,
-    content: candidate.content as AulaDocument["content"],
+    content: stripped.content,
   }, warnings);
 }
 

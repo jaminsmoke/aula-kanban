@@ -1,5 +1,6 @@
 import type { JSONContent } from "@tiptap/core";
 import { normalizeAulaLink, type AulaDocument } from "./document";
+import { stripDuplicateTitleHeading } from "./title-heading";
 
 /** Resultado de convertir Markdown al modelo del documento. */
 export type MarkdownDocumentResult = {
@@ -254,16 +255,20 @@ export function markdownToDocument(
     : firstParagraph
       ? nodeText(firstParagraph).trim().slice(0, 120)
       : options.titleFallback ?? "Documento importado";
-  const firstBlock = blocks[0];
-  if (options.stripTitleHeading && firstBlock?.type === "heading" && nodeText(firstBlock).trim() === title) {
-    blocks.shift();
+  let contentBlocks = blocks;
+  if (options.stripTitleHeading) {
+    const stripped = stripDuplicateTitleHeading({ type: "doc", content: blocks }, title);
+    if (stripped.removed) {
+      contentBlocks = stripped.content.content ?? [];
+      if (stripped.warning) warnings.push(stripped.warning);
+    }
   }
 
   return {
     title: title || options.titleFallback || "Documento importado",
     content: {
       type: "doc",
-      content: blocks.length ? blocks : [{ type: "paragraph" }],
+      content: contentBlocks.length ? contentBlocks : [{ type: "paragraph" }],
     },
     warnings,
   };

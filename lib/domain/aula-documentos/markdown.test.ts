@@ -81,6 +81,7 @@ describe("Markdown de Aula Documentos", () => {
     expect(parsed.document.title).toBe("Mi documento");
     expect(parsed.stats.mermaidBlocks).toBe(1);
     expect(parsed.document.content.content?.filter((node) => node.type === "heading")).toHaveLength(0);
+    expect(converted.warnings).toContain("Se quitó el H1 inicial porque repetía el título.");
     expect(JSON.stringify(parsed.document.content)).toContain("fuerte");
     expect(JSON.stringify(parsed.document.content)).toContain("https://example.com/");
   });
