@@ -107,10 +107,9 @@ tiempo **STORE-13**, Hoja de cálculo **STORE-14**, Notas y documentos
 **STORE-15**, Visor Office **STORE-16** y Aula Documentos **STORE-17**, además de
 las cinco iniciales) ya están integradas.
 
-En el roadmap queda **ADOC-05** (presentación y salida de Aula Documentos). En el
-backlog quedan **DEV-01** (evaluación de pnpm, fuera del catálogo de apps) y
+En el backlog quedan **DEV-01** (evaluación de pnpm, fuera del catálogo de apps) y
 las mejoras **ADOC-06 y ADOC-07** de Aula Documentos, con prioridad P2. ADOC-01
-a ADOC-04 están completados. El resto de candidatas sigue documentado por
+a ADOC-05 están completados. El resto de candidatas sigue documentado por
 categorías, sin entrada hasta que se prioricen.
 
 ## Cómo reverificar una licencia

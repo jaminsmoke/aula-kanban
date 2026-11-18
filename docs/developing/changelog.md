@@ -1,8 +1,34 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-05 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-18 — Roadmap ADOC-05 · Presentación y salida de Aula Documentos
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Los archivos exportados usan un slug derivado del título; HTML, Markdown y JSON de recuperación dejan de depender del `projectId`.
+- Añadida la acción «Imprimir o guardar PDF»: monta el documento autónomo con sus SVG en un iframe oculto, sin la interfaz del editor y con reglas para evitar cortes.
+- El documento sube a esquema v2 con `presentation.theme` y `presentation.notes`; los documentos v1 se migran al cargar.
+- Tres temas de presentación (Aula, Claro y Oscuro), selector persistente y vista previa con recuento y navegación.
+- Notas del orador por diapositiva, editables desde la vista previa y visibles en la presentación solo al activar «Notas». Los invitados no pueden editarlas.
+- Exportación HTML estática de la presentación con tema y notas en un `<details>` opcional, sin scripts, CDN ni recursos externos.
+- La ayuda menciona temas, notas y exportación. No cambian `AULA_STORE_VERSION`, la versión de la app ni el Site.
+
+### Verificación
+
+- Salida revisada a 1366, 1024 y 390 px; vista previa, notas, temas y navegación comprobados en la app real. La impresión se probó con un HTML autónomo y sin recursos externos.
+- Suite completa: **195 archivos / 1.391 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `9ebd42f` (Fase 1), `c0b1f0d` (Fase 2), `244ceef` (Fase 3) y este commit de cierre. Push único a `github main`; sin publicación en Sites ni cambio de versión del Site: sigue en **1.1.35**.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-06**, **ADOC-07** y **DEV-01**. El plan completo está en [`historial/roadmap-adoc-05.md`](../historial/roadmap-adoc-05.md).
 
 ---
 

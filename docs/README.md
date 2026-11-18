@@ -17,7 +17,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | ADOC-05 activo: presentación y salida | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | Plantilla del próximo roadmap | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -83,6 +83,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap ADOC-03 activo:** importación legacy limpia de Aula Documentos, sin títulos duplicados y con origen, fecha y avisos en la vista previa. Plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap ADOC-04 activo:** Mermaid utilizable en Aula Documentos, con errores completos, plantillas, render bajo demanda, zoom y fallback explícito. Plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap ADOC-05 activo:** presentación y salida de Aula Documentos, con nombres legibles, PDF/impresión, temas, vista previa, notas del orador y exportación estática. Plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.35` y sin publicación.
+- **Roadmap ADOC-05 completado:** Aula Documentos añade nombres legibles, impresión/PDF, temas de presentación, vista previa, notas del orador y exportación estática sin recursos externos; el documento migra a esquema v2. Verificado a 1366, 1024 y 390 px; 195 archivos / 1.391 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-05.md`](historial/roadmap-adoc-05.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap ADOC-04 completado:** Mermaid utilizable en Aula Documentos con errores completos, fallback compartido, mapa mental y plantillas, copia/restauración, render bajo demanda y zoom/paneo. Verificado a 1366, 1024 y 390 px; 193 archivos / 1.379 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-04.md`](historial/roadmap-adoc-04.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap ADOC-03 completado:** Aula Documentos importa desde Notas, Diagramas y Presentaciones sin duplicar el título, muestra origen, fecha y avisos antes de confirmar y conserva los datos originales. Verificado a 1366, 1024 y 390 px; 190 archivos / 1.366 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-03.md`](historial/roadmap-adoc-03.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap ADOC-02 completado:** Aula Documentos incorpora seis plantillas y un selector con vista previa, aviso de cambios sin guardar, reemplazo seguro y foco según la plantilla. Verificado a 1366, 1024 y 390 px; 189 archivos / 1.356 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-02.md`](historial/roadmap-adoc-02.md). El Site sigue en `1.1.35` y sin publicación.
