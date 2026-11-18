@@ -177,7 +177,7 @@ export function buildAulaDocumentHtml(
   .aula-mermaid-export svg { display: inline-block; max-width: 100%; height: auto; }
   .aula-mermaid-export-error { margin: 0 0 .7em; color: #8a2f2f; font-size: .85rem; font-weight: 700; text-align: left; }
   .aula-mermaid-export-error + pre { margin: 0; text-align: left; }
-  @media print { body { background: #fff; } main { width: auto; max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; } }
+  @media print { body { background: #fff; } main { width: auto; max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; } .aula-mermaid-export, pre, blockquote { break-inside: avoid; } h1, h2, h3 { break-after: avoid; } }
 </style>
 </head>
 <body>

@@ -26,6 +26,12 @@ const mermaidMock = vi.hoisted(() => ({
   render: vi.fn(async (code: string) => `<svg data-mermaid-preview="true"><text>${code}</text></svg>`),
 }));
 
+const printMock = vi.hoisted(() => vi.fn());
+
+vi.mock("../../shared/aula-documentos/print-html", () => ({
+  printHtmlDocument: printMock,
+}));
+
 vi.mock("../use-app-document", () => ({
   useAppDocument: (_projectId: string, appId: string) => ({
     load: appId === "documentos"
@@ -409,6 +415,20 @@ describe("Aula Documentos", () => {
     fireEvent.click(screen.getByRole("button", { name: "Restablecer zoom" }));
     expect(screen.getByText("100%")).toBeTruthy();
     expect(document.querySelector(".aula-mermaid-zoom")?.getAttribute("data-zoom")).toBe("1");
+  });
+
+  it("prepara una impresión autónoma sin la interfaz del editor", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Imprimir o guardar PDF" }));
+
+    await waitFor(() => expect(printMock).toHaveBeenCalledTimes(1));
+    const html = printMock.mock.calls[0][0] as string;
+    expect(html).toContain("<title>Documento de ejemplo</title>");
+    expect(html).toContain("@media print");
+    expect(html).toContain("break-inside: avoid");
+    expect(html).not.toContain("aula-documentos-toolbar");
+    expect(html).not.toMatch(/https?:\/\//);
   });
 
   it("inserta dos diagramas y guarda el documento validado", async () => {

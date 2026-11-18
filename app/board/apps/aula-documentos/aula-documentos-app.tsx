@@ -24,6 +24,7 @@ import {
   NotebookPen,
   Pilcrow,
   Presentation,
+  Printer,
   Quote,
   Redo2,
   Save,
@@ -47,6 +48,7 @@ import {
   type AulaDocumentImportPreview,
   type AulaDocumentImportSource,
 } from "../../../../lib/domain/aula-documentos/importers";
+import { aulaFileName, aulaRecoveryFileName } from "../../../../lib/domain/aula-documentos/filename";
 import {
   AULA_DOCUMENT_MARKDOWN_MAX_LENGTH,
   documentToMarkdown,
@@ -66,6 +68,7 @@ import { createAulaDocumentExtensions } from "../../shared/aula-documentos/docum
 import { buildAulaDocumentHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
 import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../../shared/aula-documentos/mermaid-block";
 import { getMermaidRenderer } from "../../shared/aula-documentos/mermaid-renderer";
+import { printHtmlDocument } from "../../shared/aula-documentos/print-html";
 import "./aula-documentos.css";
 
 const PresentationView = lazy(() => import("../../shared/aula-documentos/presentation-view").then((module) => ({
@@ -236,6 +239,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [title, setTitle] = useState(initialDocument.title);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [printing, setPrinting] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
   const [editVersion, setEditVersion] = useState(0);
@@ -402,7 +406,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       downloadTextFile(
         JSON.stringify(invalidDocument.raw, null, 2),
         "application/json;charset=utf-8",
-        `aula-documentos-${projectId}-recuperacion.json`,
+        aulaRecoveryFileName(title),
       );
       setStatus("JSON original descargado.");
     } catch {
@@ -641,12 +645,34 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         (code) => getMermaidRenderer().render(code),
       );
       const html = buildAulaDocumentHtml(document, svgByCode);
-      downloadTextFile(html, "text/html;charset=utf-8", `aula-documentos-${projectId}.html`);
+      downloadTextFile(html, "text/html;charset=utf-8", aulaFileName(document.title, "html"));
       setStatus("HTML descargado.");
     } catch {
       setStatus("No se pudo preparar el HTML del documento.");
     } finally {
       setExporting(false);
+    }
+  }
+
+  /**
+   * Prepara y abre la impresión o el PDF del documento.
+   */
+  async function printDocument() {
+    const document = currentDocument();
+    if (!document) return;
+    setPrinting(true);
+    setStatus("Preparando impresión y diagramas…");
+    try {
+      const svgByCode = await renderMermaidSvgs(
+        collectMermaidCodes(document.content),
+        (code) => getMermaidRenderer().render(code),
+      );
+      printHtmlDocument(buildAulaDocumentHtml(document, svgByCode));
+      setStatus("Vista de impresión abierta.");
+    } catch {
+      setStatus("No se pudo preparar la impresión del documento.");
+    } finally {
+      setPrinting(false);
     }
   }
 
@@ -659,7 +685,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     downloadTextFile(
       documentToMarkdown(document),
       "text/markdown;charset=utf-8",
-      `aula-documentos-${projectId}.md`,
+      aulaFileName(document.title, "md"),
     );
     setStatus("Markdown descargado.");
   }
@@ -930,6 +956,12 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       icon: exporting ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <Download size={15} aria-hidden />,
       onClick: () => { void exportHtml(); },
       disabled: !editor || exporting || Boolean(invalidDocument),
+    },
+    {
+      label: "Imprimir o guardar PDF",
+      icon: printing ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <Printer size={15} aria-hidden />,
+      onClick: () => { void printDocument(); },
+      disabled: !editor || printing || Boolean(invalidDocument),
     },
     {
       label: "Exportar Markdown",

@@ -47,11 +47,11 @@
 
 ### Fase 1 — Nombres, impresión y PDF
 
-- [ ] Crear un helper de slug de título con minúsculas, guiones y fallback.
-- [ ] Usar el slug en HTML, Markdown, JSON de recuperación y presentación exportada.
-- [ ] Construir una vista de impresión autónoma con el documento validado y los SVG disponibles.
-- [ ] Añadir la acción «Imprimir / PDF» y revisar saltos de página, márgenes y contenido largo.
-- [ ] Cubrir con pruebas nombres, caracteres especiales, títulos vacíos, impresión y ausencia de recursos externos.
+- [x] Crear un helper de slug de título con minúsculas, guiones y fallback.
+- [x] Usar el slug en HTML, Markdown y JSON de recuperación; la presentación exportada lo reutilizará en la fase 3.
+- [x] Construir una vista de impresión autónoma con el documento validado y los SVG disponibles.
+- [x] Añadir la acción «Imprimir / PDF» y revisar saltos de página, márgenes y contenido largo.
+- [x] Cubrir con pruebas nombres, caracteres especiales, títulos vacíos, impresión y ausencia de recursos externos.
 - **Criterios de aceptación:**
   - Los archivos descargados usan un nombre legible y estable.
   - La impresión no incluye la UI del editor.
@@ -111,3 +111,4 @@
 - 2026-11-18: ADOC-05 sale del backlog y pasa a ser el roadmap activo. Prioridad P1; no se implementa nada en este paso.
 - Puntos de partida: `lib/domain/aula-documentos/document.ts`, `lib/domain/aula-documentos/presentation.ts`, `app/board/shared/aula-documentos/presentation-view.tsx`, `app/board/shared/aula-documentos/export-html.ts` y sus pruebas.
 - ADOC-01 a ADOC-04 están cerrados. La presentación actual usa `reveal.js` bajo demanda; este roadmap añade salida estática y no introduce recursos externos.
+- 2026-11-18: Fase 1 completada. `filename.ts` genera slugs con acentos, signos y fallback; HTML, Markdown y JSON de recuperación usan el título. La acción «Imprimir o guardar PDF» genera el HTML autónomo con SVG y lo imprime en un iframe oculto, con reglas `break-inside` y sin recursos externos. 47 pruebas focalizadas y 1.385 en la suite completa; `tsc` y ESLint en verde.
