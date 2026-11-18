@@ -475,6 +475,21 @@ describe("Aula Documentos", () => {
     expect(saved.presentation?.notes?.["0"]).toBe("Recordar explicar el ejemplo.");
   });
 
+  it("ofrece acciones etiquetadas en el menú móvil", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    fireEvent.click(screen.getByRole("button", { name: "Acciones del documento" }));
+    expect(screen.getByRole("menu", { name: "Acciones del documento" })).toBeTruthy();
+    for (const name of ["Nuevo documento", "Importar documento", "Guardar documento", "Presentar documento", "Exportar HTML", "Exportar presentación"]) {
+      expect(screen.getByRole("menuitem", { name })).toBeTruthy();
+    }
+
+    fireEvent.click(screen.getByRole("menuitem", { name: "Guardar documento" }));
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    expect(screen.queryByRole("menu", { name: "Acciones del documento" })).toBeNull();
+  });
+
   it("inserta dos diagramas y guarda el documento validado", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());

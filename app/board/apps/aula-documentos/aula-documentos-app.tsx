@@ -7,6 +7,7 @@ import {
   Code,
   Code2,
   Download,
+  Ellipsis,
   FileDown,
   FilePenLine,
   FilePlus2,
@@ -169,6 +170,36 @@ function FileActions({ actions }: { actions: ToolbarAction[] }) {
 }
 
 /**
+ * Menú de acciones con etiquetas visibles en pantallas estrechas.
+ * @param props - Acciones y selector.
+ * @returns Los elementos del menú.
+ */
+function MobileActions({
+  actions,
+  onSelect,
+}: {
+  actions: ToolbarAction[];
+  onSelect: (action: ToolbarAction) => void;
+}) {
+  return (
+    <>
+      {actions.map((action) => (
+        <button
+          type="button"
+          role="menuitem"
+          key={action.label}
+          disabled={action.disabled}
+          onClick={() => onSelect(action)}
+        >
+          {action.icon}
+          <span>{action.label}</span>
+        </button>
+      ))}
+    </>
+  );
+}
+
+/**
  * Cuenta palabras de texto plano.
  * @param text - Texto del editor.
  * @returns Número de palabras.
@@ -261,6 +292,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [newDocumentOpen, setNewDocumentOpen] = useState(false);
   const [newDocumentPreview, setNewDocumentPreview] = useState<{ template: AulaDocumentTemplate; document: AulaDocument } | null>(null);
   const [newDocumentError, setNewDocumentError] = useState<string | null>(null);
+  const [actionsOpen, setActionsOpen] = useState(false);
   const [preparingPresentation, setPreparingPresentation] = useState(false);
   const [presentation, setPresentation] = useState<{ title: string; slides: string[] } | null>(null);
   const [presentationTheme, setPresentationTheme] = useState<AulaPresentationTheme>(DEFAULT_AULA_PRESENTATION.theme);
@@ -277,6 +309,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const editVersionRef = useRef(0);
   const savingRef = useRef(false);
   const mountedRef = useRef(true);
+  const actionsRef = useRef<HTMLDivElement>(null);
   const readOnly = role === "guest";
   const { load, save, loading, error } = useAppDocument<AulaDocument>(projectId, "aula-documentos");
   const notesStore = useAppDocument<unknown>(projectId, "documentos");
@@ -299,6 +332,22 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     mountedRef.current = true;
     return () => { mountedRef.current = false; };
   }, []);
+
+  useEffect(() => {
+    if (!actionsOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (actionsRef.current && !actionsRef.current.contains(event.target as Node)) setActionsOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActionsOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [actionsOpen]);
 
   const requestWindowClose = useWindowClose();
   const closeGuard = useCallback(() => {
@@ -1070,6 +1119,22 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     },
   ];
 
+  const mobileActions: ToolbarAction[] = [
+    ...documentFileActions,
+    {
+      label: "Presentar documento",
+      icon: <MonitorPlay size={15} aria-hidden />,
+      onClick: () => { void startPresentation(); },
+      disabled: preparingPresentation || Boolean(presentation),
+    },
+    {
+      label: "Exportar presentación",
+      icon: exportingPresentation ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <Presentation size={15} aria-hidden />,
+      onClick: () => { void exportPresentation(); },
+      disabled: !editor || exportingPresentation,
+    },
+  ];
+
   const groups: ToolbarAction[][] = editor && !readOnly ? [
     [
       { label: "Párrafo", icon: <Pilcrow size={15} aria-hidden />, active: toolbar.paragraph, onClick: () => editor.chain().focus().setParagraph().run() },
@@ -1132,7 +1197,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           </div>
         ))}
         {editor ? (
-          <div className="aula-documentos-tool-group">
+          <div className="aula-documentos-tool-group aula-documentos-present-action">
             <ToolButton
               action={{
                 label: "Presentar documento",
@@ -1145,6 +1210,30 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         ) : null}
         <div className="aula-documentos-tool-group aula-documentos-file-actions">
           <FileActions actions={documentFileActions} />
+        </div>
+        <div className="aula-documentos-mobile-actions" ref={actionsRef}>
+          <button
+            type="button"
+            className="aula-documentos-mobile-toggle"
+            aria-haspopup="menu"
+            aria-expanded={actionsOpen}
+            aria-label="Acciones del documento"
+            onClick={() => setActionsOpen((current) => !current)}
+          >
+            <Ellipsis size={16} aria-hidden />
+            <span>Acciones</span>
+          </button>
+          {actionsOpen ? (
+            <div className="aula-documentos-mobile-menu" role="menu" aria-label="Acciones del documento">
+              <MobileActions
+                actions={mobileActions}
+                onSelect={(action) => {
+                  setActionsOpen(false);
+                  action.onClick();
+                }}
+              />
+            </div>
+          ) : null}
         </div>
         {!editor ? <span className="aula-documentos-loading">Preparando editor…</span> : null}
       </div>

@@ -45,11 +45,11 @@
 
 ### Fase 1 — Acciones móviles y objetivos táctiles
 
-- [ ] Añadir un menú de acciones con etiquetas visibles en anchos estrechos.
-- [ ] Dar texto a Guardar, Importar, Presentar y Exportar sin perder los atajos de escritorio.
-- [ ] Aumentar a 44×44 px los objetivos táctiles de la barra y los controles Mermaid.
-- [ ] Revisar el desbordamiento del documento, la barra y el panel lateral a 390 y 620 px.
-- [ ] Cubrir con pruebas la presencia de etiquetas y los tamaños mínimos.
+- [x] Añadir un menú de acciones con etiquetas visibles en anchos estrechos.
+- [x] Dar texto a Guardar, Importar, Presentar y Exportar sin perder los atajos de escritorio.
+- [x] Aumentar a 44×44 px los objetivos táctiles de la barra y los controles Mermaid.
+- [x] Revisar el desbordamiento del documento, la barra y el panel lateral a 390 y 620 px.
+- [x] Cubrir con pruebas la presencia de etiquetas y verificar manualmente los tamaños mínimos.
 - **Criterios de aceptación:**
   - En 390 px se entiende qué hace cada acción sin tooltip.
   - Guardar, importar, presentar y exportar siguen siendo accesibles.
@@ -106,3 +106,4 @@
 - 2026-11-18: ADOC-06 sale del backlog y pasa a ser el roadmap activo. Prioridad P2; no se implementa nada en este paso.
 - Puntos de partida: `app/board/apps/aula-documentos/aula-documentos-app.tsx`, `aula-documentos.css`, `mermaid-block.tsx`, `presentation-view.tsx`, los modales compartidos y `app/board/store/store-window.tsx`.
 - ADOC-01 a ADOC-05 están cerrados. La posición inicial de la ventana en móvil se considerará una incidencia del escritorio si afecta a todas las apps.
+- 2026-11-18: Fase 1 completada. En contenedores estrechos aparece el menú «Acciones» con etiquetas para nuevo, importar, guardar, exportar, imprimir, presentar y exportar presentación; la barra y los controles Mermaid usan objetivos de 44×44 px. Revisado a 390 y 620 px sin desbordamiento horizontal. 40 pruebas focalizadas y 1.392 en la suite completa; `tsc` y ESLint en verde.
