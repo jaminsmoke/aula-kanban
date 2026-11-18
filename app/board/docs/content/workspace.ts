@@ -75,7 +75,7 @@ export const workspaceSections: DocSection[] = [
           { term: "Hoja de cálculo (1.0.0)", text: "Celdas, fórmulas y formato esencial con filas y columnas ampliables; exportación CSV protegida, guardado por proyecto y modo lectura para invitados." },
           { term: "Notas y documentos (1.0.0)", text: "Editor de texto enriquecido con título, listas, citas, código y enlaces; guardado por proyecto, exportación HTML y modo lectura para invitados." },
           { term: "Visor Office (1.0.0)", text: "Abre archivos .docx, .xlsx y .pptx de tu equipo en solo lectura, con zoom y navegación por páginas, hojas o diapositivas. El archivo no se sube, no se modifica y no se guarda en el proyecto." },
-          { term: "Aula Documentos (1.0.0)", text: "Documento unificado con texto enriquecido y diagramas Mermaid, importación desde Notas y documentos, Diagramas y Presentaciones, exportación HTML o Markdown y modo presentación. Se guarda por proyecto en app_documents; los invitados solo pueden consultarlo." },
+          { term: "Aula Documentos (1.0.0)", text: "Documento unificado con texto enriquecido y diagramas Mermaid, importación desde Notas y documentos, Diagramas y Presentaciones, exportación HTML o Markdown y modo presentación. Se guarda automáticamente por proyecto en app_documents; los invitados solo pueden consultarlo." },
         ],
       },
       { type: "note", tone: "info", text: "El historial de la calculadora se guarda en este navegador, no en el proyecto: no lo ves desde otro equipo y puedes vaciarlo con «Borrar» en el panel del historial. La memoria de la calculadora vive solo mientras la ventana está abierta. Los documentos de Programación por bloques y Diagramas sí se guardan en el proyecto, con el botón «Guardar»." },

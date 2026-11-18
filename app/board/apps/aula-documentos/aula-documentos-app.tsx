@@ -64,6 +64,9 @@ const PresentationView = lazy(() => import("../../shared/aula-documentos/present
   default: module.PresentationView,
 })));
 
+/** Espera antes de guardar automáticamente tras una edición. */
+export const AUTOSAVE_DELAY_MS = 1_600;
+
 type ToolbarAction = {
   label: string;
   icon: ReactNode;
@@ -139,6 +142,15 @@ function ToolButton({ action }: { action: ToolbarAction }) {
 }
 
 /**
+ * Acciones de archivo de la barra de formato.
+ * @param props - Acciones disponibles.
+ * @returns Los botones en orden.
+ */
+function FileActions({ actions }: { actions: ToolbarAction[] }) {
+  return <>{actions.map((action) => <ToolButton action={action} key={action.label} />)}</>;
+}
+
+/**
  * Cuenta palabras de texto plano.
  * @param text - Texto del editor.
  * @returns Número de palabras.
@@ -146,6 +158,17 @@ function ToolButton({ action }: { action: ToolbarAction }) {
 function countWords(text: string): number {
   const normalized = text.replace(/\s+/g, " ").trim();
   return normalized ? normalized.split(" ").length : 0;
+}
+
+/**
+ * Formatea una marca de tiempo como hora local corta.
+ * @param timestamp - Milisegundos desde época o `null`.
+ * @returns La hora `HH:MM` o una cadena vacía.
+ */
+function formatSavedTime(timestamp: number | null): string {
+  if (timestamp === null) return "";
+  const date = new Date(timestamp);
+  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
 
 /**
@@ -188,6 +211,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [title, setTitle] = useState(initialDocument.title);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
+  const [editVersion, setEditVersion] = useState(0);
   const [exporting, setExporting] = useState(false);
   const [status, setStatus] = useState("Cargando documento…");
   const [wordCount, setWordCount] = useState(0);
@@ -205,11 +231,31 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const editorRef = useRef<Editor | null>(null);
   const pendingDocumentRef = useRef<AulaDocument | null>(null);
   const applyingDocumentRef = useRef(false);
+  const editVersionRef = useRef(0);
+  const savingRef = useRef(false);
+  const mountedRef = useRef(true);
   const readOnly = role === "guest";
   const { load, save, loading, error } = useAppDocument<AulaDocument>(projectId, "aula-documentos");
   const notesStore = useAppDocument<unknown>(projectId, "documentos");
   const mermaidStore = useAppDocument<unknown>(projectId, "mermaid");
   const presentationsStore = useAppDocument<unknown>(projectId, "presentaciones");
+
+  /**
+   * Marca el documento como modificado y reinicia el debounce de autosave.
+   * @param message - Mensaje de estado opcional.
+   */
+  const markChanged = useCallback((message = "Documento modificado.") => {
+    editVersionRef.current += 1;
+    setEditVersion((version) => version + 1);
+    setDirty(true);
+    setSaveFailed(false);
+    setStatus(message);
+  }, []);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -243,8 +289,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       setWordCount(countWords(current.getText()));
       setDiagramCount(countMermaidBlocks(current.getJSON()));
       if (applyingDocumentRef.current) return;
-      setDirty(true);
-      setStatus("Documento modificado.");
+      markChanged();
     },
   });
 
@@ -289,6 +334,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       window.setTimeout(() => { applyingDocumentRef.current = false; }, 0);
     }
     setDirty(false);
+    setSaveFailed(false);
     setStatus("Documento guardado cargado.");
   }, []);
 
@@ -299,16 +345,19 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
 
   useEffect(() => {
     let active = true;
-    void load().then(({ state }) => {
+    void load().then(({ state, updatedAt }) => {
       if (!active) return;
       if (state === null) {
+        setLastSavedAt(null);
         setStatus("Documento de ejemplo listo. Guarda para conservarlo.");
         return;
       }
       const parsed = parseAulaDocument(state);
       if (parsed.ok) {
+        setLastSavedAt(typeof updatedAt === "number" ? updatedAt : null);
         applyDocument(parsed.document);
       } else {
+        setLastSavedAt(null);
         setStatus(parsed.message);
       }
     });
@@ -323,7 +372,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
    * Obtiene el documento actual validado.
    * @returns El documento o `null` si no cumple el esquema.
    */
-  function currentDocument(): AulaDocument | null {
+  const currentDocument = useCallback((): AulaDocument | null => {
     if (!editor) return null;
     const parsed = parseAulaDocument({
       schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
@@ -335,26 +384,80 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       return null;
     }
     return parsed.document;
-  }
+  }, [editor, title]);
 
   /**
-   * Guarda el documento en el proyecto.
+   * Persiste un documento y actualiza el estado de guardado.
+   * @param document - Documento validado.
+   * @param automatic - Indica si el guardado lo inició el autosave.
+   * @returns `true` si se guardó correctamente.
    */
-  async function saveDocument() {
-    if (readOnly) return;
-    const document = currentDocument();
-    if (!document) return;
+  const persistDocument = useCallback(async (document: AulaDocument, automatic: boolean): Promise<boolean> => {
+    if (savingRef.current) return false;
+    savingRef.current = true;
     setSaving(true);
-    const ok = await save(document);
+    setSaveFailed(false);
+    setStatus(automatic ? "Guardando automáticamente…" : "Guardando documento…");
+    const versionAtSave = editVersionRef.current;
+    let ok = false;
+    try {
+      ok = await save(document);
+    } catch {
+      ok = false;
+    }
+    savingRef.current = false;
+    if (!mountedRef.current) return ok;
     setSaving(false);
     if (ok) {
-      setTitle(document.title);
-      setDirty(false);
-      setStatus("Documento guardado en el proyecto.");
+      setLastSavedAt(Date.now());
+      if (editVersionRef.current === versionAtSave) {
+        setTitle(document.title);
+        setDirty(false);
+      }
+      setStatus(automatic ? "Documento guardado automáticamente." : "Documento guardado en el proyecto.");
     } else {
+      setSaveFailed(true);
+      setDirty(true);
       setStatus("No se pudo guardar el documento. Revisa la conexión.");
     }
-  }
+    return ok;
+  }, [save]);
+
+  /**
+   * Construye y persiste el documento actual.
+   * @param automatic - Indica si el guardado lo inició el autosave.
+   * @returns `true` si se guardó correctamente.
+   */
+  const saveCurrent = useCallback(async (automatic: boolean): Promise<boolean> => {
+    if (readOnly) return false;
+    const document = currentDocument();
+    if (!document) return false;
+    return persistDocument(document, automatic);
+  }, [currentDocument, persistDocument, readOnly]);
+
+  /**
+   * Guarda el documento manualmente.
+   */
+  const saveDocument = useCallback(() => {
+    void saveCurrent(false);
+  }, [saveCurrent]);
+
+  useEffect(() => {
+    if (readOnly || loading || !editor || !dirty || saving || saveFailed) return;
+    const timer = window.setTimeout(() => { void saveCurrent(true); }, AUTOSAVE_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [dirty, editVersion, editor, loading, readOnly, saveCurrent, saveFailed, saving]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        void saveCurrent(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [saveCurrent]);
 
   /**
    * Inserta un bloque Mermaid con la plantilla de flujo.
@@ -547,8 +650,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   function applyImport() {
     if (!importPreview || !importConfirm) return;
     applyDocument(importPreview.document);
-    setDirty(true);
-    setStatus(`Documento importado desde ${IMPORT_LABELS[importPreview.source]}. Guárdalo para conservarlo.`);
+    markChanged(`Documento importado desde ${IMPORT_LABELS[importPreview.source]}. Guárdalo para conservarlo.`);
     closeImport();
   }
 
@@ -594,20 +696,29 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
    */
   function updateTitle(value: string) {
     setTitle(value);
-    setDirty(true);
-    setStatus("Título actualizado.");
+    markChanged("Título actualizado.");
   }
 
   const statusText = loading
     ? "Cargando documento…"
-    : error ?? (dirty ? `${status} Cambios sin guardar.` : status);
+    : error ?? (saving || saveFailed ? status : dirty ? `${status} Cambios sin guardar.` : status);
+  const savedLabel = lastSavedAt === null ? "Sin guardar" : `Guardado ${formatSavedTime(lastSavedAt)}`;
+  const chipText = readOnly
+    ? "Solo lectura"
+    : saving
+      ? "Guardando…"
+      : saveFailed
+        ? "Error al guardar"
+        : dirty
+          ? "Cambios sin guardar"
+          : savedLabel;
   const wordLabel = wordCount === 1 ? "1 palabra" : `${wordCount} palabras`;
   const diagramLabel = diagramCount === 1 ? "1 diagrama" : `${diagramCount} diagramas`;
   const importExcerpt = importPreview
     ? contentText(importPreview.document.content).replace(/\s+/g, " ").trim().slice(0, 260)
     : "";
 
-  const fileActions: ToolbarAction[] = [
+  const documentFileActions: ToolbarAction[] = [
     {
       label: "Importar documento",
       icon: <Upload size={15} aria-hidden />,
@@ -682,7 +793,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         </div>
         <div className="aula-documentos-meta" aria-label="Estado del documento">
           <span className={dirty && !readOnly ? "aula-documentos-chip is-dirty" : "aula-documentos-chip"}>
-            {readOnly ? "Solo lectura" : saving ? "Guardando…" : dirty ? "Cambios sin guardar" : "Documento local"}
+            {chipText}
           </span>
           <span className="aula-documentos-count">{wordLabel}</span>
           <span className="aula-documentos-count">{diagramLabel}</span>
@@ -708,7 +819,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           </div>
         ) : null}
         <div className="aula-documentos-tool-group aula-documentos-file-actions">
-          {fileActions.map((action) => <ToolButton action={action} key={action.label} />)}
+          <FileActions actions={documentFileActions} />
         </div>
         {!editor ? <span className="aula-documentos-loading">Preparando editor…</span> : null}
       </div>
@@ -902,8 +1013,17 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         <aside className="aula-documentos-side">
           <section className="aula-documentos-info">
             <h3>Texto y diagramas juntos</h3>
-            <p>Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG.</p>
+            <p>Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa.</p>
             <p className="aula-documentos-status" role="status">{statusText}</p>
+            {saveFailed && !readOnly ? (
+              <button
+                type="button"
+                className="aula-documentos-retry"
+                onClick={() => { void saveCurrent(false); }}
+              >
+                Reintentar guardado
+              </button>
+            ) : null}
           </section>
           <section className="aula-documentos-help">
             <h3>Atajos</h3>
@@ -911,6 +1031,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
               <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>B</kbd> negrita</li>
               <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>I</kbd> cursiva</li>
               <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> enlace</li>
+              <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>S</kbd> guardar</li>
               <li>En un diagrama, <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Intro</kbd> aplica el código.</li>
             </ul>
           </section>

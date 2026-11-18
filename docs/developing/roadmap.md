@@ -47,11 +47,11 @@
 
 ### Fase 1 — Autosave y estado de guardado
 
-- [ ] Extraer una función única que construya el documento actual validado y otra que lo persista, para que guardado manual y autosave compartan la misma ruta.
-- [ ] Añadir autosave con debounce cuando el documento esté sucio; cancelar el timer al desmontar, al importar y al cerrar, y descartar respuestas de guardados antiguos.
-- [ ] Añadir `Ctrl/Cmd+S` y mantener el botón de guardado como acción explícita.
-- [ ] Mostrar estados claros: «Guardando…», «Guardado», «Cambios sin guardar» y error con opción de reintentar; mostrar la última hora de guardado.
-- [ ] Cubrir con pruebas: no guardar limpio, guardar una vez tras varias ediciones, no guardar como invitado, conservar sucio si falla la red y no guardar durante la carga.
+- [x] Extraer una función única que construya el documento actual validado y otra que lo persista, para que guardado manual y autosave compartan la misma ruta.
+- [x] Añadir autosave con debounce cuando el documento esté sucio; cancelar el timer al desmontar y al importar, y descartar respuestas de guardados antiguos. El cierre se completa en la fase 3.
+- [x] Añadir `Ctrl/Cmd+S` y mantener el botón de guardado como acción explícita.
+- [x] Mostrar estados claros: «Guardando…», «Guardado», «Cambios sin guardar» y error con opción de reintentar; mostrar la última hora de guardado.
+- [x] Cubrir con pruebas: no guardar limpio, guardar una vez tras varias ediciones, no guardar como invitado, conservar sucio si falla la red y no guardar durante la carga.
 - **Criterios de aceptación:**
   - Escribir y esperar el debounce guarda el documento sin pulsar nada.
   - Varias ediciones seguidas producen un solo guardado y nunca uno fuera de orden.
@@ -112,3 +112,4 @@
 - 2026-11-18: ADOC-01 sale del backlog y pasa a ser el roadmap activo. Prioridad P0 antes de publicar. No se implementa nada en este paso.
 - Puntos de partida: `app/board/apps/aula-documentos/aula-documentos-app.tsx`, `app/board/apps/use-app-document.ts`, `app/board/shared/aula-documentos/mermaid-block.tsx`, `app/board/store/use-desktop-windows.ts` y `app/board/store/store-desktop.tsx`.
 - La app conserva un único documento por proyecto. No se añaden revisiones ni concurrencia en esta entrega; quedan en ADOC-07.
+- 2026-11-18: Fase 1 completada. Autosave de 1,6 s con una única ruta de validación/persistencia, `Ctrl/Cmd+S`, estado de guardado, última hora y reintento tras error. El guardado manual cancela el debounce; las respuestas de guardados concurrentes se descartan y los invitados no guardan. Verificado con un cambio de título real y la suite de la app: 16 pruebas focalizadas y 1.338 en la suite completa; `tsc`, ESLint, build y `perf:budget` en verde. No se cambió la versión del Site ni se publicó.

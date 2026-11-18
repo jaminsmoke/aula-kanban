@@ -1,9 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
-import AulaDocumentosApp from "./aula-documentos-app";
+import AulaDocumentosApp, { AUTOSAVE_DELAY_MS } from "./aula-documentos-app";
 
 const documentMock = vi.hoisted(() => ({
+  loading: false as boolean,
   load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
   save: vi.fn(async (_state: unknown) => true),
   notesLoad: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
@@ -25,7 +26,7 @@ vi.mock("../use-app-document", () => ({
           ? documentMock.presentationsLoad
           : documentMock.load,
     save: documentMock.save,
-    loading: false,
+    loading: documentMock.loading,
     error: null,
   }),
 }));
@@ -54,6 +55,8 @@ function countMermaid(content: unknown): number {
 describe("Aula Documentos", () => {
   afterEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
+    documentMock.loading = false;
     documentMock.load.mockResolvedValue({ state: null, updatedAt: null });
     documentMock.save.mockResolvedValue(true);
     documentMock.notesLoad.mockResolvedValue({ state: null, updatedAt: null });
@@ -76,6 +79,85 @@ describe("Aula Documentos", () => {
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
     expect(screen.getByRole("status").textContent).toContain("Documento de ejemplo listo");
     expect(screen.getByText("0 diagramas")).toBeTruthy();
+  });
+
+  it("no guarda automáticamente un documento limpio", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    vi.useFakeTimers();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(AUTOSAVE_DELAY_MS + 100);
+    });
+    vi.useRealTimers();
+
+    expect(documentMock.save).not.toHaveBeenCalled();
+  });
+
+  it("agrupa varias ediciones en un solo autosave", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    vi.useFakeTimers();
+    const insert = screen.getByRole("button", { name: "Insertar diagrama Mermaid" });
+    fireEvent.click(insert);
+    fireEvent.click(insert);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(AUTOSAVE_DELAY_MS + 100);
+    });
+    vi.useRealTimers();
+
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
+    expect(countMermaid(saved.content)).toBe(2);
+    expect(screen.getByRole("status").textContent).toContain("guardado automáticamente");
+    expect(screen.getByText(/Guardado \d{2}:\d{2}/)).toBeTruthy();
+  });
+
+  it("guarda con Ctrl+S sin esperar al autosave", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    fireEvent.keyDown(window, { key: "s", ctrlKey: true });
+
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    expect(screen.getByRole("status").textContent).toContain("guardado en el proyecto");
+  });
+
+  it("mantiene el documento sucio y permite reintentar si falla el guardado", async () => {
+    documentMock.save.mockResolvedValueOnce(false);
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    vi.useFakeTimers();
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(AUTOSAVE_DELAY_MS + 100);
+    });
+    vi.useRealTimers();
+
+    await waitFor(() => expect(screen.getByRole("status").textContent).toContain("No se pudo guardar"));
+    expect(screen.getByText("Error al guardar")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Reintentar guardado" }));
+
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(2));
+    expect(screen.getByRole("status").textContent).toContain("guardado en el proyecto");
+  });
+
+  it("no guarda mientras el documento se está cargando", async () => {
+    documentMock.loading = true;
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    vi.useFakeTimers();
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(AUTOSAVE_DELAY_MS + 100);
+    });
+    vi.useRealTimers();
+
+    expect(documentMock.save).not.toHaveBeenCalled();
   });
 
   it("inserta dos diagramas y guarda el documento validado", async () => {
@@ -282,5 +364,7 @@ describe("Aula Documentos", () => {
     expect(screen.queryByRole("button", { name: "Negrita" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Insertar diagrama Mermaid" })).toBeNull();
     expect(screen.getByLabelText("Contenido del documento").getAttribute("contenteditable")).toBe("false");
+    fireEvent.keyDown(window, { key: "s", ctrlKey: true });
+    expect(documentMock.save).not.toHaveBeenCalled();
   });
 });

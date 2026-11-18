@@ -935,6 +935,24 @@
   color:var(--ui-text-secondary) !important;
 }
 
+.aula-documentos-retry {
+  margin-top:6px;
+  padding:5px 8px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius:var(--radius-xs);
+  background:var(--ui-action-primary);
+  color:var(--ui-action-text);
+  font:inherit;
+  font-size:10.5px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.aula-documentos-retry:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:2px;
+}
+
 .aula-documentos-help kbd {
   padding:1px 4px;
   border:var(--border-width-hairline) solid var(--ui-border-default);
