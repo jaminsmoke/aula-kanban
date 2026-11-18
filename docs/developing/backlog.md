@@ -2,26 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 6 entradas: ADOC-03…ADOC-07 y DEV-01 pendientes
+> **Roadmap:** ADOC-03 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 5 entradas: ADOC-04…ADOC-07 y DEV-01 pendientes
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-18 — ADOC-03 · Importación legacy limpia
-
-- **Prioridad:** P1 · antes de publicar.
-- Contexto: al importar Notas y documentos, si el contenido empieza por un H1 igual al título, la app muestra el título dos veces: en el campo superior y en el cuerpo. La importación de Markdown ya tiene `stripTitleHeading`, pero la de Notas no lo aplica. Además, la vista previa no muestra de dónde viene el documento ni cuándo se guardó.
-- Alcance:
-  1. Detectar un primer H1 equivalente al título y quitarlo del contenido importado, con un aviso visible en la vista previa.
-  2. Mostrar app de origen, título final y fecha de actualización del documento de origen cuando estén disponibles.
-  3. Mantener la vista previa, la confirmación y la garantía de no escribir en el origen.
-  4. Añadir pruebas de importación con y sin H1 duplicado, títulos vacíos y documentos que no se pueden convertir.
-- Criterios de aceptación:
-  - Importar un documento con título y H1 iguales no duplica el encabezado.
-  - El aviso explica qué se ha normalizado antes de reemplazar.
-  - Los datos de `documentos`, `mermaid` y `presentaciones` quedan intactos.
-- Notas: no borrar un H1 que no coincida con el título; puede ser contenido legítimo. La normalización debe ocurrir en el importador, no en la vista.
 
 ## 2026-11-18 — ADOC-04 · Mermaid utilizable
 
