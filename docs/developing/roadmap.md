@@ -70,11 +70,11 @@ La app sigue el registro plano de `NATIVE_APPS` y no importa código de `documen
 
 ### Fase 1 — Fundación, esquema e importadores
 
-- [ ] Crear la base pura de `aula-documentos`: tipos, esquema versionado, límites, normalización de enlaces y validación defensiva.
-- [ ] Definir el nodo `mermaidBlock` y reservar `slideBreak` en el esquema, aunque la interfaz de presentación llegue después.
-- [ ] Implementar lectores de `documentos`, `mermaid` y `presentaciones` que produzcan una vista previa del documento unificado sin escribir en el origen.
-- [ ] Medir el peso inicial del editor y el coste de Mermaid y `reveal.js` antes de integrarlos.
-- [ ] Añadir pruebas de esquema, datos antiguos, límites, enlaces, nodos desconocidos y documentos corruptos.
+- [x] Crear la base pura de `aula-documentos`: tipos, esquema versionado, límites, normalización de enlaces y validación defensiva.
+- [x] Definir el nodo `mermaidBlock` y reservar `slideBreak` en el esquema, aunque la interfaz de presentación llegue después.
+- [x] Implementar lectores de `documentos`, `mermaid` y `presentaciones` que produzcan una vista previa del documento unificado sin escribir en el origen.
+- [x] Medir el peso inicial del editor y el coste de Mermaid y `reveal.js` antes de integrarlos.
+- [x] Añadir pruebas de esquema, datos antiguos, límites, enlaces, nodos desconocidos y documentos corruptos.
 - **Criterios de aceptación:**
   - Los tres formatos antiguos se pueden leer y describir sin modificar sus datos.
   - Un documento inválido, demasiado grande o de una versión futura se rechaza con un error explícito.
@@ -153,6 +153,8 @@ El objetivo se revisa en la fase 1 y se cierra en la fase 5. Las cifras son lím
 - La exportación HTML no referencia CDN, fuentes ni workers externos.
 - Si una medición supera el objetivo, se ajusta el diseño antes de cerrar la fase, no se maquilla el número.
 
+**Línea base medida el 2026-11-18:** `documentos-app` 131,3 KB gzip + CSS 1,9 KB; el flujo inicial de Diagramas con Mermaid 317,5 KB gzip; `presentaciones-app` 35,2 KB gzip + CSS 12,9 KB. Son la referencia para el editor (≤ 180 KB), el primer diagrama (≤ 350 KB) y la presentación diferida (≤ 60 KB).
+
 ## 6. Riesgos y bloqueos
 
 | Riesgo | Impacto | Mitigación |
@@ -169,6 +171,7 @@ El objetivo se revisa en la fase 1 y se cierra en la fase 5. Las cifras son lím
 ## 7. Notas de sesión
 
 - 2026-11-18: STORE-17 sale del backlog y pasa a ser el roadmap activo. Se mantiene `aula-documentos` como id y almacén, un documento por proyecto y la primera fusión texto enriquecido + Mermaid.
+- 2026-11-18: Fase 1 completada. `lib/domain/aula-documentos/` contiene el esquema v1, los límites, la validación de texto, enlaces, `mermaidBlock`, `slideBreak`, nodos y profundidad, y los lectores de Notas y documentos, Diagramas y Presentaciones con vista previa sin escribir en el origen. La base admite 190.000 caracteres, 4.000 nodos, 100.000 de texto y 12 diagramas. 12 pruebas focalizadas y 1.312 en la suite completa; `tsc` y ESLint en verde. No se tocaron apps, tablas ni endpoints.
 - La estructura del backlog se ajusta: el núcleo puro va a `lib/domain/aula-documentos/` y la UI compartida a `app/board/shared/aula-documentos/`, para que las apps antiguas puedan adoptarlo sin imports entre apps.
 - Las apps `documentos`, `mermaid` y `presentaciones` no se modifican en esta entrega. Se conservan como compatibilidad y su conversión a adaptadores finos queda para el roadmap de retirada.
 - No se añaden herramientas MCP de contenido, imágenes, tablas ni edición colaborativa en esta primera unificación.
