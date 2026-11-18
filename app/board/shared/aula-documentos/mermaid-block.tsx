@@ -264,12 +264,19 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
             Dibujando…
           </p>
         ) : error ? (
-          <p className="aula-mermaid-error" role="alert">{error}</p>
+          <div className="aula-mermaid-error" role="alert">
+            <strong>{error.summary}</strong>
+            <pre className="aula-mermaid-error-detail">{error.detail}</pre>
+          </div>
         ) : svg ? (
           <div className="aula-mermaid-svg" dangerouslySetInnerHTML={{ __html: svg }} />
         ) : (
           <p className="aula-mermaid-state">
-            {readOnly && !code.trim() ? "Este diagrama está vacío." : "El diagrama aparecerá aquí."}
+            {!previewCode.trim()
+              ? editing
+                ? "Escribe código Mermaid para ver la vista previa."
+                : "El diagrama está vacío."
+              : "El diagrama aparecerá aquí."}
           </p>
         )}
       </div>

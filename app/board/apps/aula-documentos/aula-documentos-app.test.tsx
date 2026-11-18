@@ -366,7 +366,7 @@ describe("Aula Documentos", () => {
 
   it("muestra el error de sintaxis y permite eliminar el bloque", async () => {
     mermaidMock.render.mockImplementation(async (code: string) => {
-      if (code.includes("A -->")) throw new Error("Parse error de prueba");
+      if (code.includes("A -->")) throw new Error("Parse error on line 3:\nA -->\nExpecting NODE_STRING");
       return `<svg data-mermaid-preview="true"><text>${code}</text></svg>`;
     });
 
@@ -381,7 +381,8 @@ describe("Aula Documentos", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Aplicar" }));
 
-    expect(await screen.findByText("Parse error de prueba")).toBeTruthy();
+    expect(await screen.findByText("No se pudo dibujar el diagrama (línea 3).")).toBeTruthy();
+    expect(screen.getByText(/Expecting NODE_STRING/)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Eliminar diagrama" }));
     await waitFor(() => expect(screen.queryByText("Diagrama Mermaid")).toBeNull());
   });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
-import { buildAulaDocumentHtml, collectMermaidCodes, countMermaidBlocks, renderMermaidSvgs } from "./export-html";
+import { buildAulaDocumentHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "./export-html";
 
 /**
  * Documento con texto y dos diagramas (uno repetido).
@@ -45,9 +45,33 @@ describe("exportación HTML de Aula Documentos", () => {
     expect(html).not.toMatch(/https?:\/\//);
   });
 
-  it("deja el código visible si no hay SVG disponible", () => {
+  it("deja el código visible y explica el fallback si no hay SVG disponible", () => {
     const html = buildAulaDocumentHtml(documentWithDiagrams());
+    expect(html).toContain("No se pudo dibujar el diagrama. Revisa el código Mermaid.");
     expect(html).toContain("<pre><code>flowchart TD\nA --&gt; B</code></pre>");
+  });
+
+  it("distingue un diagrama vacío de uno roto", () => {
+    const document: AulaDocument = {
+      schemaVersion: 1,
+      title: "Vacío",
+      content: {
+        type: "doc",
+        content: [{ type: "mermaidBlock", attrs: { code: "" } }],
+      },
+    };
+    const html = buildAulaDocumentHtml(document);
+    expect(html).toContain("El diagrama está vacío.");
+    expect(html).not.toContain("No se pudo dibujar el diagrama.");
+  });
+
+  it("comparte el fallback con la presentación", () => {
+    const html = renderAulaContentHtml({
+      type: "doc",
+      content: [{ type: "mermaidBlock", attrs: { code: "flowchart LR\nA -->" } }],
+    });
+    expect(html).toContain("No se pudo dibujar el diagrama. Revisa el código Mermaid.");
+    expect(html).toContain("flowchart LR");
   });
 
   it("cuenta y deduplica los códigos Mermaid", () => {

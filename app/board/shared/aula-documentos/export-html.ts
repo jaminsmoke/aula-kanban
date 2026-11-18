@@ -98,11 +98,20 @@ function replaceMermaidPlaceholders(html: string, svgByCode: ReadonlyMap<string,
       block.innerHTML = svg;
       continue;
     }
+    const message = document.createElement("p");
+    message.className = "aula-mermaid-export-error";
+    message.textContent = code.trim()
+      ? "No se pudo dibujar el diagrama. Revisa el código Mermaid."
+      : "El diagrama está vacío.";
+    if (!code.trim()) {
+      block.replaceChildren(message);
+      continue;
+    }
     const pre = document.createElement("pre");
     const codeElement = document.createElement("code");
-    codeElement.textContent = code || "Diagrama sin código.";
+    codeElement.textContent = code;
     pre.appendChild(codeElement);
-    block.replaceChildren(pre);
+    block.replaceChildren(message, pre);
   }
 
   return template.innerHTML;
@@ -166,6 +175,8 @@ export function buildAulaDocumentHtml(
   hr { border: 0; border-top: 1px solid #e7e4ef; }
   .aula-mermaid-export { margin: 1.4em 0; padding: 1em; overflow: auto; border: 1px solid #e7e4ef; border-radius: 12px; background: #fbfaff; text-align: center; }
   .aula-mermaid-export svg { display: inline-block; max-width: 100%; height: auto; }
+  .aula-mermaid-export-error { margin: 0 0 .7em; color: #8a2f2f; font-size: .85rem; font-weight: 700; text-align: left; }
+  .aula-mermaid-export-error + pre { margin: 0; text-align: left; }
   @media print { body { background: #fff; } main { width: auto; max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; } }
 </style>
 </head>

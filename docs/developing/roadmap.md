@@ -45,11 +45,11 @@
 
 ### Fase 1 — Errores y fallback
 
-- [ ] Extraer un mensaje de error de Mermaid con línea, detalle y resumen accionable.
-- [ ] Mostrar el mensaje completo en un bloque desplazable, sin truncarlo a la primera línea.
-- [ ] Añadir un fallback compartido para editor, presentación y HTML: «No se pudo dibujar el diagrama», con el código como respaldo.
-- [ ] Distinguir un diagrama vacío, uno roto y uno que aún se está dibujando.
-- [ ] Cubrir con pruebas errores con línea, errores sin línea, diagramas vacíos y fallback en presentación/exportación.
+- [x] Extraer un mensaje de error de Mermaid con línea, detalle y resumen accionable.
+- [x] Mostrar el mensaje completo en un bloque desplazable, sin truncarlo a la primera línea.
+- [x] Añadir un fallback compartido para editor, presentación y HTML: «No se pudo dibujar el diagrama», con el código como respaldo.
+- [x] Distinguir un diagrama vacío, uno roto y uno que aún se está dibujando.
+- [x] Cubrir con pruebas errores con línea, errores sin línea, diagramas vacíos y fallback en presentación/exportación.
 - **Criterios de aceptación:**
   - Un error de sintaxis muestra la línea y el detalle completo.
   - Un diagrama roto no ejecuta HTML ni rompe el resto del documento.
@@ -107,3 +107,4 @@
 - 2026-11-18: ADOC-04 sale del backlog y pasa a ser el roadmap activo. Prioridad P1; no se implementa nada en este paso.
 - Puntos de partida: `app/board/shared/aula-documentos/mermaid-block.tsx`, `app/board/shared/aula-documentos/mermaid-renderer.ts`, `app/board/shared/aula-documentos/export-html.ts`, `lib/domain/mermaid/templates.ts` y sus pruebas.
 - ADOC-01, ADOC-02 y ADOC-03 están cerrados. La app mantiene Mermaid bajo demanda y `securityLevel: "strict"`.
+- 2026-11-18: Fase 1 completada. `mermaid-error.ts` extrae línea, resumen y detalle; el editor muestra el mensaje completo en un área desplazable y distingue vacío, roto y cargando. El fallback compartido explica el fallo y conserva el código en presentación y HTML exportado. 39 pruebas focalizadas y 1.371 en la suite completa; `tsc` y ESLint en verde.

@@ -151,6 +151,18 @@
   height:auto;
 }
 
+.aula-presentation-slide .aula-mermaid-export-error {
+  margin:0 0 .7em;
+  color:var(--ui-danger-ink);
+  font-size:.9rem;
+  font-weight:700;
+  text-align:left;
+}
+
+.aula-presentation-slide .aula-mermaid-export-error + pre {
+  text-align:left;
+}
+
 .aula-presentation-reveal .progress {
   color:var(--ui-action-primary);
 }

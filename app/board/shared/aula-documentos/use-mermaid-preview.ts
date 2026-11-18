@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { formatMermaidError, type MermaidErrorInfo } from "./mermaid-error";
 import { getMermaidRenderer } from "./mermaid-renderer";
 
 type PreviewState = {
   code: string;
   svg: string;
-  error: string | null;
+  error: MermaidErrorInfo | null;
 };
 
 /**
@@ -28,7 +29,7 @@ export function useMermaidPreview(code: string) {
         setState({
           code,
           svg: "",
-          error: caught instanceof Error ? caught.message.split("\n")[0] : "No se pudo dibujar el diagrama.",
+          error: formatMermaidError(caught),
         });
       });
     }, 350);
