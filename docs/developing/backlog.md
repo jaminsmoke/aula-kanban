@@ -3,9 +3,121 @@
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 1 entrada: DEV-01 pendiente
+> **Estado:** 8 entradas: ADOC-01…ADOC-07 y DEV-01 pendientes
+> **Nota:** ADOC-xx identifica mejoras de Aula Documentos; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
+
+## 2026-11-18 — ADOC-01 · Guardado seguro y recuperación
+
+- **Prioridad:** P0 · antes de publicar.
+- Contexto: STORE-17 cerró con guardado manual. La revisión de la app encontró tres formas de perder trabajo: cerrar la ventana con cambios sin guardar, escribir un diagrama Mermaid y guardar sin pulsar «Aplicar», y abrir un documento guardado inválido sin una salida clara. `useAppDocument` solo persiste al llamar a `save()` y el cierre de la ventana de la app no tiene guarda.
+- Alcance:
+  1. Autosave con debounce de 1,5–2 s cuando el documento esté sucio, con estados «Guardando…», «Guardado» y «Cambios sin guardar».
+  2. Incluir el borrador pendiente de cada bloque Mermaid al guardar, al perder el foco y al cerrar; hoy el código solo entra en el JSON al pulsar «Aplicar».
+  3. Añadir `Ctrl/Cmd+S` y una guarda de cierre: confirmar o forzar guardado antes de cerrar la ventana y registrar `beforeunload` para recargas o cierre de pestaña. La guarda de la ventana de la app necesita un punto de extensión del escritorio; si no existe, el autosave y `beforeunload` son el mínimo.
+  4. Si el documento guardado no valida, no cargar el ejemplo en silencio: ofrecer descargar el JSON original y elegir entre recuperarlo o empezar de cero sin sobrescribirlo.
+  5. Mostrar la última hora de guardado usando el `updatedAt` que ya devuelve `useAppDocument`.
+- Criterios de aceptación:
+  - Escribir, esperar el autosave, cerrar y volver a abrir conserva el documento.
+  - Guardar con un diagrama en edición conserva el código del borrador, sin exigir «Aplicar» antes.
+  - Cerrar con cambios pendientes no pierde trabajo de forma silenciosa.
+  - Un documento inválido se puede descargar antes de decidir si se reinicia.
+- Notas: no convertir el autosave en un bucle de peticiones; cancelar el guardado pendiente al desmontar y no guardar en modo invitado. La recuperación de un documento inválido debe conservar el JSON original aunque se elija empezar de nuevo.
+
+## 2026-11-18 — ADOC-02 · Documento nuevo y plantillas
+
+- **Prioridad:** P1 · antes de publicar.
+- Contexto: el ejemplo inicial solo se carga cuando el proyecto no tiene documento. Después no hay «Nuevo», «Vaciar» ni plantillas; `createEmptyAulaDocument` existe en el dominio pero la app no lo usa. Para empezar otro documento hay que borrar el contenido a mano.
+- Alcance:
+  1. Acción «Nuevo documento» con confirmación si hay cambios sin guardar.
+  2. Elegir entre documento vacío, documento de ejemplo y plantillas básicas: apuntes, proyecto de clase, presentación y guía.
+  3. Definir el título inicial y el foco del editor; no reutilizar el título del documento anterior.
+  4. Mantener el documento actual recuperable hasta confirmar el reemplazo.
+- Criterios de aceptación:
+  - Se puede empezar un documento vacío desde cualquier estado.
+  - Elegir una plantilla deja contenido válido, guardable y con un título comprensible.
+  - Cancelar la confirmación no modifica el documento abierto.
+- Notas: sigue habiendo un solo documento por proyecto; no convertir esto en una biblioteca de documentos. Las plantillas deben construirse con el modelo validado, no con HTML.
+
+## 2026-11-18 — ADOC-03 · Importación legacy limpia
+
+- **Prioridad:** P1 · antes de publicar.
+- Contexto: al importar Notas y documentos, si el contenido empieza por un H1 igual al título, la app muestra el título dos veces: en el campo superior y en el cuerpo. La importación de Markdown ya tiene `stripTitleHeading`, pero la de Notas no lo aplica. Además, la vista previa no muestra de dónde viene el documento ni cuándo se guardó.
+- Alcance:
+  1. Detectar un primer H1 equivalente al título y quitarlo del contenido importado, con un aviso visible en la vista previa.
+  2. Mostrar app de origen, título final y fecha de actualización del documento de origen cuando estén disponibles.
+  3. Mantener la vista previa, la confirmación y la garantía de no escribir en el origen.
+  4. Añadir pruebas de importación con y sin H1 duplicado, títulos vacíos y documentos que no se pueden convertir.
+- Criterios de aceptación:
+  - Importar un documento con título y H1 iguales no duplica el encabezado.
+  - El aviso explica qué se ha normalizado antes de reemplazar.
+  - Los datos de `documentos`, `mermaid` y `presentaciones` quedan intactos.
+- Notas: no borrar un H1 que no coincida con el título; puede ser contenido legítimo. La normalización debe ocurrir en el importador, no en la vista.
+
+## 2026-11-18 — ADOC-04 · Mermaid utilizable
+
+- **Prioridad:** P1 · antes de publicar.
+- Contexto: la vista previa corta el error en la primera línea (`Parse error on line 3:`), justo antes de la información que permite corregirlo. Solo se ofrece la plantilla de flujo, no se puede hacer zoom y la presentación muestra el código fuente cuando un diagrama falla, sin explicar que el diagrama no se pudo dibujar.
+- Alcance:
+  1. Mostrar el error completo en un área desplazable, con línea, mensaje y una indicación breve de qué revisar.
+  2. Selector de plantillas Mermaid: flujo, secuencia, línea de tiempo y mapa mental, insertadas como bloques editables.
+  3. Renderizar solo los bloques visibles o cercanos al viewport, no los doce a la vez al abrir.
+  4. Añadir zoom y paneo al SVG, y un fallback explícito «No se pudo dibujar el diagrama» en presentación y exportación.
+  5. Permitir copiar el código y restaurar la última versión válida del bloque.
+- Criterios de aceptación:
+  - Un error de sintaxis muestra la línea y el detalle completo.
+  - Se puede insertar una plantilla distinta de la de flujo y editarla.
+  - Un documento con varios diagramas no bloquea la apertura.
+  - Presentación y HTML exportado distinguen un diagrama roto de un diagrama vacío.
+- Notas: mantener `securityLevel: strict` y no aceptar HTML en el código Mermaid. El renderizador compartido ya tiene cola; reutilizarla para el render bajo demanda.
+
+## 2026-11-18 — ADOC-05 · Presentación y salida
+
+- **Prioridad:** P2 · después de publicar el flujo básico.
+- Contexto: la presentación funciona con `reveal.js` y las diapositivas se derivan de H1/H2 o de saltos explícitos, pero no hay temas, vista previa de diapositivas, notas ni exportación a PDF. Los archivos exportados se llaman con el `projectId`, no con el título.
+- Alcance:
+  1. Nombre de archivo derivado del título, con slug seguro y fallback.
+  2. Impresión/PDF desde la app o desde el HTML exportado, con estilos de impresión revisados.
+  3. Temas de presentación y una vista previa con recuento de diapositivas.
+  4. Notas del orador y exportación de la presentación, si el alcance se confirma.
+  5. Revisar contenido largo y diagramas dentro de una diapositiva.
+- Criterios de aceptación:
+  - El HTML y el Markdown descargados usan un nombre legible y estable.
+  - La presentación se puede imprimir sin cortar contenido.
+  - El tema elegido se conserva en la presentación exportada.
+- Notas: no duplicar el documento para presentarlo; la fuente sigue siendo el JSON único. La exportación interactiva con `reveal.js` puede ser un HTML separado y no necesita entrar en el primer corte.
+
+## 2026-11-18 — ADOC-06 · Móvil y accesibilidad
+
+- **Prioridad:** P2 · después de ADOC-01 y ADOC-02.
+- Contexto: en móvil la barra es solo de iconos y los tooltips no existen en pantalla táctil; guardar, importar y presentar no se distinguen bien. Los botones de la barra miden 29–31 px y los diálogos no atrapan el foco ni lo devuelven al control de origen. A 390 px la app se adapta bien al maximizar la ventana, pero la ventana nace desplazada; eso parece del escritorio, no del componente.
+- Alcance:
+  1. Menú de acciones con etiquetas visibles en pantallas estrechas y botones de texto para Guardar, Importar y Presentar.
+  2. Foco atrapado en importación y presentación, restauración del foco al cerrar y cierre con Escape.
+  3. Objetivos táctiles de al menos 44×44 px en la barra y controles de Mermaid.
+  4. Revisar `aria-live`, nombres accesibles de los SVG y contraste en tema claro y oscuro.
+  5. Repetir la revisión visual a 390 px sin depender de ampliar la ventana.
+- Criterios de aceptación:
+  - En 390 px se entiende qué hace cada acción sin tooltip.
+  - El teclado no sale del diálogo mientras está abierto y vuelve al botón que lo abrió.
+  - Un lector de pantalla anuncia el estado de guardado y los errores.
+- Notas: el desplazamiento inicial de la ventana en móvil se tratará como incidencia del escritorio si se confirma que afecta a todas las apps; no duplicar el arreglo dentro de Aula Documentos.
+
+## 2026-11-18 — ADOC-07 · Concurrencia y versiones
+
+- **Prioridad:** P2 · después de ADOC-01.
+- Contexto: `useAppDocument` hace un POST del estado completo y no compara versiones. Dos ventanas o dos pestañas pueden guardar el mismo proyecto y la última sobrescribe a la anterior sin avisar. No hay una copia recuperable más allá del guardado actual.
+- Alcance:
+  1. Enviar y comprobar `updatedAt` o una revisión en el POST; si el servidor tiene una versión más nueva, abrir un conflicto y no sobrescribir.
+  2. Ofrecer «recargar la versión del servidor», «conservar la mía» y «descargar copia» antes de resolver.
+  3. Guardar una copia local de la última versión antes de un reemplazo destructivo, sin convertir esto en un historial completo.
+  4. Probar dos ventanas, dos pestañas y un guardado tras otro.
+- Criterios de aceptación:
+  - Dos guardados simultáneos no se pisan en silencio.
+  - El conflicto se puede resolver sin perder la copia local.
+  - Una versión recuperable sigue disponible después de recargar.
+- Notas: si el endpoint no puede exponer una revisión, la alternativa mínima es comparar `updatedAt` y pedir confirmación; no añadir migraciones de base sin evaluar primero el contrato de `app_documents`. Depende de ADOC-01 para el autosave y los estados de guardado.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 
