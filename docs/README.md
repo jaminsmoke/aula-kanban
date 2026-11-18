@@ -17,7 +17,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | ADOC-07 activo: concurrencia y versiones | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | Plantilla del próximo roadmap | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -80,11 +80,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
-- **Roadmap ADOC-03 activo:** importación legacy limpia de Aula Documentos, sin títulos duplicados y con origen, fecha y avisos en la vista previa. Plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.35` y sin publicación.
-- **Roadmap ADOC-04 activo:** Mermaid utilizable en Aula Documentos, con errores completos, plantillas, render bajo demanda, zoom y fallback explícito. Plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.35` y sin publicación.
-- **Roadmap ADOC-05 activo:** presentación y salida de Aula Documentos, con nombres legibles, PDF/impresión, temas, vista previa, notas del orador y exportación estática. Plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.35` y sin publicación.
-- **Roadmap ADOC-06 activo:** móvil y accesibilidad de Aula Documentos, con acciones etiquetadas, objetivos táctiles, foco atrapado, estados anunciados y revisión de contraste. Plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.35` y sin publicación.
-- **Roadmap ADOC-07 activo:** concurrencia y versiones de Aula Documentos, con guardado condicional, conflicto explícito y copia recuperable. Plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.35` y sin publicación.
+- **Roadmap ADOC-07 completado:** Aula Documentos guarda con `expectedUpdatedAt`, responde `409` sin pisar la versión del servidor y ofrece recargar, conservar o descargar. Conserva hasta tres copias locales recuperables antes de reemplazar o resolver un conflicto, con descarga y restauración confirmada. Verificado con guardados reales 200/409/200, conflicto y recuperación en la interfaz y revisión a 390, 620, 900, 1024 y 1366 px; 197 archivos / 1.414 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-07.md`](historial/roadmap-adoc-07.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap ADOC-06 completado:** Aula Documentos mejora su uso móvil y accesibilidad con menú de acciones etiquetado, objetivos táctiles, foco atrapado y devuelto, estados anunciados, contraste por tema y nombres accesibles de diagramas. Verificado a 390, 620, 900, 1024 y 1366 px; 195 archivos / 1.393 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-06.md`](historial/roadmap-adoc-06.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap ADOC-05 completado:** Aula Documentos añade nombres legibles, impresión/PDF, temas de presentación, vista previa, notas del orador y exportación estática sin recursos externos; el documento migra a esquema v2. Verificado a 1366, 1024 y 390 px; 195 archivos / 1.391 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-05.md`](historial/roadmap-adoc-05.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap ADOC-04 completado:** Mermaid utilizable en Aula Documentos con errores completos, fallback compartido, mapa mental y plantillas, copia/restauración, render bajo demanda y zoom/paneo. Verificado a 1366, 1024 y 390 px; 193 archivos / 1.379 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-04.md`](historial/roadmap-adoc-04.md). El Site sigue en `1.1.35` y sin publicación.

@@ -1,8 +1,36 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-07 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-19 — Roadmap ADOC-07 · Concurrencia y versiones de Aula Documentos
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- El POST de `/api/app-documents` acepta `expectedUpdatedAt`. El servidor actualiza solo si coincide con la versión vigente y responde `409` con `updatedAt` sin escribir cuando otro guardado llegó antes.
+- El testigo avanza con `max(ahora, actual + 1)` para no repetirse en el mismo milisegundo. Los clientes antiguos conservan el guardado incondicional.
+- `useAppDocument` añade `saveVersioned`; Aula Documentos envía el testigo, detiene autosave, Ctrl+S y guardado manual al detectar un conflicto y abre un diálogo para recargar, conservar o descargar.
+- «Conservar la mía» exige confirmación, descarga un JSON y guarda una copia local antes de sobrescribir. «Recargar versión del servidor» también conserva la copia local y descarta el editor solo tras la acción explícita.
+- Las copias locales se guardan por proyecto en `localStorage`: hasta 3 copias, 420.000 bytes totales y 190.000 por documento. Se purgan las más antiguas y se reintenta si el navegador agota la cuota.
+- El diálogo «Copias locales» permite descargar y restaurar con confirmación. Restaurar no escribe en el servidor; el siguiente guardado usa el `updatedAt` vigente.
+- La ayuda menciona conflictos, copias locales y recuperación. No cambian `AULA_STORE_VERSION`, la versión de la app ni el Site.
+
+### Verificación
+
+- Guardados consecutivos contra el servidor de desarrollo: **200** con la versión vigente, **409** con la anterior sin escritura y **200** al restaurar la versión correcta.
+- Conflicto real en la interfaz con dos escrituras externas: diálogo visible, recarga del servidor, copia local listada, descarga y restauración confirmada sin guardado automático.
+- Revisado a 390, 620, 900, 1024 y 1366 px sin desbordamiento horizontal.
+- Suite completa: **197 archivos / 1.414 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `c2dd198` (Fase 1), `47b993f` (Fase 2), `acb61c5` (Fase 3) y este commit de cierre. Push único a `github main`; sin publicación en Sites ni cambio de versión del Site: sigue en **1.1.35**.
+
+### Seguimiento
+
+- El backlog queda con **DEV-01**. El plan completo está en [`historial/roadmap-adoc-07.md`](../historial/roadmap-adoc-07.md).
 
 ---
 
