@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Reveal from "reveal.js";
 import type { AulaPresentationTheme } from "../../../../lib/domain/aula-documentos/document";
 import "reveal.js/reveal.css";
@@ -12,6 +12,7 @@ export type PresentationViewProps = {
   title: string;
   slides: string[];
   theme?: AulaPresentationTheme;
+  notes?: Record<string, string>;
   onExit: () => void;
 };
 
@@ -20,8 +21,10 @@ export type PresentationViewProps = {
  * @param props - Título, HTML de cada diapositiva y cierre.
  * @returns La capa de presentación a pantalla completa.
  */
-export function PresentationView({ title, slides, theme = "aula", onExit }: PresentationViewProps) {
+export function PresentationView({ title, slides, theme = "aula", notes = {}, onExit }: PresentationViewProps) {
   const revealRef = useRef<HTMLDivElement>(null);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [showNotes, setShowNotes] = useState(false);
 
   useEffect(() => {
     const element = revealRef.current;
@@ -42,6 +45,11 @@ export function PresentationView({ title, slides, theme = "aula", onExit }: Pres
       respondToHashChanges: false,
     });
     void deck.initialize();
+    const onSlideChanged = (event: Event) => {
+      const index = (event as Event & { indexh?: number }).indexh;
+      if (typeof index === "number") setActiveSlide(index);
+    };
+    deck.on("slidechanged", onSlideChanged);
     element.focus();
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -52,6 +60,7 @@ export function PresentationView({ title, slides, theme = "aula", onExit }: Pres
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("keydown", onKeyDown);
+      deck.off("slidechanged", onSlideChanged);
       document.body.style.overflow = previousOverflow;
       deck.destroy();
     };
@@ -63,6 +72,20 @@ export function PresentationView({ title, slides, theme = "aula", onExit }: Pres
         <X size={16} aria-hidden />
         Salir
       </button>
+      <button
+        type="button"
+        className="aula-presentation-notes-toggle"
+        onClick={() => setShowNotes((current) => !current)}
+        aria-pressed={showNotes}
+      >
+        Notas
+      </button>
+      {showNotes ? (
+        <aside className="aula-presentation-notes" aria-label="Notas del orador">
+          <h2>Notas · diapositiva {activeSlide + 1}</h2>
+          <p>{notes[String(activeSlide)] || "Sin notas para esta diapositiva."}</p>
+        </aside>
+      ) : null}
       <div ref={revealRef} className="reveal aula-presentation-reveal" tabIndex={-1}>
         <div className="slides">
           {slides.map((html, index) => (

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
-import { buildAulaDocumentHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "./export-html";
+import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "./export-html";
 
 /**
  * Documento con texto y dos diagramas (uno repetido).
@@ -81,6 +81,35 @@ describe("exportación HTML de Aula Documentos", () => {
       "flowchart TD\nA --> B",
       "sequenceDiagram\nA->>B: Hola",
     ]);
+  });
+
+  it("exporta diapositivas estáticas con tema y notas sin recursos externos", () => {
+    const html = buildAulaPresentationHtml(
+      {
+        schemaVersion: 2,
+        title: "Presentación de clase",
+        content: { type: "doc", content: [] },
+      },
+      ["<h2>Primera</h2><p>Contenido.</p>", "<h2>Segunda</h2>"],
+      { theme: "claro", notes: { "0": "Nota privada" } },
+    );
+    expect(html).toContain("<title>Presentación de clase</title>");
+    expect(html).toContain('class="slide"');
+    expect(html).toContain("Notas del orador");
+    expect(html).toContain("Nota privada");
+    expect(html).toContain("background: #f4f3f8");
+    expect(html).not.toContain("<script");
+    expect(html).not.toMatch(/https?:\/\//);
+    expect(html.match(/class="slide"/g)).toHaveLength(2);
+  });
+
+  it("puede omitir las notas en la exportación", () => {
+    const html = buildAulaPresentationHtml(
+      { schemaVersion: 2, title: "Sin notas", content: { type: "doc", content: [] } },
+      ["<h2>Una</h2>"],
+      { theme: "oscuro", notes: { "0": "No debe salir" }, includeNotes: false },
+    );
+    expect(html).not.toContain("No debe salir");
   });
 
   it("continúa la exportación si un diagrama no se puede renderizar", async () => {

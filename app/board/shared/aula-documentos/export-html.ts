@@ -1,6 +1,6 @@
 import { generateHTML } from "@tiptap/core";
 import type { JSONContent } from "@tiptap/core";
-import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
+import type { AulaDocument, AulaPresentationTheme } from "../../../../lib/domain/aula-documentos/document";
 import { createAulaDocumentExtensions } from "./document-extensions";
 
 /**
@@ -129,6 +129,79 @@ export function renderAulaContentHtml(
 ): string {
   const html = generateHTML(content, createAulaDocumentExtensions());
   return replaceMermaidPlaceholders(html, svgByCode);
+}
+
+/**
+ * Genera un HTML estático de diapositivas con tema y notas opcionales.
+ * @param aulaDocument - Documento validado.
+ * @param slides - HTML de cada diapositiva.
+ * @param options - Tema, notas e inclusión de notas.
+ * @returns Un archivo HTML sin scripts ni recursos externos.
+ */
+export function buildAulaPresentationHtml(
+  aulaDocument: AulaDocument,
+  slides: string[],
+  options: {
+    theme?: AulaPresentationTheme;
+    notes?: Record<string, string>;
+    includeNotes?: boolean;
+  } = {},
+): string {
+  const title = escapeHtml(aulaDocument.title.trim() || "Presentación");
+  const theme = options.theme ?? "aula";
+  const includeNotes = options.includeNotes ?? true;
+  const palette = theme === "claro"
+    ? { bg: "#f4f3f8", slide: "#ffffff", ink: "#211b36", heading: "#2c214f", border: "#ded9e9", code: "#f1eff8", muted: "#625c74" }
+    : theme === "oscuro"
+      ? { bg: "#0f0e17", slide: "#191627", ink: "#f6f2ff", heading: "#ffffff", border: "#393152", code: "#29233d", muted: "#b4abc5" }
+      : { bg: "#f7f8fc", slide: "#ffffff", ink: "#211b36", heading: "#2c214f", border: "#e7e4ef", code: "#f1eff8", muted: "#625c74" };
+
+  const body = slides.map((slide, index) => {
+    const note = includeNotes ? options.notes?.[String(index)]?.trim() : "";
+    const notes = note
+      ? `<details class="notes"><summary>Notas del orador</summary><p>${escapeHtml(note)}</p></details>`
+      : "";
+    return `<section class="slide">${slide}${notes}</section>`;
+  }).join("\n");
+
+  return `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="Aula Kanban — Aula Documentos">
+<title>${title}</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: ${palette.bg}; color: ${palette.ink}; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.65; }
+  .deck { width: min(100%, 1080px); margin: 0 auto; }
+  .slide { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 8%; border-bottom: 1px solid ${palette.border}; background: ${palette.slide}; page-break-after: always; break-after: page; }
+  .slide:last-child { border-bottom: 0; page-break-after: auto; break-after: auto; }
+  h1, h2, h3 { color: ${palette.heading}; line-height: 1.2; }
+  h1 { font-size: 2.4rem; } h2 { font-size: 1.9rem; } h3 { font-size: 1.4rem; }
+  p, li { font-size: 1.05rem; }
+  ul, ol { padding-left: 1.4em; }
+  blockquote { margin: 1em 0; padding-left: 1em; border-left: 3px solid ${palette.muted}; color: ${palette.muted}; }
+  code { padding: .15em .35em; border-radius: 4px; background: ${palette.code}; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+  pre { overflow: auto; padding: 1em; border-radius: 8px; background: ${palette.code}; }
+  pre code { padding: 0; background: transparent; }
+  .aula-mermaid-export { margin: 1em 0; padding: 1em; overflow: auto; border: 1px solid ${palette.border}; border-radius: 10px; text-align: center; }
+  .aula-mermaid-export svg { display: inline-block; max-width: 100%; height: auto; }
+  .aula-mermaid-export-error { margin: 0 0 .7em; color: #8a2f2f; text-align: left; }
+  .notes { margin-top: 2em; padding-top: 1em; border-top: 1px solid ${palette.border}; color: ${palette.muted}; font-size: .9rem; }
+  .notes summary { cursor: pointer; font-weight: 700; }
+  .notes p { white-space: pre-wrap; }
+  @media print { body { background: #fff; } .slide { min-height: auto; } }
+</style>
+</head>
+<body>
+<main class="deck">
+${body}
+</main>
+</body>
+</html>
+`;
 }
 
 /**

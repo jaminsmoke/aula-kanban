@@ -29,9 +29,16 @@ export const AULA_PRESENTATION_THEMES = ["aula", "claro", "oscuro"] as const;
 /** Tema de presentación del documento. */
 export type AulaPresentationTheme = (typeof AULA_PRESENTATION_THEMES)[number];
 
+/** Límite de una nota de diapositiva. */
+export const AULA_PRESENTATION_NOTE_MAX_LENGTH = 5_000;
+
+/** Límite total de las notas de presentación. */
+export const AULA_PRESENTATION_NOTES_MAX_TOTAL = 20_000;
+
 /** Preferencias de presentación persistidas con el documento. */
 export type AulaDocumentPresentation = {
   theme: AulaPresentationTheme;
+  notes?: Record<string, string>;
 };
 
 /** Presentación por defecto para documentos nuevos o migrados. */
@@ -348,11 +355,25 @@ function normalizePresentation(value: unknown): AulaDocumentPresentation {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     return { ...DEFAULT_AULA_PRESENTATION };
   }
-  const theme = (value as Record<string, unknown>).theme;
+  const candidate = value as Record<string, unknown>;
+  const theme = candidate.theme;
+  const notes: Record<string, string> = {};
+  if (typeof candidate.notes === "object" && candidate.notes !== null && !Array.isArray(candidate.notes)) {
+    let total = 0;
+    for (const [key, note] of Object.entries(candidate.notes)) {
+      if (!/^\d{1,3}$/.test(key) || Number(key) > 200 || typeof note !== "string") continue;
+      const value = note.slice(0, AULA_PRESENTATION_NOTE_MAX_LENGTH);
+      if (!value.trim()) continue;
+      total += value.length;
+      if (total > AULA_PRESENTATION_NOTES_MAX_TOTAL) break;
+      notes[key] = value;
+    }
+  }
   return {
     theme: typeof theme === "string" && (AULA_PRESENTATION_THEMES as readonly string[]).includes(theme)
       ? theme as AulaPresentationTheme
       : DEFAULT_AULA_PRESENTATION.theme,
+    ...(Object.keys(notes).length ? { notes } : {}),
   };
 }
 

@@ -89,6 +89,56 @@
   outline-offset:2px;
 }
 
+.aula-presentation-notes-toggle {
+  position:fixed;
+  top:12px;
+  right:88px;
+  z-index:4;
+  padding:6px 9px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+  font:inherit;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.aula-presentation-notes-toggle[aria-pressed="true"] {
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+}
+
+.aula-presentation-notes {
+  position:fixed;
+  top:52px;
+  right:12px;
+  bottom:52px;
+  z-index:3;
+  width:min(340px, calc(100vw - 24px));
+  overflow:auto;
+  padding:14px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius:var(--radius-sm);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-primary);
+  box-shadow:var(--ui-shadow-card-hover);
+}
+
+.aula-presentation-notes h2 {
+  margin:0 0 8px;
+  font-size:13px;
+}
+
+.aula-presentation-notes p {
+  margin:0;
+  white-space:pre-wrap;
+  color:var(--ui-text-secondary);
+  font-size:12px;
+  line-height:1.55;
+}
+
 .aula-presentation-reveal {
   flex:1 1 auto;
   width:100%;

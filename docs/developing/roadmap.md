@@ -71,11 +71,11 @@
 
 ### Fase 3 — Notas y exportación estática
 
-- [ ] Añadir notas por diapositiva en `presentation.notes`, con edición solo para roles con permiso.
-- [ ] Mostrar las notas en la presentación sin exponerlas al público por defecto.
-- [ ] Generar un HTML estático de diapositivas con el tema elegido y las notas como sección opcional.
-- [ ] Mantener el HTML sin CDN, fuentes ni scripts externos y con el SVG ya renderizado.
-- [ ] Cubrir con pruebas notas, exportación, tema, invitados y contenido sin notas.
+- [x] Añadir notas por diapositiva en `presentation.notes`, con edición solo para roles con permiso.
+- [x] Mostrar las notas en la presentación sin exponerlas al público por defecto.
+- [x] Generar un HTML estático de diapositivas con el tema elegido y las notas como sección opcional.
+- [x] Mantener el HTML sin CDN, fuentes ni scripts externos y con el SVG ya renderizado.
+- [x] Cubrir con pruebas notas, exportación, tema, invitados y contenido sin notas.
 - **Criterios de aceptación:**
   - Las notas se guardan con el documento y no se mezclan con el texto visible.
   - La exportación conserva tema, orden y contenido de las diapositivas.
@@ -113,3 +113,4 @@
 - ADOC-01 a ADOC-04 están cerrados. La presentación actual usa `reveal.js` bajo demanda; este roadmap añade salida estática y no introduce recursos externos.
 - 2026-11-18: Fase 1 completada. `filename.ts` genera slugs con acentos, signos y fallback; HTML, Markdown y JSON de recuperación usan el título. La acción «Imprimir o guardar PDF» genera el HTML autónomo con SVG y lo imprime en un iframe oculto, con reglas `break-inside` y sin recursos externos. 47 pruebas focalizadas y 1.385 en la suite completa; `tsc` y ESLint en verde.
 - 2026-11-18: Fase 2 completada. El documento sube a esquema v2 con `presentation.theme`; los documentos v1 se migran con el tema Aula. Hay tres temas (Aula, Claro y Oscuro) y una vista previa con recuento y navegación, sin cambiar el documento. 52 pruebas focalizadas y 1.388 en la suite completa; `tsc` y ESLint en verde.
+- 2026-11-18: Fase 3 completada. Las notas del orador se guardan por índice en `presentation.notes`, se editan desde la vista previa solo con permiso y se muestran en la presentación con un botón «Notas» desactivado por defecto. La exportación estática incluye tema y notas como `<details>`, sin scripts, CDN ni fuentes externas. 55 pruebas focalizadas y 1.391 en la suite completa; `tsc` y ESLint en verde.

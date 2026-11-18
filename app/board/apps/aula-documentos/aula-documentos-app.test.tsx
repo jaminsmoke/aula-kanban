@@ -458,6 +458,23 @@ describe("Aula Documentos", () => {
     expect(screen.getByRole("button", { name: "Siguiente" })).toHaveProperty("disabled", true);
   });
 
+  it("guarda las notas del orador con la diapositiva", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    fireEvent.click(screen.getByRole("button", { name: "Vista previa" }));
+    await screen.findByRole("dialog", { name: "Vista previa: Documento de ejemplo" });
+    fireEvent.change(screen.getByLabelText(/Notas del orador/), {
+      target: { value: "Recordar explicar el ejemplo." },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Cerrar vista previa" }));
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
+    expect(saved.presentation?.notes?.["0"]).toBe("Recordar explicar el ejemplo.");
+  });
+
   it("inserta dos diagramas y guarda el documento validado", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
@@ -782,5 +799,9 @@ describe("Aula Documentos", () => {
     expect(screen.getByLabelText("Contenido del documento").getAttribute("contenteditable")).toBe("false");
     fireEvent.keyDown(window, { key: "s", ctrlKey: true });
     expect(documentMock.save).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Vista previa" }));
+    await screen.findByRole("dialog", { name: "Vista previa: Documento de ejemplo" });
+    expect(screen.getByLabelText(/Notas del orador/)).toHaveProperty("readOnly", true);
   });
 });

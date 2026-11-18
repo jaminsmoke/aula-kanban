@@ -108,6 +108,20 @@ describe("modelo de Aula Documentos", () => {
     expect(invalid.ok).toBe(true);
     if (!invalid.ok) return;
     expect(invalid.document.presentation).toEqual({ theme: "aula" });
+
+    const notes = parseAulaDocument({
+      ...candidate([{ type: "paragraph" }]),
+      presentation: {
+        theme: "oscuro",
+        notes: { "0": "Primera nota", "1": "   ", "200": "Límite", "201": "Fuera", otro: "No" },
+      },
+    });
+    expect(notes.ok).toBe(true);
+    if (!notes.ok) return;
+    expect(notes.document.presentation).toEqual({
+      theme: "oscuro",
+      notes: { "0": "Primera nota", "200": "Límite" },
+    });
   });
 
   it("rechaza nodos y marcas no compatibles", () => {

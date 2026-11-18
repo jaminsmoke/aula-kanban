@@ -68,7 +68,7 @@ import { useAppDocument } from "../use-app-document";
 import { useWindowClose, useWindowCloseGuard } from "../../store/window-close-guard";
 import type { StoreRole } from "../types";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
-import { buildAulaDocumentHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
+import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
 import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../../shared/aula-documentos/mermaid-block";
 import { getMermaidRenderer } from "../../shared/aula-documentos/mermaid-renderer";
 import { printHtmlDocument } from "../../shared/aula-documentos/print-html";
@@ -264,6 +264,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [preparingPresentation, setPreparingPresentation] = useState(false);
   const [presentation, setPresentation] = useState<{ title: string; slides: string[] } | null>(null);
   const [presentationTheme, setPresentationTheme] = useState<AulaPresentationTheme>(DEFAULT_AULA_PRESENTATION.theme);
+  const [presentationNotes, setPresentationNotes] = useState<Record<string, string>>({});
+  const [exportingPresentation, setExportingPresentation] = useState(false);
   const [slidePreview, setSlidePreview] = useState<{ title: string; slides: string[]; index: number } | null>(null);
   const [closePromptOpen, setClosePromptOpen] = useState(false);
   const [invalidDocument, setInvalidDocument] = useState<{ raw: unknown; message: string } | null>(null);
@@ -385,6 +387,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     pendingDocumentRef.current = document;
     setTitle(document.title);
     setPresentationTheme(document.presentation?.theme ?? DEFAULT_AULA_PRESENTATION.theme);
+    setPresentationNotes(document.presentation?.notes ?? {});
     const current = editorRef.current;
     if (current) {
       applyingDocumentRef.current = true;
@@ -505,14 +508,17 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
       title,
       content: editor.getJSON(),
-      presentation: { theme: presentationTheme },
+      presentation: {
+        theme: presentationTheme,
+        ...(Object.keys(presentationNotes).length ? { notes: presentationNotes } : {}),
+      },
     });
     if (!parsed.ok) {
       setStatus(parsed.message);
       return null;
     }
     return parsed.document;
-  }, [editor, presentationTheme, title]);
+  }, [editor, presentationNotes, presentationTheme, title]);
 
   /**
    * Persiste un documento y actualiza el estado de guardado.
@@ -680,6 +686,21 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }
 
   /**
+   * Actualiza las notas de una diapositiva.
+   * @param index - Índice de la diapositiva.
+   * @param value - Texto de la nota.
+   */
+  function changeSlideNote(index: number, value: string) {
+    setPresentationNotes((current) => {
+      const next = { ...current };
+      if (value) next[String(index)] = value;
+      else delete next[String(index)];
+      return next;
+    });
+    markChanged("Notas de presentación actualizadas.");
+  }
+
+  /**
    * Prepara y descarga el HTML autónomo del documento.
    */
   async function exportHtml() {
@@ -721,6 +742,34 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       setStatus("No se pudo preparar la impresión del documento.");
     } finally {
       setPrinting(false);
+    }
+  }
+
+  /**
+   * Exporta una presentación HTML estática con tema y notas.
+   */
+  async function exportPresentation() {
+    const document = currentDocument();
+    if (!document) return;
+    setExportingPresentation(true);
+    setStatus("Preparando la presentación exportada…");
+    try {
+      const slides = await buildPresentationHtml(document);
+      const html = buildAulaPresentationHtml(document, slides, {
+        theme: presentationTheme,
+        notes: presentationNotes,
+        includeNotes: true,
+      });
+      downloadTextFile(
+        html,
+        "text/html;charset=utf-8",
+        aulaFileName(`${document.title} presentación`, "html"),
+      );
+      setStatus("Presentación exportada.");
+    } catch {
+      setStatus("No se pudo exportar la presentación.");
+    } finally {
+      setExportingPresentation(false);
     }
   }
 
@@ -1554,6 +1603,14 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             >
               {preparingPresentation ? "Preparando…" : "Vista previa"}
             </button>
+            <button
+              type="button"
+              className="aula-documentos-preview-button"
+              onClick={() => { void exportPresentation(); }}
+              disabled={!editor || exportingPresentation}
+            >
+              {exportingPresentation ? "Exportando…" : "Exportar presentación"}
+            </button>
           </section>
           <section className="aula-documentos-help">
             <h3>Atajos</h3>
@@ -1600,6 +1657,16 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
               className={`aula-slide-preview aula-presentation-theme-${presentationTheme}`}
               dangerouslySetInnerHTML={{ __html: slidePreview.slides[slidePreview.index] ?? "" }}
             />
+            <label className="aula-slide-preview-notes" htmlFor="aula-slide-preview-notes">
+              <span>Notas del orador · diapositiva {slidePreview.index + 1}</span>
+              <textarea
+                id="aula-slide-preview-notes"
+                value={presentationNotes[String(slidePreview.index)] ?? ""}
+                onChange={(event) => changeSlideNote(slidePreview.index, event.target.value)}
+                placeholder="Solo visibles para quien presenta."
+                readOnly={readOnly}
+              />
+            </label>
             <div className="aula-slide-preview-nav">
               <button
                 type="button"
@@ -1629,6 +1696,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             title={presentation.title}
             slides={presentation.slides}
             theme={presentationTheme}
+            notes={presentationNotes}
             onExit={closePresentation}
           />
         </Suspense>
