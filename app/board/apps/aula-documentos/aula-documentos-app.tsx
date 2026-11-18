@@ -36,6 +36,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ChangeEv
 import {
   AULA_DOCUMENT_SCHEMA_VERSION,
   AULA_DOCUMENT_TITLE_MAX_LENGTH,
+  createEmptyAulaDocument,
   normalizeAulaLink,
   parseAulaDocument,
   type AulaDocument,
@@ -54,6 +55,7 @@ import { buildPresentationSlides } from "../../../../lib/domain/aula-documentos/
 import { createStarterAulaDocument } from "../../../../lib/domain/aula-documentos/starter";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useAppDocument } from "../use-app-document";
+import { useWindowClose, useWindowCloseGuard } from "../../store/window-close-guard";
 import type { StoreRole } from "../types";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
 import { buildAulaDocumentHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
@@ -229,6 +231,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [importConfirm, setImportConfirm] = useState(false);
   const [preparingPresentation, setPreparingPresentation] = useState(false);
   const [presentation, setPresentation] = useState<{ title: string; slides: string[] } | null>(null);
+  const [closePromptOpen, setClosePromptOpen] = useState(false);
+  const [invalidDocument, setInvalidDocument] = useState<{ raw: unknown; message: string } | null>(null);
+  const [invalidResetConfirm, setInvalidResetConfirm] = useState(false);
   const editorRef = useRef<Editor | null>(null);
   const pendingDocumentRef = useRef<AulaDocument | null>(null);
   const applyingDocumentRef = useRef(false);
@@ -257,6 +262,24 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     mountedRef.current = true;
     return () => { mountedRef.current = false; };
   }, []);
+
+  const requestWindowClose = useWindowClose();
+  const closeGuard = useCallback(() => {
+    if (readOnly || !dirty) return true;
+    setClosePromptOpen(true);
+    return false;
+  }, [dirty, readOnly]);
+  useWindowCloseGuard(closeGuard);
+
+  useEffect(() => {
+    if (readOnly || !dirty) return;
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [dirty, readOnly]);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -344,30 +367,90 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     setStatus("Presentación cerrada.");
   }, []);
 
+  /**
+   * Descarga el JSON original de un documento que no se pudo validar.
+   */
+  function downloadInvalidDocument() {
+    if (!invalidDocument) return;
+    try {
+      downloadTextFile(
+        JSON.stringify(invalidDocument.raw, null, 2),
+        "application/json;charset=utf-8",
+        `aula-documentos-${projectId}-recuperacion.json`,
+      );
+      setStatus("JSON original descargado.");
+    } catch {
+      setStatus("No se pudo descargar el JSON original.");
+    }
+  }
+
+  /**
+   * Sustituye un documento inválido por un documento vacío, con confirmación.
+   */
+  function resetInvalidDocument() {
+    applyDocument(createEmptyAulaDocument("Documento sin título"));
+    setInvalidDocument(null);
+    setInvalidResetConfirm(false);
+    setLastSavedAt(null);
+    markChanged("Documento reiniciado. Guárdalo para conservarlo.");
+  }
+
+  /**
+   * Cierra la ventana sin guardar los cambios pendientes.
+   */
+  function closeWithoutSaving() {
+    setClosePromptOpen(false);
+    requestWindowClose();
+  }
+
+  /**
+   * Guarda y cierra la ventana si el guardado termina bien.
+   */
+  async function saveAndClose() {
+    const ok = await saveCurrent(false);
+    if (!ok) return;
+    setClosePromptOpen(false);
+    requestWindowClose();
+  }
+
+  const applyLoadedState = useCallback((state: unknown, updatedAt: number | null) => {
+    if (state === null) {
+      setInvalidDocument(null);
+      setLastSavedAt(null);
+      setStatus("Documento de ejemplo listo. Guarda para conservarlo.");
+      return;
+    }
+    const parsed = parseAulaDocument(state);
+    if (parsed.ok) {
+      setInvalidDocument(null);
+      setLastSavedAt(typeof updatedAt === "number" ? updatedAt : null);
+      applyDocument(parsed.document);
+    } else {
+      setInvalidDocument({ raw: state, message: parsed.message });
+      setInvalidResetConfirm(false);
+      setLastSavedAt(null);
+      setStatus("El documento guardado no se pudo leer.");
+    }
+  }, [applyDocument]);
+
+  const loadSavedDocument = useCallback(async () => {
+    const { state, updatedAt } = await load();
+    if (!mountedRef.current) return;
+    applyLoadedState(state, updatedAt);
+  }, [applyLoadedState, load]);
+
   useEffect(() => {
     let active = true;
     void load().then(({ state, updatedAt }) => {
-      if (!active) return;
-      if (state === null) {
-        setLastSavedAt(null);
-        setStatus("Documento de ejemplo listo. Guarda para conservarlo.");
-        return;
-      }
-      const parsed = parseAulaDocument(state);
-      if (parsed.ok) {
-        setLastSavedAt(typeof updatedAt === "number" ? updatedAt : null);
-        applyDocument(parsed.document);
-      } else {
-        setLastSavedAt(null);
-        setStatus(parsed.message);
-      }
+      if (!active || !mountedRef.current) return;
+      applyLoadedState(state, updatedAt);
     });
     return () => { active = false; };
-  }, [applyDocument, load]);
+  }, [applyLoadedState, load]);
 
   useEffect(() => {
-    editor?.setEditable(!readOnly);
-  }, [editor, readOnly]);
+    editor?.setEditable(!readOnly && !invalidDocument);
+  }, [editor, invalidDocument, readOnly]);
 
   useEffect(() => {
     if (!editor) return;
@@ -451,10 +534,10 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }, [saveCurrent]);
 
   useEffect(() => {
-    if (readOnly || loading || !editor || !dirty || saving || saveFailed) return;
+    if (readOnly || loading || !editor || !dirty || saving || saveFailed || invalidDocument) return;
     const timer = window.setTimeout(() => { void saveCurrent(true); }, AUTOSAVE_DELAY_MS);
     return () => window.clearTimeout(timer);
-  }, [dirty, editVersion, editor, loading, readOnly, saveCurrent, saveFailed, saving]);
+  }, [dirty, editVersion, editor, invalidDocument, loading, readOnly, saveCurrent, saveFailed, saving]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -731,25 +814,25 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       label: "Importar documento",
       icon: <Upload size={15} aria-hidden />,
       onClick: openImport,
-      disabled: readOnly || !editor,
+      disabled: readOnly || !editor || Boolean(invalidDocument),
     },
     {
       label: "Guardar documento",
       icon: <Save size={15} aria-hidden />,
       onClick: () => { void saveDocument(); },
-      disabled: readOnly || saving || loading || !editor,
+      disabled: readOnly || saving || loading || !editor || Boolean(invalidDocument),
     },
     {
       label: "Exportar HTML",
       icon: exporting ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <Download size={15} aria-hidden />,
       onClick: () => { void exportHtml(); },
-      disabled: !editor || exporting,
+      disabled: !editor || exporting || Boolean(invalidDocument),
     },
     {
       label: "Exportar Markdown",
       icon: <FileDown size={15} aria-hidden />,
       onClick: exportMarkdown,
-      disabled: !editor,
+      disabled: !editor || Boolean(invalidDocument),
     },
   ];
 
@@ -877,6 +960,141 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             <span className="aula-documentos-link-hint">Solo http, https o correo.</span>
           )}
         </form>
+      ) : null}
+
+      {invalidDocument ? (
+        <div className="aula-documentos-modal-backdrop">
+          <section
+            className="aula-documentos-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aula-documentos-invalid-title"
+          >
+            <header className="aula-documentos-modal-head">
+              <h2 id="aula-documentos-invalid-title">Documento guardado inválido</h2>
+            </header>
+            <div className="aula-documentos-import-menu">
+              <p className="aula-documentos-import-intro">{invalidDocument.message}</p>
+              <p className="aula-documentos-import-intro">
+                El documento original sigue guardado. Descárgalo antes de decidir si lo reintentas o empiezas de cero.
+              </p>
+              {invalidResetConfirm ? (
+                <>
+                  <p className="aula-documentos-import-warning">
+                    Se sustituirá el documento inválido por uno vacío. Si no has descargado el JSON, perderás esta copia.
+                  </p>
+                  <div className="aula-documentos-import-actions">
+                    <button
+                      type="button"
+                      className="aula-documentos-import-secondary"
+                      onClick={() => setInvalidResetConfirm(false)}
+                    >
+                      Volver
+                    </button>
+                    <button
+                      type="button"
+                      className="aula-documentos-import-primary"
+                      onClick={resetInvalidDocument}
+                    >
+                      Confirmar y empezar de cero
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="aula-documentos-import-actions">
+                  <button
+                    type="button"
+                    className="aula-documentos-import-secondary"
+                    onClick={downloadInvalidDocument}
+                  >
+                    <Download size={14} aria-hidden />
+                    Descargar JSON original
+                  </button>
+                  <button
+                    type="button"
+                    className="aula-documentos-import-secondary"
+                    onClick={() => { void loadSavedDocument(); }}
+                  >
+                    Reintentar
+                  </button>
+                  <button
+                    type="button"
+                    className="aula-documentos-import-primary"
+                    onClick={() => setInvalidResetConfirm(true)}
+                  >
+                    Empezar de cero
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+      ) : null}
+
+      {closePromptOpen ? (
+        <div
+          className="aula-documentos-modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setClosePromptOpen(false);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setClosePromptOpen(false);
+          }}
+        >
+          <section
+            className="aula-documentos-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aula-documentos-close-title"
+          >
+            <header className="aula-documentos-modal-head">
+              <h2 id="aula-documentos-close-title">Cerrar Aula Documentos</h2>
+              <button
+                type="button"
+                className="aula-documentos-modal-close"
+                onClick={() => setClosePromptOpen(false)}
+                aria-label="Cancelar cierre"
+                autoFocus
+              >
+                <X size={16} aria-hidden />
+              </button>
+            </header>
+            <div className="aula-documentos-import-menu">
+              <p className="aula-documentos-import-intro">
+                Hay cambios sin guardar. Puedes guardarlos antes de cerrar o descartarlos.
+              </p>
+              {saveFailed ? (
+                <p className="aula-documentos-import-error" role="alert">
+                  No se pudo guardar el documento. Revisa la conexión e inténtalo de nuevo.
+                </p>
+              ) : null}
+              <div className="aula-documentos-import-actions">
+                <button
+                  type="button"
+                  className="aula-documentos-import-secondary"
+                  onClick={() => setClosePromptOpen(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  className="aula-documentos-import-secondary"
+                  onClick={closeWithoutSaving}
+                >
+                  Cerrar sin guardar
+                </button>
+                <button
+                  type="button"
+                  className="aula-documentos-import-primary"
+                  onClick={() => { void saveAndClose(); }}
+                  disabled={saving}
+                >
+                  {saving ? "Guardando…" : "Guardar y cerrar"}
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
       ) : null}
 
       {importOpen ? (
@@ -1010,7 +1228,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
               aria-label="Título del documento"
               placeholder="Título del documento"
               spellCheck
-              readOnly={readOnly}
+              readOnly={readOnly || Boolean(invalidDocument)}
             />
             <div className="aula-documentos-divider" aria-hidden />
             <EditorContent editor={editor} className="aula-documentos-editor" />

@@ -73,10 +73,10 @@
 
 ### Fase 3 — Cierre protegido y recuperación
 
-- [ ] Añadir al escritorio un hook opcional de cierre por app, sin cambiar el comportamiento de las apps que no lo registren.
-- [ ] Usar ese hook para ofrecer «Guardar y cerrar», «Cerrar sin guardar» y «Cancelar» cuando haya cambios pendientes; registrar también `beforeunload`.
-- [ ] Si el documento guardado no valida, conservar el estado original y mostrar descarga del JSON, reintento y reinicio explícito; no cargar el ejemplo como si todo hubiera ido bien.
-- [ ] Añadir pruebas del hook de cierre, del aviso de `beforeunload`, de la recuperación y de que un invitado no recibe acciones de guardado.
+- [x] Añadir al escritorio un hook opcional de cierre por app, sin cambiar el comportamiento de las apps que no lo registren.
+- [x] Usar ese hook para ofrecer «Guardar y cerrar», «Cerrar sin guardar» y «Cancelar» cuando haya cambios pendientes; registrar también `beforeunload`.
+- [x] Si el documento guardado no valida, conservar el estado original y mostrar descarga del JSON, reintento y reinicio explícito; no cargar el ejemplo como si todo hubiera ido bien.
+- [x] Añadir pruebas del hook de cierre, del aviso de `beforeunload`, de la recuperación y de que un invitado no recibe acciones de guardado.
 - **Criterios de aceptación:**
   - Cerrar con cambios pendientes no pierde trabajo de forma silenciosa.
   - Cancelar el cierre mantiene la app abierta y el documento intacto.
@@ -114,3 +114,4 @@
 - La app conserva un único documento por proyecto. No se añaden revisiones ni concurrencia en esta entrega; quedan en ADOC-07.
 - 2026-11-18: Fase 1 completada. Autosave de 1,6 s con una única ruta de validación/persistencia, `Ctrl/Cmd+S`, estado de guardado, última hora y reintento tras error. El guardado manual cancela el debounce; las respuestas de guardados concurrentes se descartan y los invitados no guardan. Verificado con un cambio de título real y la suite de la app: 16 pruebas focalizadas y 1.338 en la suite completa; `tsc`, ESLint, build y `perf:budget` en verde. No se cambió la versión del Site ni se publicó.
 - 2026-11-18: Fase 2 completada. Los borradores Mermaid se registran en el almacén de la extensión y se vuelcan en `onBlur`, al guardar y en el autosave; el autosave no cierra el textarea ni genera una transacción por carácter. La aplicación comprueba el código vivo antes de escribir y cierra el grupo de historial, de modo que deshacer revierte el código sin eliminar el bloque. Verificado en la app real con un diagrama, undo y autosave; 21 pruebas focalizadas y 1.343 en la suite completa; `tsc`, ESLint, build y `perf:budget` en verde.
+- 2026-11-18: Fase 3 completada. El escritorio expone una guarda de cierre opcional por ventana; Aula Documentos la usa para ofrecer «Guardar y cerrar», «Cerrar sin guardar» y «Cancelar», y añade `beforeunload` para recargas. Un documento inválido bloquea la edición y muestra descarga del JSON original, reintento y reinicio confirmado. Verificado en la app real a 390 px y con 24 pruebas focalizadas; 1.346 en la suite completa; `tsc`, ESLint, build y `perf:budget` en verde. El Site sigue en `1.1.35`.

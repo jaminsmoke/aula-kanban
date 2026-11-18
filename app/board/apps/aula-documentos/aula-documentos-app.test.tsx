@@ -1,7 +1,17 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
+import { useWindowAttemptClose, WindowCloseProvider } from "../../store/window-close-guard";
 import AulaDocumentosApp, { AUTOSAVE_DELAY_MS } from "./aula-documentos-app";
+
+/**
+ * Botón de prueba que intenta cerrar la ventana como el control real.
+ * @returns El botón de cierre.
+ */
+function CloseTrigger() {
+  const attemptClose = useWindowAttemptClose();
+  return <button type="button" onClick={attemptClose}>Probar cierre</button>;
+}
 
 const documentMock = vi.hoisted(() => ({
   loading: false as boolean,
@@ -352,7 +362,7 @@ describe("Aula Documentos", () => {
     expect(screen.getByText("1 diagrama")).toBeTruthy();
   });
 
-  it("mantiene el ejemplo si el documento guardado no cumple el esquema", async () => {
+  it("mantiene el ejemplo y ofrece recuperación si el documento guardado no cumple el esquema", async () => {
     documentMock.load.mockResolvedValueOnce({
       state: { schemaVersion: 99, title: "Roto", content: { type: "doc", content: [] } },
       updatedAt: 2,
@@ -360,8 +370,66 @@ describe("Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
 
-    await waitFor(() => expect(screen.getByRole("status").textContent).toContain("versión más nueva"));
+    expect(await screen.findByRole("dialog", { name: "Documento guardado inválido" })).toBeTruthy();
+    expect(screen.getByText(/versión más nueva/)).toBeTruthy();
     expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento de ejemplo");
+    expect(documentMock.save).not.toHaveBeenCalled();
+  });
+
+  it("reinicia un documento inválido solo con confirmación explícita", async () => {
+    documentMock.load.mockResolvedValueOnce({
+      state: { schemaVersion: 99, title: "Roto", content: { type: "doc", content: [] } },
+      updatedAt: 2,
+    });
+
+    render(<AulaDocumentosApp {...props} />);
+    await screen.findByRole("dialog", { name: "Documento guardado inválido" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Empezar de cero" }));
+    expect(screen.getByText(/perderás esta copia/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar y empezar de cero" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Documento guardado inválido" })).toBeNull());
+    expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento sin título");
+  });
+
+  it("protege el cierre y permite cancelar, guardar o descartar", async () => {
+    const onClose = vi.fn();
+    render(
+      <WindowCloseProvider onClose={onClose}>
+        <AulaDocumentosApp {...props} />
+        <CloseTrigger />
+      </WindowCloseProvider>,
+    );
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    fireEvent.change(screen.getByLabelText("Título del documento"), { target: { value: "Cambios pendientes" } });
+    fireEvent.click(screen.getByRole("button", { name: "Probar cierre" }));
+    expect(screen.getByRole("dialog", { name: "Cerrar Aula Documentos" })).toBeTruthy();
+    expect(onClose).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+    expect(screen.queryByRole("dialog", { name: "Cerrar Aula Documentos" })).toBeNull();
+    expect(onClose).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Probar cierre" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cerrar sin guardar" }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "Probar cierre" }));
+    fireEvent.click(screen.getByRole("button", { name: "Guardar y cerrar" }));
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(onClose).toHaveBeenCalledTimes(2));
+  });
+
+  it("avisa antes de descargar la página con cambios pendientes", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.change(screen.getByLabelText("Título del documento"), { target: { value: "Antes de recargar" } });
+
+    const event = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(true);
   });
 
   it("importa Notas y documentos con vista previa y confirmación", async () => {

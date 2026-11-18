@@ -2,6 +2,24 @@
 
 import { useRef, type PointerEvent, type ReactNode } from "react";
 import { m } from "motion/react";
+import { useWindowAttemptClose, WindowCloseProvider } from "./window-close-guard";
+
+/**
+ * Botón de cierre que respeta la guarda registrada por la app.
+ * @param props.title - Título de la ventana.
+ * @returns El botón de cierre.
+ */
+function WindowCloseButton({ title }: { title: string }) {
+  const attemptClose = useWindowAttemptClose();
+  return (
+    <button
+      type="button"
+      className="store-traffic store-traffic-close"
+      aria-label={`Cerrar ${title}`}
+      onClick={attemptClose}
+    />
+  );
+}
 
 /**
  * Ventana estilo macOS: barra de título con botones de cerrar,
@@ -77,27 +95,29 @@ export default function StoreWindow({
   }
 
   return (
-    <m.div
-      initial={{ opacity: 0, scale: 0.96, y: 12 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.96, y: 12 }}
-      transition={{ duration: 0.24, ease: "easeOut" }}
-      className={`store-window${maximized ? " store-window--maximized" : ""}`}
-      role="dialog"
-      aria-label={title}
-      style={{ left: position.x, top: position.y, zIndex, width: size.width, height: size.height, borderRadius: maximized ? 0 : undefined, display: minimized ? "none" : undefined }}
-      onPointerDown={onFocus}
-    >
-      <div className="store-window-titlebar" onPointerDown={startDrag}>
-        <div className="store-window-controls">
-          <button type="button" className="store-traffic store-traffic-close" aria-label={`Cerrar ${title}`} onClick={onClose} />
-          <button type="button" className="store-traffic store-traffic-minimize" aria-label={`Minimizar ${title}`} onClick={onMinimize} />
-          <button type="button" className="store-traffic store-traffic-zoom" aria-label={`${maximized ? "Reducir" : "Ampliar"} ${title}`} onClick={onZoom} />
+    <WindowCloseProvider onClose={onClose}>
+      <m.div
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 12 }}
+        transition={{ duration: 0.24, ease: "easeOut" }}
+        className={`store-window${maximized ? " store-window--maximized" : ""}`}
+        role="dialog"
+        aria-label={title}
+        style={{ left: position.x, top: position.y, zIndex, width: size.width, height: size.height, borderRadius: maximized ? 0 : undefined, display: minimized ? "none" : undefined }}
+        onPointerDown={onFocus}
+      >
+        <div className="store-window-titlebar" onPointerDown={startDrag}>
+          <div className="store-window-controls">
+            <WindowCloseButton title={title} />
+            <button type="button" className="store-traffic store-traffic-minimize" aria-label={`Minimizar ${title}`} onClick={onMinimize} />
+            <button type="button" className="store-traffic store-traffic-zoom" aria-label={`${maximized ? "Reducir" : "Ampliar"} ${title}`} onClick={onZoom} />
+          </div>
+          <span className="store-window-title">{title}</span>
         </div>
-        <span className="store-window-title">{title}</span>
-      </div>
-      <div className="store-window-body">{children}</div>
-      {!maximized && <div className="store-resize" onPointerDown={startResize} aria-hidden />}
-    </m.div>
+        <div className="store-window-body">{children}</div>
+        {!maximized && <div className="store-resize" onPointerDown={startResize} aria-hidden />}
+      </m.div>
+    </WindowCloseProvider>
   );
 }
