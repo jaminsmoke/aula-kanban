@@ -2,27 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 4 entradas: ADOC-05…ADOC-07 y DEV-01 pendientes
+> **Roadmap:** ADOC-05 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 3 entradas: ADOC-06, ADOC-07 y DEV-01 pendientes
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-18 — ADOC-05 · Presentación y salida
-
-- **Prioridad:** P2 · después de publicar el flujo básico.
-- Contexto: la presentación funciona con `reveal.js` y las diapositivas se derivan de H1/H2 o de saltos explícitos, pero no hay temas, vista previa de diapositivas, notas ni exportación a PDF. Los archivos exportados se llaman con el `projectId`, no con el título.
-- Alcance:
-  1. Nombre de archivo derivado del título, con slug seguro y fallback.
-  2. Impresión/PDF desde la app o desde el HTML exportado, con estilos de impresión revisados.
-  3. Temas de presentación y una vista previa con recuento de diapositivas.
-  4. Notas del orador y exportación de la presentación, si el alcance se confirma.
-  5. Revisar contenido largo y diagramas dentro de una diapositiva.
-- Criterios de aceptación:
-  - El HTML y el Markdown descargados usan un nombre legible y estable.
-  - La presentación se puede imprimir sin cortar contenido.
-  - El tema elegido se conserva en la presentación exportada.
-- Notas: no duplicar el documento para presentarlo; la fuente sigue siendo el JSON único. La exportación interactiva con `reveal.js` puede ser un HTML separado y no necesita entrar en el primer corte.
 
 ## 2026-11-18 — ADOC-06 · Móvil y accesibilidad
 
