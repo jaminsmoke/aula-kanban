@@ -2,26 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 7 entradas: ADOC-02…ADOC-07 y DEV-01 pendientes
+> **Roadmap:** ADOC-02 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 6 entradas: ADOC-03…ADOC-07 y DEV-01 pendientes
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-18 — ADOC-02 · Documento nuevo y plantillas
-
-- **Prioridad:** P1 · antes de publicar.
-- Contexto: el ejemplo inicial solo se carga cuando el proyecto no tiene documento. Después no hay «Nuevo», «Vaciar» ni plantillas; `createEmptyAulaDocument` existe en el dominio pero la app no lo usa. Para empezar otro documento hay que borrar el contenido a mano.
-- Alcance:
-  1. Acción «Nuevo documento» con confirmación si hay cambios sin guardar.
-  2. Elegir entre documento vacío, documento de ejemplo y plantillas básicas: apuntes, proyecto de clase, presentación y guía.
-  3. Definir el título inicial y el foco del editor; no reutilizar el título del documento anterior.
-  4. Mantener el documento actual recuperable hasta confirmar el reemplazo.
-- Criterios de aceptación:
-  - Se puede empezar un documento vacío desde cualquier estado.
-  - Elegir una plantilla deja contenido válido, guardable y con un título comprensible.
-  - Cancelar la confirmación no modifica el documento abierto.
-- Notas: sigue habiendo un solo documento por proyecto; no convertir esto en una biblioteca de documentos. Las plantillas deben construirse con el modelo validado, no con HTML.
 
 ## 2026-11-18 — ADOC-03 · Importación legacy limpia
 
