@@ -477,6 +477,23 @@
   font-weight:700;
 }
 
+.aula-mermaid-template {
+  max-width:145px;
+  padding:3px 6px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-secondary);
+  font:inherit;
+  font-size:10.5px;
+  font-weight:600;
+}
+
+.aula-mermaid-template:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:1px;
+}
+
 .aula-mermaid-actions {
   display:flex;
   align-items:center;

@@ -313,6 +313,88 @@ describe("Aula Documentos", () => {
     expect(saved.content.content?.some((node) => node.type === "mermaidBlock")).toBe(true);
   });
 
+  it("inserta una plantilla Mermaid con confirmación si ya hay código", async () => {
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
+
+    const select = screen.getByLabelText("Insertar plantilla Mermaid");
+    expect(select.querySelectorAll("option")).toHaveLength(8);
+    const original = (screen.getByLabelText("Código Mermaid") as HTMLTextAreaElement).value;
+
+    fireEvent.change(select, { target: { value: "secuencia" } });
+    expect((screen.getByLabelText("Código Mermaid") as HTMLTextAreaElement).value).toBe(original);
+
+    confirm.mockReturnValue(true);
+    fireEvent.change(select, { target: { value: "secuencia" } });
+    expect((screen.getByLabelText("Código Mermaid") as HTMLTextAreaElement).value).toContain("sequenceDiagram");
+    expect(confirm).toHaveBeenCalledTimes(2);
+    confirm.mockRestore();
+  });
+
+  it("restaura la última versión válida de un diagrama", async () => {
+    mermaidMock.render.mockImplementation(async (code: string) => {
+      if (code.includes("BORRAR")) throw new Error("Parse error on line 2:\nBORRAR");
+      return `<svg data-mermaid-preview="true"><text>${code}</text></svg>`;
+    });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    await waitFor(() => expect(document.querySelector(".aula-mermaid-svg")).toBeTruthy());
+    fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
+    const original = (screen.getByLabelText("Código Mermaid") as HTMLTextAreaElement).value;
+
+    fireEvent.change(screen.getByLabelText("Código Mermaid"), {
+      target: { value: "flowchart TD\nBORRAR" },
+    });
+    expect(await screen.findByText("No se pudo dibujar el diagrama (línea 2).")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Restaurar última versión válida del diagrama" }));
+
+    expect((screen.getByLabelText("Código Mermaid") as HTMLTextAreaElement).value).toBe(original);
+  });
+
+  it("descarta el borrador aunque el autosave ya lo haya aplicado", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    await waitFor(() => expect(document.querySelector(".aula-mermaid-svg")).toBeTruthy());
+    fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
+    const original = (screen.getByLabelText("Código Mermaid") as HTMLTextAreaElement).value;
+
+    vi.useFakeTimers();
+    fireEvent.change(screen.getByLabelText("Código Mermaid"), {
+      target: { value: "flowchart TD\nAutosave --> Temporal" },
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(AUTOSAVE_DELAY_MS + 100);
+    });
+    vi.useRealTimers();
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+
+    fireEvent.click(screen.getByRole("button", { name: "Descartar" }));
+    await waitFor(() => expect(document.querySelector(".aula-mermaid-block")?.getAttribute("data-mermaid-code")).toBe(original));
+  });
+
+  it("copia el código Mermaid del bloque", async () => {
+    const writeText = vi.fn(async (_value: string) => {});
+    Object.defineProperty(window.navigator, "clipboard", {
+      value: { writeText },
+      configurable: true,
+    });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    await screen.findByRole("button", { name: "Editar" });
+    fireEvent.click(screen.getByRole("button", { name: "Copiar código Mermaid" }));
+
+    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+    expect(writeText.mock.calls[0][0]).toContain("flowchart TD");
+  });
+
   it("inserta dos diagramas y guarda el documento validado", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());

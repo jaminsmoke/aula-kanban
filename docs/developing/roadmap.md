@@ -57,11 +57,11 @@
 
 ### Fase 2 — Plantillas y recuperación
 
-- [ ] Ampliar `lib/domain/mermaid/templates.ts` con flujo, secuencia, línea de tiempo y mapa mental.
-- [ ] Añadir un selector de plantilla al bloque Mermaid, sin reemplazar el código sin confirmación.
-- [ ] Guardar en memoria la última versión válida y ofrecer restaurarla.
-- [ ] Añadir un botón para copiar el código del bloque.
-- [ ] Cubrir con pruebas cada plantilla, inserción, restauración y copia.
+- [x] Ampliar `lib/domain/mermaid/templates.ts` con flujo, secuencia, línea de tiempo y mapa mental.
+- [x] Añadir un selector de plantilla al bloque Mermaid, sin reemplazar el código sin confirmación.
+- [x] Guardar en memoria la última versión válida y ofrecer restaurarla.
+- [x] Añadir un botón para copiar el código del bloque.
+- [x] Cubrir con pruebas cada plantilla, inserción, restauración y copia.
 - **Criterios de aceptación:**
   - Se puede insertar una plantilla distinta de la de flujo y editarla.
   - Restaurar recupera el último código que se dibujó correctamente.
@@ -108,3 +108,4 @@
 - Puntos de partida: `app/board/shared/aula-documentos/mermaid-block.tsx`, `app/board/shared/aula-documentos/mermaid-renderer.ts`, `app/board/shared/aula-documentos/export-html.ts`, `lib/domain/mermaid/templates.ts` y sus pruebas.
 - ADOC-01, ADOC-02 y ADOC-03 están cerrados. La app mantiene Mermaid bajo demanda y `securityLevel: "strict"`.
 - 2026-11-18: Fase 1 completada. `mermaid-error.ts` extrae línea, resumen y detalle; el editor muestra el mensaje completo en un área desplazable y distingue vacío, roto y cargando. El fallback compartido explica el fallo y conserva el código en presentación y HTML exportado. 39 pruebas focalizadas y 1.371 en la suite completa; `tsc` y ESLint en verde.
+- 2026-11-18: Fase 2 completada. El catálogo suma mapa mental y el bloque Mermaid ofrece selector de plantilla con confirmación, copia del código y restauración de la última versión válida. La restauración se mantiene en memoria mientras el bloque está montado y «Descartar» recupera el código con el que empezó la edición aunque el autosave ya haya aplicado el borrador. Verificado en pruebas con secuencia, restauración, copia y descarte; 37 pruebas focalizadas y 1.375 en la suite completa; `tsc` y ESLint en verde.

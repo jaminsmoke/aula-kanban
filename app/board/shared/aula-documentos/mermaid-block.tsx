@@ -4,8 +4,9 @@ import type { Editor } from "@tiptap/core";
 import { Node, mergeAttributes } from "@tiptap/core";
 import { closeHistory } from "@tiptap/pm/history";
 import { NodeViewWrapper, ReactNodeViewRenderer, type NodeViewProps } from "@tiptap/react";
-import { ArrowDown, ArrowUp, Check, Code2, GripVertical, Loader2, Pencil, Trash2, X } from "lucide-react";
-import { useCallback, useEffect, useId, useState } from "react";
+import { ArrowDown, ArrowUp, Check, Code2, Copy, GripVertical, Loader2, Pencil, RotateCcw, Trash2, X } from "lucide-react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useMermaidPreview } from "./use-mermaid-preview";
 
 type MermaidDraftStorage = {
@@ -74,12 +75,15 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
   const draftId = useId();
   const readOnly = !editor.isEditable;
   const previewCode = editing ? draft : code;
-  const { svg, error, loading } = useMermaidPreview(previewCode);
+  const { svg, error, loading, lastValidCode } = useMermaidPreview(previewCode);
   const position = getPos();
   const parent = typeof position === "number" ? editor.state.doc.resolve(position).parent : null;
   const index = typeof position === "number" ? editor.state.doc.resolve(position).index() : -1;
   const canMoveUp = index > 0;
   const canMoveDown = Boolean(parent && index >= 0 && index < parent.childCount - 1);
+  const activeCode = editing ? draft : code;
+  const canRestore = Boolean(lastValidCode.trim()) && lastValidCode !== activeCode;
+  const baselineRef = useRef(code);
 
   /**
    * Aplica el código al nodo como un cambio de historial independiente.
@@ -107,7 +111,10 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
     const liveNode = typeof position === "number" ? editor.state.doc.nodeAt(position) : null;
     const liveCode = typeof liveNode?.attrs?.code === "string" ? liveNode.attrs.code : code;
     if (draft !== liveCode) applyMermaidCode(draft);
-    if (closeEditor) setEditing(false);
+    if (closeEditor) {
+      baselineRef.current = draft;
+      setEditing(false);
+    }
   }, [applyMermaidCode, code, draft, editor, position]);
 
   const flushDraft = useCallback(() => {
@@ -123,6 +130,7 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
    * Abre el editor con el código guardado.
    */
   function startEditing() {
+    baselineRef.current = code;
     setDraft(code);
     setEditing(true);
   }
@@ -155,11 +163,51 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
   }
 
   /**
-   * Descarta el borrador y vuelve al código guardado.
+   * Descarta el borrador y vuelve al código con el que empezó la edición.
    */
   function cancelEdit() {
-    setDraft(code);
+    const baseline = baselineRef.current;
+    setDraft(baseline);
     setEditing(false);
+    const liveNode = typeof position === "number" ? editor.state.doc.nodeAt(position) : null;
+    const liveCode = typeof liveNode?.attrs?.code === "string" ? liveNode.attrs.code : code;
+    if (baseline !== liveCode) applyMermaidCode(baseline);
+  }
+
+  /**
+   * Reemplaza el código por una plantilla, con confirmación si ya hay contenido.
+   * @param templateId - Identificador de la plantilla elegida.
+   */
+  function applyTemplate(templateId: string) {
+    const template = MERMAID_TEMPLATES.find((item) => item.id === templateId);
+    if (!template) return;
+    if (activeCode.trim() && !window.confirm("Se reemplazará el código actual del diagrama. ¿Continuar?")) return;
+    if (!editing) baselineRef.current = code;
+    setDraft(template.code);
+    setEditing(true);
+    mermaidStorage(editor)?.onDraftChange?.();
+  }
+
+  /**
+   * Recupera el último código que se dibujó correctamente.
+   */
+  function restoreLastValid() {
+    if (!lastValidCode.trim()) return;
+    if (!editing) baselineRef.current = code;
+    setDraft(lastValidCode);
+    setEditing(true);
+    mermaidStorage(editor)?.onDraftChange?.();
+  }
+
+  /**
+   * Copia el código visible del bloque.
+   */
+  async function copyCode() {
+    try {
+      await navigator.clipboard?.writeText(activeCode);
+    } catch {
+      /* La copia depende del permiso del navegador; el código sigue visible. */
+    }
   }
 
   return (
@@ -178,7 +226,42 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
           Diagrama Mermaid
         </span>
         {!readOnly ? (
+          <select
+            className="aula-mermaid-template"
+            aria-label="Insertar plantilla Mermaid"
+            defaultValue=""
+            onChange={(event) => {
+              applyTemplate(event.currentTarget.value);
+              event.currentTarget.value = "";
+            }}
+          >
+            <option value="">Plantilla…</option>
+            {MERMAID_TEMPLATES.map((template) => (
+              <option value={template.id} key={template.id}>{template.label}</option>
+            ))}
+          </select>
+        ) : null}
+        {!readOnly ? (
           <span className="aula-mermaid-actions">
+            <button
+              type="button"
+              className="aula-mermaid-action icon"
+              onClick={() => { void copyCode(); }}
+              aria-label="Copiar código Mermaid"
+              title="Copiar código Mermaid"
+            >
+              <Copy size={14} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="aula-mermaid-action icon"
+              onClick={restoreLastValid}
+              disabled={!canRestore}
+              aria-label="Restaurar última versión válida del diagrama"
+              title="Restaurar última versión válida del diagrama"
+            >
+              <RotateCcw size={14} aria-hidden />
+            </button>
             <button
               type="button"
               className="aula-mermaid-action icon"

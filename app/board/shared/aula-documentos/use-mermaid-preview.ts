@@ -17,6 +17,7 @@ type PreviewState = {
  */
 export function useMermaidPreview(code: string) {
   const [state, setState] = useState<PreviewState>({ code: "", svg: "", error: null });
+  const [lastValidCode, setLastValidCode] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -24,6 +25,7 @@ export function useMermaidPreview(code: string) {
       void getMermaidRenderer().render(code).then((next) => {
         if (cancelled || next === null) return;
         setState({ code, svg: next, error: null });
+        if (next) setLastValidCode(code);
       }).catch((caught: unknown) => {
         if (cancelled) return;
         setState({
@@ -43,5 +45,6 @@ export function useMermaidPreview(code: string) {
     svg: state.code === code ? state.svg : "",
     error: state.code === code ? state.error : null,
     loading: Boolean(code.trim()) && state.code !== code,
+    lastValidCode,
   };
 }

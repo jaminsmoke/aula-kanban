@@ -70,4 +70,16 @@ export const MERMAID_TEMPLATES: MermaidTemplate[] = [
   2022 : Primeros talleres
   2024 : Exposición final`,
   },
+  {
+    id: "mapa",
+    label: "Mapa mental",
+    code: `mindmap
+  root((Aula))
+    Texto
+      Apuntes
+      Proyectos
+    Diagramas
+      Mermaid
+    Presentaciones`,
+  },
 ];
