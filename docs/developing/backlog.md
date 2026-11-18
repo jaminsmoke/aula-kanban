@@ -2,28 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 8 entradas: ADOC-01…ADOC-07 y DEV-01 pendientes
+> **Roadmap:** ADOC-01 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 7 entradas: ADOC-02…ADOC-07 y DEV-01 pendientes
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-18 — ADOC-01 · Guardado seguro y recuperación
-
-- **Prioridad:** P0 · antes de publicar.
-- Contexto: STORE-17 cerró con guardado manual. La revisión de la app encontró tres formas de perder trabajo: cerrar la ventana con cambios sin guardar, escribir un diagrama Mermaid y guardar sin pulsar «Aplicar», y abrir un documento guardado inválido sin una salida clara. `useAppDocument` solo persiste al llamar a `save()` y el cierre de la ventana de la app no tiene guarda.
-- Alcance:
-  1. Autosave con debounce de 1,5–2 s cuando el documento esté sucio, con estados «Guardando…», «Guardado» y «Cambios sin guardar».
-  2. Incluir el borrador pendiente de cada bloque Mermaid al guardar, al perder el foco y al cerrar; hoy el código solo entra en el JSON al pulsar «Aplicar».
-  3. Añadir `Ctrl/Cmd+S` y una guarda de cierre: confirmar o forzar guardado antes de cerrar la ventana y registrar `beforeunload` para recargas o cierre de pestaña. La guarda de la ventana de la app necesita un punto de extensión del escritorio; si no existe, el autosave y `beforeunload` son el mínimo.
-  4. Si el documento guardado no valida, no cargar el ejemplo en silencio: ofrecer descargar el JSON original y elegir entre recuperarlo o empezar de cero sin sobrescribirlo.
-  5. Mostrar la última hora de guardado usando el `updatedAt` que ya devuelve `useAppDocument`.
-- Criterios de aceptación:
-  - Escribir, esperar el autosave, cerrar y volver a abrir conserva el documento.
-  - Guardar con un diagrama en edición conserva el código del borrador, sin exigir «Aplicar» antes.
-  - Cerrar con cambios pendientes no pierde trabajo de forma silenciosa.
-  - Un documento inválido se puede descargar antes de decidir si se reinicia.
-- Notas: no convertir el autosave en un bucle de peticiones; cancelar el guardado pendiente al desmontar y no guardar en modo invitado. La recuperación de un documento inválido debe conservar el JSON original aunque se elija empezar de nuevo.
 
 ## 2026-11-18 — ADOC-02 · Documento nuevo y plantillas
 
