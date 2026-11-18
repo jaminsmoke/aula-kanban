@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { useAppDocument } from "./use-app-document";
+import { useAppDocument, type VersionedSaveResult } from "./use-app-document";
 import { jsonResponse } from "../../../vitest.setup";
 
 describe("documento de app", () => {
@@ -9,10 +9,10 @@ describe("documento de app", () => {
     vi.stubGlobal("fetch", fetchMock);
     const { result } = renderHook(() => useAppDocument<{ code: string }>("p1", "mermaid"));
 
-    let loaded: { state: { code: string } | null; updatedAt: number | null } | undefined;
+    let loaded: { state: { code: string } | null; updatedAt: number | null; ok?: boolean } | undefined;
     await act(async () => { loaded = await result.current.load(); });
 
-    expect(loaded).toEqual({ state: { code: "flowchart TD" }, updatedAt: 120 });
+    expect(loaded).toEqual({ state: { code: "flowchart TD" }, updatedAt: 120, ok: true });
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.updatedAt).toBe(120);
     expect(fetchMock).toHaveBeenCalledWith("/api/app-documents?project=p1&app=mermaid", { cache: "no-store" });
@@ -37,5 +37,30 @@ describe("documento de app", () => {
     await act(async () => { saved = await result.current.save({ code: "graph LR" }); });
     expect(saved).toBe(false);
     expect(result.current.error).toMatch(/No se pudo guardar/);
+  });
+
+  it("distingue un conflicto de versión al guardar con la versión esperada", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse({ accepted: true, updatedAt: 300 }))
+      .mockResolvedValueOnce(jsonResponse({ accepted: false, conflict: true, updatedAt: 400 }, false, 409));
+    vi.stubGlobal("fetch", fetchMock);
+    const { result } = renderHook(() => useAppDocument<{ code: string }>("p1", "aula-documentos"));
+
+    let saved: VersionedSaveResult | undefined;
+    await act(async () => { saved = await result.current.saveVersioned({ code: "graph LR" }, 200); });
+    expect(saved).toEqual({ status: "saved", updatedAt: 300 });
+    expect(result.current.updatedAt).toBe(300);
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      "/api/app-documents?project=p1&app=aula-documentos",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ state: { code: "graph LR" }, expectedUpdatedAt: 200 }),
+      }),
+    );
+
+    await act(async () => { saved = await result.current.saveVersioned({ code: "graph LR" }, 300); });
+    expect(saved).toEqual({ status: "conflict", updatedAt: 400 });
+    expect(result.current.updatedAt).toBe(300);
+    expect(result.current.error).toMatch(/ha cambiado en otra sesión/);
   });
 });

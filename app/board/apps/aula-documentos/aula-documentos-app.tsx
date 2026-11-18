@@ -65,7 +65,7 @@ import {
   type AulaDocumentTemplate,
 } from "../../../../lib/domain/aula-documentos/templates";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
-import { useAppDocument } from "../use-app-document";
+import { useAppDocument, type VersionedSaveResult } from "../use-app-document";
 import { useWindowClose, useWindowCloseGuard } from "../../store/window-close-guard";
 import type { StoreRole } from "../types";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
@@ -138,6 +138,11 @@ const IMPORT_LABELS: Record<AulaDocumentImportSource | "markdown", string> = {
 
 type ImportPreviewState = AulaDocumentImportPreview & {
   sourceUpdatedAt: number | null;
+};
+
+type SaveConflict = {
+  updatedAt: number | null;
+  keepConfirm: boolean;
 };
 
 /**
@@ -303,6 +308,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [closePromptOpen, setClosePromptOpen] = useState(false);
   const [invalidDocument, setInvalidDocument] = useState<{ raw: unknown; message: string } | null>(null);
   const [invalidResetConfirm, setInvalidResetConfirm] = useState(false);
+  const [saveConflict, setSaveConflict] = useState<SaveConflict | null>(null);
+  const [conflictNotice, setConflictNotice] = useState<string | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const pendingDocumentRef = useRef<AulaDocument | null>(null);
@@ -310,6 +317,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const editVersionRef = useRef(0);
   const savingRef = useRef(false);
   const mountedRef = useRef(true);
+  const documentVersionRef = useRef<number | null>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
   const actionsToggleRef = useRef<HTMLButtonElement>(null);
   const newDocumentRef = useRef<HTMLElement>(null);
@@ -317,8 +325,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const closePromptRef = useRef<HTMLElement>(null);
   const importRef = useRef<HTMLElement>(null);
   const slidePreviewRef = useRef<HTMLElement>(null);
+  const conflictRef = useRef<HTMLElement>(null);
   const readOnly = role === "guest";
-  const { load, save, loading, error } = useAppDocument<AulaDocument>(projectId, "aula-documentos");
+  const { load, saveVersioned, loading, error } = useAppDocument<AulaDocument>(projectId, "aula-documentos");
   const notesStore = useAppDocument<unknown>(projectId, "documentos");
   const mermaidStore = useAppDocument<unknown>(projectId, "mermaid");
   const presentationsStore = useAppDocument<unknown>(projectId, "presentaciones");
@@ -361,13 +370,16 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   useDialogFocus(closePromptOpen, () => setClosePromptOpen(false), closePromptRef);
   useDialogFocus(importOpen, closeImport, importRef, actionsToggleRef);
   useDialogFocus(Boolean(slidePreview), () => setSlidePreview(null), slidePreviewRef);
+  useDialogFocus(Boolean(saveConflict), () => {}, conflictRef);
 
   const requestWindowClose = useWindowClose();
   const closeGuard = useCallback(() => {
-    if (readOnly || !dirty) return true;
+    if (readOnly) return true;
+    if (saveConflict) return false;
+    if (!dirty) return true;
     setClosePromptOpen(true);
     return false;
-  }, [dirty, readOnly]);
+  }, [dirty, readOnly, saveConflict]);
   useWindowCloseGuard(closeGuard);
 
   useEffect(() => {
@@ -515,6 +527,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }
 
   const applyLoadedState = useCallback((state: unknown, updatedAt: number | null) => {
+    documentVersionRef.current = typeof updatedAt === "number" ? updatedAt : null;
     if (state === null) {
       setInvalidDocument(null);
       setLastSavedAt(null);
@@ -534,11 +547,11 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     }
   }, [applyDocument]);
 
-  const loadSavedDocument = useCallback(async () => {
+  async function loadSavedDocument() {
     const { state, updatedAt } = await load();
     if (!mountedRef.current) return;
     applyLoadedState(state, updatedAt);
-  }, [applyLoadedState, load]);
+  }
 
   useEffect(() => {
     let active = true;
@@ -589,35 +602,44 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
    * @returns `true` si se guardó correctamente.
    */
   const persistDocument = useCallback(async (document: AulaDocument, automatic: boolean): Promise<boolean> => {
-    if (savingRef.current) return false;
+    if (saveConflict || savingRef.current) return false;
     savingRef.current = true;
     setSaving(true);
     setSaveFailed(false);
     setStatus(automatic ? "Guardando automáticamente…" : "Guardando documento…");
     const versionAtSave = editVersionRef.current;
-    let ok = false;
+    let result: VersionedSaveResult;
     try {
-      ok = await save(document);
+      result = await saveVersioned(document, documentVersionRef.current);
     } catch {
-      ok = false;
+      result = { status: "failed" };
     }
     savingRef.current = false;
-    if (!mountedRef.current) return ok;
+    if (!mountedRef.current) return result.status === "saved";
     setSaving(false);
-    if (ok) {
-      setLastSavedAt(Date.now());
+    if (result.status === "saved") {
+      documentVersionRef.current = result.updatedAt;
+      setLastSavedAt(result.updatedAt);
       if (editVersionRef.current === versionAtSave) {
         setTitle(document.title);
         setDirty(false);
       }
       setStatus(automatic ? "Documento guardado automáticamente." : "Documento guardado en el proyecto.");
-    } else {
-      setSaveFailed(true);
-      setDirty(true);
-      setStatus("No se pudo guardar el documento. Revisa la conexión.");
+      return true;
     }
-    return ok;
-  }, [save]);
+    if (result.status === "conflict") {
+      setSaveConflict({ updatedAt: result.updatedAt, keepConfirm: false });
+      setConflictNotice(null);
+      setSaveFailed(false);
+      setDirty(true);
+      setStatus("El documento cambió en otra sesión. Elige qué versión conservar.");
+      return false;
+    }
+    setSaveFailed(true);
+    setDirty(true);
+    setStatus("No se pudo guardar el documento. Revisa la conexión.");
+    return false;
+  }, [saveConflict, saveVersioned]);
 
   /**
    * Construye y persiste el documento actual.
@@ -632,6 +654,109 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }, [currentDocument, persistDocument, readOnly]);
 
   /**
+   * Descarga una copia de la versión local antes de resolver el conflicto.
+   * @returns `true` si la copia se generó correctamente.
+   */
+  function downloadConflictCopy(): boolean {
+    const document = currentDocument();
+    if (!document) {
+      setConflictNotice("No se pudo preparar la copia porque el documento no es válido.");
+      return false;
+    }
+    try {
+      downloadTextFile(
+        JSON.stringify(document, null, 2),
+        "application/json;charset=utf-8",
+        aulaRecoveryFileName(document.title),
+      );
+      setConflictNotice("Copia de tu versión descargada.");
+      setStatus("Copia de la versión en conflicto descargada.");
+      return true;
+    } catch {
+      setConflictNotice("No se pudo descargar la copia. Revisa los permisos del navegador.");
+      setStatus("No se pudo descargar la copia de la versión en conflicto.");
+      return false;
+    }
+  }
+
+  /**
+   * Recarga la versión del servidor y descarta la copia local del editor.
+   */
+  async function reloadServerVersion() {
+    if (!saveConflict || savingRef.current) return;
+    savingRef.current = true;
+    setSaving(true);
+    setConflictNotice("Recargando la versión del servidor…");
+    const loaded = await load();
+    savingRef.current = false;
+    if (!mountedRef.current) return;
+    setSaving(false);
+    if (loaded.ok === false) {
+      setConflictNotice("No se pudo recargar. Revisa la conexión e inténtalo de nuevo.");
+      setStatus("No se pudo recargar la versión del servidor.");
+      return;
+    }
+    applyLoadedState(loaded.state, loaded.updatedAt);
+    setSaveConflict(null);
+    setConflictNotice(null);
+    setSaveFailed(false);
+    setStatus("Versión del servidor recargada.");
+  }
+
+  /**
+   * Descarga una copia y sobrescribe la versión del servidor con la local.
+   */
+  async function keepMineVersion() {
+    if (!saveConflict || savingRef.current) return;
+    const document = currentDocument();
+    if (!document) {
+      setConflictNotice("No se pudo preparar el documento para conservarlo.");
+      return;
+    }
+    if (!downloadConflictCopy()) return;
+
+    savingRef.current = true;
+    setSaving(true);
+    setSaveFailed(false);
+    setConflictNotice("Guardando tu versión sobre la del servidor…");
+    const versionAtSave = editVersionRef.current;
+    let result: VersionedSaveResult;
+    try {
+      result = await saveVersioned(document, saveConflict.updatedAt);
+    } catch {
+      result = { status: "failed" };
+    }
+    savingRef.current = false;
+    if (!mountedRef.current) return;
+    setSaving(false);
+
+    if (result.status === "saved") {
+      documentVersionRef.current = result.updatedAt;
+      setLastSavedAt(result.updatedAt);
+      if (editVersionRef.current === versionAtSave) {
+        setTitle(document.title);
+        setDirty(false);
+      }
+      setSaveConflict(null);
+      setConflictNotice(null);
+      setStatus("Tu versión se guardó y la copia quedó descargada.");
+      return;
+    }
+    if (result.status === "conflict") {
+      setSaveConflict({ updatedAt: result.updatedAt, keepConfirm: false });
+      setConflictNotice("La versión del servidor volvió a cambiar. Descarga otra copia antes de reintentar.");
+      setSaveFailed(false);
+      setDirty(true);
+      setStatus("La versión del servidor volvió a cambiar.");
+      return;
+    }
+    setSaveFailed(true);
+    setDirty(true);
+    setConflictNotice("No se pudo guardar tu versión. La copia descargada sigue disponible.");
+    setStatus("No se pudo conservar tu versión. Revisa la conexión.");
+  }
+
+  /**
    * Guarda el documento manualmente.
    */
   const saveDocument = useCallback(() => {
@@ -639,10 +764,10 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }, [saveCurrent]);
 
   useEffect(() => {
-    if (readOnly || loading || !editor || !dirty || saving || saveFailed || invalidDocument) return;
+    if (readOnly || loading || !editor || !dirty || saving || saveFailed || invalidDocument || saveConflict) return;
     const timer = window.setTimeout(() => { void saveCurrent(true); }, AUTOSAVE_DELAY_MS);
     return () => window.clearTimeout(timer);
-  }, [dirty, editVersion, editor, invalidDocument, loading, readOnly, saveCurrent, saveFailed, saving]);
+  }, [dirty, editVersion, editor, invalidDocument, loading, readOnly, saveConflict, saveCurrent, saveFailed, saving]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -1064,13 +1189,15 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const savedLabel = lastSavedAt === null ? "Sin guardar" : `Guardado ${formatSavedTime(lastSavedAt)}`;
   const chipText = readOnly
     ? "Solo lectura"
-    : saving
-      ? "Guardando…"
-      : saveFailed
-        ? "Error al guardar"
-        : dirty
-          ? "Cambios sin guardar"
-          : savedLabel;
+    : saveConflict
+      ? "Conflicto sin resolver"
+      : saving
+        ? "Guardando…"
+        : saveFailed
+          ? "Error al guardar"
+          : dirty
+            ? "Cambios sin guardar"
+            : savedLabel;
   const wordLabel = wordCount === 1 ? "1 palabra" : `${wordCount} palabras`;
   const diagramLabel = diagramCount === 1 ? "1 diagrama" : `${diagramCount} diagramas`;
   const slideCount = editor ? buildPresentationSlides(editor.getJSON()).length : 0;
@@ -1110,7 +1237,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       label: "Guardar documento",
       icon: <Save size={15} aria-hidden />,
       onClick: () => { void saveDocument(); },
-      disabled: readOnly || saving || loading || !editor || Boolean(invalidDocument),
+      disabled: readOnly || saving || loading || !editor || Boolean(invalidDocument) || Boolean(saveConflict),
     },
     {
       label: "Exportar HTML",
@@ -1195,7 +1322,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           </span>
         </div>
         <div className="aula-documentos-meta" aria-label="Estado del documento">
-          <span className={dirty && !readOnly ? "aula-documentos-chip is-dirty" : "aula-documentos-chip"}>
+          <span className={(dirty || saveConflict) && !readOnly ? "aula-documentos-chip is-dirty" : "aula-documentos-chip"}>
             {chipText}
           </span>
           <span className="aula-documentos-count">{wordLabel}</span>
@@ -1451,6 +1578,101 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                     onClick={() => setInvalidResetConfirm(true)}
                   >
                     Empezar de cero
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+      ) : null}
+
+      {saveConflict ? (
+        <div className="aula-documentos-modal-backdrop">
+          <section
+            className="aula-documentos-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aula-documentos-conflict-title"
+            aria-describedby="aula-documentos-conflict-description"
+            ref={conflictRef}
+          >
+            <header className="aula-documentos-modal-head">
+              <h2 id="aula-documentos-conflict-title">Conflicto de versión</h2>
+            </header>
+            <div className="aula-documentos-import-menu">
+              <p className="aula-documentos-import-intro" id="aula-documentos-conflict-description">
+                El documento se guardó en otra pestaña o ventana después de tu última carga. Tus cambios siguen en el
+                editor y todavía no se han sobrescrito.
+              </p>
+              <p className="aula-documentos-import-meta">
+                {saveConflict.updatedAt === null
+                  ? "No se pudo obtener la hora de la versión del servidor."
+                  : `Versión del servidor: ${formatSourceDate(saveConflict.updatedAt) ?? "hora desconocida"}`}
+              </p>
+              <p className="aula-documentos-import-warning">
+                El autosave y el guardado manual están detenidos hasta que resuelvas el conflicto.
+              </p>
+              {conflictNotice ? (
+                <p className="aula-documentos-import-status" role="status">{conflictNotice}</p>
+              ) : null}
+
+              {saveConflict.keepConfirm ? (
+                <>
+                  <p className="aula-documentos-import-warning">
+                    Se descargará una copia JSON de tu versión y después se sobrescribirá la versión del servidor.
+                    Los cambios de la otra sesión se perderán.
+                  </p>
+                  <div className="aula-documentos-import-actions">
+                    <button
+                      type="button"
+                      className="aula-documentos-import-secondary"
+                      onClick={() => {
+                        setSaveConflict((current) => current ? { ...current, keepConfirm: false } : current);
+                        setConflictNotice(null);
+                      }}
+                      disabled={saving}
+                    >
+                      Volver
+                    </button>
+                    <button
+                      type="button"
+                      className="aula-documentos-import-primary"
+                      onClick={() => { void keepMineVersion(); }}
+                      disabled={saving}
+                    >
+                      {saving ? "Guardando…" : "Descargar copia y sobrescribir"}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="aula-documentos-import-actions">
+                  <button
+                    type="button"
+                    className="aula-documentos-import-secondary"
+                    onClick={() => { downloadConflictCopy(); }}
+                    disabled={saving}
+                  >
+                    <Download size={14} aria-hidden />
+                    Descargar copia
+                  </button>
+                  <button
+                    type="button"
+                    className="aula-documentos-import-secondary"
+                    onClick={() => { void reloadServerVersion(); }}
+                    disabled={saving}
+                  >
+                    {saving ? "Recargando…" : "Recargar versión del servidor"}
+                  </button>
+                  <button
+                    type="button"
+                    className="aula-documentos-import-primary"
+                    onClick={() => {
+                      setSaveConflict((current) => current ? { ...current, keepConfirm: true } : current);
+                      setConflictNotice(null);
+                    }}
+                    disabled={saving}
+                  >
+                    Conservar la mía
                   </button>
                 </div>
               )}

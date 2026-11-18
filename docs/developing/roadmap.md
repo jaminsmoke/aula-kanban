@@ -59,11 +59,11 @@
 
 ### Fase 2 — Cliente y diálogo de conflicto
 
-- [ ] Hacer que `useAppDocument` envíe el `updatedAt` conocido y distinga conflicto de error de red.
-- [ ] Detener el autosave y el guardado manual mientras haya conflicto.
-- [ ] Añadir un diálogo con «Recargar versión del servidor», «Conservar la mía» y «Descargar copia».
-- [ ] Actualizar el estado local solo después de una resolución explícita.
-- [ ] Cubrir con pruebas conflicto, recarga, conservar, descargar y nuevo guardado posterior.
+- [x] Hacer que `useAppDocument` envíe el `updatedAt` conocido y distinga conflicto de error de red.
+- [x] Detener el autosave y el guardado manual mientras haya conflicto.
+- [x] Añadir un diálogo con «Recargar versión del servidor», «Conservar la mía» y «Descargar copia».
+- [x] Actualizar el estado local solo después de una resolución explícita.
+- [x] Cubrir con pruebas conflicto, recarga, conservar, descargar y nuevo guardado posterior.
 - **Criterios de aceptación:**
   - Dos guardados consecutivos no se pisan en silencio.
   - Recargar trae la versión del servidor y conserva el documento actual hasta confirmar.
@@ -110,3 +110,4 @@
 - Puntos de partida: `lib/server/app-documents.ts`, `app/api/app-documents/route.ts`, `app/board/apps/use-app-document.ts`, `app/board/apps/aula-documentos/aula-documentos-app.tsx` y sus pruebas.
 - ADOC-01 a ADOC-06 están cerrados. El esquema del documento ya está en v2 y no se añade historial completo; la copia local es una red de seguridad, no una funcionalidad de versiones.
 - 2026-11-18: Fase 1 completada. El POST acepta `expectedUpdatedAt` numérico o `null`; un `UPDATE ... WHERE updated_at = ? RETURNING` atómico acepta solo la versión vigente y un `INSERT ... ON CONFLICT DO NOTHING` protege la creación. El conflicto responde `409` con `updatedAt` y no escribe. El testigo avanza con `max(ahora, actual + 1)` para no repetirse en el mismo milisegundo; sin el campo se conserva el contrato anterior. 17 pruebas focalizadas y 1.402 en la suite completa; `tsc` y ESLint en verde.
+- 2026-11-18: Fase 2 completada. `useAppDocument` añade `saveVersioned` y conserva `save` para las demás apps. Aula Documentos envía el testigo del servidor, abre un diálogo de conflicto y detiene autosave, Ctrl+S y guardado manual hasta resolver. «Recargar versión del servidor» descarta la copia local tras una acción explícita; «Conservar la mía» exige confirmación y descarga un JSON antes de sobrescribir. La siguiente fase sustituye esa descarga por una copia recuperable en el navegador. 47 pruebas focalizadas y 1.406 en la suite completa; `tsc` y ESLint en verde.

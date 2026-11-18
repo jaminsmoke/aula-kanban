@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
 import { useWindowAttemptClose, WindowCloseProvider } from "../../store/window-close-guard";
+import type { VersionedSaveResult } from "../use-app-document";
 import AulaDocumentosApp, { AUTOSAVE_DELAY_MS } from "./aula-documentos-app";
 
 /**
@@ -15,8 +16,12 @@ function CloseTrigger() {
 
 const documentMock = vi.hoisted(() => ({
   loading: false as boolean,
-  load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
-  save: vi.fn(async (_state: unknown) => true),
+  load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null; ok?: boolean }> => ({ state: null, updatedAt: null, ok: true })),
+  save: vi.fn(async (_state: unknown, _expectedUpdatedAt?: number | null) => true),
+  saveVersioned: vi.fn(async (state: unknown, expectedUpdatedAt: number | null): Promise<VersionedSaveResult> => {
+    const ok = await documentMock.save(state, expectedUpdatedAt);
+    return ok ? { status: "saved" as const, updatedAt: Date.now() } : { status: "failed" as const };
+  }),
   notesLoad: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
   mermaidLoad: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
   presentationsLoad: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
@@ -42,6 +47,7 @@ vi.mock("../use-app-document", () => ({
           ? documentMock.presentationsLoad
           : documentMock.load,
     save: documentMock.save,
+    saveVersioned: documentMock.saveVersioned,
     loading: documentMock.loading,
     error: null,
   }),
@@ -68,17 +74,58 @@ function countMermaid(content: unknown): number {
     + children.reduce<number>((total, child) => total + countMermaid(child), 0);
 }
 
+/**
+ * Construye un documento válido para simular otra versión del servidor.
+ * @param title - Título del documento.
+ * @returns Documento listo para guardar o cargar.
+ */
+function savedDocument(title: string): AulaDocument {
+  return {
+    schemaVersion: 2,
+    title,
+    content: {
+      type: "doc",
+      content: [{
+        type: "paragraph",
+        content: [{ type: "text", text: "Contenido de prueba." }],
+      }],
+    },
+  } as AulaDocument;
+}
+
+/**
+ * Sustituye la descarga del navegador para poder comprobar la copia.
+ * @returns El espía de `URL.createObjectURL`.
+ */
+function stubDownload() {
+  const createObjectURL = vi.fn(() => "blob:copia");
+  Object.defineProperty(URL, "createObjectURL", { configurable: true, value: createObjectURL });
+  Object.defineProperty(URL, "revokeObjectURL", { configurable: true, value: vi.fn() });
+  vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+  return createObjectURL;
+}
+
 describe("Aula Documentos", () => {
   afterEach(() => {
+    vi.restoreAllMocks();
     vi.clearAllMocks();
     vi.useRealTimers();
     documentMock.loading = false;
-    documentMock.load.mockResolvedValue({ state: null, updatedAt: null });
+    documentMock.load.mockReset();
+    documentMock.load.mockResolvedValue({ state: null, updatedAt: null, ok: true });
+    documentMock.save.mockReset();
     documentMock.save.mockResolvedValue(true);
+    documentMock.saveVersioned.mockReset();
+    documentMock.saveVersioned.mockImplementation(async (state: unknown, expectedUpdatedAt: number | null) => {
+      const ok = await documentMock.save(state, expectedUpdatedAt);
+      return ok ? { status: "saved" as const, updatedAt: Date.now() } : { status: "failed" as const };
+    });
     documentMock.notesLoad.mockResolvedValue({ state: null, updatedAt: null });
     documentMock.mermaidLoad.mockResolvedValue({ state: null, updatedAt: null });
     documentMock.presentationsLoad.mockResolvedValue({ state: null, updatedAt: null });
     mermaidMock.render.mockImplementation(async (code: string) => `<svg data-mermaid-preview="true"><text>${code}</text></svg>`);
+    delete (URL as unknown as Record<string, unknown>).createObjectURL;
+    delete (URL as unknown as Record<string, unknown>).revokeObjectURL;
   });
 
   it("monta el título, el editor y las acciones principales", async () => {
@@ -159,6 +206,113 @@ describe("Aula Documentos", () => {
 
     await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(2));
     expect(screen.getByRole("status").textContent).toContain("guardado en el proyecto");
+  });
+
+  it("detiene el autosave y el guardado manual al abrir un conflicto", async () => {
+    documentMock.load.mockResolvedValueOnce({
+      state: savedDocument("Versión inicial"),
+      updatedAt: 5,
+      ok: true,
+    });
+    documentMock.saveVersioned.mockResolvedValueOnce({ status: "conflict", updatedAt: 12 });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Versión inicial"));
+    fireEvent.change(screen.getByLabelText("Título del documento"), { target: { value: "Cambio local" } });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+
+    expect(await screen.findByRole("dialog", { name: "Conflicto de versión" })).toBeTruthy();
+    expect(screen.getByText("Conflicto sin resolver")).toBeTruthy();
+    expect(screen.getByText(/Versión del servidor:/)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Guardar documento" })).toHaveProperty("disabled", true);
+    expect(documentMock.saveVersioned).toHaveBeenCalledWith(
+      expect.objectContaining({ title: "Cambio local" }),
+      5,
+    );
+
+    const calls = documentMock.saveVersioned.mock.calls.length;
+    vi.useFakeTimers();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(AUTOSAVE_DELAY_MS + 100);
+    });
+    vi.useRealTimers();
+    fireEvent.keyDown(window, { key: "s", ctrlKey: true });
+
+    expect(documentMock.saveVersioned).toHaveBeenCalledTimes(calls);
+  });
+
+  it("recarga la versión del servidor y guarda después con la versión nueva", async () => {
+    documentMock.load
+      .mockResolvedValueOnce({
+        state: savedDocument("Versión local"),
+        updatedAt: 5,
+        ok: true,
+      })
+      .mockResolvedValueOnce({
+        state: savedDocument("Versión del servidor"),
+        updatedAt: 30,
+        ok: true,
+      });
+    documentMock.saveVersioned.mockResolvedValueOnce({ status: "conflict", updatedAt: 30 });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Versión local"));
+    fireEvent.change(screen.getByLabelText("Título del documento"), { target: { value: "Cambio local" } });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+    await screen.findByRole("dialog", { name: "Conflicto de versión" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Recargar versión del servidor" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Conflicto de versión" })).toBeNull());
+    expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Versión del servidor");
+    expect(documentMock.load).toHaveBeenCalledTimes(2);
+    expect(screen.getByRole("status").textContent).toContain("Versión del servidor recargada");
+
+    fireEvent.change(screen.getByLabelText("Título del documento"), { target: { value: "Después de recargar" } });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+
+    await waitFor(() => expect(documentMock.saveVersioned).toHaveBeenCalledTimes(2));
+    expect(documentMock.saveVersioned.mock.calls[1][1]).toBe(30);
+  });
+
+  it("descarga una copia y conserva la versión local solo tras confirmar", async () => {
+    const createObjectURL = stubDownload();
+    documentMock.load.mockResolvedValueOnce({
+      state: savedDocument("Versión local"),
+      updatedAt: 5,
+      ok: true,
+    });
+    documentMock.saveVersioned
+      .mockResolvedValueOnce({ status: "conflict", updatedAt: 12 })
+      .mockResolvedValueOnce({ status: "saved", updatedAt: 20 });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Versión local"));
+    fireEvent.change(screen.getByLabelText("Título del documento"), { target: { value: "Cambio local" } });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+    await screen.findByRole("dialog", { name: "Conflicto de versión" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Descargar copia" }));
+    expect(createObjectURL).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("Copia de tu versión descargada.")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Conservar la mía" }));
+    expect(screen.getByText(/Se descargará una copia JSON/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Descargar copia y sobrescribir" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Conflicto de versión" })).toBeNull());
+    expect(createObjectURL).toHaveBeenCalledTimes(2);
+    expect(documentMock.saveVersioned).toHaveBeenLastCalledWith(
+      expect.objectContaining({ title: "Cambio local" }),
+      12,
+    );
+    expect(screen.getByRole("status").textContent).toContain("Tu versión se guardó");
+
+    fireEvent.change(screen.getByLabelText("Título del documento"), { target: { value: "Después de conservar" } });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+
+    await waitFor(() => expect(documentMock.saveVersioned).toHaveBeenCalledTimes(3));
+    expect(documentMock.saveVersioned.mock.calls[2][1]).toBe(20);
   });
 
   it("no guarda mientras el documento se está cargando", async () => {
