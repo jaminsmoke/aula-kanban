@@ -55,13 +55,13 @@
 
 ### Fase 1 — Visor local para los tres formatos
 
-- [ ] Instalar y fijar `@silurus/ooxml` 0.90.1.
-- [ ] Crear `app/board/apps/visor-office/` con modelo de formato, selector y superficie de visor.
-- [ ] Detectar `.docx`, `.xlsx` y `.pptx`, validar el límite de 30 MB y leer los bytes localmente.
-- [ ] Instanciar el visor correspondiente y liberarlo al cambiar de archivo, cerrar o desmontar.
-- [ ] Añadir nombre, tamaño y formato del archivo, estados de carga y errores básicos.
-- [ ] Incorporar controles de zoom, ajuste y navegación disponibles en cada visor.
-- [ ] Revisar el layout a 1366, 1024 y 390 px, sin scroll horizontal de página.
+- [x] Instalar y fijar `@silurus/ooxml` 0.90.1.
+- [x] Crear `app/board/apps/visor-office/` con modelo de formato, selector y superficie de visor.
+- [x] Detectar `.docx`, `.xlsx` y `.pptx`, validar el límite de 30 MB y leer los bytes localmente.
+- [x] Instanciar el visor correspondiente y liberarlo al cambiar de archivo, cerrar o desmontar.
+- [x] Añadir nombre, tamaño y formato del archivo, estados de carga y errores básicos.
+- [x] Incorporar controles de zoom, ajuste y navegación disponibles en cada visor.
+- [x] Revisar el layout a 1366, 1024 y 390 px, sin scroll horizontal de página.
 - **Criterios de aceptación:**
   - Se abre un archivo local de cada uno de los tres formatos.
   - El archivo no se sube, no se modifica, no se persiste en el proyecto y no se envía fuera del navegador.
@@ -117,3 +117,4 @@
 - No se añade PDF: el lector de libros ya lo cubre.
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.
 - No se cambia la versión del Site (`1.1.35`) ni se publica en Sites desde este roadmap.
+- 2026-11-18: Fase 1 verificada con archivos reales de Word, Excel y PowerPoint en 1366, 1024 y 390 px. El visor usa un host DOM estable, ajusta Word al ancho y PowerPoint a la ventana, mantiene Excel al 100 % y vuelve a ajustar al redimensionar. Cambiar o cerrar el archivo destruye el visor y limpia sus nodos. Modelo y componente tienen 8 pruebas en verde.

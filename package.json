@@ -30,6 +30,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@excalidraw/excalidraw": "^0.18.1",
     "@modelcontextprotocol/sdk": "^1.32.2",
+    "@silurus/ooxml": "0.90.1",
     "@tiptap/core": "3.34.0",
     "@tiptap/extension-link": "3.34.0",
     "@tiptap/pm": "3.34.0",
