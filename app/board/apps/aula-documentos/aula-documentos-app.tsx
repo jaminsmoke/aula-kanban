@@ -128,6 +128,10 @@ const IMPORT_LABELS: Record<AulaDocumentImportSource | "markdown", string> = {
   markdown: "Markdown",
 };
 
+type ImportPreviewState = AulaDocumentImportPreview & {
+  sourceUpdatedAt: number | null;
+};
+
 /**
  * Botón de la barra de formato.
  * @param props - Acción y estado del botón.
@@ -177,6 +181,19 @@ function formatSavedTime(timestamp: number | null): string {
   if (timestamp === null) return "";
   const date = new Date(timestamp);
   return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+}
+
+/**
+ * Formatea la fecha de actualización del documento de origen.
+ * @param timestamp - Milisegundos desde época o `null`.
+ * @returns Fecha legible o `null` si no está disponible.
+ */
+function formatSourceDate(timestamp: number | null): string | null {
+  if (timestamp === null || !Number.isFinite(timestamp)) return null;
+  return new Intl.DateTimeFormat("es-ES", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(timestamp));
 }
 
 /**
@@ -230,7 +247,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [linkUrl, setLinkUrl] = useState("");
   const [linkError, setLinkError] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
-  const [importPreview, setImportPreview] = useState<AulaDocumentImportPreview | null>(null);
+  const [importPreview, setImportPreview] = useState<ImportPreviewState | null>(null);
   const [importLoading, setImportLoading] = useState<string | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importConfirm, setImportConfirm] = useState(false);
@@ -737,7 +754,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         : source === "mermaid"
           ? mermaidStore
           : presentationsStore;
-      const { state } = await store.load();
+      const { state, updatedAt } = await store.load();
       if (state === null) {
         setImportError(`No hay ningún documento guardado en ${IMPORT_LABELS[source]}.`);
         return;
@@ -747,7 +764,10 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         setImportError(result.message);
         return;
       }
-      setImportPreview(result.preview);
+      setImportPreview({
+        ...result.preview,
+        sourceUpdatedAt: typeof updatedAt === "number" ? updatedAt : null,
+      });
     } catch {
       setImportError("No se pudo leer el documento de origen.");
     } finally {
@@ -789,6 +809,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         document: parsed.document,
         stats: parsed.stats,
         warnings: converted.warnings,
+        sourceUpdatedAt: null,
       });
     } catch {
       setImportError("No se pudo leer el archivo Markdown.");
@@ -869,6 +890,14 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const diagramLabel = diagramCount === 1 ? "1 diagrama" : `${diagramCount} diagramas`;
   const importExcerpt = importPreview
     ? contentText(importPreview.document.content).replace(/\s+/g, " ").trim().slice(0, 260)
+    : "";
+  const importSourceUpdatedLabel = importPreview ? formatSourceDate(importPreview.sourceUpdatedAt) : null;
+  const importSourceDate = importPreview
+    ? importPreview.source === "markdown"
+      ? "Archivo local"
+      : importSourceUpdatedLabel
+        ? `Actualizado en el origen: ${importSourceUpdatedLabel}`
+        : "Fecha de origen no disponible."
     : "";
   const newDocumentText = newDocumentPreview ? contentText(newDocumentPreview.document.content) : "";
   const newDocumentExcerpt = newDocumentText.replace(/\s+/g, " ").trim().slice(0, 260);
@@ -1291,6 +1320,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                   {importPreview.stats.textLength} caracteres de texto · {importPreview.stats.mermaidBlocks === 1 ? "1 diagrama" : `${importPreview.stats.mermaidBlocks} diagramas`}
                   {importPreview.stats.slideBreaks ? ` · ${importPreview.stats.slideBreaks} ${importPreview.stats.slideBreaks === 1 ? "salto" : "saltos"} de diapositiva` : ""}
                 </p>
+                <p className="aula-documentos-import-meta">{importSourceDate}</p>
                 <p className="aula-documentos-import-excerpt">
                   {importExcerpt || "El documento no contiene texto."}
                 </p>

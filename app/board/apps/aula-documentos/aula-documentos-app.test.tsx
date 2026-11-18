@@ -524,6 +524,63 @@ describe("Aula Documentos", () => {
     expect(saved.content.content?.some((node) => node.type === "slideBreak")).toBe(true);
   });
 
+  it("muestra origen, fecha y aviso al importar Notas con H1 duplicado", async () => {
+    documentMock.notesLoad.mockResolvedValueOnce({
+      state: {
+        title: "Notas de clase",
+        content: {
+          type: "doc",
+          content: [
+            { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "  notas DE CLASE " }] },
+            { type: "paragraph", content: [{ type: "text", text: "Contenido." }] },
+          ],
+        },
+      },
+      updatedAt: Date.UTC(2026, 10, 18, 10, 30),
+    });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Importar documento" }));
+    fireEvent.click(screen.getByRole("button", { name: /Notas y documentos/ }));
+
+    expect(await screen.findByRole("heading", { name: "Notas de clase" })).toBeTruthy();
+    expect(screen.getByText("Se quitó el H1 inicial porque repetía el título.")).toBeTruthy();
+    expect(screen.getByText(/Actualizado en el origen:/)).toBeTruthy();
+    expect(screen.getByText("Notas y documentos")).toBeTruthy();
+  });
+
+  it("indica cuando el origen no tiene fecha al importar Diagramas", async () => {
+    documentMock.mermaidLoad.mockResolvedValueOnce({
+      state: { code: "flowchart TD\nA --> B" },
+      updatedAt: null,
+    });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Importar documento" }));
+    fireEvent.click(screen.getByRole("button", { name: /Diagramas/ }));
+
+    expect(await screen.findByRole("heading", { name: "Diagrama importado" })).toBeTruthy();
+    expect(screen.getByText("Fecha de origen no disponible.")).toBeTruthy();
+    expect(screen.getByText("Diagramas")).toBeTruthy();
+  });
+
+  it("muestra un error legible si el origen no se puede convertir", async () => {
+    documentMock.notesLoad.mockResolvedValueOnce({
+      state: { title: 3, content: {} },
+      updatedAt: null,
+    });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Importar documento" }));
+    fireEvent.click(screen.getByRole("button", { name: /Notas y documentos/ }));
+
+    expect(await screen.findByText("El documento de Notas y documentos no tiene un título válido.")).toBeTruthy();
+    expect(screen.queryByRole("checkbox", { name: /Entiendo que se reemplaza/ })).toBeNull();
+  });
+
   it("importa Presentaciones y conserva sus saltos", async () => {
     documentMock.presentationsLoad.mockResolvedValueOnce({
       state: {

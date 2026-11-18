@@ -54,11 +54,11 @@
 
 ### Fase 2 — Vista previa y metadatos
 
-- [ ] Mostrar app de origen y fecha de actualización cuando `load()` la devuelva.
-- [ ] Mostrar el título final y una advertencia cuando se haya quitado un H1 duplicado.
-- [ ] Mantener la vista previa, la confirmación y el aviso de reemplazo del documento actual.
-- [ ] Evitar que una importación con metadatos ausentes o un estado no convertibles rompa el diálogo.
-- [ ] Añadir pruebas de importación desde las tres apps, con y sin fecha, y de los avisos mostrados.
+- [x] Mostrar app de origen y fecha de actualización cuando `load()` la devuelva.
+- [x] Mostrar el título final y una advertencia cuando se haya quitado un H1 duplicado.
+- [x] Mantener la vista previa, la confirmación y el aviso de reemplazo del documento actual.
+- [x] Evitar que una importación con metadatos ausentes o un estado no convertibles rompa el diálogo.
+- [x] Añadir pruebas de importación desde las tres apps, con y sin fecha, y de los avisos mostrados.
 - **Criterios de aceptación:**
   - La vista previa explica el origen y las normalizaciones antes de confirmar.
   - Las importaciones válidas siguen funcionando con los datos actuales.
@@ -93,3 +93,4 @@
 - Puntos de partida: `lib/domain/aula-documentos/importers.ts`, `lib/domain/aula-documentos/markdown.ts`, `app/board/apps/aula-documentos/aula-documentos-app.tsx` y sus pruebas.
 - ADOC-01 y ADOC-02 ya están cerrados. La app conserva un único documento por proyecto y no escribe en `documentos`, `mermaid` ni `presentaciones`.
 - 2026-11-18: Fase 1 completada. `title-heading.ts` normaliza mayúsculas, acentos y espacios, retira solo el primer H1 equivalente y devuelve un aviso sin mutar el original. Se aplica a Notas y al Markdown con `stripTitleHeading`; los H1 distintos, vacíos o posteriores se conservan. 5 pruebas nuevas en el helper y casos añadidos a importadores y Markdown; 1.363 en la suite completa; `tsc` y ESLint en verde.
+- 2026-11-18: Fase 2 completada. La vista previa muestra app de origen, fecha de actualización o «Fecha de origen no disponible», título final y las advertencias del importador, incluida la retirada del H1 duplicado. Se conserva la confirmación de reemplazo y un estado no convertible muestra error sin ofrecer la importación. Verificado con Notas, Diagramas y Presentaciones; 30 pruebas focalizadas y 1.366 en la suite completa; `tsc` y ESLint en verde.
