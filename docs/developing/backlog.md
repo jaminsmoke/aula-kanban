@@ -7,25 +7,26 @@
 
 ---
 
-## 2026-11-18 — STORE-17 · Editor unificado de documentos (nombre pendiente)
+## 2026-11-18 — STORE-17 · Aula Documentos · Editor unificado
 
 - Contexto: Notas y documentos, Diagramas y Presentaciones comparten el trabajo con documentos, pero usan tres modelos distintos: Tiptap JSON, Mermaid y Markdown/reveal.js. La fusión puede unificar editor, persistencia, exportación y ficha, y dejar los motores pesados como bloques diferidos.
 - Decisiones ya tomadas:
-  1. Mantener `documentos` como id interno y `app_documents` como almacenamiento; el nombre visible queda pendiente.
+  1. Nombre visible: **Aula Documentos**. Mantener `documentos` como id interno y `app_documents` como almacenamiento.
   2. Un documento compuesto por proyecto en la primera versión.
   3. La primera fusión será texto enriquecido + bloque Mermaid. Presentaciones y el modo Markdown llegarán después.
   4. No habrá migración destructiva: los datos de `documentos`, `mermaid` y `presentaciones` se conservan y se importan con vista previa cuando haya paridad.
   5. Las apps antiguas se mantienen un ciclo de compatibilidad antes de ocultarlas o retirarlas.
   6. Markdown será importación/exportación y vista previa; no habrá dos fuentes de verdad desde el inicio.
   7. Mermaid y reveal.js se cargarán bajo demanda; la fusión no debe aumentar el chunk inicial.
+  8. Estructura interna: `apps/documentos/` será la app de entrada y el núcleo compartido; los bloques y funciones vivirán en subcarpetas suyas (`blocks/`, `presentation/`, `markdown/`). Las apps antiguas que sigan existiendo durante la compatibilidad serán adaptadores finos sobre ese núcleo, no copias. El registro de apps seguirá plano por id; la jerarquía será interna.
 - Alcance por fases:
-  1. Spike de modelo de documento, validación, migración de datos, presupuesto de chunks y ficha con procedencia.
+  1. Spike de modelo de documento, validación, migración de datos, estructura de carpetas, presupuesto de chunks y ficha con procedencia.
   2. Editor unificado v1 con texto enriquecido y bloque Mermaid editable, guardado y exportación HTML.
   3. Importación/exportación Markdown y vista previa, sin edición dual simultánea.
   4. Modo presentación con `reveal.js` diferido y migración asistida de Presentaciones.
   5. Paridad, retirada gradual de apps antiguas, alias y actualización de ayuda, MCP y matriz.
 - Criterios: no perder documentos existentes, abrir y editar los tres tipos de contenido, mantener invitados en solo lectura, respetar el presupuesto de chunks y actualizar las fichas con «incluye» y los paquetes upstream.
-- Notas: el nombre visible sigue abierto; se han considerado `Aula Docs`, `Docxpress` y otras opciones, pero `Composio` y `Aula Studio` se descartaron por sonar a marcas tecnológicas o estudios audiovisuales. Mapas conceptuales y Líneas de tiempo quedan fuera de esta fusión. No abrir roadmap hasta cerrar STORE-16.
+- Notas: el nombre elegido es **Aula Documentos**; `Composio`, `Aula Studio`, `Aula Docs` y `Docxpress` se descartan por sonar a marcas tecnológicas o estudios audiovisuales. Mapas conceptuales y Líneas de tiempo quedan fuera de esta fusión. No abrir roadmap hasta cerrar STORE-16.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 
