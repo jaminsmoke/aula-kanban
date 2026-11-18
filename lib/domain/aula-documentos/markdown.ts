@@ -1,5 +1,5 @@
 import type { JSONContent } from "@tiptap/core";
-import { normalizeAulaLink } from "./document";
+import { normalizeAulaLink, type AulaDocument } from "./document";
 
 /** Resultado de convertir Markdown al modelo del documento. */
 export type MarkdownDocumentResult = {
@@ -8,15 +8,20 @@ export type MarkdownDocumentResult = {
   warnings: string[];
 };
 
+/** Límite de entrada para Markdown. */
+export const AULA_DOCUMENT_MARKDOWN_MAX_LENGTH = 200_000;
+
 /** Opciones de conversión. */
 export type MarkdownDocumentOptions = {
   /** Convierte `---` en saltos de diapositiva en vez de reglas horizontales. */
   slideBreaks?: boolean;
   /** Título cuando no hay un encabezado utilizable. */
   titleFallback?: string;
+  /** Quita el primer encabezado cuando se usa como título del documento. */
+  stripTitleHeading?: boolean;
 };
 
-const INLINE_PATTERN = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g;
+const INLINE_PATTERN = /(\*\*\*[^*]+\*\*\*|~~[^~]+~~|\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g;
 
 /**
  * Convierte Markdown inline en nodos de texto seguros.
@@ -29,8 +34,16 @@ export function markdownInlineToNodes(text: string): JSONContent[] {
   const nodes: JSONContent[] = [];
 
   for (const part of parts) {
+    if (part.startsWith("***") && part.endsWith("***") && part.length > 6) {
+      nodes.push({ type: "text", text: part.slice(3, -3), marks: [{ type: "bold" }, { type: "italic" }] });
+      continue;
+    }
     if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
       nodes.push({ type: "text", text: part.slice(2, -2), marks: [{ type: "bold" }] });
+      continue;
+    }
+    if (part.startsWith("~~") && part.endsWith("~~") && part.length > 4) {
+      nodes.push({ type: "text", text: part.slice(2, -2), marks: [{ type: "strike" }] });
       continue;
     }
     if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
@@ -241,6 +254,10 @@ export function markdownToDocument(
     : firstParagraph
       ? nodeText(firstParagraph).trim().slice(0, 120)
       : options.titleFallback ?? "Documento importado";
+  const firstBlock = blocks[0];
+  if (options.stripTitleHeading && firstBlock?.type === "heading" && nodeText(firstBlock).trim() === title) {
+    blocks.shift();
+  }
 
   return {
     title: title || options.titleFallback || "Documento importado",
@@ -250,4 +267,102 @@ export function markdownToDocument(
     },
     warnings,
   };
+}
+
+/**
+ * Escapa el texto que no debe interpretarse como Markdown.
+ * @param value - Texto plano.
+ * @returns Texto seguro para el subconjunto.
+ */
+function escapeMarkdownText(value: string): string {
+  return value.replace(/([\\`*_[\]])/g, "\\$1");
+}
+
+/**
+ * Convierte nodos inline a Markdown.
+ * @param nodes - Texto con marcas.
+ * @returns Markdown inline.
+ */
+function inlineToMarkdown(nodes: JSONContent[]): string {
+  return nodes.map((node) => {
+    if (node.type === "hardBreak") return "  \n";
+    if (node.type !== "text") return "";
+    const text = node.text ?? "";
+    const marks = new Set((node.marks ?? []).map((mark) => mark.type));
+    const link = (node.marks ?? []).find((mark) => mark.type === "link");
+    if (link?.attrs?.href) {
+      return `[${escapeMarkdownText(text)}](${link.attrs.href})`;
+    }
+    if (marks.has("code")) return `\`${text.replace(/`/g, "\\`")}\``;
+    const bold = marks.has("bold");
+    const italic = marks.has("italic");
+    if (bold && italic) return `***${escapeMarkdownText(text)}***`;
+    if (bold) return `**${escapeMarkdownText(text)}**`;
+    if (italic) return `*${escapeMarkdownText(text)}*`;
+    if (marks.has("strike")) return `~~${escapeMarkdownText(text)}~~`;
+    return escapeMarkdownText(text);
+  }).join("");
+}
+
+/**
+ * Convierte una lista a Markdown.
+ * @param node - Nodo de lista.
+ * @param ordered - Si la lista es numerada.
+ * @returns Markdown de la lista.
+ */
+function listToMarkdown(node: JSONContent, ordered: boolean): string {
+  return (node.content ?? []).map((item, index) => {
+    const body = (item.content ?? []).map((child) => blockToMarkdown(child)).join("\n\n");
+    const marker = ordered ? `${index + 1}. ` : "- ";
+    return body.split("\n").map((line, lineIndex) => (
+      lineIndex === 0 ? `${marker}${line}` : `${" ".repeat(marker.length)}${line}`
+    )).join("\n");
+  }).join("\n");
+}
+
+/**
+ * Convierte un nodo de bloque a Markdown.
+ * @param node - Nodo del documento.
+ * @returns Markdown del bloque.
+ */
+function blockToMarkdown(node: JSONContent): string {
+  if (node.type === "paragraph") return inlineToMarkdown(node.content ?? []);
+  if (node.type === "heading") {
+    const level = Number(node.attrs?.level) || 1;
+    return `${"#".repeat(Math.max(1, Math.min(3, level)))} ${inlineToMarkdown(node.content ?? [])}`;
+  }
+  if (node.type === "bulletList") return listToMarkdown(node, false);
+  if (node.type === "orderedList") return listToMarkdown(node, true);
+  if (node.type === "blockquote") {
+    return (node.content ?? [])
+      .map((child) => blockToMarkdown(child))
+      .join("\n\n")
+      .split("\n")
+      .map((line) => `> ${line}`)
+      .join("\n");
+  }
+  if (node.type === "codeBlock") {
+    const language = typeof node.attrs?.language === "string" ? node.attrs.language : "";
+    return `\`\`\`${language}\n${nodeText(node)}\n\`\`\``;
+  }
+  if (node.type === "mermaidBlock") {
+    const code = typeof node.attrs?.code === "string" ? node.attrs.code : "";
+    return `\`\`\`mermaid\n${code}\n\`\`\``;
+  }
+  if (node.type === "slideBreak" || node.type === "horizontalRule") return "---";
+  return (node.content ?? []).map((child) => blockToMarkdown(child)).join("\n\n");
+}
+
+/**
+ * Exporta el documento al subconjunto Markdown soportado.
+ * @param aulaDocument - Documento validado.
+ * @returns Markdown con título, contenido y diagramas cercados.
+ */
+export function documentToMarkdown(aulaDocument: AulaDocument): string {
+  const title = aulaDocument.title.trim() || "Documento sin título";
+  const blocks = [...(aulaDocument.content.content ?? [])];
+  const first = blocks[0];
+  if (first?.type === "heading" && nodeText(first).trim() === title) blocks.shift();
+  const body = blocks.map((block) => blockToMarkdown(block)).filter(Boolean).join("\n\n");
+  return `# ${escapeMarkdownText(title)}${body ? `\n\n${body}` : ""}\n`;
 }

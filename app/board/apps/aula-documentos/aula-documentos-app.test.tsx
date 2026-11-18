@@ -6,6 +6,8 @@ import AulaDocumentosApp from "./aula-documentos-app";
 const documentMock = vi.hoisted(() => ({
   load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
   save: vi.fn(async (_state: unknown) => true),
+  notesLoad: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
+  mermaidLoad: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
 }));
 
 const mermaidMock = vi.hoisted(() => ({
@@ -13,8 +15,12 @@ const mermaidMock = vi.hoisted(() => ({
 }));
 
 vi.mock("../use-app-document", () => ({
-  useAppDocument: () => ({
-    load: documentMock.load,
+  useAppDocument: (_projectId: string, appId: string) => ({
+    load: appId === "documentos"
+      ? documentMock.notesLoad
+      : appId === "mermaid"
+        ? documentMock.mermaidLoad
+        : documentMock.load,
     save: documentMock.save,
     loading: false,
     error: null,
@@ -47,6 +53,8 @@ describe("Aula Documentos", () => {
     vi.clearAllMocks();
     documentMock.load.mockResolvedValue({ state: null, updatedAt: null });
     documentMock.save.mockResolvedValue(true);
+    documentMock.notesLoad.mockResolvedValue({ state: null, updatedAt: null });
+    documentMock.mermaidLoad.mockResolvedValue({ state: null, updatedAt: null });
     mermaidMock.render.mockImplementation(async (code: string) => `<svg data-mermaid-preview="true"><text>${code}</text></svg>`);
   });
 
@@ -173,6 +181,61 @@ describe("Aula Documentos", () => {
 
     await waitFor(() => expect(screen.getByRole("status").textContent).toContain("versión más nueva"));
     expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento de ejemplo");
+  });
+
+  it("importa Notas y documentos con vista previa y confirmación", async () => {
+    documentMock.notesLoad.mockResolvedValueOnce({
+      state: {
+        title: "Notas importadas",
+        content: {
+          type: "doc",
+          content: [{
+            type: "paragraph",
+            content: [{ type: "text", text: "Texto importado." }],
+          }],
+        },
+      },
+      updatedAt: 1,
+    });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Importar documento" }));
+
+    expect(screen.getByRole("dialog", { name: "Importar documento" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Notas y documentos/ }));
+
+    expect(await screen.findByRole("heading", { name: "Notas importadas" })).toBeTruthy();
+    expect(screen.getByText(/Texto importado/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("checkbox", { name: /Entiendo que se reemplaza/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Importar y reemplazar" }));
+
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Notas importadas"));
+    expect(screen.getByRole("status").textContent).toContain("Documento importado desde Notas y documentos");
+    expect(documentMock.save).not.toHaveBeenCalled();
+  });
+
+  it("importa un Markdown con vista previa", async () => {
+    const file = {
+      name: "clase.md",
+      size: 24,
+      text: async () => "# Clase\n\nTexto desde Markdown.",
+    } as unknown as File;
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Importar documento" }));
+    fireEvent.change(screen.getByLabelText(/Archivo Markdown/), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByRole("heading", { name: "Clase" })).toBeTruthy();
+    expect(screen.getByText(/Texto desde Markdown/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("checkbox", { name: /Entiendo que se reemplaza/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Importar y reemplazar" }));
+
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Clase"));
+    expect(screen.getByRole("status").textContent).toContain("Documento importado desde Markdown");
   });
 
   it("deja el documento en solo lectura para invitados", async () => {

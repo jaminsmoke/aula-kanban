@@ -7,7 +7,9 @@ import {
   Code,
   Code2,
   Download,
+  FileDown,
   FilePenLine,
+  FileText,
   GitBranch,
   Heading1,
   Heading2,
@@ -17,15 +19,17 @@ import {
   List,
   ListOrdered,
   Loader2,
+  NotebookPen,
   Pilcrow,
   Quote,
   Redo2,
   Save,
   Underline,
   Undo2,
+  Upload,
   X,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import {
   AULA_DOCUMENT_SCHEMA_VERSION,
   AULA_DOCUMENT_TITLE_MAX_LENGTH,
@@ -33,6 +37,16 @@ import {
   parseAulaDocument,
   type AulaDocument,
 } from "../../../../lib/domain/aula-documentos/document";
+import {
+  importLegacyDocument,
+  type AulaDocumentImportPreview,
+  type AulaDocumentImportSource,
+} from "../../../../lib/domain/aula-documentos/importers";
+import {
+  AULA_DOCUMENT_MARKDOWN_MAX_LENGTH,
+  documentToMarkdown,
+  markdownToDocument,
+} from "../../../../lib/domain/aula-documentos/markdown";
 import { createStarterAulaDocument } from "../../../../lib/domain/aula-documentos/starter";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useAppDocument } from "../use-app-document";
@@ -88,6 +102,13 @@ const EMPTY_TOOLBAR_STATE: ToolbarState = {
   canRedo: false,
 };
 
+const IMPORT_LABELS: Record<AulaDocumentImportSource | "markdown", string> = {
+  documentos: "Notas y documentos",
+  mermaid: "Diagramas",
+  presentaciones: "Presentaciones",
+  markdown: "Markdown",
+};
+
 /**
  * Botón de la barra de formato.
  * @param props - Acción y estado del botón.
@@ -120,6 +141,36 @@ function countWords(text: string): number {
 }
 
 /**
+ * Descarga un contenido de texto.
+ * @param contents - Contenido del archivo.
+ * @param type - Tipo MIME.
+ * @param name - Nombre de descarga.
+ */
+function downloadTextFile(contents: string, type: string, name: string) {
+  const blob = new Blob([contents], { type });
+  const url = URL.createObjectURL(blob);
+  const anchor = window.document.createElement("a");
+  anchor.href = url;
+  anchor.download = name;
+  window.document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+}
+
+/**
+ * Extrae el texto visible de un contenido para la vista previa.
+ * @param value - Nodo Tiptap.
+ * @returns Texto plano.
+ */
+function contentText(value: unknown): string {
+  if (!value || typeof value !== "object") return "";
+  const node = value as { type?: string; text?: string; content?: unknown[] };
+  if (node.type === "text" && typeof node.text === "string") return node.text;
+  return (node.content ?? []).map((child) => contentText(child)).join(" ");
+}
+
+/**
  * Aula Documentos: texto enriquecido con bloques Mermaid en un único documento.
  * @param props - Proyecto activo y rol.
  * @returns La ventana de edición y exportación.
@@ -136,11 +187,18 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const [linkError, setLinkError] = useState<string | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importPreview, setImportPreview] = useState<AulaDocumentImportPreview | null>(null);
+  const [importLoading, setImportLoading] = useState<string | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importConfirm, setImportConfirm] = useState(false);
   const editorRef = useRef<Editor | null>(null);
   const pendingDocumentRef = useRef<AulaDocument | null>(null);
   const applyingDocumentRef = useRef(false);
   const readOnly = role === "guest";
   const { load, save, loading, error } = useAppDocument<AulaDocument>(projectId, "aula-documentos");
+  const notesStore = useAppDocument<unknown>(projectId, "documentos");
+  const mermaidStore = useAppDocument<unknown>(projectId, "mermaid");
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -308,21 +366,131 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         (code) => getMermaidRenderer().render(code),
       );
       const html = buildAulaDocumentHtml(document, svgByCode);
-      const blob = new Blob([html], { type: "text/html;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const anchor = window.document.createElement("a");
-      anchor.href = url;
-      anchor.download = `aula-documentos-${projectId}.html`;
-      window.document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+      downloadTextFile(html, "text/html;charset=utf-8", `aula-documentos-${projectId}.html`);
       setStatus("HTML descargado.");
     } catch {
       setStatus("No se pudo preparar el HTML del documento.");
     } finally {
       setExporting(false);
     }
+  }
+
+  /**
+   * Exporta el documento al subconjunto Markdown.
+   */
+  function exportMarkdown() {
+    const document = currentDocument();
+    if (!document) return;
+    downloadTextFile(
+      documentToMarkdown(document),
+      "text/markdown;charset=utf-8",
+      `aula-documentos-${projectId}.md`,
+    );
+    setStatus("Markdown descargado.");
+  }
+
+  /**
+   * Abre el diálogo de importación y limpia su estado.
+   */
+  function openImport() {
+    setImportPreview(null);
+    setImportError(null);
+    setImportLoading(null);
+    setImportConfirm(false);
+    setImportOpen(true);
+  }
+
+  /**
+   * Cierra el diálogo de importación.
+   */
+  function closeImport() {
+    setImportOpen(false);
+    setImportPreview(null);
+    setImportError(null);
+    setImportLoading(null);
+    setImportConfirm(false);
+  }
+
+  /**
+   * Carga una app antigua y prepara su vista previa.
+   * @param source - App de origen.
+   */
+  async function importFrom(source: "documentos" | "mermaid") {
+    setImportLoading(source);
+    setImportError(null);
+    setImportPreview(null);
+    setImportConfirm(false);
+    try {
+      const store = source === "documentos" ? notesStore : mermaidStore;
+      const { state } = await store.load();
+      if (state === null) {
+        setImportError(`No hay ningún documento guardado en ${IMPORT_LABELS[source]}.`);
+        return;
+      }
+      const result = importLegacyDocument(source, state);
+      if (!result.ok) {
+        setImportError(result.message);
+        return;
+      }
+      setImportPreview(result.preview);
+    } catch {
+      setImportError("No se pudo leer el documento de origen.");
+    } finally {
+      setImportLoading(null);
+    }
+  }
+
+  /**
+   * Lee un archivo Markdown y prepara su vista previa.
+   * @param file - Archivo elegido.
+   */
+  async function importMarkdown(file: File | undefined) {
+    if (!file) return;
+    setImportLoading("markdown");
+    setImportError(null);
+    setImportPreview(null);
+    setImportConfirm(false);
+    try {
+      const source = await file.text();
+      if (source.length > AULA_DOCUMENT_MARKDOWN_MAX_LENGTH) {
+        setImportError("El Markdown supera el tamaño permitido.");
+        return;
+      }
+      const converted = markdownToDocument(source, {
+        stripTitleHeading: true,
+        titleFallback: file.name.replace(/\.[^.]+$/, "") || "Documento importado",
+      });
+      const parsed = parseAulaDocument({
+        schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
+        title: converted.title,
+        content: converted.content,
+      });
+      if (!parsed.ok) {
+        setImportError(parsed.message);
+        return;
+      }
+      setImportPreview({
+        source: "markdown",
+        document: parsed.document,
+        stats: parsed.stats,
+        warnings: converted.warnings,
+      });
+    } catch {
+      setImportError("No se pudo leer el archivo Markdown.");
+    } finally {
+      setImportLoading(null);
+    }
+  }
+
+  /**
+   * Sustituye el documento actual por la vista previa confirmada.
+   */
+  function applyImport() {
+    if (!importPreview || !importConfirm) return;
+    applyDocument(importPreview.document);
+    setDirty(true);
+    setStatus(`Documento importado desde ${IMPORT_LABELS[importPreview.source]}. Guárdalo para conservarlo.`);
+    closeImport();
   }
 
   /**
@@ -376,8 +544,17 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     : error ?? (dirty ? `${status} Cambios sin guardar.` : status);
   const wordLabel = wordCount === 1 ? "1 palabra" : `${wordCount} palabras`;
   const diagramLabel = diagramCount === 1 ? "1 diagrama" : `${diagramCount} diagramas`;
+  const importExcerpt = importPreview
+    ? contentText(importPreview.document.content).replace(/\s+/g, " ").trim().slice(0, 260)
+    : "";
 
   const fileActions: ToolbarAction[] = [
+    {
+      label: "Importar documento",
+      icon: <Upload size={15} aria-hidden />,
+      onClick: openImport,
+      disabled: readOnly || !editor,
+    },
     {
       label: "Guardar documento",
       icon: <Save size={15} aria-hidden />,
@@ -389,6 +566,12 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       icon: exporting ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <Download size={15} aria-hidden />,
       onClick: () => { void exportHtml(); },
       disabled: !editor || exporting,
+    },
+    {
+      label: "Exportar Markdown",
+      icon: <FileDown size={15} aria-hidden />,
+      onClick: exportMarkdown,
+      disabled: !editor,
     },
   ];
 
@@ -503,6 +686,122 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             <span className="aula-documentos-link-hint">Solo http, https o correo.</span>
           )}
         </form>
+      ) : null}
+
+      {importOpen ? (
+        <div
+          className="aula-documentos-modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeImport();
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") closeImport();
+          }}
+        >
+          <section
+            className="aula-documentos-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aula-documentos-import-title"
+          >
+            <header className="aula-documentos-modal-head">
+              <h2 id="aula-documentos-import-title">Importar documento</h2>
+              <button type="button" className="aula-documentos-modal-close" onClick={closeImport} aria-label="Cerrar importación" autoFocus>
+                <X size={16} aria-hidden />
+              </button>
+            </header>
+
+            {importPreview ? (
+              <div className="aula-documentos-import-preview">
+                <p className="aula-documentos-import-kicker">{IMPORT_LABELS[importPreview.source]}</p>
+                <h3>{importPreview.document.title || "Documento sin título"}</h3>
+                <p className="aula-documentos-import-meta">
+                  {importPreview.stats.textLength} caracteres de texto · {importPreview.stats.mermaidBlocks === 1 ? "1 diagrama" : `${importPreview.stats.mermaidBlocks} diagramas`}
+                  {importPreview.stats.slideBreaks ? ` · ${importPreview.stats.slideBreaks} saltos de diapositiva` : ""}
+                </p>
+                <p className="aula-documentos-import-excerpt">
+                  {importExcerpt || "El documento no contiene texto."}
+                </p>
+                {importPreview.warnings.length ? (
+                  <ul className="aula-documentos-import-warnings">
+                    {importPreview.warnings.map((warning) => <li key={warning}>{warning}</li>)}
+                  </ul>
+                ) : null}
+                <p className="aula-documentos-import-warning">
+                  Se sustituirá el documento abierto. El documento de la app original no se modifica.
+                </p>
+                <label className="aula-documentos-import-confirm">
+                  <input
+                    type="checkbox"
+                    checked={importConfirm}
+                    onChange={(event) => setImportConfirm(event.target.checked)}
+                  />
+                  Entiendo que se reemplaza el documento actual.
+                </label>
+                <div className="aula-documentos-import-actions">
+                  <button
+                    type="button"
+                    className="aula-documentos-import-secondary"
+                    onClick={() => {
+                      setImportPreview(null);
+                      setImportConfirm(false);
+                      setImportError(null);
+                    }}
+                  >
+                    Volver
+                  </button>
+                  <button
+                    type="button"
+                    className="aula-documentos-import-primary"
+                    disabled={!importConfirm}
+                    onClick={applyImport}
+                  >
+                    Importar y reemplazar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="aula-documentos-import-menu">
+                <p className="aula-documentos-import-intro">
+                  Elige una app del proyecto o un archivo Markdown. La vista previa no cambia el origen.
+                </p>
+                <button type="button" className="aula-documentos-import-option" onClick={() => { void importFrom("documentos"); }}>
+                  <FileText size={18} aria-hidden />
+                  <span><strong>Notas y documentos</strong><small>Texto enriquecido guardado en el proyecto</small></span>
+                </button>
+                <button type="button" className="aula-documentos-import-option" onClick={() => { void importFrom("mermaid"); }}>
+                  <GitBranch size={18} aria-hidden />
+                  <span><strong>Diagramas</strong><small>Un diagrama Mermaid como bloque</small></span>
+                </button>
+                <label className="aula-documentos-import-option" htmlFor="aula-documentos-markdown-file">
+                  <NotebookPen size={18} aria-hidden />
+                  <span><strong>Archivo Markdown</strong><small>Importa .md o .markdown con vista previa</small></span>
+                </label>
+                <input
+                  id="aula-documentos-markdown-file"
+                  className="aula-documentos-file-input"
+                  type="file"
+                  accept=".md,.markdown,text/markdown,text/plain"
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                    const file = event.currentTarget.files?.[0];
+                    event.currentTarget.value = "";
+                    void importMarkdown(file);
+                  }}
+                />
+                {importLoading ? (
+                  <p className="aula-documentos-import-status" role="status">
+                    <Loader2 size={15} className="aula-documentos-spin" aria-hidden />
+                    Leyendo {IMPORT_LABELS[importLoading as keyof typeof IMPORT_LABELS] ?? "documento"}…
+                  </p>
+                ) : null}
+                {importError ? <p className="aula-documentos-import-error" role="alert">{importError}</p> : null}
+                <div className="aula-documentos-import-actions">
+                  <button type="button" className="aula-documentos-import-secondary" onClick={closeImport}>Cancelar</button>
+                </div>
+              </div>
+            )}
+          </section>
+        </div>
       ) : null}
 
       <div className="aula-documentos-layout">
