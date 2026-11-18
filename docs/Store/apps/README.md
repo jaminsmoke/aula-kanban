@@ -107,9 +107,10 @@ tiempo **STORE-13**, Hoja de cálculo **STORE-14**, Notas y documentos
 **STORE-15** y Visor Office **STORE-16**, además de las cinco iniciales) ya
 están integradas.
 
-En el backlog quedan **STORE-17** (Aula Documentos, editor unificado) y
-**DEV-01** (evaluación de pnpm, fuera del catálogo de apps). El resto de
-candidatas sigue documentado por categorías, sin entrada hasta que se priorice.
+En el roadmap queda **STORE-17** (Aula Documentos, editor unificado). En el
+backlog queda **DEV-01** (evaluación de pnpm, fuera del catálogo de apps). El
+resto de candidatas sigue documentado por categorías, sin entrada hasta que se
+priorice.
 
 ## Cómo reverificar una licencia
 
