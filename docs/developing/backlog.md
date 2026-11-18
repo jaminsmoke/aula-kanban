@@ -2,27 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 3 entradas: ADOC-06, ADOC-07 y DEV-01 pendientes
+> **Roadmap:** ADOC-06 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas: ADOC-07 y DEV-01 pendientes
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-18 — ADOC-06 · Móvil y accesibilidad
-
-- **Prioridad:** P2 · después de ADOC-01 y ADOC-02.
-- Contexto: en móvil la barra es solo de iconos y los tooltips no existen en pantalla táctil; guardar, importar y presentar no se distinguen bien. Los botones de la barra miden 29–31 px y los diálogos no atrapan el foco ni lo devuelven al control de origen. A 390 px la app se adapta bien al maximizar la ventana, pero la ventana nace desplazada; eso parece del escritorio, no del componente.
-- Alcance:
-  1. Menú de acciones con etiquetas visibles en pantallas estrechas y botones de texto para Guardar, Importar y Presentar.
-  2. Foco atrapado en importación y presentación, restauración del foco al cerrar y cierre con Escape.
-  3. Objetivos táctiles de al menos 44×44 px en la barra y controles de Mermaid.
-  4. Revisar `aria-live`, nombres accesibles de los SVG y contraste en tema claro y oscuro.
-  5. Repetir la revisión visual a 390 px sin depender de ampliar la ventana.
-- Criterios de aceptación:
-  - En 390 px se entiende qué hace cada acción sin tooltip.
-  - El teclado no sale del diálogo mientras está abierto y vuelve al botón que lo abrió.
-  - Un lector de pantalla anuncia el estado de guardado y los errores.
-- Notas: el desplazamiento inicial de la ventana en móvil se tratará como incidencia del escritorio si se confirma que afecta a todas las apps; no duplicar el arreglo dentro de Aula Documentos.
 
 ## 2026-11-18 — ADOC-07 · Concurrencia y versiones
 
