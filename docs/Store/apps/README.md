@@ -107,12 +107,11 @@ tiempo **STORE-13**, Hoja de cálculo **STORE-14**, Notas y documentos
 **STORE-15**, Visor Office **STORE-16** y Aula Documentos **STORE-17**, además de
 las cinco iniciales) ya están integradas.
 
-En el roadmap queda **ADOC-04** (Mermaid utilizable en Aula Documentos). En el
-backlog quedan **DEV-01** (evaluación de pnpm, fuera del catálogo de apps) y
+En el backlog quedan **DEV-01** (evaluación de pnpm, fuera del catálogo de apps) y
 las mejoras **ADOC-05…ADOC-07** de Aula Documentos, con prioridad P1–P2. ADOC-01
-(guardado seguro), ADOC-02 (documento nuevo y plantillas) y ADOC-03 (importación
-legacy limpia) están completados. El resto de candidatas sigue documentado por
-categorías, sin entrada hasta que se prioricen.
+(guardado seguro), ADOC-02 (documento nuevo y plantillas), ADOC-03 (importación
+legacy limpia) y ADOC-04 (Mermaid utilizable) están completados. El resto de
+candidatas sigue documentado por categorías, sin entrada hasta que se prioricen.
 
 ## Cómo reverificar una licencia
 

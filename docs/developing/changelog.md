@@ -1,8 +1,33 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-04 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-18 — Roadmap ADOC-04 · Mermaid utilizable en Aula Documentos
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Los errores de Mermaid muestran línea, resumen y detalle completo en un área desplazable. Un diagrama vacío, uno roto y uno en carga se distinguen.
+- Presentación y HTML exportado comparten un fallback explícito: «No se pudo dibujar el diagrama», con el código como respaldo.
+- El catálogo incorpora mapa mental y el bloque ofrece selector de plantilla con confirmación, copia del código y restauración de la última versión válida.
+- «Descartar» recupera el código con el que empezó la edición aunque el autosave ya haya aplicado el borrador.
+- Los bloques se renderizan bajo demanda con `IntersectionObserver`, con fallback sin observador; zoom de 100–300 %, paneo por arrastre o flechas y restablecimiento. El zoom no modifica el SVG guardado ni la exportación.
+- La ayuda menciona plantillas y zoom. No cambian `AULA_STORE_VERSION`, la versión de la app ni el Site.
+
+### Verificación
+
+- Revisado a 1366, 1024 y 390 px, con teclado, mapa mental y zoom; a 390 px el zoom genera desplazamiento interno sin desbordar la app.
+- Suite completa: **193 archivos / 1.379 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `5a841bf` (Fase 1), `9ba0fff` (Fase 2), `11bd73f` (Fase 3) y este commit de cierre. Push único a `github main`; sin publicación en Sites ni cambio de versión del Site: sigue en **1.1.35**.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-05…ADOC-07** y **DEV-01**. El plan completo está en [`historial/roadmap-adoc-04.md`](../historial/roadmap-adoc-04.md).
 
 ---
 
