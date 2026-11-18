@@ -570,6 +570,7 @@ describe("Aula Documentos", () => {
 
     expect(screen.getByText(/Modo lectura/)).toBeTruthy();
     expect(screen.getByLabelText("Título del documento")).toHaveProperty("readOnly", true);
+    expect(screen.getByRole("button", { name: "Nuevo documento" })).toHaveProperty("disabled", true);
     expect(screen.getByRole("button", { name: "Guardar documento" })).toHaveProperty("disabled", true);
     expect(screen.getByRole("button", { name: "Exportar HTML" })).toHaveProperty("disabled", false);
     expect(screen.queryByRole("button", { name: "Negrita" })).toBeNull();

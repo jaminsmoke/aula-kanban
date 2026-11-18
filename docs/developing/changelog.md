@@ -1,8 +1,33 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-02 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-18 — Roadmap ADOC-02 · Documento nuevo y plantillas en Aula Documentos
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Aula Documentos incorpora seis plantillas: documento vacío, documento de ejemplo, apuntes de clase, proyecto de clase, presentación breve y guía rápida.
+- La acción «Nuevo documento» abre un selector con nombre y descripción; al elegir una plantilla se muestra su título, extracto, recuento de palabras y diagramas antes de confirmar.
+- Si hay cambios sin guardar, el selector y la vista previa avisan y el botón pasa a «Reemplazar documento». Cancelar o volver no modifica el documento actual.
+- El reemplazo usa `applyDocument` y `markChanged`, conserva la ruta de autosave y coloca el foco en el título o en el editor según la plantilla.
+- Las plantillas son funciones puras de `lib/domain/aula-documentos/templates.ts`, validadas con el esquema y con copias independientes. La ayuda menciona las plantillas. No cambian `AULA_STORE_VERSION`, la versión de la app ni el Site.
+
+### Verificación
+
+- Selector y vista previa revisados en la app real a 1366, 1024 y 390 px, con cierre por Escape y comprobación de que cancelar conserva el documento.
+- Documento vacío, proyecto con diagrama y guardado posterior cubiertos por pruebas; el modo invitado deshabilita «Nuevo documento».
+- Suite completa: **189 archivos / 1.356 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `ec9d87f` (Fase 1), `8f9ab7f` (Fase 2) y este commit de cierre. Push único a `github main`; sin publicación en Sites ni cambio de versión del Site: sigue en **1.1.35**.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-03…ADOC-07** y **DEV-01**. El plan completo está en [`historial/roadmap-adoc-02.md`](../historial/roadmap-adoc-02.md).
 
 ---
 
