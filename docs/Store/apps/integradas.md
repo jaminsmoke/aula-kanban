@@ -20,6 +20,7 @@
 | Hoja de cálculo | `jspreadsheet-ce` 5.0.4 | MIT | ✅ Integrada | Celdas editables, fórmulas, formato esencial, filas y columnas ampliables; exportación CSV protegida, guardado por proyecto en `app_documents` y modo lectura para invitados |
 | Notas y documentos | `@tiptap/core` 3.34.0 | MIT | ✅ Integrada | Editor de texto enriquecido con título, listas, citas, código y enlaces; guardado por proyecto en `app_documents`, exportación HTML local y modo lectura para invitados |
 | Visor Office | `@silurus/ooxml` 0.90.1 | MIT | ✅ Integrada | Apertura local de `.docx`, `.xlsx` y `.pptx` en solo lectura, con zoom y navegación por páginas, hojas o diapositivas; límite de 30 MB, sin subida ni persistencia. WASM y recursos servidos desde el Site |
+| Aula Documentos | `@tiptap/core` 3.34.0 + `mermaid` 12.3.0 + `reveal.js` 6.0.2 | MIT | ✅ Integrada | Documento unificado con texto enriquecido y bloques Mermaid; importación desde Notas y documentos, Diagramas y Presentaciones; exportación HTML/Markdown y modo presentación. Guardado por proyecto en `app_documents`; las apps anteriores siguen disponibles |
 
 ## Versiones por app
 
@@ -41,8 +42,9 @@
 | Hoja de cálculo | `1.0.0` | `jspreadsheet-ce 5.0.4` |
 | Notas y documentos | `1.0.0` | `@tiptap/core 3.34.0` + extensiones |
 | Visor Office | `1.0.0` | `@silurus/ooxml 0.90.1` |
+| Aula Documentos | `1.0.0` | `@tiptap/core 3.34.0` + Tiptap, `mermaid 12.3.0` y `reveal.js 6.0.2` |
 
-La tienda está en `1.11.0`: la incorporación de Visor Office subió la versión menor desde `1.10.0`. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
+La tienda está en `1.12.0`: Aula Documentos subió la versión menor desde `1.11.0`. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
 
 ## Transición de `edu-tools`
 
@@ -50,4 +52,4 @@ La transición de datos del servicio separa una instalación antigua de `edu-too
 
 ## Portadas
 
-Las dieciséis apps usan portadas SVG de 1200×675 en `public/store/`, con la misma composición visual. La integración y el cierre de esa unificación están documentados en [`../../historial/roadmap-store-05.md`](../../historial/roadmap-store-05.md); Ajedrez, Tarjetas, Física, Geometría, Mapas, Presentaciones, Moléculas 3D, Líneas de tiempo, Hoja de cálculo, Notas y documentos y Visor Office añaden sus portadas en STORE-06, STORE-09, STORE-07, STORE-08, STORE-10, STORE-11, STORE-12, STORE-13, STORE-14, STORE-15 y STORE-16, ya completados.
+Las diecisiete apps usan portadas SVG de 1200×675 en `public/store/`, con la misma composición visual. La integración y el cierre de esa unificación están documentados en [`../../historial/roadmap-store-05.md`](../../historial/roadmap-store-05.md); Ajedrez, Tarjetas, Física, Geometría, Mapas, Presentaciones, Moléculas 3D, Líneas de tiempo, Hoja de cálculo, Notas y documentos, Visor Office y Aula Documentos añaden sus portadas en STORE-06, STORE-09, STORE-07, STORE-08, STORE-10, STORE-11, STORE-12, STORE-13, STORE-14, STORE-15, STORE-16 y STORE-17, ya completados.

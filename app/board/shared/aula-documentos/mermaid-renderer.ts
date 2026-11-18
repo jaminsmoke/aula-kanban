@@ -64,6 +64,7 @@ export function createMermaidRenderer(): MermaidRenderer {
           return normalizeMermaidSvg(svg);
         } catch (error) {
           cleanupStrayMermaidSvg(targetId);
+          setTimeout(() => cleanupStrayMermaidSvg(targetId), 0);
           throw error;
         }
       };
@@ -82,7 +83,12 @@ export function createMermaidRenderer(): MermaidRenderer {
 function cleanupStrayMermaidSvg(id: string): void {
   if (typeof document === "undefined") return;
   const stray = document.getElementById(id);
-  if (stray?.parentElement === document.body) stray.remove();
+  if (!stray) return;
+  let candidate: HTMLElement = stray;
+  while (candidate.parentElement && candidate.parentElement !== document.body) {
+    candidate = candidate.parentElement;
+  }
+  if (candidate.parentElement === document.body) candidate.remove();
 }
 
 let sharedRenderer: MermaidRenderer | null = null;

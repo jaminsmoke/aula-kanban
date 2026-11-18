@@ -97,6 +97,11 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     herramientas: [],
     pendiente: "El archivo se abre en el navegador, no se sube ni se guarda y no tiene estado de servidor; no hay herramientas MCP específicas en esta versión.",
   },
+  "aula-documentos": {
+    appId: "aula-documentos",
+    herramientas: [],
+    pendiente: "El documento se guarda en app_documents, pero la edición, las importaciones, la exportación y la presentación viven en el navegador; no hay herramientas MCP específicas en esta versión.",
+  },
 };
 
 /** Herramientas de todas las apps, en el orden de sus declaraciones. */

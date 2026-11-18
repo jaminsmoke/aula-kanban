@@ -100,17 +100,16 @@ La tabla de versiones por app está en [`integradas.md#versiones-por-app`](integ
 
 ## Estado del catálogo
 
-Las dieciséis apps actuales (Ajedrez **STORE-06**, Física 2D **STORE-07**, Geometría
+Las diecisiete apps actuales (Ajedrez **STORE-06**, Física 2D **STORE-07**, Geometría
 interactiva **STORE-08**, Tarjetas de repaso **STORE-09**, Mapas conceptuales
 **STORE-10**, Presentaciones **STORE-11**, Moléculas 3D **STORE-12**, Líneas de
 tiempo **STORE-13**, Hoja de cálculo **STORE-14**, Notas y documentos
-**STORE-15** y Visor Office **STORE-16**, además de las cinco iniciales) ya
-están integradas.
+**STORE-15**, Visor Office **STORE-16** y Aula Documentos **STORE-17**, además de
+las cinco iniciales) ya están integradas.
 
-En el roadmap queda **STORE-17** (Aula Documentos, editor unificado). En el
-backlog queda **DEV-01** (evaluación de pnpm, fuera del catálogo de apps). El
-resto de candidatas sigue documentado por categorías, sin entrada hasta que se
-priorice.
+En el backlog queda **DEV-01** (evaluación de pnpm, fuera del catálogo de apps).
+El resto de candidatas sigue documentado por categorías, sin entrada hasta que se
+prioricen.
 
 ## Cómo reverificar una licencia
 

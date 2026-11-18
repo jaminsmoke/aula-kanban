@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Portada de Aula Documentos">
+  <defs>
+    <linearGradient id="aula-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7f5ff"/>
+      <stop offset="1" stop-color="#e4dff7"/>
+    </linearGradient>
+    <linearGradient id="aula-page" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#fcfbff"/>
+    </linearGradient>
+    <linearGradient id="aula-action" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#513a9e"/>
+      <stop offset="1" stop-color="#7657c9"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#aula-bg)"/>
+  <circle cx="1090" cy="82" r="220" fill="#c9bce9" opacity=".46"/>
+  <circle cx="86" cy="646" r="190" fill="#ffffff" opacity=".46"/>
+
+  <g transform="translate(0 30)" font-family="Instrument Sans, system-ui, sans-serif">
+    <text x="86" y="230" fill="#2c214f" font-size="68" font-weight="700">Aula</text>
+    <text x="86" y="300" fill="#513a9e" font-size="68" font-weight="700">Documentos</text>
+    <text x="88" y="360" fill="#5e537b" font-size="27">Texto, diagramas y</text>
+    <text x="88" y="400" fill="#5e537b" font-size="27">presentaciones juntos</text>
+    <g transform="translate(88 452)">
+      <rect width="354" height="52" rx="26" fill="#ffffff" opacity=".88"/>
+      <text x="24" y="34" fill="#513a9e" font-size="19" font-weight="600">Un documento · tres vistas</text>
+    </g>
+  </g>
+
+  <g transform="translate(700 78) rotate(2 220 260)" font-family="Instrument Sans, system-ui, sans-serif">
+    <rect width="440" height="520" rx="30" fill="url(#aula-page)" opacity=".98"/>
+
+    <rect x="0" y="0" width="440" height="54" rx="30" fill="#f0ecfb"/>
+    <rect x="0" y="30" width="440" height="24" fill="#f0ecfb"/>
+    <text x="30" y="34" fill="#513a9e" font-size="12" font-weight="700" letter-spacing="1.8">AULA DOCUMENTOS</text>
+    <circle cx="396" cy="27" r="6" fill="#c8b9e9"/>
+    <circle cx="414" cy="27" r="6" fill="#c8b9e9"/>
+
+    <g transform="translate(30 76)" font-size="11" font-weight="700">
+      <rect width="94" height="30" rx="15" fill="#e9e2fb"/>
+      <text x="20" y="20" fill="#513a9e">TEXTO</text>
+      <rect x="104" width="105" height="30" rx="15" fill="#eaf7ef"/>
+      <text x="121" y="20" fill="#287a50">MERMAID</text>
+      <rect x="219" width="112" height="30" rx="15" fill="#fff1e6"/>
+      <text x="233" y="20" fill="#a05a20">PRESENTAR</text>
+    </g>
+
+    <g transform="translate(30 128)">
+      <rect width="380" height="294" rx="18" fill="#ffffff" stroke="#e0d8f2" stroke-width="2"/>
+      <rect x="24" y="24" width="56" height="12" rx="6" fill="#513a9e"/>
+      <text x="24" y="72" fill="#2c214f" font-size="23" font-weight="700">Proyecto de clase</text>
+      <text x="24" y="96" fill="#786d92" font-size="11.5">Texto, diagrama y diapositivas en el mismo documento.</text>
+      <rect x="24" y="114" width="332" height="2" rx="1" fill="#ebe5f7"/>
+
+      <g fill="#5f547a" font-size="11.5">
+        <circle cx="30" cy="139" r="2.5" fill="#513a9e"/>
+        <text x="42" y="143">Escribe la idea y aplica formato.</text>
+        <circle cx="30" cy="162" r="2.5" fill="#513a9e"/>
+        <text x="42" y="166">Inserta un diagrama Mermaid.</text>
+        <circle cx="30" cy="185" r="2.5" fill="#513a9e"/>
+        <text x="42" y="189">Presenta sin duplicar el documento.</text>
+      </g>
+
+      <g transform="translate(24 210)">
+        <rect width="332" height="60" rx="10" fill="#f8f6fe" stroke="#e0d8f2" stroke-width="1.5"/>
+        <rect x="14" y="18" width="54" height="24" rx="6" fill="#e9e2fb" stroke="#b9a7e4" stroke-width="1.5"/>
+        <text x="22" y="34" fill="#513a9e" font-size="9.5" font-weight="700">Texto</text>
+        <path d="M70 30h22M88 26l5 4-5 4" fill="none" stroke="#7357c9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="99" y="18" width="62" height="24" rx="6" fill="#eaf7ef" stroke="#b7dfc8" stroke-width="1.5"/>
+        <text x="106" y="34" fill="#287a50" font-size="9.5" font-weight="700">Mermaid</text>
+        <path d="M163 30h22M181 26l5 4-5 4" fill="none" stroke="#7357c9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="192" y="18" width="74" height="24" rx="6" fill="#fff1e6" stroke="#efd4bb" stroke-width="1.5"/>
+        <text x="199" y="34" fill="#a05a20" font-size="9.5" font-weight="700">Presentar</text>
+      </g>
+    </g>
+
+    <g transform="translate(30 438)">
+      <rect width="380" height="46" rx="13" fill="#f4f1fd" stroke="#e0d8f2" stroke-width="1.5"/>
+      <text x="20" y="27" fill="#786d92" font-size="10.5" font-weight="600">Un documento, tres formas de leerlo</text>
+      <rect x="270" y="10" width="92" height="26" rx="13" fill="url(#aula-action)"/>
+      <text x="288" y="27" fill="#ffffff" font-size="10.5" font-weight="700">Presentar</text>
+    </g>
+  </g>
+</svg>

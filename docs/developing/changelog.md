@@ -1,8 +1,34 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-17 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-18 — Roadmap STORE-17 · Aula Documentos en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Aula Documentos se incorpora con `@tiptap/core` 3.34.0, Mermaid 12.3.0 y `reveal.js` 6.0.2 (MIT): texto enriquecido y bloques Mermaid en un mismo documento, importación desde Notas y documentos, Diagramas y Presentaciones, exportación HTML/Markdown y modo presentación con `reveal.js` diferido.
+- El documento se guarda por proyecto en `app_documents` bajo `aula-documentos`, con validación defensiva del esquema, límites de tamaño y nodos, y modo lectura para invitados. Las apps `documentos`, `mermaid` y `presentaciones` siguen instalables, se pueden abrir y editar; no se oculta ninguna ni se reescriben sus datos.
+- La importación es explícita, con vista previa y sin escribir en el origen. Markdown importa y exporta el subconjunto representable; Mermaid viaja como bloque cercado y `---` se convierte en saltos de diapositiva al importar Presentaciones.
+- Portada `public/store/aula-documentos.svg`, ficha con versión `1.0.0`, upstream `@tiptap/core 3.34.0` y extras Tiptap, Mermaid y `reveal.js`; icono, registro lazy y entrada en «Mejores aplicaciones». `AULA_STORE_VERSION` sube a `1.12.0`; el Site sigue en `1.1.35`.
+- Declaración MCP sin herramientas de contenido en esta versión; ayuda, matriz de herramientas, catálogo, snapshots y `docs/Store/apps/integradas.md` actualizados. La demo no cambia.
+
+### Verificación
+
+- Tienda y ficha revisadas a 1366, 1024 y 390 px: versión `v1.12.0`, 17 apps disponibles, portada sin 404 y ficha con versión `1.0.0` y upstream correcto. La app se instaló y abrió desde la Store con un documento local; las tres apps antiguas siguen disponibles.
+- Importaciones de las tres apps probadas con datos reales en las fases 3 y 4, sin modificar los originales. La presentación se probó con diapositivas reales, navegación por teclado y salida con Escape.
+- Chunk de app: `aula-documentos-app` 47.010 B / 14.263 B gzip y CSS 17.283 B / 3.072 B gzip. El editor inicial mide ~147 KB gzip, la primera carga de Mermaid ~290 KB gzip y la presentación 30,8 KB gzip + 11,4 KB CSS, fuera del chunk inicial. Portada 4.964 B / 1.397 B gzip; todo se sirve desde `dist/client`.
+- Suite completa: **188 archivos / 1.333 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commit de cierre y push único a `github main`; sin publicación en Sites ni cambio de versión del Site: sigue en **1.1.35**.
+
+### Seguimiento
+
+- El backlog queda con DEV-01 (evaluación de pnpm). El plan completo está en [`historial/roadmap-store-17.md`](../historial/roadmap-store-17.md).
 
 ---
 

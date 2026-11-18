@@ -1,12 +1,12 @@
 # Cobertura MCP de las apps nativas
 
-Estado de la superficie MCP de las dieciséis apps de Aula Store. La fuente de las
+Estado de la superficie MCP de las diecisiete apps de Aula Store. La fuente de las
 herramientas es `lib/server/mcp/apps/registro.ts`; la instalación y los permisos
 se resuelven con `lib/server/mcp/apps/contrato.ts`.
 
 **Última revisión:** 2026-11-18 · **Catálogo:** `0.28.0` · **59 herramientas**
 
-**Estado:** MCP-05B, MCP-05C, MCP-05D y MCP-05E cerrados; las dieciséis apps tienen declaración MCP. Ajedrez, Tarjetas, Física, Geometría, Mapas, Presentaciones, Moléculas 3D, Líneas de tiempo, Hoja de cálculo, Notas y documentos, Visor Office y Calculadora no exponen herramientas propias porque su estado de trabajo vive en el navegador o en `app_documents` sin herramientas específicas.
+**Estado:** MCP-05B, MCP-05C, MCP-05D y MCP-05E cerrados; las diecisiete apps tienen declaración MCP. Ajedrez, Tarjetas, Física, Geometría, Mapas, Presentaciones, Moléculas 3D, Líneas de tiempo, Hoja de cálculo, Notas y documentos, Visor Office, Aula Documentos y Calculadora no exponen herramientas propias porque su estado de trabajo vive en el navegador o en `app_documents` sin herramientas específicas.
 
 ## Herramientas comunes
 
@@ -56,6 +56,7 @@ reglas de cada app.
 | **Hoja de cálculo** (`hoja-calculo`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | Datos, fórmulas y estilos se guardan en `app_documents`; la edición, el cálculo y la exportación CSV viven en el navegador. Sin herramientas MCP específicas en esta versión. |
 | **Notas y documentos** (`documentos`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | Título y JSON de Tiptap se guardan en `app_documents`; la edición, los enlaces y la exportación HTML viven en el navegador. Sin herramientas MCP específicas en esta versión. |
 | **Visor Office** (`visor-office`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Todos los roles; el archivo se abre en el navegador y no se comparte ni se guarda. | `.docx`, `.xlsx` y `.pptx` de hasta 30 MB en solo lectura; el archivo no se sube ni se persiste. Sin herramientas MCP específicas en esta versión. |
+| **Aula Documentos** (`aula-documentos`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | Un documento JSON por proyecto en `app_documents`; texto, Mermaid, importaciones, presentación y exportaciones viven en el navegador. Sin herramientas MCP específicas en esta versión. |
 
 ## Qué falta en cada app
 
@@ -179,6 +180,15 @@ reglas de cada app.
 - La lectura completa del canvas y la edición quedan fuera de esta versión; no
   se añaden herramientas MCP específicas.
 
+### Aula Documentos — sin herramientas
+
+- El documento se guarda en `app_documents` bajo `aula-documentos`, pero la
+  edición Tiptap, los diagramas Mermaid, las importaciones, la presentación y
+  las exportaciones viven en el navegador.
+- `abrir_app` y el control de ventanas siguen disponibles por MCP-04.
+- No se añaden herramientas MCP de contenido hasta cerrar la paridad y la
+  migración; la app anterior `documentos` conserva su propio estado.
+
 ### Hoja de cálculo — sin herramientas
 
 - La hoja, sus fórmulas y sus estilos se guardan en `app_documents`, pero la
@@ -196,7 +206,7 @@ reglas de cada app.
 ## Revisión de huecos
 
 - **Instalación y catálogo:** cubiertos por MCP-03.
-- **Abrir y controlar ventanas:** cubiertos por MCP-04 para las dieciséis apps.
+- **Abrir y controlar ventanas:** cubiertos por MCP-04 para las diecisiete apps.
 - **Lectura y escritura de contenido:** MCP-05B, MCP-05D y MCP-05E (completados).
 - **Exportación:** no hay una herramienta dedicada. Excalidraw necesita render
   de imagen; Mermaid necesita render de SVG, aunque `leer_diagrama` ya devuelve
