@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import Reveal from "reveal.js";
+import type { AulaPresentationTheme } from "../../../../lib/domain/aula-documentos/document";
 import "reveal.js/reveal.css";
 import "./presentation.css";
 
@@ -10,6 +11,7 @@ import "./presentation.css";
 export type PresentationViewProps = {
   title: string;
   slides: string[];
+  theme?: AulaPresentationTheme;
   onExit: () => void;
 };
 
@@ -18,7 +20,7 @@ export type PresentationViewProps = {
  * @param props - Título, HTML de cada diapositiva y cierre.
  * @returns La capa de presentación a pantalla completa.
  */
-export function PresentationView({ title, slides, onExit }: PresentationViewProps) {
+export function PresentationView({ title, slides, theme = "aula", onExit }: PresentationViewProps) {
   const revealRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,7 +58,7 @@ export function PresentationView({ title, slides, onExit }: PresentationViewProp
   }, [onExit, slides]);
 
   return (
-    <div className="aula-presentation" role="dialog" aria-modal="true" aria-label={`Presentación: ${title}`}>
+    <div className={`aula-presentation aula-presentation-theme-${theme}`} role="dialog" aria-modal="true" aria-label={`Presentación: ${title}`}>
       <button type="button" className="aula-presentation-exit" onClick={onExit} aria-label="Salir de la presentación">
         <X size={16} aria-hidden />
         Salir

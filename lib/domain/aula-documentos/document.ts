@@ -1,7 +1,10 @@
 import type { JSONContent } from "@tiptap/core";
 
 /** Versión del documento que entiende esta entrega. */
-export const AULA_DOCUMENT_SCHEMA_VERSION = 1 as const;
+export const AULA_DOCUMENT_SCHEMA_VERSION = 2 as const;
+
+/** Versiones que se pueden migrar al cargar. */
+const AULA_DOCUMENT_SUPPORTED_VERSIONS = new Set([1, 2]);
 
 /** Título máximo del documento. */
 export const AULA_DOCUMENT_TITLE_MAX_LENGTH = 120;
@@ -20,11 +23,26 @@ export const AULA_DOCUMENT_MAX_MERMAID_BLOCKS = 12;
 export const AULA_DOCUMENT_MAX_MERMAID_CODE_LENGTH = 20_000;
 export const AULA_DOCUMENT_MAX_MERMAID_TOTAL_LENGTH = 80_000;
 
+/** Temas de presentación disponibles. */
+export const AULA_PRESENTATION_THEMES = ["aula", "claro", "oscuro"] as const;
+
+/** Tema de presentación del documento. */
+export type AulaPresentationTheme = (typeof AULA_PRESENTATION_THEMES)[number];
+
+/** Preferencias de presentación persistidas con el documento. */
+export type AulaDocumentPresentation = {
+  theme: AulaPresentationTheme;
+};
+
+/** Presentación por defecto para documentos nuevos o migrados. */
+export const DEFAULT_AULA_PRESENTATION: AulaDocumentPresentation = { theme: "aula" };
+
 /** Documento unificado que se guarda en `app_documents`. */
 export type AulaDocument = {
   schemaVersion: typeof AULA_DOCUMENT_SCHEMA_VERSION;
   title: string;
   content: JSONContent;
+  presentation?: AulaDocumentPresentation;
 };
 
 /** Resumen calculado al validar un documento. */
@@ -322,6 +340,23 @@ export function createEmptyAulaDocument(title = "Documento sin título"): AulaDo
 }
 
 /**
+ * Normaliza las preferencias de presentación de un documento guardado.
+ * @param value - Valor candidato.
+ * @returns Preferencias válidas o las de por defecto.
+ */
+function normalizePresentation(value: unknown): AulaDocumentPresentation {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return { ...DEFAULT_AULA_PRESENTATION };
+  }
+  const theme = (value as Record<string, unknown>).theme;
+  return {
+    theme: typeof theme === "string" && (AULA_PRESENTATION_THEMES as readonly string[]).includes(theme)
+      ? theme as AulaPresentationTheme
+      : DEFAULT_AULA_PRESENTATION.theme,
+  };
+}
+
+/**
  * Valida un documento leído de `app_documents`.
  * @param value - Valor candidato.
  * @returns El documento validado o un error estable.
@@ -342,12 +377,14 @@ export function parseAulaDocument(value: unknown): AulaDocumentParseResult {
   }
 
   const candidate = value as Record<string, unknown>;
-  if (candidate.schemaVersion !== AULA_DOCUMENT_SCHEMA_VERSION) {
-    if (typeof candidate.schemaVersion === "number" && candidate.schemaVersion > AULA_DOCUMENT_SCHEMA_VERSION) {
+  const version = candidate.schemaVersion;
+  if (typeof version !== "number" || !AULA_DOCUMENT_SUPPORTED_VERSIONS.has(version)) {
+    if (typeof version === "number" && version > AULA_DOCUMENT_SCHEMA_VERSION) {
       return { ok: false, code: "unsupported-version", message: "El documento usa una versión más nueva de la que entiende esta app." };
     }
     return { ok: false, code: "invalid-schema", message: "El documento no tiene una versión de esquema válida." };
   }
+  const presentation = normalizePresentation(candidate.presentation);
   if (typeof candidate.title !== "string") {
     return { ok: false, code: "invalid-title", message: "El documento no tiene un título válido." };
   }
@@ -378,6 +415,7 @@ export function parseAulaDocument(value: unknown): AulaDocumentParseResult {
         schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
         title,
         content,
+        presentation,
       },
       stats: {
         nodes: context.nodes,

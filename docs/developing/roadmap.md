@@ -59,11 +59,11 @@
 
 ### Fase 2 — Temas y vista previa
 
-- [ ] Definir dos o tres temas de presentación con tokens de color, tipografía y fondo.
-- [ ] Añadir selector de tema, persistirlo en `presentation.theme` y migrar documentos v1.
-- [ ] Añadir una vista previa con recuento de diapositivas y navegación sin entrar en pantalla completa.
-- [ ] Revisar contenido largo, listas y diagramas dentro de una diapositiva.
-- [ ] Cubrir con pruebas de migración, cambio de tema, persistencia y vista previa.
+- [x] Definir dos o tres temas de presentación con tokens de color, tipografía y fondo.
+- [x] Añadir selector de tema, persistirlo en `presentation.theme` y migrar documentos v1.
+- [x] Añadir una vista previa con recuento de diapositivas y navegación sin entrar en pantalla completa.
+- [x] Revisar contenido largo, listas y diagramas dentro de una diapositiva.
+- [x] Cubrir con pruebas de migración, cambio de tema, persistencia y vista previa.
 - **Criterios de aceptación:**
   - El tema elegido sobrevive a guardar, recargar y reabrir.
   - La vista previa muestra el número de diapositivas y no altera el documento.
@@ -112,3 +112,4 @@
 - Puntos de partida: `lib/domain/aula-documentos/document.ts`, `lib/domain/aula-documentos/presentation.ts`, `app/board/shared/aula-documentos/presentation-view.tsx`, `app/board/shared/aula-documentos/export-html.ts` y sus pruebas.
 - ADOC-01 a ADOC-04 están cerrados. La presentación actual usa `reveal.js` bajo demanda; este roadmap añade salida estática y no introduce recursos externos.
 - 2026-11-18: Fase 1 completada. `filename.ts` genera slugs con acentos, signos y fallback; HTML, Markdown y JSON de recuperación usan el título. La acción «Imprimir o guardar PDF» genera el HTML autónomo con SVG y lo imprime en un iframe oculto, con reglas `break-inside` y sin recursos externos. 47 pruebas focalizadas y 1.385 en la suite completa; `tsc` y ESLint en verde.
+- 2026-11-18: Fase 2 completada. El documento sube a esquema v2 con `presentation.theme`; los documentos v1 se migran con el tema Aula. Hay tres temas (Aula, Claro y Oscuro) y una vista previa con recuento y navegación, sin cambiar el documento. 52 pruebas focalizadas y 1.388 en la suite completa; `tsc` y ESLint en verde.

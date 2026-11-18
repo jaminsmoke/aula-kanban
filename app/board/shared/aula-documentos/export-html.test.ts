@@ -8,7 +8,7 @@ import { buildAulaDocumentHtml, collectMermaidCodes, countMermaidBlocks, renderA
  */
 function documentWithDiagrams(): AulaDocument {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     title: "Documento exportable",
     content: {
       type: "doc",
@@ -53,7 +53,7 @@ describe("exportación HTML de Aula Documentos", () => {
 
   it("distingue un diagrama vacío de uno roto", () => {
     const document: AulaDocument = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       title: "Vacío",
       content: {
         type: "doc",

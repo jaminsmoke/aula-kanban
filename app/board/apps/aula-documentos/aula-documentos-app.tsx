@@ -38,10 +38,13 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ChangeEv
 import {
   AULA_DOCUMENT_SCHEMA_VERSION,
   AULA_DOCUMENT_TITLE_MAX_LENGTH,
+  AULA_PRESENTATION_THEMES,
+  DEFAULT_AULA_PRESENTATION,
   createEmptyAulaDocument,
   normalizeAulaLink,
   parseAulaDocument,
   type AulaDocument,
+  type AulaPresentationTheme,
 } from "../../../../lib/domain/aula-documentos/document";
 import {
   importLegacyDocument,
@@ -260,6 +263,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [newDocumentError, setNewDocumentError] = useState<string | null>(null);
   const [preparingPresentation, setPreparingPresentation] = useState(false);
   const [presentation, setPresentation] = useState<{ title: string; slides: string[] } | null>(null);
+  const [presentationTheme, setPresentationTheme] = useState<AulaPresentationTheme>(DEFAULT_AULA_PRESENTATION.theme);
+  const [slidePreview, setSlidePreview] = useState<{ title: string; slides: string[]; index: number } | null>(null);
   const [closePromptOpen, setClosePromptOpen] = useState(false);
   const [invalidDocument, setInvalidDocument] = useState<{ raw: unknown; message: string } | null>(null);
   const [invalidResetConfirm, setInvalidResetConfirm] = useState(false);
@@ -379,6 +384,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const applyDocument = useCallback((document: AulaDocument) => {
     pendingDocumentRef.current = document;
     setTitle(document.title);
+    setPresentationTheme(document.presentation?.theme ?? DEFAULT_AULA_PRESENTATION.theme);
     const current = editorRef.current;
     if (current) {
       applyingDocumentRef.current = true;
@@ -499,13 +505,14 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
       title,
       content: editor.getJSON(),
+      presentation: { theme: presentationTheme },
     });
     if (!parsed.ok) {
       setStatus(parsed.message);
       return null;
     }
     return parsed.document;
-  }, [editor, title]);
+  }, [editor, presentationTheme, title]);
 
   /**
    * Persiste un documento y actualiza el estado de guardado.
@@ -602,6 +609,23 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }
 
   /**
+   * Construye el HTML de cada diapositiva con sus diagramas.
+   * @param document - Documento validado.
+   * @returns Diapositivas listas para presentar o previsualizar.
+   */
+  async function buildPresentationHtml(document: AulaDocument): Promise<string[]> {
+    const slides = buildPresentationSlides(document.content);
+    const svgByCode = await renderMermaidSvgs(
+      collectMermaidCodes({ type: "doc", content: slides.flatMap((slide) => slide.content) }),
+      (code) => getMermaidRenderer().render(code),
+    );
+    return slides.map((slide) => renderAulaContentHtml(
+      { type: "doc", content: slide.content },
+      svgByCode,
+    ));
+  }
+
+  /**
    * Construye y abre la presentación del documento actual.
    */
   async function startPresentation() {
@@ -610,15 +634,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     setPreparingPresentation(true);
     setStatus("Preparando presentación…");
     try {
-      const slides = buildPresentationSlides(document.content);
-      const svgByCode = await renderMermaidSvgs(
-        collectMermaidCodes({ type: "doc", content: slides.flatMap((slide) => slide.content) }),
-        (code) => getMermaidRenderer().render(code),
-      );
-      const html = slides.map((slide) => renderAulaContentHtml(
-        { type: "doc", content: slide.content },
-        svgByCode,
-      ));
+      const html = await buildPresentationHtml(document);
       setPresentation({
         title: document.title.trim() || "Aula Documentos",
         slides: html,
@@ -629,6 +645,38 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     } finally {
       setPreparingPresentation(false);
     }
+  }
+
+  /**
+   * Abre una vista previa con navegación entre diapositivas.
+   */
+  async function openSlidePreview() {
+    const document = currentDocument();
+    if (!document) return;
+    setPreparingPresentation(true);
+    setStatus("Preparando vista previa…");
+    try {
+      const html = await buildPresentationHtml(document);
+      setSlidePreview({
+        title: document.title.trim() || "Aula Documentos",
+        slides: html,
+        index: 0,
+      });
+      setStatus(`Vista previa abierta: ${html.length} ${html.length === 1 ? "diapositiva" : "diapositivas"}.`);
+    } catch {
+      setStatus("No se pudo preparar la vista previa.");
+    } finally {
+      setPreparingPresentation(false);
+    }
+  }
+
+  /**
+   * Cambia el tema de la presentación y lo guarda con el documento.
+   * @param theme - Nuevo tema.
+   */
+  function changePresentationTheme(theme: AulaPresentationTheme) {
+    setPresentationTheme(theme);
+    markChanged("Tema de presentación actualizado.");
   }
 
   /**
@@ -914,6 +962,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           : savedLabel;
   const wordLabel = wordCount === 1 ? "1 palabra" : `${wordCount} palabras`;
   const diagramLabel = diagramCount === 1 ? "1 diagrama" : `${diagramCount} diagramas`;
+  const slideCount = editor ? buildPresentationSlides(editor.getJSON()).length : 0;
+  const slideLabel = slideCount === 1 ? "1 diapositiva" : `${slideCount} diapositivas`;
   const importExcerpt = importPreview
     ? contentText(importPreview.document.content).replace(/\s+/g, " ").trim().slice(0, 260)
     : "";
@@ -1477,6 +1527,34 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
               </button>
             ) : null}
           </section>
+          <section className="aula-documentos-info">
+            <h3>Presentación</h3>
+            <label className="aula-documentos-theme" htmlFor="aula-documentos-theme">
+              <span>Tema</span>
+              <select
+                id="aula-documentos-theme"
+                aria-label="Tema de la presentación"
+                value={presentationTheme}
+                onChange={(event) => changePresentationTheme(event.target.value as AulaPresentationTheme)}
+                disabled={readOnly}
+              >
+                {AULA_PRESENTATION_THEMES.map((theme) => (
+                  <option value={theme} key={theme}>
+                    {theme === "aula" ? "Aula" : theme === "claro" ? "Claro" : "Oscuro"}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p className="aula-documentos-slide-count">{slideLabel}</p>
+            <button
+              type="button"
+              className="aula-documentos-preview-button"
+              onClick={() => { void openSlidePreview(); }}
+              disabled={!editor || preparingPresentation}
+            >
+              {preparingPresentation ? "Preparando…" : "Vista previa"}
+            </button>
+          </section>
           <section className="aula-documentos-help">
             <h3>Atajos</h3>
             <ul>
@@ -1490,11 +1568,67 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         </aside>
       </div>
 
+      {slidePreview ? (
+        <div
+          className="aula-documentos-modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setSlidePreview(null);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setSlidePreview(null);
+          }}
+        >
+          <section
+            className="aula-documentos-modal aula-slide-preview-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aula-documentos-preview-title"
+          >
+            <header className="aula-documentos-modal-head">
+              <h2 id="aula-documentos-preview-title">Vista previa: {slidePreview.title}</h2>
+              <button
+                type="button"
+                className="aula-documentos-modal-close"
+                onClick={() => setSlidePreview(null)}
+                aria-label="Cerrar vista previa"
+                autoFocus
+              >
+                <X size={16} aria-hidden />
+              </button>
+            </header>
+            <div
+              className={`aula-slide-preview aula-presentation-theme-${presentationTheme}`}
+              dangerouslySetInnerHTML={{ __html: slidePreview.slides[slidePreview.index] ?? "" }}
+            />
+            <div className="aula-slide-preview-nav">
+              <button
+                type="button"
+                className="aula-documentos-import-secondary"
+                onClick={() => setSlidePreview((current) => current ? { ...current, index: current.index - 1 } : current)}
+                disabled={slidePreview.index <= 0}
+              >
+                Anterior
+              </button>
+              <span>Diapositiva {slidePreview.index + 1} de {slidePreview.slides.length}</span>
+              <button
+                type="button"
+                className="aula-documentos-import-secondary"
+                onClick={() => setSlidePreview((current) => current ? { ...current, index: current.index + 1 } : current)}
+                disabled={slidePreview.index >= slidePreview.slides.length - 1}
+              >
+                Siguiente
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
+
       {presentation ? (
         <Suspense fallback={<div className="aula-documentos-presentation-fallback" role="status">Cargando presentación…</div>}>
           <PresentationView
             title={presentation.title}
             slides={presentation.slides}
+            theme={presentationTheme}
             onExit={closePresentation}
           />
         </Suspense>

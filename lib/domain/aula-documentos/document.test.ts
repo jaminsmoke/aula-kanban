@@ -79,11 +79,35 @@ describe("modelo de Aula Documentos", () => {
   });
 
   it("rechaza versiones futuras y esquemas desconocidos", () => {
-    const future = parseAulaDocument({ ...candidate([]), schemaVersion: 2 });
+    const future = parseAulaDocument({ ...candidate([]), schemaVersion: 3 });
     expect(future).toMatchObject({ ok: false, code: "unsupported-version" });
 
     const unknown = parseAulaDocument({ ...candidate([]), schemaVersion: 0 });
     expect(unknown).toMatchObject({ ok: false, code: "invalid-schema" });
+  });
+
+  it("migra documentos v1 y normaliza el tema de presentación", () => {
+    const v1 = parseAulaDocument({ ...candidate([{ type: "paragraph" }]), schemaVersion: 1 });
+    expect(v1.ok).toBe(true);
+    if (!v1.ok) return;
+    expect(v1.document.schemaVersion).toBe(2);
+    expect(v1.document.presentation).toEqual({ theme: "aula" });
+
+    const custom = parseAulaDocument({
+      ...candidate([{ type: "paragraph" }]),
+      presentation: { theme: "claro" },
+    });
+    expect(custom.ok).toBe(true);
+    if (!custom.ok) return;
+    expect(custom.document.presentation).toEqual({ theme: "claro" });
+
+    const invalid = parseAulaDocument({
+      ...candidate([{ type: "paragraph" }]),
+      presentation: { theme: "inventado" },
+    });
+    expect(invalid.ok).toBe(true);
+    if (!invalid.ok) return;
+    expect(invalid.document.presentation).toEqual({ theme: "aula" });
   });
 
   it("rechaza nodos y marcas no compatibles", () => {

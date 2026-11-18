@@ -182,6 +182,18 @@
   --ui-glow-primary-faint: var(--primitive-glow-primary-faint);
   --ui-text-shadow-dark: 0 1px 4px var(--primitive-text-shadow-dark);
   --ui-scrim: var(--primitive-scrim);
+  /* Temas de presentación: independientes del tema claro/oscuro de la UI. */
+  --ui-presentation-clear-bg: #f4f3f8;
+  --ui-presentation-clear-slide: #ffffff;
+  --ui-presentation-clear-ink: #211b36;
+  --ui-presentation-clear-heading: #2c214f;
+  --ui-presentation-clear-border: #ded9e9;
+  --ui-presentation-clear-code: #f1eff8;
+  --ui-presentation-dark-bg: #0f0e17;
+  --ui-presentation-dark-slide: #191627;
+  --ui-presentation-dark-ink: #f6f2ff;
+  --ui-presentation-dark-border: #393152;
+  --ui-presentation-dark-code: #29233d;
   --ui-shadow-card: 0 2px 3px #29213a08;
   --ui-shadow-card-hover: 0 3px 8px #29213a13;
   --ui-shadow-float: 0 16px 48px #3022550d;

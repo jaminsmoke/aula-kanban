@@ -11,6 +11,56 @@
   color:var(--ui-text-primary);
 }
 
+.aula-presentation-theme-claro {
+  background:var(--ui-presentation-clear-bg);
+  color:var(--ui-presentation-clear-ink);
+}
+
+.aula-presentation-theme-claro .aula-presentation-reveal.reveal-viewport {
+  background:var(--ui-presentation-clear-bg);
+}
+
+.aula-presentation-theme-claro .aula-presentation-slide {
+  border-color:var(--ui-presentation-clear-border);
+  background:var(--ui-presentation-clear-slide);
+  color:var(--ui-presentation-clear-ink);
+}
+
+.aula-presentation-theme-claro .aula-presentation-slide h1,
+.aula-presentation-theme-claro .aula-presentation-slide h2,
+.aula-presentation-theme-claro .aula-presentation-slide h3 {
+  color:var(--ui-presentation-clear-heading);
+}
+
+.aula-presentation-theme-claro .aula-presentation-slide code {
+  background:var(--ui-presentation-clear-code);
+}
+
+.aula-presentation-theme-oscuro {
+  background:var(--ui-presentation-dark-bg);
+  color:var(--ui-presentation-dark-ink);
+}
+
+.aula-presentation-theme-oscuro .aula-presentation-reveal.reveal-viewport {
+  background:var(--ui-presentation-dark-bg);
+}
+
+.aula-presentation-theme-oscuro .aula-presentation-slide {
+  border-color:var(--ui-presentation-dark-border);
+  background:var(--ui-presentation-dark-slide);
+  color:var(--ui-presentation-dark-ink);
+}
+
+.aula-presentation-theme-oscuro .aula-presentation-slide h1,
+.aula-presentation-theme-oscuro .aula-presentation-slide h2,
+.aula-presentation-theme-oscuro .aula-presentation-slide h3 {
+  color:var(--ui-presentation-clear-slide);
+}
+
+.aula-presentation-theme-oscuro .aula-presentation-slide code {
+  background:var(--ui-presentation-dark-code);
+}
+
 .aula-presentation-exit {
   position:fixed;
   top:12px;

@@ -431,6 +431,33 @@ describe("Aula Documentos", () => {
     expect(html).not.toMatch(/https?:\/\//);
   });
 
+  it("guarda el tema de presentación con el documento", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    fireEvent.change(screen.getByLabelText("Tema de la presentación"), { target: { value: "claro" } });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
+    expect(saved.schemaVersion).toBe(2);
+    expect(saved.presentation).toEqual({ theme: "claro" });
+  });
+
+  it("muestra una vista previa navegable con el recuento de diapositivas", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    expect(screen.getByText("2 diapositivas")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Vista previa" }));
+
+    expect(await screen.findByRole("dialog", { name: "Vista previa: Documento de ejemplo" })).toBeTruthy();
+    expect(screen.getByText("Diapositiva 1 de 2")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Siguiente" }));
+    expect(screen.getByText("Diapositiva 2 de 2")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Siguiente" })).toHaveProperty("disabled", true);
+  });
+
   it("inserta dos diagramas y guarda el documento validado", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
@@ -444,7 +471,7 @@ describe("Aula Documentos", () => {
     await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
 
     const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
-    expect(saved.schemaVersion).toBe(1);
+    expect(saved.schemaVersion).toBe(2);
     expect(saved.title).toBe("Documento de ejemplo");
     expect(countMermaid(saved.content)).toBe(2);
     expect(screen.getByRole("status").textContent).toContain("guardado en el proyecto");
