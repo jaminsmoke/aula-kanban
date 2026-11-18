@@ -2,28 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 5 entradas: ADOC-04…ADOC-07 y DEV-01 pendientes
+> **Roadmap:** ADOC-04 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 4 entradas: ADOC-05…ADOC-07 y DEV-01 pendientes
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-18 — ADOC-04 · Mermaid utilizable
-
-- **Prioridad:** P1 · antes de publicar.
-- Contexto: la vista previa corta el error en la primera línea (`Parse error on line 3:`), justo antes de la información que permite corregirlo. Solo se ofrece la plantilla de flujo, no se puede hacer zoom y la presentación muestra el código fuente cuando un diagrama falla, sin explicar que el diagrama no se pudo dibujar.
-- Alcance:
-  1. Mostrar el error completo en un área desplazable, con línea, mensaje y una indicación breve de qué revisar.
-  2. Selector de plantillas Mermaid: flujo, secuencia, línea de tiempo y mapa mental, insertadas como bloques editables.
-  3. Renderizar solo los bloques visibles o cercanos al viewport, no los doce a la vez al abrir.
-  4. Añadir zoom y paneo al SVG, y un fallback explícito «No se pudo dibujar el diagrama» en presentación y exportación.
-  5. Permitir copiar el código y restaurar la última versión válida del bloque.
-- Criterios de aceptación:
-  - Un error de sintaxis muestra la línea y el detalle completo.
-  - Se puede insertar una plantilla distinta de la de flujo y editarla.
-  - Un documento con varios diagramas no bloquea la apertura.
-  - Presentación y HTML exportado distinguen un diagrama roto de un diagrama vacío.
-- Notas: mantener `securityLevel: strict` y no aceptar HTML en el código Mermaid. El renderizador compartido ya tiene cola; reutilizarla para el render bajo demanda.
 
 ## 2026-11-18 — ADOC-05 · Presentación y salida
 

@@ -17,7 +17,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Plantilla del próximo roadmap | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | ADOC-04 activo: Mermaid utilizable | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -81,6 +81,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
 - **Roadmap ADOC-03 activo:** importación legacy limpia de Aula Documentos, sin títulos duplicados y con origen, fecha y avisos en la vista previa. Plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.35` y sin publicación.
+- **Roadmap ADOC-04 activo:** Mermaid utilizable en Aula Documentos, con errores completos, plantillas, render bajo demanda, zoom y fallback explícito. Plan en [`roadmap.md`](developing/roadmap.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap ADOC-03 completado:** Aula Documentos importa desde Notas, Diagramas y Presentaciones sin duplicar el título, muestra origen, fecha y avisos antes de confirmar y conserva los datos originales. Verificado a 1366, 1024 y 390 px; 190 archivos / 1.366 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-03.md`](historial/roadmap-adoc-03.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap ADOC-02 completado:** Aula Documentos incorpora seis plantillas y un selector con vista previa, aviso de cambios sin guardar, reemplazo seguro y foco según la plantilla. Verificado a 1366, 1024 y 390 px; 189 archivos / 1.356 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-02.md`](historial/roadmap-adoc-02.md). El Site sigue en `1.1.35` y sin publicación.
 - **Roadmap ADOC-01 completado:** Aula Documentos guarda automáticamente, conserva los borradores Mermaid sin pulsar «Aplicar», protege el cierre con cambios y recupera documentos inválidos con descarga del JSON original. Verificado a 1366, 1024 y 390 px; 188 archivos / 1.346 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-01.md`](historial/roadmap-adoc-01.md). El Site sigue en `1.1.35` y sin publicación.
@@ -97,7 +98,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 - **Roadmap STORE-09 completado:** Tarjetas de repaso integrada con mazos en `app_documents`, repaso FSRS, cuatro valoraciones, progreso local por navegador y portada SVG; `AULA_STORE_VERSION` sube a `1.2.0`. Verificada en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-09.md`](historial/roadmap-store-09.md). Sin cambio de versión del Site ni publicación.
 - **Roadmap STORE-06 completado:** Ajedrez integrado en Aula Store con tablero, reglas completas, dos jugadores locales, rival aleatorio, formulario de teclado y portada SVG; `AULA_STORE_VERSION` sube a `1.1.0`. Verificado en Tienda y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-06.md`](historial/roadmap-store-06.md). Sin cambio de versión del Site ni publicación.
 - **Roadmap STORE-05 completado:** las cinco portadas de Aula Store son SVG de 1200×675; Excalidraw, Programación por bloques y Diagramas sustituyen sus capturas PNG y se retiran los archivos antiguos. Verificado en tarjeta y ficha a 1366, 1024 y 390 px; resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-store-05.md`](historial/roadmap-store-05.md). Sin cambio de versión ni publicación.
-- **Backlog:** DEV-01 (evaluación de pnpm) y ADOC-04…ADOC-07 (mejoras de Aula Documentos, P1–P2), pendientes de llevar al roadmap.
+- **Backlog:** DEV-01 (evaluación de pnpm) y ADOC-05…ADOC-07 (mejoras de Aula Documentos, P1–P2), pendientes de llevar al roadmap.
 - **Roadmap UI-08 completado:** Tienda en Administración, Clase como botón de icono en la cabecera, URL canónica `view=administracion&section=tienda` y alias `view=espacio`; revisado en 1366, 1024, 900, 620 y 390. Catálogo MCP `0.27.0`. Resumen en [`changelog.md`](developing/changelog.md).
 - **Roadmap APP-01 completado:** inventario y matriz de herramientas, roles y alcance en [`matriz-herramientas.md`](Store/matriz-herramientas.md). Resumen en [`changelog.md`](developing/changelog.md).
 - **Roadmap APP-03 completado:** mochila del alumnado y maletín docente (migración 0037 y sección `clase > mochila`); resumen en [`changelog.md`](developing/changelog.md).
