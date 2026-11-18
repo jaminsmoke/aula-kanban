@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
+import { listAulaRecoveryCopies, saveAulaRecoveryCopy } from "../../../../lib/domain/aula-documentos/recovery";
 import { useWindowAttemptClose, WindowCloseProvider } from "../../store/window-close-guard";
 import type { VersionedSaveResult } from "../use-app-document";
 import AulaDocumentosApp, { AUTOSAVE_DELAY_MS } from "./aula-documentos-app";
@@ -124,6 +125,7 @@ describe("Aula Documentos", () => {
     documentMock.mermaidLoad.mockResolvedValue({ state: null, updatedAt: null });
     documentMock.presentationsLoad.mockResolvedValue({ state: null, updatedAt: null });
     mermaidMock.render.mockImplementation(async (code: string) => `<svg data-mermaid-preview="true"><text>${code}</text></svg>`);
+    window.localStorage.clear();
     delete (URL as unknown as Record<string, unknown>).createObjectURL;
     delete (URL as unknown as Record<string, unknown>).revokeObjectURL;
   });
@@ -266,6 +268,11 @@ describe("Aula Documentos", () => {
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Conflicto de versión" })).toBeNull());
     expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Versión del servidor");
     expect(documentMock.load).toHaveBeenCalledTimes(2);
+    expect(listAulaRecoveryCopies(window.localStorage, "p1")[0]).toMatchObject({
+      title: "Cambio local",
+      reason: "conflict",
+      serverUpdatedAt: 30,
+    });
     expect(screen.getByRole("status").textContent).toContain("Versión del servidor recargada");
 
     fireEvent.change(screen.getByLabelText("Título del documento"), { target: { value: "Después de recargar" } });
@@ -306,6 +313,12 @@ describe("Aula Documentos", () => {
       expect.objectContaining({ title: "Cambio local" }),
       12,
     );
+    expect(listAulaRecoveryCopies(window.localStorage, "p1")[0]).toMatchObject({
+      title: "Cambio local",
+      reason: "conflict",
+      serverUpdatedAt: 12,
+    });
+    expect(screen.getByRole("button", { name: "Copias locales (1)" })).toBeTruthy();
     expect(screen.getByRole("status").textContent).toContain("Tu versión se guardó");
 
     fireEvent.change(screen.getByLabelText("Título del documento"), { target: { value: "Después de conservar" } });
@@ -313,6 +326,68 @@ describe("Aula Documentos", () => {
 
     await waitFor(() => expect(documentMock.saveVersioned).toHaveBeenCalledTimes(3));
     expect(documentMock.saveVersioned.mock.calls[2][1]).toBe(20);
+  });
+
+  it("restaura una copia local con confirmación sin guardarla en el servidor", async () => {
+    const createObjectURL = stubDownload();
+    saveAulaRecoveryCopy(window.localStorage, "p1", {
+      document: savedDocument("Copia recuperada"),
+      reason: "replace",
+      serverUpdatedAt: 8,
+      now: 1_000,
+      id: "copia-local",
+    });
+    documentMock.load.mockResolvedValueOnce({
+      state: savedDocument("Documento actual"),
+      updatedAt: 12,
+      ok: true,
+    });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento actual"));
+    fireEvent.click(screen.getByRole("button", { name: "Copias locales (1)" }));
+
+    expect(screen.getByRole("dialog", { name: "Copias locales" })).toBeTruthy();
+    expect(screen.getByText("Copia recuperada")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Descargar" }));
+    expect(createObjectURL).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("Copia descargada.")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Restaurar" }));
+    expect(screen.getByText(/no se guardará en el servidor hasta que pulses/)).toBeTruthy();
+    expect(documentMock.saveVersioned).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar restauración" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Copias locales" })).toBeNull());
+    expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Copia recuperada");
+    expect(screen.getByRole("status").textContent).toContain("Todavía no se ha guardado");
+    expect(documentMock.saveVersioned).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+    await waitFor(() => expect(documentMock.saveVersioned).toHaveBeenCalledTimes(1));
+    expect(documentMock.saveVersioned.mock.calls[0][1]).toBe(12);
+  });
+
+  it("guarda una copia local antes de reemplazar con una plantilla", async () => {
+    documentMock.load.mockResolvedValueOnce({
+      state: savedDocument("Documento actual"),
+      updatedAt: 5,
+      ok: true,
+    });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento actual"));
+    fireEvent.click(screen.getByRole("button", { name: "Nuevo documento" }));
+    fireEvent.click(screen.getByRole("button", { name: /Documento vacío/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Crear documento" }));
+
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento sin título"));
+    expect(listAulaRecoveryCopies(window.localStorage, "p1")[0]).toMatchObject({
+      title: "Documento actual",
+      reason: "replace",
+      serverUpdatedAt: 5,
+    });
+    expect(screen.getByRole("button", { name: "Copias locales (1)" })).toBeTruthy();
   });
 
   it("no guarda mientras el documento se está cargando", async () => {

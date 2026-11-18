@@ -71,11 +71,11 @@
 
 ### Fase 3 — Copia recuperable y reintento
 
-- [ ] Guardar una copia local antes de reemplazar o conservar una versión en conflicto.
-- [ ] Limitar tamaño y número de copias por proyecto/app; purgar las más antiguas.
-- [ ] Permitir descargar la copia y restaurarla en el editor con confirmación.
-- [ ] Reintentar el guardado con el `updatedAt` actualizado tras la resolución.
-- [ ] Cubrir con pruebas cuota, purga, descarga y restauración.
+- [x] Guardar una copia local antes de reemplazar o conservar una versión en conflicto.
+- [x] Limitar tamaño y número de copias por proyecto/app; purgar las más antiguas.
+- [x] Permitir descargar la copia y restaurarla en el editor con confirmación.
+- [x] Reintentar el guardado con el `updatedAt` actualizado tras la resolución.
+- [x] Cubrir con pruebas cuota, purga, descarga y restauración.
 - **Criterios de aceptación:**
   - Una copia recuperable sigue disponible tras recargar la página.
   - La copia no crece sin límite ni bloquea el almacenamiento del navegador.
@@ -111,3 +111,4 @@
 - ADOC-01 a ADOC-06 están cerrados. El esquema del documento ya está en v2 y no se añade historial completo; la copia local es una red de seguridad, no una funcionalidad de versiones.
 - 2026-11-18: Fase 1 completada. El POST acepta `expectedUpdatedAt` numérico o `null`; un `UPDATE ... WHERE updated_at = ? RETURNING` atómico acepta solo la versión vigente y un `INSERT ... ON CONFLICT DO NOTHING` protege la creación. El conflicto responde `409` con `updatedAt` y no escribe. El testigo avanza con `max(ahora, actual + 1)` para no repetirse en el mismo milisegundo; sin el campo se conserva el contrato anterior. 17 pruebas focalizadas y 1.402 en la suite completa; `tsc` y ESLint en verde.
 - 2026-11-18: Fase 2 completada. `useAppDocument` añade `saveVersioned` y conserva `save` para las demás apps. Aula Documentos envía el testigo del servidor, abre un diálogo de conflicto y detiene autosave, Ctrl+S y guardado manual hasta resolver. «Recargar versión del servidor» descarta la copia local tras una acción explícita; «Conservar la mía» exige confirmación y descarga un JSON antes de sobrescribir. La siguiente fase sustituye esa descarga por una copia recuperable en el navegador. 47 pruebas focalizadas y 1.406 en la suite completa; `tsc` y ESLint en verde.
+- 2026-11-18: Fase 3 completada. `recovery.ts` guarda hasta 3 copias por proyecto con un máximo de 420.000 bytes; purga las más antiguas y reintenta si el navegador agota la cuota. Aula Documentos crea una copia antes de recargar o conservar un conflicto y antes de sustituir por plantilla o importación. El diálogo «Copias locales» permite descargar y restaurar con confirmación; restaurar no escribe en el servidor y el siguiente guardado usa el testigo vigente. 52 pruebas focalizadas y 1.414 en la suite completa; `tsc` y ESLint en verde.

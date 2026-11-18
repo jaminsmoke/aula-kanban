@@ -1147,6 +1147,42 @@
   opacity:.5;
 }
 
+.aula-documentos-recovery-button {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+
+.aula-documentos-recovery-list {
+  display:grid;
+  gap:8px;
+}
+
+.aula-documentos-recovery-item {
+  display:grid;
+  gap:7px;
+  padding:10px;
+  border:var(--border-width-hairline) solid var(--ui-border-subtle);
+  border-radius:var(--radius-sm);
+  background:var(--ui-surface-faint);
+}
+
+.aula-documentos-recovery-head {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.aula-documentos-recovery-head strong {
+  color:var(--ui-text-primary);
+  font-size:12px;
+  line-height:1.4;
+  overflow-wrap:anywhere;
+}
+
 .aula-slide-preview-modal {
   width:min(100%, 760px);
 }

@@ -16,6 +16,7 @@ import {
   Heading1,
   Heading2,
   Heading3,
+  History,
   Italic,
   Link2,
   List,
@@ -64,6 +65,13 @@ import {
   AULA_DOCUMENT_TEMPLATES,
   type AulaDocumentTemplate,
 } from "../../../../lib/domain/aula-documentos/templates";
+import {
+  AULA_RECOVERY_REASON_LABELS,
+  listAulaRecoveryCopies,
+  saveAulaRecoveryCopy,
+  type AulaRecoveryCopy,
+  type AulaRecoveryReason,
+} from "../../../../lib/domain/aula-documentos/recovery";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useAppDocument, type VersionedSaveResult } from "../use-app-document";
 import { useWindowClose, useWindowCloseGuard } from "../../store/window-close-guard";
@@ -310,6 +318,18 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [invalidResetConfirm, setInvalidResetConfirm] = useState(false);
   const [saveConflict, setSaveConflict] = useState<SaveConflict | null>(null);
   const [conflictNotice, setConflictNotice] = useState<string | null>(null);
+  const [recoveryOpen, setRecoveryOpen] = useState(false);
+  const [recoveryCopies, setRecoveryCopies] = useState<AulaRecoveryCopy[]>([]);
+  const [recoveryCount, setRecoveryCount] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    try {
+      return listAulaRecoveryCopies(window.localStorage, projectId).length;
+    } catch {
+      return 0;
+    }
+  });
+  const [recoveryRestoreId, setRecoveryRestoreId] = useState<string | null>(null);
+  const [recoveryNotice, setRecoveryNotice] = useState<string | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const pendingDocumentRef = useRef<AulaDocument | null>(null);
@@ -326,6 +346,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const importRef = useRef<HTMLElement>(null);
   const slidePreviewRef = useRef<HTMLElement>(null);
   const conflictRef = useRef<HTMLElement>(null);
+  const recoveryRef = useRef<HTMLElement>(null);
   const readOnly = role === "guest";
   const { load, saveVersioned, loading, error } = useAppDocument<AulaDocument>(projectId, "aula-documentos");
   const notesStore = useAppDocument<unknown>(projectId, "documentos");
@@ -371,6 +392,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   useDialogFocus(importOpen, closeImport, importRef, actionsToggleRef);
   useDialogFocus(Boolean(slidePreview), () => setSlidePreview(null), slidePreviewRef);
   useDialogFocus(Boolean(saveConflict), () => {}, conflictRef);
+  useDialogFocus(recoveryOpen, closeRecoveryCopies, recoveryRef);
 
   const requestWindowClose = useWindowClose();
   const closeGuard = useCallback(() => {
@@ -596,6 +618,97 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }, [editor, presentationNotes, presentationTheme, title]);
 
   /**
+   * Guarda una copia local del documento antes de una operación destructiva.
+   * @param reason - Motivo de la copia.
+   * @param serverUpdatedAt - Versión del servidor asociada; por defecto, la cargada.
+   * @returns `true` si la copia quedó almacenada en el navegador.
+   */
+  function storeRecoveryCopy(
+    reason: AulaRecoveryReason,
+    serverUpdatedAt: number | null = documentVersionRef.current,
+  ): boolean {
+    const document = currentDocument();
+    if (!document) return false;
+    try {
+      const result = saveAulaRecoveryCopy(window.localStorage, projectId, {
+        document,
+        reason,
+        serverUpdatedAt,
+      });
+      if (!result.ok) {
+        setStatus(result.reason === "quota"
+          ? "No hay espacio para la copia local. Descarga el documento antes de continuar."
+          : "La copia local supera el tamaño permitido. Descarga el documento antes de continuar.");
+        return false;
+      }
+      setRecoveryCount(result.copies.length);
+      return true;
+    } catch {
+      setStatus("No se pudo guardar la copia local en este navegador.");
+      return false;
+    }
+  }
+
+  /**
+   * Abre la lista de copias locales guardadas en el navegador.
+   */
+  function openRecoveryCopies() {
+    try {
+      const copies = listAulaRecoveryCopies(window.localStorage, projectId);
+      setRecoveryCopies(copies);
+      setRecoveryCount(copies.length);
+    } catch {
+      setRecoveryCopies([]);
+      setRecoveryCount(0);
+    }
+    setRecoveryRestoreId(null);
+    setRecoveryNotice(null);
+    setRecoveryOpen(true);
+  }
+
+  /**
+   * Cierra la lista de copias locales.
+   */
+  function closeRecoveryCopies() {
+    setRecoveryOpen(false);
+    setRecoveryRestoreId(null);
+    setRecoveryNotice(null);
+  }
+
+  /**
+   * Descarga una copia local como JSON.
+   * @param copy - Copia elegida.
+   */
+  function downloadRecoveryCopy(copy: AulaRecoveryCopy) {
+    try {
+      downloadTextFile(
+        JSON.stringify(copy.document, null, 2),
+        "application/json;charset=utf-8",
+        aulaRecoveryFileName(copy.title),
+      );
+      setRecoveryNotice("Copia descargada.");
+    } catch {
+      setRecoveryNotice("No se pudo descargar la copia.");
+    }
+  }
+
+  /**
+   * Restaura una copia local en el editor, sin guardarla todavía en el servidor.
+   * @param copy - Copia confirmada.
+   */
+  function restoreRecoveryCopy(copy: AulaRecoveryCopy) {
+    const parsed = parseAulaDocument(copy.document);
+    if (!parsed.ok) {
+      setRecoveryNotice(parsed.message);
+      return;
+    }
+    applyDocument(parsed.document);
+    closeRecoveryCopies();
+    markChanged("Copia local restaurada. Guárdala para conservarla en el proyecto.");
+    setStatus("Copia local restaurada en el editor. Todavía no se ha guardado en el servidor.");
+  }
+
+  /**
    * Persiste un documento y actualiza el estado de guardado.
    * @param document - Documento validado.
    * @param automatic - Indica si el guardado lo inició el autosave.
@@ -684,6 +797,11 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
    */
   async function reloadServerVersion() {
     if (!saveConflict || savingRef.current) return;
+    const stored = storeRecoveryCopy("conflict", saveConflict.updatedAt);
+    if (!stored && !downloadConflictCopy()) {
+      setConflictNotice("No se pudo guardar ni descargar una copia. La versión del servidor no se ha recargado.");
+      return;
+    }
     savingRef.current = true;
     setSaving(true);
     setConflictNotice("Recargando la versión del servidor…");
@@ -714,6 +832,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       return;
     }
     if (!downloadConflictCopy()) return;
+    storeRecoveryCopy("conflict", saveConflict.updatedAt);
 
     savingRef.current = true;
     setSaving(true);
@@ -755,13 +874,6 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     setConflictNotice("No se pudo guardar tu versión. La copia descargada sigue disponible.");
     setStatus("No se pudo conservar tu versión. Revisa la conexión.");
   }
-
-  /**
-   * Guarda el documento manualmente.
-   */
-  const saveDocument = useCallback(() => {
-    void saveCurrent(false);
-  }, [saveCurrent]);
 
   useEffect(() => {
     if (readOnly || loading || !editor || !dirty || saving || saveFailed || invalidDocument || saveConflict) return;
@@ -1013,6 +1125,10 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   function applyNewDocument() {
     if (!newDocumentPreview) return;
     const { template, document } = newDocumentPreview;
+    if (!storeRecoveryCopy("replace")) {
+      setNewDocumentError("No se pudo guardar una copia local antes de reemplazar. El documento actual no ha cambiado.");
+      return;
+    }
     applyDocument(document);
     markChanged(`Documento creado desde «${template.name}». Guárdalo para conservarlo.`);
     closeNewDocument();
@@ -1133,6 +1249,10 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
    */
   function applyImport() {
     if (!importPreview || !importConfirm) return;
+    if (!storeRecoveryCopy("replace")) {
+      setImportError("No se pudo guardar una copia local antes de reemplazar. El documento actual no ha cambiado.");
+      return;
+    }
     applyDocument(importPreview.document);
     markChanged(`Documento importado desde ${IMPORT_LABELS[importPreview.source]}. Guárdalo para conservarlo.`);
     closeImport();
@@ -1236,7 +1356,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     {
       label: "Guardar documento",
       icon: <Save size={15} aria-hidden />,
-      onClick: () => { void saveDocument(); },
+      onClick: () => { void saveCurrent(false); },
       disabled: readOnly || saving || loading || !editor || Boolean(invalidDocument) || Boolean(saveConflict),
     },
     {
@@ -1681,6 +1801,122 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         </div>
       ) : null}
 
+      {recoveryOpen ? (
+        <div
+          className="aula-documentos-modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeRecoveryCopies();
+          }}
+        >
+          <section
+            className="aula-documentos-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aula-documentos-recovery-title"
+            ref={recoveryRef}
+          >
+            <header className="aula-documentos-modal-head">
+              <h2 id="aula-documentos-recovery-title">Copias locales</h2>
+              <button
+                type="button"
+                className="aula-documentos-modal-close"
+                onClick={closeRecoveryCopies}
+                aria-label="Cerrar copias locales"
+              >
+                <X size={16} aria-hidden />
+              </button>
+            </header>
+            <div className="aula-documentos-import-menu">
+              <p className="aula-documentos-import-intro">
+                Se guardan en este navegador antes de reemplazar el documento o resolver un conflicto.
+                No se sincronizan con el servidor y se purgan las más antiguas.
+              </p>
+              {recoveryNotice ? (
+                <p className="aula-documentos-import-status" role="status">{recoveryNotice}</p>
+              ) : null}
+              {recoveryCopies.length === 0 ? (
+                <p className="aula-documentos-import-intro">Todavía no hay copias locales para este proyecto.</p>
+              ) : (
+                <div className="aula-documentos-recovery-list">
+                  {recoveryCopies.map((copy) => {
+                    const confirming = recoveryRestoreId === copy.id;
+                    const createdLabel = formatSourceDate(copy.createdAt);
+                    const versionLabel = formatSourceDate(copy.serverUpdatedAt);
+                    return (
+                      <article className="aula-documentos-recovery-item" key={copy.id}>
+                        <div className="aula-documentos-recovery-head">
+                          <strong>{copy.title || "Documento sin título"}</strong>
+                          <span className="aula-documentos-import-meta">
+                            {AULA_RECOVERY_REASON_LABELS[copy.reason]}
+                          </span>
+                        </div>
+                        <p className="aula-documentos-import-meta">
+                          {createdLabel ? `Guardada: ${createdLabel}` : "Fecha no disponible."}
+                          {versionLabel ? ` · Versión del servidor: ${versionLabel}` : ""}
+                        </p>
+                        {confirming ? (
+                          <>
+                            <p className="aula-documentos-import-warning">
+                              Se cargará en el editor, pero no se guardará en el servidor hasta que pulses
+                              «Guardar documento».
+                            </p>
+                            <div className="aula-documentos-import-actions">
+                              <button
+                                type="button"
+                                className="aula-documentos-import-secondary"
+                                onClick={() => {
+                                  setRecoveryRestoreId(null);
+                                  setRecoveryNotice(null);
+                                }}
+                              >
+                                Cancelar
+                              </button>
+                              <button
+                                type="button"
+                                className="aula-documentos-import-primary"
+                                onClick={() => { restoreRecoveryCopy(copy); }}
+                              >
+                                Confirmar restauración
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="aula-documentos-import-actions">
+                            <button
+                              type="button"
+                              className="aula-documentos-import-secondary"
+                              onClick={() => { downloadRecoveryCopy(copy); }}
+                            >
+                              <Download size={14} aria-hidden />
+                              Descargar
+                            </button>
+                            <button
+                              type="button"
+                              className="aula-documentos-import-primary"
+                              onClick={() => {
+                                setRecoveryRestoreId(copy.id);
+                                setRecoveryNotice(null);
+                              }}
+                            >
+                              Restaurar
+                            </button>
+                          </div>
+                        )}
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+              <div className="aula-documentos-import-actions">
+                <button type="button" className="aula-documentos-import-secondary" onClick={closeRecoveryCopies}>
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : null}
+
       {closePromptOpen ? (
         <div
           className="aula-documentos-modal-backdrop"
@@ -1904,6 +2140,14 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                 Reintentar guardado
               </button>
             ) : null}
+            <button
+              type="button"
+              className="aula-documentos-preview-button aula-documentos-recovery-button"
+              onClick={openRecoveryCopies}
+            >
+              <History size={14} aria-hidden />
+              Copias locales{recoveryCount > 0 ? ` (${recoveryCount})` : ""}
+            </button>
           </section>
           <section className="aula-documentos-info">
             <h3>Presentación</h3>
