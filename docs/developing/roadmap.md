@@ -44,10 +44,10 @@
 
 ### Fase 1 — Modelo de plantillas
 
-- [ ] Crear `lib/domain/aula-documentos/templates.ts` con las plantillas vacía, apuntes, proyecto de clase, presentación y guía.
-- [ ] Reutilizar `createEmptyAulaDocument` y `createStarterAulaDocument` cuando corresponda, sin duplicar contenido.
-- [ ] Validar cada plantilla con `parseAulaDocument` y añadir pruebas de títulos, contenido, diagramas y saltos de diapositiva.
-- [ ] Exportar una lista tipada de plantillas con id, nombre, descripción y creador.
+- [x] Crear `lib/domain/aula-documentos/templates.ts` con las plantillas vacía, apuntes, proyecto de clase, presentación y guía.
+- [x] Reutilizar `createEmptyAulaDocument` y `createStarterAulaDocument` cuando corresponda, sin duplicar contenido.
+- [x] Validar cada plantilla con `parseAulaDocument` y añadir pruebas de títulos, contenido, diagramas y saltos de diapositiva.
+- [x] Exportar una lista tipada de plantillas con id, nombre, descripción y creador.
 - **Criterios de aceptación:**
   - Cada plantilla devuelve un documento válido y guardable.
   - Las plantillas no incluyen HTML ni nodos fuera del esquema.
@@ -95,3 +95,4 @@
 - 2026-11-18: ADOC-02 sale del backlog y pasa a ser el roadmap activo. Prioridad P1; no se implementa nada en este paso.
 - Puntos de partida: `lib/domain/aula-documentos/starter.ts`, `lib/domain/aula-documentos/document.ts`, `app/board/apps/aula-documentos/aula-documentos-app.tsx` y sus pruebas.
 - ADOC-01 ya dejó el autosave, el cierre protegido y la recuperación; este roadmap reutiliza esa ruta. La app sigue con un único documento por proyecto.
+- 2026-11-18: Fase 1 completada. `templates.ts` exporta seis plantillas tipadas y localizables (`empty`, `starter`, `notes`, `class-project`, `presentation`, `guide`), reutiliza los creadores existentes y valida cada documento con `parseAulaDocument`. Las pruebas cubren copias independientes, contenido vacío, listas, diagrama, saltos de diapositiva y guía. 7 pruebas focalizadas y 1.353 en la suite completa; `tsc` y ESLint en verde.
