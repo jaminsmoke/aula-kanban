@@ -219,8 +219,7 @@ reglas de cada app.
 
 ## Referencias
 
-- [`roadmap.md`](../developing/roadmap.md): ADOC-03 activo, importación legacy limpia
-  de Aula Documentos.
+- [`roadmap.md`](../developing/roadmap.md): plantilla del próximo roadmap.
 - [`changelog.md`](../developing/changelog.md): resumen de los roadmaps MCP-05B, MCP-05D y
   MCP-05E.
 - [`backlog.md`](../developing/backlog.md): DEV-01 y ADOC-04…ADOC-07.

@@ -1,8 +1,32 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-03 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-18 — Roadmap ADOC-03 · Importación legacy limpia en Aula Documentos
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- La importación desde Notas y documentos retira el primer H1 cuando repite el título, comparando sin distinguir mayúsculas, acentos ni espacios. El mismo helper se aplica al Markdown con `stripTitleHeading`.
+- Un H1 distinto, vacío o que no esté al inicio se conserva. La operación no muta el documento de origen y devuelve un aviso para la vista previa.
+- La vista previa muestra app de origen, título final y fecha de actualización; si falta la fecha, indica «Fecha de origen no disponible». Las advertencias del importador aparecen antes de confirmar.
+- Un estado no convertible muestra un error legible y no ofrece la importación. La confirmación de reemplazo y el aviso de cambios pendientes se mantienen.
+- La ayuda menciona la importación sin duplicar el título. No cambian `AULA_STORE_VERSION`, la versión de la app ni el Site.
+
+### Verificación
+
+- Importación revisada a 1366, 1024 y 390 px, con datos reales de Notas, Diagramas y Presentaciones, teclado y modo invitado.
+- Suite completa: **190 archivos / 1.366 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `d9678f3` (Fase 1), `0b3bad0` (Fase 2) y este commit de cierre. Push único a `github main`; sin publicación en Sites ni cambio de versión del Site: sigue en **1.1.35**.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-04…ADOC-07** y **DEV-01**. El plan completo está en [`historial/roadmap-adoc-03.md`](../historial/roadmap-adoc-03.md).
 
 ---
 
