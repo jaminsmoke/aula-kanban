@@ -25,9 +25,9 @@ export type NativeCategory = StoreTopCategory;
 export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
-export const AULA_STORE_VERSION = "1.10.0";
+export const AULA_STORE_VERSION = "1.11.0";
 
-export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "presentaciones", "moleculas", "timeline", "hoja-calculo", "documentos"] as const;
+export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "presentaciones", "moleculas", "timeline", "hoja-calculo", "documentos", "visor-office"] as const;
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
 
@@ -274,6 +274,19 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
       { name: "@tiptap/starter-kit", version: "3.34.0" },
       { name: "@tiptap/extension-link", version: "3.34.0" },
     ],
+    window: { width: 1200, height: 720 },
+  },
+  {
+    id: "visor-office",
+    name: "Visor Office",
+    tagline: "Abre Word, Excel y PowerPoint sin subirlos.",
+    description: "Visor de archivos .docx, .xlsx y .pptx locales con @silurus/ooxml (MIT): páginas, hojas y diapositivas en solo lectura, con zoom y navegación, sin subir ni guardar el documento.",
+    categories: ["Oficina"],
+    subcategory: "Herramientas",
+    cover: "/store/visor-office.svg",
+    features: ["Word, Excel y PowerPoint en solo lectura", "El archivo no se sube ni se guarda", "Zoom, navegación y recursos servidos desde el Site"],
+    appVersion: "1.0.0",
+    upstream: { name: "@silurus/ooxml", version: "0.90.1" },
     window: { width: 1200, height: 720 },
   },
 ];

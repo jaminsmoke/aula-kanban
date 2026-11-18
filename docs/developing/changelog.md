@@ -1,8 +1,35 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-16 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-18 — Roadmap STORE-16 · Visor Office en Aula Store
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Visor Office se incorpora con `@silurus/ooxml` 0.90.1 (MIT): apertura local de `.docx`, `.xlsx` y `.pptx` en solo lectura, con zoom y navegación por páginas, hojas y diapositivas.
+- El archivo se lee con `File.arrayBuffer()` y se descarta al cerrar: no se sube, no se guarda en `app_documents` ni se persiste. Límite de 30 MB y un archivo cada vez.
+- Los tres visores se cargan con `import()` dinámico por formato. WASM, workers y recursos se sirven desde `dist/client`; la auditoría de producción no encontró peticiones a otros orígenes ni fuentes externas del visor.
+- Robustez: mensajes para archivos protegidos, antiguos, dañados, no compatibles, demasiado grandes y con imágenes fuera de límite; host DOM estable con `destroy()` al cambiar, cerrar o desmontar; foco, atajos de teclado, reducción de movimiento y límite del canvas documentados.
+- Portada `public/store/visor-office.svg`, ficha, icono y registro lazy; entrada en «Mejores aplicaciones». `AULA_STORE_VERSION` sube a `1.11.0`; el Site sigue en `1.1.35`.
+- Declaración MCP sin herramientas propias; ayuda, matriz de herramientas, catálogo y documentación actualizados. Aviso MIT de `@silurus/ooxml` añadido. La demo no cambia.
+
+### Verificación
+
+- Tienda y ficha revisadas a 1366, 1024 y 390 px: la portada carga sin 404, la ficha muestra versión `1.0.0` y upstream `@silurus/ooxml 0.90.1`, y la app se instaló y abrió en la ventana con un `.docx` real.
+- La app se revisó a pantalla completa a 1366 y 390 px; el visor abrió Word, Excel y PowerPoint con archivos reales en las fases 1 y 2. La portada y la ficha se revisaron también en móvil.
+- Chunk diferido: `visor-office-app` 16.610 B / 5.416 B gzip, CSS 8.118 B / 1.784 B gzip y portada 6.556 B. WASM: DOCX 2.303.994 B / 966.909 B gzip; XLSX 1.953.087 B / 807.350 B gzip; PPTX 2.023.939 B / 812.090 B gzip. Todo se sirve desde `dist/client`.
+- Suite completa: **182 archivos / 1.300 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `8dc5b9e` (Fase 1), `bc80eff` (Fase 2) y este commit de cierre. Push único a `github main`; sin publicación en Sites ni cambio de versión del Site: sigue en **1.1.35**.
+
+### Seguimiento
+
+- El backlog queda con STORE-17 (Aula Documentos) y DEV-01 (evaluación de pnpm). El plan completo está en [`historial/roadmap-store-16.md`](../historial/roadmap-store-16.md).
 
 ---
 

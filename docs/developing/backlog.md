@@ -2,7 +2,7 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** STORE-16 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
 > **Estado:** 2 entradas: STORE-17 y DEV-01 pendientes
 
 ---
@@ -26,7 +26,7 @@
   4. Modo presentación con `reveal.js` diferido y migración asistida de Presentaciones.
   5. Paridad, retirada gradual de apps antiguas, alias y actualización de ayuda, MCP y matriz.
 - Criterios: no perder documentos existentes, abrir y editar los tres tipos de contenido, mantener invitados en solo lectura, respetar el presupuesto de chunks y actualizar las fichas con «incluye» y los paquetes upstream.
-- Notas: el nombre elegido es **Aula Documentos** y el id `aula-documentos`; `Composio`, `Aula Studio`, `Aula Docs` y `Docxpress` se descartan por sonar a marcas tecnológicas o estudios audiovisuales. El id distinto evita colisiones de instalación y de `app_documents` con la app `documentos` actual. Mapas conceptuales y Líneas de tiempo quedan fuera de esta fusión. No abrir roadmap hasta cerrar STORE-16.
+- Notas: el nombre elegido es **Aula Documentos** y el id `aula-documentos`; `Composio`, `Aula Studio`, `Aula Docs` y `Docxpress` se descartan por sonar a marcas tecnológicas o estudios audiovisuales. El id distinto evita colisiones de instalación y de `app_documents` con la app `documentos` actual. Mapas conceptuales y Líneas de tiempo quedan fuera de esta fusión. STORE-16 está cerrado: esta entrada puede convertirse en el próximo roadmap.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 

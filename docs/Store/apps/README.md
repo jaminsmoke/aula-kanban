@@ -3,7 +3,7 @@
 Lista viva de las aplicaciones nativas de Aula Kanban: qué está integrado, qué es
 candidato y qué se ha descartado, con la licencia y la versión comprobadas en npm.
 
-Última verificación: **2026-11-17**.
+Última verificación: **2026-11-18**.
 
 ## Índice
 
@@ -100,16 +100,16 @@ La tabla de versiones por app está en [`integradas.md#versiones-por-app`](integ
 
 ## Estado del catálogo
 
-Las quince apps actuales (Ajedrez **STORE-06**, Física 2D **STORE-07**, Geometría
+Las dieciséis apps actuales (Ajedrez **STORE-06**, Física 2D **STORE-07**, Geometría
 interactiva **STORE-08**, Tarjetas de repaso **STORE-09**, Mapas conceptuales
 **STORE-10**, Presentaciones **STORE-11**, Moléculas 3D **STORE-12**, Líneas de
-tiempo **STORE-13**, Hoja de cálculo **STORE-14** y Notas y documentos
-**STORE-15**, además de las cinco iniciales) ya están integradas.
+tiempo **STORE-13**, Hoja de cálculo **STORE-14**, Notas y documentos
+**STORE-15** y Visor Office **STORE-16**, además de las cinco iniciales) ya
+están integradas.
 
-**STORE-16** Visor Office está en roadmap. En el backlog quedan **STORE-17**
-(Aula Documentos, editor unificado) y **DEV-01** (evaluación de pnpm, fuera del
-catálogo de apps). El resto de candidatas sigue documentado por categorías, sin
-entrada hasta que se priorice.
+En el backlog quedan **STORE-17** (Aula Documentos, editor unificado) y
+**DEV-01** (evaluación de pnpm, fuera del catálogo de apps). El resto de
+candidatas sigue documentado por categorías, sin entrada hasta que se priorice.
 
 ## Cómo reverificar una licencia
 

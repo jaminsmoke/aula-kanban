@@ -4,8 +4,8 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 
 > **Integradas:** Mapas conceptuales como **STORE-10**, Presentaciones como
 > **STORE-11**, Líneas de tiempo como **STORE-13**, Hoja de cálculo como
-> **STORE-14** y Notas y documentos como **STORE-15**. **En roadmap:** Visor
-> Office como **STORE-16**. El resto sigue como candidato hasta que se priorice.
+> **STORE-14**, Notas y documentos como **STORE-15** y Visor Office como
+> **STORE-16**. El resto sigue como candidato hasta que se priorice.
 
 | App | Paquete | Licencia | Aporta | Peso | Notas |
 |---|---|---|---|---|---|
@@ -17,20 +17,19 @@ Peso = orden de magnitud del chunk diferido, sin medir en este repo.
 | Gráficas | `@observablehq/plot` 0.6.19 | ISC | Gráficas declarativas | ~250 KB | Alternativa a Chart.js |
 | Funciones | `function-plot` 1.26.0 | MIT | Representación de funciones | ~150 KB | Matemáticas |
 | Lienzo 2D | `konva` 10.9.1 | MIT | Capas, formas y arrastre | ~250 KB | Base para editores propios |
-| Documentos Office | `@silurus/ooxml` 0.90.1 | MIT | Ver docx/xlsx/pptx en el navegador | ~1 MB WASM | En roadmap STORE-16; paquete de ~23 MB sin empaquetar, medir chunk |
 | Visor PDF | `pdfjs-dist` 6.5.438 | Apache-2.0 | Leer PDF | ~1,5 MB | Worker servido desde el propio Site |
 | Visor PDF (React) | `@embedpdf/react-pdf-viewer` 2.15.1 | MIT | Envoltorio listo sobre PDF | ~300 KB + motor | Alternativa a montar PDF.js a mano |
 
 ## Valoración
 
 - **Mapas conceptuales**, **Presentaciones**, **Líneas de tiempo**, **Hoja de
-  cálculo** y **Notas y documentos** ya están integradas y cubren edición de
-  mapas, diapositivas, secuencias temporales, hojas de cálculo y documentos.
-- **Visor Office** está en roadmap como **STORE-16**.
+  cálculo**, **Notas y documentos** y **Visor Office** ya están integradas y
+  cubren edición de mapas, diapositivas, secuencias temporales, hojas de cálculo,
+  documentos y lectura local de Office.
 - **Mapas mentales** es una variante más estrecha de los mapas conceptuales; puede
   esperar a que se priorice una necesidad concreta.
-- **Texto enriquecido**, **documentos Office** y **visores PDF** amplían el trabajo
-  documental. El visor PDF no entra ahora porque el lector de libros ya cubre PDF;
-  si se necesita una librería compartida, se decidirá al fusionar apps.
+- **Texto enriquecido** y **visores PDF** amplían el trabajo documental. El visor
+  PDF no entra ahora porque el lector de libros ya cubre PDF; si se necesita una
+  librería compartida, se decidirá al fusionar apps.
 - **Código**, **playground** y **lienzo 2D** son piezas de apoyo o bases para
   editores propios; no se convierten en app por sí solas.
