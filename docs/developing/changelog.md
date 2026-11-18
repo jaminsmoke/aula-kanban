@@ -6,6 +6,17 @@
 
 ---
 
+## 2026-11-19 — Publicación 1.1.36
+
+**Estado:** Publicada en Sites.
+
+- Aula Store incorpora Hoja de cálculo, Notas y documentos, Visor Office y Aula Documentos. Aula Documentos incluye guardado condicionado a la versión, recuperación de copias locales y mejoras de edición, presentación y accesibilidad.
+- Hoja de cálculo conserva las fórmulas como texto y desactiva la evaluación automática y la interpretación de HTML en las celdas. La recuperación del cálculo queda registrada en el backlog.
+- Verificación: 1.414 pruebas, ESLint, TypeScript, compilación y presupuesto de rendimiento. En producción responden la portada, documentación y recursos de la tienda y el plugin lista las 17 apps del catálogo.
+- La publicación no requiere migraciones. La ruta pública `/demo` devuelve 404 porque su identificador fijo no está presente en producción.
+
+---
+
 ## 2026-11-19 — Roadmap ADOC-07 · Concurrencia y versiones de Aula Documentos
 
 **Estado:** Completada · Sin publicación

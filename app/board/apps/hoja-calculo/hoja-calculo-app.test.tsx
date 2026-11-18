@@ -60,8 +60,11 @@ describe("Hoja de cálculo", () => {
     expect(screen.getByText("Presupuesto de ejemplo")).toBeTruthy();
     await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
     const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
+      parseFormulas: boolean;
+      parseHTML: boolean;
       worksheets: Array<{ data: unknown; minDimensions?: number[] }>;
     };
+    expect(options).toMatchObject({ parseFormulas: false, parseHTML: false });
     expect(options.worksheets[0].data).toEqual(STARTER_SHEET);
     expect(options.worksheets[0].minDimensions).toEqual([6, 20]);
   });

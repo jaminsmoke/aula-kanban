@@ -38,7 +38,7 @@ import "./hoja-calculo.css";
 type Worksheet = jspreadsheet.WorksheetInstance;
 
 /**
- * Hoja de cálculo con celdas, fórmulas, formato y persistencia por proyecto.
+ * Hoja de cálculo con celdas, formato y persistencia por proyecto.
  * @param props - Proyecto activo y rol del usuario.
  * @returns La ventana con la rejilla y la barra de herramientas.
  */
@@ -52,7 +52,7 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
   const [ready, setReady] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState("Hoja de ejemplo lista. Las fórmulas se recalculan al editar.");
+  const [status, setStatus] = useState("Hoja de ejemplo lista.");
   const [initError, setInitError] = useState<string | null>(null);
   const { load, save, loading, error } = useAppDocument<SpreadsheetDocument>(projectId, "hoja-calculo");
   const readOnly = role === "guest";
@@ -111,6 +111,10 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
 
     try {
       jspreadsheet(element, {
+        // Las hojas compartidas se cargan como datos. El motor de fórmulas
+        // de esta versión de Jspreadsheet ejecuta expresiones como JavaScript.
+        parseFormulas: false,
+        parseHTML: false,
         worksheets: [
           {
             data: initialDataRef.current,
@@ -319,7 +323,7 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
           </span>
           <span>
             <strong>Hoja de cálculo</strong>
-            <small>Celdas y fórmulas</small>
+            <small>Celdas y formato</small>
           </span>
         </div>
         <div className="hoja-calculo-actions" role="group" aria-label="Herramientas de la hoja">
@@ -385,14 +389,13 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
         <aside className="hoja-calculo-side">
           <section className="hoja-calculo-info">
             <h3>Presupuesto de ejemplo</h3>
-            <p>Edita las celdas, cambia cantidades y precios, y usa las fórmulas de la columna Total.</p>
+            <p>Edita las celdas y cambia cantidades y precios. Las fórmulas se conservan como texto, con el cálculo automático desactivado.</p>
             <p className="hoja-calculo-status" role="status">{statusText}</p>
           </section>
           <section className="hoja-calculo-help">
             <h3>Atajos</h3>
             <ul>
               <li>Haz clic o arrastra para seleccionar celdas.</li>
-              <li>Escribe una fórmula empezando por <code>=</code>.</li>
               <li>Las filas y columnas se añaden al final.</li>
             </ul>
           </section>
