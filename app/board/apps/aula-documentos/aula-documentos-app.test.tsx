@@ -490,6 +490,29 @@ describe("Aula Documentos", () => {
     expect(screen.queryByRole("menu", { name: "Acciones del documento" })).toBeNull();
   });
 
+  it("atrapa el foco en los diálogos y lo devuelve al control de origen", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    const trigger = screen.getByRole("button", { name: "Acciones del documento" });
+    trigger.focus();
+    fireEvent.click(trigger);
+    fireEvent.click(screen.getByRole("menuitem", { name: "Nuevo documento" }));
+    const dialog = await screen.findByRole("dialog", { name: "Nuevo documento" });
+    expect(dialog.getAttribute("aria-modal")).toBe("true");
+
+    const close = screen.getByRole("button", { name: "Cerrar nuevo documento" });
+    expect(document.activeElement).toBe(close);
+    const cancel = screen.getByRole("button", { name: "Cancelar" });
+    cancel.focus();
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(document.activeElement).toBe(close);
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Nuevo documento" })).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
+  });
+
   it("inserta dos diagramas y guarda el documento validado", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());

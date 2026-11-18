@@ -73,6 +73,7 @@ import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, 
 import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../../shared/aula-documentos/mermaid-block";
 import { getMermaidRenderer } from "../../shared/aula-documentos/mermaid-renderer";
 import { printHtmlDocument } from "../../shared/aula-documentos/print-html";
+import { useDialogFocus } from "../../shared/use-dialog-focus";
 import "./aula-documentos.css";
 
 const PresentationView = lazy(() => import("../../shared/aula-documentos/presentation-view").then((module) => ({
@@ -310,6 +311,12 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const savingRef = useRef(false);
   const mountedRef = useRef(true);
   const actionsRef = useRef<HTMLDivElement>(null);
+  const actionsToggleRef = useRef<HTMLButtonElement>(null);
+  const newDocumentRef = useRef<HTMLElement>(null);
+  const invalidDocumentRef = useRef<HTMLElement>(null);
+  const closePromptRef = useRef<HTMLElement>(null);
+  const importRef = useRef<HTMLElement>(null);
+  const slidePreviewRef = useRef<HTMLElement>(null);
   const readOnly = role === "guest";
   const { load, save, loading, error } = useAppDocument<AulaDocument>(projectId, "aula-documentos");
   const notesStore = useAppDocument<unknown>(projectId, "documentos");
@@ -348,6 +355,12 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [actionsOpen]);
+
+  useDialogFocus(newDocumentOpen, closeNewDocument, newDocumentRef, actionsToggleRef);
+  useDialogFocus(Boolean(invalidDocument), () => {}, invalidDocumentRef);
+  useDialogFocus(closePromptOpen, () => setClosePromptOpen(false), closePromptRef);
+  useDialogFocus(importOpen, closeImport, importRef, actionsToggleRef);
+  useDialogFocus(Boolean(slidePreview), () => setSlidePreview(null), slidePreviewRef);
 
   const requestWindowClose = useWindowClose();
   const closeGuard = useCallback(() => {
@@ -1215,6 +1228,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           <button
             type="button"
             className="aula-documentos-mobile-toggle"
+            ref={actionsToggleRef}
             aria-haspopup="menu"
             aria-expanded={actionsOpen}
             aria-label="Acciones del documento"
@@ -1300,6 +1314,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             role="dialog"
             aria-modal="true"
             aria-labelledby="aula-documentos-new-title"
+            ref={newDocumentRef}
           >
             <header className="aula-documentos-modal-head">
               <h2 id="aula-documentos-new-title">Nuevo documento</h2>
@@ -1381,6 +1396,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             role="dialog"
             aria-modal="true"
             aria-labelledby="aula-documentos-invalid-title"
+            ref={invalidDocumentRef}
           >
             <header className="aula-documentos-modal-head">
               <h2 id="aula-documentos-invalid-title">Documento guardado inválido</h2>
@@ -1458,6 +1474,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             role="dialog"
             aria-modal="true"
             aria-labelledby="aula-documentos-close-title"
+            ref={closePromptRef}
           >
             <header className="aula-documentos-modal-head">
               <h2 id="aula-documentos-close-title">Cerrar Aula Documentos</h2>
@@ -1524,6 +1541,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             role="dialog"
             aria-modal="true"
             aria-labelledby="aula-documentos-import-title"
+            ref={importRef}
           >
             <header className="aula-documentos-modal-head">
               <h2 id="aula-documentos-import-title">Importar documento</h2>
@@ -1654,7 +1672,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           <section className="aula-documentos-info">
             <h3>Texto y diagramas juntos</h3>
             <p>Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa.</p>
-            <p className="aula-documentos-status" role="status">{statusText}</p>
+            <p className="aula-documentos-status" role="status" aria-live="polite">{statusText}</p>
             {saveFailed && !readOnly ? (
               <button
                 type="button"
@@ -1729,6 +1747,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             role="dialog"
             aria-modal="true"
             aria-labelledby="aula-documentos-preview-title"
+            ref={slidePreviewRef}
           >
             <header className="aula-documentos-modal-head">
               <h2 id="aula-documentos-preview-title">Vista previa: {slidePreview.title}</h2>

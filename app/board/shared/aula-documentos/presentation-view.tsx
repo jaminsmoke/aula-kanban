@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Reveal from "reveal.js";
 import type { AulaPresentationTheme } from "../../../../lib/domain/aula-documentos/document";
+import { useDialogFocus } from "../use-dialog-focus";
 import "reveal.js/reveal.css";
 import "./presentation.css";
 
@@ -23,8 +24,10 @@ export type PresentationViewProps = {
  */
 export function PresentationView({ title, slides, theme = "aula", notes = {}, onExit }: PresentationViewProps) {
   const revealRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [showNotes, setShowNotes] = useState(false);
+  useDialogFocus(true, onExit, dialogRef);
 
   useEffect(() => {
     const element = revealRef.current;
@@ -54,12 +57,7 @@ export function PresentationView({ title, slides, theme = "aula", notes = {}, on
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onExit();
-    };
-    window.addEventListener("keydown", onKeyDown);
     return () => {
-      window.removeEventListener("keydown", onKeyDown);
       deck.off("slidechanged", onSlideChanged);
       document.body.style.overflow = previousOverflow;
       deck.destroy();
@@ -67,7 +65,7 @@ export function PresentationView({ title, slides, theme = "aula", notes = {}, on
   }, [onExit, slides]);
 
   return (
-    <div className={`aula-presentation aula-presentation-theme-${theme}`} role="dialog" aria-modal="true" aria-label={`Presentación: ${title}`}>
+    <div ref={dialogRef} className={`aula-presentation aula-presentation-theme-${theme}`} role="dialog" aria-modal="true" aria-label={`Presentación: ${title}`}>
       <button type="button" className="aula-presentation-exit" onClick={onExit} aria-label="Salir de la presentación">
         <X size={16} aria-hidden />
         Salir

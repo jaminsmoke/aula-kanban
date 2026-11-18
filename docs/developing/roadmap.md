@@ -57,11 +57,11 @@
 
 ### Fase 2 — Foco y semántica de diálogos
 
-- [ ] Extraer un hook de foco que atrape Tab, cierre con Escape y devuelva el foco al disparador.
-- [ ] Aplicarlo a importación, nuevo documento, vista previa, cierre, recuperación y presentación.
-- [ ] Revisar `aria-modal`, `aria-labelledby`, `aria-describedby` y el orden de tabulación.
-- [ ] Anunciar guardado, errores y preparación con `role="status"` o `role="alert"` según corresponda.
-- [ ] Cubrir con pruebas el foco atrapado, la devolución y el cierre con Escape.
+- [x] Extraer un hook de foco que atrape Tab, cierre con Escape y devuelva el foco al disparador.
+- [x] Aplicarlo a importación, nuevo documento, vista previa, cierre, recuperación y presentación.
+- [x] Revisar `aria-modal`, `aria-labelledby`, `aria-describedby` y el orden de tabulación.
+- [x] Anunciar guardado, errores y preparación con `role="status"` o `role="alert"` según corresponda.
+- [x] Cubrir con pruebas el foco atrapado, la devolución y el cierre con Escape.
 - **Criterios de aceptación:**
   - El teclado no sale de un diálogo abierto.
   - Al cerrar, el foco vuelve al botón que abrió el diálogo.
@@ -107,3 +107,4 @@
 - Puntos de partida: `app/board/apps/aula-documentos/aula-documentos-app.tsx`, `aula-documentos.css`, `mermaid-block.tsx`, `presentation-view.tsx`, los modales compartidos y `app/board/store/store-window.tsx`.
 - ADOC-01 a ADOC-05 están cerrados. La posición inicial de la ventana en móvil se considerará una incidencia del escritorio si afecta a todas las apps.
 - 2026-11-18: Fase 1 completada. En contenedores estrechos aparece el menú «Acciones» con etiquetas para nuevo, importar, guardar, exportar, imprimir, presentar y exportar presentación; la barra y los controles Mermaid usan objetivos de 44×44 px. Revisado a 390 y 620 px sin desbordamiento horizontal. 40 pruebas focalizadas y 1.392 en la suite completa; `tsc` y ESLint en verde.
+- 2026-11-18: Fase 2 completada. `useDialogFocus` atrapa Tab, cierra con Escape y devuelve el foco al disparador; se aplica a nuevo documento, importación, vista previa, cierre, recuperación y presentación. El estado de guardado usa `role="status"` con `aria-live="polite"`, y los errores mantienen `role="alert"`. 41 pruebas focalizadas y 1.393 en la suite completa; `tsc` y ESLint en verde.
