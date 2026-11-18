@@ -71,12 +71,12 @@
 
 ### Fase 2 — Robustez, accesibilidad, portada y medición
 
-- [ ] Manejar archivos corruptos, protegidos, no soportados y demasiado grandes con mensajes claros.
-- [ ] Confirmar que WASM, workers y fuentes se sirven desde el Site y que abrir un archivo no hace peticiones externas ni lo envía fuera del navegador.
-- [ ] Revisar foco, teclado, contraste, reducción de movimiento y límites de accesibilidad del canvas.
-- [ ] Añadir un estado vacío útil y evitar que el selector acepte formatos fuera de alcance.
-- [ ] Crear `public/store/visor-office.svg` con el formato de las portadas actuales.
-- [ ] Medir el chunk, los assets WASM y el tiempo de carga de cada formato; documentar el presupuesto.
+- [x] Manejar archivos corruptos, protegidos, no soportados y demasiado grandes con mensajes claros.
+- [x] Confirmar que WASM, workers y fuentes se sirven desde el Site y que abrir un archivo no hace peticiones externas ni lo envía fuera del navegador.
+- [x] Revisar foco, teclado, contraste, reducción de movimiento y límites de accesibilidad del canvas.
+- [x] Añadir un estado vacío útil y evitar que el selector acepte formatos fuera de alcance.
+- [x] Crear `public/store/visor-office.svg` con el formato de las portadas actuales.
+- [x] Medir el chunk, los assets WASM y el tiempo de carga de cada formato; documentar el presupuesto.
 - **Criterios de aceptación:**
   - Los errores no rompen la ventana ni dejan visores huérfanos.
   - Abrir un archivo no hace peticiones externas; WASM, workers y fuentes se sirven desde el propio Site.
@@ -98,7 +98,31 @@
   - Suite completa, tipos, lint, build y presupuesto en verde.
   - Sin cambios de datos versionados, Site ni publicación; el push se hace una sola vez al cerrar.
 
-## 5. Riesgos y bloqueos
+## 5. Presupuesto de carga observado
+
+Medición sobre el build de producción local, con los tres archivos de muestra y el visor abierto a 1366×768. Los tamaños de JS/CSS incluyen el shell compartido de Aula Store; el código propio de la app (página, CSS e iconos) ronda los 9–12 KB gzip.
+
+| Medida | Observado | Presupuesto |
+|---|---:|---:|
+| DOCX: JS/CSS del flujo | 823 KB gzip | ≤ 850 KB |
+| XLSX: JS/CSS del flujo | 573 KB gzip | ≤ 600 KB |
+| PPTX: JS/CSS del flujo | 559 KB gzip | ≤ 600 KB |
+| WASM de DOCX | 967 KB gzip / 2,30 MB bruto | ≤ 1 MB gzip |
+| WASM de XLSX | 807 KB gzip / 1,95 MB bruto | ≤ 850 KB |
+| WASM de PPTX | 812 KB gzip / 2,02 MB bruto | ≤ 850 KB |
+| Primera apertura local en frío (DOCX) | 0,96 s | ≤ 1,5 s |
+| Apertura con el shell ya cacheado (XLSX / PPTX) | 0,29 s / 0,26 s | ≤ 0,5 s |
+| Peticiones a otros orígenes | 0 | 0 |
+| Fuentes externas o workers adicionales del visor | 0 | 0 |
+| Fuentes locales del shell | 2 WOFF2 desde `/fonts` | las mismas del Site |
+
+- Solo se descarga el WASM del formato elegido; los tres quedan como assets estáticos del Site.
+- El shell carga sus dos fuentes locales habituales; el visor no añade fuentes ni workers de formato.
+- En la auditoría de red no aparecieron peticiones a otros orígenes.
+- Los tiempos son del servidor local; no incluyen latencia real de red y sirven como referencia de regresión.
+- El límite de 30 MB se mantiene como protección de memoria, independiente del presupuesto de carga.
+
+## 6. Riesgos y bloqueos
 
 | Riesgo | Impacto | Mitigación |
 |---|---|---|
@@ -110,7 +134,7 @@
 | El ciclo de vida deja visores o workers abiertos | Fugas de memoria | `destroy()` en cambio, cierre y desmontaje; prueba de limpieza. |
 | Añadir la app rompe snapshots y contratos MCP | Suite en rojo | Actualizar declaraciones, snapshots y pruebas de cobertura en la misma fase. |
 
-## 6. Notas de sesión
+## 7. Notas de sesión
 
 - 2026-11-17: STORE-16 sale del backlog y pasa a ser el roadmap activo. `@silurus/ooxml` 0.90.1 es MIT, ESM y trae WASM propio; el paquete completo ocupa unos 23 MB sin empaquetar.
 - La primera versión es solo lectura y no guarda archivos: el visor trabaja con `File.arrayBuffer()` en memoria.
@@ -118,3 +142,4 @@
 - La demo no se toca: `DEMO_APPS` sigue con las cinco apps actuales.
 - No se cambia la versión del Site (`1.1.35`) ni se publica en Sites desde este roadmap.
 - 2026-11-18: Fase 1 verificada con archivos reales de Word, Excel y PowerPoint en 1366, 1024 y 390 px. El visor usa un host DOM estable, ajusta Word al ancho y PowerPoint a la ventana, mantiene Excel al 100 % y vuelve a ajustar al redimensionar. Cambiar o cerrar el archivo destruye el visor y limpia sus nodos. Modelo y componente tienen 8 pruebas en verde.
+- 2026-11-18: Fase 2 completada. Los errores distinguen contraseña, formato antiguo, archivo dañado, contenido no compatible, límites de recursos e imágenes demasiado grandes; el aviso permite elegir otro archivo. El área del documento recibe foco y admite flechas, `+`, `−`, `1` y `0`; el estado se anuncia y el límite del canvas queda documentado. Se añadió la portada y se midió el build de producción: solo se descarga el WASM del formato elegido, sin fuentes externas, workers adicionales ni peticiones a otros orígenes. El presupuesto queda en la sección 5.

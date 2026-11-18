@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import {
   ArrowLeftRight,
   ChevronLeft,
@@ -69,6 +69,7 @@ export default function VisorOfficeApp() {
   const hostRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<ViewerControls | null>(null);
   const loadIdRef = useRef(0);
+  const noteId = useId();
   const [loaded, setLoaded] = useState<LoadedOfficeFile | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -315,6 +316,42 @@ export default function VisorOfficeApp() {
     if (controls) void action(controls);
   }
 
+  /**
+   * Atajos del visor cuando el foco está en el área del documento.
+   * @param event - Tecla pulsada.
+   */
+  function handleViewerKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (!loaded || loading || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.key === "+" || event.key === "=") {
+      event.preventDefault();
+      runViewer((controls) => controls.zoomIn());
+      return;
+    }
+    if (event.key === "-" || event.key === "_") {
+      event.preventDefault();
+      runViewer((controls) => controls.zoomOut());
+      return;
+    }
+    if (event.key === "0") {
+      event.preventDefault();
+      runViewer((controls) => controls.fitPage());
+      return;
+    }
+    if (event.key === "1") {
+      event.preventDefault();
+      runViewer((controls) => controls.fitWidth());
+      return;
+    }
+    if (selectedFormat === "xlsx") return;
+    if ((event.key === "ArrowLeft" || event.key === "PageUp") && canPrevious) {
+      event.preventDefault();
+      runViewer((controls) => controls.previous?.() ?? undefined);
+    } else if ((event.key === "ArrowRight" || event.key === "PageDown") && canNext) {
+      event.preventDefault();
+      runViewer((controls) => controls.next?.() ?? undefined);
+    }
+  }
+
   const fileActions = loaded ? (
     <div className="visor-office-file">
       <span className={`visor-office-file-icon is-${selectedFormat}`}>
@@ -364,6 +401,12 @@ export default function VisorOfficeApp() {
           void openFile(file);
         }}
       />
+
+      <p id={noteId} className="visor-office-sr-only">
+        El contenido se muestra en un lienzo de solo lectura. Usa los botones o, con el foco en el área del documento,
+        las flechas para navegar, + y − para ampliar, 1 para ajustar al ancho y 0 para ajustar a la ventana.
+        La lectura automática del lienzo puede ser limitada.
+      </p>
 
       <div className="visor-office-toolbar" role="toolbar" aria-label="Controles del documento">
         <div className="visor-office-tool-group">
@@ -453,7 +496,11 @@ export default function VisorOfficeApp() {
       {error ? (
         <div className="visor-office-error" role="alert">
           <span>{error}</span>
-          <button type="button" onClick={() => setError(null)} aria-label="Descartar aviso" title="Descartar aviso">
+          <button type="button" className="visor-office-error-action" onClick={openPicker}>
+            <FolderOpen size={14} aria-hidden />
+            Elegir otro archivo
+          </button>
+          <button type="button" className="visor-office-error-close" onClick={() => setError(null)} aria-label="Descartar aviso" title="Descartar aviso">
             <X size={14} aria-hidden />
           </button>
         </div>
@@ -462,11 +509,18 @@ export default function VisorOfficeApp() {
       <section
         className={`visor-office-stage${selectedFormat === "xlsx" ? " is-spreadsheet" : ""}`}
         aria-label="Visor de documentos"
+        aria-busy={loading}
       >
         {loaded ? (
           <div
             ref={hostRef}
             className={`visor-office-host${selectedFormat === "xlsx" ? " is-spreadsheet" : ""}`}
+            role="group"
+            aria-label={`Documento ${loaded.info.name}`}
+            aria-describedby={noteId}
+            aria-busy={loading}
+            tabIndex={loading ? -1 : 0}
+            onKeyDown={handleViewerKeyDown}
           />
         ) : null}
 

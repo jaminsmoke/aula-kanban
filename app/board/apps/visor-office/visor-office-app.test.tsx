@@ -11,6 +11,7 @@ const officeMock = vi.hoisted(() => {
 
   class FakeViewer {
     static instances: FakeViewer[] = [];
+    static failNextLoad: unknown = null;
     kind = "docx";
     destroyed = vi.fn();
     zoomIn = vi.fn();
@@ -30,6 +31,11 @@ const officeMock = vi.hoisted(() => {
     }
 
     async load(bytes: ArrayBuffer) {
+      if (FakeViewer.failNextLoad) {
+        const failure = FakeViewer.failNextLoad;
+        FakeViewer.failNextLoad = null;
+        throw failure;
+      }
       this.loaded = bytes;
       this.options.onPageChange?.(0, this.pageCount, true);
       this.options.onSlideChange?.(0, this.slideCount, true);
@@ -99,6 +105,7 @@ function viewers(kind: string) {
 }
 
 import VisorOfficeApp from "./visor-office-app";
+import { MAX_OFFICE_FILE_BYTES } from "./visor-office-model";
 
 /**
  * Crea un archivo falso con `arrayBuffer` controlado.
@@ -117,6 +124,7 @@ function fakeFile(name: string, size = 10): File {
 describe("Visor Office", () => {
   beforeEach(() => {
     officeMock.FakeViewer.instances = [];
+    officeMock.FakeViewer.failNextLoad = null;
   });
 
   afterEach(() => {
@@ -132,8 +140,30 @@ describe("Visor Office", () => {
       target: { files: [fakeFile("notas.pdf")] },
     });
 
-    expect((await screen.findByRole("alert")).textContent).toContain("Elige un archivo");
+    expect((await screen.findByRole("alert")).textContent).toContain("Solo se admiten archivos");
     expect(viewers("docx")).toHaveLength(0);
+  });
+
+  it("rechaza un archivo por encima de 30 MB antes de leerlo", async () => {
+    render(<VisorOfficeApp />);
+    fireEvent.change(screen.getByLabelText("Elegir archivo de Office"), {
+      target: { files: [fakeFile("enorme.docx", MAX_OFFICE_FILE_BYTES + 1)] },
+    });
+
+    expect((await screen.findByRole("alert")).textContent).toContain("30 MB");
+    expect(viewers("docx")).toHaveLength(0);
+  });
+
+  it("traduce el fallo de apertura y ofrece elegir otro archivo", async () => {
+    officeMock.FakeViewer.failNextLoad = { code: "encrypted" };
+    render(<VisorOfficeApp />);
+    fireEvent.change(screen.getByLabelText("Elegir archivo de Office"), {
+      target: { files: [fakeFile("protegido.docx")] },
+    });
+
+    expect((await screen.findByRole("alert")).textContent).toContain("contraseña");
+    expect(screen.queryByRole("group", { name: /Documento/ })).toBeNull();
+    expect(screen.getByRole("button", { name: "Elegir otro archivo" })).toBeTruthy();
   });
 
   it("abre un DOCX, muestra la página y permite avanzar", async () => {
@@ -150,6 +180,22 @@ describe("Visor Office", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Página siguiente" }));
     await waitFor(() => expect(screen.getByText("Página 2 de 3")).toBeTruthy());
+  });
+
+  it("permite navegar y ampliar con el teclado desde el documento", async () => {
+    render(<VisorOfficeApp />);
+    fireEvent.change(screen.getByLabelText("Elegir archivo de Office"), {
+      target: { files: [fakeFile("clase.docx")] },
+    });
+    await waitFor(() => expect(viewers("docx")).toHaveLength(1));
+    const viewer = viewers("docx")[0];
+    const host = screen.getByRole("group", { name: "Documento clase.docx" });
+
+    host.focus();
+    fireEvent.keyDown(host, { key: "ArrowRight" });
+    await waitFor(() => expect(screen.getByText("Página 2 de 3")).toBeTruthy());
+    fireEvent.keyDown(host, { key: "+" });
+    expect(viewer.zoomIn).toHaveBeenCalledTimes(1);
   });
 
   it("abre XLSX y PPTX por su formato", async () => {

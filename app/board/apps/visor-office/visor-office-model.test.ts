@@ -22,10 +22,12 @@ describe("modelo de Visor Office", () => {
       file: { name: "clase.docx", size: 2048, format: "docx" },
     });
     expect(validateOfficeFile({ name: "clase.pdf", size: 2048 })).toEqual({
-      error: "Elige un archivo .docx, .xlsx o .pptx.",
+      error: "Solo se admiten archivos .docx, .xlsx y .pptx. Los formatos .doc, .xls y .ppt no se pueden abrir.",
     });
-    expect(validateOfficeFile({ name: "clase.docx", size: 0 })).toEqual({ error: "El archivo está vacío." });
-    expect(validateOfficeFile({ name: "clase.docx", size: MAX_OFFICE_FILE_BYTES + 1 })).toHaveProperty("error");
+    expect(validateOfficeFile({ name: "clase.docx", size: 0 })).toEqual({ error: "El archivo está vacío o no se puede leer." });
+    expect(validateOfficeFile({ name: "clase.docx", size: MAX_OFFICE_FILE_BYTES + 1 })).toEqual({
+      error: expect.stringMatching(/30 MB.*más pequeño/),
+    });
   });
 
   it("formatea el tamaño y la etiqueta del formato", () => {
@@ -39,9 +41,12 @@ describe("modelo de Visor Office", () => {
 
   it("traduce los errores conocidos a mensajes de aula", () => {
     expect(officeErrorMessage({ code: "encrypted" })).toContain("contraseña");
-    expect(officeErrorMessage({ code: "legacy-binary-format" })).toContain("formatos antiguos");
+    expect(officeErrorMessage({ code: "legacy-binary-format" })).toContain("formato antiguo");
     expect(officeErrorMessage({ code: "not-ooxml" })).toContain("no parece");
     expect(officeErrorMessage({ code: "unsupported-content" })).toContain("todavía no puede");
+    expect(officeErrorMessage({ metric: "image-pixels", limit: 10, observed: 20 })).toContain("imágenes demasiado grandes");
+    expect(officeErrorMessage({ code: "ooxml-resource-limit" })).toContain("demasiado grande o complejo");
+    expect(officeErrorMessage({ cause: { code: "encrypted" } })).toContain("contraseña");
     expect(officeErrorMessage(new Error("desconocido"))).toContain("No se pudo abrir");
   });
 });
