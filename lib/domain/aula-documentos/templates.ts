@@ -20,6 +20,7 @@ export type AulaDocumentTemplate = {
   id: AulaDocumentTemplateId;
   name: string;
   description: string;
+  focus: "title" | "editor";
   create: () => AulaDocument;
 };
 
@@ -120,18 +121,21 @@ export const AULA_DOCUMENT_TEMPLATES: readonly AulaDocumentTemplate[] = [
     id: "empty",
     name: "Documento vacío",
     description: "Una página en blanco para empezar a escribir.",
+    focus: "title",
     create: () => createEmptyAulaDocument("Documento sin título"),
   },
   {
     id: "starter",
     name: "Documento de ejemplo",
     description: "Una guía breve con texto, lista y una invitación a insertar un diagrama.",
+    focus: "title",
     create: () => createStarterAulaDocument(),
   },
   {
     id: "notes",
     name: "Apuntes de clase",
     description: "Ideas, puntos clave y dudas para organizar una clase.",
+    focus: "editor",
     create: () => templateDocument("Apuntes de clase", [
       heading(2, "Idea principal"),
       paragraph("Escribe aquí la idea que quieres recordar."),
@@ -150,6 +154,7 @@ export const AULA_DOCUMENT_TEMPLATES: readonly AulaDocumentTemplate[] = [
     id: "class-project",
     name: "Proyecto de clase",
     description: "Objetivo, pasos, diagrama y entrega en un solo documento.",
+    focus: "editor",
     create: () => templateDocument("Proyecto de clase", [
       heading(2, "Objetivo"),
       paragraph("Describe qué quieres conseguir con este proyecto."),
@@ -169,6 +174,7 @@ export const AULA_DOCUMENT_TEMPLATES: readonly AulaDocumentTemplate[] = [
     id: "presentation",
     name: "Presentación breve",
     description: "Tres diapositivas para exponer una idea, el contexto y el cierre.",
+    focus: "editor",
     create: () => templateDocument("Presentación breve", [
       heading(2, "Idea central"),
       paragraph("Explica en una frase la idea que quieres defender."),
@@ -188,6 +194,7 @@ export const AULA_DOCUMENT_TEMPLATES: readonly AulaDocumentTemplate[] = [
     id: "guide",
     name: "Guía rápida",
     description: "Instrucciones numeradas y un consejo final.",
+    focus: "editor",
     create: () => templateDocument("Guía rápida", [
       heading(2, "Antes de empezar"),
       paragraph("Reúne los materiales y comprueba que tienes todo lo necesario."),

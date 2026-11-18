@@ -55,12 +55,12 @@
 
 ### Fase 2 — Selector y reemplazo seguro
 
-- [ ] Añadir la acción «Nuevo documento» a la barra de archivo y abrir un selector con las plantillas.
-- [ ] Si hay cambios sin guardar, pedir confirmación antes de mostrar o aplicar el reemplazo.
-- [ ] Aplicar la plantilla con `applyDocument`, marcar el documento como modificado y dejar el autosave listo.
-- [ ] Colocar el foco en el título o en el editor según la plantilla y desplazar la vista al inicio.
-- [ ] Mantener el documento actual recuperable hasta la confirmación final.
-- [ ] Cubrir con pruebas: documento limpio, documento sucio, cancelar, cada plantilla y contenido válido al guardar.
+- [x] Añadir la acción «Nuevo documento» a la barra de archivo y abrir un selector con las plantillas.
+- [x] Si hay cambios sin guardar, pedir confirmación antes de mostrar o aplicar el reemplazo.
+- [x] Aplicar la plantilla con `applyDocument`, marcar el documento como modificado y dejar el autosave listo.
+- [x] Colocar el foco en el título o en el editor según la plantilla y desplazar la vista al inicio.
+- [x] Mantener el documento actual recuperable hasta la confirmación final.
+- [x] Cubrir con pruebas: documento limpio, documento sucio, cancelar, cada plantilla y contenido válido al guardar.
 - **Criterios de aceptación:**
   - Se puede empezar un documento vacío desde cualquier estado.
   - Elegir una plantilla deja un título comprensible y contenido válido.
@@ -96,3 +96,4 @@
 - Puntos de partida: `lib/domain/aula-documentos/starter.ts`, `lib/domain/aula-documentos/document.ts`, `app/board/apps/aula-documentos/aula-documentos-app.tsx` y sus pruebas.
 - ADOC-01 ya dejó el autosave, el cierre protegido y la recuperación; este roadmap reutiliza esa ruta. La app sigue con un único documento por proyecto.
 - 2026-11-18: Fase 1 completada. `templates.ts` exporta seis plantillas tipadas y localizables (`empty`, `starter`, `notes`, `class-project`, `presentation`, `guide`), reutiliza los creadores existentes y valida cada documento con `parseAulaDocument`. Las pruebas cubren copias independientes, contenido vacío, listas, diagrama, saltos de diapositiva y guía. 7 pruebas focalizadas y 1.353 en la suite completa; `tsc` y ESLint en verde.
+- 2026-11-18: Fase 2 completada. «Nuevo documento» abre un selector con las seis plantillas, muestra una vista previa con título, extracto, palabras y diagramas, avisa si hay cambios sin guardar y solo reemplaza tras confirmación. El reemplazo usa `applyDocument` y `markChanged`, deja el autosave listo y enfoca el título o el editor según la plantilla. Verificado en la app real; 27 pruebas focalizadas y 1.356 en la suite completa; `tsc` y ESLint en verde.

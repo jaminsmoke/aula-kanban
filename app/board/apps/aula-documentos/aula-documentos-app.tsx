@@ -9,6 +9,7 @@ import {
   Download,
   FileDown,
   FilePenLine,
+  FilePlus2,
   FileText,
   GitBranch,
   Heading1,
@@ -53,6 +54,10 @@ import {
 } from "../../../../lib/domain/aula-documentos/markdown";
 import { buildPresentationSlides } from "../../../../lib/domain/aula-documentos/presentation";
 import { createStarterAulaDocument } from "../../../../lib/domain/aula-documentos/starter";
+import {
+  AULA_DOCUMENT_TEMPLATES,
+  type AulaDocumentTemplate,
+} from "../../../../lib/domain/aula-documentos/templates";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useAppDocument } from "../use-app-document";
 import { useWindowClose, useWindowCloseGuard } from "../../store/window-close-guard";
@@ -229,12 +234,16 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [importLoading, setImportLoading] = useState<string | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importConfirm, setImportConfirm] = useState(false);
+  const [newDocumentOpen, setNewDocumentOpen] = useState(false);
+  const [newDocumentPreview, setNewDocumentPreview] = useState<{ template: AulaDocumentTemplate; document: AulaDocument } | null>(null);
+  const [newDocumentError, setNewDocumentError] = useState<string | null>(null);
   const [preparingPresentation, setPreparingPresentation] = useState(false);
   const [presentation, setPresentation] = useState<{ title: string; slides: string[] } | null>(null);
   const [closePromptOpen, setClosePromptOpen] = useState(false);
   const [invalidDocument, setInvalidDocument] = useState<{ raw: unknown; message: string } | null>(null);
   const [invalidResetConfirm, setInvalidResetConfirm] = useState(false);
   const editorRef = useRef<Editor | null>(null);
+  const titleRef = useRef<HTMLInputElement>(null);
   const pendingDocumentRef = useRef<AulaDocument | null>(null);
   const applyingDocumentRef = useRef(false);
   const editVersionRef = useRef(0);
@@ -639,6 +648,59 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }
 
   /**
+   * Abre el selector de plantillas para un documento nuevo.
+   */
+  function openNewDocument() {
+    setNewDocumentPreview(null);
+    setNewDocumentError(null);
+    setNewDocumentOpen(true);
+  }
+
+  /**
+   * Cierra el selector de plantillas y limpia su estado.
+   */
+  function closeNewDocument() {
+    setNewDocumentOpen(false);
+    setNewDocumentPreview(null);
+    setNewDocumentError(null);
+  }
+
+  /**
+   * Prepara la vista previa de una plantilla antes de reemplazar el documento.
+   * @param template - Plantilla elegida.
+   */
+  function selectNewDocumentTemplate(template: AulaDocumentTemplate) {
+    const parsed = parseAulaDocument(template.create());
+    if (!parsed.ok) {
+      setNewDocumentPreview(null);
+      setNewDocumentError(parsed.message);
+      return;
+    }
+    setNewDocumentPreview({ template, document: parsed.document });
+    setNewDocumentError(null);
+  }
+
+  /**
+   * Sustituye el documento actual por la plantilla confirmada.
+   */
+  function applyNewDocument() {
+    if (!newDocumentPreview) return;
+    const { template, document } = newDocumentPreview;
+    applyDocument(document);
+    markChanged(`Documento creado desde «${template.name}». Guárdalo para conservarlo.`);
+    closeNewDocument();
+    window.setTimeout(() => {
+      if (template.focus === "title") {
+        titleRef.current?.focus();
+        titleRef.current?.scrollIntoView?.({ block: "nearest" });
+      } else {
+        editorRef.current?.commands.focus("end", { scrollIntoView: false });
+        editorRef.current?.view.dom.scrollIntoView?.({ block: "nearest" });
+      }
+    }, 0);
+  }
+
+  /**
    * Abre el diálogo de importación y limpia su estado.
    */
   function openImport() {
@@ -808,8 +870,20 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const importExcerpt = importPreview
     ? contentText(importPreview.document.content).replace(/\s+/g, " ").trim().slice(0, 260)
     : "";
+  const newDocumentText = newDocumentPreview ? contentText(newDocumentPreview.document.content) : "";
+  const newDocumentExcerpt = newDocumentText.replace(/\s+/g, " ").trim().slice(0, 260);
+  const newDocumentWordCount = countWords(newDocumentText);
+  const newDocumentDiagramCount = newDocumentPreview
+    ? countMermaidBlocks(newDocumentPreview.document.content)
+    : 0;
 
   const documentFileActions: ToolbarAction[] = [
+    {
+      label: "Nuevo documento",
+      icon: <FilePlus2 size={15} aria-hidden />,
+      onClick: openNewDocument,
+      disabled: readOnly || !editor || Boolean(invalidDocument) || saving || loading,
+    },
     {
       label: "Importar documento",
       icon: <Upload size={15} aria-hidden />,
@@ -960,6 +1034,95 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             <span className="aula-documentos-link-hint">Solo http, https o correo.</span>
           )}
         </form>
+      ) : null}
+
+      {newDocumentOpen ? (
+        <div
+          className="aula-documentos-modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeNewDocument();
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") closeNewDocument();
+          }}
+        >
+          <section
+            className="aula-documentos-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aula-documentos-new-title"
+          >
+            <header className="aula-documentos-modal-head">
+              <h2 id="aula-documentos-new-title">Nuevo documento</h2>
+              <button type="button" className="aula-documentos-modal-close" onClick={closeNewDocument} aria-label="Cerrar nuevo documento" autoFocus>
+                <X size={16} aria-hidden />
+              </button>
+            </header>
+
+            {newDocumentPreview ? (
+              <div className="aula-documentos-import-preview">
+                <p className="aula-documentos-import-kicker">{newDocumentPreview.template.name}</p>
+                <h3>{newDocumentPreview.document.title}</h3>
+                <p className="aula-documentos-import-meta">
+                  {newDocumentWordCount === 1 ? "1 palabra" : `${newDocumentWordCount} palabras`}
+                  {newDocumentDiagramCount === 1 ? " · 1 diagrama" : ` · ${newDocumentDiagramCount} diagramas`}
+                </p>
+                <p className="aula-documentos-import-excerpt">
+                  {newDocumentExcerpt || "Documento vacío, listo para escribir."}
+                </p>
+                {dirty ? (
+                  <p className="aula-documentos-import-warning">
+                    Hay cambios sin guardar. Se sustituirán por el contenido de esta plantilla.
+                  </p>
+                ) : null}
+                <div className="aula-documentos-import-actions">
+                  <button
+                    type="button"
+                    className="aula-documentos-import-secondary"
+                    onClick={() => setNewDocumentPreview(null)}
+                  >
+                    Volver
+                  </button>
+                  <button
+                    type="button"
+                    className="aula-documentos-import-primary"
+                    onClick={applyNewDocument}
+                  >
+                    {dirty ? "Reemplazar documento" : "Crear documento"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="aula-documentos-import-menu">
+                <p className="aula-documentos-import-intro">
+                  Elige una plantilla para empezar. El documento actual no cambia hasta que confirmes.
+                </p>
+                {dirty ? (
+                  <p className="aula-documentos-import-warning">
+                    Hay cambios sin guardar en el documento actual.
+                  </p>
+                ) : null}
+                {AULA_DOCUMENT_TEMPLATES.map((template) => (
+                  <button
+                    type="button"
+                    className="aula-documentos-import-option"
+                    key={template.id}
+                    onClick={() => selectNewDocumentTemplate(template)}
+                  >
+                    <FileText size={18} aria-hidden />
+                    <span><strong>{template.name}</strong><small>{template.description}</small></span>
+                  </button>
+                ))}
+                {newDocumentError ? <p className="aula-documentos-import-error" role="alert">{newDocumentError}</p> : null}
+                <div className="aula-documentos-import-actions">
+                  <button type="button" className="aula-documentos-import-secondary" onClick={closeNewDocument}>
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
+        </div>
       ) : null}
 
       {invalidDocument ? (
@@ -1229,6 +1392,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
               placeholder="Título del documento"
               spellCheck
               readOnly={readOnly || Boolean(invalidDocument)}
+              ref={titleRef}
             />
             <div className="aula-documentos-divider" aria-hidden />
             <EditorContent editor={editor} className="aula-documentos-editor" />

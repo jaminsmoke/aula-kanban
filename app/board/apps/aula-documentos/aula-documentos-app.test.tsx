@@ -265,6 +265,54 @@ describe("Aula Documentos", () => {
     expect(block?.attrs?.code).toBe(original);
   });
 
+  it("crea un documento vacío desde el selector de plantillas", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    fireEvent.click(screen.getByRole("button", { name: "Nuevo documento" }));
+    expect(screen.getByRole("dialog", { name: "Nuevo documento" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Documento vacío/ }));
+
+    expect(screen.getByRole("heading", { name: "Documento sin título" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Crear documento" }));
+
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento sin título"));
+    expect(screen.queryByRole("dialog", { name: "Nuevo documento" })).toBeNull();
+  });
+
+  it("advierte de cambios sin guardar y cancelar conserva el documento", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.change(screen.getByLabelText("Título del documento"), { target: { value: "Cambios pendientes" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "Nuevo documento" }));
+    expect(screen.getByText("Hay cambios sin guardar en el documento actual.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Apuntes de clase/ }));
+    expect(screen.getByText("Hay cambios sin guardar. Se sustituirán por el contenido de esta plantilla.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Volver" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+
+    expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Cambios pendientes");
+  });
+
+  it("crea un documento desde una plantilla con diagrama y lo guarda", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    fireEvent.click(screen.getByRole("button", { name: "Nuevo documento" }));
+    fireEvent.click(screen.getByRole("button", { name: /Proyecto de clase/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Crear documento" }));
+
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Proyecto de clase"));
+    expect(screen.getByText("Diagrama Mermaid")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
+    expect(saved.title).toBe("Proyecto de clase");
+    expect(saved.content.content?.some((node) => node.type === "mermaidBlock")).toBe(true);
+  });
+
   it("inserta dos diagramas y guarda el documento validado", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
