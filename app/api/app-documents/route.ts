@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { boundedJson } from "../../../lib/server/bounded-json";
 import { NATIVE_APP_IDS } from "../../../lib/native-apps";
-import { MAX_APP_DOCUMENT_CHARS, readAppDocument, saveAppDocument } from "../../../lib/server/app-documents";
+import { MAX_APP_DOCUMENT_CHARS, readAppDocument, saveAppDocument, saveAppDocumentIfCurrent } from "../../../lib/server/app-documents";
 import { json } from "../../../lib/server/http";
 import { withJsonMutation, withProjectRoute } from "../../../lib/server/route-helpers";
 
@@ -32,7 +32,9 @@ export const GET = withProjectRoute(async (request, project) => {
 
 /**
  * Guarda el documento de una app para el proyecto. Sirve a cualquier app
- * nativa: el estado es JSON y la app decide su forma.
+ * nativa: el estado es JSON y la app decide su forma. Si llega
+ * `expectedUpdatedAt`, el guardado solo se aplica cuando esa versión sigue
+ * vigente; en caso contrario responde 409 sin pisar el documento.
  */
 export const POST = withJsonMutation(withProjectRoute(async (request, project) => {
   if (project.access.role === "guest") return json({ message: "Las cuentas invitadas solo pueden consultar el proyecto." }, 403);
@@ -41,13 +43,35 @@ export const POST = withJsonMutation(withProjectRoute(async (request, project) =
 
   let body: unknown;
   try { body = await boundedJson(request, MAX_APP_DOCUMENT_CHARS); } catch { return json({ message: "Documento no válido o demasiado grande." }, 413); }
-  const parsed = z.object({ state: z.unknown() }).strict().safeParse(body);
+  const parsed = z.object({
+    state: z.unknown(),
+    expectedUpdatedAt: z.number().int().nonnegative().nullable().optional(),
+  }).strict().safeParse(body);
   if (!parsed.success || parsed.data.state === undefined) return json({ message: "Documento no válido." }, 400);
 
   const serialized = JSON.stringify(parsed.data.state);
   if (serialized.length > MAX_APP_DOCUMENT_CHARS) return json({ message: "El documento es demasiado grande." }, 413);
 
   try {
+    if (parsed.data.expectedUpdatedAt !== undefined) {
+      const result = await saveAppDocumentIfCurrent({
+        projectId: project.id,
+        appId,
+        state: serialized,
+        updatedByUserId: project.access.user.userId,
+        expectedUpdatedAt: parsed.data.expectedUpdatedAt,
+      });
+      if (result.status === "conflict") {
+        return json({
+          accepted: false,
+          conflict: true,
+          message: "El documento ha cambiado en otra sesión.",
+          updatedAt: result.updatedAt,
+        }, 409);
+      }
+      return json({ accepted: true, updatedAt: result.updatedAt });
+    }
+
     const updatedAt = await saveAppDocument({
       projectId: project.id,
       appId,

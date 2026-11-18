@@ -46,11 +46,11 @@
 
 ### Fase 1 — Contrato de concurrencia en el servidor
 
-- [ ] Añadir `expectedUpdatedAt` opcional al POST de `/api/app-documents`.
-- [ ] Implementar una actualización condicional atómica: si el `updatedAt` actual no coincide, responder `409` con el valor vigente.
-- [ ] Mantener el comportamiento actual cuando el cliente no envía el campo.
-- [ ] Devolver `updatedAt` en guardados correctos y conflictos.
-- [ ] Cubrir con pruebas guardado normal, conflicto, cliente antiguo, invitado y tamaño.
+- [x] Añadir `expectedUpdatedAt` opcional al POST de `/api/app-documents`.
+- [x] Implementar una actualización condicional atómica: si el `updatedAt` actual no coincide, responder `409` con el valor vigente.
+- [x] Mantener el comportamiento actual cuando el cliente no envía el campo.
+- [x] Devolver `updatedAt` en guardados correctos y conflictos.
+- [x] Cubrir con pruebas guardado normal, conflicto, cliente antiguo, invitado y tamaño.
 - **Criterios de aceptación:**
   - Un guardado con la versión esperada se acepta.
   - Un guardado con una versión anterior recibe `409` y no escribe.
@@ -109,3 +109,4 @@
 - 2026-11-18: ADOC-07 sale del backlog y pasa a ser el roadmap activo. Prioridad P2; no se implementa nada en este paso.
 - Puntos de partida: `lib/server/app-documents.ts`, `app/api/app-documents/route.ts`, `app/board/apps/use-app-document.ts`, `app/board/apps/aula-documentos/aula-documentos-app.tsx` y sus pruebas.
 - ADOC-01 a ADOC-06 están cerrados. El esquema del documento ya está en v2 y no se añade historial completo; la copia local es una red de seguridad, no una funcionalidad de versiones.
+- 2026-11-18: Fase 1 completada. El POST acepta `expectedUpdatedAt` numérico o `null`; un `UPDATE ... WHERE updated_at = ? RETURNING` atómico acepta solo la versión vigente y un `INSERT ... ON CONFLICT DO NOTHING` protege la creación. El conflicto responde `409` con `updatedAt` y no escribe. El testigo avanza con `max(ahora, actual + 1)` para no repetirse en el mismo milisegundo; sin el campo se conserva el contrato anterior. 17 pruebas focalizadas y 1.402 en la suite completa; `tsc` y ESLint en verde.
