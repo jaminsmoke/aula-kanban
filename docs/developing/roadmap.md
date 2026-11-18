@@ -83,12 +83,12 @@ La app sigue el registro plano de `NATIVE_APPS` y no importa código de `documen
 
 ### Fase 2 — Editor v1: texto enriquecido y Mermaid
 
-- [ ] Crear la app y el editor con título, texto enriquecido y el bloque Mermaid editable.
-- [ ] Permitir insertar, editar, mover y eliminar bloques Mermaid; mostrar vista previa con retardo y error de sintaxis.
-- [ ] Guardar y recuperar el documento en `app_documents` con validación previa, estado de cambios y recuperación de errores.
-- [ ] Exportar HTML autónomo con el texto y los diagramas renderizados como SVG, sin recursos externos.
-- [ ] Aplicar modo lectura para invitados, foco, teclado, contraste, reducción de movimiento y diseño a 1366, 1024 y 390 px.
-- [ ] Cubrir el editor con pruebas de creación, guardado, recuperación, límites, Mermaid inválido y exportación.
+- [x] Crear la app y el editor con título, texto enriquecido y el bloque Mermaid editable.
+- [x] Permitir insertar, editar, mover y eliminar bloques Mermaid; mostrar vista previa con retardo y error de sintaxis.
+- [x] Guardar y recuperar el documento en `app_documents` con validación previa, estado de cambios y recuperación de errores.
+- [x] Exportar HTML autónomo con el texto y los diagramas renderizados como SVG, sin recursos externos.
+- [x] Aplicar modo lectura para invitados, foco, teclado, contraste, reducción de movimiento y diseño a 1366, 1024 y 390 px.
+- [x] Cubrir el editor con pruebas de creación, guardado, recuperación, límites, Mermaid inválido y exportación.
 - **Criterios de aceptación:**
   - Se crea un documento con texto y al menos dos diagramas, se guarda y se recupera completo.
   - Un invitado lo consulta sin poder editarlo ni guardarlo.
@@ -172,6 +172,7 @@ El objetivo se revisa en la fase 1 y se cierra en la fase 5. Las cifras son lím
 
 - 2026-11-18: STORE-17 sale del backlog y pasa a ser el roadmap activo. Se mantiene `aula-documentos` como id y almacén, un documento por proyecto y la primera fusión texto enriquecido + Mermaid.
 - 2026-11-18: Fase 1 completada. `lib/domain/aula-documentos/` contiene el esquema v1, los límites, la validación de texto, enlaces, `mermaidBlock`, `slideBreak`, nodos y profundidad, y los lectores de Notas y documentos, Diagramas y Presentaciones con vista previa sin escribir en el origen. La base admite 190.000 caracteres, 4.000 nodos, 100.000 de texto y 12 diagramas. 12 pruebas focalizadas y 1.312 en la suite completa; `tsc` y ESLint en verde. No se tocaron apps, tablas ni endpoints.
+- 2026-11-18: Fase 2 completada. Editor Tiptap con bloque Mermaid editable, vista previa con retardo, inserción, borrado, guardado/recuperación en `aula-documentos`, exportación HTML con SVG y fallback de código, modo invitado y revisión 1366/1024/390. La prueba local de persistencia usó una aceptación temporal del id en el API, retirada antes del commit; el registro de la app sigue en la fase 5. El editor inicial mide ~147 KB gzip y la primera carga de Mermaid ~290 KB gzip, dentro del presupuesto. 11 pruebas focalizadas y 1.323 en la suite completa; `tsc` y ESLint en verde.
 - La estructura del backlog se ajusta: el núcleo puro va a `lib/domain/aula-documentos/` y la UI compartida a `app/board/shared/aula-documentos/`, para que las apps antiguas puedan adoptarlo sin imports entre apps.
 - Las apps `documentos`, `mermaid` y `presentaciones` no se modifican en esta entrega. Se conservan como compatibilidad y su conversión a adaptadores finos queda para el roadmap de retirada.
 - No se añaden herramientas MCP de contenido, imágenes, tablas ni edición colaborativa en esta primera unificación.
