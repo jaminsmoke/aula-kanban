@@ -1,8 +1,34 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-06 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-18 — Roadmap ADOC-06 · Móvil y accesibilidad en Aula Documentos
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- En contenedores estrechos aparece un menú «Acciones» con etiquetas para nuevo, importar, guardar, exportar, imprimir, presentar y exportar presentación. La barra mantiene los iconos en escritorio.
+- Los objetivos táctiles de la barra y los controles Mermaid pasan a 44×44 px; el documento se revisó sin desbordamiento horizontal a 390 y 620 px.
+- `useDialogFocus` atrapa Tab, cierra con Escape y devuelve el foco al disparador. Se aplica a nuevo documento, importación, vista previa, cierre, recuperación y presentación.
+- El estado de guardado usa `role="status"` con `aria-live="polite"`; los errores mantienen `role="alert"`.
+- Contraste corregido con tokens por tema: Claro 16,47:1 y 6,36:1; Oscuro 16,08:1 y 8,08:1.
+- El SVG del diagrama tiene `role="img"` y nombre accesible; los controles de zoom forman un grupo etiquetado y el porcentaje se anuncia.
+- La ayuda menciona las acciones móviles y el foco accesible. No cambian `AULA_STORE_VERSION`, la versión de la app ni el Site.
+
+### Verificación
+
+- Revisado a 390, 620, 900, 1024 y 1366 px sin desbordamiento horizontal. Foco atrapado, devolución y cierre con Escape cubiertos por pruebas.
+- Suite completa: **195 archivos / 1.393 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `4e034fc` (Fase 1), `757d335` (Fase 2), `12c3833` (Fase 3) y este commit de cierre. Push único a `github main`; sin publicación en Sites ni cambio de versión del Site: sigue en **1.1.35**.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-07** y **DEV-01**. El plan completo está en [`historial/roadmap-adoc-06.md`](../historial/roadmap-adoc-06.md).
 
 ---
 

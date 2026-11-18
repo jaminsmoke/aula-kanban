@@ -107,9 +107,8 @@ tiempo **STORE-13**, Hoja de cálculo **STORE-14**, Notas y documentos
 **STORE-15**, Visor Office **STORE-16** y Aula Documentos **STORE-17**, además de
 las cinco iniciales) ya están integradas.
 
-En el roadmap queda **ADOC-06** (móvil y accesibilidad de Aula Documentos). En el
-backlog quedan **DEV-01** (evaluación de pnpm, fuera del catálogo de apps) y
-**ADOC-07** (concurrencia y versiones), con prioridad P2. ADOC-01 a ADOC-05 están
+En el backlog quedan **DEV-01** (evaluación de pnpm, fuera del catálogo de apps) y
+**ADOC-07** (concurrencia y versiones), con prioridad P2. ADOC-01 a ADOC-06 están
 completados. El resto de candidatas sigue documentado por categorías, sin entrada
 hasta que se prioricen.
 
