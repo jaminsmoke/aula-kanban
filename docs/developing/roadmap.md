@@ -60,11 +60,11 @@
 
 ### Fase 2 — Borradores Mermaid
 
-- [ ] Definir un registro de borradores de bloques Mermaid que la app pueda vaciar antes de leer `editor.getJSON()`.
-- [ ] Aplicar el borrador al nodo en `onBlur` y antes de guardar, autosave o cierre; conservar «Aplicar», «Descartar», Escape y `Ctrl/Cmd+Intro`.
-- [ ] Marcar el documento como sucio cuando cambie el borrador sin generar transacciones por cada pulsación.
-- [ ] Evitar dobles aplicaciones y comprobar que deshacer/rehacer sigue siendo predecible.
-- [ ] Cubrir con pruebas: guardar sin pulsar «Aplicar», `Ctrl/Cmd+S` con el foco en el textarea, descartar y reabrir el bloque.
+- [x] Definir un registro de borradores de bloques Mermaid que la app pueda vaciar antes de leer `editor.getJSON()`.
+- [x] Aplicar el borrador al nodo en `onBlur` y antes de guardar o autosave; conservar «Aplicar», «Descartar», Escape y `Ctrl/Cmd+Intro`. El cierre se completa en la fase 3.
+- [x] Marcar el documento como sucio cuando cambie el borrador sin generar transacciones por cada pulsación.
+- [x] Evitar dobles aplicaciones y cerrar el grupo de historial antes de aplicar el código; deshacer y rehacer verificados en la app real.
+- [x] Cubrir con pruebas: guardar sin pulsar «Aplicar», `Ctrl/Cmd+S` con el foco en el textarea, autosave sin cerrar el editor, salir del textarea y descartar.
 - **Criterios de aceptación:**
   - Editar el código de un diagrama y guardar conserva el texto nuevo aunque no se haya pulsado «Aplicar».
   - Descartar restaura el código anterior.
@@ -113,3 +113,4 @@
 - Puntos de partida: `app/board/apps/aula-documentos/aula-documentos-app.tsx`, `app/board/apps/use-app-document.ts`, `app/board/shared/aula-documentos/mermaid-block.tsx`, `app/board/store/use-desktop-windows.ts` y `app/board/store/store-desktop.tsx`.
 - La app conserva un único documento por proyecto. No se añaden revisiones ni concurrencia en esta entrega; quedan en ADOC-07.
 - 2026-11-18: Fase 1 completada. Autosave de 1,6 s con una única ruta de validación/persistencia, `Ctrl/Cmd+S`, estado de guardado, última hora y reintento tras error. El guardado manual cancela el debounce; las respuestas de guardados concurrentes se descartan y los invitados no guardan. Verificado con un cambio de título real y la suite de la app: 16 pruebas focalizadas y 1.338 en la suite completa; `tsc`, ESLint, build y `perf:budget` en verde. No se cambió la versión del Site ni se publicó.
+- 2026-11-18: Fase 2 completada. Los borradores Mermaid se registran en el almacén de la extensión y se vuelcan en `onBlur`, al guardar y en el autosave; el autosave no cierra el textarea ni genera una transacción por carácter. La aplicación comprueba el código vivo antes de escribir y cierra el grupo de historial, de modo que deshacer revierte el código sin eliminar el bloque. Verificado en la app real con un diagrama, undo y autosave; 21 pruebas focalizadas y 1.343 en la suite completa; `tsc`, ESLint, build y `perf:budget` en verde.

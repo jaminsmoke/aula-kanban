@@ -160,6 +160,101 @@ describe("Aula Documentos", () => {
     expect(documentMock.save).not.toHaveBeenCalled();
   });
 
+  it("guarda un borrador Mermaid sin pulsar Aplicar", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
+
+    const nextCode = "flowchart TD\nX --> Y";
+    fireEvent.change(screen.getByLabelText("Código Mermaid"), { target: { value: nextCode } });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
+    const block = saved.content.content?.find((node) => node.type === "mermaidBlock");
+    expect(block?.attrs?.code).toBe(nextCode);
+  });
+
+  it("autoguarda el borrador Mermaid sin cerrar el editor", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
+
+    const nextCode = "flowchart LR\nAntes --> Después";
+    vi.useFakeTimers();
+    fireEvent.change(screen.getByLabelText("Código Mermaid"), { target: { value: nextCode } });
+    expect(screen.getByText("Cambios sin guardar")).toBeTruthy();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(AUTOSAVE_DELAY_MS + 100);
+    });
+    vi.useRealTimers();
+
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    expect(screen.getByLabelText("Código Mermaid")).toHaveProperty("value", nextCode);
+    const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
+    const block = saved.content.content?.find((node) => node.type === "mermaidBlock");
+    expect(block?.attrs?.code).toBe(nextCode);
+  });
+
+  it("guarda con Ctrl+S mientras se edita un diagrama", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
+
+    const nextCode = "flowchart TD\nCtrl --> S";
+    const textarea = screen.getByLabelText("Código Mermaid");
+    fireEvent.change(textarea, { target: { value: nextCode } });
+    fireEvent.keyDown(textarea, { key: "s", ctrlKey: true });
+
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
+    const block = saved.content.content?.find((node) => node.type === "mermaidBlock");
+    expect(block?.attrs?.code).toBe(nextCode);
+    expect(screen.getByLabelText("Código Mermaid")).toHaveProperty("value", nextCode);
+  });
+
+  it("aplica el borrador Mermaid al salir del textarea", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
+
+    const nextCode = "flowchart TD\nSalida --> Aplicada";
+    const textarea = screen.getByLabelText("Código Mermaid");
+    fireEvent.change(textarea, { target: { value: nextCode } });
+    fireEvent.blur(textarea, { relatedTarget: screen.getByRole("button", { name: "Guardar documento" }) });
+
+    await waitFor(() => expect(screen.queryByLabelText("Código Mermaid")).toBeNull());
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
+    const block = saved.content.content?.find((node) => node.type === "mermaidBlock");
+    expect(block?.attrs?.code).toBe(nextCode);
+  });
+
+  it("descarta el borrador Mermaid y conserva el código anterior", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
+    const original = (screen.getByLabelText("Código Mermaid") as HTMLTextAreaElement).value;
+
+    fireEvent.change(screen.getByLabelText("Código Mermaid"), {
+      target: { value: "flowchart TD\nBorrador --> Descartado" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Descartar" }));
+    expect(screen.queryByLabelText("Código Mermaid")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
+    const block = saved.content.content?.find((node) => node.type === "mermaidBlock");
+    expect(block?.attrs?.code).toBe(original);
+  });
+
   it("inserta dos diagramas y guarda el documento validado", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());

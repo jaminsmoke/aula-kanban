@@ -1,20 +1,77 @@
 "use client";
 
+import type { Editor } from "@tiptap/core";
 import { Node, mergeAttributes } from "@tiptap/core";
+import { closeHistory } from "@tiptap/pm/history";
 import { NodeViewWrapper, ReactNodeViewRenderer, type NodeViewProps } from "@tiptap/react";
 import { ArrowDown, ArrowUp, Check, Code2, GripVertical, Loader2, Pencil, Trash2, X } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { useMermaidPreview } from "./use-mermaid-preview";
+
+type MermaidDraftStorage = {
+  drafts: Map<string, () => void>;
+  onDraftChange: (() => void) | null;
+};
+
+/**
+ * Devuelve el almacén interno de borradores Mermaid del editor.
+ * @param editor - Editor de Tiptap.
+ * @returns El almacén o `null` si la extensión no está registrada.
+ */
+function mermaidStorage(editor: Editor): MermaidDraftStorage | null {
+  const storage = (editor.storage as { mermaidBlock?: Partial<MermaidDraftStorage> }).mermaidBlock;
+  return storage ? storage as MermaidDraftStorage : null;
+}
+
+/**
+ * Registra el volcado de un borrador Mermaid.
+ * @param editor - Editor de Tiptap.
+ * @param id - Identificador estable del bloque.
+ * @param flush - Función que aplica el borrador al nodo.
+ */
+export function registerMermaidDraft(editor: Editor, id: string, flush: () => void): void {
+  mermaidStorage(editor)?.drafts.set(id, flush);
+}
+
+/**
+ * Retira el registro de un borrador Mermaid.
+ * @param editor - Editor de Tiptap.
+ * @param id - Identificador del bloque.
+ */
+export function unregisterMermaidDraft(editor: Editor, id: string): void {
+  mermaidStorage(editor)?.drafts.delete(id);
+}
+
+/**
+ * Define el aviso que se ejecuta al cambiar un borrador Mermaid.
+ * @param editor - Editor de Tiptap.
+ * @param handler - Aviso o `null`.
+ */
+export function setMermaidDraftChangeHandler(editor: Editor, handler: (() => void) | null): void {
+  const storage = mermaidStorage(editor);
+  if (storage) storage.onDraftChange = handler;
+}
+
+/**
+ * Aplica todos los borradores Mermaid pendientes antes de leer el documento.
+ * @param editor - Editor de Tiptap.
+ */
+export function flushMermaidDrafts(editor: Editor): void {
+  const storage = mermaidStorage(editor);
+  if (!storage) return;
+  for (const flush of [...storage.drafts.values()]) flush();
+}
 
 /**
  * Vista editable de un bloque Mermaid dentro del documento.
  * @param props - Props del NodeView de Tiptap.
  * @returns El bloque con código, vista previa y controles.
  */
-function MermaidBlockView({ node, updateAttributes, deleteNode, editor, selected, getPos }: NodeViewProps) {
+function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeViewProps) {
   const code = typeof node.attrs.code === "string" ? node.attrs.code : "";
   const [draft, setDraft] = useState(code);
   const [editing, setEditing] = useState(!code.trim());
+  const draftId = useId();
   const readOnly = !editor.isEditable;
   const previewCode = editing ? draft : code;
   const { svg, error, loading } = useMermaidPreview(previewCode);
@@ -23,6 +80,44 @@ function MermaidBlockView({ node, updateAttributes, deleteNode, editor, selected
   const index = typeof position === "number" ? editor.state.doc.resolve(position).index() : -1;
   const canMoveUp = index > 0;
   const canMoveDown = Boolean(parent && index >= 0 && index < parent.childCount - 1);
+
+  /**
+   * Aplica el código al nodo como un cambio de historial independiente.
+   * @param nextCode - Código que se guarda en el bloque.
+   */
+  const applyMermaidCode = useCallback((nextCode: string) => {
+    if (typeof position !== "number") return;
+    editor.commands.command(({ tr }) => {
+      closeHistory(tr);
+      tr.setNodeMarkup(position, undefined, { ...node.attrs, code: nextCode });
+      return true;
+    });
+  }, [editor, node.attrs, position]);
+
+  /**
+   * Aplica el borrador al nodo y, opcionalmente, cierra el editor.
+   * @param closeEditor - Indica si se debe cerrar el textarea.
+   */
+  const commitDraft = useCallback((closeEditor: boolean) => {
+    const next = draft.trim();
+    if (!next) {
+      if (closeEditor) setEditing(false);
+      return;
+    }
+    const liveNode = typeof position === "number" ? editor.state.doc.nodeAt(position) : null;
+    const liveCode = typeof liveNode?.attrs?.code === "string" ? liveNode.attrs.code : code;
+    if (draft !== liveCode) applyMermaidCode(draft);
+    if (closeEditor) setEditing(false);
+  }, [applyMermaidCode, code, draft, editor, position]);
+
+  const flushDraft = useCallback(() => {
+    if (editing) commitDraft(false);
+  }, [commitDraft, editing]);
+
+  useEffect(() => {
+    registerMermaidDraft(editor, draftId, flushDraft);
+    return () => unregisterMermaidDraft(editor, draftId);
+  }, [draftId, editor, flushDraft]);
 
   /**
    * Abre el editor con el código guardado.
@@ -56,8 +151,7 @@ function MermaidBlockView({ node, updateAttributes, deleteNode, editor, selected
    * Guarda el código editado en el atributo del nodo.
    */
   function applyCode() {
-    updateAttributes({ code: draft });
-    setEditing(false);
+    commitDraft(true);
   }
 
   /**
@@ -141,7 +235,15 @@ function MermaidBlockView({ node, updateAttributes, deleteNode, editor, selected
           value={draft}
           spellCheck={false}
           aria-label="Código Mermaid"
-          onChange={(event) => setDraft(event.target.value)}
+          onChange={(event) => {
+            setDraft(event.target.value);
+            mermaidStorage(editor)?.onDraftChange?.();
+          }}
+          onBlur={(event) => {
+            const next = event.relatedTarget;
+            if (next instanceof HTMLElement && next.closest(".aula-mermaid-block")) return;
+            commitDraft(true);
+          }}
           onKeyDown={(event) => {
             if (event.key === "Escape") {
               event.preventDefault();
@@ -182,6 +284,12 @@ export const MermaidBlock = Node.create({
   atom: true,
   draggable: true,
   selectable: true,
+  addStorage(): MermaidDraftStorage {
+    return {
+      drafts: new Map<string, () => void>(),
+      onDraftChange: null,
+    };
+  },
   addAttributes() {
     return {
       code: {

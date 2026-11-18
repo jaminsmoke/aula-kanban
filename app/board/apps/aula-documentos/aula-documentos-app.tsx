@@ -57,6 +57,7 @@ import { useAppDocument } from "../use-app-document";
 import type { StoreRole } from "../types";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
 import { buildAulaDocumentHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
+import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../../shared/aula-documentos/mermaid-block";
 import { getMermaidRenderer } from "../../shared/aula-documentos/mermaid-renderer";
 import "./aula-documentos.css";
 
@@ -368,12 +369,19 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     editor?.setEditable(!readOnly);
   }, [editor, readOnly]);
 
+  useEffect(() => {
+    if (!editor) return;
+    setMermaidDraftChangeHandler(editor, () => markChanged("Diagrama modificado."));
+    return () => setMermaidDraftChangeHandler(editor, null);
+  }, [editor, markChanged]);
+
   /**
    * Obtiene el documento actual validado.
    * @returns El documento o `null` si no cumple el esquema.
    */
   const currentDocument = useCallback((): AulaDocument | null => {
     if (!editor) return null;
+    flushMermaidDrafts(editor);
     const parsed = parseAulaDocument({
       schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
       title,
