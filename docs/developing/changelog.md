@@ -6,6 +6,31 @@
 
 ---
 
+## 2026-11-18 — Roadmap ADOC-01 · Guardado seguro en Aula Documentos
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Aula Documentos guarda automáticamente a los 1,6 s de la última edición, comparte la validación y la persistencia con el guardado manual y añade `Ctrl/Cmd+S`.
+- El estado visible distingue «Guardando…», «Guardado HH:MM», «Cambios sin guardar» y «Error al guardar», con reintento y última hora de guardado. Los invitados siguen sin poder guardar.
+- Los borradores de los bloques Mermaid se aplican al salir del textarea, al guardar y en el autosave, sin cerrar el editor ni crear una transacción por carácter. El autosave no pisa el código vivo y el grupo de historial se cierra para que deshacer revierta el diagrama sin eliminarlo.
+- El escritorio expone una guarda de cierre opcional por ventana. Aula Documentos la usa para ofrecer «Guardar y cerrar», «Cerrar sin guardar» y «Cancelar», además de `beforeunload` para recargas.
+- Un documento guardado inválido bloquea la edición y muestra descarga del JSON original, reintento y reinicio con confirmación; no se sobrescribe ni se carga el ejemplo en silencio.
+- La ayuda de Aula Documentos menciona el guardado automático, la protección del cierre y la recuperación. No cambian `AULA_STORE_VERSION`, la versión de la app ni el Site.
+
+### Verificación
+
+- Flujo real: autosave de título y de diagrama, borrador Mermaid sin «Aplicar», undo del código y cierre protegido; recuperación de documento inválido cubierta por pruebas. Revisado a 1366, 1024 y 390 px, con teclado y foco dentro del textarea Mermaid.
+- Suite completa: **188 archivos / 1.346 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `41ec914` (Fase 1), `2627f4a` (Fase 2), `4ed72f8` (Fase 3) y este commit de cierre. Push único a `github main`; sin publicación en Sites ni cambio de versión del Site: sigue en **1.1.35**.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-02…ADOC-07** y **DEV-01**. El plan completo está en [`historial/roadmap-adoc-01.md`](../historial/roadmap-adoc-01.md).
+
+---
+
 ## 2026-11-18 — Roadmap STORE-17 · Aula Documentos en Aula Store
 
 **Estado:** Completada · Sin publicación
