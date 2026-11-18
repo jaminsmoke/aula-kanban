@@ -411,6 +411,9 @@ describe("Aula Documentos", () => {
     fireEvent.click(screen.getByRole("button", { name: "Acercar diagrama" }));
     expect(screen.getByText("125%")).toBeTruthy();
     expect(document.querySelector(".aula-mermaid-zoom")?.getAttribute("data-zoom")).toBe("1.25");
+    expect(document.querySelector(".aula-mermaid-preview")?.getAttribute("tabindex")).toBe("0");
+    expect(screen.getByRole("group", { name: "Controles de zoom del diagrama" })).toBeTruthy();
+    expect(screen.getByRole("img", { name: "Diagrama Mermaid" })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Restablecer zoom" }));
     expect(screen.getByText("100%")).toBeTruthy();

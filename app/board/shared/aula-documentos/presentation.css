@@ -12,6 +12,13 @@
 }
 
 .aula-presentation-theme-claro {
+  --ui-text-primary: var(--ui-presentation-clear-ink);
+  --ui-text-secondary: var(--ui-presentation-clear-muted);
+  --ui-text-muted: var(--ui-presentation-clear-muted);
+  --ui-surface-faint: var(--ui-presentation-clear-code);
+  --ui-surface-raised: var(--ui-presentation-clear-slide);
+  --ui-border-default: var(--ui-presentation-clear-border);
+  --ui-border-strong: var(--ui-presentation-clear-border);
   background:var(--ui-presentation-clear-bg);
   color:var(--ui-presentation-clear-ink);
 }
@@ -37,6 +44,13 @@
 }
 
 .aula-presentation-theme-oscuro {
+  --ui-text-primary: var(--ui-presentation-dark-ink);
+  --ui-text-secondary: var(--ui-presentation-dark-muted);
+  --ui-text-muted: var(--ui-presentation-dark-muted);
+  --ui-surface-faint: var(--ui-presentation-dark-code);
+  --ui-surface-raised: var(--ui-presentation-dark-slide);
+  --ui-border-default: var(--ui-presentation-dark-border);
+  --ui-border-strong: var(--ui-presentation-dark-border);
   background:var(--ui-presentation-dark-bg);
   color:var(--ui-presentation-dark-ink);
 }

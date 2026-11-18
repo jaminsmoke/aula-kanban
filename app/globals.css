@@ -186,12 +186,14 @@
   --ui-presentation-clear-bg: #f4f3f8;
   --ui-presentation-clear-slide: #ffffff;
   --ui-presentation-clear-ink: #211b36;
+  --ui-presentation-clear-muted: #625c74;
   --ui-presentation-clear-heading: #2c214f;
   --ui-presentation-clear-border: #ded9e9;
   --ui-presentation-clear-code: #f1eff8;
   --ui-presentation-dark-bg: #0f0e17;
   --ui-presentation-dark-slide: #191627;
   --ui-presentation-dark-ink: #f6f2ff;
+  --ui-presentation-dark-muted: #b4abc5;
   --ui-presentation-dark-border: #393152;
   --ui-presentation-dark-code: #29233d;
   --ui-shadow-card: 0 2px 3px #29213a08;

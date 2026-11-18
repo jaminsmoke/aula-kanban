@@ -402,7 +402,7 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
       ) : null}
 
       {svg && !loading && !error ? (
-        <div className="aula-mermaid-zoom-controls">
+        <div className="aula-mermaid-zoom-controls" role="group" aria-label="Controles de zoom del diagrama">
           <button
             type="button"
             className="aula-mermaid-action icon"
@@ -413,7 +413,7 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
           >
             <ZoomOut size={14} aria-hidden />
           </button>
-          <span className="aula-mermaid-zoom-value">{Math.round(zoom * 100)}%</span>
+          <span className="aula-mermaid-zoom-value" aria-live="polite">{Math.round(zoom * 100)}%</span>
           <button
             type="button"
             className="aula-mermaid-action icon"
@@ -441,6 +441,7 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
         className={`aula-mermaid-preview${zoom > 1 ? " is-zoomed" : ""}`}
         aria-busy={loading}
         aria-label="Vista previa del diagrama Mermaid"
+        role="group"
         tabIndex={zoom > 1 ? 0 : -1}
         ref={previewRef}
         onPointerDown={startPan}
@@ -472,7 +473,7 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
           </div>
         ) : svg ? (
           <div className="aula-mermaid-zoom" data-zoom={zoom} style={{ width: `${zoom * 100}%` }}>
-            <div className="aula-mermaid-svg" dangerouslySetInnerHTML={{ __html: svg }} />
+            <div className="aula-mermaid-svg" role="img" aria-label="Diagrama Mermaid" dangerouslySetInnerHTML={{ __html: svg }} />
           </div>
         ) : (
           <p className="aula-mermaid-state">

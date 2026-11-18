@@ -69,11 +69,11 @@
 
 ### Fase 3 — Contraste, SVG y revisión visual
 
-- [ ] Revisar contraste de texto, botones, bordes y estados en los temas Aula, Claro y Oscuro.
-- [ ] Añadir nombres accesibles a los contenedores de diagramas y a los controles de zoom.
-- [ ] Revisar zoom, paneo, tabla de atajos y textos largos con teclado.
-- [ ] Repetir la revisión a 390, 620, 900, 1024 y 1366 px.
-- [ ] Cubrir con pruebas los nombres accesibles y los estados de los controles.
+- [x] Revisar contraste de texto, botones, bordes y estados en los temas Aula, Claro y Oscuro.
+- [x] Añadir nombres accesibles a los contenedores de diagramas y a los controles de zoom.
+- [x] Revisar zoom, paneo, tabla de atajos y textos largos con teclado.
+- [x] Repetir la revisión a 390, 620, 900, 1024 y 1366 px.
+- [x] Cubrir con pruebas los nombres accesibles y los estados de los controles.
 - **Criterios de aceptación:**
   - El contraste es legible en los tres temas.
   - Los diagramas y controles tienen nombre accesible.
@@ -108,3 +108,4 @@
 - ADOC-01 a ADOC-05 están cerrados. La posición inicial de la ventana en móvil se considerará una incidencia del escritorio si afecta a todas las apps.
 - 2026-11-18: Fase 1 completada. En contenedores estrechos aparece el menú «Acciones» con etiquetas para nuevo, importar, guardar, exportar, imprimir, presentar y exportar presentación; la barra y los controles Mermaid usan objetivos de 44×44 px. Revisado a 390 y 620 px sin desbordamiento horizontal. 40 pruebas focalizadas y 1.392 en la suite completa; `tsc` y ESLint en verde.
 - 2026-11-18: Fase 2 completada. `useDialogFocus` atrapa Tab, cierra con Escape y devuelve el foco al disparador; se aplica a nuevo documento, importación, vista previa, cierre, recuperación y presentación. El estado de guardado usa `role="status"` con `aria-live="polite"`, y los errores mantienen `role="alert"`. 41 pruebas focalizadas y 1.393 en la suite completa; `tsc` y ESLint en verde.
+- 2026-11-18: Fase 3 completada. Los tres temas usan tokens de contraste (Claro 16,47:1 y 6,36:1; Oscuro 16,08:1 y 8,08:1 en texto principal y secundario). El SVG tiene `role="img"`, los controles de zoom forman un grupo etiquetado y el porcentaje se anuncia. Revisión sin desbordamiento a 390, 620, 900, 1024 y 1366 px. 43 pruebas focalizadas y 1.393 en la suite completa; `tsc` y ESLint en verde.
