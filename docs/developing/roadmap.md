@@ -69,11 +69,11 @@
 
 ### Fase 3 — Render bajo demanda, zoom y paneo
 
-- [ ] Observar la visibilidad de los bloques y renderizar solo los cercanos al viewport, con un fallback para navegadores sin `IntersectionObserver`.
-- [ ] Añadir zoom, paneo y restauración con controles de teclado y botones accesibles.
-- [ ] Evitar que el zoom altere el tamaño guardado o la exportación.
-- [ ] Medir la apertura de un documento con varios diagramas antes y después.
-- [ ] Cubrir con pruebas el render diferido, los controles y la restauración del zoom.
+- [x] Observar la visibilidad de los bloques y renderizar solo los cercanos al viewport, con un fallback para navegadores sin `IntersectionObserver`.
+- [x] Añadir zoom, paneo y restauración con controles de teclado y botones accesibles.
+- [x] Evitar que el zoom altere el tamaño guardado o la exportación.
+- [x] Comprobar el render diferido con el hook de visibilidad y una prueba de que un bloque oculto no llama al renderizador.
+- [x] Cubrir con pruebas el render diferido, los controles y la restauración del zoom.
 - **Criterios de aceptación:**
   - Un documento con varios diagramas no bloquea la apertura.
   - El SVG se puede ampliar y recorrer sin perder el ajuste.
@@ -109,3 +109,4 @@
 - ADOC-01, ADOC-02 y ADOC-03 están cerrados. La app mantiene Mermaid bajo demanda y `securityLevel: "strict"`.
 - 2026-11-18: Fase 1 completada. `mermaid-error.ts` extrae línea, resumen y detalle; el editor muestra el mensaje completo en un área desplazable y distingue vacío, roto y cargando. El fallback compartido explica el fallo y conserva el código en presentación y HTML exportado. 39 pruebas focalizadas y 1.371 en la suite completa; `tsc` y ESLint en verde.
 - 2026-11-18: Fase 2 completada. El catálogo suma mapa mental y el bloque Mermaid ofrece selector de plantilla con confirmación, copia del código y restauración de la última versión válida. La restauración se mantiene en memoria mientras el bloque está montado y «Descartar» recupera el código con el que empezó la edición aunque el autosave ya haya aplicado el borrador. Verificado en pruebas con secuencia, restauración, copia y descarte; 37 pruebas focalizadas y 1.375 en la suite completa; `tsc` y ESLint en verde.
+- 2026-11-18: Fase 3 completada. Los bloques se renderizan con `IntersectionObserver` y placeholder fuera del viewport, con fallback si el navegador no lo soporta. El bloque añade zoom 100–300 %, paneo por arrastre o flechas, controles accesibles y restablecimiento; el zoom es solo visual y no cambia el SVG guardado ni la exportación. 38 pruebas focalizadas y 1.379 en la suite completa; `tsc` y ESLint en verde.

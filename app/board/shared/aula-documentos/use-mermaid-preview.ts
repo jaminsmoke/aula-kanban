@@ -13,13 +13,15 @@ type PreviewState = {
 /**
  * Estado de vista previa de un bloque Mermaid, con retardo al escribir.
  * @param code - Código actual del bloque.
- * @returns SVG, error y estado de carga.
+ * @param enabled - Indica si el bloque debe renderizarse.
+ * @returns SVG, error, estado de carga y última versión válida.
  */
-export function useMermaidPreview(code: string) {
+export function useMermaidPreview(code: string, enabled = true) {
   const [state, setState] = useState<PreviewState>({ code: "", svg: "", error: null });
   const [lastValidCode, setLastValidCode] = useState("");
 
   useEffect(() => {
+    if (!enabled) return;
     let cancelled = false;
     const timer = window.setTimeout(() => {
       void getMermaidRenderer().render(code).then((next) => {
@@ -39,12 +41,12 @@ export function useMermaidPreview(code: string) {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [code]);
+  }, [code, enabled]);
 
   return {
     svg: state.code === code ? state.svg : "",
     error: state.code === code ? state.error : null,
-    loading: Boolean(code.trim()) && state.code !== code,
+    loading: enabled && Boolean(code.trim()) && state.code !== code,
     lastValidCode,
   };
 }

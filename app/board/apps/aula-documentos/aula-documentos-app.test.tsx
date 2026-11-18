@@ -395,6 +395,22 @@ describe("Aula Documentos", () => {
     expect(writeText.mock.calls[0][0]).toContain("flowchart TD");
   });
 
+  it("permite ampliar y restablecer el zoom del diagrama", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    await waitFor(() => expect(document.querySelector(".aula-mermaid-svg")).toBeTruthy());
+
+    expect(screen.getByText("100%")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Acercar diagrama" }));
+    expect(screen.getByText("125%")).toBeTruthy();
+    expect(document.querySelector(".aula-mermaid-zoom")?.getAttribute("data-zoom")).toBe("1.25");
+
+    fireEvent.click(screen.getByRole("button", { name: "Restablecer zoom" }));
+    expect(screen.getByText("100%")).toBeTruthy();
+    expect(document.querySelector(".aula-mermaid-zoom")?.getAttribute("data-zoom")).toBe("1");
+  });
+
   it("inserta dos diagramas y guarda el documento validado", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
