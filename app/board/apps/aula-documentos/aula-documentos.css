@@ -589,6 +589,62 @@
   to { transform:rotate(360deg); }
 }
 
+/* Salto de diapositiva */
+
+.aula-slide-break {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin:18px 0;
+  padding:7px 9px;
+  border-top:var(--border-width-hairline) dashed var(--ui-border-strong);
+  border-bottom:var(--border-width-hairline) dashed var(--ui-border-strong);
+  color:var(--ui-text-muted);
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+}
+
+.aula-slide-break.is-selected {
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+}
+
+.aula-slide-break-delete {
+  display:grid;
+  place-items:center;
+  width:24px;
+  height:24px;
+  margin-left:auto;
+  padding:0;
+  border:0;
+  border-radius:var(--radius-xs);
+  background:transparent;
+  color:var(--ui-danger-ink);
+  cursor:pointer;
+}
+
+.aula-slide-break-delete:hover {
+  background:var(--ui-danger-soft);
+}
+
+.aula-slide-break-delete:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:1px;
+}
+
+.aula-documentos-presentation-fallback {
+  position:fixed;
+  inset:0;
+  z-index:89;
+  display:grid;
+  place-items:center;
+  background:var(--ui-surface-page);
+  color:var(--ui-text-muted);
+  font-size:12px;
+}
+
 /* Diálogo de importación */
 
 .aula-documentos-modal-backdrop {

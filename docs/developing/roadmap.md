@@ -111,10 +111,10 @@ La app sigue el registro plano de `NATIVE_APPS` y no importa código de `documen
 
 ### Fase 4 — Presentación y migración de Presentaciones
 
-- [ ] Añadir saltos de diapositiva y modo presentación con `reveal.js` diferido.
-- [ ] Derivar diapositivas de `slideBreak` y, si no hay saltos, de los títulos H1/H2; definir el comportamiento de los diagramas dentro de una diapositiva.
-- [ ] Importar `presentaciones` con vista previa, convirtiendo `---` en saltos y Markdown en contenido editable.
-- [ ] Cubrir teclado, foco, salida de la presentación, contenido largo y documentos sin títulos.
+- [x] Añadir saltos de diapositiva y modo presentación con `reveal.js` diferido.
+- [x] Derivar diapositivas de `slideBreak` y, si no hay saltos, de los títulos H1/H2; definir el comportamiento de los diagramas dentro de una diapositiva.
+- [x] Importar `presentaciones` con vista previa, convirtiendo `---` en saltos y Markdown en contenido editable.
+- [x] Cubrir teclado, foco, salida de la presentación, contenido largo y documentos sin títulos.
 - **Criterios de aceptación:**
   - El mismo documento se presenta sin duplicarlo ni convertirlo en otra app.
   - Una presentación antigua se importa con diapositivas, listas, citas y código.
@@ -174,6 +174,7 @@ El objetivo se revisa en la fase 1 y se cierra en la fase 5. Las cifras son lím
 - 2026-11-18: Fase 1 completada. `lib/domain/aula-documentos/` contiene el esquema v1, los límites, la validación de texto, enlaces, `mermaidBlock`, `slideBreak`, nodos y profundidad, y los lectores de Notas y documentos, Diagramas y Presentaciones con vista previa sin escribir en el origen. La base admite 190.000 caracteres, 4.000 nodos, 100.000 de texto y 12 diagramas. 12 pruebas focalizadas y 1.312 en la suite completa; `tsc` y ESLint en verde. No se tocaron apps, tablas ni endpoints.
 - 2026-11-18: Fase 2 completada. Editor Tiptap con bloque Mermaid editable, vista previa con retardo, inserción, borrado, guardado/recuperación en `aula-documentos`, exportación HTML con SVG y fallback de código, modo invitado y revisión 1366/1024/390. La prueba local de persistencia usó una aceptación temporal del id en el API, retirada antes del commit; el registro de la app sigue en la fase 5. El editor inicial mide ~147 KB gzip y la primera carga de Mermaid ~290 KB gzip, dentro del presupuesto. 11 pruebas focalizadas y 1.323 en la suite completa; `tsc` y ESLint en verde.
 - 2026-11-18: Fase 3 completada. Importación desde Notas y documentos y Diagramas con vista previa, confirmación y sin escribir en el origen; modal revisado a 1366 y 390 px. Markdown importa y exporta título, párrafos, listas, citas, código, enlaces, énfasis y Mermaid, con límite de 200.000 caracteres y sin edición dual. La prueba visual usó de nuevo la aceptación temporal del id, retirada antes del commit. 27 pruebas focalizadas y 1.327 en la suite completa; `tsc` y ESLint en verde.
+- 2026-11-18: Fase 4 completada. Saltos de diapositiva y presentación con `reveal.js` cargado por `lazy`; diapositivas por saltos explícitos o por H1/H2; importación de Presentaciones con vista previa y conversión de `---` en saltos. Probado con una presentación real de tres diapositivas, navegación por teclado, salida con Escape y bloqueo del scroll de la página. El chunk de presentación mide 30,8 KB gzip y su CSS 11,4 KB, fuera del chunk inicial. 6 pruebas nuevas, suite completa en 1.333; `tsc` y ESLint en verde.
 - La estructura del backlog se ajusta: el núcleo puro va a `lib/domain/aula-documentos/` y la UI compartida a `app/board/shared/aula-documentos/`, para que las apps antiguas puedan adoptarlo sin imports entre apps.
 - Las apps `documentos`, `mermaid` y `presentaciones` no se modifican en esta entrega. Se conservan como compatibilidad y su conversión a adaptadores finos queda para el roadmap de retirada.
 - No se añaden herramientas MCP de contenido, imágenes, tablas ni edición colaborativa en esta primera unificación.

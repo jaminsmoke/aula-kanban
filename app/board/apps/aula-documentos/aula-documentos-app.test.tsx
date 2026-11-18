@@ -8,6 +8,7 @@ const documentMock = vi.hoisted(() => ({
   save: vi.fn(async (_state: unknown) => true),
   notesLoad: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
   mermaidLoad: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
+  presentationsLoad: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
 }));
 
 const mermaidMock = vi.hoisted(() => ({
@@ -20,7 +21,9 @@ vi.mock("../use-app-document", () => ({
       ? documentMock.notesLoad
       : appId === "mermaid"
         ? documentMock.mermaidLoad
-        : documentMock.load,
+        : appId === "presentaciones"
+          ? documentMock.presentationsLoad
+          : documentMock.load,
     save: documentMock.save,
     loading: false,
     error: null,
@@ -55,6 +58,7 @@ describe("Aula Documentos", () => {
     documentMock.save.mockResolvedValue(true);
     documentMock.notesLoad.mockResolvedValue({ state: null, updatedAt: null });
     documentMock.mermaidLoad.mockResolvedValue({ state: null, updatedAt: null });
+    documentMock.presentationsLoad.mockResolvedValue({ state: null, updatedAt: null });
     mermaidMock.render.mockImplementation(async (code: string) => `<svg data-mermaid-preview="true"><text>${code}</text></svg>`);
   });
 
@@ -213,6 +217,35 @@ describe("Aula Documentos", () => {
     await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Notas importadas"));
     expect(screen.getByRole("status").textContent).toContain("Documento importado desde Notas y documentos");
     expect(documentMock.save).not.toHaveBeenCalled();
+  });
+
+  it("inserta un salto de diapositiva y lo guarda", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Insertar salto de diapositiva" }));
+    expect(await screen.findByText("Salto de diapositiva")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
+    expect(saved.content.content?.some((node) => node.type === "slideBreak")).toBe(true);
+  });
+
+  it("importa Presentaciones y conserva sus saltos", async () => {
+    documentMock.presentationsLoad.mockResolvedValueOnce({
+      state: {
+        markdown: "# Presentación\n\nIntro\n\n---\n\n## Idea\n\n- Uno\n- Dos",
+      },
+      updatedAt: 1,
+    });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Importar documento" }));
+    fireEvent.click(screen.getByRole("button", { name: /Presentaciones/ }));
+
+    expect(await screen.findByRole("heading", { name: "Presentación" })).toBeTruthy();
+    expect(screen.getByText(/1 salto de diapositiva/)).toBeTruthy();
   });
 
   it("importa un Markdown con vista previa", async () => {

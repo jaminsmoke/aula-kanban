@@ -19,17 +19,20 @@ import {
   List,
   ListOrdered,
   Loader2,
+  MonitorPlay,
   NotebookPen,
   Pilcrow,
+  Presentation,
   Quote,
   Redo2,
   Save,
+  SeparatorHorizontal,
   Underline,
   Undo2,
   Upload,
   X,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import {
   AULA_DOCUMENT_SCHEMA_VERSION,
   AULA_DOCUMENT_TITLE_MAX_LENGTH,
@@ -47,14 +50,19 @@ import {
   documentToMarkdown,
   markdownToDocument,
 } from "../../../../lib/domain/aula-documentos/markdown";
+import { buildPresentationSlides } from "../../../../lib/domain/aula-documentos/presentation";
 import { createStarterAulaDocument } from "../../../../lib/domain/aula-documentos/starter";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useAppDocument } from "../use-app-document";
 import type { StoreRole } from "../types";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
-import { buildAulaDocumentHtml, collectMermaidCodes, countMermaidBlocks, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
+import { buildAulaDocumentHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
 import { getMermaidRenderer } from "../../shared/aula-documentos/mermaid-renderer";
 import "./aula-documentos.css";
+
+const PresentationView = lazy(() => import("../../shared/aula-documentos/presentation-view").then((module) => ({
+  default: module.PresentationView,
+})));
 
 type ToolbarAction = {
   label: string;
@@ -192,6 +200,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [importLoading, setImportLoading] = useState<string | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importConfirm, setImportConfirm] = useState(false);
+  const [preparingPresentation, setPreparingPresentation] = useState(false);
+  const [presentation, setPresentation] = useState<{ title: string; slides: string[] } | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const pendingDocumentRef = useRef<AulaDocument | null>(null);
   const applyingDocumentRef = useRef(false);
@@ -199,6 +209,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const { load, save, loading, error } = useAppDocument<AulaDocument>(projectId, "aula-documentos");
   const notesStore = useAppDocument<unknown>(projectId, "documentos");
   const mermaidStore = useAppDocument<unknown>(projectId, "mermaid");
+  const presentationsStore = useAppDocument<unknown>(projectId, "presentaciones");
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -281,6 +292,11 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     setStatus("Documento guardado cargado.");
   }, []);
 
+  const closePresentation = useCallback(() => {
+    setPresentation(null);
+    setStatus("Presentación cerrada.");
+  }, []);
+
   useEffect(() => {
     let active = true;
     void load().then(({ state }) => {
@@ -353,6 +369,45 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }
 
   /**
+   * Inserta un salto de diapositiva en el documento.
+   */
+  function insertSlideBreak() {
+    if (!editor || readOnly) return;
+    editor.chain().focus(undefined, { scrollIntoView: false }).insertContent({ type: "slideBreak" }).run();
+    setStatus("Salto de diapositiva insertado.");
+  }
+
+  /**
+   * Construye y abre la presentación del documento actual.
+   */
+  async function startPresentation() {
+    const document = currentDocument();
+    if (!document) return;
+    setPreparingPresentation(true);
+    setStatus("Preparando presentación…");
+    try {
+      const slides = buildPresentationSlides(document.content);
+      const svgByCode = await renderMermaidSvgs(
+        collectMermaidCodes({ type: "doc", content: slides.flatMap((slide) => slide.content) }),
+        (code) => getMermaidRenderer().render(code),
+      );
+      const html = slides.map((slide) => renderAulaContentHtml(
+        { type: "doc", content: slide.content },
+        svgByCode,
+      ));
+      setPresentation({
+        title: document.title.trim() || "Aula Documentos",
+        slides: html,
+      });
+      setStatus("Presentación abierta.");
+    } catch {
+      setStatus("No se pudo preparar la presentación.");
+    } finally {
+      setPreparingPresentation(false);
+    }
+  }
+
+  /**
    * Prepara y descarga el HTML autónomo del documento.
    */
   async function exportHtml() {
@@ -415,13 +470,17 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
    * Carga una app antigua y prepara su vista previa.
    * @param source - App de origen.
    */
-  async function importFrom(source: "documentos" | "mermaid") {
+  async function importFrom(source: "documentos" | "mermaid" | "presentaciones") {
     setImportLoading(source);
     setImportError(null);
     setImportPreview(null);
     setImportConfirm(false);
     try {
-      const store = source === "documentos" ? notesStore : mermaidStore;
+      const store = source === "documentos"
+        ? notesStore
+        : source === "mermaid"
+          ? mermaidStore
+          : presentationsStore;
       const { state } = await store.load();
       if (state === null) {
         setImportError(`No hay ningún documento guardado en ${IMPORT_LABELS[source]}.`);
@@ -601,6 +660,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     ],
     [
       { label: "Insertar diagrama Mermaid", icon: <GitBranch size={15} aria-hidden />, onClick: insertMermaid },
+      { label: "Insertar salto de diapositiva", icon: <SeparatorHorizontal size={15} aria-hidden />, onClick: insertSlideBreak },
     ],
     [
       { label: "Deshacer", icon: <Undo2 size={15} aria-hidden />, disabled: !toolbar.canUndo, onClick: () => editor.chain().focus().undo().run() },
@@ -635,6 +695,18 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             {group.map((action) => <ToolButton action={action} key={action.label} />)}
           </div>
         ))}
+        {editor ? (
+          <div className="aula-documentos-tool-group">
+            <ToolButton
+              action={{
+                label: "Presentar documento",
+                icon: <MonitorPlay size={15} aria-hidden />,
+                onClick: () => { void startPresentation(); },
+                disabled: preparingPresentation || Boolean(presentation),
+              }}
+            />
+          </div>
+        ) : null}
         <div className="aula-documentos-tool-group aula-documentos-file-actions">
           {fileActions.map((action) => <ToolButton action={action} key={action.label} />)}
         </div>
@@ -717,7 +789,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                 <h3>{importPreview.document.title || "Documento sin título"}</h3>
                 <p className="aula-documentos-import-meta">
                   {importPreview.stats.textLength} caracteres de texto · {importPreview.stats.mermaidBlocks === 1 ? "1 diagrama" : `${importPreview.stats.mermaidBlocks} diagramas`}
-                  {importPreview.stats.slideBreaks ? ` · ${importPreview.stats.slideBreaks} saltos de diapositiva` : ""}
+                  {importPreview.stats.slideBreaks ? ` · ${importPreview.stats.slideBreaks} ${importPreview.stats.slideBreaks === 1 ? "salto" : "saltos"} de diapositiva` : ""}
                 </p>
                 <p className="aula-documentos-import-excerpt">
                   {importExcerpt || "El documento no contiene texto."}
@@ -772,6 +844,10 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                 <button type="button" className="aula-documentos-import-option" onClick={() => { void importFrom("mermaid"); }}>
                   <GitBranch size={18} aria-hidden />
                   <span><strong>Diagramas</strong><small>Un diagrama Mermaid como bloque</small></span>
+                </button>
+                <button type="button" className="aula-documentos-import-option" onClick={() => { void importFrom("presentaciones"); }}>
+                  <Presentation size={18} aria-hidden />
+                  <span><strong>Presentaciones</strong><small>Diapositivas Markdown con saltos</small></span>
                 </button>
                 <label className="aula-documentos-import-option" htmlFor="aula-documentos-markdown-file">
                   <NotebookPen size={18} aria-hidden />
@@ -840,6 +916,16 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           </section>
         </aside>
       </div>
+
+      {presentation ? (
+        <Suspense fallback={<div className="aula-documentos-presentation-fallback" role="status">Cargando presentación…</div>}>
+          <PresentationView
+            title={presentation.title}
+            slides={presentation.slides}
+            onExit={closePresentation}
+          />
+        </Suspense>
+      ) : null}
     </div>
   );
 }

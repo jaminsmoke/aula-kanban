@@ -109,6 +109,20 @@ function replaceMermaidPlaceholders(html: string, svgByCode: ReadonlyMap<string,
 }
 
 /**
+ * Genera el HTML de un contenido Tiptap e inserta los SVG disponibles.
+ * @param content - Contenido raíz o nodo del documento.
+ * @param svgByCode - SVG indexados por código Mermaid.
+ * @returns HTML con los diagramas insertados.
+ */
+export function renderAulaContentHtml(
+  content: JSONContent,
+  svgByCode: ReadonlyMap<string, string> = new Map(),
+): string {
+  const html = generateHTML(content, createAulaDocumentExtensions());
+  return replaceMermaidPlaceholders(html, svgByCode);
+}
+
+/**
  * Genera un HTML autónomo con texto y diagramas ya renderizados.
  * @param aulaDocument - Documento validado.
  * @param svgByCode - SVG de cada código Mermaid.
@@ -120,8 +134,7 @@ export function buildAulaDocumentHtml(
 ): string {
   const title = aulaDocument.title.trim() || "Documento sin título";
   const safeTitle = escapeHtml(title);
-  const content = generateHTML(aulaDocument.content, createAulaDocumentExtensions());
-  const withDiagrams = replaceMermaidPlaceholders(content, svgByCode);
+  const withDiagrams = renderAulaContentHtml(aulaDocument.content, svgByCode);
 
   return `<!doctype html>
 <html lang="es">

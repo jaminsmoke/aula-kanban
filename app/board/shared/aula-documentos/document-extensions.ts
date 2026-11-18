@@ -1,6 +1,7 @@
 import Link from "@tiptap/extension-link";
 import StarterKit from "@tiptap/starter-kit";
 import { MermaidBlock } from "./mermaid-block";
+import { SlideBreak } from "./slide-break";
 
 /**
  * Extensiones del editor de Aula Documentos.
@@ -23,5 +24,6 @@ export function createAulaDocumentExtensions() {
       },
     }),
     MermaidBlock,
+    SlideBreak,
   ];
 }

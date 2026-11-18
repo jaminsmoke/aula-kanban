@@ -1,0 +1,182 @@
+/* ==========================================================================
+   Presentación de Aula Documentos con reveal.js
+   ========================================================================== */
+
+.aula-presentation {
+  position:fixed;
+  inset:0;
+  z-index:90;
+  display:flex;
+  background:var(--ui-surface-page);
+  color:var(--ui-text-primary);
+}
+
+.aula-presentation-exit {
+  position:fixed;
+  top:12px;
+  right:12px;
+  z-index:3;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:6px 9px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+  font:inherit;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.aula-presentation-exit:hover {
+  color:var(--ui-text-primary);
+}
+
+.aula-presentation-exit:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:2px;
+}
+
+.aula-presentation-reveal {
+  flex:1 1 auto;
+  width:100%;
+  height:100%;
+  outline:none;
+}
+
+.aula-presentation .aula-presentation-reveal.reveal-viewport {
+  background:var(--ui-surface-page);
+}
+
+.aula-presentation-reveal .slides {
+  color:var(--ui-text-primary);
+  text-align:left;
+}
+
+.aula-presentation-reveal .slides section.aula-presentation-slide {
+  box-sizing:border-box;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  overflow:auto;
+  padding:6% 7%;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-lg);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-primary);
+  text-align:left;
+}
+
+.aula-presentation-slide > :first-child {
+  margin-top:0;
+}
+
+.aula-presentation-slide > :last-child {
+  margin-bottom:0;
+}
+
+.aula-presentation-slide h1 {
+  margin:0 0 .35em;
+  font-size:2.4rem;
+  line-height:1.1;
+}
+
+.aula-presentation-slide h2 {
+  margin:0 0 .4em;
+  font-size:1.9rem;
+  line-height:1.15;
+}
+
+.aula-presentation-slide h3 {
+  margin:0 0 .4em;
+  font-size:1.4rem;
+}
+
+.aula-presentation-slide p,
+.aula-presentation-slide li {
+  font-size:1.05rem;
+  line-height:1.55;
+}
+
+.aula-presentation-slide ul,
+.aula-presentation-slide ol {
+  padding-left:1.5em;
+}
+
+.aula-presentation-slide blockquote {
+  margin:1.2em 0;
+  padding:.4em 0 .4em 1em;
+  border-left:3px solid var(--ui-action-primary);
+  color:var(--ui-text-secondary);
+  font-style:italic;
+}
+
+.aula-presentation-slide code {
+  padding:.15em .35em;
+  border-radius:4px;
+  background:var(--ui-surface-faint);
+  font-family:var(--font-mono);
+  font-size:.92em;
+}
+
+.aula-presentation-slide pre {
+  overflow:auto;
+  padding:1em 1.2em;
+  border-radius:var(--radius-sm);
+  background:var(--ui-surface-faint);
+  font-family:var(--font-mono);
+}
+
+.aula-presentation-slide a {
+  color:var(--ui-action-text);
+  font-weight:600;
+}
+
+.aula-presentation-slide .aula-mermaid-export {
+  margin:1.2em 0;
+  padding:1em;
+  overflow:auto;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-sm);
+  background:var(--ui-surface-faint);
+  text-align:center;
+}
+
+.aula-presentation-slide .aula-mermaid-export svg {
+  display:inline-block;
+  max-width:100%;
+  height:auto;
+}
+
+.aula-presentation-reveal .progress {
+  color:var(--ui-action-primary);
+}
+
+.aula-presentation-reveal .controls {
+  color:var(--ui-text-secondary);
+}
+
+.aula-presentation-reveal .slide-number {
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+}
+
+.aula-presentation-fallback {
+  position:fixed;
+  inset:0;
+  z-index:89;
+  display:grid;
+  place-items:center;
+  background:var(--ui-surface-page);
+  color:var(--ui-text-muted);
+  font-size:12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aula-presentation-reveal .slides section {
+    transition:none;
+  }
+}
