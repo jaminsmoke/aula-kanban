@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useWindowCloseGuard } from "../store/window-close-guard";
+import { useWindowCloseGuard } from "../shared/window-close-guard";
 import { useAppDocument, type VersionedSaveResult } from "./use-app-document";
 import {
   saveVersionedDraftRecovery,
@@ -48,6 +48,8 @@ export type VersionedDraftOptions<T> = {
   storage?: Pick<Storage, "getItem" | "setItem"> | null;
   /** Se ejecuta cuando el cierre se bloquea por cambios pendientes. */
   onCloseBlocked?: () => void;
+  /** Se ejecuta después de guardar o recargar correctamente el borrador. */
+  onSaved?: () => void;
 };
 
 /**
@@ -209,6 +211,7 @@ export function useVersionedDraft<T>(options: VersionedDraftOptions<T>) {
       if (editVersionRef.current === versionAtSave) setDirtyState(false);
       setConflictNotice(null);
       setStatus(automatic ? "Cambios guardados automáticamente." : "Borrador guardado.");
+      optionsRef.current.onSaved?.();
       return true;
     }
 
@@ -380,6 +383,7 @@ export function useVersionedDraft<T>(options: VersionedDraftOptions<T>) {
     setConflictState(null);
     setConflictNotice(null);
     setStatus("Borrador cargado.");
+    optionsRef.current.onSaved?.();
     return true;
   }, [load, setConflictState, setDirtyState]);
 
@@ -434,6 +438,7 @@ export function useVersionedDraft<T>(options: VersionedDraftOptions<T>) {
     setConflictState(null);
     setConflictNotice(null);
     setStatus("Versión del servidor recargada.");
+    optionsRef.current.onSaved?.();
     return true;
   }, [downloadCopy, load, rememberRecovery, setConflictState, setDirtyState]);
 
@@ -475,6 +480,7 @@ export function useVersionedDraft<T>(options: VersionedDraftOptions<T>) {
       setConflictState(null);
       setConflictNotice(null);
       setStatus("Tu versión se guardó y la copia quedó descargada.");
+      optionsRef.current.onSaved?.();
       return true;
     }
 

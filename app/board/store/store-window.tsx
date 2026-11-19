@@ -2,7 +2,7 @@
 
 import { useRef, type PointerEvent, type ReactNode } from "react";
 import { m } from "motion/react";
-import { useWindowAttemptClose, WindowCloseProvider } from "./window-close-guard";
+import { useWindowAttemptClose, WindowCloseProvider } from "../shared/window-close-guard";
 import {
   fitWindowGeometry,
   WINDOW_MARGIN,

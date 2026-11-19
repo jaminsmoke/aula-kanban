@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { useWindowAttemptClose, WindowCloseProvider } from "../../store/window-close-guard";
+import { useWindowAttemptClose, WindowCloseProvider } from "../../shared/window-close-guard";
 import type { VersionedSaveResult } from "../use-app-document";
 
 const revealMock = vi.hoisted(() => ({

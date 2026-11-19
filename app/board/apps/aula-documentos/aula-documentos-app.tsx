@@ -82,7 +82,7 @@ import {
 } from "../../../../lib/domain/aula-documentos/recovery";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useAppDocument, type VersionedSaveResult } from "../use-app-document";
-import { useWindowClose, useWindowCloseGuard } from "../../store/window-close-guard";
+import { useWindowClose, useWindowCloseGuard } from "../../shared/window-close-guard";
 import type { StoreRole } from "../types";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
 import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";

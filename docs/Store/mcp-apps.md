@@ -219,7 +219,7 @@ reglas de cada app.
 
 ## Referencias
 
-- [`roadmap.md`](../developing/roadmap.md): ADOC-10 activo, paridad de apps heredadas.
+- [`roadmap.md`](../developing/roadmap.md): plantilla del próximo roadmap.
 - [`changelog.md`](../developing/changelog.md): resumen de los roadmaps MCP-05B, MCP-05D y
   MCP-05E.
 - [`backlog.md`](../developing/backlog.md): ADOC-11, Hoja de cálculo y DEV-01.

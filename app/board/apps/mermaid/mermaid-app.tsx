@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { StoreRole } from "../types";
 import { useVersionedDraft } from "../use-versioned-draft";
-import { useWindowClose } from "../../store/window-close-guard";
+import { useWindowClose } from "../../shared/window-close-guard";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useMermaidPreview } from "./use-mermaid-preview";
 import { mermaidFileName } from "./mermaid-filename";
@@ -44,6 +44,7 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
       fileName: mermaidFileName(value.code).replace(/\.svg$/, "-recuperacion.json"),
     }),
     onCloseBlocked: () => setClosePromptOpen(true),
+    onSaved: () => setClosePromptOpen(false),
   });
 
   const flash = useCallback((message: string) => {
@@ -216,7 +217,7 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
       </div>
 
       <UnsavedChangesDialog
-        open={closePromptOpen}
+        open={closePromptOpen && !draft.conflict}
         busy={draft.saving}
         notice={draft.saveFailed ? draft.status : null}
         onStay={() => setClosePromptOpen(false)}

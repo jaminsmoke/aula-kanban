@@ -6,7 +6,7 @@ import "reveal.js/reveal.css";
 import { Download, FolderOpen, Play, Presentation, RotateCcw, Save } from "lucide-react";
 import type { StoreRole } from "../types";
 import { useVersionedDraft } from "../use-versioned-draft";
-import { useWindowClose } from "../../store/window-close-guard";
+import { useWindowClose } from "../../shared/window-close-guard";
 import { aulaFileName } from "../../../../lib/domain/aula-documentos/filename";
 import VersionConflictDialog from "../version-conflict-dialog";
 import UnsavedChangesDialog from "../unsaved-changes-dialog";
@@ -60,6 +60,7 @@ export default function PresentacionesApp({ projectId, role }: { projectId: stri
         .replace(/\.json$/, "-recuperacion.json"),
     }),
     onCloseBlocked: () => setClosePromptOpen(true),
+    onSaved: () => setClosePromptOpen(false),
   });
 
   const slides = useMemo(() => parseSlides(markdown), [markdown]);
@@ -254,7 +255,7 @@ export default function PresentacionesApp({ projectId, role }: { projectId: stri
       )}
 
       <UnsavedChangesDialog
-        open={closePromptOpen}
+        open={closePromptOpen && !draft.conflict}
         busy={draft.saving}
         notice={draft.saveFailed ? draft.status : null}
         onStay={() => setClosePromptOpen(false)}

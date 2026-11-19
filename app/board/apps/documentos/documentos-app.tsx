@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import type { StoreRole } from "../types";
 import { useVersionedDraft } from "../use-versioned-draft";
-import { useWindowClose } from "../../store/window-close-guard";
+import { useWindowClose } from "../../shared/window-close-guard";
 import { aulaFileName } from "../../../../lib/domain/aula-documentos/filename";
 import VersionConflictDialog from "../version-conflict-dialog";
 import UnsavedChangesDialog from "../unsaved-changes-dialog";
@@ -166,6 +166,7 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
       fileName: aulaFileName(document.title, "json", "notas"),
     }),
     onCloseBlocked: () => setClosePromptOpen(true),
+    onSaved: () => setClosePromptOpen(false),
   });
 
   const editor = useEditor({
@@ -592,7 +593,7 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
       </div>
 
       <UnsavedChangesDialog
-        open={closePromptOpen}
+        open={closePromptOpen && !draft.conflict}
         busy={draft.saving}
         notice={draft.saveFailed ? draft.status : null}
         onStay={() => setClosePromptOpen(false)}

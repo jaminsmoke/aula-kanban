@@ -1,6 +1,6 @@
 import { act, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { WindowCloseProvider, useWindowAttemptClose } from "../store/window-close-guard";
+import { WindowCloseProvider, useWindowAttemptClose } from "../shared/window-close-guard";
 import { jsonResponse } from "../../../vitest.setup";
 import { useVersionedDraft } from "./use-versioned-draft";
 import { readVersionedDraftRecovery } from "./versioned-draft-recovery";
@@ -97,6 +97,7 @@ describe("motor de borrador versionado", () => {
       .mockResolvedValueOnce(jsonResponse({ accepted: true, updatedAt: 200 }));
     vi.stubGlobal("fetch", fetchMock);
     const applyLoaded = vi.fn(() => true);
+    const onSaved = vi.fn();
     const { result } = renderHook(() => useVersionedDraft<{ code: string }>({
       projectId: "p1",
       appId: "mermaid",
@@ -104,6 +105,7 @@ describe("motor de borrador versionado", () => {
       applyLoaded,
       storage: null,
       autosaveDelayMs: 5,
+      onSaved,
     }));
 
     await waitFor(() => expect(result.current.ready).toBe(true));
@@ -120,6 +122,7 @@ describe("motor de borrador versionado", () => {
       }),
     );
     await waitFor(() => expect(result.current.dirty).toBe(false));
+    expect(onSaved).toHaveBeenCalledTimes(1);
     expect(result.current.lastSavedAt).toBe(200);
     expect(result.current.status).toMatch(/automáticamente/);
   });

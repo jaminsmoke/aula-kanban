@@ -1,8 +1,38 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-10 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-19 — Roadmap ADOC-10 · Paridad de apps heredadas
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Añadido `useVersionedDraft`, un motor compartido con carga, autosave, estado sucio, conflicto y guarda de cierre sobre `saveVersioned`.
+- Notas y documentos, Diagramas y Presentaciones lo usan con copia recuperable por app/proyecto y descarga antes de reemplazar o conservar.
+- Añadidos el diálogo compartido de conflicto y el aviso de cambios sin guardar; el aviso se cierra solo cuando el autosave termina.
+- Diagramas recibe el rol: los invitados no pueden editar, guardar, cargar, limpiar ni aplicar plantillas.
+- Cargar, limpiar, reiniciar o aplicar plantillas con cambios pide confirmación.
+- Diagramas exporta SVG con un nombre derivado del contenido; Notas usa el título y Presentaciones usa el título de la primera diapositiva.
+- El HTML de Presentaciones conserva el título actual. El modo presentación se reinicializa al recargar un conflicto sin perder el estado.
+- Actualizadas la ayuda integrada y la guía de apps para recomendar el motor versionado.
+
+### Verificación
+
+- Revisadas las tres apps a **390, 620, 900, 1024 y 1366 px** sin scroll horizontal.
+- Conflicto real de Notas con un guardado desde otra sesión (409), recarga de la versión del servidor y copia recuperable guardada en el navegador.
+- Cierre con cambios y autocierre del aviso al completarse el autosave.
+- Presentaciones se instaló temporalmente para revisar el editor y el modo presentación; se desinstaló después. Aula Documentos mantiene su flujo.
+- Suite completa: **209 archivos / 1.482 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos. El límite de Diagramas se ajusta por el motor compartido y los diálogos de cierre.
+- Versión del Site sin cambios (`1.1.36`). Commits: `e39ed3b` (motor), `2e3b20a` (Notas y Diagramas), `1609377` (Presentaciones) y este cierre. Push único a `github main`; sin publicación en Sites.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-11, Hoja de cálculo y DEV-01**. El plan completo está en [`historial/roadmap-adoc-10.md`](../historial/roadmap-adoc-10.md).
 
 ---
 

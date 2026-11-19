@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
 import { listAulaRecoveryCopies, saveAulaRecoveryCopy } from "../../../../lib/domain/aula-documentos/recovery";
-import { useWindowAttemptClose, WindowCloseProvider } from "../../store/window-close-guard";
+import { useWindowAttemptClose, WindowCloseProvider } from "../../shared/window-close-guard";
 import type { VersionedSaveResult } from "../use-app-document";
 import AulaDocumentosApp, { AUTOSAVE_DELAY_MS } from "./aula-documentos-app";
 
