@@ -1,6 +1,7 @@
 # Suite documental: paridad y compatibilidad
 
 > **Estado:** Fase 1 de ADOC-13 · **Fecha:** 2026-11-19
+> **Actualización Fase 2:** el bloque Mermaid de Aula Documentos ya incorpora Gantt guiado, plantillas, salto a la línea del error, zoom/paneo, pantalla completa y SVG por bloque.
 > **Apps comparadas:** Notas y documentos, Diagramas, Presentaciones y Visor Office frente a Aula Documentos.
 > **Decisión de producto:** Aula Documentos será la app canónica; las cuatro apps se retiran solo después de demostrar paridad y conservar datos, enlaces, permisos y MCP.
 
@@ -44,15 +45,15 @@ Accesos que deben seguir funcionando durante la transición:
 | Función | App antigua | Aula Documentos | Decisión |
 |---|---|---|---|
 | Editar código Mermaid | Sí | Sí, en bloque | Absorbida |
-| Plantillas Mermaid | Selector completo | Solo inserta la primera plantilla | **Añadir selector de plantillas** |
-| Gantt guiado por contenido | Sí | No | **Añadir al bloque o a una vista de diagrama** |
-| Errores con línea y salto | Sí | Parcial en el bloque | **Igualar detalle y salto** |
-| Lienzo con zoom, paneo y pantalla completa | Sí | Parcial | **Añadir vista ampliada del bloque** |
-| Exportar SVG por diagrama | Sí | No | **Añadir exportación por bloque** |
-| Guardar/cargar un diagrama suelto | Sí | Solo dentro del documento | Decidir si se conserva como vista enfocada |
-| Ayuda, plantillas y atajos | Sí | Parcial | Igualar antes de retirar |
+| Plantillas Mermaid | Selector completo | Selector en el bloque | Absorbida |
+| Gantt guiado por contenido | Sí | Sí, modo Contenido del bloque | Absorbida |
+| Errores con línea y salto | Sí | Sí, detalle y salto a línea | Absorbida |
+| Lienzo con zoom, paneo y pantalla completa | Sí | Zoom, paneo y pantalla completa nativa | Absorbida |
+| Exportar SVG por diagrama | Sí | Sí, por bloque | Absorbida |
+| Guardar/cargar un diagrama suelto | Sí | Solo dentro del documento | Decidido: el bloque forma parte del documento; no habrá app separada |
+| Ayuda, plantillas y atajos | Sí | Cubierto por el bloque y la ayuda | Absorbida |
 
-**Conclusión:** Aula Documentos cubre el caso básico, pero no toda la experiencia de Diagramas. La app antigua se mantiene como cáscara hasta cerrar estos huecos.
+**Conclusión:** Aula Documentos cubre ahora las funciones de Diagramas dentro del bloque: plantillas, Gantt guiado, errores con salto, zoom/paneo, pantalla completa y SVG por bloque. La app antigua se mantiene como cáscara hasta migrar datos y alias.
 
 ### Presentaciones
 
@@ -103,7 +104,7 @@ Accesos que deben seguir funcionando durante la transición:
 | P0 | Migración de datos y alias de IDs/URLs | 4 |
 | P0 | Compatibilidad MCP de Diagramas | 4 |
 | P0 | Apertura libre de Office en Aula Documentos | 3 |
-| P1 | Plantillas, Gantt, error y SVG de Diagramas | 2 |
+| P1 | Plantillas, Gantt, error y SVG de Diagramas | Hecho en Fase 2 |
 | P1 | Editor Markdown y plantillas de Presentaciones | 3 |
 | P1 | Ficha mínima sin apps retiradas | 5 |
 | P2 | Rediseño reutilizable de tarjetas de suite | STORE-18 |

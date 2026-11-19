@@ -811,6 +811,20 @@
   margin-left:auto;
 }
 
+.aula-mermaid-edit-modes {
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:7px 10px;
+  border-bottom:var(--border-width-hairline) solid var(--doc-border);
+  background:var(--doc-code-surface);
+}
+
+.aula-mermaid-action.is-active {
+  background:var(--doc-action-soft);
+  color:var(--doc-action-text);
+}
+
 .aula-mermaid-action {
   display:inline-flex;
   align-items:center;
@@ -907,6 +921,12 @@
 
 .aula-mermaid-preview.is-zoomed:active {
   cursor:grabbing;
+}
+
+.aula-mermaid-preview:fullscreen {
+  max-height:none;
+  padding:32px;
+  background:var(--doc-paper);
 }
 
 .aula-mermaid-zoom {

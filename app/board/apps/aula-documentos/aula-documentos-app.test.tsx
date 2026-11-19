@@ -527,6 +527,30 @@ describe("Aula Documentos", () => {
     expect(block?.attrs?.code).toBe(nextCode);
   });
 
+  it("edita el contenido de un Gantt dentro del bloque Mermaid", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    insertMermaid();
+    fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
+
+    fireEvent.change(screen.getByLabelText("Código Mermaid"), {
+      target: {
+        value: "gantt\n  title Plan de proyecto\n  dateFormat YYYY-MM-DD\n  section Trabajo\n  Tarea :t1, 2026-01-01, 2d",
+      },
+    });
+    const guided = await screen.findByRole("button", { name: "Contenido" });
+    await waitFor(() => expect(guided).toHaveProperty("disabled", false));
+    fireEvent.click(guided);
+
+    expect(screen.getByLabelText("Título del Gantt")).toHaveProperty("value", "Plan de proyecto");
+    fireEvent.change(screen.getByLabelText("Título del Gantt"), { target: { value: "Plan editado" } });
+    fireEvent.click(screen.getByRole("button", { name: "Código" }));
+
+    expect((screen.getByLabelText("Código Mermaid") as HTMLTextAreaElement).value).toContain("title Plan editado");
+    expect(screen.getByRole("button", { name: "Exportar diagrama SVG" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Ver diagrama en pantalla completa" })).toBeTruthy();
+  });
+
   it("autoguarda el borrador Mermaid sin cerrar el editor", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());

@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
+import { MERMAID_TEMPLATES } from "./templates";
 import {
   createGanttTask,
   parseGanttDocument,
   serializeGanttDocument,
   type GanttDocument,
-} from "./gantt-model";
+} from "./gantt";
 
 describe("modelo guiado de Gantt", () => {
   it("interpreta el Gantt de la plantilla", () => {

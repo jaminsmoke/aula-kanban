@@ -4,9 +4,11 @@ import type { Editor } from "@tiptap/core";
 import { Node, mergeAttributes } from "@tiptap/core";
 import { closeHistory } from "@tiptap/pm/history";
 import { NodeViewWrapper, ReactNodeViewRenderer, type NodeViewProps } from "@tiptap/react";
-import { ArrowDown, ArrowUp, Check, Code2, Copy, GripVertical, Loader2, Pencil, RotateCcw, Trash2, X, ZoomIn, ZoomOut } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Code2, Copy, Download, GripVertical, Loader2, Maximize2, Pencil, RotateCcw, Trash2, X, ZoomIn, ZoomOut } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { parseGanttDocument, serializeGanttDocument, type GanttDocument } from "../../../../lib/domain/mermaid/gantt";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
+import GanttEditor from "../mermaid/gantt-editor";
 import { useMermaidPreview } from "./use-mermaid-preview";
 import { useMermaidVisibility } from "./use-mermaid-visibility";
 
@@ -73,9 +75,12 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
   const code = typeof node.attrs.code === "string" ? node.attrs.code : "";
   const [draft, setDraft] = useState(code);
   const [editing, setEditing] = useState(!code.trim());
+  const [guided, setGuided] = useState(false);
+  const [guidedDocument, setGuidedDocument] = useState<GanttDocument | null>(null);
   const draftId = useId();
   const blockRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dragRef = useRef<{ x: number; y: number; left: number; top: number } | null>(null);
   const [zoom, setZoom] = useState(1);
   const visible = useMermaidVisibility(blockRef);
@@ -88,6 +93,7 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
   const canMoveUp = index > 0;
   const canMoveDown = Boolean(parent && index >= 0 && index < parent.childCount - 1);
   const activeCode = editing ? draft : code;
+  const canGuide = parseGanttDocument(activeCode) !== null;
   const canRestore = Boolean(lastValidCode.trim()) && lastValidCode !== activeCode;
   const baselineRef = useRef(code);
 
@@ -120,6 +126,7 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
     if (closeEditor) {
       baselineRef.current = draft;
       setEditing(false);
+      setGuided(false);
     }
   }, [applyMermaidCode, code, draft, editor, position]);
 
@@ -138,6 +145,8 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
   function startEditing() {
     baselineRef.current = code;
     setDraft(code);
+    setGuided(false);
+    setGuidedDocument(null);
     setEditing(true);
   }
 
@@ -175,6 +184,8 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
     const baseline = baselineRef.current;
     setDraft(baseline);
     setEditing(false);
+    setGuided(false);
+    setGuidedDocument(null);
     const liveNode = typeof position === "number" ? editor.state.doc.nodeAt(position) : null;
     const liveCode = typeof liveNode?.attrs?.code === "string" ? liveNode.attrs.code : code;
     if (baseline !== liveCode) applyMermaidCode(baseline);
@@ -190,6 +201,8 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
     if (activeCode.trim() && !window.confirm("Se reemplazará el código actual del diagrama. ¿Continuar?")) return;
     if (!editing) baselineRef.current = code;
     setDraft(template.code);
+    setGuided(false);
+    setGuidedDocument(null);
     setEditing(true);
     mermaidStorage(editor)?.onDraftChange?.();
   }
@@ -201,8 +214,70 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
     if (!lastValidCode.trim()) return;
     if (!editing) baselineRef.current = code;
     setDraft(lastValidCode);
+    setGuided(false);
+    setGuidedDocument(null);
     setEditing(true);
     mermaidStorage(editor)?.onDraftChange?.();
+  }
+
+  /**
+   * Abre el editor guiado de Gantt si el código se puede interpretar.
+   */
+  function enterGuided() {
+    const parsed = parseGanttDocument(activeCode);
+    if (!parsed) return;
+    setGuidedDocument(parsed);
+    setGuided(true);
+    setEditing(true);
+  }
+
+  /**
+   * Actualiza el contenido guiado y regenera el código Mermaid.
+   * @param next - Documento Gantt editado.
+   */
+  function updateGuided(next: GanttDocument) {
+    setGuidedDocument(next);
+    setDraft(serializeGanttDocument(next));
+    mermaidStorage(editor)?.onDraftChange?.();
+  }
+
+  /**
+   * Descarga el SVG visible del bloque.
+   */
+  function downloadSvg() {
+    if (!svg) return;
+    const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = window.document.createElement("a");
+    anchor.href = url;
+    anchor.download = "diagrama-mermaid.svg";
+    window.document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+  }
+
+  /**
+   * Lleva el foco a la línea que señala el error de Mermaid.
+   * @param line - Línea uno-based.
+   */
+  function jumpToErrorLine(line: number) {
+    if (readOnly) return;
+    if (!editing) {
+      baselineRef.current = code;
+      setDraft(code);
+      setEditing(true);
+    }
+    window.requestAnimationFrame(() => {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+      const lines = draft.split("\n");
+      const index = Math.max(0, Math.min(lines.length - 1, line - 1));
+      const start = lines.slice(0, index).reduce((total, item) => total + item.length + 1, 0);
+      textarea.focus();
+      textarea.setSelectionRange(start, start + lines[index].length);
+      textarea.scrollTop = Math.max(0, index * 20 - textarea.clientHeight / 2);
+    });
   }
 
   /**
@@ -316,6 +391,16 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
             <button
               type="button"
               className="aula-mermaid-action icon"
+              onClick={downloadSvg}
+              disabled={!svg}
+              aria-label="Exportar diagrama SVG"
+              title="Exportar diagrama SVG"
+            >
+              <Download size={14} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="aula-mermaid-action icon"
               onClick={restoreLastValid}
               disabled={!canRestore}
               aria-label="Restaurar última versión válida del diagrama"
@@ -374,31 +459,56 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
       </div>
 
       {editing && !readOnly ? (
-        <textarea
-          className="aula-mermaid-code"
-          value={draft}
-          spellCheck={false}
-          aria-label="Código Mermaid"
-          onChange={(event) => {
-            setDraft(event.target.value);
-            mermaidStorage(editor)?.onDraftChange?.();
-          }}
-          onBlur={(event) => {
-            const next = event.relatedTarget;
-            if (next instanceof HTMLElement && next.closest(".aula-mermaid-block")) return;
-            commitDraft(true);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") {
-              event.preventDefault();
-              cancelEdit();
-            }
-            if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
-              event.preventDefault();
-              applyCode();
-            }
-          }}
-        />
+        <>
+          <div className="aula-mermaid-edit-modes" role="group" aria-label="Modo de edición del diagrama">
+            <button
+              type="button"
+              className={`aula-mermaid-action${!guided ? " is-active" : ""}`}
+              onClick={() => setGuided(false)}
+            >
+              Código
+            </button>
+            <button
+              type="button"
+              className={`aula-mermaid-action${guided ? " is-active" : ""}`}
+              onClick={enterGuided}
+              disabled={!canGuide}
+              title={canGuide ? "Editar el contenido del Gantt" : "Este diagrama no se puede editar como contenido"}
+            >
+              Contenido
+            </button>
+          </div>
+          {guided && guidedDocument ? (
+            <GanttEditor value={guidedDocument} onChange={updateGuided} readOnly={false} />
+          ) : (
+            <textarea
+              ref={textareaRef}
+              className="aula-mermaid-code"
+              value={draft}
+              spellCheck={false}
+              aria-label="Código Mermaid"
+              onChange={(event) => {
+                setDraft(event.target.value);
+                mermaidStorage(editor)?.onDraftChange?.();
+              }}
+              onBlur={(event) => {
+                const next = event.relatedTarget;
+                if (next instanceof HTMLElement && next.closest(".aula-mermaid-block")) return;
+                commitDraft(true);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                  event.preventDefault();
+                  cancelEdit();
+                }
+                if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+                  event.preventDefault();
+                  applyCode();
+                }
+              }}
+            />
+          )}
+        </>
       ) : null}
 
       {svg && !loading && !error ? (
@@ -433,6 +543,15 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
             title="Restablecer zoom"
           >
             <RotateCcw size={14} aria-hidden />
+          </button>
+          <button
+            type="button"
+            className="aula-mermaid-action icon"
+            onClick={() => { void previewRef.current?.requestFullscreen?.(); }}
+            aria-label="Ver diagrama en pantalla completa"
+            title="Pantalla completa"
+          >
+            <Maximize2 size={14} aria-hidden />
           </button>
         </div>
       ) : null}
@@ -470,6 +589,11 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
           <div className="aula-mermaid-error" role="alert">
             <strong>{error.summary}</strong>
             <pre className="aula-mermaid-error-detail">{error.detail}</pre>
+            {error.line && !readOnly ? (
+              <button type="button" className="aula-mermaid-action" onClick={() => jumpToErrorLine(error.line ?? 1)}>
+                Ir a la línea {error.line}
+              </button>
+            ) : null}
           </div>
         ) : svg ? (
           <div className="aula-mermaid-zoom" data-zoom={zoom} style={{ width: `${zoom * 100}%` }}>

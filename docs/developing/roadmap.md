@@ -60,10 +60,10 @@
 
 ### Fase 2 — Notas y Diagramas completos en Aula Documentos
 
-- [ ] Cubrir todas las funciones de Notas y documentos dentro del editor de Aula Documentos.
-- [ ] Cubrir las funciones de Diagramas: edición, plantillas, códigos, errores, zoom, paneo, Gantt guiado y exportación SVG.
-- [ ] Resolver las diferencias de edición entre un bloque Mermaid y la app independiente.
-- [ ] Añadir pruebas de paridad y conservar la importación de datos antiguos.
+- [x] Cubrir todas las funciones de Notas y documentos dentro del editor de Aula Documentos.
+- [x] Cubrir las funciones de Diagramas: edición, plantillas, códigos, errores, zoom, paneo, Gantt guiado y exportación SVG.
+- [x] Resolver las diferencias de edición entre un bloque Mermaid y la app independiente.
+- [x] Añadir pruebas de paridad y conservar la importación de datos antiguos.
 - **Criterios de aceptación:**
   - Un usuario puede hacer en Aula Documentos todo lo que hacía en Notas y Diagramas.
   - Los datos existentes siguen abriendo y se pueden convertir sin pérdida.
@@ -127,3 +127,4 @@
 - No se mueven raíces de apps ni se borran datos durante las primeras fases.
 - El Site sigue en `1.1.36`; no se publica nada desde este roadmap.
 - 2026-11-19: Fase 1 completada. Matriz de paridad y mapa de compatibilidad en [`docs/Store/apps/document-suite.md`](../../Store/apps/document-suite.md). Notas y documentos no tiene huecos funcionales; Diagramas necesita plantillas, Gantt guiado, detalle de errores, zoom/paneo y SVG por bloque; Presentaciones necesita edición Markdown de origen y plantillas; Visor Office necesita apertura libre de DOCX/XLSX/PPTX desde Aula Documentos. Mapeados `app_documents`, IDs, URLs, permisos, catálogo y los tres tools MCP de Diagramas. Ninguna app retirada ni dato borrado. No se ejecutan checks de código porque la fase es documental; se registra un commit local de la fase.
+- 2026-11-19: Fase 2 completada. El bloque Mermaid de Aula Documentos incorpora Gantt guiado, selector completo de plantillas, salto a la línea del error, zoom/paneo, pantalla completa y exportación SVG por bloque. El modelo y el editor Gantt se movieron a `lib/domain/mermaid` y `app/board/shared/mermaid`, compartidos con la app Diagramas. Notas ya tenía paridad. Verificado en la app real: Gantt en modo Contenido, edición del título y vuelta a Código; SVG y pantalla completa presentes. Suite completa: 219 archivos / 1.540 pruebas; `tsc`, ESLint, build y presupuestos correctos. `diagramas` ajusta su techo a **379.000 B gzip** (378.062 B).
