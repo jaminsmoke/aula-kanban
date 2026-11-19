@@ -25,6 +25,7 @@ Extracción con el motor headless de `@silurus/ooxml`:
 - DOCX: 5 elementos de cuerpo; `styleId: "Heading1"` en el título; `isLink` y `hyperlink` en el enlace; `numbering.format: "bullet"` en las listas; tabla con 2 filas.
 - PPTX: 2 diapositivas; texto de títulos y párrafos recuperable por diapositiva.
 - La proyección `toMarkdown()` se validó en la app real: el DOCX conserva párrafo, enlace, lista y tabla; el PPTX conserva dos diapositivas y sus saltos. Las imágenes y las notas del orador se omiten con aviso.
+- La exportación DOCX/PPTX se validó generando archivos y reabriéndolos con `@silurus/ooxml/node`; en la app real se descargaron un DOCX de 9.782 B y un PPTX de 54.790 B con cabecera ZIP y contenido válido.
 - Los fixtures viven en `app/board/shared/office/__fixtures__/` y tienen una prueba en `office-fixtures.test.ts`.
 
 Coste de exportación medido con esbuild, minificado y comprimido con gzip:
@@ -35,7 +36,7 @@ Coste de exportación medido con esbuild, minificado y comprimido con gzip:
 | `pptxgenjs` | 373.792 B | 126.424 B |
 | **Total de los dos chunks** | **608.031 B** | **196.481 B** |
 
-Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de exportación. La medición es reproducible con `npm run perf:office`; el presupuesto se incorporará a `perf:budget` cuando exista el flujo real de exportación en la app, no antes.
+Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de exportación. La medición es reproducible con `npm run perf:office`; el flujo real de exportación, con el coste de los chunks compartidos, está en `perf:budget` como `aula-documentos-export`: **329.582 / 340.000 B gzip**. XLSX no forma parte de la exportación de Aula Documentos.
 
 ## 3. Matriz de fidelidad
 
@@ -65,7 +66,7 @@ Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de 
 | Tablas y gráficos | Limitado / a validar | Tablas simples | Los gráficos no se reconstruyen como objetos editables. |
 | Posiciones, temas y patrones | No | No | Se genera un diseño Aula estándar. |
 | Animaciones, transiciones y multimedia | No | No | Fuera de alcance. |
-| Notas del orador | Se omiten con aviso | Solo si el modelo las conserva | No bloquean la primera entrega. |
+| Notas del orador | Se omiten con aviso | Sí, desde las notas de presentación | Se incluyen en el PPTX exportado si existen. |
 
 ## 4. Límites y errores
 
@@ -81,4 +82,4 @@ Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de 
 - Validar la importación con más DOCX/PPTX reales y con archivos de varias versiones.
 - Decidir si el archivo original se guarda como adjunto y con qué límite.
 - Validar la exportación con Office real y con archivos de varias versiones.
-- Fijar el presupuesto definitivo de los chunks de exportación en `perf:budget`.
+- Mantener el presupuesto de `aula-documentos-export` y `perf:office` actualizado si crece el contenido exportable.

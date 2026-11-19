@@ -84,6 +84,7 @@ import { useAppDocument, type VersionedSaveResult } from "../use-app-document";
 import { useWindowClose, useWindowCloseGuard } from "../../shared/window-close-guard";
 import type { StoreRole } from "../types";
 import { importOfficeFile } from "../../shared/office/office-import";
+import { exportAulaDocx, exportAulaPptx } from "../../shared/office/office-export";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
 import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
 import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../../shared/aula-documentos/mermaid-block";
@@ -261,13 +262,11 @@ function formatSourceDate(timestamp: number | null): string | null {
 }
 
 /**
- * Descarga un contenido de texto.
- * @param contents - Contenido del archivo.
- * @param type - Tipo MIME.
+ * Descarga un blob.
+ * @param blob - Contenido del archivo.
  * @param name - Nombre de descarga.
  */
-function downloadTextFile(contents: string, type: string, name: string) {
-  const blob = new Blob([contents], { type });
+function downloadBlob(blob: Blob, name: string) {
   const url = URL.createObjectURL(blob);
   const anchor = window.document.createElement("a");
   anchor.href = url;
@@ -276,6 +275,16 @@ function downloadTextFile(contents: string, type: string, name: string) {
   anchor.click();
   anchor.remove();
   window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+}
+
+/**
+ * Descarga un contenido de texto.
+ * @param contents - Contenido del archivo.
+ * @param type - Tipo MIME.
+ * @param name - Nombre de descarga.
+ */
+function downloadTextFile(contents: string, type: string, name: string) {
+  downloadBlob(new Blob([contents], { type }), name);
 }
 
 /**
@@ -325,6 +334,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [presentationTheme, setPresentationTheme] = useState<AulaPresentationTheme>(DEFAULT_AULA_PRESENTATION.theme);
   const [presentationNotes, setPresentationNotes] = useState<Record<string, string>>({});
   const [exportingPresentation, setExportingPresentation] = useState(false);
+  const [exportingOffice, setExportingOffice] = useState(false);
   const [slidePreview, setSlidePreview] = useState<{ title: string; slides: string[]; index: number } | null>(null);
   const [closePromptOpen, setClosePromptOpen] = useState(false);
   const [invalidDocument, setInvalidDocument] = useState<{ raw: unknown; message: string } | null>(null);
@@ -1109,6 +1119,30 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }
 
   /**
+   * Exporta el documento a una copia DOCX o PPTX.
+   * @param format - Formato de destino.
+   */
+  async function exportOffice(format: "docx" | "pptx") {
+    const document = currentDocument();
+    if (!document) return;
+    setExportingOffice(true);
+    setStatus(`Preparando ${format.toUpperCase()}…`);
+    try {
+      const result = format === "docx"
+        ? await exportAulaDocx(document)
+        : await exportAulaPptx(document, presentationNotes);
+      downloadBlob(result.blob, aulaFileName(document.title, format));
+      setStatus(result.warnings.length
+        ? `${format.toUpperCase()} descargado. ${result.warnings.join(" ")}`
+        : `${format.toUpperCase()} descargado.`);
+    } catch {
+      setStatus(`No se pudo preparar el archivo ${format.toUpperCase()}.`);
+    } finally {
+      setExportingOffice(false);
+    }
+  }
+
+  /**
    * Abre el selector de plantillas para un documento nuevo.
    */
   function openNewDocument() {
@@ -1413,6 +1447,18 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     onClick: exportMarkdown,
     disabled: !editor || Boolean(invalidDocument),
   };
+  const exportDocxAction: ToolbarAction = {
+    label: "Exportar DOCX",
+    icon: exportingOffice ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <FileText size={15} aria-hidden />,
+    onClick: () => { void exportOffice("docx"); },
+    disabled: !editor || exportingOffice || Boolean(invalidDocument),
+  };
+  const exportPptxAction: ToolbarAction = {
+    label: "Exportar PPTX",
+    icon: exportingOffice ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <Presentation size={15} aria-hidden />,
+    onClick: () => { void exportOffice("pptx"); },
+    disabled: !editor || exportingOffice || Boolean(invalidDocument),
+  };
   const presentAction: ToolbarAction = {
     label: "Presentar documento",
     icon: <MonitorPlay size={15} aria-hidden />,
@@ -1445,6 +1491,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     exportHtmlAction,
     printAction,
     exportMarkdownAction,
+    exportDocxAction,
+    exportPptxAction,
   ];
 
   const archiveMenuActions: AulaMenuAction[] = [
@@ -1493,6 +1541,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     { label: exportHtmlAction.label, icon: exportHtmlAction.icon, onSelect: exportHtmlAction.onClick, disabled: exportHtmlAction.disabled },
     { label: printAction.label, icon: printAction.icon, onSelect: printAction.onClick, disabled: printAction.disabled },
     { label: exportMarkdownAction.label, icon: exportMarkdownAction.icon, onSelect: exportMarkdownAction.onClick, disabled: exportMarkdownAction.disabled },
+    { label: exportDocxAction.label, icon: exportDocxAction.icon, onSelect: exportDocxAction.onClick, disabled: exportDocxAction.disabled },
+    { label: exportPptxAction.label, icon: exportPptxAction.icon, onSelect: exportPptxAction.onClick, disabled: exportPptxAction.disabled },
     { label: exportPresentationAction.label, icon: exportPresentationAction.icon, onSelect: exportPresentationAction.onClick, disabled: exportPresentationAction.disabled },
   ];
 
@@ -2262,7 +2312,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           <section className="aula-documentos-info">
             <h3>Texto y diagramas juntos</h3>
             <p>Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa.</p>
-            <p>También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad. XLSX se consulta en Visor Office.</p>
+            <p>También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad, y exportar copias DOCX/PPTX desde el menú Exportar. XLSX se consulta en Visor Office.</p>
             <p className="aula-documentos-status" role="status" aria-live="polite">{statusText}</p>
             {saveFailed && !readOnly ? (
               <button

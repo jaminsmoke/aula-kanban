@@ -220,7 +220,7 @@ describe("Aula Documentos", () => {
     fireEvent.keyDown(screen.getByRole("menu", { name: "Insertar" }), { key: "Escape" });
 
     openMenu("Exportar");
-    for (const name of ["Exportar HTML", "Imprimir o guardar PDF", "Exportar Markdown", "Exportar presentación"]) {
+    for (const name of ["Exportar HTML", "Imprimir o guardar PDF", "Exportar Markdown", "Exportar DOCX", "Exportar PPTX", "Exportar presentación"]) {
       expect(screen.getByRole("menuitem", { name })).toBeTruthy();
     }
     fireEvent.keyDown(screen.getByRole("menu", { name: "Exportar" }), { key: "Escape" });
@@ -819,7 +819,7 @@ describe("Aula Documentos", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Acciones del documento" }));
     expect(screen.getByRole("menu", { name: "Acciones del documento" })).toBeTruthy();
-    for (const name of ["Nuevo documento", "Importar documento", "Guardar documento", "Insertar diagrama Mermaid", "Insertar salto de diapositiva", "Presentar documento", "Exportar HTML", "Exportar presentación"]) {
+    for (const name of ["Nuevo documento", "Importar documento", "Guardar documento", "Insertar diagrama Mermaid", "Insertar salto de diapositiva", "Presentar documento", "Exportar HTML", "Exportar DOCX", "Exportar PPTX", "Exportar presentación"]) {
       expect(screen.getByRole("menuitem", { name })).toBeTruthy();
     }
 

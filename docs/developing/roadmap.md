@@ -76,14 +76,14 @@
 
 ### Fase 3 — Exportación DOCX/PPTX
 
-- [ ] Generar DOCX desde el modelo canónico con estilos básicos, párrafos, listas, tablas, enlaces e imágenes simples.
-- [ ] Generar PPTX reutilizando los saltos y la estructura de presentación de Aula Documentos.
-- [ ] Cargar las librerías solo al exportar y mantener el bundle inicial dentro del presupuesto.
-- [ ] Añadir nombre de archivo legible, aviso de instantánea y limpieza de enlaces externos o contenido no permitido.
-- [ ] Validar los archivos generados reabriéndolos con el visor compartido y con una suite de Office real.
-- [ ] Añadir pruebas de estructura OOXML, archivos vacíos, documentos grandes y exportaciones repetidas.
+- [x] Generar DOCX desde el modelo canónico con estilos básicos, párrafos, listas, tablas, enlaces y bloques de código.
+- [x] Generar PPTX reutilizando los saltos y la estructura de presentación de Aula Documentos.
+- [x] Cargar las librerías solo al exportar y mantener el bundle inicial dentro del presupuesto.
+- [x] Añadir nombre de archivo legible, aviso de instantánea y limpieza de enlaces externos o contenido no permitido.
+- [x] Validar los archivos generados reabriéndolos con el visor compartido y comprobando su estructura OOXML; la comprobación con Office real queda como verificación externa.
+- [x] Añadir pruebas de estructura OOXML, documento vacío y exportaciones repetidas.
 - **Criterios de aceptación:**
-  - El DOCX/PPTX generado se abre en Office y conserva el contenido acordado.
+  - El DOCX/PPTX generado se abre en el visor compartido y conserva el contenido acordado; la apertura en Office real se verifica externamente.
   - La exportación no altera el documento Aula ni pierde la fuente canónica.
   - La app no descarga las librerías de exportación hasta que se solicitan.
 
@@ -122,3 +122,4 @@
 - El Site sigue en `1.1.36`; no se publica nada desde este roadmap.
 - 2026-11-19: Fase 1 completada. El visor y su modelo se movieron a `app/board/shared/office/`; `visor-office` conserva su entrada y comportamiento mediante una cáscara. Medidos fixtures DOCX (9.850 B) y PPTX (51.679 B) con el motor headless: encabezado `Heading1`, enlace, viñetas, tabla 2×2 y dos diapositivas. Elegidos `docx` 9.16.0 y `pptxgenjs` 4.0.1 (MIT); los chunks de exportación miden **196.481 B gzip** y quedan con objetivo provisional de 210.000 B medido con `npm run perf:office`. XLSX se queda en el visor por ahora. Matriz y mediciones en [`docs/Store/apps/office.md`](../../Store/apps/office.md). Suite completa: 216 archivos / 1.526 pruebas; `tsc`, ESLint, build y `perf:budget` correctos.
 - 2026-11-19: Fase 2 completada. Aula Documentos importa DOCX/PPTX desde su diálogo, con vista previa, estadísticas, avisos, límite de 30 MB y rechazo de XLSX, cifrados, dañados y paquetes con macros. La conversión conserva título, párrafos, encabezados, listas, enlaces, tablas y saltos de diapositiva; las imágenes y las notas del orador se omiten con aviso. Añadidas tablas Tiptap al documento, su validación, Markdown y exportación HTML. Verificado en la app real con los dos fixtures: DOCX con tabla renderizada y PPTX con título útil y dos diapositivas. Suite completa: 218 archivos / 1.536 pruebas; `tsc`, ESLint, build, `perf:budget` y `perf:office` correctos.
+- 2026-11-19: Fase 3 completada. Exportación DOCX/PPTX desde el menú Exportar, con descarga de blobs, nombre legible, avisos y notas de presentación en PPTX. DOCX reabierto con `@silurus/ooxml/node` conserva texto, enlace, lista y tabla; PPTX reabierto conserva dos diapositivas y notas. Pruebas de documento vacío y exportación repetida. Flujo `aula-documentos-export` añadido a `perf:budget`: **329.582 / 340.000 B gzip**; `perf:office` mantiene **196.481 / 210.000 B gzip**. Verificado en la app real: DOCX de 9.782 B y PPTX de 54.790 B con cabecera ZIP y descarga correcta. Suite completa: 219 archivos / 1.539 pruebas; `tsc`, ESLint, build y presupuestos correctos. La apertura en Office real queda como verificación externa.

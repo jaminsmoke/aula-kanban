@@ -95,6 +95,14 @@ const FLOWS = [
     roots: ["app/board/apps/hoja-calculo/hoja-calculo-app.tsx"],
   },
   {
+    id: "aula-documentos-export",
+    label: "Aula Documentos → exportar Office",
+    roots: [
+      "node_modules/docx/dist/index.mjs",
+      "node_modules/pptxgenjs/dist/pptxgen.es.js",
+    ],
+  },
+  {
     id: "basica",
     label: "Calculadora · abrir Básica",
     roots: ["app/board/apps/calculadora/calculadora-app.tsx"],

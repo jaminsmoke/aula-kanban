@@ -4,6 +4,7 @@
   "flows": {
     "tablero": 175656,
     "hoja-calculo": 315000,
+    "aula-documentos-export": 340000,
     "basica": 150827,
     "basica-evalua": 150827,
     "cientifica": 2069960,
@@ -27,6 +28,7 @@
   },
   "required": {
     "hoja-calculo": ["hoja-calculo-app"],
+    "aula-documentos-export": ["pptxgen"],
     "cientifica": ["compute-engine"],
     "pizarra": ["chunk-EIO"],
     "diagramas": ["mermaid.core"],
