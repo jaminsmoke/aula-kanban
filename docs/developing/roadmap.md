@@ -65,7 +65,7 @@
 
 - [x] Añadir Office como origen de importación dentro de Aula Documentos, junto a Notas, Diagramas, Presentaciones y Markdown.
 - [x] Leer DOCX/PPTX con los límites actuales del visor y mostrar vista previa, nombre, formato, tamaño, estadísticas y avisos.
-- [x] Convertir a documento Aula: título, encabezados, párrafos, listas, tablas, enlaces e imágenes simples; saltos de diapositiva en PPTX.
+- [x] Convertir a documento Aula: título, encabezados, párrafos, listas, tablas y enlaces; las imágenes y notas del orador se omiten con aviso; saltos de diapositiva en PPTX.
 - [x] Rechazar archivos cifrados, dañados, con macros o con contenido no soportado con mensajes claros.
 - [x] Confirmar el reemplazo sin romper autosave, conflictos ni el botón de recuperación.
 - [x] Cubrir con pruebas fixtures válidos, vacíos, grandes, corruptos y con elementos no representables.
