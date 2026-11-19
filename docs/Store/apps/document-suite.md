@@ -5,6 +5,7 @@
 > **Actualización Fase 3:** Aula Documentos añade Fuente Markdown, plantillas de presentación y Abrir Office para DOCX/XLSX/PPTX sin importar.
 > **Actualización Fase 4:** las apps antiguas se ocultan de la Tienda y del escritorio, sus enlaces abren Aula Documentos y la migración guarda copias reversibles de origen y destino. MCP de Diagramas lee y escribe el primer bloque Mermaid de Aula cuando existe.
 > **Actualización Fase 5:** las cuatro apps salen de `NATIVE_APP_IDS`, del catálogo, de la Tienda, del registro y de `app/board/apps/`; Aula Documentos queda como única entrada documental. Los enlaces y comandos antiguos siguen resolviendo a Aula Documentos y los datos históricos se pueden migrar con copia reversible.
+> **Actualización STORE-18:** la tarjeta y la ficha presentan Aula Documentos como suite, con módulos, capacidades agrupadas, formatos, captura y aviso de migración. Aula Store sube a `1.15.0`; Aula Documentos sigue en `1.2.0`.
 > **Apps comparadas:** Notas y documentos, Diagramas, Presentaciones y Visor Office frente a Aula Documentos.
 > **Decisión de producto:** Aula Documentos será la app canónica; las cuatro apps se retiran solo después de demostrar paridad y conservar datos, enlaces, permisos y MCP.
 
@@ -98,7 +99,7 @@ Accesos que siguen funcionando durante la transición:
 3. **Migración con copia.** Se importa el estado antiguo a Aula Documentos y se conserva el estado de origen hasta validar el resultado. No se borra `app_documents` en la misma operación. Las copias internas usan el prefijo reservado `__aula-documentos-migration:`: una fila por app de origen, otra para el Aula anterior y una meta con la fecha y las fuentes importadas.
 4. **Alias reversibles.** `documentos`, `mermaid`, `presentaciones` y `visor-office` resuelven a `aula-documentos` en URLs y ventanas. Los IDs antiguos siguen disponibles para leer sus filas y para MCP.
 5. **MCP compatible.** Los nombres `leer_diagrama`, `guardar_diagrama` y `listar_plantillas_diagrama` siguen funcionando. Con un documento canónico en Aula, el primer bloque Mermaid es el diagrama activo; si no existe, se usa la fila antigua. Los diagramas adicionales del documento no se seleccionan desde MCP.
-6. **Ficha mínima en ADOC-13.** La tarjeta no debe anunciar apps retiradas; el patrón de ficha de suite se desarrolla en STORE-18.
+6. **Ficha de suite en STORE-18.** La tarjeta y la ficha presentan módulos, formatos, captura y migración sin anunciar apps retiradas como instalables.
 7. **Carpetas al final.** Lo común se extrae a `shared` o `lib`; las raíces no se anidan dentro de `aula-documentos/` hasta la retirada.
 
 ## 4. Huecos priorizados
@@ -111,7 +112,7 @@ Accesos que siguen funcionando durante la transición:
 | P1 | Plantillas, Gantt, error y SVG de Diagramas | Hecho en Fase 2 |
 | P1 | Editor Markdown y plantillas de Presentaciones | Hecho en Fase 3 |
 | P1 | Ficha mínima sin apps retiradas | 5 |
-| P2 | Rediseño reutilizable de tarjetas de suite | STORE-18 |
+| P2 | Rediseño reutilizable de tarjetas de suite | Hecho en STORE-18 |
 
 ## 5. Plan de reversión
 

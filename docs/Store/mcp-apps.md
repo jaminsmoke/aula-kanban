@@ -52,7 +52,7 @@ reglas de cada app.
 | **Moléculas 3D** (`moleculas`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Todos los roles; la vista y la selección son locales. | La vista y la selección viven en el navegador; no hay documento persistente. Sin herramientas MCP específicas en esta versión. |
 | **Líneas de tiempo** (`timeline`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | El documento se guarda en `app_documents`; el lienzo, el zoom y la edición viven en el navegador. Sin herramientas MCP específicas en esta versión. |
 | **Hoja de cálculo** (`hoja-calculo`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | Datos, fórmulas y estilos se guardan en `app_documents`; la edición, el cálculo y la exportación CSV viven en el navegador. Sin herramientas MCP específicas en esta versión. |
-| **Aula Documentos** (`aula-documentos`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_diagrama` y `listar_plantillas_diagrama` | Sí, `guardar_diagrama` | No desde MCP; la ventana exporta SVG, HTML, Markdown, DOCX y PPTX | Lectura y plantillas: cualquier miembro con acceso, o cualquier cuenta autenticada para las plantillas si Aula Documentos está instalada. Escritura: no invitados. | Un documento JSON por proyecto en `app_documents`. Los tools operan sobre el primer bloque Mermaid; el resto de la edición, importación, presentación y exportación vive en el navegador. |
+| **Aula Documentos** (`aula-documentos`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_diagrama` y `listar_plantillas_diagrama` | Sí, `guardar_diagrama` | No desde MCP; la ventana exporta SVG, HTML, Markdown, DOCX y PPTX | Lectura y plantillas: cualquier miembro con acceso, o cualquier cuenta autenticada para las plantillas si Aula Documentos está instalada. Escritura: no invitados. | Un documento JSON por proyecto en `app_documents`. Los tools operan sobre el primer bloque Mermaid; el resto de la edición, importación, presentación y exportación vive en el navegador. La ficha MCP comunica la suite con sus módulos, formatos, captura y migración. |
 
 ## Qué falta en cada app
 
@@ -96,6 +96,8 @@ reglas de cada app.
   vista previa y las exportaciones son capacidades del navegador.
 - `abrir_app` y el control de ventanas aceptan los IDs documentales antiguos y
   los resuelven como `aula-documentos` por MCP-04.
+- `obtener_app` devuelve la ficha completa, incluida `suite` con promesa, módulos, capacidades, formatos, capturas y migración. `listar_apps` añade `esSuite` y `modulos` para distinguir suites de apps individuales.
+
 ### Ajedrez — sin herramientas
 
 - La partida, el tablero y el rival aleatorio viven en el navegador; no hay

@@ -25,6 +25,8 @@ type AppView = {
   versionPaquete: string | null;
   estado: string;
   versionInstalada: string | null;
+  esSuite: boolean;
+  modulos: string[];
 };
 
 /**
@@ -45,6 +47,8 @@ function vista(meta: NativeAppMeta, estado: AppInstalledState): AppView {
     versionPaquete: meta.upstream?.version ?? null,
     estado: estado.status,
     versionInstalada: estado.version,
+    esSuite: Boolean(meta.suite),
+    modulos: [...(meta.suite?.modules ?? [])],
   };
 }
 
@@ -88,6 +92,7 @@ async function obtenerApp(caller: McpCaller, args: Record<string, unknown>) {
       versionLabel: meta.versionLabel ?? null,
       extras: (meta.extras ?? []).map((extra) => ({ nombre: extra.name, version: extra.version })),
       ventana: meta.window,
+      suite: meta.suite ?? null,
       versionAulaStore: AULA_STORE_VERSION,
     },
   });

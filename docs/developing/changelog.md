@@ -1,11 +1,37 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** STORE-18 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
 
+## 2026-11-19 - Roadmap STORE-18 - Fichas de producto para apps-suites
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Añadido un contrato opcional `suite` al catálogo de apps: promesa, módulos, capacidades agrupadas, formatos de apertura/exportación, capturas y migración.
+- Aula Documentos se presenta como suite documental con Notas, Diagramas, Presentaciones y Office, sus formatos y la migración desde las cuatro apps retiradas.
+- La tarjeta añade etiqueta **Suite**, promesa y resumen de módulos; la portada actualiza su mensaje.
+- La ficha muestra capacidades por grupo, formatos, aviso de migración, captura real y ficha técnica plegada. Las apps individuales conservan su ficha clásica.
+- Aula Store MCP expone `esSuite` y `modulos` en `listar_apps`, y la suite completa en `obtener_app`.
+- Actualizados `docs/Store/apps/document-suite.md`, `integradas.md`, `mcp-apps.md` y la ayuda de la Tienda.
+- Aula Store sube a `1.15.0`; Aula Documentos sigue en `1.2.0` y el Site en `1.1.36`.
+
+### Verificación
+
+- Suite completa: **210 archivos / 1.490 pruebas**; `tsc`, ESLint, build, `perf:budget` y `perf:office` correctos.
+- `aula-documentos`: **362.122 / 370.000 B gzip**; `aula-documentos-export`: **329.619 / 340.000 B gzip**; `perf:office`: **196.481 / 210.000 B gzip**.
+- Ficha y tarjeta revisadas en 393, 1024 y 1374 px en claro y oscuro sin desbordamiento; navegación por teclado y cierre con Escape.
+- Sin publicación en Sites. Push único a `github main` con los commits acumulados.
+
+### Seguimiento
+
+- El backlog queda con **DEV-01** (evaluación de pnpm). El plan completo queda en [`historial/roadmap-store-18.md`](../historial/roadmap-store-18.md).
+
+---
 ## 2026-11-19 - Roadmap ADOC-13 - Suite documental en Aula Documentos
 
 **Estado:** Completada - Sin publicación en Sites

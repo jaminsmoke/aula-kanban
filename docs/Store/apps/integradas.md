@@ -36,7 +36,7 @@
 | Hoja de cálculo | `1.0.0` | `jspreadsheet-ce 5.0.4` |
 | Aula Documentos | `1.2.0` | `@tiptap/core 3.34.0` + Tiptap, `mermaid 12.3.0`, `reveal.js 6.0.2`, `docx 9.16.0` y `pptxgenjs 4.0.1` |
 
-La tienda está en `1.14.0`: Aula Documentos subió a `1.2.0` al convertirse en la suite documental y retirar las cuatro apps que absorbe. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
+La tienda está en `1.15.0`: STORE-18 añade la ficha reutilizable de apps-suites y presenta Aula Documentos con módulos, capacidades, formatos, capturas y migración. Aula Documentos sigue en `1.2.0`. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
 
 ## Transición de `edu-tools`
 

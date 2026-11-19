@@ -25,7 +25,7 @@ export type NativeCategory = StoreTopCategory;
 export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
-export const AULA_STORE_VERSION = "1.14.0";
+export const AULA_STORE_VERSION = "1.15.0";
 
 export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "moleculas", "timeline", "hoja-calculo", "aula-documentos"] as const;
 

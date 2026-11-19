@@ -287,11 +287,26 @@ describe("paridad MCP ↔ HTTP", () => {
     rolActual = "owner";
     const result = await llamar("listar_apps", identidad.owner, {});
     expect(result.isError).toBeUndefined();
-    const apps = (result.structuredContent as { apps: Array<{ id: string; estado: string }> }).apps;
+    const apps = (result.structuredContent as { apps: Array<{ id: string; estado: string; esSuite: boolean; modulos: string[] }> }).apps;
     expect(apps.map((app) => app.id)).toEqual(["excalidraw", "calculadora", "tabla-periodica", "blockly", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "moleculas", "timeline", "hoja-calculo", "aula-documentos"]);
     for (const app of apps) {
       expect(["installed", "not_installed"]).toContain(app.estado);
     }
+    expect(apps.find((app) => app.id === "aula-documentos")).toMatchObject({
+      esSuite: true,
+      modulos: ["Notas", "Diagramas", "Presentaciones", "Office"],
+    });
+  });
+
+  it("obtener_app expone la ficha de suite", async () => {
+    rolActual = "owner";
+    const result = await llamar("obtener_app", identidad.owner, { appId: "aula-documentos" });
+    expect(result.isError).toBeUndefined();
+    const app = (result.structuredContent as { app: { esSuite: boolean; suite: { promise: string; modules: string[]; formats: { open: string[]; export: string[] } } } }).app;
+    expect(app.esSuite).toBe(true);
+    expect(app.suite.modules).toEqual(["Notas", "Diagramas", "Presentaciones", "Office"]);
+    expect(app.suite.formats.open).toContain("DOCX");
+    expect(app.suite.formats.export).toContain("HTML");
   });
 
   it("desinstalar sin confirmar avisa y no desinstala", async () => {
