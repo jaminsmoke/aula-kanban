@@ -47,11 +47,11 @@
 
 ### Fase 1 — Motor seguro de fórmulas
 
-- [ ] Crear el lexer/parser de fórmulas con números, texto, celdas, rangos, operadores y paréntesis.
-- [ ] Implementar el evaluador con `SUM`, `AVERAGE`, `MIN`, `MAX`, `COUNT`, `IF`, `ROUND` y `ABS`.
-- [ ] Resolver referencias A1 y rangos con límites de filas, columnas y celdas.
-- [ ] Detectar referencias circulares y devolver errores `#VALOR!`, `#REF!`, `#DIV/0!`, `#NOMBRE!` o `#CIRC!` sin lanzar excepciones.
-- [ ] Cubrir con pruebas fórmulas válidas, errores, ciclos, texto, división por cero y rangos fuera de límites.
+- [x] Crear el lexer/parser de fórmulas con números, texto, celdas, rangos, operadores y paréntesis.
+- [x] Implementar el evaluador con `SUM`, `AVERAGE`, `MIN`, `MAX`, `COUNT`, `IF`, `ROUND` y `ABS`.
+- [x] Resolver referencias A1 y rangos con límites de filas, columnas y celdas.
+- [x] Detectar referencias circulares y devolver errores `#VALOR!`, `#REF!`, `#DIV/0!`, `#NOMBRE!` o `#CIRC!` sin lanzar excepciones.
+- [x] Cubrir con pruebas fórmulas válidas, errores, ciclos, texto, división por cero y rangos fuera de límites.
 - **Criterios de aceptación:**
   - Ninguna ruta usa `eval`, `Function` o ejecución de JavaScript.
   - Los resultados numéricos y los errores son deterministas.
@@ -113,3 +113,4 @@
 - Puntos de partida: `app/board/apps/hoja-calculo/hoja-calculo-app.tsx`, `hoja-calculo-model.ts`, `hoja-calculo-app.test.tsx` y `docs/perf-budget.json`.
 - No se cambia el esquema `{ data, styles? }` ni se migra la app a otro motor de persistencia.
 - DEV-01 queda como única entrada del backlog.
+- 2026-11-19: Fase 1 completada. Se añadió un lexer/parser y evaluador propio con referencias A1, rangos acotados, funciones habituales, comparaciones, errores `#...` y detección de ciclos. No usa `eval` ni `Function`. Suite completa: 214 archivos / 1.514 pruebas; `tsc` y ESLint en verde.
