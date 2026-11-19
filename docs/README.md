@@ -17,7 +17,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | ADOC-09 activo: menús y barra de edición | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | Plantilla del próximo roadmap | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -80,7 +80,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
-- **Roadmap ADOC-09 activo:** menús y barra de edición, con acciones agrupadas, etiquetas visibles, menú de formato en móvil y nuevas acciones de tachado, línea horizontal, limpiar formato, alineación y listas de tareas. Plan en [`roadmap.md`](developing/roadmap.md). Sin publicación desde este roadmap.
+- **Roadmap ADOC-09 completado:** Aula Documentos agrupa la barra en menús etiquetados de Archivo, Formato, Insertar y Exportar, con menús móviles de 44 px y acciones nuevas de tachado, línea horizontal, limpiar formato, alineación y listas de tareas. Markdown, HTML, impresión y validación conservan el formato; verificado a 390, 620, 900, 1024 y 1366 px con teclado real; 203 archivos / 1.443 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-09.md`](historial/roadmap-adoc-09.md). Sin publicación desde este roadmap.
 - **Roadmap ADOC-08 completado:** Aula Documentos y Notas usan una hoja blanca estable en los tres temas, con tokens de contenido, selección, foco, código y Mermaid; Presentaciones heredadas y las exportaciones también usan lienzo claro. Verificado en tema oscuro y claro a 390, 620, 900, 1024 y 1366 px; 201 archivos / 1.433 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-08.md`](historial/roadmap-adoc-08.md). Sin publicación desde este roadmap.
 - **Roadmap UI-10 completado:** las ventanas de la Tienda comparten geometría segura, se recolocan al cambiar el escritorio, abren maximizadas en móvil y conservan foco, estado y orden al minimizar, restaurar o redimensionar. Verificado en 1366, 1024, 900, 620 y 390 px; 200 archivos / 1.428 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-ui-10.md`](historial/roadmap-ui-10.md). Sin publicación desde este roadmap.
 - **Roadmap ADOC-07 completado:** Aula Documentos guarda con `expectedUpdatedAt`, responde `409` sin pisar la versión del servidor y ofrece recargar, conservar o descargar. Conserva hasta tres copias locales recuperables antes de reemplazar o resolver un conflicto, con descarga y restauración confirmada. Verificado con guardados reales 200/409/200, conflicto y recuperación en la interfaz y revisión a 390, 620, 900, 1024 y 1366 px; 197 archivos / 1.414 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-07.md`](historial/roadmap-adoc-07.md). El Site sigue en `1.1.35` y sin publicación.

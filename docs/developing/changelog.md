@@ -1,8 +1,35 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-09 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-19 — Roadmap ADOC-09 · Menús y barra de edición de Aula Documentos
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- La barra de Aula Documentos se reorganiza en menús **Archivo**, **Formato**, **Insertar** y **Exportar**, con un grupo directo para deshacer/rehacer, negrita, cursiva, subrayado y enlace.
+- «Presentar» y «Guardar» quedan como acciones etiquetadas; se elimina la exportación de presentación duplicada del panel lateral.
+- Los menús son reutilizables, navegables con flechas, Inicio/Fin, Escape, Tab y clic exterior. Los estados activo y deshabilitado se anuncian.
+- En móvil aparecen **Formato** y **Acciones** con etiquetas y objetivos de 44 px. Formato incluye las acciones frecuentes; Acciones conserva archivo, inserción, presentación y exportación.
+- Añadidos tachado, línea horizontal, limpiar formato, alineación y listas de tareas. Se incorporan `@tiptap/extension-text-align`, `task-list` y `task-item` 3.34.0.
+- El validador y el modelo conservan `textAlign`, `taskList`, `taskItem` y `checked`. Markdown importa/exporta listas de tareas y líneas; la alineación se mantiene en JSON y HTML.
+- HTML e impresión incluyen casillas y alineación. La ayuda menciona los menús y las acciones nuevas.
+
+### Verificación
+
+- Revisado a 390, 620, 900, 1024 y 1366 px sin scroll horizontal.
+- Menús comprobados con teclado real: flecha abre el primer elemento, Escape cierra y devuelve el foco al disparador.
+- Suite completa: **203 archivos / 1.443 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `007a938` (Fase 1), `176668e` (Fase 2), `022bad5` (Fase 3) y este commit de cierre. Push único a `github main`; sin publicación en Sites.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-10, ADOC-11, Hoja de cálculo y DEV-01**. El plan completo está en [`historial/roadmap-adoc-09.md`](../historial/roadmap-adoc-09.md).
 
 ---
 
