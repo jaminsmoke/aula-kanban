@@ -48,10 +48,10 @@
 
 ### Fase 1 — Tokens del papel y superficies
 
-- [ ] Definir en `globals.css` los tokens de papel, tinta, texto secundario, borde, código y selección.
-- [ ] Aplicar el ámbito a `.aula-documentos-paper` y `.documentos-paper` sin alterar el marco de las apps.
-- [ ] Sustituir en el papel los tokens de interfaz que hoy cambian con el tema.
-- [ ] Cubrir con pruebas los valores de token y el contraste de las parejas principales.
+- [x] Definir en `globals.css` los tokens de papel, tinta, texto secundario, borde, código y selección.
+- [x] Aplicar el ámbito a `.aula-documentos-paper` y `.documentos-paper` sin alterar el marco de las apps.
+- [x] Sustituir en el papel los tokens de interfaz que hoy cambian con el tema.
+- [x] Cubrir con pruebas los valores de token y el contraste de las parejas principales.
 - **Criterios de aceptación:**
   - La hoja es blanca en tema Aula, Claro y Oscuro.
   - El marco de la app sigue usando el tema de la interfaz.
@@ -110,3 +110,4 @@
 - Evidencia inicial: `.aula-documentos-paper` y `.documentos-paper` usan `--ui-surface-raised`; `.presentaciones-preview-slide` y la vista de presentación usan `--ui-surface-pale`. En tema oscuro el documento completo se ve oscuro.
 - Puntos de partida: `app/globals.css`, `app/board/apps/aula-documentos/aula-documentos.css`, `app/board/apps/documentos/documentos.css`, `app/board/apps/presentaciones/presentaciones.css`, `app/board/shared/aula-documentos/presentation.css` y los generadores de exportación/impresión.
 - No se cambia el contrato del documento ni el guardado. La hoja blanca es una decisión visual, no una migración de datos.
+- 2026-11-19: Fase 1 completada. `globals.css` define tokens `--doc-*` que no se sobrescriben en tema oscuro; Aula Documentos y Notas usan papel blanco, tinta oscura, bordes y selección propios. Texto principal, secundario, enlaces y código superan contraste AA. Verificado visualmente en tema oscuro: la hoja permanece blanca y el marco sigue oscuro. 5 pruebas focalizadas y 201 archivos / 1.431 pruebas; `tsc` y ESLint en verde.

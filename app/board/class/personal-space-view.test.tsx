@@ -37,8 +37,8 @@ describe("PersonalSpaceView", () => {
 
     const desktop = await screen.findByLabelText("Escritorio personal");
     expect(desktop).toBeTruthy();
-    expect(screen.getByRole("button", { name: /Excalidraw/ })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /Diagramas/ })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: /Excalidraw/ })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: /Diagramas/ })).toBeTruthy();
     // Sin tienda: no hay catálogo ni botón de Aula Store.
     expect(screen.queryByRole("button", { name: /Aula Store/ })).toBeNull();
     expect(screen.queryByRole("region", { name: "Aula Store" })).toBeNull();

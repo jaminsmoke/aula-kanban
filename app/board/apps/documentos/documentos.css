@@ -264,10 +264,16 @@
   min-height:520px;
   margin:0 auto;
   padding:28px 34px 42px;
-  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border:var(--border-width-hairline) solid var(--doc-border);
   border-radius:var(--radius-md);
-  background:var(--ui-surface-raised);
+  background:var(--doc-paper);
+  color:var(--doc-ink);
   box-shadow:var(--ui-shadow-card);
+}
+
+.documentos-paper ::selection {
+  background:var(--doc-selection);
+  color:var(--doc-selection-ink);
 }
 
 .documentos-title {
@@ -276,20 +282,21 @@
   padding:0;
   border:0;
   background:transparent;
-  color:var(--ui-text-primary);
+  color:var(--doc-ink);
   font:inherit;
   font-size:28px;
   font-weight:700;
   line-height:1.2;
   letter-spacing:-.02em;
+  caret-color:var(--doc-ink);
 }
 
 .documentos-title::placeholder {
-  color:var(--ui-text-muted);
+  color:var(--doc-muted);
 }
 
 .documentos-title:focus-visible {
-  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline:var(--border-width-strong) solid var(--doc-focus);
   outline-offset:4px;
   border-radius:var(--radius-xs);
 }
@@ -301,7 +308,7 @@
 .documentos-divider {
   height:var(--border-width-hairline);
   margin:16px 0 20px;
-  background:var(--ui-border-subtle);
+  background:var(--doc-border);
 }
 
 .documentos-editor {
@@ -311,7 +318,8 @@
 .documentos-prose {
   min-height:410px;
   outline:none;
-  color:var(--ui-text-primary);
+  color:var(--doc-ink);
+  caret-color:var(--doc-ink);
   font-size:14px;
   line-height:1.7;
 }
@@ -327,7 +335,7 @@
 .documentos-prose h1,
 .documentos-prose h2,
 .documentos-prose h3 {
-  color:var(--ui-text-primary);
+  color:var(--doc-heading);
   line-height:1.25;
 }
 
@@ -352,23 +360,23 @@
 }
 
 .documentos-prose strong {
-  color:var(--ui-text-primary);
+  color:var(--doc-heading);
   font-weight:700;
 }
 
 .documentos-prose em {
-  color:var(--ui-text-secondary);
+  color:var(--doc-secondary);
 }
 
 .documentos-prose a {
-  color:var(--ui-action-text);
+  color:var(--doc-link);
   font-weight:600;
   text-decoration:underline;
   text-underline-offset:2px;
 }
 
 .documentos-prose a:hover {
-  color:var(--ui-action-primary);
+  color:var(--doc-link-hover);
 }
 
 .documentos-prose ul,
@@ -383,16 +391,16 @@
 .documentos-prose blockquote {
   margin:16px 0;
   padding:6px 0 6px 16px;
-  border-left:3px solid var(--ui-action-primary);
-  color:var(--ui-text-secondary);
+  border-left:3px solid var(--doc-link);
+  color:var(--doc-secondary);
   font-style:italic;
 }
 
 .documentos-prose code {
   padding:2px 5px;
   border-radius:4px;
-  background:var(--ui-surface-faint);
-  color:var(--ui-text-secondary);
+  background:var(--doc-code-surface);
+  color:var(--doc-code-ink);
   font-family:var(--font-mono);
   font-size:.92em;
 }
@@ -400,10 +408,10 @@
 .documentos-prose pre {
   overflow:auto;
   padding:13px 15px;
-  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border:var(--border-width-hairline) solid var(--doc-border);
   border-radius:var(--radius-sm);
-  background:var(--ui-surface-faint);
-  color:var(--ui-text-primary);
+  background:var(--doc-code-surface);
+  color:var(--doc-code-ink);
   font-family:var(--font-mono);
   font-size:12px;
   line-height:1.6;
@@ -418,12 +426,12 @@
 
 .documentos-prose hr {
   border:0;
-  border-top:var(--border-width-hairline) solid var(--ui-border-default);
+  border-top:var(--border-width-hairline) solid var(--doc-border);
 }
 
 .documentos-editor-loading {
   margin:0;
-  color:var(--ui-text-muted);
+  color:var(--doc-muted);
   font-size:12px;
 }
 

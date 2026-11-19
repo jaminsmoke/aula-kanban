@@ -196,6 +196,22 @@
   --ui-presentation-dark-muted: #b4abc5;
   --ui-presentation-dark-border: #393152;
   --ui-presentation-dark-code: #29233d;
+  /* Lienzo editorial: no depende del tema claro/oscuro de la interfaz. La hoja
+     permanece blanca; el marco de la app conserva --ui-*. */
+  --doc-paper: var(--primitive-white);
+  --doc-ink: var(--primitive-ink);
+  --doc-secondary: var(--primitive-ink-soft);
+  --doc-muted: var(--primitive-muted);
+  --doc-heading: var(--primitive-ink-deep);
+  --doc-link: var(--primitive-violet);
+  --doc-link-hover: var(--primitive-violet-dark);
+  --doc-border: var(--primitive-line);
+  --doc-border-strong: var(--primitive-line-strong);
+  --doc-code-surface: var(--primitive-surface-faint);
+  --doc-code-ink: var(--primitive-ink-deep);
+  --doc-selection: #ddd5f3;
+  --doc-selection-ink: var(--primitive-ink-deep);
+  --doc-focus: var(--primitive-focus);
   --ui-shadow-card: 0 2px 3px #29213a08;
   --ui-shadow-card-hover: 0 3px 8px #29213a13;
   --ui-shadow-float: 0 16px 48px #3022550d;
