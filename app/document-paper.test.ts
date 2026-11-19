@@ -91,6 +91,14 @@ describe("lienzo editorial", () => {
     expect(NOTAS_CSS).toMatch(/\.documentos-paper\s*{[^}]*color:var\(--doc-ink\)/);
   });
 
+  it("mantiene selección, foco y Mermaid dentro del lienzo claro", () => {
+    expect(AULA_CSS).toMatch(/\.aula-documentos-paper ::selection\s*{[^}]*background:var\(--doc-selection\)/);
+    expect(AULA_CSS).toMatch(/\.aula-documentos-title:focus-visible\s*{[^}]*var\(--doc-focus\)/);
+    expect(AULA_CSS).toMatch(/\.aula-mermaid-block\s*{[^}]*background:var\(--doc-mermaid-surface\)/);
+    expect(AULA_CSS).toMatch(/\.aula-mermaid-preview\s*{[^}]*background:var\(--doc-paper\)/);
+    expect(AULA_CSS).toMatch(/\.aula-mermaid-error\s*{[^}]*background:var\(--doc-danger-surface\)/);
+  });
+
   it("mantiene contraste AA en texto y código", () => {
     const paper = resolveToken("doc-paper");
     const codeSurface = resolveToken("doc-code-surface");
@@ -101,5 +109,7 @@ describe("lienzo editorial", () => {
     expect(contrast(resolveToken("doc-link"), paper)).toBeGreaterThanOrEqual(4.5);
     expect(contrast(resolveToken("doc-code-ink"), codeSurface)).toBeGreaterThanOrEqual(4.5);
     expect(contrast(resolveToken("doc-selection-ink"), resolveToken("doc-selection"))).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(resolveToken("doc-danger-ink"), resolveToken("doc-danger-surface"))).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(resolveToken("doc-action-text"), resolveToken("doc-action-soft"))).toBeGreaterThanOrEqual(4.5);
   });
 });

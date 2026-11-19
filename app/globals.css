@@ -209,6 +209,15 @@
   --doc-border-strong: var(--primitive-line-strong);
   --doc-code-surface: var(--primitive-surface-faint);
   --doc-code-ink: var(--primitive-ink-deep);
+  --doc-mermaid-surface: var(--primitive-surface-pale);
+  --doc-mermaid-head: var(--primitive-surface-faint);
+  --doc-control-surface: var(--primitive-white);
+  --doc-control-hover: var(--primitive-surface-hover);
+  --doc-action-soft: var(--primitive-violet-pale);
+  --doc-action-text: var(--primitive-violet);
+  --doc-danger-surface: var(--primitive-danger-soft);
+  --doc-danger-ink: var(--primitive-danger-ink);
+  --doc-danger-border: var(--primitive-border-danger);
   --doc-selection: #ddd5f3;
   --doc-selection-ink: var(--primitive-ink-deep);
   --doc-focus: var(--primitive-focus);

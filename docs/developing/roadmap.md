@@ -59,11 +59,11 @@
 
 ### Fase 2 — Contenido, código y Mermaid
 
-- [ ] Revisar títulos, párrafos, enlaces, citas, listas, código en línea, bloques de código, tablas y placeholders sobre blanco.
-- [ ] Definir selección de texto y foco visibles sobre la hoja.
-- [ ] Ajustar el contenedor Mermaid y el SVG para que se lean sobre blanco en los tres temas.
-- [ ] Revisar el estado vacío, el error de Mermaid y los controles del bloque.
-- [ ] Cubrir con pruebas el formato rico, el código y la selección.
+- [x] Revisar títulos, párrafos, enlaces, citas, listas, código en línea, bloques de código, tablas y placeholders sobre blanco.
+- [x] Definir selección de texto y foco visibles sobre la hoja.
+- [x] Ajustar el contenedor Mermaid y el SVG para que se lean sobre blanco en los tres temas.
+- [x] Revisar el estado vacío, el error de Mermaid y los controles del bloque.
+- [x] Cubrir con pruebas el formato rico, el código y la selección.
 - **Criterios de aceptación:**
   - Ningún texto o icono desaparece por heredar un color oscuro.
   - Mermaid, código y citas mantienen contraste y jerarquía.
@@ -111,3 +111,4 @@
 - Puntos de partida: `app/globals.css`, `app/board/apps/aula-documentos/aula-documentos.css`, `app/board/apps/documentos/documentos.css`, `app/board/apps/presentaciones/presentaciones.css`, `app/board/shared/aula-documentos/presentation.css` y los generadores de exportación/impresión.
 - No se cambia el contrato del documento ni el guardado. La hoja blanca es una decisión visual, no una migración de datos.
 - 2026-11-19: Fase 1 completada. `globals.css` define tokens `--doc-*` que no se sobrescriben en tema oscuro; Aula Documentos y Notas usan papel blanco, tinta oscura, bordes y selección propios. Texto principal, secundario, enlaces y código superan contraste AA. Verificado visualmente en tema oscuro: la hoja permanece blanca y el marco sigue oscuro. 5 pruebas focalizadas y 201 archivos / 1.431 pruebas; `tsc` y ESLint en verde.
+- 2026-11-19: Fase 2 completada. Títulos, formato rico, enlaces, citas, código, selección y foco usan tokens del lienzo. El bloque Mermaid, su editor, controles, estados y error usan superficies claras; el SVG de Mermaid ya se renderiza con variables claras. Verificado en tema oscuro con un diagrama insertado: bloque y vista previa legibles sobre la hoja blanca. 6 pruebas focalizadas y 201 archivos / 1.432 pruebas; `tsc` y ESLint en verde.
