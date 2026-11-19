@@ -35,7 +35,7 @@ Coste de exportación medido con esbuild, minificado y comprimido con gzip:
 | `pptxgenjs` | 373.792 B | 126.424 B |
 | **Total de los dos chunks** | **608.031 B** | **196.481 B** |
 
-Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de exportación. El presupuesto se incorporará a `perf:budget` cuando exista el flujo real de exportación en la app, no antes.
+Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de exportación. La medición es reproducible con `npm run perf:office`; el presupuesto se incorporará a `perf:budget` cuando exista el flujo real de exportación en la app, no antes.
 
 ## 3. Matriz de fidelidad
 
