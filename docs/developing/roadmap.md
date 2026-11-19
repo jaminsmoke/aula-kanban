@@ -71,10 +71,10 @@
 
 ### Fase 3 — Foco, estado y controles
 
-- [ ] Conservar la ventana activa y el foco del control usado al recolocar.
-- [ ] Revisar que abrir, enfocar, mover, redimensionar, minimizar y cerrar mantienen el orden esperado.
-- [ ] Impedir que el arrastre deje la ventana fuera del área segura.
-- [ ] Añadir pruebas de integración del escritorio con más de una ventana y cambios de tamaño.
+- [x] Conservar la ventana activa y el foco del control usado al recolocar.
+- [x] Revisar que abrir, enfocar, mover, redimensionar, minimizar y cerrar mantienen el orden esperado.
+- [x] Impedir que el arrastre deje la ventana fuera del área segura.
+- [x] Añadir pruebas de integración del escritorio con más de una ventana y cambios de tamaño.
 - **Criterios de aceptación:**
   - El contenido de la app no se recarga ni pierde cambios al cambiar la geometría.
   - La ventana con foco sigue siendo la misma después del reflujo.
@@ -110,3 +110,4 @@
 - El arreglo es transversal a todas las apps de la Tienda. No se cambia el contenido de las apps ni su contrato de guardado.
 - 2026-11-19: Fase 1 completada. `window-geometry.ts` centraliza margen, mínimos y ajuste; apertura, arrastre, resize, restauración y reflujo usan la misma regla. El `ResizeObserver` recoloca las ventanas sin remontarlas y devuelve la misma referencia cuando no hay cambios. Verificado en el navegador: una ventana abierta con escritorio ancho y reducida a 390 px pasa a `x=12`, `right=378`, sin scroll horizontal. 7 pruebas focalizadas y 199 archivos / 1.421 pruebas; `tsc` y ESLint en verde.
 - 2026-11-19: Fase 2 completada. Las ventanas abiertas con un escritorio de 640 px o menos arrancan maximizadas; el botón de reducir devuelve una geometría segura y el reflujo revalida la posición guardada. En maximizado se desactiva el arrastre y desaparece el asa de resize. Verificado en 390 y 620 px con apertura, reducción, minimizar/restaurar desde el dock y cierre; los controles de tráfico tienen foco visible. 10 pruebas focalizadas y 199 archivos / 1.424 pruebas; `tsc` y ESLint en verde.
+- 2026-11-19: Fase 3 completada. Restaurar desde el dock sube la ventana al frente; el reflujo conserva la ventana activa y el orden de las demás. Las pruebas de integración cubren dos ventanas, foco, minimizar/restaurar, cambio a 390 px y geometrías dentro del área. Un cambio de posición o tamaño no remonta la ventana: el contenido y el foco del control se conservan. El arrastre se ajusta al área segura y no puede sacar la ventana. 7 pruebas focalizadas de la fase y 200 archivos / 1.428 pruebas; `tsc` y ESLint en verde.

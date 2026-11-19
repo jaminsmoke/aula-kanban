@@ -169,7 +169,12 @@ export function useDesktopWindows() {
       size: { width: rect?.width ?? bounds.width, height: rect?.height ?? bounds.height },
     };
   })), [desktopSize]);
-  const restore = useCallback((id: string) => setWindows((current) => current.map((item) => (item.tool.id === id ? { ...item, minimized: false } : item))), []);
+  const restore = useCallback((id: string) => setWindows((current) => {
+    zCounter.current += 1;
+    return current.map((item) => (item.tool.id === id
+      ? { ...item, minimized: false, zIndex: zCounter.current }
+      : item));
+  }), []);
 
   return { desktopRef, desktopSize, windows, open, focus, close, minimize, restore, move, resize, zoom };
 }

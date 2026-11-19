@@ -20,6 +20,13 @@ const tool: StoreTool = {
   roles: ["owner"],
 };
 
+const secondTool: StoreTool = {
+  ...tool,
+  id: "segunda",
+  name: "Segunda",
+  window: { width: 700, height: 500 },
+};
+
 class ResizeObserverMock {
   static instances: ResizeObserverMock[] = [];
   private readonly callback: ResizeObserverCallback;
@@ -67,8 +74,11 @@ function stubDesktopMeasure() {
  * @returns El escritorio y una acción para abrir la ventana de prueba.
  */
 function DesktopHarness() {
-  const { desktopRef, desktopSize, windows, open, zoom } = useDesktopWindows();
+  const { desktopRef, desktopSize, windows, open, zoom, focus, minimize, restore } = useDesktopWindows();
   const activeWindow = windows[0];
+  const topWindow = windows.length
+    ? windows.reduce((top, item) => item.zIndex > top.zIndex ? item : top)
+    : undefined;
   return (
     <div ref={desktopRef} data-testid="desktop">
       <output data-testid="size">{`${desktopSize.width}x${desktopSize.height}`}</output>
@@ -76,8 +86,24 @@ function DesktopHarness() {
         {activeWindow ? `${activeWindow.position.x},${activeWindow.position.y},${activeWindow.size.width},${activeWindow.size.height}` : "sin ventana"}
       </output>
       <output data-testid="maximized">{activeWindow ? String(activeWindow.maximized) : "sin ventana"}</output>
+      <output data-testid="top">{topWindow?.tool.id ?? "sin ventana"}</output>
+      <output data-testid="layout">
+        {JSON.stringify(windows.map((item) => ({
+          id: item.tool.id,
+          x: item.position.x,
+          y: item.position.y,
+          width: item.size.width,
+          height: item.size.height,
+          zIndex: item.zIndex,
+          minimized: item.minimized,
+        })))}
+      </output>
       <button type="button" onClick={() => open(tool)}>Abrir</button>
+      <button type="button" onClick={() => open(secondTool)}>Abrir segunda</button>
       <button type="button" onClick={() => { if (activeWindow) zoom(activeWindow.tool.id); }}>Ampliar</button>
+      <button type="button" onClick={() => focus(tool.id)}>Enfocar primera</button>
+      <button type="button" onClick={() => minimize(tool.id)}>Minimizar primera</button>
+      <button type="button" onClick={() => restore(tool.id)}>Restaurar primera</button>
     </div>
   );
 }
@@ -135,5 +161,61 @@ describe("ventanas del escritorio", () => {
 
     expect(screen.getByTestId("maximized").textContent).toBe("false");
     expect(screen.getByTestId("geometry").textContent).toBe("12,12,366,600");
+  });
+
+  it("conserva la ventana activa y la geometría al reducir el escritorio", async () => {
+    stubDesktopMeasure();
+
+    render(<DesktopHarness />);
+    await waitFor(() => expect(screen.getByTestId("size").textContent).toBe("1200x700"));
+    fireEvent.click(screen.getByRole("button", { name: "Abrir" }));
+    fireEvent.click(screen.getByRole("button", { name: "Abrir segunda" }));
+    expect(screen.getByTestId("top").textContent).toBe("segunda");
+
+    fireEvent.click(screen.getByRole("button", { name: "Enfocar primera" }));
+    expect(screen.getByTestId("top").textContent).toBe("prueba");
+
+    desktopRect = { width: 390, height: 680 };
+    act(() => { ResizeObserverMock.instances[0]?.trigger(); });
+
+    expect(screen.getByTestId("top").textContent).toBe("prueba");
+    const layout = JSON.parse(screen.getByTestId("layout").textContent ?? "[]") as Array<{
+      x: number; y: number; width: number; height: number;
+    }>;
+    expect(layout).toHaveLength(2);
+    for (const item of layout) {
+      expect(item.x).toBeGreaterThanOrEqual(12);
+      expect(item.y).toBeGreaterThanOrEqual(12);
+      expect(item.x + item.width).toBeLessThanOrEqual(390);
+      expect(item.y + item.height).toBeLessThanOrEqual(680);
+    }
+  });
+
+  it("sube al frente la ventana restaurada desde el dock", async () => {
+    stubDesktopMeasure();
+
+    render(<DesktopHarness />);
+    await waitFor(() => expect(screen.getByTestId("size").textContent).toBe("1200x700"));
+    fireEvent.click(screen.getByRole("button", { name: "Abrir" }));
+    fireEvent.click(screen.getByRole("button", { name: "Abrir segunda" }));
+    expect(screen.getByTestId("top").textContent).toBe("segunda");
+
+    fireEvent.click(screen.getByRole("button", { name: "Minimizar primera" }));
+    desktopRect = { width: 390, height: 680 };
+    act(() => { ResizeObserverMock.instances[0]?.trigger(); });
+    fireEvent.click(screen.getByRole("button", { name: "Restaurar primera" }));
+
+    expect(screen.getByTestId("top").textContent).toBe("prueba");
+    const layout = JSON.parse(screen.getByTestId("layout").textContent ?? "[]") as Array<{
+      id: string; minimized: boolean; zIndex: number; x: number; y: number; width: number; height: number;
+    }>;
+    const first = layout.find((item) => item.id === "prueba");
+    const second = layout.find((item) => item.id === "segunda");
+    expect(first?.minimized).toBe(false);
+    expect(first?.zIndex).toBeGreaterThan(second?.zIndex ?? 0);
+    expect(first?.x).toBeGreaterThanOrEqual(12);
+    expect(first?.y).toBeGreaterThanOrEqual(12);
+    expect((first?.x ?? 0) + (first?.width ?? 0)).toBeLessThanOrEqual(390);
+    expect((first?.y ?? 0) + (first?.height ?? 0)).toBeLessThanOrEqual(680);
   });
 });
