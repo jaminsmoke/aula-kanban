@@ -14,6 +14,7 @@ export type AulaMenuAction = {
 
 export type AulaMenuProps = {
   label: string;
+  ariaLabel?: string;
   actions: AulaMenuAction[];
   disabled?: boolean;
 };
@@ -21,10 +22,10 @@ export type AulaMenuProps = {
 /**
  * Menú desplegable accesible de la barra de Aula Documentos.
  * No atrapa el foco: Escape, Tab o un clic fuera lo cierran.
- * @param props - Etiqueta, acciones y estado del disparador.
+ * @param props - Etiqueta, nombre accesible, acciones y estado del disparador.
  * @returns El menú con su botón.
  */
-export function AulaMenu({ label, actions, disabled = false }: AulaMenuProps) {
+export function AulaMenu({ label, ariaLabel, actions, disabled = false }: AulaMenuProps) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -89,6 +90,7 @@ export function AulaMenu({ label, actions, disabled = false }: AulaMenuProps) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
+        aria-label={ariaLabel}
         disabled={disabled}
         onClick={() => setOpen((current) => !current)}
         onKeyDown={(event) => {
@@ -106,7 +108,7 @@ export function AulaMenu({ label, actions, disabled = false }: AulaMenuProps) {
           className="aula-documentos-menu-popup"
           id={menuId}
           role="menu"
-          aria-label={label}
+          aria-label={ariaLabel ?? label}
           ref={menuRef}
           onKeyDown={onMenuKeyDown}
         >

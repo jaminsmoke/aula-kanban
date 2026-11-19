@@ -790,13 +790,34 @@ describe("Aula Documentos", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Acciones del documento" }));
     expect(screen.getByRole("menu", { name: "Acciones del documento" })).toBeTruthy();
-    for (const name of ["Nuevo documento", "Importar documento", "Guardar documento", "Presentar documento", "Exportar HTML", "Exportar presentación"]) {
+    for (const name of ["Nuevo documento", "Importar documento", "Guardar documento", "Insertar diagrama Mermaid", "Insertar salto de diapositiva", "Presentar documento", "Exportar HTML", "Exportar presentación"]) {
       expect(screen.getByRole("menuitem", { name })).toBeTruthy();
     }
 
+    const actionsButton = screen.getByRole("button", { name: "Acciones del documento" });
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("menu", { name: "Acciones del documento" })).toBeNull();
+    expect(document.activeElement).toBe(actionsButton);
+
+    fireEvent.click(actionsButton);
     fireEvent.click(screen.getByRole("menuitem", { name: "Guardar documento" }));
     await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
     expect(screen.queryByRole("menu", { name: "Acciones del documento" })).toBeNull();
+  });
+
+  it("ofrece un menú de formato etiquetado en móvil", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    fireEvent.click(screen.getByRole("button", { name: "Formato del documento" }));
+    expect(screen.getByRole("menu", { name: "Formato del documento" })).toBeTruthy();
+    expect(screen.getByRole("menuitem", { name: "Deshacer" })).toBeTruthy();
+    for (const name of ["Negrita", /Título 1/, "Lista con viñetas", "Cita", "Bloque de código"]) {
+      expect(screen.getByRole("menuitemcheckbox", { name })).toBeTruthy();
+    }
+
+    fireEvent.keyDown(screen.getByRole("menu", { name: "Formato del documento" }), { key: "Escape" });
+    expect(screen.queryByRole("menu", { name: "Formato del documento" })).toBeNull();
   });
 
   it("atrapa el foco en los diálogos y lo devuelve al control de origen", async () => {

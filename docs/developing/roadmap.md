@@ -62,11 +62,11 @@
 
 ### Fase 2 — Móvil y accesibilidad
 
-- [ ] Añadir un menú «Formato» etiquetado junto a «Acciones» en contenedores estrechos.
-- [ ] Mantener objetivos táctiles de 44×44 px y etiquetas visibles.
-- [ ] Revisar foco, Escape, devolución al disparador y orden de tabulación.
-- [ ] Evitar solapamientos y scroll horizontal a 390, 620 y 900 px.
-- [ ] Cubrir con pruebas la apertura/cierre, el teclado y los nombres accesibles.
+- [x] Añadir un menú «Formato» etiquetado junto a «Acciones» en contenedores estrechos.
+- [x] Mantener objetivos táctiles de 44×44 px y etiquetas visibles.
+- [x] Revisar foco, Escape, devolución al disparador y orden de tabulación.
+- [x] Evitar solapamientos y scroll horizontal a 390, 620 y 900 px.
+- [x] Cubrir con pruebas la apertura/cierre, el teclado y los nombres accesibles.
 - **Criterios de aceptación:**
   - En móvil se llega a cualquier acción en dos pasos como máximo.
   - El menú no atrapa el foco ni deja elementos inaccesibles.
@@ -115,3 +115,4 @@
 - Estado actual: barra de iconos, archivo a la derecha, «Acciones» solo en móvil y «Presentar» duplicado. StarterKit ya ofrece tachado y línea horizontal, pero no tienen botón; alineación y listas de tareas requieren extensiones.
 - No se abordan tablas, imágenes ni buscar/reemplazar. La barra debe seguir funcionando con el guardado condicional y la recuperación de ADOC-07.
 - 2026-11-19: Fase 1 completada. La barra usa menús reutilizables Archivo, Formato, Insertar y Exportar, un grupo directo de deshacer/rehacer, B/I/U/enlace, y botones etiquetados Presentar y Guardar. Se eliminó la exportación de presentación duplicada del panel lateral. Los menús no atrapan el foco, cierran con Escape, Tab o clic fuera y recorren acciones con flechas. Verificado a 900, 1024 y 1366 px sin scroll horizontal y en 390/620 px con la barra existente. 50 pruebas focalizadas y 202 archivos / 1.437 pruebas; `tsc` y ESLint en verde.
+- 2026-11-19: Fase 2 completada. En contenedores estrechos la barra directa y el menú de escritorio se ocultan; aparecen «Formato» y «Acciones» con objetivos de 44 px y etiquetas visibles. El menú de formato incluye formato y acciones frecuentes; Acciones mantiene archivo, inserción, presentación y exportación. Escape devuelve el foco al disparador y el menú de formato reutiliza la navegación por flechas. Verificado a 390, 620 y 900 px sin scroll horizontal. 52 pruebas focalizadas y 203 archivos / 1.439 pruebas; `tsc` y ESLint en verde.

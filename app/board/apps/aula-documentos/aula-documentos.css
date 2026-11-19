@@ -307,10 +307,20 @@
   margin-left:auto;
 }
 
+.aula-documentos-direct-tools {
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
 .aula-documentos-mobile-actions {
   display:none;
   position:relative;
   margin-left:auto;
+}
+
+.aula-documentos-mobile-menu-anchor {
+  position:relative;
 }
 
 .aula-documentos-mobile-toggle {
@@ -1506,13 +1516,44 @@
 
   .aula-documentos-present-action,
   .aula-documentos-file-actions,
+  .aula-documentos-direct-tools,
   .aula-documentos-menubar,
   .aula-documentos-desktop-actions {
     display:none;
   }
 
   .aula-documentos-mobile-actions {
-    display:block;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .aula-documentos-mobile-actions .aula-documentos-menu-trigger,
+  .aula-documentos-mobile-actions .aula-documentos-mobile-toggle {
+    min-height:44px;
+    padding:0 10px;
+    border-color:var(--ui-border-default);
+    background:var(--ui-surface-raised);
+    font-size:11px;
+  }
+
+  .aula-documentos-mobile-actions .aula-documentos-menu-trigger:hover,
+  .aula-documentos-mobile-actions .aula-documentos-menu-trigger.is-open,
+  .aula-documentos-mobile-actions .aula-documentos-mobile-toggle:hover {
+    background:var(--ui-surface-hover);
+  }
+
+  .aula-documentos-mobile-actions .aula-documentos-menu-popup {
+    left:auto;
+    right:0;
+    width:min(260px, calc(100vw - 32px));
+    min-width:0;
+    max-height:min(70vh, 460px);
+  }
+
+  .aula-documentos-mobile-actions .aula-documentos-menu-item {
+    min-height:44px;
+    font-size:12px;
   }
 
   .aula-mermaid-action {

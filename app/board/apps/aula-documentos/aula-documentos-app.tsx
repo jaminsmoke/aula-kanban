@@ -368,7 +368,10 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       if (actionsRef.current && !actionsRef.current.contains(event.target as Node)) setActionsOpen(false);
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setActionsOpen(false);
+      if (event.key === "Escape") {
+        setActionsOpen(false);
+        actionsToggleRef.current?.focus();
+      }
     };
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
@@ -1390,12 +1393,6 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     exportMarkdownAction,
   ];
 
-  const mobileActions: ToolbarAction[] = [
-    ...documentFileActions,
-    presentAction,
-    exportPresentationAction,
-  ];
-
   const archiveMenuActions: AulaMenuAction[] = [
     { label: newDocumentAction.label, icon: newDocumentAction.icon, onSelect: newDocumentAction.onClick, disabled: newDocumentAction.disabled },
     { label: importDocumentAction.label, icon: importDocumentAction.icon, onSelect: importDocumentAction.onClick, disabled: importDocumentAction.disabled },
@@ -1418,6 +1415,18 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     { label: "Insertar salto de diapositiva", icon: <SeparatorHorizontal size={15} aria-hidden />, onSelect: insertSlideBreak },
   ] : [];
 
+  const mobileActions: ToolbarAction[] = [
+    ...documentFileActions,
+    ...insertMenuActions.map((action) => ({
+      label: action.label,
+      icon: action.icon,
+      onClick: action.onSelect,
+      disabled: action.disabled,
+    })),
+    presentAction,
+    exportPresentationAction,
+  ];
+
   const exportMenuActions: AulaMenuAction[] = [
     { label: exportHtmlAction.label, icon: exportHtmlAction.icon, onSelect: exportHtmlAction.onClick, disabled: exportHtmlAction.disabled },
     { label: printAction.label, icon: printAction.icon, onSelect: printAction.onClick, disabled: printAction.disabled },
@@ -1425,18 +1434,30 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     { label: exportPresentationAction.label, icon: exportPresentationAction.icon, onSelect: exportPresentationAction.onClick, disabled: exportPresentationAction.disabled },
   ];
 
-  const groups: ToolbarAction[][] = editor && !readOnly ? [
-    [
-      { label: "Deshacer", icon: <Undo2 size={15} aria-hidden />, disabled: !toolbar.canUndo, onClick: () => editor.chain().focus().undo().run() },
-      { label: "Rehacer", icon: <Redo2 size={15} aria-hidden />, disabled: !toolbar.canRedo, onClick: () => editor.chain().focus().redo().run() },
-    ],
-    [
-      { label: "Negrita", icon: <Bold size={15} aria-hidden />, active: toolbar.bold, onClick: () => editor.chain().focus().toggleBold().run() },
-      { label: "Cursiva", icon: <Italic size={15} aria-hidden />, active: toolbar.italic, onClick: () => editor.chain().focus().toggleItalic().run() },
-      { label: "Subrayado", icon: <Underline size={15} aria-hidden />, active: toolbar.underline, onClick: () => editor.chain().focus().toggleUnderline().run() },
-      { label: "Insertar o editar enlace", icon: <Link2 size={15} aria-hidden />, active: toolbar.link, disabled: !toolbar.canLink, onClick: openLinkPanel },
-    ],
+  const directFormatActions: ToolbarAction[] = editor && !readOnly ? [
+    { label: "Deshacer", icon: <Undo2 size={15} aria-hidden />, disabled: !toolbar.canUndo, onClick: () => editor.chain().focus().undo().run() },
+    { label: "Rehacer", icon: <Redo2 size={15} aria-hidden />, disabled: !toolbar.canRedo, onClick: () => editor.chain().focus().redo().run() },
+    { label: "Negrita", icon: <Bold size={15} aria-hidden />, active: toolbar.bold, onClick: () => editor.chain().focus().toggleBold().run() },
+    { label: "Cursiva", icon: <Italic size={15} aria-hidden />, active: toolbar.italic, onClick: () => editor.chain().focus().toggleItalic().run() },
+    { label: "Subrayado", icon: <Underline size={15} aria-hidden />, active: toolbar.underline, onClick: () => editor.chain().focus().toggleUnderline().run() },
+    { label: "Insertar o editar enlace", icon: <Link2 size={15} aria-hidden />, active: toolbar.link, disabled: !toolbar.canLink, onClick: openLinkPanel },
   ] : [];
+
+  const groups: ToolbarAction[][] = editor && !readOnly ? [
+    directFormatActions.slice(0, 2),
+    directFormatActions.slice(2),
+  ] : [];
+
+  const mobileFormatMenuActions: AulaMenuAction[] = [
+    ...directFormatActions.map((action) => ({
+      label: action.label,
+      icon: action.icon,
+      active: action.active,
+      disabled: action.disabled,
+      onSelect: action.onClick,
+    })),
+    ...formatMenuActions,
+  ];
 
   return (
     <div className="aula-documentos-app">
@@ -1466,11 +1487,13 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           <AulaMenu label="Insertar" actions={insertMenuActions} disabled={!editor || readOnly} />
           <AulaMenu label="Exportar" actions={exportMenuActions} />
         </div>
-        {groups.map((group, index) => (
-          <div className="aula-documentos-tool-group" key={index}>
-            {group.map((action) => <ToolButton action={action} key={action.label} />)}
-          </div>
-        ))}
+        <div className="aula-documentos-direct-tools">
+          {groups.map((group, index) => (
+            <div className="aula-documentos-tool-group" key={index}>
+              {group.map((action) => <ToolButton action={action} key={action.label} />)}
+            </div>
+          ))}
+        </div>
         <div className="aula-documentos-desktop-actions">
           <button
             type="button"
@@ -1494,29 +1517,37 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           </button>
         </div>
         <div className="aula-documentos-mobile-actions" ref={actionsRef}>
-          <button
-            type="button"
-            className="aula-documentos-mobile-toggle"
-            ref={actionsToggleRef}
-            aria-haspopup="menu"
-            aria-expanded={actionsOpen}
-            aria-label="Acciones del documento"
-            onClick={() => setActionsOpen((current) => !current)}
-          >
-            <Ellipsis size={16} aria-hidden />
-            <span>Acciones</span>
-          </button>
-          {actionsOpen ? (
-            <div className="aula-documentos-mobile-menu" role="menu" aria-label="Acciones del documento">
-              <MobileActions
-                actions={mobileActions}
-                onSelect={(action) => {
-                  setActionsOpen(false);
-                  action.onClick();
-                }}
-              />
-            </div>
-          ) : null}
+          <AulaMenu
+            label="Formato"
+            ariaLabel="Formato del documento"
+            actions={mobileFormatMenuActions}
+            disabled={!editor || readOnly}
+          />
+          <div className="aula-documentos-mobile-menu-anchor">
+            <button
+              type="button"
+              className="aula-documentos-mobile-toggle"
+              ref={actionsToggleRef}
+              aria-haspopup="menu"
+              aria-expanded={actionsOpen}
+              aria-label="Acciones del documento"
+              onClick={() => setActionsOpen((current) => !current)}
+            >
+              <Ellipsis size={16} aria-hidden />
+              <span>Acciones</span>
+            </button>
+            {actionsOpen ? (
+              <div className="aula-documentos-mobile-menu" role="menu" aria-label="Acciones del documento">
+                <MobileActions
+                  actions={mobileActions}
+                  onSelect={(action) => {
+                    setActionsOpen(false);
+                    action.onClick();
+                  }}
+                />
+              </div>
+            ) : null}
+          </div>
         </div>
         {!editor ? <span className="aula-documentos-loading">Preparando editor…</span> : null}
       </div>
