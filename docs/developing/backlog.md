@@ -2,26 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 3 entradas pendientes
+> **Roadmap:** ADOC-11 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas pendientes
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-19 — ADOC-11 · Diagramas: lienzo y editor
-
-- **Prioridad:** P2.
-- **Contexto:** la vista previa de Diagramas usa el tema oscuro, aparece recortada y con scroll horizontal, y deja mucho espacio vacío. No hay ajuste automático, zoom, paneo ni pantalla completa. El editor es un textarea plano, sin números de línea ni resaltado, y la exportación SVG usa el `projectId` en vez de un nombre legible.
-- **Alcance:**
-  1. Lienzo claro y legible para la vista previa, independiente del tema de la interfaz.
-  2. Ajuste automático, zoom, paneo y pantalla completa, con controles de teclado.
-  3. Evaluar un editor con resaltado y números de línea sin romper el límite de peso.
-  4. Errores de sintaxis completos con línea y detalle, y exportación SVG con nombre derivado del contenido o del título.
-- **Criterios de aceptación:**
-  - Los diagramas se ven completos a 390, 1024 y 1366 px sin recortes iniciales.
-  - El zoom y el paneo funcionan con ratón, tacto y teclado.
-  - La exportación conserva el SVG legible y un nombre de archivo identificable.
-- **Notas:** las confirmaciones de Limpiar/Cargar y el modo invitado pertenecen a ADOC-10; este bloque se centra en el lienzo y la edición.
 
 ## 2026-11-19 — Hoja de cálculo · Recuperar el cálculo automático
 
