@@ -47,11 +47,11 @@
 
 ### Fase 1 — Geometría segura y reflujo
 
-- [ ] Extraer una función pura que ajuste posición y tamaño a unos límites con margen y mínimos.
-- [ ] Usarla al abrir ventanas, al arrastrar, al redimensionar y al cambiar el tamaño del escritorio.
-- [ ] Recolocar las ventanas abiertas desde la observación del escritorio, sin remontarlas.
-- [ ] Evitar actualizaciones si la geometría calculada no cambia.
-- [ ] Cubrir con pruebas aperturas pequeñas, posiciones fuera de rango, tamaños mínimos y reflujo.
+- [x] Extraer una función pura que ajuste posición y tamaño a unos límites con margen y mínimos.
+- [x] Usarla al abrir ventanas, al arrastrar, al redimensionar y al cambiar el tamaño del escritorio.
+- [x] Recolocar las ventanas abiertas desde la observación del escritorio, sin remontarlas.
+- [x] Evitar actualizaciones si la geometría calculada no cambia.
+- [x] Cubrir con pruebas aperturas pequeñas, posiciones fuera de rango, tamaños mínimos y reflujo.
 - **Criterios de aceptación:**
   - Ninguna ventana queda fuera del escritorio después de reducirlo.
   - Las ventanas conservan un tamaño mínimo usable.
@@ -108,3 +108,4 @@
 - 2026-11-19: UI-10 sale del backlog y pasa a ser el roadmap activo. Evidencia: una ventana abierta en escritorio y reducida a 390 px conserva `x=150` y `right=516`; abierta desde cero a 390 px calcula `x=12` y `right=378`.
 - Puntos de partida: `app/board/store/store-window.tsx`, `app/board/store/use-desktop-windows.ts`, `app/board/store/store-desktop.tsx`, `app/board/store/store-desktop.css` y sus pruebas.
 - El arreglo es transversal a todas las apps de la Tienda. No se cambia el contenido de las apps ni su contrato de guardado.
+- 2026-11-19: Fase 1 completada. `window-geometry.ts` centraliza margen, mínimos y ajuste; apertura, arrastre, resize, restauración y reflujo usan la misma regla. El `ResizeObserver` recoloca las ventanas sin remontarlas y devuelve la misma referencia cuando no hay cambios. Verificado en el navegador: una ventana abierta con escritorio ancho y reducida a 390 px pasa a `x=12`, `right=378`, sin scroll horizontal. 7 pruebas focalizadas y 199 archivos / 1.421 pruebas; `tsc` y ESLint en verde.

@@ -3,6 +3,13 @@
 import { useRef, type PointerEvent, type ReactNode } from "react";
 import { m } from "motion/react";
 import { useWindowAttemptClose, WindowCloseProvider } from "./window-close-guard";
+import {
+  fitWindowGeometry,
+  WINDOW_MARGIN,
+  WINDOW_MIN_HEIGHT,
+  WINDOW_MIN_WIDTH,
+  type WindowBounds,
+} from "./window-geometry";
 
 /**
  * Botón de cierre que respeta la guarda registrada por la app.
@@ -55,12 +62,18 @@ export default function StoreWindow({
     onFocus();
     const move = (moveEvent: globalThis.PointerEvent) => {
       if (!drag.current) return;
-      const width = bounds.width || window.innerWidth;
-      const height = bounds.height || window.innerHeight;
-      onMove({
-        x: Math.max(-size.width + 120, Math.min(moveEvent.clientX - drag.current.dx, width - 120)),
-        y: Math.max(0, Math.min(moveEvent.clientY - drag.current.dy, height - 40)),
-      });
+      const limits: WindowBounds = {
+        width: bounds.width || window.innerWidth,
+        height: bounds.height || window.innerHeight,
+      };
+      const geometry = fitWindowGeometry({
+        position: {
+          x: moveEvent.clientX - drag.current.dx,
+          y: moveEvent.clientY - drag.current.dy,
+        },
+        size,
+      }, limits);
+      onMove(geometry.position);
     };
     const up = () => {
       drag.current = null;
@@ -77,14 +90,20 @@ export default function StoreWindow({
     onFocus();
     const start = { x: event.clientX, y: event.clientY, width: size.width, height: size.height };
     const move = (moveEvent: globalThis.PointerEvent) => {
-      const widthLimit = bounds.width || window.innerWidth;
-      const heightLimit = bounds.height || window.innerHeight;
-      const maxWidth = Math.max(180, widthLimit - position.x);
-      const maxHeight = Math.max(140, heightLimit - position.y);
-      onResize({
-        width: Math.max(Math.min(560, maxWidth), Math.min(start.width + moveEvent.clientX - start.x, maxWidth)),
-        height: Math.max(Math.min(380, maxHeight), Math.min(start.height + moveEvent.clientY - start.y, maxHeight)),
-      });
+      const limits: WindowBounds = {
+        width: bounds.width || window.innerWidth,
+        height: bounds.height || window.innerHeight,
+      };
+      const maxWidth = Math.max(1, limits.width - position.x - WINDOW_MARGIN);
+      const maxHeight = Math.max(1, limits.height - position.y - WINDOW_MARGIN);
+      const geometry = fitWindowGeometry({
+        position,
+        size: {
+          width: Math.min(Math.max(WINDOW_MIN_WIDTH, start.width + moveEvent.clientX - start.x), maxWidth),
+          height: Math.min(Math.max(WINDOW_MIN_HEIGHT, start.height + moveEvent.clientY - start.y), maxHeight),
+        },
+      }, limits);
+      onResize(geometry.size);
     };
     const up = () => {
       window.removeEventListener("pointermove", move);

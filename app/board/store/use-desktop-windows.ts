@@ -2,6 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { StoreTool } from "./tools";
+import {
+  fitWindowGeometry,
+  sameWindowGeometry,
+  WINDOW_MARGIN,
+  type WindowBounds,
+} from "./window-geometry";
 
 /** Ventana abierta en un escritorio: app, estado y geometría. */
 export type DesktopWindow = {
@@ -13,6 +19,39 @@ export type DesktopWindow = {
   saved?: { position: { x: number; y: number }; size: { width: number; height: number } };
   zIndex: number;
 };
+
+/**
+ * Ajusta las ventanas abiertas a un nuevo tamaño de escritorio.
+ * @param windows - Ventanas actuales.
+ * @param bounds - Nuevo espacio disponible.
+ * @returns Las ventanas con geometría segura, conservando las que ya encajan.
+ */
+function reflowWindows(windows: DesktopWindow[], bounds: WindowBounds): DesktopWindow[] {
+  let changed = false;
+  const next = windows.map((item) => {
+    if (item.maximized) {
+      if (!item.saved) return item;
+      const saved = fitWindowGeometry(item.saved, bounds);
+      if (sameWindowGeometry(item.saved, saved)) return item;
+      changed = true;
+      return { ...item, saved };
+    }
+    const geometry = fitWindowGeometry(item, bounds);
+    if (sameWindowGeometry(item, geometry)) return item;
+    changed = true;
+    return { ...item, position: geometry.position, size: geometry.size };
+  });
+  return changed ? next : windows;
+}
+
+/**
+ * Devuelve el tamaño del escritorio si ya está medido.
+ * @param bounds - Medida observada.
+ * @returns Los límites válidos o `null` si aún no hay medidas.
+ */
+function measuredBounds(bounds: WindowBounds): WindowBounds | null {
+  return bounds.width > 0 && bounds.height > 0 ? bounds : null;
+}
 
 /**
  * Gestión de ventanas de un escritorio: abrir, enfocar, cerrar,
@@ -35,7 +74,10 @@ export function useDesktopWindows() {
     if (!element) return;
     const update = () => {
       const rect = element.getBoundingClientRect();
-      setDesktopSize({ width: rect.width, height: rect.height });
+      if (rect.width <= 0 || rect.height <= 0) return;
+      const next = { width: rect.width, height: rect.height };
+      setDesktopSize((current) => current.width === next.width && current.height === next.height ? current : next);
+      setWindows((current) => reflowWindows(current, next));
     };
     update();
     if (typeof ResizeObserver === "undefined") {
@@ -56,14 +98,26 @@ export function useDesktopWindows() {
       }
       const preferred = tool.window;
       const rect = desktopRef.current?.getBoundingClientRect();
-      const areaWidth = Math.max(280, rect?.width ?? window.innerWidth);
-      const areaHeight = Math.max(240, rect?.height ?? window.innerHeight);
-      const width = Math.min(preferred.width, Math.max(240, areaWidth - 24));
-      const height = Math.min(preferred.height, Math.max(200, areaHeight - 24));
-      const offset = Math.max(12, Math.min(150 + current.length * 30, areaWidth - width - 12));
-      const position = { x: offset, y: 12 };
-      const size = { width, height };
-      return [...current, { tool, minimized: false, position, size, maximized: false, zIndex: zCounter.current }];
+      const bounds: WindowBounds = rect && rect.width > 0 && rect.height > 0
+        ? { width: rect.width, height: rect.height }
+        : { width: window.innerWidth, height: window.innerHeight };
+      const desiredWidth = Math.min(preferred.width, Math.max(1, bounds.width - WINDOW_MARGIN * 2));
+      const offset = Math.max(
+        WINDOW_MARGIN,
+        Math.min(150 + current.length * 30, bounds.width - desiredWidth - WINDOW_MARGIN),
+      );
+      const geometry = fitWindowGeometry({
+        position: { x: offset, y: WINDOW_MARGIN },
+        size: preferred,
+      }, bounds);
+      return [...current, {
+        tool,
+        minimized: false,
+        position: geometry.position,
+        size: geometry.size,
+        maximized: false,
+        zIndex: zCounter.current,
+      }];
     });
   }, []);
 
@@ -73,20 +127,45 @@ export function useDesktopWindows() {
   }), []);
   const close = useCallback((id: string) => setWindows((current) => current.filter((item) => item.tool.id !== id)), []);
   const minimize = useCallback((id: string) => setWindows((current) => current.map((item) => (item.tool.id === id ? { ...item, minimized: true } : item))), []);
-  const move = useCallback((id: string, position: { x: number; y: number }) => setWindows((current) => current.map((item) => (item.tool.id === id ? { ...item, position } : item))), []);
-  const resize = useCallback((id: string, size: { width: number; height: number }) => setWindows((current) => current.map((item) => (item.tool.id === id ? { ...item, size } : item))), []);
+  const move = useCallback((id: string, position: { x: number; y: number }) => setWindows((current) => {
+    const bounds = measuredBounds(desktopSize);
+    return current.map((item) => {
+      if (item.tool.id !== id || item.maximized || !bounds) return item;
+      const geometry = fitWindowGeometry({ position, size: item.size }, bounds);
+      return sameWindowGeometry(item, geometry)
+        ? item
+        : { ...item, position: geometry.position, size: geometry.size };
+    });
+  }), [desktopSize]);
+  const resize = useCallback((id: string, size: { width: number; height: number }) => setWindows((current) => {
+    const bounds = measuredBounds(desktopSize);
+    return current.map((item) => {
+      if (item.tool.id !== id || item.maximized || !bounds) return item;
+      const geometry = fitWindowGeometry({ position: item.position, size }, bounds);
+      return sameWindowGeometry(item, geometry)
+        ? item
+        : { ...item, position: geometry.position, size: geometry.size };
+    });
+  }), [desktopSize]);
   const zoom = useCallback((id: string) => setWindows((current) => current.map((item) => {
     if (item.tool.id !== id) return item;
-    if (item.maximized && item.saved) return { ...item, maximized: false, position: item.saved.position, size: item.saved.size, saved: undefined };
+    const bounds = measuredBounds(desktopSize) ?? {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+    if (item.maximized && item.saved) {
+      const restored = fitWindowGeometry(item.saved, bounds);
+      return { ...item, maximized: false, position: restored.position, size: restored.size, saved: undefined };
+    }
     const rect = desktopRef.current?.getBoundingClientRect();
     return {
       ...item,
       maximized: true,
       saved: { position: item.position, size: item.size },
       position: { x: 0, y: 0 },
-      size: { width: rect?.width ?? window.innerWidth, height: rect?.height ?? window.innerHeight },
+      size: { width: rect?.width ?? bounds.width, height: rect?.height ?? bounds.height },
     };
-  })), []);
+  })), [desktopSize]);
   const restore = useCallback((id: string) => setWindows((current) => current.map((item) => (item.tool.id === id ? { ...item, minimized: false } : item))), []);
 
   return { desktopRef, desktopSize, windows, open, focus, close, minimize, restore, move, resize, zoom };
