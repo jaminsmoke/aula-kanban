@@ -83,6 +83,47 @@ export type NativeAppPackage = {
   version: string;
 };
 
+/** Grupo de capacidades que la ficha de una suite muestra como bloque. */
+export type NativeAppSuiteCapability = {
+  title: string;
+  items: readonly string[];
+};
+
+/** Formatos visibles de una suite, separados por apertura y exportación. */
+export type NativeAppSuiteFormats = {
+  open: readonly string[];
+  export: readonly string[];
+};
+
+/** App absorbida por una suite; su id se conserva solo para datos y compatibilidad. */
+export type NativeAppSuiteMigrationSource = {
+  id: string;
+  name: string;
+};
+
+/** Captura opcional de una suite. */
+export type NativeAppSuiteScreenshot = {
+  src: string;
+  alt: string;
+  caption?: string;
+};
+
+/** Contrato de producto de una app que reúne varias experiencias. */
+export type NativeAppSuite = {
+  /** Promesa corta que encabeza tarjeta y ficha. */
+  promise: string;
+  /** Módulos o experiencias que incluye la suite. */
+  modules: readonly string[];
+  /** Capacidades agrupadas para la ficha. */
+  capabilities: readonly NativeAppSuiteCapability[];
+  formats: NativeAppSuiteFormats;
+  screenshots?: readonly NativeAppSuiteScreenshot[];
+  migration?: {
+    replaces: readonly NativeAppSuiteMigrationSource[];
+    note: string;
+  };
+};
+
 export type NativeAppMeta = {
   id: NativeAppId;
   name: string;
@@ -106,6 +147,8 @@ export type NativeAppMeta = {
   window: { width: number; height: number };
   /** Oculta la app del catálogo y del escritorio sin borrar sus datos ni rutas. */
   hidden?: boolean;
+  /** Presentación ampliada cuando la app reúne varias experiencias. */
+  suite?: NativeAppSuite;
 };
 
 export const NATIVE_APPS: readonly NativeAppMeta[] = [
@@ -287,6 +330,57 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
       { name: "docx", version: "9.16.0" },
       { name: "pptxgenjs", version: "4.0.1" },
     ],
+    suite: {
+      promise: "La suite documental del aula: texto, diagramas, presentaciones y Office en un mismo proyecto.",
+      modules: ["Notas", "Diagramas", "Presentaciones", "Office"],
+      capabilities: [
+        {
+          title: "Escritura",
+          items: [
+            "Texto enriquecido, tablas, enlaces y listas",
+            "Plantillas de notas y proyectos",
+            "Autosave, conflictos y copias locales",
+          ],
+        },
+        {
+          title: "Diagramas",
+          items: [
+            "Bloques Mermaid con plantillas",
+            "Gantt guiado y edición de código",
+            "Zoom, pantalla completa y exportación SVG",
+          ],
+        },
+        {
+          title: "Presentaciones",
+          items: [
+            "Diapositivas, temas y notas del orador",
+            "Fuente Markdown y plantillas",
+            "Modo presentación y exportación HTML",
+          ],
+        },
+        {
+          title: "Office e intercambio",
+          items: [
+            "Visor local de DOCX, XLSX y PPTX",
+            "Importación de DOCX/PPTX y Markdown",
+            "Exportación DOCX/PPTX, HTML y Markdown",
+          ],
+        },
+      ],
+      formats: {
+        open: ["DOCX", "XLSX", "PPTX", "Markdown"],
+        export: ["HTML", "Markdown", "DOCX", "PPTX"],
+      },
+      migration: {
+        replaces: [
+          { id: "documentos", name: "Notas y documentos" },
+          { id: "mermaid", name: "Diagramas" },
+          { id: "presentaciones", name: "Presentaciones" },
+          { id: "visor-office", name: "Visor Office" },
+        ],
+        note: "Las cuatro apps se integran en Aula Documentos. Usa Archivo > Migrar apps antiguas para reunir sus datos con copia reversible.",
+      },
+    },
     window: { width: 1200, height: 720 },
   },
 ];

@@ -58,6 +58,71 @@ describe("catálogo de apps nativas", () => {
     expect(resolveAppRouteId("calculadora")).toBe("calculadora");
   });
 
+  it("declara la suite de Aula Documentos con módulos, formatos y migración", () => {
+    const app = NATIVE_APPS.find((item) => item.id === "aula-documentos");
+    expect(app?.suite).toBeDefined();
+    const suite = app!.suite!;
+
+    expect(suite.promise).toContain("suite documental");
+    expect(suite.modules).toEqual(["Notas", "Diagramas", "Presentaciones", "Office"]);
+    expect(suite.formats.open).toEqual(["DOCX", "XLSX", "PPTX", "Markdown"]);
+    expect(suite.formats.export).toEqual(["HTML", "Markdown", "DOCX", "PPTX"]);
+    expect(suite.migration?.note).toContain("Migrar apps antiguas");
+
+    const replacedIds = suite.migration?.replaces.map((source) => source.id).sort() ?? [];
+    expect(replacedIds).toEqual([...DOCUMENT_SUITE_LEGACY_APP_IDS].sort());
+    for (const id of replacedIds) {
+      expect(NATIVE_APPS.some((candidate) => candidate.id === (id as string)), `${id} no debe seguir instalable`).toBe(false);
+    }
+  });
+
+  it("valida todas las suites y conserva la ficha clásica en las apps individuales", () => {
+    const suites = NATIVE_APPS.filter((app) => app.suite);
+    expect(suites.length).toBeGreaterThan(0);
+
+    for (const app of suites) {
+      const suite = app.suite!;
+      expect(suite.promise.trim(), `${app.id}: promesa vacía`).toBe(suite.promise);
+      expect(suite.promise.length, `${app.id}: promesa demasiado corta`).toBeGreaterThan(20);
+      expect(new Set(suite.modules).size, `${app.id}: módulos repetidos`).toBe(suite.modules.length);
+      expect(suite.modules.every((module) => module.trim() === module && module.length > 0)).toBe(true);
+
+      expect(suite.capabilities.length, `${app.id}: sin capacidades`).toBeGreaterThan(0);
+      expect(new Set(suite.capabilities.map((group) => group.title)).size).toBe(suite.capabilities.length);
+      for (const group of suite.capabilities) {
+        expect(group.title.trim()).toBe(group.title);
+        expect(group.items.length).toBeGreaterThan(0);
+        expect(group.items.every((item) => item.trim() === item && item.length > 0)).toBe(true);
+        expect(new Set(group.items).size).toBe(group.items.length);
+      }
+
+      for (const formats of [suite.formats.open, suite.formats.export]) {
+        expect(formats.length).toBeGreaterThan(0);
+        expect(formats.every((format) => format.trim() === format && format.length > 0)).toBe(true);
+        expect(new Set(formats).size).toBe(formats.length);
+      }
+
+      for (const screenshot of suite.screenshots ?? []) {
+        expect(screenshot.src.startsWith("/"), `${app.id}: captura sin ruta local`).toBe(true);
+        expect(screenshot.alt.trim()).toBeTruthy();
+      }
+
+      if (suite.migration) {
+        expect(suite.migration.note.trim()).toBe(suite.migration.note);
+        expect(suite.migration.note.length).toBeGreaterThan(0);
+        expect(new Set(suite.migration.replaces.map((source) => source.id)).size)
+          .toBe(suite.migration.replaces.length);
+        for (const source of suite.migration.replaces) {
+          expect(source.name.trim()).toBeTruthy();
+          expect(DOCUMENT_SUITE_LEGACY_APP_IDS).toContain(source.id);
+        }
+      }
+    }
+
+    expect(NATIVE_APPS.find((app) => app.id === "excalidraw")?.suite).toBeUndefined();
+    expect(NATIVE_APPS.find((app) => app.id === "calculadora")?.suite).toBeUndefined();
+  });
+
   it("mantiene las versiones upstream sincronizadas con package-lock.json", () => {
     for (const app of NATIVE_APPS) {
       if (!app.upstream) continue;

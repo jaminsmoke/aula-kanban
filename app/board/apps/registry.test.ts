@@ -6,7 +6,9 @@ describe("registro de apps nativas", () => {
   it("mantiene sincronizados el catálogo, la API y los componentes", () => {
     expect(NATIVE_APP_IDS).toEqual(NATIVE_APPS.map((app) => app.id));
     for (const meta of NATIVE_APPS) {
-      expect(storeTools.find((tool) => tool.id === meta.id)).toBeDefined();
+      const tool = storeTools.find((item) => item.id === meta.id);
+      expect(tool).toBeDefined();
+      expect(tool?.suite).toBe(meta.suite);
       expect(toolApps[meta.id]).toBeDefined();
       expect(toolWindow(meta.id)).toEqual(meta.window);
     }

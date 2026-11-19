@@ -43,11 +43,11 @@
 
 ### Fase 1 — Contrato y datos de suite
 
-- [ ] Definir el tipo `NativeAppSuite` en `lib/native-apps.ts`: promesa, módulos, grupos de capacidades, formatos de apertura/exportación, capturas y migración.
-- [ ] Añadir `suite?: NativeAppSuite` a `NativeAppMeta`, manteniéndolo opcional para las apps individuales.
-- [ ] Completar la metadata de Aula Documentos con sus módulos, formatos y migración desde Notas, Diagramas, Presentaciones y Visor Office.
-- [ ] Validar la estructura con pruebas puras: campos requeridos, grupos no vacíos, formatos normalizados y ausencia de IDs retirados como apps instalables.
-- [ ] Añadir una prueba de compatibilidad que confirme que las apps sin `suite` siguen mostrando su ficha actual.
+- [x] Definir el tipo `NativeAppSuite` en `lib/native-apps.ts`: promesa, módulos, grupos de capacidades, formatos de apertura/exportación, capturas y migración.
+- [x] Añadir `suite?: NativeAppSuite` a `NativeAppMeta`, manteniéndolo opcional para las apps individuales.
+- [x] Completar la metadata de Aula Documentos con sus módulos, formatos y migración desde Notas, Diagramas, Presentaciones y Visor Office.
+- [x] Validar la estructura con pruebas puras: campos requeridos, grupos no vacíos, formatos normalizados y ausencia de IDs retirados como apps instalables.
+- [x] Añadir una prueba de compatibilidad que confirme que las apps sin `suite` siguen mostrando su ficha actual.
 - **Criterios de aceptación:**
   - El catálogo sigue siendo la única fuente de la ficha.
   - Aula Documentos declara la suite completa sin duplicar apps retiradas.
@@ -95,3 +95,4 @@
 - 2026-11-19: STORE-18 sale del backlog y pasa a ser el roadmap activo. ADOC-13 cerró la convergencia y retiró las cuatro apps documentales; el backlog queda con DEV-01.
 - La ficha mínima de ADOC-13 ya no anuncia apps retiradas. Este roadmap desarrolla el patrón reutilizable de suite, no nuevas capacidades de edición.
 - El Site sigue en `1.1.36`; no se publica nada desde este roadmap.
+- 2026-11-19: Fase 1 completada. `NativeAppSuite` queda definido con promesa, módulos, capacidades agrupadas, formatos, capturas opcionales y migración. Aula Documentos declara Notas, Diagramas, Presentaciones y Office, sus formatos y las cuatro apps absorbidas; las apps individuales conservan la ficha clásica. Verificado con pruebas puras de estructura, compatibilidad y propagación al catálogo de la Tienda. Suite completa: 210 archivos / 1.485 pruebas; `tsc` y ESLint correctos.
