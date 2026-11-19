@@ -52,6 +52,30 @@ describe("Diagramas", () => {
     expect(container.querySelector(".mermaid-highlight")?.textContent).toContain("flowchart TD");
   });
 
+  it("permite editar el contenido de un Gantt sin generar errores de sintaxis", async () => {
+    render(<MermaidApp projectId="p1" role="owner" />);
+    const editor = screen.getByLabelText("Código del diagrama");
+    await waitFor(() => expect(screen.getByRole("button", { name: "Guardar" }).hasAttribute("disabled")).toBe(false));
+
+    fireEvent.change(editor, {
+      target: {
+        value: `gantt
+  title Plan de proyecto
+  dateFormat YYYY-MM-DD
+  section Investigación
+  Buscar fuentes :a1, 2026-01-10, 5d`,
+      },
+    });
+    fireEvent.click(await screen.findByRole("button", { name: "Contenido" }));
+
+    expect(screen.getByLabelText("Título del Gantt")).toHaveProperty("value", "Plan de proyecto");
+    fireEvent.change(screen.getByLabelText("Título del Gantt"), { target: { value: "Plan editado" } });
+    fireEvent.change(screen.getByLabelText("Nombre de la tarea 1 de la sección 1"), { target: { value: "Buscar fuentes nuevas" } });
+    fireEvent.click(screen.getByRole("button", { name: "Código" }));
+    expect((screen.getByLabelText("Código del diagrama") as HTMLTextAreaElement).value).toContain("title Plan editado");
+    expect((screen.getByLabelText("Código del diagrama") as HTMLTextAreaElement).value).toContain("gantt");
+  });
+
   it("muestra el detalle del error y permite saltar a su línea", async () => {
     render(<MermaidApp projectId="p1" role="owner" />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Guardar" }).hasAttribute("disabled")).toBe(false));

@@ -80,11 +80,23 @@
   - El SVG exportado sigue siendo legible y conserva su nombre identificable.
   - `perf:budget` sigue en verde.
 
+### Fase 3B — Contenido guiado de Gantt
+
+- [x] Detectar Gantt y ofrecer un modo **Contenido** junto al modo **Código**.
+- [x] Editar título, secciones, tareas, fechas, dependencias y duración sin tocar las palabras clave.
+- [x] Sanear nombres, fechas y duraciones para que el código generado siga siendo válido.
+- [x] Permitir añadir y eliminar secciones y tareas, y mantener el modo de código como opción avanzada.
+- [x] Cubrir con pruebas el parseo, la serialización, el formulario y la edición desde la app.
+- **Criterios de aceptación:**
+  - Borrar o cambiar el título y los nombres no rompe `gantt`, `title`, `dateFormat` ni `section`.
+  - Las dependencias `after` se conservan al cambiar contenido.
+  - El modo Código sigue disponible para diagramas personalizados.
+
 ### Fase 4 — Verificación y cierre
 
 - [ ] Revisar 390, 620, 900, 1024 y 1366 px en tema claro y oscuro.
 - [ ] Probar ratón, tacto, teclado, pantalla completa y errores reales.
-- [ ] Comprobar que el guardado, los conflictos y el rol de ADOC-10 siguen intactos.
+- [ ] Comprobar el modo Contenido de Gantt y que el guardado, los conflictos y el rol de ADOC-10 siguen intactos.
 - [ ] Ejecutar la suite completa, `tsc`, ESLint, build y `perf:budget`.
 - [ ] Actualizar ayuda y changelog; archivar en `docs/historial/roadmap-adoc-11.md`, reiniciar el roadmap y dejar el backlog con dos entradas.
 - [ ] Hacer un commit por fase verificada y un push único al cerrar; no publicar en Sites.
@@ -112,3 +124,4 @@
 - 2026-11-19: Fase 1 completada. El lienzo usa `--doc-*`, mide el SVG con `ResizeObserver` y aplica un zoom inicial que respeta ancho y alto. Revisado a 390 y 1366 px sin scroll horizontal. Suite completa: 210 archivos / 1.488 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (límite de Diagramas 371.000 B).
 - 2026-11-19: Fase 2 completada. El lienzo incorpora zoom con botones, rueda y pinza; paneo con arrastre y flechas; reinicio al ajuste inicial y pantalla completa con Escape y retorno de foco. Se limitan zoom y desplazamiento, y el estado de vista no llama a `markDirty`. Revisado con controles reales en escritorio y pantalla completa. Suite completa: 211 archivos / 1.497 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (límites de Diagramas 374.000/825.000 B).
 - 2026-11-19: Fase 3 completada. El editor incorpora números de línea sincronizados, resaltado ligero por tokens y errores de Mermaid con resumen, detalle y salto a la línea. Se mantiene el textarea nativo para no añadir un editor pesado. Revisado el error real y la alineación en escritorio. Suite completa: 212 archivos / 1.501 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (límites de Diagramas 375.000/827.000 B).
+- 2026-11-19: Fase 3B completada. Diagramas ofrece un modo Contenido para Gantt con título, secciones, tareas, fechas, dependencias y duración; las palabras clave y la estructura se generan automáticamente y el modo Código sigue disponible. Revisado el formulario con el Gantt de la plantilla. Suite completa: 213 archivos / 1.507 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (límites de Diagramas 378.000/830.000 B).

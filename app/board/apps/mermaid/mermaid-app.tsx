@@ -7,6 +7,8 @@ import { useWindowClose } from "../../shared/window-close-guard";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useMermaidPreview } from "./use-mermaid-preview";
 import MermaidCanvasView from "./mermaid-canvas-view";
+import GanttEditor from "./gantt-editor";
+import { parseGanttDocument, serializeGanttDocument, type GanttDocument } from "./gantt-model";
 import { tokenizeMermaidLine } from "./mermaid-highlight";
 import { mermaidFileName } from "./mermaid-filename";
 import VersionConflictDialog from "../version-conflict-dialog";
@@ -23,6 +25,8 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
   const { code, setCode, svg, error, clear } = useMermaidPreview(MERMAID_TEMPLATES[0].code);
   const [flashStatus, setFlashStatus] = useState("");
   const [closePromptOpen, setClosePromptOpen] = useState(false);
+  const [editorMode, setEditorMode] = useState<"code" | "guided">("code");
+  const [guidedDocument, setGuidedDocument] = useState<GanttDocument | null>(null);
   const statusTimer = useRef<number | null>(null);
   const fallbackChecked = useRef(false);
   const editor = useRef<HTMLTextAreaElement>(null);
@@ -97,6 +101,8 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
     if (draft.dirty && !window.confirm("Se reemplazará el diagrama actual. ¿Continuar?")) return;
     const loaded = await draft.reload();
     if (loaded) {
+      setEditorMode("code");
+      setGuidedDocument(null);
       flash("Diagrama cargado");
       return;
     }
@@ -107,6 +113,8 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
         return;
       }
       setCode(saved);
+      setEditorMode("code");
+      setGuidedDocument(null);
       draft.markDirty("Diagrama cargado del navegador.");
       flash("Diagrama cargado del navegador");
     } catch {
@@ -133,6 +141,8 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
     if (readOnly) return;
     if (draft.dirty && !window.confirm("Se limpiará el diagrama actual. ¿Continuar?")) return;
     clear();
+    setEditorMode("code");
+    setGuidedDocument(null);
     draft.markDirty("Editor limpiado.");
     flash("Editor limpiado");
   };
@@ -143,6 +153,8 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
     if (!template) return;
     if (draft.dirty && !window.confirm("Se reemplazará el diagrama actual. ¿Continuar?")) return;
     setCode(template.code);
+    setEditorMode("code");
+    setGuidedDocument(null);
     draft.markDirty(`Plantilla: ${template.label}`);
     flash(`Plantilla: ${template.label}`);
   };
@@ -152,6 +164,29 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
   const lines = useMemo(() => code.split("\n"), [code]);
   const highlightedLines = useMemo(() => lines.map(tokenizeMermaidLine), [lines]);
   const errorLine = error?.line ?? null;
+  const canGuide = useMemo(() => Boolean(parseGanttDocument(code)), [code]);
+  const guidedActive = editorMode === "guided" && guidedDocument !== null;
+
+  function enterGuided() {
+    if (readOnly) return;
+    const parsed = parseGanttDocument(code);
+    if (!parsed) {
+      flash("Este diagrama no se puede editar como contenido; usa Código.");
+      return;
+    }
+    setGuidedDocument(parsed);
+    setEditorMode("guided");
+  }
+
+  function updateGuided(next: GanttDocument) {
+    setGuidedDocument(next);
+    setCode(serializeGanttDocument(next));
+    draft.markDirty("Contenido del diagrama actualizado.");
+  }
+
+  function leaveGuided() {
+    setEditorMode("code");
+  }
 
   function syncEditorScroll(event: UIEvent<HTMLTextAreaElement>) {
     const { scrollTop, scrollLeft } = event.currentTarget;
@@ -203,55 +238,85 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
 
       <div className="mermaid-body">
         <div className="mermaid-editor">
-          <label className="mermaid-editor-label" htmlFor="mermaid-code">Código del diagrama</label>
-          <div className="mermaid-editor-body">
-            <div className="mermaid-line-numbers" ref={gutterRef} aria-hidden>
-              {lines.map((_, index) => (
-                <span key={index} className={index + 1 === errorLine ? "is-error" : undefined}>{index + 1}</span>
-              ))}
-            </div>
-            <div className="mermaid-editor-code">
-              <pre ref={highlightRef} className="mermaid-highlight" aria-hidden>
-                <code>
-                  {highlightedLines.map((tokens, index) => (
-                    <span className="mermaid-highlight-line" key={index}>
-                      {tokens.map((token, tokenIndex) => (
-                        <span className={`mermaid-token mermaid-token-${token.kind}`} key={tokenIndex}>{token.text}</span>
-                      ))}
-                      {index < lines.length - 1 ? "\n" : null}
-                    </span>
-                  ))}
-                </code>
-              </pre>
-              <textarea
-                id="mermaid-code"
-                ref={editor}
-                value={code}
-                spellCheck={false}
-                readOnly={readOnly}
-                wrap="off"
-                onScroll={syncEditorScroll}
-                onChange={(event) => {
-                  if (readOnly) return;
-                  setCode(event.target.value);
-                  draft.markDirty("Diagrama modificado.");
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== "Tab" || readOnly) return;
-                  event.preventDefault();
-                  const target = event.currentTarget;
-                  const start = target.selectionStart;
-                  const end = target.selectionEnd;
-                  const next = `${code.slice(0, start)}  ${code.slice(end)}`;
-                  setCode(next);
-                  draft.markDirty("Diagrama modificado.");
-                  window.requestAnimationFrame(() => {
-                    editor.current?.setSelectionRange(start + 2, start + 2);
-                  });
-                }}
-              />
-            </div>
+          <div className="mermaid-editor-head">
+            {guidedActive ? (
+              <span className="mermaid-editor-label">Contenido del Gantt</span>
+            ) : (
+              <label className="mermaid-editor-label" htmlFor="mermaid-code">Código del diagrama</label>
+            )}
+            {canGuide && !readOnly ? (
+              <div className="mermaid-editor-modes" role="group" aria-label="Modo de edición">
+                <button
+                  type="button"
+                  className={guidedActive ? "is-active" : undefined}
+                  aria-pressed={guidedActive}
+                  onClick={enterGuided}
+                >
+                  Contenido
+                </button>
+                <button
+                  type="button"
+                  className={!guidedActive ? "is-active" : undefined}
+                  aria-pressed={!guidedActive}
+                  onClick={leaveGuided}
+                >
+                  Código
+                </button>
+              </div>
+            ) : null}
           </div>
+          {guidedActive && guidedDocument ? (
+            <GanttEditor value={guidedDocument} onChange={updateGuided} readOnly={readOnly} />
+          ) : (
+            <div className="mermaid-editor-body">
+              <div className="mermaid-line-numbers" ref={gutterRef} aria-hidden>
+                {lines.map((_, index) => (
+                  <span key={index} className={index + 1 === errorLine ? "is-error" : undefined}>{index + 1}</span>
+                ))}
+              </div>
+              <div className="mermaid-editor-code">
+                <pre ref={highlightRef} className="mermaid-highlight" aria-hidden>
+                  <code>
+                    {highlightedLines.map((tokens, index) => (
+                      <span className="mermaid-highlight-line" key={index}>
+                        {tokens.map((token, tokenIndex) => (
+                          <span className={`mermaid-token mermaid-token-${token.kind}`} key={tokenIndex}>{token.text}</span>
+                        ))}
+                        {index < lines.length - 1 ? "\n" : null}
+                      </span>
+                    ))}
+                  </code>
+                </pre>
+                <textarea
+                  id="mermaid-code"
+                  ref={editor}
+                  value={code}
+                  spellCheck={false}
+                  readOnly={readOnly}
+                  wrap="off"
+                  onScroll={syncEditorScroll}
+                  onChange={(event) => {
+                    if (readOnly) return;
+                    setCode(event.target.value);
+                    draft.markDirty("Diagrama modificado.");
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key !== "Tab" || readOnly) return;
+                    event.preventDefault();
+                    const target = event.currentTarget;
+                    const start = target.selectionStart;
+                    const end = target.selectionEnd;
+                    const next = `${code.slice(0, start)}  ${code.slice(end)}`;
+                    setCode(next);
+                    draft.markDirty("Diagrama modificado.");
+                    window.requestAnimationFrame(() => {
+                      editor.current?.setSelectionRange(start + 2, start + 2);
+                    });
+                  }}
+                />
+              </div>
+            </div>
+          )}
           {error ? (
             <section className="mermaid-error-detail" role="region" aria-label="Detalle del error">
               <p>{error.summary}</p>
