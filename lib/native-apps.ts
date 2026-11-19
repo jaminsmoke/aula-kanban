@@ -371,6 +371,11 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
         open: ["DOCX", "XLSX", "PPTX", "Markdown"],
         export: ["HTML", "Markdown", "DOCX", "PPTX"],
       },
+      screenshots: [{
+        src: "/capturas/aula-documentos-suite.webp",
+        alt: "Aula Documentos con un documento de texto, un diagrama y dos diapositivas",
+        caption: "Notas, diagramas y presentaciones en el mismo documento.",
+      }],
       migration: {
         replaces: [
           { id: "documentos", name: "Notas y documentos" },

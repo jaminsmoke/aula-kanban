@@ -55,11 +55,11 @@
 
 ### Fase 2 — Ficha y tarjeta de suite
 
-- [ ] Rediseñar `StoreDetail` para suites: portada, promesa, módulos incluidos, capacidades agrupadas, formatos de apertura/exportación, capturas y aviso de migración.
-- [ ] Adaptar `StoreCard` para mostrar la promesa de suite y un resumen de módulos sin romper la galería ni las acciones de instalar/abrir/desinstalar.
-- [ ] Mantener la ficha técnica existente (versión, upstream, ampliaciones) como sección secundaria de la suite.
-- [ ] Añadir estilos responsive y accesibles con los tokens existentes; revisar teclado, foco, contraste y reducción de movimiento.
-- [ ] Cubrir la ficha y la tarjeta con pruebas de render, contenido, acciones y navegación por teclado.
+- [x] Rediseñar `StoreDetail` para suites: portada, promesa, módulos incluidos, capacidades agrupadas, formatos de apertura/exportación, capturas y aviso de migración.
+- [x] Adaptar `StoreCard` para mostrar la promesa de suite y un resumen de módulos sin romper la galería ni las acciones de instalar/abrir/desinstalar.
+- [x] Mantener la ficha técnica existente (versión, upstream, ampliaciones) como sección secundaria de la suite.
+- [x] Añadir estilos responsive y accesibles con los tokens existentes; revisar teclado, foco, contraste y reducción de movimiento.
+- [x] Cubrir la ficha y la tarjeta con pruebas de render, contenido, acciones y navegación por teclado.
 - **Criterios de aceptación:**
   - La ficha de Aula Documentos explica con claridad qué incluye y qué formatos abre y exporta.
   - La tarjeta comunica la suite sin repetir la ficha completa ni prometer apps retiradas.
@@ -96,3 +96,4 @@
 - La ficha mínima de ADOC-13 ya no anuncia apps retiradas. Este roadmap desarrolla el patrón reutilizable de suite, no nuevas capacidades de edición.
 - El Site sigue en `1.1.36`; no se publica nada desde este roadmap.
 - 2026-11-19: Fase 1 completada. `NativeAppSuite` queda definido con promesa, módulos, capacidades agrupadas, formatos, capturas opcionales y migración. Aula Documentos declara Notas, Diagramas, Presentaciones y Office, sus formatos y las cuatro apps absorbidas; las apps individuales conservan la ficha clásica. Verificado con pruebas puras de estructura, compatibilidad y propagación al catálogo de la Tienda. Suite completa: 210 archivos / 1.485 pruebas; `tsc` y ESLint correctos.
+- 2026-11-19: Fase 2 completada. La ficha de Aula Documentos muestra promesa, módulos, cuatro grupos de capacidades, formatos de apertura/exportación, migración desde las cuatro apps, captura real y ficha técnica plegada. La tarjeta añade etiqueta Suite, promesa y resumen de módulos, y la portada se actualiza a la promesa de suite. Añadida la captura `public/capturas/aula-documentos-suite.webp`. Verificado en 393, 1024 y 1374 px en claro y oscuro sin desbordamiento; ficha técnica y apps individuales conservan su comportamiento. Suite completa: 210 archivos / 1.489 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 362.121 / 370.000 B gzip) y `perf:office` correctos.

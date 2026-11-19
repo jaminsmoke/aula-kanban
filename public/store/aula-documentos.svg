@@ -21,11 +21,11 @@
   <g transform="translate(0 30)" font-family="Instrument Sans, system-ui, sans-serif">
     <text x="86" y="230" fill="#2c214f" font-size="68" font-weight="700">Aula</text>
     <text x="86" y="300" fill="#513a9e" font-size="68" font-weight="700">Documentos</text>
-    <text x="88" y="360" fill="#5e537b" font-size="27">Texto, diagramas y</text>
-    <text x="88" y="400" fill="#5e537b" font-size="27">presentaciones juntos</text>
+    <text x="88" y="360" fill="#5e537b" font-size="27">Texto, diagramas,</text>
+    <text x="88" y="400" fill="#5e537b" font-size="27">presentaciones y Office</text>
     <g transform="translate(88 452)">
       <rect width="354" height="52" rx="26" fill="#ffffff" opacity=".88"/>
-      <text x="24" y="34" fill="#513a9e" font-size="19" font-weight="600">Un documento · tres vistas</text>
+      <text x="24" y="34" fill="#513a9e" font-size="19" font-weight="600">Una suite, cuatro módulos</text>
     </g>
   </g>
 
@@ -51,7 +51,7 @@
       <rect width="380" height="294" rx="18" fill="#ffffff" stroke="#e0d8f2" stroke-width="2"/>
       <rect x="24" y="24" width="56" height="12" rx="6" fill="#513a9e"/>
       <text x="24" y="72" fill="#2c214f" font-size="23" font-weight="700">Proyecto de clase</text>
-      <text x="24" y="96" fill="#786d92" font-size="11.5">Texto, diagrama y diapositivas en el mismo documento.</text>
+      <text x="24" y="96" fill="#786d92" font-size="11.5">Notas, diagramas, presentaciones y Office.</text>
       <rect x="24" y="114" width="332" height="2" rx="1" fill="#ebe5f7"/>
 
       <g fill="#5f547a" font-size="11.5">
@@ -78,7 +78,7 @@
 
     <g transform="translate(30 438)">
       <rect width="380" height="46" rx="13" fill="#f4f1fd" stroke="#e0d8f2" stroke-width="1.5"/>
-      <text x="20" y="27" fill="#786d92" font-size="10.5" font-weight="600">Un documento, tres formas de leerlo</text>
+      <text x="20" y="27" fill="#786d92" font-size="10.5" font-weight="600">Una suite, cuatro formas de trabajar</text>
       <rect x="270" y="10" width="92" height="26" rx="13" fill="url(#aula-action)"/>
       <text x="288" y="27" fill="#ffffff" font-size="10.5" font-weight="700">Presentar</text>
     </g>

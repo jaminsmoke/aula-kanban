@@ -21,6 +21,7 @@ export default function StoreCard({ tool, index, status, justInstalled, actions,
   onDetails: () => void;
 }) {
   const Icon = tool.icon;
+  const suite = tool.suite;
   return (
     <m.article
       layout
@@ -28,7 +29,7 @@ export default function StoreCard({ tool, index, status, justInstalled, actions,
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ duration: 0.24, ease: "easeOut", delay: index * 0.04 }}
-      className="store-card"
+      className={`store-card${suite ? " store-card--suite" : ""}`}
     >
       <button type="button" className="store-card-cover" onClick={onDetails} aria-label={`Ver detalles de ${tool.name}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -38,8 +39,12 @@ export default function StoreCard({ tool, index, status, justInstalled, actions,
       </button>
 
       <div className="store-card-body">
-        <h3>{tool.name}</h3>
-        <p className="store-card-tagline">{tool.tagline}</p>
+        <div className="store-card-heading">
+          <h3>{tool.name}</h3>
+          {suite ? <span className="store-suite-label">Suite</span> : null}
+        </div>
+        <p className="store-card-tagline">{suite ? suite.promise : tool.tagline}</p>
+        {suite ? <p className="store-card-modules">{suite.modules.join(" · ")}</p> : null}
         <p className="store-meta">
           <span className={`store-chip ${STATUS_META[status]?.className ?? "store-chip--pending"}`}>
             <span className="store-chip-dot" aria-hidden />

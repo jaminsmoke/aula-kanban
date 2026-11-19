@@ -49,6 +49,22 @@ describe("Aula Store", () => {
       expect(screen.queryByText(retired)).toBeNull();
     }
   });
+  it("muestra la tarjeta de suite de Aula Documentos", () => {
+    render(<AppsStore {...props} role="owner" />);
+    expect(screen.getAllByText(/La suite documental del aula/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Notas · Diagramas · Presentaciones · Office").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Suite").length).toBeGreaterThan(0);
+  });
+
+  it("abre la ficha de suite de Aula Documentos y la cierra con Escape", () => {
+    render(<AppsStore {...props} role="owner" />);
+    fireEvent.click(screen.getAllByRole("button", { name: "Ver detalles de Aula Documentos" })[0]);
+    expect(screen.getByRole("dialog", { name: "Aula Documentos" })).toBeTruthy();
+    expect(screen.getByText("Migración")).toBeTruthy();
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
   it("busca por descripción y filtra instaladas", () => {
     render(<AppsStore {...props} role="owner" />);
     fireEvent.change(screen.getByLabelText("Buscar aplicaciones"), { target: { value: "pizarra" } });

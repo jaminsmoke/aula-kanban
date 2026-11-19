@@ -67,6 +67,7 @@ describe("catálogo de apps nativas", () => {
     expect(suite.modules).toEqual(["Notas", "Diagramas", "Presentaciones", "Office"]);
     expect(suite.formats.open).toEqual(["DOCX", "XLSX", "PPTX", "Markdown"]);
     expect(suite.formats.export).toEqual(["HTML", "Markdown", "DOCX", "PPTX"]);
+    expect(suite.screenshots?.[0]?.src).toBe("/capturas/aula-documentos-suite.webp");
     expect(suite.migration?.note).toContain("Migrar apps antiguas");
 
     const replacedIds = suite.migration?.replaces.map((source) => source.id).sort() ?? [];
