@@ -544,6 +544,9 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
             <ul>
               <li>Haz clic o arrastra para seleccionar celdas.</li>
               <li>Selecciona una celda y edita su contenido en la barra <code>fx</code>.</li>
+              <li>Empieza una fórmula con <code>=</code>. Admite <code>SUM</code>, <code>AVERAGE</code>, <code>MIN</code>, <code>MAX</code>, <code>COUNT</code>, <code>IF</code>, <code>ROUND</code> y <code>ABS</code>.</li>
+              <li>Los errores <code>#VALOR!</code>, <code>#REF!</code>, <code>#DIV/0!</code>, <code>#NOMBRE!</code> y <code>#CIRC!</code> se muestran en su celda.</li>
+              <li>Límites: 2.000 caracteres por fórmula, 10.000 celdas por rango y 200 niveles de dependencia.</li>
               <li>Las filas y columnas se añaden al final.</li>
             </ul>
           </section>

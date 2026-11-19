@@ -1,8 +1,37 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** Hoja de cálculo activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-19 — Roadmap Hoja de cálculo · Cálculo automático seguro
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- La Hoja de cálculo vuelve a calcular sus fórmulas con un evaluador propio, sin `eval` ni `new Function`, y conserva siempre el texto de la fórmula como dato persistido.
+- La rejilla muestra resultados calculados; la barra `fx` permite consultar y editar la fórmula de la celda seleccionada.
+- Se recalculan el presupuesto, las celdas dependientes y los totales al editar, cargar, reiniciar, añadir filas o columnas.
+- Errores `#VALOR!`, `#REF!`, `#DIV/0!`, `#NOMBRE!` y `#CIRC!`, referencias circulares y límites de longitud, rango y profundidad quedan acotados y visibles.
+- El panel de cálculo muestra el número de fórmulas, las celdas con error y los límites alcanzados.
+- Guardar y recargar conservan las fórmulas; el CSV exporta su texto protegido y el formato se mantiene.
+- Invitados siguen en solo lectura, sin edición, guardado ni reinicio.
+- Actualizada la ayuda integrada con funciones, errores y límites.
+- Añadido el flujo `hoja-calculo` a `perf:budget`.
+
+### Verificación
+
+- Revisados 390, 620, 900, 1024 y 1366 px en tema claro y oscuro sin desbordamiento de página; la rejilla conserva su scroll interno en móvil.
+- Probados el presupuesto real, una fórmula circular (`#CIRC!`), un rango excesivo, guardado y recarga con los mismos totales, y la Calculadora como comprobación de las demás apps.
+- Suite completa: **215 archivos / 1.524 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos. Presupuesto de `hoja-calculo`: **309.447 / 315.000 B gzip**.
+- Versión del Site sin cambios (`1.1.36`). Commits: `31cde2f` (motor), `ded9889` (rejilla), `0f91583` (persistencia y estados) y este cierre. Push único a `github main`; sin publicación en Sites.
+
+### Seguimiento
+
+- El backlog queda con **DEV-01**. El plan completo está en [`historial/roadmap-hoja-calculo.md`](../historial/roadmap-hoja-calculo.md).
 
 ---
 
