@@ -49,11 +49,11 @@
 
 ### Fase 1 — Motor compartido y conflicto
 
-- [ ] Extraer un hook de borrador versionado con carga, autosave, estado sucio, guardado manual y error.
-- [ ] Integrar `saveVersioned`, el estado de conflicto y la guarda de cierre.
-- [ ] Crear un diálogo compartido con «Recargar versión del servidor», «Conservar la mía» y «Descargar copia».
-- [ ] Guardar una copia local con límite antes de conservar o reemplazar.
-- [ ] Cubrir con pruebas guardado normal, conflicto, recarga, conservación, copia y cierre.
+- [x] Extraer un hook de borrador versionado con carga, autosave, estado sucio, guardado manual y error.
+- [x] Integrar `saveVersioned`, el estado de conflicto y la guarda de cierre.
+- [x] Crear un diálogo compartido con «Recargar versión del servidor», «Conservar la mía» y «Descargar copia».
+- [x] Guardar una copia local con límite antes de conservar o reemplazar.
+- [x] Cubrir con pruebas guardado normal, conflicto, recarga, conservación, copia y cierre.
 - **Criterios de aceptación:**
   - El motor no usa guardado incondicional.
   - Un conflicto no sobrescribe ni pierde la versión local.
@@ -116,3 +116,4 @@
 - Estado inicial: Notas, Diagramas y Presentaciones usan `save` incondicional y no tienen autosave/conflicto. Diagramas no recibe `role`. «Cargar», «Limpiar» y «Reiniciar» pueden perder cambios sin confirmación.
 - Puntos de partida: `app/board/apps/use-app-document.ts`, las tres apps heredadas, `window-close-guard`, `use-dialog-focus` y las utilidades de recuperación de Aula Documentos.
 - No se cambia el formato de datos de cada app ni se toca el esquema del documento de Aula Documentos.
+- 2026-11-19: Fase 1 completada. Se añadieron `useVersionedDraft`, la copia recuperable por app/proyecto, el diálogo compartido de conflicto y sus pruebas. El motor usa `saveVersioned`, autosave, guarda de cierre y `beforeunload`; la copia local se limita a una entrada de 420.000 caracteres. Suite completa: 206 archivos / 1.458 pruebas; `tsc` y ESLint en verde.
