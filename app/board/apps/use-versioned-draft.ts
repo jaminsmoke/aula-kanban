@@ -133,9 +133,13 @@ export function useVersionedDraft<T>(options: VersionedDraftOptions<T>) {
         return;
       }
       if (loaded.state === null) {
-        setDirtyState(false);
-        setLastSavedAt(null);
-        setStatus("No hay un borrador guardado.");
+        if (editVersionRef.current === 0) {
+          setDirtyState(false);
+          setLastSavedAt(null);
+          setStatus("No hay un borrador guardado.");
+        } else {
+          setStatus("Hay cambios locales; no hay un borrador guardado en el servidor.");
+        }
         setInitializing(false);
         return;
       }

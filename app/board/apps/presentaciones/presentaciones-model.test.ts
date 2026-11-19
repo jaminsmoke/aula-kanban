@@ -7,6 +7,7 @@ import {
   parseInline,
   parsePresentationDocument,
   parseSlides,
+  presentationTitle,
   presetInfo,
   serializePresentation,
 } from "./presentaciones-model";
@@ -69,11 +70,18 @@ describe("modelo de Presentaciones", () => {
   it("exporta HTML autónomo y escapa el contenido", () => {
     const html = exportPresentationHtml("# Hola\n\n<script>alert(1)</script>\n\n---\n\n## Dos");
     expect(html).toContain("<!doctype html>");
+    expect(html).toContain("<title>Hola</title>");
     expect(html).toContain("Hola");
     expect(html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
     expect(html).not.toContain("<script>alert(1)</script>");
     expect(html).toContain("background:#fff");
     expect(html).toContain("color:#1c2a5a");
     expect(html.match(/class="slide/g)).toHaveLength(2);
+  });
+
+  it("deriva el título de la primera diapositiva", () => {
+    expect(presentationTitle("# Mi clase\n\nTexto")).toBe("Mi clase");
+    expect(presentationTitle("Texto sin título")).toBe("Texto sin título");
+    expect(presentationTitle("")).toBe("Diapositiva 1");
   });
 });

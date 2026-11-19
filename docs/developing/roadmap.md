@@ -75,11 +75,11 @@
 
 ### Fase 3 — Presentaciones
 
-- [ ] Migrar Presentaciones al motor compartido.
-- [ ] Confirmar antes de cargar, reiniciar o aplicar una plantilla con cambios.
-- [ ] Exportar con un nombre derivado del título.
-- [ ] Resolver conflictos con el diálogo compartido y copia recuperable.
-- [ ] Revisar que el modo presentación no pierda el estado al resolver un conflicto.
+- [x] Migrar Presentaciones al motor compartido.
+- [x] Confirmar antes de cargar, reiniciar o aplicar una plantilla con cambios.
+- [x] Exportar con un nombre derivado del título.
+- [x] Resolver conflictos con el diálogo compartido y copia recuperable.
+- [x] Revisar que el modo presentación no pierda el estado al resolver un conflicto.
 - **Criterios de aceptación:**
   - Presentaciones no pierde cambios al cerrar, cargar o reiniciar.
   - La plantilla y el reinicio requieren confirmación.
@@ -118,3 +118,4 @@
 - No se cambia el formato de datos de cada app ni se toca el esquema del documento de Aula Documentos.
 - 2026-11-19: Fase 1 completada. Se añadieron `useVersionedDraft`, la copia recuperable por app/proyecto, el diálogo compartido de conflicto y sus pruebas. El motor usa `saveVersioned`, autosave, guarda de cierre y `beforeunload`; la copia local se limita a una entrada de 420.000 caracteres. Suite completa: 206 archivos / 1.458 pruebas; `tsc` y ESLint en verde.
 - 2026-11-19: Fase 2 completada. Notas y documentos y Diagramas usan el motor compartido con autosave, conflicto, copia recuperable, guarda de cierre y aviso de cambios. Diagramas recibe el rol y bloquea edición, plantilla, cargar, limpiar y guardar para invitados. Las descargas usan el título de Notas y un nombre derivado del contenido en Diagramas. Revisado a 390 y 1366 px; suite completa: 209 archivos / 1.476 pruebas, con `tsc`, ESLint y build correctos.
+- 2026-11-19: Fase 3 completada. Presentaciones usa el motor compartido, confirma cargar, reiniciar y aplicar plantillas con cambios, resuelve conflictos con copia recuperable y conserva el modo presentación al recargar. El HTML exportado usa el título de la primera diapositiva. Suite completa: 209 archivos / 1.482 pruebas, con `tsc`, ESLint y build correctos.

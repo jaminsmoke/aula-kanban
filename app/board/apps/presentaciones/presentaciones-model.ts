@@ -274,12 +274,23 @@ export function parsePresentationDocument(value: unknown): PresentationDocument 
 }
 
 /**
+ * Obtiene el título visible de la primera diapositiva.
+ * @param markdown - Documento completo del editor.
+ * @returns El título o un valor genérico si no hay contenido.
+ */
+export function presentationTitle(markdown: string): string {
+  const title = parseSlides(markdown)[0]?.title.trim();
+  return title || "Presentación";
+}
+
+/**
  * Genera una presentación HTML autónoma y sin red.
  * @param markdown - Documento actual.
  * @returns El HTML completo que se descarga.
  */
 export function exportPresentationHtml(markdown: string): string {
   const slides = parseSlides(markdown);
+  const title = presentationTitle(markdown);
   const sections = slides.map((slide, index) => (
     `<section class="slide${index === 0 ? " active" : ""}" data-slide="${index}">${blocksToHtml(slide.blocks)}</section>`
   )).join("\n");
@@ -288,7 +299,7 @@ export function exportPresentationHtml(markdown: string): string {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Presentación</title>
+<title>${escapeHtml(title)}</title>
 <style>
 :root{font-family:Georgia,serif;color:#1c2a5a;background:#f6f7fb}
 *{box-sizing:border-box}

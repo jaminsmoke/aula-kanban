@@ -5,7 +5,11 @@ import Reveal from "reveal.js";
 import "reveal.js/reveal.css";
 import { Download, FolderOpen, Play, Presentation, RotateCcw, Save } from "lucide-react";
 import type { StoreRole } from "../types";
-import { useAppDocument } from "../use-app-document";
+import { useVersionedDraft } from "../use-versioned-draft";
+import { useWindowClose } from "../../store/window-close-guard";
+import { aulaFileName } from "../../../../lib/domain/aula-documentos/filename";
+import VersionConflictDialog from "../version-conflict-dialog";
+import UnsavedChangesDialog from "../unsaved-changes-dialog";
 import {
   DEFAULT_MARKDOWN,
   PRESETS,
@@ -13,6 +17,7 @@ import {
   parseInline,
   parsePresentationDocument,
   parseSlides,
+  presentationTitle,
   presetInfo,
   serializePresentation,
   type InlineSegment,
@@ -32,30 +37,33 @@ export default function PresentacionesApp({ projectId, role }: { projectId: stri
   const [markdown, setMarkdown] = useState(DEFAULT_MARKDOWN);
   const [selectedPreset, setSelectedPreset] = useState<PresetId>("clase");
   const [presenting, setPresenting] = useState(false);
-  const [dirty, setDirty] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState("Cargando presentación…");
+  const [closePromptOpen, setClosePromptOpen] = useState(false);
   const revealRef = useRef<HTMLDivElement>(null);
-  const { load, save, loading, error } = useAppDocument<PresentationDocument>(projectId, "presentaciones");
   const readOnly = role === "guest";
+  const forceClose = useWindowClose();
+
+  const draft = useVersionedDraft<PresentationDocument>({
+    projectId,
+    appId: "presentaciones",
+    getValue: () => serializePresentation(markdown),
+    applyLoaded: (loaded) => {
+      const parsed = parsePresentationDocument(loaded);
+      if (!parsed) return false;
+      setMarkdown(parsed.markdown);
+      return true;
+    },
+    readOnly,
+    formatCopy: (document) => ({
+      contents: JSON.stringify(document, null, 2),
+      type: "application/json;charset=utf-8",
+      fileName: aulaFileName(presentationTitle(document.markdown), "json", "presentacion")
+        .replace(/\.json$/, "-recuperacion.json"),
+    }),
+    onCloseBlocked: () => setClosePromptOpen(true),
+  });
+
   const slides = useMemo(() => parseSlides(markdown), [markdown]);
   const currentPreset = presetInfo(selectedPreset);
-
-  useEffect(() => {
-    let active = true;
-    void load().then(({ state }) => {
-      if (!active) return;
-      const parsed = parsePresentationDocument(state);
-      if (parsed) {
-        setMarkdown(parsed.markdown);
-        setDirty(false);
-        setStatus("Presentación guardada cargada.");
-      } else {
-        setStatus("Presentación de ejemplo lista. Guarda para conservarla.");
-      }
-    });
-    return () => { active = false; };
-  }, [load]);
 
   useEffect(() => {
     if (!presenting) return;
@@ -85,71 +93,73 @@ export default function PresentacionesApp({ projectId, role }: { projectId: stri
       window.removeEventListener("keydown", onKeyDown);
       deck.destroy();
     };
-  }, [presenting]);
-
-  function markDirty() {
-    setDirty(true);
-  }
+  }, [markdown, presenting]);
 
   function editMarkdown(value: string) {
     if (readOnly) return;
     setMarkdown(value);
-    markDirty();
-    setStatus("");
+    draft.markDirty("Presentación modificada.");
   }
 
   function applyPreset() {
     if (readOnly) return;
-    if (dirty && !window.confirm("Se reemplazará la presentación actual. ¿Continuar?")) return;
+    if (draft.dirty && !window.confirm("Se reemplazará la presentación actual. ¿Continuar?")) return;
     setMarkdown(currentPreset.markdown);
-    markDirty();
-    setStatus(`Plantilla «${currentPreset.label}» aplicada.`);
+    draft.markDirty(`Plantilla «${currentPreset.label}» aplicada.`);
   }
 
   async function savePresentation() {
     if (readOnly) return;
-    setSaving(true);
-    const ok = await save(serializePresentation(markdown));
-    setSaving(false);
-    if (ok) {
-      setDirty(false);
-      setStatus("Presentación guardada en el proyecto.");
-    } else {
-      setStatus("No se pudo guardar la presentación. Revisa la conexión.");
-    }
+    await draft.save(false);
+  }
+
+  async function saveAndClose() {
+    setClosePromptOpen(false);
+    if (await draft.save(false)) forceClose();
   }
 
   async function loadPresentation() {
-    if (loading) return;
-    setStatus("Cargando presentación…");
-    const { state } = await load();
-    const parsed = parsePresentationDocument(state);
-    if (parsed) {
-      setMarkdown(parsed.markdown);
-      setDirty(false);
-      setStatus("Presentación cargada.");
-    } else {
-      setStatus("No hay una presentación guardada válida; se mantiene la actual.");
+    if (draft.loading || draft.saving || draft.conflict) return;
+    if (draft.dirty && !window.confirm("Se reemplazará la presentación actual. ¿Continuar?")) return;
+    const loaded = await draft.reload();
+    if (loaded) {
+      draft.setStatus("Presentación cargada.");
+    } else if (!draft.error) {
+      draft.setStatus("No hay una presentación guardada válida; se mantiene la actual.");
     }
   }
 
   function reset() {
     if (readOnly) return;
+    if (draft.dirty && !window.confirm("Se reiniciará la presentación actual. ¿Continuar?")) return;
     setMarkdown(currentPreset.markdown);
-    markDirty();
-    setStatus("Presentación reiniciada.");
+    draft.markDirty("Presentación reiniciada.");
   }
 
   function exportHtml() {
-    const blob = new Blob([exportPresentationHtml(markdown)], { type: "text/html;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = "presentacion.html";
-    anchor.click();
-    URL.revokeObjectURL(url);
-    setStatus("HTML descargado.");
+    try {
+      const title = presentationTitle(markdown);
+      const blob = new Blob([exportPresentationHtml(markdown)], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = aulaFileName(title, "html", "presentacion");
+      anchor.click();
+      URL.revokeObjectURL(url);
+      draft.setStatus("HTML descargado.");
+    } catch {
+      draft.setStatus("No se pudo preparar el HTML de la presentación.");
+    }
   }
+
+  const statusText = draft.loading
+    ? "Cargando presentación…"
+    : draft.ready && draft.updatedAt === null && !draft.dirty && !draft.saveFailed && !draft.error
+      ? "Presentación de ejemplo lista. Guarda para conservarla."
+      : draft.dirty
+        ? `${draft.status} Cambios sin guardar.`
+        : draft.status;
+  const busy = draft.loading || draft.saving;
 
   return (
     <div className="presentaciones-app">
@@ -163,12 +173,16 @@ export default function PresentacionesApp({ projectId, role }: { projectId: stri
         </div>
         <div className="presentaciones-actions">
           <button type="button" onClick={() => setPresenting(true)}><Play size={15} aria-hidden /> Presentar</button>
-          <button type="button" onClick={savePresentation} disabled={readOnly || saving || loading}>
-            <Save size={15} aria-hidden /> {saving ? "Guardando…" : "Guardar"}
+          <button type="button" onClick={savePresentation} disabled={readOnly || busy || Boolean(draft.conflict)}>
+            <Save size={15} aria-hidden /> {draft.saving ? "Guardando…" : "Guardar"}
           </button>
-          <button type="button" onClick={loadPresentation} disabled={loading}><FolderOpen size={15} aria-hidden /> Cargar</button>
+          <button type="button" onClick={loadPresentation} disabled={busy || Boolean(draft.conflict)}>
+            <FolderOpen size={15} aria-hidden /> Cargar
+          </button>
           <button type="button" onClick={exportHtml}><Download size={15} aria-hidden /> Exportar HTML</button>
-          <button type="button" onClick={reset} disabled={readOnly}><RotateCcw size={15} aria-hidden /> Reiniciar</button>
+          <button type="button" onClick={reset} disabled={readOnly || busy || Boolean(draft.conflict)}>
+            <RotateCcw size={15} aria-hidden /> Reiniciar
+          </button>
         </div>
       </header>
 
@@ -200,11 +214,11 @@ export default function PresentacionesApp({ projectId, role }: { projectId: stri
                 id="presentaciones-preset"
                 value={selectedPreset}
                 onChange={(event) => setSelectedPreset(event.target.value as PresetId)}
-                disabled={readOnly}
+                disabled={readOnly || busy || Boolean(draft.conflict)}
               >
                 {PRESETS.map((preset) => <option key={preset.id} value={preset.id}>{preset.label}</option>)}
               </select>
-              <button type="button" onClick={applyPreset} disabled={readOnly}>Aplicar</button>
+              <button type="button" onClick={applyPreset} disabled={readOnly || busy || Boolean(draft.conflict)}>Aplicar</button>
               <span>{currentPreset.description}</span>
             </div>
             <textarea
@@ -216,9 +230,9 @@ export default function PresentacionesApp({ projectId, role }: { projectId: stri
               spellCheck={false}
             />
             <p className="presentaciones-status" role="status">
-              {loading ? "Cargando…" : status || (dirty ? "Cambios sin guardar." : `${slides.length} ${slides.length === 1 ? "diapositiva" : "diapositivas"}.`)}
+              {statusText}
             </p>
-            {error && <p className="presentaciones-error" role="alert">{error}</p>}
+            {draft.error && <p className="presentaciones-error" role="alert">{draft.error}</p>}
             {readOnly && <p className="presentaciones-readonly">Modo lectura: no puedes editar ni guardar esta presentación.</p>}
           </section>
 
@@ -238,6 +252,28 @@ export default function PresentacionesApp({ projectId, role }: { projectId: stri
           </section>
         </div>
       )}
+
+      <UnsavedChangesDialog
+        open={closePromptOpen}
+        busy={draft.saving}
+        notice={draft.saveFailed ? draft.status : null}
+        onStay={() => setClosePromptOpen(false)}
+        onDiscard={() => {
+          setClosePromptOpen(false);
+          forceClose();
+        }}
+        onSave={() => { void saveAndClose(); }}
+      />
+
+      <VersionConflictDialog
+        open={Boolean(draft.conflict)}
+        serverUpdatedAt={draft.conflict?.serverUpdatedAt ?? null}
+        notice={draft.conflictNotice}
+        busy={draft.saving}
+        onDownload={() => { draft.downloadCopy(); }}
+        onReload={() => { void draft.reloadServerVersion(); }}
+        onKeepMine={() => { void draft.keepMineVersion(); }}
+      />
     </div>
   );
 }
