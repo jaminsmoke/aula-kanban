@@ -22,6 +22,16 @@ export async function readAppDocument(projectId: string, appId: string): Promise
 }
 
 /**
+ * Borra el documento de una app del proyecto.
+ * @param projectId - Proyecto activo.
+ * @param appId - Identificador de la app.
+ */
+export async function deleteAppDocument(projectId: string, appId: string): Promise<void> {
+  await getDb().delete(appDocuments)
+    .where(and(eq(appDocuments.projectId, projectId), eq(appDocuments.appId, appId)));
+}
+
+/**
  * Guarda (o reemplaza) el documento de una app para el proyecto sin comprobar
  * la versión. Se conserva para los clientes anteriores y las herramientas MCP;
  * la web usa `saveAppDocumentIfCurrent`.

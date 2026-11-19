@@ -79,6 +79,7 @@ const isAdmin = (role: StoreRole) => role === "owner" || role === "admin";
  * @returns Las herramientas que ese rol puede ver.
  */
 export function visibleTools(role: StoreRole, tools: StoreTool[] = storeTools): StoreTool[] {
-  if (isAdmin(role)) return tools;
-  return tools.filter((tool) => tool.roles.includes(role));
+  const visible = tools.filter((tool) => !tool.hidden);
+  if (isAdmin(role)) return visible;
+  return visible.filter((tool) => tool.roles.includes(role));
 }

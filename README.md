@@ -149,9 +149,9 @@ La lista siguiente se genera desde `lib/domain/mcp-catalogo.ts`; las dos puertas
 - **`consultar_elemento`** — Consultar elemento. Cualquier cuenta autenticada; la app Tabla periódica debe estar instalada. No requiere proyecto.
 - **`leer_programa_bloques`** — Leer programa de bloques. Cualquier miembro con acceso al proyecto; la app Blockly debe estar instalada.
 - **`guardar_programa_bloques`** — Guardar programa de bloques. Cualquier miembro con acceso al proyecto; las cuentas invitadas no escriben. No hay revisión optimista: la última escritura gana.
-- **`leer_diagrama`** — Leer diagrama. Cualquier miembro con acceso al proyecto; la app Diagramas debe estar instalada.
-- **`guardar_diagrama`** — Guardar diagrama. Cualquier miembro con acceso al proyecto; las cuentas invitadas no escriben. No hay revisión optimista: la última escritura gana.
-- **`listar_plantillas_diagrama`** — Listar plantillas de diagrama. Cualquier cuenta autenticada; la app Diagramas debe estar instalada. No requiere proyecto.
+- **`leer_diagrama`** — Leer diagrama. Cualquier miembro con acceso al proyecto; Aula Documentos o Diagramas debe estar instalada.
+- **`guardar_diagrama`** — Guardar diagrama. Cualquier miembro con acceso al proyecto; Aula Documentos o Diagramas debe estar instalada y las cuentas invitadas no escriben. No hay revisión optimista: la última escritura gana.
+- **`listar_plantillas_diagrama`** — Listar plantillas de diagrama. Cualquier cuenta autenticada; Aula Documentos o Diagramas debe estar instalada. No requiere proyecto.
 
 **Ventanas**
 

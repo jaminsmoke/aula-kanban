@@ -83,11 +83,11 @@
 
 ### Fase 4 — Migración, alias y compatibilidad
 
-- [ ] Migrar los estados de `app_documents` de Notas, Diagramas y Presentaciones conservando una copia del origen.
-- [ ] Mantener alias de IDs, URLs, ventanas, permisos y enlaces profundos hacia Aula Documentos.
-- [ ] Adaptar MCP y la matriz de permisos a la app unificada.
-- [ ] Ocultar las apps antiguas de la Tienda sin borrar sus datos ni sus rutas.
-- [ ] Probar instalaciones existentes, enlaces antiguos, invitados y rollback.
+- [x] Migrar los estados de `app_documents` de Notas, Diagramas y Presentaciones conservando una copia del origen.
+- [x] Mantener alias de IDs, URLs, ventanas, permisos y enlaces profundos hacia Aula Documentos.
+- [x] Adaptar MCP y la matriz de permisos a la app unificada.
+- [x] Ocultar las apps antiguas de la Tienda sin borrar sus datos ni sus rutas.
+- [x] Probar instalaciones existentes, enlaces antiguos, invitados y rollback.
 - **Criterios de aceptación:**
   - Los documentos antiguos se abren desde Aula Documentos sin pérdida.
   - Un enlace o ventana antigua no devuelve un error.
@@ -129,3 +129,4 @@
 - 2026-11-19: Fase 1 completada. Matriz de paridad y mapa de compatibilidad en [`docs/Store/apps/document-suite.md`](../../Store/apps/document-suite.md). Notas y documentos no tiene huecos funcionales; Diagramas necesita plantillas, Gantt guiado, detalle de errores, zoom/paneo y SVG por bloque; Presentaciones necesita edición Markdown de origen y plantillas; Visor Office necesita apertura libre de DOCX/XLSX/PPTX desde Aula Documentos. Mapeados `app_documents`, IDs, URLs, permisos, catálogo y los tres tools MCP de Diagramas. Ninguna app retirada ni dato borrado. No se ejecutan checks de código porque la fase es documental; se registra un commit local de la fase.
 - 2026-11-19: Fase 2 completada. El bloque Mermaid de Aula Documentos incorpora Gantt guiado, selector completo de plantillas, salto a la línea del error, zoom/paneo, pantalla completa y exportación SVG por bloque. El modelo y el editor Gantt se movieron a `lib/domain/mermaid` y `app/board/shared/mermaid`, compartidos con la app Diagramas. Notas ya tenía paridad. Verificado en la app real: Gantt en modo Contenido, edición del título y vuelta a Código; SVG y pantalla completa presentes. Suite completa: 219 archivos / 1.540 pruebas; `tsc`, ESLint, build y presupuestos correctos. `diagramas` ajusta su techo a **379.000 B gzip** (378.062 B).
 - 2026-11-19: Fase 3 completada. Aula Documentos añade Fuente Markdown con saltos de diapositiva, tres plantillas de presentación (breve, proyecto y blanca) y Abrir Office para DOCX/XLSX/PPTX sin importarlos. El visor reutiliza el componente compartido y se abre en un modal. Verificado en la app real: modal de Office con archivo local, fuente Markdown y plantillas. Suite completa: 219 archivos / 1.543 pruebas; `tsc`, ESLint, build, `perf:budget` y `perf:office` correctos.
+- 2026-11-19: Fase 4 completada. Las cuatro apps documentales antiguas quedan ocultas en Tienda y escritorio, pero conservan IDs, filas de `app_documents`, rutas y declaraciones MCP. `resolveAppRouteId` canoniza sus URLs y comandos a `app=aula-documentos`; los enlaces antiguos abren Aula aunque la app antigua no esté instalada. La migración desde **Archivo > Migrar apps antiguas** guarda copias internas por origen y del Aula anterior, combina fuentes válidas sin borrar trabajo actual y permite `rollback` exacto. MCP de Diagramas lee y escribe el primer bloque Mermaid de Aula cuando existe; si no, mantiene la fila antigua. Verificado en la app real: `app=mermaid` abrió Aula con URL canónica, la Tienda mostró solo las apps visibles, la migración de Diagramas conservó el título y el rollback restauró estados idénticos en Aula y `mermaid`. Suite completa: 222 archivos / 1.564 pruebas; `tsc`, ESLint, build, `perf:budget` y `perf:office` correctos.

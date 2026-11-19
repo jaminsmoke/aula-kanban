@@ -154,6 +154,7 @@ describe("Aula Documentos", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     vi.clearAllMocks();
+    vi.unstubAllGlobals();
     vi.useRealTimers();
     documentMock.loading = false;
     documentMock.load.mockReset();
@@ -1152,6 +1153,54 @@ describe("Aula Documentos", () => {
     await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Notas importadas"));
     expect(screen.getByRole("status").textContent).toContain("Documento importado desde Notas y documentos");
     expect(documentMock.save).not.toHaveBeenCalled();
+  });
+
+  it("migra las apps antiguas y ofrece deshacer", async () => {
+    const migrated = savedDocument("Documentos migrados");
+    const status = {
+      aula: { exists: false, updatedAt: null },
+      sources: [
+        { source: "documentos", exists: false, updatedAt: null, valid: false },
+        { source: "mermaid", exists: true, updatedAt: 4, valid: true },
+        { source: "presentaciones", exists: false, updatedAt: null, valid: false },
+      ],
+      migration: { active: false, createdAt: null },
+    };
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify(status), { headers: { "content-type": "application/json" } }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        action: "migrate",
+        status: "migrated",
+        document: migrated,
+        updatedAt: 15,
+        sources: ["mermaid"],
+        warnings: [],
+      }), { headers: { "content-type": "application/json" } }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        ...status,
+        aula: { exists: true, updatedAt: 15 },
+        migration: { active: true, createdAt: 15 },
+      }), { headers: { "content-type": "application/json" } }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    chooseMenu("Archivo", "Migrar apps antiguas");
+
+    expect(await screen.findByRole("dialog", { name: "Migrar apps antiguas" })).toBeTruthy();
+    expect(await screen.findByText("Diagramas")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Migrar datos" }));
+
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documentos migrados"));
+    expect(screen.getAllByRole("status").some((node) => node.textContent?.includes("Migración aplicada"))).toBe(true);
+    expect(await screen.findByRole("button", { name: "Deshacer migración" })).toBeTruthy();
+    expect(fetchMock).toHaveBeenCalledWith("/api/aula-documentos/migration?project=p1", { cache: "no-store" });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/aula-documentos/migration?project=p1",
+      expect.objectContaining({ method: "POST", body: JSON.stringify({ action: "migrate" }) }),
+    );
+
+    vi.unstubAllGlobals();
   });
 
   it("inserta un salto de diapositiva y lo guarda", async () => {

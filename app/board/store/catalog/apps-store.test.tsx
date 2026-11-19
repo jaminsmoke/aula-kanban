@@ -42,8 +42,11 @@ describe("Aula Store", () => {
     // Oficina ya tiene Hoja de cálculo; no muestra el aviso de categoría vacía.
     expect(screen.queryByText("Más adelante: habrá más aplicaciones de Oficina.")).toBeNull();
     // Cada app aparece en «Mejores aplicaciones» y en su categoría.
-    for (const name of ["Calculadora", "Tabla periódica", "Programación por bloques", "Diagramas", "Ajedrez", "Hoja de cálculo", "Notas y documentos", "Visor Office", "Aula Documentos"]) {
+    for (const name of ["Calculadora", "Tabla periódica", "Programación por bloques", "Ajedrez", "Hoja de cálculo", "Aula Documentos"]) {
       expect(screen.getAllByText(name).length).toBeGreaterThan(0);
+    }
+    for (const retired of ["Notas y documentos", "Presentaciones", "Visor Office"]) {
+      expect(screen.queryByText(retired)).toBeNull();
     }
   });
   it("busca por descripción y filtra instaladas", () => {
@@ -74,9 +77,9 @@ describe("Aula Store", () => {
     expect(container.querySelectorAll(".store-gallery")).toHaveLength(1);
     expect(screen.getByRole("group", { name: "Herramientas" })).toBeTruthy();
     expect(screen.getByText("Hoja de cálculo")).toBeTruthy();
-    expect(screen.getByText("Notas y documentos")).toBeTruthy();
-    expect(screen.getByText("Visor Office")).toBeTruthy();
     expect(screen.getByText("Aula Documentos")).toBeTruthy();
+    expect(screen.queryByText("Notas y documentos")).toBeNull();
+    expect(screen.queryByText("Visor Office")).toBeNull();
   });
   it("filtra por categoría y abre la ficha de detalle", () => {
     render(<AppsStore {...props} role="owner" />);

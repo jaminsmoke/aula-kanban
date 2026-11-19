@@ -9,7 +9,7 @@ import { AulaStoreIcon } from "./catalog/aula-store-icon";
 // La tienda solo se descarga al abrirla.
 const AppsStore = lazy(() => import("./catalog/apps-store"));
 import { visibleTools, type StoreRole } from "./tools";
-import { normalizeNativeAppId } from "../../../lib/native-apps";
+import { LEGACY_DOCUMENT_APP_ALIASES, resolveAppRouteId } from "../../../lib/native-apps";
 import { parseBoardUrl } from "../shared/board-url";
 import { useSpaceSocket } from "./use-space-socket";
 import { toolApps } from "../apps/registry";
@@ -61,32 +61,48 @@ export default function StoreDesktop({ role, projectId }: { role: StoreRole; pro
   // ventana al cargar. Se lee una sola vez por app y solo si está instalada y
   // visible para el rol; el parámetro queda en la URL y cerrar la ventana no lo toca.
   const openedFromUrl = useRef<string | null>(null);
+  const [legacyDocumentWindow, setLegacyDocumentWindow] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const rawAppId = new URLSearchParams(window.location.search).get("app");
+    return rawAppId !== null && rawAppId in LEGACY_DOCUMENT_APP_ALIASES;
+  });
   useEffect(() => {
     if (managerConfigured !== true) return;
     const appId = parseBoardUrl(window.location.search).app;
     if (!appId || openedFromUrl.current === appId) return;
-    const tool = desktopTools.find((item) => item.id === appId);
+    const rawAppId = new URLSearchParams(window.location.search).get("app");
+    const legacyDocumentLink = rawAppId !== null && rawAppId in LEGACY_DOCUMENT_APP_ALIASES;
+    const installedTool = desktopTools.find((item) => item.id === appId);
+    const tool = installedTool
+      ?? (legacyDocumentLink ? tools.find((item) => item.id === appId) : undefined);
     if (!tool) return;
     openedFromUrl.current = appId;
     open(tool);
-  }, [managerConfigured, desktopTools, open]);
+  }, [managerConfigured, desktopTools, open, tools]);
   // Si una app se desinstala, su ventana abierta desaparece (filtro en el
   // render, sin efecto): solo se muestran las de apps instaladas.
-  const shownWindows = managerConfigured === null ? windows : windows.filter((item) => installedIds.has(item.tool.id));
+  const shownWindows = managerConfigured === null
+    ? windows
+    : windows.filter((item) => installedIds.has(item.tool.id)
+      || (legacyDocumentWindow && item.tool.id === "aula-documentos"));
 
   // Canal en vivo del escritorio (Fase 2 de MCP-04): publica el estado de
   // las ventanas y ejecuta los comandos que envían las herramientas MCP.
   const { publicarEstado, alComando } = useSpaceSocket(projectId);
-  const latest = useRef({ open, close, minimize, restore, zoom, desktopTools });
+  const latest = useRef({ open, close, minimize, restore, zoom, desktopTools, tools });
   useEffect(() => {
-    latest.current = { open, close, minimize, restore, zoom, desktopTools };
+    latest.current = { open, close, minimize, restore, zoom, desktopTools, tools };
   });
   useEffect(() => {
     return alComando((cmd) => {
       const state = latest.current;
-      const appId = normalizeNativeAppId(cmd.appId);
-      const tool = state.desktopTools.find((item) => item.id === appId);
+      const appId = resolveAppRouteId(cmd.appId);
+      const legacyDocumentCommand = cmd.appId in LEGACY_DOCUMENT_APP_ALIASES;
+      const installedTool = state.desktopTools.find((item) => item.id === appId);
+      const tool = installedTool
+        ?? (legacyDocumentCommand ? state.tools.find((item) => item.id === appId) : undefined);
       if (!tool) return;
+      if (!installedTool) setLegacyDocumentWindow(true);
       switch (cmd.accion) {
         case "abrir": state.open(tool); break;
         case "cerrar": state.close(appId); break;

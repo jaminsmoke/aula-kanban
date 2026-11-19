@@ -1,8 +1,9 @@
 # Suite documental: paridad y compatibilidad
 
-> **Estado:** Fase 1 de ADOC-13 · **Fecha:** 2026-11-19
+> **Estado:** Fase 4 de ADOC-13 · **Fecha:** 2026-11-19
 > **Actualización Fase 2:** el bloque Mermaid de Aula Documentos ya incorpora Gantt guiado, plantillas, salto a la línea del error, zoom/paneo, pantalla completa y SVG por bloque.
 > **Actualización Fase 3:** Aula Documentos añade Fuente Markdown, plantillas de presentación y Abrir Office para DOCX/XLSX/PPTX sin importar.
+> **Actualización Fase 4:** las apps antiguas se ocultan de la Tienda y del escritorio, sus enlaces abren Aula Documentos y la migración guarda copias reversibles de origen y destino. MCP de Diagramas lee y escribe el primer bloque Mermaid de Aula cuando existe.
 > **Apps comparadas:** Notas y documentos, Diagramas, Presentaciones y Visor Office frente a Aula Documentos.
 > **Decisión de producto:** Aula Documentos será la app canónica; las cuatro apps se retiran solo después de demostrar paridad y conservar datos, enlaces, permisos y MCP.
 
@@ -16,14 +17,15 @@
 | Visor Office | — | Sin estado | El archivo local no se guarda |
 | Aula Documentos | `aula-documentos` | `{ schemaVersion: 2, title, content, presentation? }` | Documento canónico, tema y notas |
 
-Accesos que deben seguir funcionando durante la transición:
+Accesos que siguen funcionando durante la transición:
 
 - IDs de app: `documentos`, `mermaid`, `presentaciones`, `visor-office` y `aula-documentos`.
-- Parámetro de URL `app=<id>` y enlaces profundos existentes.
-- Ventanas y elementos instalados que guarden el ID antiguo.
-- Permisos actuales: todos los roles ven las apps; los invitados solo leen.
-- MCP: Diagramas expone `leer_diagrama`, `guardar_diagrama` y `listar_plantillas_diagrama`; el resto no tiene herramientas específicas.
-- Catálogo: `NATIVE_APPS`, `NATIVE_APP_IDS`, `registry.tsx`, portadas y fichas de la Tienda.
+- Parámetro de URL `app=<id>` y enlaces profundos existentes. Los cuatro IDs antiguos se canonizan a `app=aula-documentos`.
+- Ventanas y elementos instalados que guarden el ID antiguo; el canal en vivo también resuelve el alias antes de buscar la ventana.
+- Permisos actuales: todos los roles ven Aula Documentos; los invitados solo leen y no pueden migrar ni deshacer.
+- MCP: Diagramas expone `leer_diagrama`, `guardar_diagrama` y `listar_plantillas_diagrama`. Si Aula Documentos ya tiene un documento válido, los dos primeros operan sobre su primer bloque Mermaid; si no, conservan la fila antigua `mermaid`. `listar_plantillas_diagrama` acepta cualquiera de las dos apps instaladas.
+- Catálogo: `NATIVE_APPS`, `NATIVE_APP_IDS`, `registry.tsx`, portadas y fichas de la Tienda. Las cuatro apps antiguas tienen `hidden: true`: siguen en el registro y en `app_documents`, pero no aparecen en el catálogo ni en el escritorio.
+- Migración: `POST /api/aula-documentos/migration?project=<id>` con `{ action: "migrate" | "rollback" }`; `GET` devuelve el estado detectado y si hay una migración reversible.
 
 ## 2. Matriz de paridad
 
@@ -91,10 +93,10 @@ Accesos que deben seguir funcionando durante la transición:
 ## 3. Decisiones de migración
 
 1. **Aula Documentos es la fuente de verdad.** Las apps antiguas no se convierten en editores paralelos.
-2. **Cáscaras compatibles primero.** Durante las fases 2 y 3 se mantienen las apps y sus datos; se ocultan en la fase 4 y se retiran en la 5.
-3. **Migración con copia.** Se importa el estado antiguo a Aula Documentos y se conserva el estado de origen hasta validar el resultado. No se borra `app_documents` en la misma operación.
-4. **Alias reversibles.** `documentos`, `mermaid`, `presentaciones` y `visor-office` deben resolver a Aula Documentos o a una vista de compatibilidad antes de retirar sus IDs.
-5. **MCP compatible.** Los nombres `leer_diagrama`, `guardar_diagrama` y `listar_plantillas_diagrama` deben seguir funcionando o tener un adaptador documentado. Si el diagrama pasa a ser un bloque del documento, decidir cómo se selecciona el bloque y qué ocurre con varios.
+2. **Cáscaras compatibles primero.** Las apps y sus datos se mantienen en el registro; en la fase 4 se ocultan de la Tienda y del escritorio y se retiran físicamente en la 5.
+3. **Migración con copia.** Se importa el estado antiguo a Aula Documentos y se conserva el estado de origen hasta validar el resultado. No se borra `app_documents` en la misma operación. Las copias internas usan el prefijo reservado `__aula-documentos-migration:`: una fila por app de origen, otra para el Aula anterior y una meta con la fecha y las fuentes importadas.
+4. **Alias reversibles.** `documentos`, `mermaid`, `presentaciones` y `visor-office` resuelven a `aula-documentos` en URLs y ventanas. Los IDs antiguos siguen disponibles para leer sus filas y para MCP.
+5. **MCP compatible.** Los nombres `leer_diagrama`, `guardar_diagrama` y `listar_plantillas_diagrama` siguen funcionando. Con un documento canónico en Aula, el primer bloque Mermaid es el diagrama activo; si no existe, se usa la fila antigua. Los diagramas adicionales del documento no se seleccionan desde MCP.
 6. **Ficha mínima en ADOC-13.** La tarjeta no debe anunciar apps retiradas; el patrón de ficha de suite se desarrolla en STORE-18.
 7. **Carpetas al final.** Lo común se extrae a `shared` o `lib`; las raíces no se anidan dentro de `aula-documentos/` hasta la retirada.
 
@@ -102,8 +104,8 @@ Accesos que deben seguir funcionando durante la transición:
 
 | Prioridad | Hueco | Fase |
 |---|---|---|
-| P0 | Migración de datos y alias de IDs/URLs | 4 |
-| P0 | Compatibilidad MCP de Diagramas | 4 |
+| P0 | Migración de datos y alias de IDs/URLs | Hecho en Fase 4 |
+| P0 | Compatibilidad MCP de Diagramas | Hecho en Fase 4 |
 | P0 | Apertura libre de Office en Aula Documentos | Hecho en Fase 3 |
 | P1 | Plantillas, Gantt, error y SVG de Diagramas | Hecho en Fase 2 |
 | P1 | Editor Markdown y plantillas de Presentaciones | Hecho en Fase 3 |
@@ -113,14 +115,24 @@ Accesos que deben seguir funcionando durante la transición:
 ## 5. Plan de reversión
 
 - Mantener el código y los IDs antiguos hasta la fase 5.
-- No borrar las filas antiguas de `app_documents` al migrar; guardar una copia y marcar la fecha de migración.
-- Mantener un mapa reversible de alias y una prueba de enlaces antiguos.
-- Ocultar apps de la Tienda antes de eliminarlas del catálogo y de `NATIVE_APP_IDS`.
-- Verificar que las ventanas instaladas y los enlaces profundos siguen abriendo.
-- Si falla la paridad o la migración, restaurar la app antigua y conservar Aula Documentos sin cambios.
+- No borrar las filas antiguas de `app_documents` al migrar; guardar copias internas de cada origen y del Aula anterior, y una meta con la fecha de migración.
+- `rollback` restaura el estado exacto de los orígenes y de Aula; si Aula no tenía documento, lo elimina. Después borra las copias y la meta para permitir una nueva migración.
+- Mantener el mapa reversible de alias y pruebas de enlaces antiguos. Un enlace `app=mermaid`, `app=documentos`, `app=presentaciones` o `app=visor-office` abre Aula Documentos aunque la app antigua no esté instalada.
+- Ocultar apps de la Tienda y del escritorio antes de eliminarlas del catálogo y de `NATIVE_APP_IDS`.
+- Verificar que las ventanas instaladas, los comandos en vivo y los enlaces profundos siguen abriendo.
+- Si falla la paridad o la migración, ejecutar `rollback` y conservar las apps antiguas y sus datos; no borrar rutas.
 - No publicar en Sites hasta que la suite complete las pruebas y Codex de OpenAI lo autorice.
 
-## 6. Criterio de salida de la Fase 1
+## 6. Estado de la Fase 4
+
+- `NATIVE_APPS` marca las cuatro apps antiguas como `hidden`; `visibleTools` las excluye para todos los roles, incluidos administradores.
+- `resolveAppRouteId` y `LEGACY_DOCUMENT_APP_ALIASES` canonizan URLs y comandos del espacio. `buildBoardUrl` escribe ya `app=aula-documentos`.
+- La migración se ofrece desde **Archivo > Migrar apps antiguas**. Solo se habilita sin cambios pendientes y con fuentes válidas.
+- Los orígenes inválidos se omiten con aviso; no se modifican. Si Aula ya tiene documento, los datos se añaden al final para no borrar trabajo actual.
+- La verificación real local migró Diagramas, mantuvo el título, guardó las copias y revirtió con estados idénticos en Aula y en `mermaid`.
+- La app antigua sigue en `toolApps`, en `NATIVE_APP_IDS`, en `APP_MCP_DECLARACIONES` y en las rutas físicas hasta la Fase 5.
+
+## 7. Criterio de salida de la Fase 1
 
 - Cada función de la matriz tiene decisión: absorbida, ampliada, compatibilidad o descartada.
 - Los estados de `app_documents`, IDs, URLs, permisos, MCP y catálogo están mapeados.

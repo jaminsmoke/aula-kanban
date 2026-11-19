@@ -5,7 +5,7 @@ import { jsonResponse } from "../../../vitest.setup";
 
 const installed = [
   { id: "excalidraw", name: "Excalidraw", tagline: "Pizarra colaborativa para dibujar, explicar y anotar.", category: "Pizarras", favorite: true, position: 0, folder: null as string | null },
-  { id: "mermaid", name: "Diagramas", tagline: "Escribe el diagrama en texto y míralo al instante.", category: "Diagramas", favorite: false, position: 1, folder: null as string | null },
+  { id: "aula-documentos", name: "Aula Documentos", tagline: "Texto, diagramas, presentaciones y Office en un solo documento.", category: "Herramientas", favorite: false, position: 1, folder: null as string | null },
 ];
 
 const catalog = [
@@ -38,7 +38,7 @@ describe("PersonalSpaceView", () => {
     const desktop = await screen.findByLabelText("Escritorio personal");
     expect(desktop).toBeTruthy();
     expect(await screen.findByRole("button", { name: /Excalidraw/ })).toBeTruthy();
-    expect(await screen.findByRole("button", { name: /Diagramas/ })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: /Aula Documentos/ })).toBeTruthy();
     // Sin tienda: no hay catálogo ni botón de Aula Store.
     expect(screen.queryByRole("button", { name: /Aula Store/ })).toBeNull();
     expect(screen.queryByRole("region", { name: "Aula Store" })).toBeNull();

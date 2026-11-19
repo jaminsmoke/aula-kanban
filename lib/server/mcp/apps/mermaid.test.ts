@@ -88,6 +88,37 @@ describe("herramientas de Diagramas", () => {
     expect(await call("leer_diagrama", { proyectoId: projectId })).toMatchObject({ actualizado: guardado.actualizado });
   });
 
+  it("usa el diagrama de Aula Documentos cuando existe y deja intacta la fila antigua", async () => {
+    documentos.set(`${projectId}:mermaid`, { state: { code: "flowchart TD\n  Antiguo --> B" }, updatedAt: 10 });
+    documentos.set(`${projectId}:aula-documentos`, {
+      state: {
+        schemaVersion: 2,
+        title: "Documento unificado",
+        content: {
+          type: "doc",
+          content: [{ type: "mermaidBlock", attrs: { code: "flowchart LR\n  Aula --> B" } }],
+        },
+      },
+      updatedAt: 20,
+    });
+
+    const body = await call("leer_diagrama", { proyectoId: projectId });
+    expect(body).toEqual({ codigo: "flowchart LR\n  Aula --> B", actualizado: 20 });
+    expect(mocks.resolverAppEnProyecto).toHaveBeenCalledWith(
+      caller,
+      { proyectoId: projectId, appId: "aula-documentos" },
+    );
+
+    const guardado = await call("guardar_diagrama", {
+      proyectoId: projectId,
+      documento: { code: "sequenceDiagram\n  Aula->>B: Nuevo" },
+    });
+    expect(guardado.actualizado).toEqual(expect.any(Number));
+    expect(documentos.get(`${projectId}:mermaid`)?.state).toEqual({ code: "flowchart TD\n  Antiguo --> B" });
+    const aula = documentos.get(`${projectId}:aula-documentos`);
+    expect(JSON.stringify(aula?.state)).toContain("Aula->>B: Nuevo");
+  });
+
   it("devuelve null si el proyecto aún no tiene diagrama", async () => {
     const body = await call("leer_diagrama", { proyectoId: projectId });
     expect(body).toEqual({ codigo: null, actualizado: null });

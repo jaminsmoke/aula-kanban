@@ -67,6 +67,10 @@ import {
   documentToMarkdown,
   markdownToDocument,
 } from "../../../../lib/domain/aula-documentos/markdown";
+import {
+  AULA_MIGRATION_SOURCE_LABELS,
+  type AulaMigrationSource,
+} from "../../../../lib/domain/aula-documentos/migration";
 import { buildPresentationSlides } from "../../../../lib/domain/aula-documentos/presentation";
 import { createStarterAulaDocument } from "../../../../lib/domain/aula-documentos/starter";
 import {
@@ -177,6 +181,20 @@ type SaveConflict = {
   updatedAt: number | null;
   keepConfirm: boolean;
 };
+
+type MigrationStatus = {
+  aula: { exists: boolean; updatedAt: number | null };
+  sources: Array<{
+    source: AulaMigrationSource;
+    exists: boolean;
+    updatedAt: number | null;
+    valid: boolean;
+    message?: string;
+  }>;
+  migration: { active: boolean; createdAt: number | null };
+};
+
+type MigrationLoadState = "status" | "migrate" | "rollback";
 
 /**
  * Botón de la barra de formato.
@@ -362,6 +380,12 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   });
   const [recoveryRestoreId, setRecoveryRestoreId] = useState<string | null>(null);
   const [recoveryNotice, setRecoveryNotice] = useState<string | null>(null);
+  const [migrationOpen, setMigrationOpen] = useState(false);
+  const [migrationStatus, setMigrationStatus] = useState<MigrationStatus | null>(null);
+  const [migrationLoading, setMigrationLoading] = useState<MigrationLoadState | null>(null);
+  const [migrationError, setMigrationError] = useState<string | null>(null);
+  const [migrationNotice, setMigrationNotice] = useState<string | null>(null);
+  const migrationRef = useRef<HTMLElement>(null);
   const editorRef = useRef<Editor | null>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const pendingDocumentRef = useRef<AulaDocument | null>(null);
@@ -433,6 +457,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   useDialogFocus(markdownSourceOpen, () => setMarkdownSourceOpen(false), markdownSourceRef);
   useDialogFocus(Boolean(saveConflict), () => {}, conflictRef);
   useDialogFocus(recoveryOpen, closeRecoveryCopies, recoveryRef);
+  useDialogFocus(migrationOpen, () => setMigrationOpen(false), migrationRef);
 
   const requestWindowClose = useWindowClose();
   const closeGuard = useCallback(() => {
@@ -619,6 +644,86 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     const { state, updatedAt } = await load();
     if (!mountedRef.current) return;
     applyLoadedState(state, updatedAt);
+  }
+
+  /**
+   * Consulta qué datos antiguos quedan y si hay una migración reversible.
+   * @param showSpinner - Si debe mostrarse el estado de carga inicial.
+   */
+  async function refreshMigrationStatus(showSpinner = true) {
+    if (showSpinner) setMigrationLoading("status");
+    try {
+      const response = await fetch(`/api/aula-documentos/migration?project=${encodeURIComponent(projectId)}`, { cache: "no-store" });
+      if (!response.ok) throw new Error();
+      setMigrationStatus(await response.json() as MigrationStatus);
+      setMigrationError(null);
+    } catch {
+      setMigrationError("No se pudo consultar la migración documental.");
+    } finally {
+      if (showSpinner) setMigrationLoading(null);
+    }
+  }
+
+  /**
+   * Abre el panel de migración y consulta el estado actual.
+   */
+  function openMigration() {
+    setMigrationError(null);
+    setMigrationNotice(null);
+    setMigrationOpen(true);
+    void refreshMigrationStatus();
+  }
+
+  /**
+   * Ejecuta o deshace la migración de las apps documentales antiguas.
+   * @param action - Acción solicitada.
+   */
+  async function runMigration(action: "migrate" | "rollback") {
+    setMigrationLoading(action);
+    setMigrationError(null);
+    setMigrationNotice(null);
+    try {
+      const response = await fetch(`/api/aula-documentos/migration?project=${encodeURIComponent(projectId)}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      const data = await response.json().catch(() => null) as {
+        message?: string;
+        document?: unknown;
+        updatedAt?: number | null;
+        warnings?: string[];
+      } | null;
+      if (!response.ok) {
+        setMigrationError(data?.message ?? "No se pudo completar la migración documental.");
+        return;
+      }
+
+      if (action === "migrate") {
+        if (data?.document !== undefined && data.document !== null) {
+          applyLoadedState(data.document, data.updatedAt ?? null);
+        }
+        const warningText = data?.warnings?.length ? ` Avisos: ${data.warnings.join(" ")}` : "";
+        setMigrationNotice(`Migración aplicada. Los documentos originales siguen guardados.${warningText}`);
+        setStatus("Datos antiguos migrados a Aula Documentos.");
+      } else {
+        if (data?.document === null) {
+          applyDocument(createEmptyAulaDocument("Documento sin título"));
+          setLastSavedAt(null);
+          setDirty(false);
+          setStatus("Migración deshecha. No había documento de Aula guardado.");
+        } else if (data?.document !== undefined) {
+          applyLoadedState(data.document, data.updatedAt ?? null);
+        }
+        setMigrationNotice("Migración deshecha. El documento anterior de Aula se ha restaurado.");
+        setStatus("Migración documental deshecha.");
+      }
+      await refreshMigrationStatus(false);
+    } catch {
+      setMigrationError("No se pudo completar la migración documental.");
+    } finally {
+      setMigrationLoading(null);
+    }
   }
 
   useEffect(() => {
@@ -1569,11 +1674,18 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     onClick: () => officeOpenInputRef.current?.click(),
     disabled: loading,
   };
+  const migrationAction: ToolbarAction = {
+    label: "Migrar apps antiguas",
+    icon: <History size={15} aria-hidden />,
+    onClick: openMigration,
+    disabled: loading || Boolean(invalidDocument),
+  };
 
   const documentFileActions: ToolbarAction[] = [
     newDocumentAction,
     importDocumentAction,
     openOfficeAction,
+    migrationAction,
     saveDocumentAction,
     exportHtmlAction,
     printAction,
@@ -1586,6 +1698,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     { label: newDocumentAction.label, icon: newDocumentAction.icon, onSelect: newDocumentAction.onClick, disabled: newDocumentAction.disabled },
     { label: importDocumentAction.label, icon: importDocumentAction.icon, onSelect: importDocumentAction.onClick, disabled: importDocumentAction.disabled },
     { label: openOfficeAction.label, icon: openOfficeAction.icon, onSelect: openOfficeAction.onClick, disabled: openOfficeAction.disabled },
+    { label: migrationAction.label, icon: migrationAction.icon, onSelect: migrationAction.onClick, disabled: migrationAction.disabled },
   ];
 
   const formatMenuActions: AulaMenuAction[] = editor && !readOnly ? [
@@ -2464,6 +2577,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             <h3>Texto y diagramas juntos</h3>
             <p>Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa. La presentación se puede editar por diapositivas o desde <strong>Fuente Markdown</strong>.</p>
             <p>También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad, abrir el original o cualquier archivo de Office en el visor compartido y exportar copias DOCX/PPTX desde el menú Exportar. XLSX se consulta en Visor Office.</p>
+            <p>Las apps documentales anteriores siguen guardando sus datos. Usa <strong>Archivo &gt; Migrar apps antiguas</strong> para reunirlos aquí; la migración conserva copias y se puede deshacer.</p>
             <p className="aula-documentos-status" role="status" aria-live="polite">{statusText}</p>
             {saveFailed && !readOnly ? (
               <button
@@ -2532,6 +2646,119 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           </section>
         </aside>
       </div>
+
+      {migrationOpen ? (
+        <div
+          className="aula-documentos-modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setMigrationOpen(false);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setMigrationOpen(false);
+          }}
+        >
+          <section
+            className="aula-documentos-modal aula-documentos-migration-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aula-documentos-migration-title"
+            ref={migrationRef}
+          >
+            <header className="aula-documentos-modal-head">
+              <h2 id="aula-documentos-migration-title">Migrar apps antiguas</h2>
+              <button
+                type="button"
+                className="aula-documentos-modal-close"
+                onClick={() => setMigrationOpen(false)}
+                aria-label="Cerrar migración de apps antiguas"
+                autoFocus
+              >
+                <X size={16} aria-hidden />
+              </button>
+            </header>
+            <div className="aula-documentos-import-menu">
+              <p className="aula-documentos-import-intro">
+                Notas, Diagramas y Presentaciones se convierten en un documento de Aula Documentos.
+                Los datos originales se conservan y la migración se puede deshacer.
+              </p>
+              {migrationLoading === "status" && !migrationStatus ? (
+                <p className="aula-documentos-import-meta">Consultando documentos antiguos…</p>
+              ) : null}
+              {migrationStatus ? (
+                <div className="aula-documentos-migration-list" aria-label="Datos de apps antiguas">
+                  {migrationStatus.sources.map((candidate) => (
+                    <article className="aula-documentos-migration-item" key={candidate.source}>
+                      <div className="aula-documentos-migration-head">
+                        <strong>{AULA_MIGRATION_SOURCE_LABELS[candidate.source]}</strong>
+                        <span className="aula-documentos-import-meta">
+                          {!candidate.exists
+                            ? "Sin datos"
+                            : candidate.valid
+                              ? `Guardado ${formatSourceDate(candidate.updatedAt) ?? "en una fecha desconocida"}`
+                              : "No se puede leer"}
+                        </span>
+                      </div>
+                      {candidate.message ? <p className="aula-documentos-import-warning">{candidate.message}</p> : null}
+                    </article>
+                  ))}
+                </div>
+              ) : null}
+              {migrationStatus?.migration.active ? (
+                <p className="aula-documentos-import-warning">
+                  Migración aplicada{migrationStatus.migration.createdAt ? ` el ${formatSourceDate(migrationStatus.migration.createdAt)}` : ""}.
+                  Los datos de origen siguen guardados. Deshacer restaura el estado anterior de Aula y descarta los cambios
+                  hechos desde la migración.
+                </p>
+              ) : (
+                <>
+                  {migrationStatus?.aula.exists ? (
+                    <p className="aula-documentos-import-warning">
+                      Aula Documentos ya tiene un documento. Los datos antiguos se añadirán al final para no borrar tu trabajo.
+                    </p>
+                  ) : null}
+                  {dirty ? (
+                    <p className="aula-documentos-import-warning">
+                      Hay cambios sin guardar en Aula Documentos. Guárdalos antes de migrar para no mezclarlos.
+                    </p>
+                  ) : null}
+                </>
+              )}
+              {migrationError ? <p className="aula-documentos-import-error" role="alert">{migrationError}</p> : null}
+              {migrationNotice ? <p className="aula-documentos-import-status" role="status">{migrationNotice}</p> : null}
+              <div className="aula-documentos-import-actions">
+                <button type="button" className="aula-documentos-import-secondary" onClick={() => setMigrationOpen(false)}>
+                  Cerrar
+                </button>
+                {migrationStatus?.migration.active ? (
+                  <button
+                    type="button"
+                    className="aula-documentos-import-primary"
+                    onClick={() => { void runMigration("rollback"); }}
+                    disabled={readOnly || migrationLoading !== null}
+                  >
+                    {migrationLoading === "rollback" ? "Deshaciendo…" : "Deshacer migración"}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="aula-documentos-import-primary"
+                    onClick={() => { void runMigration("migrate"); }}
+                    disabled={
+                      readOnly
+                      || dirty
+                      || migrationLoading !== null
+                      || !migrationStatus
+                      || !migrationStatus.sources.some((candidate) => candidate.exists && candidate.valid)
+                    }
+                  >
+                    {migrationLoading === "migrate" ? "Migrando…" : "Migrar datos"}
+                  </button>
+                )}
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : null}
 
       {markdownSourceOpen ? (
         <div

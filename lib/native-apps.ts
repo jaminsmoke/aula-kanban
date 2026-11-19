@@ -36,6 +36,29 @@ export const LEGACY_NATIVE_APP_ALIASES: Readonly<Record<string, NativeAppId>> = 
   "edu-tools": "calculadora",
 };
 
+/** Apps documentales antiguas que ya viven dentro de Aula Documentos. */
+export const DOCUMENT_SUITE_LEGACY_APP_IDS = [
+  "documentos",
+  "mermaid",
+  "presentaciones",
+  "visor-office",
+] as const;
+
+/** App canónica de la suite documental. */
+export const DOCUMENT_SUITE_CANONICAL_APP_ID = "aula-documentos" as const;
+
+/**
+ * Alias de navegación de la suite documental. Se usan para URLs y ventanas,
+ * no para leer datos antiguos: los ids heredados siguen existiendo en
+ * `app_documents` y en sus herramientas MCP.
+ */
+export const LEGACY_DOCUMENT_APP_ALIASES: Readonly<Record<string, NativeAppId>> = {
+  documentos: "aula-documentos",
+  mermaid: "aula-documentos",
+  presentaciones: "aula-documentos",
+  "visor-office": "aula-documentos",
+};
+
 /**
  * Resuelve un id heredado a su app actual sin tocar los ids válidos.
  * @param id - Identificador recibido por URL, MCP o canal en vivo.
@@ -43,6 +66,15 @@ export const LEGACY_NATIVE_APP_ALIASES: Readonly<Record<string, NativeAppId>> = 
  */
 export function normalizeNativeAppId(id: string): string {
   return LEGACY_NATIVE_APP_ALIASES[id] ?? id;
+}
+
+/**
+ * Resuelve el id de una URL o ventana a la app que debe abrirse.
+ * @param id - Identificador recibido por la URL o el canal en vivo.
+ * @returns La app canónica; las apps documentales antiguas abren Aula Documentos.
+ */
+export function resolveAppRouteId(id: string): string {
+  return LEGACY_DOCUMENT_APP_ALIASES[id] ?? normalizeNativeAppId(id);
 }
 
 /** Paquete npm y versión exacta que forma parte de una app. */
@@ -72,6 +104,8 @@ export type NativeAppMeta = {
   extras?: readonly NativeAppPackage[];
   /** Tamaño inicial de la ventana en Tienda. */
   window: { width: number; height: number };
+  /** Oculta la app del catálogo y del escritorio sin borrar sus datos ni rutas. */
+  hidden?: boolean;
 };
 
 export const NATIVE_APPS: readonly NativeAppMeta[] = [
@@ -138,6 +172,7 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     appVersion: "1.0.0",
     upstream: { name: "mermaid", version: "12.3.0" },
     window: { width: 1120, height: 720 },
+    hidden: true,
   },
   {
     id: "ajedrez",
@@ -217,6 +252,7 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     appVersion: "1.0.0",
     upstream: { name: "reveal.js", version: "6.0.2" },
     window: { width: 1120, height: 720 },
+    hidden: true,
   },
   {
     id: "moleculas",
@@ -275,6 +311,7 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
       { name: "@tiptap/extension-link", version: "3.34.0" },
     ],
     window: { width: 1200, height: 720 },
+    hidden: true,
   },
   {
     id: "visor-office",
@@ -288,6 +325,7 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     appVersion: "1.0.0",
     upstream: { name: "@silurus/ooxml", version: "0.90.1" },
     window: { width: 1200, height: 720 },
+    hidden: true,
   },
   {
     id: "aula-documentos",

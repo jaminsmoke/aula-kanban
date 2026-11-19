@@ -45,10 +45,21 @@ describe("parseBoardUrl", () => {
   });
 
   it("lee la app a abrir en Tienda y la ignora fuera de esa sección", () => {
-    expect(parseBoardUrl("?project=p1&view=espacio&app=mermaid")).toEqual({ ...defaults, view: "administracion", administracionSection: "tienda", app: "mermaid" });
-    expect(parseBoardUrl("?project=p1&view=administracion&section=tienda&app=mermaid")).toEqual({ ...defaults, view: "administracion", administracionSection: "tienda", app: "mermaid" });
-    expect(parseBoardUrl("?project=p1&view=administracion&section=profesores&app=mermaid")).toEqual({ ...defaults, view: "administracion", administracionSection: "profesores", app: null });
-    expect(parseBoardUrl("?project=p1&view=clase&app=mermaid")).toEqual({ ...defaults, app: null });
+    expect(parseBoardUrl("?project=p1&view=espacio&app=aula-documentos")).toEqual({ ...defaults, view: "administracion", administracionSection: "tienda", app: "aula-documentos" });
+    expect(parseBoardUrl("?project=p1&view=administracion&section=tienda&app=aula-documentos")).toEqual({ ...defaults, view: "administracion", administracionSection: "tienda", app: "aula-documentos" });
+    expect(parseBoardUrl("?project=p1&view=administracion&section=profesores&app=aula-documentos")).toEqual({ ...defaults, view: "administracion", administracionSection: "profesores", app: null });
+    expect(parseBoardUrl("?project=p1&view=clase&app=aula-documentos")).toEqual({ ...defaults, app: null });
+  });
+
+  it("abre las apps documentales antiguas en Aula Documentos", () => {
+    for (const app of ["documentos", "mermaid", "presentaciones", "visor-office"]) {
+      expect(parseBoardUrl(`?project=p1&view=administracion&section=tienda&app=${app}`)).toEqual({
+        ...defaults,
+        view: "administracion",
+        administracionSection: "tienda",
+        app: "aula-documentos",
+      });
+    }
   });
 
   it("resuelve el alias edu-tools como calculadora", () => {
@@ -107,11 +118,16 @@ describe("buildBoardUrl", () => {
   });
 
   it("canoniza el alias de Tienda y escribe app solo en esa sección", () => {
-    expect(buildBoardUrl("?project=p1", { ...defaults, view: "espacio", app: "mermaid" })).toBe("?project=p1&view=administracion&section=tienda&app=mermaid");
-    expect(buildBoardUrl("?project=p1&view=espacio&app=mermaid", { ...defaults, view: "espacio" })).toBe("?project=p1&view=administracion&section=tienda");
-    expect(buildBoardUrl("?project=p1&view=espacio&app=mermaid", { ...defaults, app: "mermaid" })).toBe("?project=p1");
-    expect(buildBoardUrl("?project=p1&view=administracion&section=tienda&app=mermaid", { ...defaults, view: "administracion", administracionSection: "tienda", app: "mermaid" })).toBe("?project=p1&view=administracion&section=tienda&app=mermaid");
-    expect(buildBoardUrl("?project=p1&view=administracion&section=tienda&app=mermaid", { ...defaults, view: "administracion", administracionSection: "profesores" })).toBe("?project=p1&view=administracion&section=profesores");
+    expect(buildBoardUrl("?project=p1", { ...defaults, view: "espacio", app: "aula-documentos" })).toBe("?project=p1&view=administracion&section=tienda&app=aula-documentos");
+    expect(buildBoardUrl("?project=p1&view=espacio&app=aula-documentos", { ...defaults, view: "espacio" })).toBe("?project=p1&view=administracion&section=tienda");
+    expect(buildBoardUrl("?project=p1&view=espacio&app=aula-documentos", { ...defaults, app: "aula-documentos" })).toBe("?project=p1");
+    expect(buildBoardUrl("?project=p1&view=administracion&section=tienda&app=aula-documentos", { ...defaults, view: "administracion", administracionSection: "tienda", app: "aula-documentos" })).toBe("?project=p1&view=administracion&section=tienda&app=aula-documentos");
+    expect(buildBoardUrl("?project=p1&view=administracion&section=tienda&app=aula-documentos", { ...defaults, view: "administracion", administracionSection: "profesores" })).toBe("?project=p1&view=administracion&section=profesores");
+  });
+
+  it("escribe las apps documentales antiguas como Aula Documentos", () => {
+    expect(buildBoardUrl("?project=p1", { ...defaults, view: "administracion", administracionSection: "tienda", app: "mermaid" }))
+      .toBe("?project=p1&view=administracion&section=tienda&app=aula-documentos");
   });
 
   it("conserva parámetros desconocidos", () => {
@@ -121,7 +137,7 @@ describe("buildBoardUrl", () => {
   it("hace roundtrip con parseBoardUrl, incluido el alias de Tienda", () => {
     const state = parseBoardUrl("?project=p1&view=ajustes&section=almacenamiento");
     expect(parseBoardUrl(buildBoardUrl("?project=p1", state))).toEqual(state);
-    const tienda = parseBoardUrl("?project=p1&view=espacio&app=mermaid");
+    const tienda = parseBoardUrl("?project=p1&view=espacio&app=aula-documentos");
     expect(parseBoardUrl(buildBoardUrl("?project=p1", tienda))).toEqual(tienda);
   });
 });

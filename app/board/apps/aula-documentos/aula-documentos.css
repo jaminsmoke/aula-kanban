@@ -1161,6 +1161,31 @@
   width:min(100%, 900px);
 }
 
+.aula-documentos-migration-modal {
+  width:min(100%, 680px);
+}
+
+.aula-documentos-migration-list {
+  display:grid;
+  gap:8px;
+  margin:4px 0 12px;
+}
+
+.aula-documentos-migration-item {
+  padding:10px 12px;
+  border:var(--border-width-hairline) solid var(--ui-border-soft);
+  border-radius:var(--radius-sm);
+  background:var(--ui-surface-pale);
+}
+
+.aula-documentos-migration-head {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:4px 12px;
+}
+
 .aula-documentos-markdown-source {
   width:100%;
   min-height:min(55dvh, 480px);
