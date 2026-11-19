@@ -1,8 +1,33 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-11 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-19 — Roadmap ADOC-11 · Diagramas: lienzo y editor
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- La vista previa de Diagramas usa un lienzo claro independiente del tema y calcula el ajuste inicial con el `viewBox` del SVG.
+- Añadidos zoom con botones, rueda y pinza; paneo con arrastre y flechas; reinicio al ajuste y pantalla completa con Escape y retorno de foco.
+- El editor incorpora números de línea sincronizados, resaltado ligero por tokens y errores de Mermaid con resumen, detalle y salto a la línea.
+- Añadido el modo **Contenido** para Gantt: título, secciones, tareas, fechas, dependencias y duración generan código válido sin exponer las palabras clave. El modo Código sigue disponible.
+- Los nombres, fechas y duraciones se sanean para que el código generado no se rompa.
+- Actualizada la ayuda integrada de Diagramas.
+
+### Verificación
+
+- Revisado el lienzo y el editor con capturas y mediciones a 390 y 1366 px, sin overflow horizontal; probados zoom, paneo, pantalla completa, errores reales y edición guiada de Gantt.
+- Suite completa: **213 archivos / 1.507 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos. Límites de Diagramas: **378.000 / 830.000 B**.
+- Versión del Site sin cambios (`1.1.36`). Commits: `9371755` (lienzo), `67ed88d` (zoom y pantalla completa), `bd817b0` (editor y errores), `6b4bd6a` (Gantt guiado) y este cierre. Push único a `github main`; sin publicación en Sites.
+
+### Seguimiento
+
+- El backlog queda con **Hoja de cálculo y DEV-01**. El plan completo está en [`historial/roadmap-adoc-11.md`](../historial/roadmap-adoc-11.md).
 
 ---
 
