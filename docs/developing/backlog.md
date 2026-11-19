@@ -2,27 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 4 entradas pendientes
+> **Roadmap:** ADOC-10 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 3 entradas pendientes
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-19 — ADOC-10 · Paridad de apps heredadas
-
-- **Prioridad:** P2.
-- **Contexto:** Notas y documentos, Diagramas y Presentaciones usan el guardado incondicional anterior a ADOC-07. No tienen autosave, estado sucio, guarda de cierre ni resolución de conflictos. Diagramas tampoco recibe el rol: un invitado puede pulsar Guardar o Limpiar y el servidor rechaza la escritura. «Cargar», «Limpiar» y «Reiniciar» pueden descartar cambios sin confirmación.
-- **Alcance:**
-  1. Decidir si estas apps se mantienen como productos independientes o quedan como fuentes de importación de Aula Documentos.
-  2. Si se mantienen: usar `saveVersioned`, autosave, indicador de cambios, guarda de cierre y copias recuperables.
-  3. Impedir la edición de invitados en Diagramas y revisar el resto de roles.
-  4. Pedir confirmación antes de cargar, limpiar o reiniciar contenido con cambios.
-  5. Unificar nombres de exportación basados en el título.
-- **Criterios de aceptación:**
-  - Ninguna app pierde cambios en silencio al cerrar, cargar o reiniciar.
-  - Un invitado no puede editar ni guardar desde Diagramas.
-  - Los conflictos se resuelven con el mismo contrato que Aula Documentos.
-- **Notas:** es una decisión de producto antes que de código. Si Aula Documentos absorbe estas experiencias, conviene reducir las apps heredadas a modo lectura/importación en lugar de duplicar mantenimiento.
 
 ## 2026-11-19 — ADOC-11 · Diagramas: lienzo y editor
 
