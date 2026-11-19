@@ -46,10 +46,10 @@
 
 ### Fase 1 — Lienzo claro y ajuste inicial
 
-- [ ] Aplicar un fondo claro y tokens de contenido al lienzo, independiente del tema.
-- [ ] Calcular un zoom inicial que encaje el SVG en el espacio disponible.
-- [ ] Eliminar el scroll horizontal y el recorte inicial a 390, 1024 y 1366 px.
-- [ ] Cubrir con pruebas el cálculo de ajuste y el render sin contenido.
+- [x] Aplicar un fondo claro y tokens de contenido al lienzo, independiente del tema.
+- [x] Calcular un zoom inicial que encaje el SVG en el espacio disponible.
+- [x] Eliminar el scroll horizontal y el recorte inicial a 390, 1024 y 1366 px.
+- [x] Cubrir con pruebas el cálculo de ajuste y el render sin contenido.
 - **Criterios de aceptación:**
   - El diagrama cabe completo al abrir en los tres anchos.
   - El lienzo mantiene contraste y legibilidad en tema claro y oscuro.
@@ -109,3 +109,4 @@
 - ADOC-10 ya dejó resueltos el rol de invitado, las confirmaciones, el autosave, los conflictos y el nombre de exportación; este roadmap se limita al lienzo y al editor.
 - Punto de partida: `app/board/apps/mermaid/mermaid-app.tsx`, `use-mermaid-preview.ts`, `mermaid-render.ts`, `mermaid-filename.ts`, `mermaid-error.ts` y `mermaid.css`.
 - No se cambia el formato de `{ code }` ni el guardado por proyecto.
+- 2026-11-19: Fase 1 completada. El lienzo usa `--doc-*`, mide el SVG con `ResizeObserver` y aplica un zoom inicial que respeta ancho y alto. Revisado a 390 y 1366 px sin scroll horizontal. Suite completa: 210 archivos / 1.488 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (límite de Diagramas 371.000 B).
