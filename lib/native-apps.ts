@@ -25,7 +25,7 @@ export type NativeCategory = StoreTopCategory;
 export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
-export const AULA_STORE_VERSION = "1.12.0";
+export const AULA_STORE_VERSION = "1.13.0";
 
 export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "presentaciones", "moleculas", "timeline", "hoja-calculo", "documentos", "visor-office", "aula-documentos"] as const;
 
@@ -292,21 +292,24 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
   {
     id: "aula-documentos",
     name: "Aula Documentos",
-    tagline: "Texto, diagramas y presentaciones en un solo documento.",
-    description: "Documento unificado con Tiptap, Mermaid y reveal.js (MIT): texto enriquecido, diagramas editables, importación desde las apps anteriores, exportación HTML/Markdown y modo presentación; guardado por proyecto en app_documents y lectura para invitados.",
+    tagline: "Texto, diagramas, presentaciones y Office en un solo documento.",
+    description: "Documento unificado con Tiptap, Mermaid y reveal.js (MIT): texto enriquecido, diagramas editables, tablas, importación desde las apps anteriores y desde DOCX/PPTX, exportación HTML/Markdown/DOCX/PPTX y modo presentación; guardado por proyecto en app_documents y lectura para invitados.",
     categories: ["Oficina", "Productividad"],
     subcategory: "Herramientas",
     cover: "/store/aula-documentos.svg",
-    features: ["Texto enriquecido y diagramas en el mismo documento", "Importa Notas, Diagramas y Presentaciones", "Exporta HTML o Markdown y presenta sin salir"],
-    appVersion: "1.0.0",
+    features: ["Texto enriquecido, tablas y diagramas en el mismo documento", "Importa Notas, Diagramas, Presentaciones y Office", "Exporta HTML, Markdown, DOCX y PPTX y presenta sin salir"],
+    appVersion: "1.1.0",
     upstream: { name: "@tiptap/core", version: "3.34.0" },
     extras: [
       { name: "@tiptap/react", version: "3.34.0" },
       { name: "@tiptap/pm", version: "3.34.0" },
       { name: "@tiptap/starter-kit", version: "3.34.0" },
       { name: "@tiptap/extension-link", version: "3.34.0" },
+      { name: "@tiptap/extension-table", version: "3.34.0" },
       { name: "mermaid", version: "12.3.0" },
       { name: "reveal.js", version: "6.0.2" },
+      { name: "docx", version: "9.16.0" },
+      { name: "pptxgenjs", version: "4.0.1" },
     ],
     window: { width: 1200, height: 720 },
   },

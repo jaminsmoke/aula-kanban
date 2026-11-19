@@ -107,10 +107,9 @@ tiempo **STORE-13**, Hoja de cálculo **STORE-14**, Notas y documentos
 **STORE-15**, Visor Office **STORE-16** y Aula Documentos **STORE-17**, además de
 las cinco iniciales) ya están integradas.
 
-En el roadmap queda **ADOC-12** (importación, exportación y visor Office
-compartido en Aula Documentos). En el backlog quedan **ADOC-13** (convergencia
+En el roadmap no hay un bloque activo. En el backlog quedan **ADOC-13** (convergencia
 de la suite documental), **STORE-18** (fichas de producto para apps-suites) y
-**DEV-01** (evaluación de pnpm, fuera del catálogo de apps). ADOC-01 a ADOC-11 y
+**DEV-01** (evaluación de pnpm, fuera del catálogo de apps). ADOC-01 a ADOC-12 y
 UI-10 están completados. El resto de candidatas sigue documentado por
 categorías, sin entrada hasta que se prioricen.
 

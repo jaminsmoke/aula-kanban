@@ -9,7 +9,7 @@
 - No habrá edición de OOXML ni round-trip con pérdida cero. El visor actual no expone mutaciones y no se va a convertir en un editor de Word, Excel o PowerPoint.
 - El visor se comparte desde `app/board/shared/office/`; `visor-office` queda como cáscara de la app independiente mientras exista.
 - **XLSX no se importa como documento Aula en ADOC-12.** Se mantiene en el visor; si se convierte en tablas, se decide junto a Hoja de cálculo en otro bloque.
-- La primera versión **no conserva el archivo original** salvo que se decida añadir un adjunto persistido. La vista previa sirve para confirmar antes de reemplazar.
+- La primera versión **no conserva el archivo original**. Se puede previsualizar en el visor compartido antes de confirmar la importación; después, Aula Documentos conserva únicamente el documento convertido. Si se quiere conservar el adjunto, será otro bloque de almacenamiento.
 
 ## 2. Medición del spike
 
@@ -36,7 +36,7 @@ Coste de exportación medido con esbuild, minificado y comprimido con gzip:
 | `pptxgenjs` | 373.792 B | 126.424 B |
 | **Total de los dos chunks** | **608.031 B** | **196.481 B** |
 
-Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de exportación. La medición es reproducible con `npm run perf:office`; el flujo real de exportación, con el coste de los chunks compartidos, está en `perf:budget` como `aula-documentos-export`: **329.582 / 340.000 B gzip**. XLSX no forma parte de la exportación de Aula Documentos.
+Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de exportación. La medición es reproducible con `npm run perf:office`; el flujo real de exportación, con el coste de los chunks compartidos, está en `perf:budget` como `aula-documentos-export`: **329.583 / 340.000 B gzip**. XLSX no forma parte de la exportación de Aula Documentos.
 
 ## 3. Matriz de fidelidad
 
@@ -80,6 +80,5 @@ Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de 
 ## 5. Decisiones pendientes para Fase 2/3
 
 - Validar la importación con más DOCX/PPTX reales y con archivos de varias versiones.
-- Decidir si el archivo original se guarda como adjunto y con qué límite.
 - Validar la exportación con Office real y con archivos de varias versiones.
 - Mantener el presupuesto de `aula-documentos-export` y `perf:office` actualizado si crece el contenido exportable.

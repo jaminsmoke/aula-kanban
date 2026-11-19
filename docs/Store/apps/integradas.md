@@ -20,7 +20,7 @@
 | Hoja de cálculo | `jspreadsheet-ce` 5.0.4 | MIT | ✅ Integrada | Celdas editables, formato esencial, filas y columnas ampliables; exportación CSV protegida, guardado por proyecto y modo lectura. Las fórmulas se conservan como texto |
 | Notas y documentos | `@tiptap/core` 3.34.0 | MIT | ✅ Integrada | Editor de texto enriquecido con título, listas, citas, código y enlaces; guardado por proyecto en `app_documents`, exportación HTML local y modo lectura para invitados |
 | Visor Office | `@silurus/ooxml` 0.90.1 | MIT | ✅ Integrada | Apertura local de `.docx`, `.xlsx` y `.pptx` en solo lectura, con zoom y navegación por páginas, hojas o diapositivas; límite de 30 MB, sin subida ni persistencia. WASM y recursos servidos desde el Site |
-| Aula Documentos | `@tiptap/core` 3.34.0 + `mermaid` 12.3.0 + `reveal.js` 6.0.2 | MIT | ✅ Integrada | Documento unificado con texto enriquecido y bloques Mermaid; importación desde Notas y documentos, Diagramas y Presentaciones; exportación HTML/Markdown y modo presentación. Guardado por proyecto en `app_documents`; las apps anteriores siguen disponibles |
+| Aula Documentos | `@tiptap/core` 3.34.0 + `mermaid` 12.3.0 + `reveal.js` 6.0.2 + `docx` 9.16.0 + `pptxgenjs` 4.0.1 | MIT | ✅ Integrada | Documento unificado con texto enriquecido, tablas, bloques Mermaid y presentación; importación desde Notas y documentos, Diagramas, Presentaciones, Markdown y DOCX/PPTX; exportación HTML/Markdown/DOCX/PPTX y modo presentación. Guardado por proyecto en `app_documents`; las apps anteriores siguen disponibles |
 
 ## Versiones por app
 
@@ -42,9 +42,9 @@
 | Hoja de cálculo | `1.0.0` | `jspreadsheet-ce 5.0.4` |
 | Notas y documentos | `1.0.0` | `@tiptap/core 3.34.0` + extensiones |
 | Visor Office | `1.0.0` | `@silurus/ooxml 0.90.1` |
-| Aula Documentos | `1.0.0` | `@tiptap/core 3.34.0` + Tiptap, `mermaid 12.3.0` y `reveal.js 6.0.2` |
+| Aula Documentos | `1.1.0` | `@tiptap/core 3.34.0` + Tiptap, `mermaid 12.3.0`, `reveal.js 6.0.2`, `docx 9.16.0` y `pptxgenjs 4.0.1` |
 
-La tienda está en `1.12.0`: Aula Documentos subió la versión menor desde `1.11.0`. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
+La tienda está en `1.13.0`: Aula Documentos subió la versión menor desde `1.12.0` al incorporar Office y tablas. El campo `instance_apps.version` existe en la base de datos, pero la ficha usa el catálogo; no se duplica la versión por cada instalación. No se crean paquetes independientes ni forks para separar versiones.
 
 ## Transición de `edu-tools`
 

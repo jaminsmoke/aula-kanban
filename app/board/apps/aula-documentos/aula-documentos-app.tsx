@@ -13,6 +13,7 @@ import {
   Download,
   Ellipsis,
   Eraser,
+  Eye,
   FileDown,
   FilePenLine,
   FilePlus2,
@@ -85,6 +86,7 @@ import { useWindowClose, useWindowCloseGuard } from "../../shared/window-close-g
 import type { StoreRole } from "../types";
 import { importOfficeFile } from "../../shared/office/office-import";
 import { exportAulaDocx, exportAulaPptx } from "../../shared/office/office-export";
+import OfficeViewer from "../../shared/office/office-viewer";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
 import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
 import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../../shared/aula-documentos/mermaid-block";
@@ -322,6 +324,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [linkError, setLinkError] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [importPreview, setImportPreview] = useState<ImportPreviewState | null>(null);
+  const [importOfficeSource, setImportOfficeSource] = useState<File | null>(null);
+  const [officePreviewOpen, setOfficePreviewOpen] = useState(false);
   const [importLoading, setImportLoading] = useState<string | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importConfirm, setImportConfirm] = useState(false);
@@ -367,6 +371,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const invalidDocumentRef = useRef<HTMLElement>(null);
   const closePromptRef = useRef<HTMLElement>(null);
   const importRef = useRef<HTMLElement>(null);
+  const officePreviewRef = useRef<HTMLElement>(null);
   const slidePreviewRef = useRef<HTMLElement>(null);
   const conflictRef = useRef<HTMLElement>(null);
   const recoveryRef = useRef<HTMLElement>(null);
@@ -416,6 +421,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   useDialogFocus(Boolean(invalidDocument), () => {}, invalidDocumentRef);
   useDialogFocus(closePromptOpen, () => setClosePromptOpen(false), closePromptRef);
   useDialogFocus(importOpen, closeImport, importRef, actionsToggleRef);
+  useDialogFocus(officePreviewOpen, () => setOfficePreviewOpen(false), officePreviewRef);
   useDialogFocus(Boolean(slidePreview), () => setSlidePreview(null), slidePreviewRef);
   useDialogFocus(Boolean(saveConflict), () => {}, conflictRef);
   useDialogFocus(recoveryOpen, closeRecoveryCopies, recoveryRef);
@@ -1204,6 +1210,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
    */
   function openImport() {
     setImportPreview(null);
+    setImportOfficeSource(null);
+    setOfficePreviewOpen(false);
     setImportError(null);
     setImportLoading(null);
     setImportConfirm(false);
@@ -1216,6 +1224,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   function closeImport() {
     setImportOpen(false);
     setImportPreview(null);
+    setImportOfficeSource(null);
+    setOfficePreviewOpen(false);
     setImportError(null);
     setImportLoading(null);
     setImportConfirm(false);
@@ -1306,6 +1316,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
    */
   async function importOffice(file: File | undefined) {
     if (!file) return;
+    setImportOfficeSource(file);
     setImportLoading("office");
     setImportError(null);
     setImportPreview(null);
@@ -2149,7 +2160,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         </div>
       ) : null}
 
-      {importOpen ? (
+      {importOpen && !officePreviewOpen ? (
         <div
           className="aula-documentos-modal-backdrop"
           onMouseDown={(event) => {
@@ -2204,6 +2215,16 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                   Entiendo que se reemplaza el documento actual.
                 </label>
                 <div className="aula-documentos-import-actions">
+                  {importPreview.source === "office" && importOfficeSource ? (
+                    <button
+                      type="button"
+                      className="aula-documentos-import-secondary"
+                      onClick={() => setOfficePreviewOpen(true)}
+                    >
+                      <Eye size={14} aria-hidden />
+                      Ver original
+                    </button>
+                  ) : null}
                   <button
                     type="button"
                     className="aula-documentos-import-secondary"
@@ -2288,6 +2309,42 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         </div>
       ) : null}
 
+      {officePreviewOpen && importOfficeSource ? (
+        <div
+          className="aula-documentos-modal-backdrop aula-documentos-office-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setOfficePreviewOpen(false);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setOfficePreviewOpen(false);
+          }}
+        >
+          <section
+            className="aula-documentos-modal aula-documentos-office-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aula-documentos-office-preview-title"
+            ref={officePreviewRef}
+          >
+            <header className="aula-documentos-modal-head">
+              <h2 id="aula-documentos-office-preview-title">Archivo original</h2>
+              <button
+                type="button"
+                className="aula-documentos-modal-close"
+                onClick={() => setOfficePreviewOpen(false)}
+                aria-label="Cerrar vista original"
+                autoFocus
+              >
+                <X size={16} aria-hidden />
+              </button>
+            </header>
+            <div className="aula-documentos-office-preview-body">
+              <OfficeViewer initialFile={importOfficeSource} embedded />
+            </div>
+          </section>
+        </div>
+      ) : null}
+
       <div className="aula-documentos-layout">
         <section className="aula-documentos-stage" aria-label="Documento">
           <article className="aula-documentos-paper">
@@ -2312,7 +2369,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           <section className="aula-documentos-info">
             <h3>Texto y diagramas juntos</h3>
             <p>Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa.</p>
-            <p>También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad, y exportar copias DOCX/PPTX desde el menú Exportar. XLSX se consulta en Visor Office.</p>
+            <p>También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad, abrir el original en el visor compartido antes de confirmar y exportar copias DOCX/PPTX desde el menú Exportar. XLSX se consulta en Visor Office.</p>
             <p className="aula-documentos-status" role="status" aria-live="polite">{statusText}</p>
             {saveFailed && !readOnly ? (
               <button

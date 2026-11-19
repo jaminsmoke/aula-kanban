@@ -1,8 +1,37 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-12 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-19 — Roadmap ADOC-12 · Office en Aula Documentos
+
+**Estado:** Completada · Office real pendiente de verificación externa
+
+### Cambios
+
+- Aula Documentos importa DOCX/PPTX desde su diálogo con vista previa, estadísticas, avisos de fidelidad y límite de 30 MB; XLSX se deriva a Visor Office.
+- El visor Office se extrajo a `app/board/shared/office/` y ahora lo comparten Visor Office y Aula Documentos.
+- Antes de importar se puede abrir el archivo original en el visor compartido; el archivo no se conserva después.
+- La importación conserva título, párrafos, encabezados, listas, enlaces, tablas y saltos de diapositiva; imágenes y notas del orador se omiten con aviso. Se rechazan archivos cifrados, dañados y paquetes con macros.
+- Aula Documentos exporta copias DOCX/PPTX desde el documento canónico, con tablas, notas de presentación y avisos. Las librerías se cargan solo al exportar.
+- Añadidas tablas Tiptap, validación, Markdown y HTML; actualizada la ayuda y la ficha.
+- Aula Documentos sube a `1.1.0` y Aula Store a `1.13.0`.
+
+### Verificación
+
+- Revisados 390, 620, 900, 1024 y 1366 px en claro y oscuro sin desbordamiento; el visor original también se revisó a 390 px.
+- Importación real del DOCX de prueba con tabla y del PPTX con dos diapositivas; exportación real de DOCX (9.782 B) y PPTX (54.790 B) con cabecera ZIP.
+- DOCX/PPTX exportados reabiertos con `@silurus/ooxml/node`; Visor Office y Aula Documentos revalidados. La apertura en Office real queda pendiente.
+- Suite completa: **219 archivos / 1.539 pruebas**; `tsc`, ESLint, build, `perf:budget` y `perf:office` correctos.
+- `aula-documentos-export`: **329.583 / 340.000 B gzip**; `perf:office`: **196.481 / 210.000 B gzip**.
+- Versión del Site sin cambios (`1.1.36`). Commits: `877d2d1` (visor compartido), `a9e8048` (presupuesto), `c9e3a36` (importación), `bf6d882` (ajuste), `3151b68` (exportación) y este cierre. Push único a `github main`; sin publicación en Sites.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-13, STORE-18 y DEV-01**. ADOC-13 absorbe la convergencia y STORE-18 la ficha de suite. El plan completo está en [`historial/roadmap-adoc-12.md`](../historial/roadmap-adoc-12.md).
 
 ---
 

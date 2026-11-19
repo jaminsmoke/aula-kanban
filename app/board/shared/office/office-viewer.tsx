@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useRef, useState, useCallback, type KeyboardEvent } from "react";
 import {
   ArrowLeftRight,
   ChevronLeft,
@@ -60,11 +60,20 @@ function OfficeFormatIcon({ format, size = 17 }: { format: OfficeFormat; size?: 
   return <FileText size={size} aria-hidden />;
 }
 
+type OfficeViewerProps = {
+  initialFile?: File | null;
+  embedded?: boolean;
+  projectId?: string;
+  role?: string;
+  instanceUrl?: string;
+};
+
 /**
  * Visor Office: abre documentos locales de Office en solo lectura.
+ * @param props - Archivo inicial opcional para la vista previa embebida.
  * @returns La ventana con selector, controles y visor.
  */
-export default function VisorOfficeApp() {
+export default function VisorOfficeApp({ initialFile = null, embedded = false }: OfficeViewerProps = {}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const hostRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<ViewerControls | null>(null);
@@ -274,7 +283,7 @@ export default function VisorOfficeApp() {
    * Valida el archivo y lo carga en memoria.
    * @param file - Archivo elegido por la persona.
    */
-  async function openFile(file: File | undefined) {
+  const openFile = useCallback(async (file: File | undefined) => {
     if (!file) return;
     const validation = validateOfficeFile(file);
     if ("error" in validation) {
@@ -295,7 +304,13 @@ export default function VisorOfficeApp() {
       setLoading(false);
       setError("No se pudo leer el archivo. Inténtalo de nuevo.");
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    if (!initialFile) return;
+    const timer = window.setTimeout(() => { void openFile(initialFile); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [initialFile, openFile]);
 
   /**
    * Cierra el documento actual y libera el visor.
@@ -381,10 +396,12 @@ export default function VisorOfficeApp() {
         {fileActions}
         <div className="visor-office-header-actions">
           <span className="visor-office-readonly">Solo lectura</span>
-          <button type="button" className="visor-office-open" onClick={openPicker} aria-label="Abrir archivo">
-            <FolderOpen size={15} aria-hidden />
-            <span>Abrir</span>
-          </button>
+          {!embedded ? (
+            <button type="button" className="visor-office-open" onClick={openPicker} aria-label="Abrir archivo">
+              <FolderOpen size={15} aria-hidden />
+              <span>Abrir</span>
+            </button>
+          ) : null}
         </div>
       </header>
 
@@ -409,16 +426,18 @@ export default function VisorOfficeApp() {
       </p>
 
       <div className="visor-office-toolbar" role="toolbar" aria-label="Controles del documento">
-        <div className="visor-office-tool-group">
-          <button type="button" className="visor-office-tool" onClick={openPicker} aria-label="Abrir archivo" title="Abrir archivo">
-            <FolderOpen size={15} aria-hidden />
-          </button>
-          {loaded ? (
-            <button type="button" className="visor-office-tool" onClick={closeFile} aria-label="Cerrar archivo" title="Cerrar archivo">
-              <X size={15} aria-hidden />
+        {!embedded ? (
+          <div className="visor-office-tool-group">
+            <button type="button" className="visor-office-tool" onClick={openPicker} aria-label="Abrir archivo" title="Abrir archivo">
+              <FolderOpen size={15} aria-hidden />
             </button>
-          ) : null}
-        </div>
+            {loaded ? (
+              <button type="button" className="visor-office-tool" onClick={closeFile} aria-label="Cerrar archivo" title="Cerrar archivo">
+                <X size={15} aria-hidden />
+              </button>
+            ) : null}
+          </div>
+        ) : null}
 
         {loaded ? (
           <div className="visor-office-tool-group">

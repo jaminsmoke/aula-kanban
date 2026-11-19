@@ -1062,6 +1062,7 @@ describe("Aula Documentos", () => {
     expect(await screen.findByRole("heading", { name: "Informe Office" })).toBeTruthy();
     expect(screen.getByText("Documento de Office")).toBeTruthy();
     expect(screen.getByText("La maquetación visual puede cambiar.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Ver original" })).toBeTruthy();
   });
 
   it("importa Notas y documentos con vista previa y confirmación", async () => {
