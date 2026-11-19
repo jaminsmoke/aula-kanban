@@ -17,7 +17,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Sin roadmap activo: plantilla para el siguiente bloque | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | ADOC-12 activa: Office en Aula Documentos | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -80,6 +80,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
+- **Roadmap ADOC-12 activo:** Aula Documentos importará y exportará DOCX/PPTX y compartirá el visor Office, sin convertirlo en editor de OOXML ni prometer round-trip. El visor se extrae a `app/board/shared/office/`; la convergencia completa de apps queda en ADOC-13 y la ficha de suite en STORE-18. Plan en [`roadmap.md`](developing/roadmap.md). Sin publicación desde este roadmap.
 - **Hoja de cálculo completada:** cálculo automático seguro sin `eval`, con referencia A1, rangos acotados, detección de ciclos y barra `fx`; las fórmulas se conservan al guardar, recargar y exportar a CSV. El panel muestra errores y límites. Verificado a 390, 620, 900, 1024 y 1366 px en claro y oscuro; 215 archivos / 1.524 pruebas y build correcto. Presupuesto de la app: **309.447 / 315.000 B gzip**. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-hoja-calculo.md`](historial/roadmap-hoja-calculo.md). Sin publicación desde este roadmap.
 - **Roadmap ADOC-11 completado:** Diagramas usa un lienzo claro con ajuste automático, zoom, paneo y pantalla completa; el editor añade números de línea, resaltado y errores con salto de línea. El modo Contenido permite editar un Gantt sin romper sus palabras clave y el modo Código sigue disponible. Verificado a 390 y 1366 px; 213 archivos / 1.507 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-11.md`](historial/roadmap-adoc-11.md). Sin publicación desde este roadmap.
 - **Roadmap ADOC-10 completado:** Notas y documentos, Diagramas y Presentaciones comparten el motor de borrador versionado con autosave, conflictos, copia recuperable y cierre protegido. Diagramas bloquea la edición para invitados; cargar, limpiar, reiniciar o aplicar plantillas pide confirmación; las exportaciones usan nombres legibles. Verificado a 390, 620, 900, 1024 y 1366 px, con un conflicto real de 409 y copia recuperable; 209 archivos / 1.482 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-10.md`](historial/roadmap-adoc-10.md). Sin publicación desde este roadmap.
