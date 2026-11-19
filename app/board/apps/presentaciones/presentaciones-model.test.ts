@@ -72,6 +72,8 @@ describe("modelo de Presentaciones", () => {
     expect(html).toContain("Hola");
     expect(html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
     expect(html).not.toContain("<script>alert(1)</script>");
+    expect(html).toContain("background:#fff");
+    expect(html).toContain("color:#1c2a5a");
     expect(html.match(/class="slide/g)).toHaveLength(2);
   });
 });

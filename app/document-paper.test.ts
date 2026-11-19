@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 const GLOBALS = readFileSync(join(process.cwd(), "app", "globals.css"), "utf8");
 const AULA_CSS = readFileSync(join(process.cwd(), "app", "board", "apps", "aula-documentos", "aula-documentos.css"), "utf8");
 const NOTAS_CSS = readFileSync(join(process.cwd(), "app", "board", "apps", "documentos", "documentos.css"), "utf8");
+const PRESENTACIONES_CSS = readFileSync(join(process.cwd(), "app", "board", "apps", "presentaciones", "presentaciones.css"), "utf8");
 
 /**
  * Lee las declaraciones de una hoja de estilos.
@@ -97,6 +98,14 @@ describe("lienzo editorial", () => {
     expect(AULA_CSS).toMatch(/\.aula-mermaid-block\s*{[^}]*background:var\(--doc-mermaid-surface\)/);
     expect(AULA_CSS).toMatch(/\.aula-mermaid-preview\s*{[^}]*background:var\(--doc-paper\)/);
     expect(AULA_CSS).toMatch(/\.aula-mermaid-error\s*{[^}]*background:var\(--doc-danger-surface\)/);
+  });
+
+  it("aplica el lienzo claro a la app heredada Presentaciones", () => {
+    expect(PRESENTACIONES_CSS).toMatch(/\.presentaciones-preview-slide\s*{[^}]*background:var\(--doc-paper\)/);
+    expect(PRESENTACIONES_CSS).toMatch(/\.presentaciones-preview-slide\s*{[^}]*color:var\(--doc-ink\)/);
+    expect(PRESENTACIONES_CSS).toMatch(/\.presentaciones-reveal\s*{[^}]*background:var\(--doc-paper\)/);
+    expect(PRESENTACIONES_CSS).toMatch(/\.presentaciones-slide-content\s*{[^}]*color:var\(--doc-ink\)/);
+    expect(PRESENTACIONES_CSS).toMatch(/\.presentaciones-slide-content h1,[\s\S]*?color:var\(--doc-heading\)/);
   });
 
   it("mantiene contraste AA en texto y código", () => {

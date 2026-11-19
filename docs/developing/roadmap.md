@@ -71,11 +71,11 @@
 
 ### Fase 3 — Presentaciones, impresión y exportación
 
-- [ ] Aplicar el lienzo claro a las diapositivas y a la vista previa de Presentaciones heredada.
-- [ ] Mantener los tres temas de presentación de Aula Documentos sin cambios.
-- [ ] Alinear HTML exportado, impresión/PDF y presentación exportada con el lienzo visible.
-- [ ] Revisar los textos de ayuda y las capturas/documentación si mencionan el tema.
-- [ ] Cubrir con pruebas las exportaciones y la vista previa.
+- [x] Aplicar el lienzo claro a las diapositivas y a la vista previa de Presentaciones heredada.
+- [x] Mantener los tres temas de presentación de Aula Documentos sin cambios.
+- [x] Alinear HTML exportado, impresión/PDF y presentación exportada con el lienzo visible.
+- [x] Revisar los textos de ayuda y las capturas/documentación si mencionan el tema.
+- [x] Cubrir con pruebas las exportaciones y la vista previa.
 - **Criterios de aceptación:**
   - La app heredada Presentaciones no cambia de fondo con el tema oscuro.
   - Aula Documentos conserva sus temas de presentación.
@@ -112,3 +112,4 @@
 - No se cambia el contrato del documento ni el guardado. La hoja blanca es una decisión visual, no una migración de datos.
 - 2026-11-19: Fase 1 completada. `globals.css` define tokens `--doc-*` que no se sobrescriben en tema oscuro; Aula Documentos y Notas usan papel blanco, tinta oscura, bordes y selección propios. Texto principal, secundario, enlaces y código superan contraste AA. Verificado visualmente en tema oscuro: la hoja permanece blanca y el marco sigue oscuro. 5 pruebas focalizadas y 201 archivos / 1.431 pruebas; `tsc` y ESLint en verde.
 - 2026-11-19: Fase 2 completada. Títulos, formato rico, enlaces, citas, código, selección y foco usan tokens del lienzo. El bloque Mermaid, su editor, controles, estados y error usan superficies claras; el SVG de Mermaid ya se renderiza con variables claras. Verificado en tema oscuro con un diagrama insertado: bloque y vista previa legibles sobre la hoja blanca. 6 pruebas focalizadas y 201 archivos / 1.432 pruebas; `tsc` y ESLint en verde.
+- 2026-11-19: Fase 3 completada. Presentaciones heredadas usa el lienzo claro en tarjetas y modo presentación, con texto, títulos, citas, código, enlaces y selección propios. Los temas Aula, Claro y Oscuro de Aula Documentos no se tocaron. La exportación HTML y la impresión mantienen fondo blanco; se añadieron pruebas para el HTML del documento, la presentación exportada y el CSS de Presentaciones. La app no está instalada en este proyecto, así que la revisión fue por CSS y pruebas, como preveía el riesgo. 23 pruebas focalizadas; `tsc` y ESLint en verde.

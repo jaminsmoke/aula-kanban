@@ -39,6 +39,8 @@ describe("exportación HTML de Aula Documentos", () => {
 
     expect(html).toContain("<title>Documento exportable</title>");
     expect(html).toContain("Texto con un diagrama.");
+    expect(html).toContain("background: #fff");
+    expect(html).toContain("background: #f7f8fc");
     expect(html).toContain('data-testid="flujo"');
     expect(html).toContain('data-testid="secuencia"');
     expect(html).not.toContain("data-mermaid-code");
