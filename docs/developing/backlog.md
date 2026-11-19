@@ -2,26 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 7 entradas pendientes
+> **Roadmap:** UI-10 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 6 entradas pendientes
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-19 — UI-10 · Ventanas responsivas de la Tienda
-
-- **Prioridad:** P1.
-- **Contexto:** las ventanas se colocan con la geometría del escritorio en el momento de abrirlas. Si después se reduce el viewport o se gira el dispositivo, conservan la posición anterior: una ventana abierta en escritorio y reducida a 390 px llega a quedar con `x=150` y `right=516`, fuera del área visible. Abrirla desde cero a 390 px sí calcula `x=12`, así que el problema aparece al redimensionar, rotar o restaurar una ventana.
-- **Alcance:**
-  1. Recalcular posición y tamaño de las ventanas abiertas cuando cambie el escritorio, con un margen mínimo y un tamaño usable.
-  2. En viewports estrechos, abrir las apps maximizadas o a pantalla completa; permitir volver al modo ventana sin dejarlas fuera del área.
-  3. Conservar el foco, el estado de la app y la ventana activa durante la recolocación.
-  4. Revisar arrastre, redimensionado, dock, cierre y navegación por teclado en móvil.
-- **Criterios de aceptación:**
-  - Ninguna ventana queda recortada después de redimensionar o girar.
-  - La ventana activa sigue siendo accesible y conserva su contenido.
-  - 390, 620, 1024 y 1366 px funcionan sin scroll horizontal del escritorio.
-- **Notas:** afecta a todas las apps de la Tienda, no solo a Aula Documentos. Conviene resolverlo antes de seguir puliendo el lienzo de cada app.
 
 ## 2026-11-19 — ADOC-08 · Lienzo editorial y tema
 
