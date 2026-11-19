@@ -1,8 +1,35 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** UI-10 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-19 — Roadmap UI-10 · Ventanas responsivas de la Tienda
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- Nueva geometría compartida con margen de 12 px, mínimos de 240×180 y ajuste a los límites del escritorio. Se usa al abrir, arrastrar, redimensionar, ampliar/restaurar y recolocar.
+- Las ventanas abiertas se recolocan cuando cambia el tamaño del escritorio, sin remontar la app ni perder el foco del control usado.
+- Las ventanas abiertas con 640 px o menos arrancan maximizadas. Reducir devuelve una geometría segura y el reflujo revalida la posición guardada.
+- En modo maximizado se desactiva el arrastre y desaparece el asa de resize; los controles de tráfico tienen foco visible.
+- Restaurar desde el dock sube la ventana al frente. El arrastre ya no puede dejar una ventana fuera del área segura.
+- No cambian las apps, el catálogo, `AULA_STORE_VERSION` ni las versiones de las apps.
+
+### Verificación
+
+- Apertura desde cero a 1366, 1024, 900, 620 y 390 px: las ventanas caben y no generan scroll horizontal del escritorio; las de 620 y 390 arrancan maximizadas.
+- Flujo de abrir en escritorio y reducir después: 1024, 900, 620 y 390 px conservan la ventana completa; en 390 la geometría final es `x=12`, `right=378`.
+- Pruebas de dos ventanas, foco, minimizar/restaurar desde el dock, arrastre limitado y conservación de contenido.
+- Suite completa: **200 archivos / 1.428 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `b797986` (Fase 1), `5a110de` (Fase 2), `71cef3c` (Fase 3) y este commit de cierre. Push único a `github main`; sin publicación en Sites.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-08, ADOC-09, ADOC-10, ADOC-11, Hoja de cálculo y DEV-01**. El plan completo está en [`historial/roadmap-ui-10.md`](../historial/roadmap-ui-10.md).
 
 ---
 
