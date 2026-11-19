@@ -6,6 +6,12 @@ import { useWindowAttemptClose, WindowCloseProvider } from "../../shared/window-
 import type { VersionedSaveResult } from "../use-app-document";
 import AulaDocumentosApp, { AUTOSAVE_DELAY_MS } from "./aula-documentos-app";
 
+const officeImportMock = vi.hoisted(() => ({
+  importOfficeFile: vi.fn(),
+}));
+
+vi.mock("../../shared/office/office-import", () => officeImportMock);
+
 /**
  * Botón de prueba que intenta cerrar la ventana como el control real.
  * @returns El botón de cierre.
@@ -1031,6 +1037,31 @@ describe("Aula Documentos", () => {
     const event = new Event("beforeunload", { cancelable: true });
     window.dispatchEvent(event);
     expect(event.defaultPrevented).toBe(true);
+  });
+
+  it("importa un DOCX/PPTX con vista previa", async () => {
+    officeImportMock.importOfficeFile.mockResolvedValueOnce({
+      ok: true,
+      preview: {
+        source: "office",
+        document: savedDocument("Informe Office"),
+        stats: { nodes: 2, depth: 2, textLength: 18, mermaidBlocks: 0, slideBreaks: 0 },
+        warnings: ["La maquetación visual puede cambiar."],
+      },
+    });
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Archivo" })).toBeTruthy());
+    importDocument();
+    const input = document.getElementById("aula-documentos-office-file") as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { files: [new File(["docx"], "informe.docx", { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" })] },
+    });
+
+    await waitFor(() => expect(officeImportMock.importOfficeFile).toHaveBeenCalledTimes(1));
+    expect(await screen.findByRole("heading", { name: "Informe Office" })).toBeTruthy();
+    expect(screen.getByText("Documento de Office")).toBeTruthy();
+    expect(screen.getByText("La maquetación visual puede cambiar.")).toBeTruthy();
   });
 
   it("importa Notas y documentos con vista previa y confirmación", async () => {

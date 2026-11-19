@@ -47,6 +47,37 @@ describe("exportación HTML de Aula Documentos", () => {
     expect(html).not.toMatch(/https?:\/\//);
   });
 
+  it("exporta tablas importadas de Office", () => {
+    const html = renderAulaContentHtml({
+      type: "doc",
+      content: [{
+        type: "table",
+        content: [
+          {
+            type: "tableRow",
+            content: [
+              { type: "tableHeader", content: [{ type: "paragraph", content: [{ type: "text", text: "A" }] }] },
+              { type: "tableHeader", content: [{ type: "paragraph", content: [{ type: "text", text: "B" }] }] },
+            ],
+          },
+          {
+            type: "tableRow",
+            content: [
+              { type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text: "1" }] }] },
+              { type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text: "2" }] }] },
+            ],
+          },
+        ],
+      }],
+    });
+
+    expect(html).toContain("<table");
+    expect(html).toContain("<th");
+    expect(html).toContain("<td");
+    expect(html).toContain("<th><p>A</p></th>");
+    expect(html).toContain("<td><p>2</p></td>");
+  });
+
   it("deja el código visible y explica el fallback si no hay SVG disponible", () => {
     const html = buildAulaDocumentHtml(documentWithDiagrams());
     expect(html).toContain("No se pudo dibujar el diagrama. Revisa el código Mermaid.");

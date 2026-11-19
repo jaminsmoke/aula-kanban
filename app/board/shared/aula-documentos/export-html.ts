@@ -189,6 +189,10 @@ export function buildAulaPresentationHtml(
   li[data-type="taskItem"] > div { flex: 1 1 auto; min-width: 0; }
   li[data-type="taskItem"][data-checked="true"] > div { color: ${palette.muted}; text-decoration: line-through; }
   blockquote { margin: 1em 0; padding-left: 1em; border-left: 3px solid ${palette.muted}; color: ${palette.muted}; }
+  table { width: 100%; margin: 1em 0; border-collapse: collapse; table-layout: fixed; }
+  th, td { padding: .45em .6em; border: 1px solid ${palette.border}; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  th { background: ${palette.code}; }
+  td p, th p { margin: 0; }
   code { padding: .15em .35em; border-radius: 4px; background: ${palette.code}; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
   pre { overflow: auto; padding: 1em; border-radius: 8px; background: ${palette.code}; }
   pre code { padding: 0; background: transparent; }
@@ -253,6 +257,10 @@ export function buildAulaDocumentHtml(
   li[data-type="taskItem"][data-checked="true"] > div { color: #625c74; text-decoration: line-through; }
   li + li { margin-top: .3em; }
   blockquote { margin: 1.2em 0; padding: .4em 0 .4em 1em; border-left: 3px solid #5839be; color: #4a4458; font-style: italic; }
+  table { width: 100%; margin: 1em 0; border-collapse: collapse; table-layout: fixed; }
+  th, td { padding: .45em .6em; border: 1px solid #e7e4ef; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  th { background: #f1eff8; }
+  td p, th p { margin: 0; }
   code { padding: .15em .35em; border-radius: 4px; background: #f1eff8; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .92em; }
   pre { overflow: auto; padding: 1em 1.2em; border-radius: 10px; background: #f1eff8; }
   pre code { padding: 0; background: transparent; }

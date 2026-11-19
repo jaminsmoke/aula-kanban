@@ -55,6 +55,25 @@ const source: AulaDocument = {
 };
 
 describe("Markdown de Aula Documentos", () => {
+  it("importa y exporta tablas GFM", () => {
+    const converted = markdownToDocument([
+      "| Columna A | Columna B |",
+      "| --- | --- |",
+      "| Dato 1 | Dato 2 |",
+    ].join("\n"), { titleFallback: "Tabla" });
+    const parsed = parseAulaDocument({
+      schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
+      title: converted.title,
+      content: converted.content,
+    });
+
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.document.content.content?.[0]?.type).toBe("table");
+    expect(documentToMarkdown(parsed.document)).toContain("| Columna A | Columna B |");
+    expect(documentToMarkdown(parsed.document)).toContain("| Dato 1 | Dato 2 |");
+  });
+
   it("exporta título, formato, listas y Mermaid", () => {
     const markdown = documentToMarkdown(source);
     expect(markdown).toMatch(/^# Mi documento/);

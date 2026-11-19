@@ -63,12 +63,12 @@
 
 ### Fase 2 — Importación DOCX/PPTX
 
-- [ ] Añadir Office como origen de importación dentro de Aula Documentos, junto a Notas, Diagramas, Presentaciones y Markdown.
-- [ ] Leer DOCX/PPTX con los límites actuales del visor y mostrar vista previa, nombre, formato, tamaño, estadísticas y avisos.
-- [ ] Convertir a documento Aula: título, encabezados, párrafos, listas, tablas, enlaces e imágenes simples; saltos de diapositiva en PPTX.
-- [ ] Rechazar archivos cifrados, dañados, con macros o con contenido no soportado con mensajes claros.
-- [ ] Confirmar el reemplazo sin romper autosave, conflictos ni el botón de recuperación.
-- [ ] Cubrir con pruebas fixtures válidos, vacíos, grandes, corruptos y con elementos no representables.
+- [x] Añadir Office como origen de importación dentro de Aula Documentos, junto a Notas, Diagramas, Presentaciones y Markdown.
+- [x] Leer DOCX/PPTX con los límites actuales del visor y mostrar vista previa, nombre, formato, tamaño, estadísticas y avisos.
+- [x] Convertir a documento Aula: título, encabezados, párrafos, listas, tablas, enlaces e imágenes simples; saltos de diapositiva en PPTX.
+- [x] Rechazar archivos cifrados, dañados, con macros o con contenido no soportado con mensajes claros.
+- [x] Confirmar el reemplazo sin romper autosave, conflictos ni el botón de recuperación.
+- [x] Cubrir con pruebas fixtures válidos, vacíos, grandes, corruptos y con elementos no representables.
 - **Criterios de aceptación:**
   - Un DOCX/PPTX válido genera un documento Aula válido y editable.
   - Los avisos explican qué se ha perdido antes de reemplazar.
@@ -121,3 +121,4 @@
 - No se mueven raíces de apps en este roadmap. Lo compartido sube a `app/board/shared` o a `lib`.
 - El Site sigue en `1.1.36`; no se publica nada desde este roadmap.
 - 2026-11-19: Fase 1 completada. El visor y su modelo se movieron a `app/board/shared/office/`; `visor-office` conserva su entrada y comportamiento mediante una cáscara. Medidos fixtures DOCX (9.850 B) y PPTX (51.679 B) con el motor headless: encabezado `Heading1`, enlace, viñetas, tabla 2×2 y dos diapositivas. Elegidos `docx` 9.16.0 y `pptxgenjs` 4.0.1 (MIT); los chunks de exportación miden **196.481 B gzip** y quedan con objetivo provisional de 210.000 B medido con `npm run perf:office`. XLSX se queda en el visor por ahora. Matriz y mediciones en [`docs/Store/apps/office.md`](../../Store/apps/office.md). Suite completa: 216 archivos / 1.526 pruebas; `tsc`, ESLint, build y `perf:budget` correctos.
+- 2026-11-19: Fase 2 completada. Aula Documentos importa DOCX/PPTX desde su diálogo, con vista previa, estadísticas, avisos, límite de 30 MB y rechazo de XLSX, cifrados, dañados y paquetes con macros. La conversión conserva título, párrafos, encabezados, listas, enlaces, tablas y saltos de diapositiva; las imágenes y las notas del orador se omiten con aviso. Añadidas tablas Tiptap al documento, su validación, Markdown y exportación HTML. Verificado en la app real con los dos fixtures: DOCX con tabla renderizada y PPTX con título útil y dos diapositivas. Suite completa: 218 archivos / 1.536 pruebas; `tsc`, ESLint, build, `perf:budget` y `perf:office` correctos.

@@ -99,6 +99,10 @@ const ALLOWED_NODES = new Set([
   "horizontalRule",
   "mermaidBlock",
   "slideBreak",
+  "table",
+  "tableRow",
+  "tableHeader",
+  "tableCell",
 ]);
 
 const ALLOWED_MARKS = new Set(["bold", "italic", "underline", "strike", "code", "link"]);

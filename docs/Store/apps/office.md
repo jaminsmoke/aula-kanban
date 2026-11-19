@@ -24,7 +24,7 @@ Extracción con el motor headless de `@silurus/ooxml`:
 
 - DOCX: 5 elementos de cuerpo; `styleId: "Heading1"` en el título; `isLink` y `hyperlink` en el enlace; `numbering.format: "bullet"` en las listas; tabla con 2 filas.
 - PPTX: 2 diapositivas; texto de títulos y párrafos recuperable por diapositiva.
-- La prueba Node usa los modelos materializados. La proyección `toMarkdown()` del navegador se validará con la app real porque necesita `Worker` y los recursos WASM del visor.
+- La proyección `toMarkdown()` se validó en la app real: el DOCX conserva párrafo, enlace, lista y tabla; el PPTX conserva dos diapositivas y sus saltos. Las imágenes y las notas del orador se omiten con aviso.
 - Los fixtures viven en `app/board/shared/office/__fixtures__/` y tienen una prueba en `office-fixtures.test.ts`.
 
 Coste de exportación medido con esbuild, minificado y comprimido con gzip:
@@ -49,7 +49,7 @@ Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de 
 | Listas | Sí, viñetas y numeración | Sí, básico | Niveles anidados limitados. |
 | Tablas | Sí, celdas y filas | Sí, tablas simples | Sin fórmulas ni estilos complejos. |
 | Enlaces | Sí | Sí | Se eliminan o aíslan enlaces externos peligrosos. |
-| Imágenes simples | A validar en Fase 2 | Sí, si están en el modelo | Sin efectos, posiciones flotantes ni recursos externos. |
+| Imágenes simples | Se omiten con aviso | Sí, si están en el modelo | La primera versión no guarda imágenes importadas. |
 | Cabeceras, pies, notas y comentarios | No garantizado | No | Se avisa si el documento los contiene. |
 | Columnas, cuadros de texto, formas y SmartArt | No | No | Se pierde la maquetación visual. |
 | Ecuaciones complejas y contenido activo | No | No | Nunca se ejecutan macros. |
@@ -61,24 +61,24 @@ Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de 
 | Número y orden de diapositivas | Sí | Sí | Una diapositiva Aula por diapositiva de salida. |
 | Títulos y texto | Sí | Sí | Se conserva el texto y los párrafos. |
 | Viñetas y niveles | Sí, si el modelo las expone | Sí, básico | Puede simplificarse. |
-| Imágenes simples | A validar en Fase 2 | Sí, si están en el modelo | Sin animaciones ni transiciones. |
+| Imágenes simples | Se omiten con aviso | Sí, si están en el modelo | La primera versión no guarda imágenes importadas. |
 | Tablas y gráficos | Limitado / a validar | Tablas simples | Los gráficos no se reconstruyen como objetos editables. |
 | Posiciones, temas y patrones | No | No | Se genera un diseño Aula estándar. |
 | Animaciones, transiciones y multimedia | No | No | Fuera de alcance. |
-| Notas del orador | A validar | Solo si el modelo las conserva | No bloquear la primera entrega. |
+| Notas del orador | Se omiten con aviso | Solo si el modelo las conserva | No bloquean la primera entrega. |
 
 ## 4. Límites y errores
 
 - Tamaño máximo inicial: **30 MB**, el mismo que el visor actual.
 - Rechazo de archivos cifrados, dañados, con formato distinto o con contenido no soportado.
-- Sin macros, sin ejecución de JavaScript incrustado y sin carga automática de recursos externos.
+- Rechazo de paquetes que contienen `vbaProject.bin`; las macros nunca se ejecutan.
+- Sin ejecución de JavaScript incrustado ni carga automática de recursos externos.
 - Los avisos se muestran antes de confirmar la importación.
 - La exportación no incluye macros ni enlaces externos no revisados.
 
 ## 5. Decisiones pendientes para Fase 2/3
 
-- Validar si `toMarkdown()` conserva encabezados, tablas e imágenes en el navegador real.
-- Decidir si las imágenes simples se importan como recursos del documento o se describen como omitidas.
+- Validar la importación con más DOCX/PPTX reales y con archivos de varias versiones.
 - Decidir si el archivo original se guarda como adjunto y con qué límite.
 - Validar la exportación con Office real y con archivos de varias versiones.
 - Fijar el presupuesto definitivo de los chunks de exportación en `perf:budget`.

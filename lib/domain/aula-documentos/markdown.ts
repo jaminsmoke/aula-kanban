@@ -93,6 +93,72 @@ function nodeText(node: JSONContent): string {
 }
 
 /**
+ * Divide una fila de tabla Markdown en celdas.
+ * @param line - Línea con pipes.
+ * @returns Las celdas recortadas.
+ */
+function tableCells(line: string): string[] {
+  return line.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim());
+}
+
+/**
+ * Indica si una línea es el separador de una tabla GFM.
+ * @param line - Línea candidata.
+ * @returns `true` si todas sus celdas son separadores.
+ */
+function isTableSeparator(line: string): boolean {
+  const cells = tableCells(line);
+  return cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell));
+}
+
+/**
+ * Convierte una tabla GFM en nodos Tiptap.
+ * @param header - Celdas de cabecera.
+ * @param rows - Filas de datos.
+ * @returns El nodo de tabla.
+ */
+function tableNode(header: string[], rows: string[][]): JSONContent {
+  const width = Math.max(header.length, ...rows.map((row) => row.length), 1);
+  const cell = (text: string, type: "tableHeader" | "tableCell"): JSONContent => ({
+    type,
+    content: [paragraph(text)],
+  });
+  return {
+    type: "table",
+    content: [
+      {
+        type: "tableRow",
+        content: Array.from({ length: width }, (_, column) => cell(header[column] ?? "", "tableHeader")),
+      },
+      ...rows.map((row) => ({
+        type: "tableRow",
+        content: Array.from({ length: width }, (_, column) => cell(row[column] ?? "", "tableCell")),
+      })),
+    ],
+  };
+}
+
+/**
+ * Convierte un nodo de tabla a Markdown GFM.
+ * @param node - Nodo de tabla.
+ * @returns Markdown de la tabla.
+ */
+function tableToMarkdown(node: JSONContent): string {
+  const rows = node.content ?? [];
+  const cells = (row: JSONContent): string[] => (row.content ?? []).map((cell) => (
+    nodeText(cell).replace(/\|/g, "\\|").replace(/\s+/g, " ").trim()
+  ));
+  const header = rows[0] ? cells(rows[0]) : [];
+  const width = Math.max(header.length, ...rows.slice(1).map((row) => cells(row).length), 1);
+  const line = (values: string[]) => `| ${Array.from({ length: width }, (_, index) => values[index] ?? "").join(" | ")} |`;
+  return [
+    line(header),
+    line(Array.from({ length: width }, () => "---")),
+    ...rows.slice(1).map((row) => line(cells(row))),
+  ].join("\n");
+}
+
+/**
  * Indica si una línea empieza un bloque distinto de un párrafo.
  * @param line - Línea ya recortada.
  * @returns `true` si no debe continuar el párrafo.
@@ -101,6 +167,7 @@ function startsBlock(line: string): boolean {
   return /^(#{1,3})\s+/.test(line)
     || line.startsWith("```")
     || line.startsWith("> ")
+    || line.startsWith("|")
     || /^[-*]\s+/.test(line)
     || /^\d+\.\s+/.test(line)
     || line === "---";
@@ -166,6 +233,18 @@ function parseBlocks(source: string, warnings: string[]): JSONContent[] {
         ...(content.length ? { content } : {}),
       });
       index += 1;
+      continue;
+    }
+
+    if (line.startsWith("|") && isTableSeparator(lines[index + 1]?.trim() ?? "")) {
+      const header = tableCells(line);
+      const rows: string[][] = [];
+      index += 2;
+      while (index < lines.length && lines[index].trim().startsWith("|")) {
+        rows.push(tableCells(lines[index].trim()));
+        index += 1;
+      }
+      blocks.push(tableNode(header, rows));
       continue;
     }
 
@@ -387,6 +466,7 @@ function blockToMarkdown(node: JSONContent): string {
     const code = typeof node.attrs?.code === "string" ? node.attrs.code : "";
     return `\`\`\`mermaid\n${code}\n\`\`\``;
   }
+  if (node.type === "table") return tableToMarkdown(node);
   if (node.type === "slideBreak" || node.type === "horizontalRule") return "---";
   return (node.content ?? []).map((child) => blockToMarkdown(child)).join("\n\n");
 }

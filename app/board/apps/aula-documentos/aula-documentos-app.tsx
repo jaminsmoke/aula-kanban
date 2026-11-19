@@ -59,7 +59,6 @@ import {
 import {
   importLegacyDocument,
   type AulaDocumentImportPreview,
-  type AulaDocumentImportSource,
 } from "../../../../lib/domain/aula-documentos/importers";
 import { aulaFileName, aulaRecoveryFileName } from "../../../../lib/domain/aula-documentos/filename";
 import {
@@ -84,6 +83,7 @@ import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useAppDocument, type VersionedSaveResult } from "../use-app-document";
 import { useWindowClose, useWindowCloseGuard } from "../../shared/window-close-guard";
 import type { StoreRole } from "../types";
+import { importOfficeFile } from "../../shared/office/office-import";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
 import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
 import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../../shared/aula-documentos/mermaid-block";
@@ -158,11 +158,12 @@ const EMPTY_TOOLBAR_STATE: ToolbarState = {
   canRedo: false,
 };
 
-const IMPORT_LABELS: Record<AulaDocumentImportSource | "markdown", string> = {
+const IMPORT_LABELS: Record<AulaDocumentImportPreview["source"], string> = {
   documentos: "Notas y documentos",
   mermaid: "Diagramas",
   presentaciones: "Presentaciones",
   markdown: "Markdown",
+  office: "Documento de Office",
 };
 
 type ImportPreviewState = AulaDocumentImportPreview & {
@@ -1266,6 +1267,33 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }
 
   /**
+   * Lee un DOCX/PPTX y prepara su vista previa.
+   * @param file - Archivo elegido.
+   */
+  async function importOffice(file: File | undefined) {
+    if (!file) return;
+    setImportLoading("office");
+    setImportError(null);
+    setImportPreview(null);
+    setImportConfirm(false);
+    try {
+      const result = await importOfficeFile(file);
+      if (!result.ok) {
+        setImportError(result.message);
+        return;
+      }
+      setImportPreview({
+        ...result.preview,
+        sourceUpdatedAt: null,
+      });
+    } catch {
+      setImportError("No se pudo leer el archivo de Office.");
+    } finally {
+      setImportLoading(null);
+    }
+  }
+
+  /**
    * Sustituye el documento actual por la vista previa confirmada.
    */
   function applyImport() {
@@ -1348,7 +1376,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     : "";
   const importSourceUpdatedLabel = importPreview ? formatSourceDate(importPreview.sourceUpdatedAt) : null;
   const importSourceDate = importPreview
-    ? importPreview.source === "markdown"
+    ? importPreview.source === "markdown" || importPreview.source === "office"
       ? "Archivo local"
       : importSourceUpdatedLabel
         ? `Actualizado en el origen: ${importSourceUpdatedLabel}`
@@ -2113,7 +2141,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                   </ul>
                 ) : null}
                 <p className="aula-documentos-import-warning">
-                  Se sustituirá el documento abierto. El documento de la app original no se modifica.
+                  Se sustituirá el documento abierto. {importPreview.source === "office"
+                    ? "El archivo de Office no se modifica."
+                    : "El documento de la app original no se modifica."}
                 </p>
                 <label className="aula-documentos-import-confirm">
                   <input
@@ -2148,7 +2178,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             ) : (
               <div className="aula-documentos-import-menu">
                 <p className="aula-documentos-import-intro">
-                  Elige una app del proyecto o un archivo Markdown. La vista previa no cambia el origen.
+                  Elige una app del proyecto, un archivo Markdown o un DOCX/PPTX. La vista previa no cambia el origen.
                 </p>
                 <button type="button" className="aula-documentos-import-option" onClick={() => { void importFrom("documentos"); }}>
                   <FileText size={18} aria-hidden />
@@ -2162,6 +2192,21 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                   <Presentation size={18} aria-hidden />
                   <span><strong>Presentaciones</strong><small>Diapositivas Markdown con saltos</small></span>
                 </button>
+                <label className="aula-documentos-import-option" htmlFor="aula-documentos-office-file">
+                  <Upload size={18} aria-hidden />
+                  <span><strong>Documento de Office</strong><small>DOCX o PPTX con vista previa; XLSX se consulta en el visor</small></span>
+                </label>
+                <input
+                  id="aula-documentos-office-file"
+                  className="aula-documentos-file-input"
+                  type="file"
+                  accept=".docx,.pptx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                    const file = event.currentTarget.files?.[0];
+                    event.currentTarget.value = "";
+                    void importOffice(file);
+                  }}
+                />
                 <label className="aula-documentos-import-option" htmlFor="aula-documentos-markdown-file">
                   <NotebookPen size={18} aria-hidden />
                   <span><strong>Archivo Markdown</strong><small>Importa .md o .markdown con vista previa</small></span>
@@ -2217,6 +2262,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           <section className="aula-documentos-info">
             <h3>Texto y diagramas juntos</h3>
             <p>Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa.</p>
+            <p>También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad. XLSX se consulta en Visor Office.</p>
             <p className="aula-documentos-status" role="status" aria-live="polite">{statusText}</p>
             {saveFailed && !readOnly ? (
               <button
