@@ -16,6 +16,11 @@ El catálogo visible en la tienda y los ids que acepta la API están en
 `lib/native-apps.ts`, que es data pura y también se importa desde el servidor.
 La API no debe tener su propia lista de ids: usa `NATIVE_APP_IDS`.
 
+Si una app comparte una experiencia con otra, el componente reutilizable vive
+en `app/board/shared/` o en `lib`; `apps/<id>/` conserva la cáscara, el registro
+y sus pruebas. Por ejemplo, `visor-office` usa `shared/office/office-viewer` y
+Aula Documentos podrá consumir el mismo visor.
+
 ## Añadir una app
 
 1. Crea `apps/<id>/` con su componente y sus estilos. No importes archivos de

@@ -105,7 +105,7 @@ function viewers(kind: string) {
 }
 
 import VisorOfficeApp from "./visor-office-app";
-import { MAX_OFFICE_FILE_BYTES } from "./visor-office-model";
+import { MAX_OFFICE_FILE_BYTES } from "../../shared/office/office-model";
 
 /**
  * Crea un archivo falso con `arrayBuffer` controlado.

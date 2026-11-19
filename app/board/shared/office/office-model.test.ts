@@ -6,7 +6,7 @@ import {
   officeErrorMessage,
   officeFormatLabel,
   validateOfficeFile,
-} from "./visor-office-model";
+} from "./office-model";
 
 describe("modelo de Visor Office", () => {
   it("detecta los tres formatos admitidos sin distinguir mayúsculas", () => {

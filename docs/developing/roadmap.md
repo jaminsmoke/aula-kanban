@@ -50,12 +50,12 @@
 
 ### Fase 1 — Spike, visor compartido y matriz de fidelidad
 
-- [ ] Medir la extracción headless de `DocxDocument` y `PptxPresentation`: texto, encabezados, listas, tablas, enlaces, imágenes y saltos.
-- [ ] Extraer el visor y sus modelos a `app/board/shared/office/` y adaptar `visor-office` sin cambiar su comportamiento.
-- [ ] Elegir las librerías de generación DOCX/PPTX y medir su coste con import dinámico.
-- [ ] Fijar la matriz de qué se conserva, qué se advierte y qué se descarta en importación y exportación.
-- [ ] Decidir si XLSX se queda solo en el visor o se importa como tablas en Aula Documentos.
-- [ ] Añadir fixtures DOCX/PPTX y un primer presupuesto de rendimiento.
+- [x] Medir la extracción headless de `DocxDocument` y `PptxPresentation`: texto, encabezados, listas, tablas, enlaces, imágenes y saltos.
+- [x] Extraer el visor y sus modelos a `app/board/shared/office/` y adaptar `visor-office` sin cambiar su comportamiento.
+- [x] Elegir las librerías de generación DOCX/PPTX y medir su coste con import dinámico.
+- [x] Fijar la matriz de qué se conserva, qué se advierte y qué se descarta en importación y exportación.
+- [x] Decidir si XLSX se queda solo en el visor o se importa como tablas en Aula Documentos.
+- [x] Añadir fixtures DOCX/PPTX y un primer presupuesto de rendimiento.
 - **Criterios de aceptación:**
   - El visor actual sigue abriendo sus tres formatos sin regresiones.
   - La extracción y la exportación producen resultados reproducibles y medibles.
@@ -120,3 +120,4 @@
 - El visor Office actual usa `@silurus/ooxml` 0.90.1 en solo lectura y sirve como referencia de límites y errores.
 - No se mueven raíces de apps en este roadmap. Lo compartido sube a `app/board/shared` o a `lib`.
 - El Site sigue en `1.1.36`; no se publica nada desde este roadmap.
+- 2026-11-19: Fase 1 completada. El visor y su modelo se movieron a `app/board/shared/office/`; `visor-office` conserva su entrada y comportamiento mediante una cáscara. Medidos fixtures DOCX (9.850 B) y PPTX (51.679 B) con el motor headless: encabezado `Heading1`, enlace, viñetas, tabla 2×2 y dos diapositivas. Elegidos `docx` 9.16.0 y `pptxgenjs` 4.0.1 (MIT); los chunks de exportación miden **196.481 B gzip** y quedan con objetivo provisional de 210.000 B. XLSX se queda en el visor por ahora. Matriz y mediciones en [`docs/Store/apps/office.md`](../../Store/apps/office.md). Suite completa: 216 archivos / 1.526 pruebas; `tsc`, ESLint, build y `perf:budget` correctos.
