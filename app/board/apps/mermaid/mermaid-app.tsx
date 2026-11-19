@@ -1,65 +1,108 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useAppDocument } from "../use-app-document";
+import type { StoreRole } from "../types";
+import { useVersionedDraft } from "../use-versioned-draft";
+import { useWindowClose } from "../../store/window-close-guard";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useMermaidPreview } from "./use-mermaid-preview";
+import { mermaidFileName } from "./mermaid-filename";
+import VersionConflictDialog from "../version-conflict-dialog";
+import UnsavedChangesDialog from "../unsaved-changes-dialog";
 import "./mermaid.css";
 
 /**
  * Editor de diagramas Mermaid con vista previa, plantillas, guardado por
  * proyecto y exportación en SVG.
- * @param props - Proyecto activo.
+ * @param props - Proyecto activo y rol del usuario.
  * @returns El editor y la vista previa del diagrama.
  */
-export default function MermaidApp({ projectId }: { projectId: string }) {
+export default function MermaidApp({ projectId, role }: { projectId: string; role: StoreRole }) {
   const { code, setCode, svg, error, clear } = useMermaidPreview(MERMAID_TEMPLATES[0].code);
-  const [status, setStatus] = useState("");
+  const [flashStatus, setFlashStatus] = useState("");
+  const [closePromptOpen, setClosePromptOpen] = useState(false);
   const statusTimer = useRef<number | null>(null);
+  const fallbackChecked = useRef(false);
   const editor = useRef<HTMLTextAreaElement>(null);
+  const readOnly = role === "guest";
+  const forceClose = useWindowClose();
 
   const storageKey = `aula.mermaid.${projectId}`;
-  const { load: loadDocument, save: saveDocument } = useAppDocument<{ code: string }>(projectId, "mermaid");
+  const draft = useVersionedDraft<{ code: string }>({
+    projectId,
+    appId: "mermaid",
+    getValue: () => ({ code }),
+    applyLoaded: (loaded) => {
+      if (!loaded || typeof loaded.code !== "string") return false;
+      setCode(loaded.code);
+      return true;
+    },
+    readOnly,
+    formatCopy: (value) => ({
+      contents: JSON.stringify(value, null, 2),
+      type: "application/json;charset=utf-8",
+      fileName: mermaidFileName(value.code).replace(/\.svg$/, "-recuperacion.json"),
+    }),
+    onCloseBlocked: () => setClosePromptOpen(true),
+  });
 
   const flash = useCallback((message: string) => {
-    setStatus(message);
+    setFlashStatus(message);
     if (statusTimer.current) window.clearTimeout(statusTimer.current);
-    statusTimer.current = window.setTimeout(() => setStatus(""), 2400);
+    statusTimer.current = window.setTimeout(() => setFlashStatus(""), 2400);
   }, []);
 
-  // Carga inicial: base de datos y, si falla, respaldo local.
+  const { ready: draftReady, updatedAt: draftUpdatedAt, dirty: draftDirty, markDirty } = draft;
+
   useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const document = await loadDocument();
-      if (!cancelled && document.state?.code) { setCode(document.state.code); return; }
+    if (!draftReady || draftDirty || fallbackChecked.current || readOnly || draftUpdatedAt !== null) return;
+    fallbackChecked.current = true;
+    const timer = window.setTimeout(() => {
       try {
         const saved = window.localStorage.getItem(storageKey);
-        if (!cancelled && saved) setCode(saved);
+        if (!saved) return;
+        setCode(saved);
+        markDirty("Diagrama recuperado de este navegador.");
+        flash("Diagrama recuperado de este navegador");
       } catch {
         /* sin respaldo local */
       }
-    })();
-    return () => { cancelled = true; };
-  }, [loadDocument, storageKey, setCode]);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [draftDirty, draftReady, draftUpdatedAt, flash, markDirty, readOnly, setCode, storageKey]);
 
   const save = async () => {
+    if (readOnly) return;
     try {
       window.localStorage.setItem(storageKey, code);
     } catch {
       /* sin respaldo local */
     }
-    const saved = await saveDocument({ code: code });
-    flash(saved ? "Diagrama guardado" : "Guardado solo en este navegador");
+    const saved = await draft.save(false);
+    flash(saved ? "Diagrama guardado" : "No se pudo guardar el diagrama");
+  };
+
+  const saveAndClose = async () => {
+    setClosePromptOpen(false);
+    if (await draft.save(false)) forceClose();
   };
 
   const load = async () => {
+    if (readOnly) return;
+    if (draft.dirty && !window.confirm("Se reemplazará el diagrama actual. ¿Continuar?")) return;
+    const loaded = await draft.reload();
+    if (loaded) {
+      flash("Diagrama cargado");
+      return;
+    }
     try {
-      const document = await loadDocument();
-      if (document.state?.code) { setCode(document.state.code); flash("Diagrama cargado"); return; }
       const saved = window.localStorage.getItem(storageKey);
-      if (!saved) { flash("No hay ningún diagrama guardado"); return; }
+      if (!saved) {
+        flash("No hay ningún diagrama guardado");
+        return;
+      }
       setCode(saved);
+      draft.markDirty("Diagrama cargado del navegador.");
       flash("Diagrama cargado del navegador");
     } catch {
       flash("No se pudo cargar el diagrama");
@@ -67,47 +110,69 @@ export default function MermaidApp({ projectId }: { projectId: string }) {
   };
 
   const exportSvg = () => {
-    if (!svg) { flash("Todavía no hay diagrama que exportar"); return; }
+    if (!svg) {
+      flash("Todavía no hay diagrama que exportar");
+      return;
+    }
     const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `diagrama-${projectId}.svg`;
+    link.download = mermaidFileName(code);
     link.click();
     URL.revokeObjectURL(url);
     flash("Diagrama exportado");
   };
 
   const clearEditor = () => {
+    if (readOnly) return;
+    if (draft.dirty && !window.confirm("Se limpiará el diagrama actual. ¿Continuar?")) return;
     clear();
+    draft.markDirty("Editor limpiado.");
     flash("Editor limpiado");
   };
 
   const applyTemplate = (id: string) => {
+    if (readOnly) return;
     const template = MERMAID_TEMPLATES.find((item) => item.id === id);
     if (!template) return;
+    if (draft.dirty && !window.confirm("Se reemplazará el diagrama actual. ¿Continuar?")) return;
     setCode(template.code);
+    draft.markDirty(`Plantilla: ${template.label}`);
     flash(`Plantilla: ${template.label}`);
   };
+
+  const statusText = flashStatus || draft.error || draft.status;
+  const busy = draft.loading || draft.saving;
 
   return (
     <div className="mermaid-app">
       <div className="mermaid-toolbar">
         <label className="mermaid-template">
           <span>Plantilla</span>
-          <select defaultValue="" onChange={(event) => { if (event.target.value) applyTemplate(event.target.value); }}>
+          <select
+            defaultValue=""
+            disabled={readOnly || busy || Boolean(draft.conflict)}
+            onChange={(event) => { if (event.target.value) applyTemplate(event.target.value); }}
+          >
             <option value="" disabled>Elegir…</option>
             {MERMAID_TEMPLATES.map((template) => (
               <option key={template.id} value={template.id}>{template.label}</option>
             ))}
           </select>
         </label>
-        <button type="button" onClick={() => void save()}>Guardar</button>
-        <button type="button" onClick={() => void load()}>Cargar</button>
+        <button type="button" onClick={() => void save()} disabled={readOnly || busy || Boolean(draft.conflict)}>Guardar</button>
+        <button type="button" onClick={() => void load()} disabled={readOnly || busy || Boolean(draft.conflict)}>Cargar</button>
         <button type="button" onClick={exportSvg}>Exportar SVG</button>
-        <button type="button" onClick={clearEditor}>Limpiar</button>
-        <span className="mermaid-status" role="status">{status}</span>
+        <button type="button" onClick={clearEditor} disabled={readOnly || busy || draft.conflict !== null}>Limpiar</button>
+        <span className="mermaid-status" role="status">{statusText}</span>
       </div>
+
+      {readOnly ? (
+        <p className="mermaid-readonly" role="note">
+          Modo lectura: puedes consultar y exportar el diagrama, pero no editarlo ni guardarlo.
+        </p>
+      ) : null}
 
       <div className="mermaid-body">
         <div className="mermaid-editor">
@@ -117,15 +182,21 @@ export default function MermaidApp({ projectId }: { projectId: string }) {
             ref={editor}
             value={code}
             spellCheck={false}
-            onChange={(event) => setCode(event.target.value)}
+            readOnly={readOnly}
+            onChange={(event) => {
+              if (readOnly) return;
+              setCode(event.target.value);
+              draft.markDirty("Diagrama modificado.");
+            }}
             onKeyDown={(event) => {
-              if (event.key !== "Tab") return;
+              if (event.key !== "Tab" || readOnly) return;
               event.preventDefault();
               const target = event.currentTarget;
               const start = target.selectionStart;
               const end = target.selectionEnd;
               const next = `${code.slice(0, start)}  ${code.slice(end)}`;
               setCode(next);
+              draft.markDirty("Diagrama modificado.");
               window.requestAnimationFrame(() => {
                 editor.current?.setSelectionRange(start + 2, start + 2);
               });
@@ -143,6 +214,28 @@ export default function MermaidApp({ projectId }: { projectId: string }) {
           </div>
         </div>
       </div>
+
+      <UnsavedChangesDialog
+        open={closePromptOpen}
+        busy={draft.saving}
+        notice={draft.saveFailed ? draft.status : null}
+        onStay={() => setClosePromptOpen(false)}
+        onDiscard={() => {
+          setClosePromptOpen(false);
+          forceClose();
+        }}
+        onSave={() => { void saveAndClose(); }}
+      />
+
+      <VersionConflictDialog
+        open={Boolean(draft.conflict)}
+        serverUpdatedAt={draft.conflict?.serverUpdatedAt ?? null}
+        notice={draft.conflictNotice}
+        busy={draft.saving}
+        onDownload={() => { draft.downloadCopy(); }}
+        onReload={() => { void draft.reloadServerVersion(); }}
+        onKeepMine={() => { void draft.keepMineVersion(); }}
+      />
     </div>
   );
 }

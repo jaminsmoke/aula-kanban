@@ -19,6 +19,7 @@
 .mermaid-template select:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:1px; }
 
 .mermaid-status { margin-left:auto; color:var(--ui-text-muted); font-size:11.5px; font-weight:650; }
+.mermaid-readonly { flex:none; margin:0; padding:7px 12px; border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle); background:var(--ui-surface-muted); color:var(--ui-text-muted); font-size:11.5px; line-height:1.4; }
 
 .mermaid-body { flex:1 1 auto; min-height:0; display:flex; }
 

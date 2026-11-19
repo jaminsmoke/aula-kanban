@@ -24,7 +24,11 @@ import {
   Undo2,
 } from "lucide-react";
 import type { StoreRole } from "../types";
-import { useAppDocument } from "../use-app-document";
+import { useVersionedDraft } from "../use-versioned-draft";
+import { useWindowClose } from "../../store/window-close-guard";
+import { aulaFileName } from "../../../../lib/domain/aula-documentos/filename";
+import VersionConflictDialog from "../version-conflict-dialog";
+import UnsavedChangesDialog from "../unsaved-changes-dialog";
 import { createDocumentExtensions } from "./documentos-editor";
 import { buildNotesHtml } from "./documentos-export";
 import {
@@ -113,19 +117,56 @@ function ToolButton({ action }: { action: ToolbarAction }) {
 export default function DocumentosApp({ projectId, role }: { projectId: string; role: StoreRole }) {
   const [initialDocument] = useState(createStarterDocument);
   const [title, setTitle] = useState(initialDocument.title);
-  const [dirty, setDirty] = useState(false);
   const [wordCount, setWordCount] = useState(0);
-  const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState("Cargando documento…");
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const [linkError, setLinkError] = useState<string | null>(null);
+  const [closePromptOpen, setClosePromptOpen] = useState(false);
   const linkInputRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<Editor | null>(null);
   const pendingDocumentRef = useRef<NotesDocument | null>(null);
   const applyingDocumentRef = useRef(false);
-  const { load, save, loading, error } = useAppDocument<NotesDocument>(projectId, "documentos");
   const readOnly = role === "guest";
+  const forceClose = useWindowClose();
+
+  /**
+   * Aplica un documento validado al editor y al título.
+   * @param document - Documento que se muestra.
+   */
+  const applyDocument = useCallback((document: NotesDocument) => {
+    pendingDocumentRef.current = document;
+    setTitle(document.title);
+    const current = editorRef.current;
+    if (current) {
+      applyingDocumentRef.current = true;
+      current.commands.setContent(document.content, { emitUpdate: false });
+      setWordCount(countWords(current.getText()));
+      window.setTimeout(() => { applyingDocumentRef.current = false; }, 0);
+    }
+  }, []);
+
+  const draft = useVersionedDraft<NotesDocument>({
+    projectId,
+    appId: "documentos",
+    getValue: () => {
+      const current = editorRef.current;
+      if (!current) return null;
+      return parseNotesDocument({ title, content: current.getJSON() });
+    },
+    applyLoaded: (loaded) => {
+      const parsed = parseNotesDocument(loaded);
+      if (!parsed) return false;
+      applyDocument(parsed);
+      return true;
+    },
+    readOnly,
+    formatCopy: (document) => ({
+      contents: JSON.stringify(document, null, 2),
+      type: "application/json;charset=utf-8",
+      fileName: aulaFileName(document.title, "json", "notas"),
+    }),
+    onCloseBlocked: () => setClosePromptOpen(true),
+  });
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -148,7 +189,6 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
         applyingDocumentRef.current = true;
         current.commands.setContent(pending.content, { emitUpdate: false });
         setWordCount(countWords(current.getText()));
-        setDirty(false);
         window.setTimeout(() => { applyingDocumentRef.current = false; }, 0);
       }
     },
@@ -156,8 +196,7 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
       if (!transaction.docChanged) return;
       setWordCount(countWords(current.getText()));
       if (applyingDocumentRef.current) return;
-      setDirty(true);
-      setStatus("Documento modificado.");
+      draft.markDirty();
     },
   });
 
@@ -186,42 +225,6 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
     },
   }) ?? EMPTY_TOOLBAR_STATE;
 
-  /**
-   * Aplica un documento validado al editor y al título.
-   * @param document - Documento que se muestra.
-   */
-  const applyDocument = useCallback((document: NotesDocument) => {
-    pendingDocumentRef.current = document;
-    setTitle(document.title);
-    const current = editorRef.current;
-    if (current) {
-      applyingDocumentRef.current = true;
-      current.commands.setContent(document.content, { emitUpdate: false });
-      setWordCount(countWords(current.getText()));
-      window.setTimeout(() => { applyingDocumentRef.current = false; }, 0);
-    }
-    setDirty(false);
-    setStatus("Documento guardado cargado.");
-  }, []);
-
-  useEffect(() => {
-    let active = true;
-    void load().then(({ state }) => {
-      if (!active) return;
-      if (state === null) {
-        setStatus("Documento de ejemplo listo. Guarda para conservarlo.");
-        return;
-      }
-      const parsed = parseNotesDocument(state);
-      if (parsed) {
-        applyDocument(parsed);
-      } else {
-        setStatus("No hay un documento guardado válido; se mantiene el ejemplo.");
-      }
-    });
-    return () => { active = false; };
-  }, [load, applyDocument]);
-
   useEffect(() => {
     editor?.setEditable(!readOnly);
   }, [editor, readOnly]);
@@ -236,8 +239,7 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
    */
   function updateTitle(value: string) {
     setTitle(value);
-    setDirty(true);
-    setStatus("Título actualizado.");
+    draft.markDirty("Título actualizado.");
   }
 
   /**
@@ -265,8 +267,7 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
     setLinkOpen(false);
     setLinkUrl("");
     setLinkError(null);
-    setDirty(true);
-    setStatus("Enlace aplicado.");
+    draft.markDirty("Enlace aplicado.");
   }
 
   /**
@@ -278,8 +279,7 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
     setLinkOpen(false);
     setLinkUrl("");
     setLinkError(null);
-    setDirty(true);
-    setStatus("Enlace retirado.");
+    draft.markDirty("Enlace retirado.");
   }
 
   /**
@@ -296,21 +296,15 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
    */
   async function saveDocument() {
     if (readOnly) return;
-    const document = currentDocument();
-    if (!document) {
-      setStatus("No se pudo validar el documento; no se ha guardado.");
-      return;
-    }
-    setSaving(true);
-    const ok = await save(document);
-    setSaving(false);
-    if (ok) {
-      setTitle(document.title);
-      setDirty(false);
-      setStatus("Documento guardado en el proyecto.");
-    } else {
-      setStatus("No se pudo guardar el documento. Revisa la conexión.");
-    }
+    await draft.save(false);
+  }
+
+  /**
+   * Guarda y cierra la ventana, o mantiene el aviso si falla.
+   */
+  async function saveAndClose() {
+    setClosePromptOpen(false);
+    if (await draft.save(false)) forceClose();
   }
 
   /**
@@ -319,7 +313,7 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
   function exportHtml() {
     const note = currentDocument();
     if (!note) {
-      setStatus("No se pudo preparar el HTML del documento.");
+      draft.setStatus("No se pudo preparar el HTML del documento.");
       return;
     }
     try {
@@ -327,24 +321,43 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = "notas-documentos.html";
+      anchor.download = aulaFileName(note.title, "html", "notas");
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
-      setStatus("HTML descargado.");
+      draft.setStatus("HTML descargado.");
     } catch {
-      setStatus("No se pudo preparar el HTML del documento.");
+      draft.setStatus("No se pudo preparar el HTML del documento.");
     }
   }
 
-  const statusText = loading
+  const statusText = draft.loading
     ? "Cargando documento…"
-    : error ?? (dirty ? `${status} Cambios sin guardar.` : status);
+    : draft.error ?? (
+      draft.ready && draft.updatedAt === null && !draft.dirty && !draft.saveFailed
+        ? "Documento de ejemplo listo. Guarda para conservarlo."
+        : draft.dirty
+          ? `${draft.status} Cambios sin guardar.`
+          : draft.status
+    );
+  const chipText = readOnly
+    ? "Solo lectura"
+    : draft.conflict
+      ? "Conflicto sin resolver"
+      : draft.saving
+        ? "Guardando…"
+        : draft.saveFailed
+          ? "Error al guardar"
+          : draft.dirty
+            ? "Cambios sin guardar"
+            : draft.lastSavedAt
+              ? "Documento guardado"
+              : "Documento local";
   const fileActions: ToolbarAction[] = [
     {
       label: "Guardar documento",
-      disabled: readOnly || saving || loading || !editor,
+      disabled: readOnly || draft.saving || draft.loading || !editor || Boolean(draft.conflict),
       onClick: () => { void saveDocument(); },
       icon: <Save size={15} aria-hidden />,
     },
@@ -475,8 +488,8 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
           </span>
         </div>
         <div className="documentos-meta" aria-label="Estado del documento">
-          <span className={dirty && !readOnly ? "documentos-chip is-dirty" : "documentos-chip"}>
-            {readOnly ? "Solo lectura" : saving ? "Guardando…" : dirty ? "Cambios sin guardar" : "Documento local"}
+          <span className={draft.dirty && !readOnly ? "documentos-chip is-dirty" : "documentos-chip"}>
+            {chipText}
           </span>
           <span className="documentos-words">{wordCount} palabras</span>
         </div>
@@ -577,6 +590,28 @@ export default function DocumentosApp({ projectId, role }: { projectId: string; 
           </section>
         </aside>
       </div>
+
+      <UnsavedChangesDialog
+        open={closePromptOpen}
+        busy={draft.saving}
+        notice={draft.saveFailed ? draft.status : null}
+        onStay={() => setClosePromptOpen(false)}
+        onDiscard={() => {
+          setClosePromptOpen(false);
+          forceClose();
+        }}
+        onSave={() => { void saveAndClose(); }}
+      />
+
+      <VersionConflictDialog
+        open={Boolean(draft.conflict)}
+        serverUpdatedAt={draft.conflict?.serverUpdatedAt ?? null}
+        notice={draft.conflictNotice}
+        busy={draft.saving}
+        onDownload={() => { draft.downloadCopy(); }}
+        onReload={() => { void draft.reloadServerVersion(); }}
+        onKeepMine={() => { void draft.keepMineVersion(); }}
+      />
     </div>
   );
 }

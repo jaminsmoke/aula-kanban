@@ -25,9 +25,12 @@ La API no debe tener su propia lista de ids: usa `NATIVE_APP_IDS`.
    características y tamaño de ventana).
 3. Regístrala en `apps/registry.tsx`: icono en `ICONS` y componente lazy en
    `APPS`. El test `registry.test.ts` falla si falta alguno.
-4. Si guarda un documento, usa `useAppDocument(projectId, appId)` y
-   `/api/app-documents`: un estado JSON por proyecto y app. No crees una tabla
-   ni una ruta nuevas salvo que el dato no encaje en ese modelo.
+4. Si guarda un documento editable, usa `useVersionedDraft(projectId, appId)` y
+   `/api/app-documents`: aporta `getValue`/`applyLoaded` y obtén autosave,
+   conflicto y guarda de cierre sobre `saveVersioned`. No uses guardado
+   incondicional. Para lecturas o importaciones puntuales, `useAppDocument`
+   sigue siendo válido. No crees una tabla ni una ruta nuevas salvo que el dato
+   no encaje en ese modelo.
 5. Declara su superficie MCP en `lib/server/mcp/apps/registro.ts`. No pongas
    herramientas MCP en `app/board/apps/<id>/`: `lib` no puede importar desde
    `app` y la frontera está bloqueada por ESLint.
@@ -67,5 +70,6 @@ La versión de Aula Store vive en `AULA_STORE_VERSION` y se muestra en la cabece
   todos los roles.
 - La tienda solo pinta el catálogo; instalar o desinstalar llama a
   `/api/space-apps`.
-- `useAppDocument` lee y guarda en `app_documents`. Cada aplicación decide
-  si necesita implementar además un respaldo local por proyecto.
+- `useVersionedDraft` guarda con versión, autosave, conflicto y guarda de cierre.
+  `useAppDocument` queda para lecturas e importaciones puntuales. Cada
+  aplicación decide si necesita además un respaldo local por proyecto.

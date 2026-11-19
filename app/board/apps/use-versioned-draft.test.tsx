@@ -40,6 +40,33 @@ describe("motor de borrador versionado", () => {
     expect(result.current.status).toMatch(/cargado/);
   });
 
+  it("no pisa los cambios locales que llegan antes de terminar la carga", async () => {
+    let resolveFetch: (response: Response) => void = () => {};
+    const pending = new Promise<Response>((resolve) => { resolveFetch = resolve; });
+    vi.stubGlobal("fetch", vi.fn(() => pending));
+    const applyLoaded = vi.fn(() => true);
+    const { result } = renderHook(() => useVersionedDraft<{ code: string }>({
+      projectId: "p1",
+      appId: "mermaid",
+      getValue: () => ({ code: "local" }),
+      applyLoaded,
+      storage: null,
+      autosaveDelayMs: 60_000,
+    }));
+
+    act(() => result.current.markDirty("Cambio local."));
+    await act(async () => {
+      resolveFetch(jsonResponse({ state: { code: "servidor" }, updatedAt: 10 }));
+      await pending;
+    });
+    await waitFor(() => expect(result.current.ready).toBe(true));
+
+    expect(applyLoaded).not.toHaveBeenCalled();
+    expect(result.current.dirty).toBe(true);
+    expect(result.current.updatedAt).toBe(10);
+    expect(result.current.status).toBe("Hay cambios locales; no se aplicó el borrador guardado.");
+  });
+
   it("guarda automáticamente los cambios y limpia el estado sucio", async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(jsonResponse({ state: null, updatedAt: null }))

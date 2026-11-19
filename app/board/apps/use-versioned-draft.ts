@@ -139,6 +139,13 @@ export function useVersionedDraft<T>(options: VersionedDraftOptions<T>) {
         setInitializing(false);
         return;
       }
+      if (editVersionRef.current > 0) {
+        versionRef.current = loaded.updatedAt;
+        setUpdatedAt(loaded.updatedAt);
+        setStatus("Hay cambios locales; no se aplicó el borrador guardado.");
+        setInitializing(false);
+        return;
+      }
       let applied = false;
       try {
         applied = applyLoadedRef.current(loaded.state, loaded.updatedAt);
@@ -331,6 +338,48 @@ export function useVersionedDraft<T>(options: VersionedDraftOptions<T>) {
   }, [recoveryStorage]);
 
   /**
+   * Recarga el borrador guardado sin pasar por el diálogo de conflicto. La app
+   * debe confirmar antes si hay cambios locales.
+   * @returns `true` si el borrador del servidor quedó aplicado.
+   */
+  const reload = useCallback(async (): Promise<boolean> => {
+    if (savingRef.current) return false;
+    savingRef.current = true;
+    const loaded = await load();
+    savingRef.current = false;
+    if (!mountedRef.current) return false;
+    if (loaded.ok === false) {
+      setStatus("No se pudo cargar el borrador guardado.");
+      return false;
+    }
+    if (loaded.state === null) {
+      setStatus("No hay un borrador guardado.");
+      return false;
+    }
+
+    let applied = false;
+    try {
+      applied = applyLoadedRef.current(loaded.state, loaded.updatedAt);
+    } catch {
+      applied = false;
+    }
+    if (!applied) {
+      setStatus("No se pudo interpretar el borrador guardado.");
+      return false;
+    }
+
+    versionRef.current = loaded.updatedAt;
+    setUpdatedAt(loaded.updatedAt);
+    setLastSavedAt(loaded.updatedAt);
+    setDirtyState(false);
+    setSaveFailed(false);
+    setConflictState(null);
+    setConflictNotice(null);
+    setStatus("Borrador cargado.");
+    return true;
+  }, [load, setConflictState, setDirtyState]);
+
+  /**
    * Descarta la versión local y recarga la del servidor, conservando antes una
    * copia recuperable o descargable.
    * @returns `true` si la versión del servidor quedó aplicada.
@@ -453,8 +502,10 @@ export function useVersionedDraft<T>(options: VersionedDraftOptions<T>) {
     updatedAt: updatedAt ?? storeUpdatedAt,
     status,
     error,
+    setStatus,
     markDirty,
     save,
+    reload,
     downloadCopy,
     reloadServerVersion,
     keepMineVersion,

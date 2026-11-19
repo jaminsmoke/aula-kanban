@@ -61,12 +61,12 @@
 
 ### Fase 2 — Notas y Diagramas
 
-- [ ] Migrar Notas y documentos al motor compartido: autosave, estado, cierre y conflicto.
-- [ ] Exportar Notas con un nombre derivado del título.
-- [ ] Pasar `role` a Diagramas y dejar el editor en solo lectura para invitados.
-- [ ] Añadir autosave, guarda de cierre y conflicto a Diagramas.
-- [ ] Confirmar antes de cargar o limpiar cuando haya cambios.
-- [ ] Exportar Diagramas con un nombre legible en lugar del `projectId`.
+- [x] Migrar Notas y documentos al motor compartido: autosave, estado, cierre y conflicto.
+- [x] Exportar Notas con un nombre derivado del título.
+- [x] Pasar `role` a Diagramas y dejar el editor en solo lectura para invitados.
+- [x] Añadir autosave, guarda de cierre y conflicto a Diagramas.
+- [x] Confirmar antes de cargar o limpiar cuando haya cambios.
+- [x] Exportar Diagramas con un nombre legible en lugar del `projectId`.
 - **Criterios de aceptación:**
   - Ambas apps avisan y bloquean el cierre con cambios pendientes.
   - Un invitado no puede editar ni guardar en Diagramas.
@@ -117,3 +117,4 @@
 - Puntos de partida: `app/board/apps/use-app-document.ts`, las tres apps heredadas, `window-close-guard`, `use-dialog-focus` y las utilidades de recuperación de Aula Documentos.
 - No se cambia el formato de datos de cada app ni se toca el esquema del documento de Aula Documentos.
 - 2026-11-19: Fase 1 completada. Se añadieron `useVersionedDraft`, la copia recuperable por app/proyecto, el diálogo compartido de conflicto y sus pruebas. El motor usa `saveVersioned`, autosave, guarda de cierre y `beforeunload`; la copia local se limita a una entrada de 420.000 caracteres. Suite completa: 206 archivos / 1.458 pruebas; `tsc` y ESLint en verde.
+- 2026-11-19: Fase 2 completada. Notas y documentos y Diagramas usan el motor compartido con autosave, conflicto, copia recuperable, guarda de cierre y aviso de cambios. Diagramas recibe el rol y bloquea edición, plantilla, cargar, limpiar y guardar para invitados. Las descargas usan el título de Notas y un nombre derivado del contenido en Diagramas. Revisado a 390 y 1366 px; suite completa: 209 archivos / 1.476 pruebas, con `tsc`, ESLint y build correctos.

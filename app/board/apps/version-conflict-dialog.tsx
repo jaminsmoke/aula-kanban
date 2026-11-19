@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Download } from "lucide-react";
 import { useDialogFocus } from "../shared/use-dialog-focus";
 import "./version-conflict-dialog.css";
@@ -43,6 +43,8 @@ function ConflictDialogContent({
 }: VersionConflictDialogProps) {
   const dialogRef = useRef<HTMLElement>(null);
   const firstConfirmRef = useRef<HTMLButtonElement>(null);
+  const titleId = useId();
+  const descriptionId = useId();
   const [keepConfirm, setKeepConfirm] = useState(false);
   useDialogFocus(true, () => {}, dialogRef);
 
@@ -59,15 +61,15 @@ function ConflictDialogContent({
         className="version-conflict-dialog"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="version-conflict-title"
-        aria-describedby="version-conflict-description"
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
         ref={dialogRef}
       >
         <header className="version-conflict-head">
-          <h2 id="version-conflict-title">Conflicto de versión</h2>
+          <h2 id={titleId}>Conflicto de versión</h2>
         </header>
         <div className="version-conflict-body">
-          <p id="version-conflict-description">
+          <p id={descriptionId}>
             El borrador se guardó en otra pestaña o ventana después de tu última carga. Tus cambios siguen en el
             editor y todavía no se han sobrescrito.
           </p>
