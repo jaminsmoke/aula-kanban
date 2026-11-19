@@ -18,7 +18,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Sin roadmap activo: plantilla para el siguiente bloque | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | ADOC-13 activa: convergencia de la suite documental | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
@@ -81,6 +81,7 @@ Las fuentes Bricolage Grotesque e Instrument Sans se autohospedan en `public/fon
 ## Estado actual
 
 - **Reparto de trabajo:** commits locales durante el roadmap y push único al repo personal `jaminsmoke/aula-kanban` al cerrarlo; despliegue y verificación en Sites, siempre por Codex de OpenAI.
+- **Roadmap ADOC-13 activo:** Aula Documentos reunirá las funciones de Notas y documentos, Diagramas, Presentaciones y Visor Office, migrando datos y conservando alias, permisos y enlaces antes de retirar las apps antiguas. La retirada física y la ficha mínima se hacen al final; el rediseño completo de la ficha queda en STORE-18. Plan en [`roadmap.md`](developing/roadmap.md). Sin publicación desde este roadmap.
 - **Roadmap ADOC-12 completado:** Aula Documentos importa y exporta DOCX/PPTX con vista previa y visor del original, tablas Tiptap, límites y avisos; Visor Office comparte el componente. Aula Documentos `1.1.0`, Aula Store `1.13.0`. Verificado a 390, 620, 900, 1024 y 1366 px en claro y oscuro; 219 archivos / 1.539 pruebas y presupuestos correctos. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-12.md`](historial/roadmap-adoc-12.md). Office real pendiente de verificación externa. Sin publicación en Sites.
 - **Hoja de cálculo completada:** cálculo automático seguro sin `eval`, con referencia A1, rangos acotados, detección de ciclos y barra `fx`; las fórmulas se conservan al guardar, recargar y exportar a CSV. El panel muestra errores y límites. Verificado a 390, 620, 900, 1024 y 1366 px en claro y oscuro; 215 archivos / 1.524 pruebas y build correcto. Presupuesto de la app: **309.447 / 315.000 B gzip**. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-hoja-calculo.md`](historial/roadmap-hoja-calculo.md). Sin publicación desde este roadmap.
 - **Roadmap ADOC-11 completado:** Diagramas usa un lienzo claro con ajuste automático, zoom, paneo y pantalla completa; el editor añade números de línea, resaltado y errores con salto de línea. El modo Contenido permite editar un Gantt sin romper sus palabras clave y el modo Código sigue disponible. Verificado a 390 y 1366 px; 213 archivos / 1.507 pruebas y build correcto. Resumen en [`changelog.md`](developing/changelog.md) y plan archivado en [`historial/roadmap-adoc-11.md`](historial/roadmap-adoc-11.md). Sin publicación desde este roadmap.

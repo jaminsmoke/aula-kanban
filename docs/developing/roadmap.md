@@ -1,53 +1,128 @@
-# Plantilla de Roadmap
+# Roadmap ADOC-13 · Converger la suite documental en Aula Documentos
 
-> **Uso:** Copia esta plantilla para crear un nuevo `docs/developing/roadmap.md`. Al completar un roadmap, muévelo a `docs/developing/changelog.md` (arriba del todo) y reinicia `docs/developing/roadmap.md` desde esta plantilla.
-> **Backlog:** Lo que se aparca del roadmap se anota en `docs/developing/backlog.md` (también lo nuevo arriba). Lo que sale del backlog entra aquí como fase.
-> **Estado:** `Activo` · `En curso` · `Completado`
+> **Estado:** Activo · **Origen:** ADOC-13 del backlog (2026-11-19)
+> **Backlog:** STORE-18 y DEV-01 · **Changelog:** [`changelog.md`](changelog.md)
+> **Publicación:** la despliega y verifica Codex de OpenAI; este roadmap no cambia la versión del Site.
 
 ---
 
 ## 1. Objetivo
 
-- [ ] Definir el objetivo en una frase.
-- [ ] Criterio de éxito: cómo sabremos que funciona.
+- [ ] Reunir en Aula Documentos todas las capacidades de Notas y documentos, Diagramas, Presentaciones y Visor Office, conservando datos, enlaces, permisos y accesos durante la transición.
+- [ ] Criterio de éxito: Aula Documentos cubre las funciones de las cuatro apps, los documentos antiguos siguen abriendo y las apps retiradas dejan de aparecer sin romper instalaciones, enlaces ni datos existentes.
 
 ## 2. Alcance
 
 **Dentro:**
--
+
+- Inventario de paridad funcional de las cuatro apps frente a Aula Documentos.
+- Edición de notas, bloques Mermaid y presentaciones dentro de Aula Documentos, con sus funciones ampliadas.
+- Visor Office compartido accesible desde Aula Documentos para previsualizar archivos locales.
+- Migración de los datos guardados en `app_documents` y apertura de enlaces antiguos.
+- Alias de IDs, URLs, ventanas, permisos, MCP y catálogo durante la transición.
+- Retirada progresiva de las apps antiguas de la Tienda y del árbol de `apps/`.
+- Actualización de la ficha mínima, la ayuda, la matriz de permisos, MCP y la documentación.
+- Verificación completa antes de borrar cualquier ruta o dato.
 
 **Fuera de alcance:**
--
+
+- Volver a implementar el motor de Office o prometer edición de OOXML.
+- Conservar automáticamente todos los archivos Office originales; la vista previa no se persiste.
+- Convertir esta roadmap en el rediseño completo de tarjetas de la Tienda; eso es STORE-18.
+- Retirar apps no documentales de Aula Store.
+- Cambiar la versión del Site o publicar en Sites.
 
 ## 3. Decisiones de arquitectura
 
 | Decisión | Alternativa descartada | Motivo |
 |---|---|---|
-|  |  |  |
+| Aula Documentos es la app canónica de la suite | Mantener cuatro editores equivalentes | Evita duplicar mantenimiento, datos, permisos y pruebas. |
+| Apps antiguas como cáscaras compatibles durante la transición | Borrar sus rutas al empezar | Permite rollback y evita romper ventanas o enlaces existentes. |
+| Alias de IDs y URLs hacia Aula Documentos | Cambiar enlaces sin transición | Conserva accesos guardados y automatizaciones. |
+| Migración de `app_documents` sin borrar el origen | Sustituir el estado antiguo de golpe | Permite recuperar el documento original si algo falla. |
+| Módulos compartidos en `shared` o `lib` | Anidar raíces de apps dentro de `aula-documentos/` | Las apps siguen existiendo hasta demostrar paridad. |
+| Retirada física solo al final | Reorganizar carpetas primero | La mudanza no aporta paridad y complica la reversión. |
+| STORE-18 separado para la ficha de suite | Incluir el rediseño completo en ADOC-13 | La retirada necesita una ficha mínima; el patrón reutilizable merece su propio bloque. |
 
 ## 4. Fases
 
-### Fase 1:
-- [ ] Tarea
-- [ ] Tarea
-- **Criterios de aceptación:**
+### Fase 1 — Inventario de paridad y decisiones
 
-### Fase 2:
-- [ ] Tarea
-- [ ] Tarea
+- [ ] Comparar funciones de Notas y documentos, Diagramas, Presentaciones y Visor Office con Aula Documentos.
+- [ ] Identificar huecos: editor Markdown de presentaciones, plantillas, exportación SVG por diagrama, apertura libre de Office, formatos y atajos.
+- [ ] Mapear estados de `app_documents`, rutas, IDs de ventana, permisos, MCP y enlaces profundos.
+- [ ] Decidir qué funciones pasan a Aula Documentos, cuáles se amplían y cuáles se retiran.
+- [ ] Documentar la matriz de paridad y el plan de reversión.
 - **Criterios de aceptación:**
+  - Cada función de las cuatro apps tiene una decisión: absorbida, ampliada o descartada.
+  - No se retira ninguna app antes de completar la matriz.
+  - Se conocen los datos, rutas y permisos que necesitan compatibilidad.
 
-### Fase 3:
-- [ ] Tarea
-- [ ] Tarea
+### Fase 2 — Notas y Diagramas completos en Aula Documentos
+
+- [ ] Cubrir todas las funciones de Notas y documentos dentro del editor de Aula Documentos.
+- [ ] Cubrir las funciones de Diagramas: edición, plantillas, códigos, errores, zoom, paneo, Gantt guiado y exportación SVG.
+- [ ] Resolver las diferencias de edición entre un bloque Mermaid y la app independiente.
+- [ ] Añadir pruebas de paridad y conservar la importación de datos antiguos.
 - **Criterios de aceptación:**
+  - Un usuario puede hacer en Aula Documentos todo lo que hacía en Notas y Diagramas.
+  - Los datos existentes siguen abriendo y se pueden convertir sin pérdida.
+  - Las funciones compartidas no duplican motores ni estilos.
+
+### Fase 3 — Presentaciones y Office completos en Aula Documentos
+
+- [ ] Cubrir las funciones de Presentaciones: edición por diapositivas, temas, notas, vista previa, modo presentación y exportación.
+- [ ] Decidir y aplicar el modo de edición Markdown o equivalente para presentaciones.
+- [ ] Integrar una apertura estable de Office local en Aula Documentos, además de la vista previa de importación.
+- [ ] Mantener DOCX/PPTX de importación y exportación, tablas y avisos de fidelidad.
+- [ ] Añadir pruebas de paridad de presentación y Office.
+- **Criterios de aceptación:**
+  - Presentaciones y Visor Office no ofrecen ninguna función imprescindible fuera de Aula Documentos.
+  - Los archivos Office se pueden previsualizar sin importarlos.
+  - La exportación y el modo presentación siguen funcionando.
+
+### Fase 4 — Migración, alias y compatibilidad
+
+- [ ] Migrar los estados de `app_documents` de Notas, Diagramas y Presentaciones conservando una copia del origen.
+- [ ] Mantener alias de IDs, URLs, ventanas, permisos y enlaces profundos hacia Aula Documentos.
+- [ ] Adaptar MCP y la matriz de permisos a la app unificada.
+- [ ] Ocultar las apps antiguas de la Tienda sin borrar sus datos ni sus rutas.
+- [ ] Probar instalaciones existentes, enlaces antiguos, invitados y rollback.
+- **Criterios de aceptación:**
+  - Los documentos antiguos se abren desde Aula Documentos sin pérdida.
+  - Un enlace o ventana antigua no devuelve un error.
+  - Se puede revertir la retirada antes de borrar los datos de origen.
+
+### Fase 5 — Retirada, ficha y cierre
+
+- [ ] Retirar las apps antiguas de `NATIVE_APP_IDS`, el catálogo, la Tienda y las rutas físicas.
+- [ ] Mover a `shared` o `lib` lo que siga siendo común; no anidar raíces dentro de `aula-documentos/`.
+- [ ] Actualizar la ficha mínima de Aula Documentos para que no anuncie apps retiradas; el rediseño completo queda en STORE-18.
+- [ ] Actualizar ayuda, MCP, permisos, versiones y documentación; conservar el plan de reversión.
+- [ ] Ejecutar suite completa, `tsc`, ESLint, build y presupuestos; revisar los cinco anchos y ambos temas.
+- [ ] Actualizar changelog; archivar el roadmap, reiniciarlo y dejar en el backlog STORE-18 y DEV-01.
+- [ ] Hacer commits locales por fase y un push único al cerrar; no publicar en Sites.
+- **Criterios de aceptación:**
+  - Las cuatro apps dejan de aparecer como instalables sin romper datos ni enlaces.
+  - Aula Documentos es la única entrada documental de la suite.
+  - El Site no cambia de versión y no se publica nada desde este roadmap.
 
 ## 5. Riesgos y bloqueos
 
 | Riesgo | Impacto | Mitigación |
 |---|---|---|
-|  |  |  |
+| Se borra una app antes de alcanzar paridad | Pérdida de funciones o datos | Matriz de paridad y retirada solo al final. |
+| Los datos antiguos no migran | Documentos perdidos | Copia del origen, migración probada y rollback. |
+| Enlaces o ventanas antiguas dejan de abrir | Accesos rotos | Alias de IDs y URLs hasta la retirada definitiva. |
+| MCP o permisos cambian de ID | Automatizaciones rotas | Mapa de compatibilidad y pruebas de contrato. |
+| Duplicar mantenimiento durante la transición | Coste alto y divergencia | Cáscaras finas y módulos compartidos. |
+| La ficha de la Tienda sigue anunciando apps retiradas | Confusión | Actualización mínima en esta roadmap; rediseño en STORE-18. |
+| El árbol de carpetas se mueve antes de tiempo | Ruido y riesgo de imports | Mudanza física solo en la fase de retirada. |
 
 ## 6. Notas de sesión
 
--
+- 2026-11-19: ADOC-13 sale del backlog y pasa a ser el roadmap activo.
+- ADOC-12 deja Office compartido, importación/exportación DOCX/PPTX y el visor reutilizable como base.
+- STORE-18 queda en el backlog para la ficha reutilizable de apps-suites; ADOC-13 solo actualiza lo mínimo necesario.
+- No se mueven raíces de apps ni se borran datos durante las primeras fases.
+- El Site sigue en `1.1.36`; no se publica nada desde este roadmap.

@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 3 entradas pendientes
+> **Roadmap:** ADOC-13 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas pendientes
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
@@ -17,20 +17,7 @@
   3. Establecer cómo se representan las apps que pasan a ser funciones internas: no deben aparecer como apps instalables duplicadas ni confundir sobre dónde se edita cada cosa.
   4. Dejar el patrón preparado para futuras suites, sin convertir la Tienda en un catálogo de promesas ambiguas.
 - Criterios: la ficha de Aula Documentos explica con claridad qué incluye y qué puede importar/exportar; las tarjetas retiradas dejan de competir con la suite; el patrón se puede reutilizar; no cambia la versión del Site.
-- Notas: depende de ADOC-13 y se ejecuta al cerrar la convergencia o inmediatamente después. No debe bloquear ADOC-12. Evitar duplicar la misma promesa en la tarjeta de Aula Documentos y en tarjetas individuales que ya no aportan nada.
-
-## 2026-11-19 — ADOC-13 · Converger Notas, Diagramas, Presentaciones y Visor Office en Aula Documentos
-
-- Contexto: la dirección de producto es que Aula Documentos reúna todas las capacidades documentales, incluidas las que hoy viven en apps instalables separadas. Aula Documentos ya importa datos de esas apps, pero todavía no las sustituye como experiencia completa; mantenerlas como apps independientes indefinidamente duplicaría mantenimiento, permisos, catálogo, MCP y esfuerzo de pruebas.
-- Alcance:
-  1. Inventariar y comparar capacidades de `documentos`, `mermaid`, `presentaciones` y `visor-office` frente a Aula Documentos; identificar huecos, funciones ampliadas y dependencias entre apps.
-  2. Incorporar en Aula Documentos las experiencias completas: edición de notas, bloques Mermaid, modo presentación y previsualización/importación Office, reutilizando los componentes compartidos de ADOC-12.
-  3. Migrar los datos existentes de `app_documents` sin pérdida y conservar alias de URL, IDs, permisos, herramientas MCP y enlaces profundos durante la transición.
-  4. Mantener las apps antiguas como cáscaras compatibles mientras dure la paridad; ocultarlas de la Tienda y retirar sus entradas del catálogo solo después de verificar que Aula Documentos cubre sus funciones y que no quedan datos sin migrar.
-  5. Reorganizar las carpetas físicas únicamente en la fase de retirada: lo compartido va a `app/board/shared` o `lib`; las raíces de apps que sigan existiendo no se anidan dentro de `aula-documentos/`.
-  6. Actualizar la documentación, la matriz de permisos, MCP, versiones de apps, el plan de reversión y la ficha de producto según STORE-18.
-- Criterios: todas las funciones actuales de las cuatro apps están disponibles en Aula Documentos; los datos y enlaces antiguos siguen abriendo; se puede volver atrás durante la transición; no se pierde ningún documento; las apps retiradas dejan de aparecer en la Tienda sin romper instalaciones existentes.
-- Notas: esta entrada es de producto y migración, no una simple mudanza de carpetas. Debe ejecutarse después o en paralelo a ADOC-12, nunca antes de tener el visor y la importación compartidos. La retirada definitiva de raíces y entradas de catálogo se decide con paridad demostrada, no por estética del árbol de archivos.
+- Notas: depende de ADOC-13 y se ejecuta al cerrar la convergencia o inmediatamente después. Evitar duplicar la misma promesa en la tarjeta de Aula Documentos y en tarjetas individuales que ya no aportan nada.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 
