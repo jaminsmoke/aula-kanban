@@ -94,6 +94,21 @@ describe("motor de fórmulas de Hoja de cálculo", () => {
 
   it("rechaza fórmulas que superan la longitud permitida", () => {
     const formula = `=${"1+".repeat(MAX_FORMULA_LENGTH)}1`;
-    expect(errorAt(evaluateSheetFormulas([[formula]]), 0, 0)).toBe("#VALOR!");
+    const results = evaluateSheetFormulas([[formula]]);
+    expect(errorAt(results, 0, 0)).toBe("#VALOR!");
+    expect(results[0][0]).toMatchObject({ ok: false, error: "#VALOR!", limit: "formulaLength" });
+  });
+
+  it("marca los límites de rango y profundidad", () => {
+    const range = evaluateSheetFormulas([["=SUM(A1:ZZ1000)"]]);
+    expect(range[0][0]).toMatchObject({ ok: false, error: "#VALOR!", limit: "rangeCells" });
+
+    const chain = Array.from({ length: 202 }, (_, index) => {
+      if (index === 0) return ["=A202"];
+      if (index === 1) return [1];
+      return [`=A${index}+1`];
+    });
+    const results = evaluateSheetFormulas(chain);
+    expect(results[0][0]).toMatchObject({ ok: false, error: "#CIRC!", limit: "depth" });
   });
 });

@@ -72,11 +72,11 @@
 
 ### Fase 3 — Persistencia, CSV y estados
 
-- [ ] Guardar y recargar las fórmulas originales, no los resultados calculados.
-- [ ] Mantener el formato y el CSV con el texto de la fórmula protegido.
-- [ ] Mostrar estado de cálculo, celdas con error y límites alcanzados.
-- [ ] Revisar el modo lectura para invitados y el reinicio de la hoja.
-- [ ] Añadir el flujo `hoja-calculo` a `perf:budget` y medir el coste del motor.
+- [x] Guardar y recargar las fórmulas originales, no los resultados calculados.
+- [x] Mantener el formato y el CSV con el texto de la fórmula protegido.
+- [x] Mostrar estado de cálculo, celdas con error y límites alcanzados.
+- [x] Revisar el modo lectura para invitados y el reinicio de la hoja.
+- [x] Añadir el flujo `hoja-calculo` a `perf:budget` y medir el coste del motor.
 - **Criterios de aceptación:**
   - Guardar, recargar y volver a calcular produce los mismos totales.
   - El CSV conserva las fórmulas sin convertirlas en valores.
@@ -115,3 +115,4 @@
 - DEV-01 queda como única entrada del backlog.
 - 2026-11-19: Fase 1 completada. Se añadió un lexer/parser y evaluador propio con referencias A1, rangos acotados, funciones habituales, comparaciones, errores `#...` y detección de ciclos. No usa `eval` ni `Function`. Suite completa: 214 archivos / 1.514 pruebas; `tsc` y ESLint en verde.
 - 2026-11-19: Fase 2 completada. La rejilla muestra los valores calculados y conserva las fórmulas en un mapa separado; al editar solo se actualizan las celdas cuyo resultado cambia, y guardar/exportar reconstruye el documento desde las fórmulas. Añadida la barra `fx` para consultar y editar la fórmula de la celda seleccionada. Verificado con Jspreadsheet real a 1366 px: cambiar `B3` actualiza `D3` y `D6`; guardar y recargar conserva los totales y las fórmulas. Suite completa: 215 archivos / 1.521 pruebas; `tsc`, ESLint, build y `perf:budget` correctos.
+- 2026-11-19: Fase 3 completada. El guardado y la recarga conservan las fórmulas y recalculan los mismos totales. El CSV exporta el texto protegido de cada fórmula (por ejemplo, `'=B3*C3`) en lugar del resultado. El panel muestra «Cálculo correcto», el número de fórmulas, las celdas con error y los límites de longitud, rango o profundidad alcanzados; reiniciar limpia el estado. Invitados mantienen la rejilla, la barra `fx`, el guardado y el reinicio desactivados. Añadido el flujo `hoja-calculo` a `perf:budget`: **309.267 B gzip / 315.000 B**.

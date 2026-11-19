@@ -3,6 +3,7 @@
   "margin": 0.05,
   "flows": {
     "tablero": 175656,
+    "hoja-calculo": 315000,
     "basica": 150827,
     "basica-evalua": 150827,
     "cientifica": 2069960,
@@ -16,6 +17,7 @@
   },
   "forbidden": {
     "tablero": ["compute-engine", "mermaid", "katex", "chunk-EIO", "blockly_compressed", "elk-", "cytoscape"],
+    "hoja-calculo": ["compute-engine", "mermaid", "katex", "blockly_compressed"],
     "espacio": ["compute-engine", "mermaid", "katex", "chunk-EIO", "blockly_compressed", "elk-", "cytoscape"],
     "basica": ["compute-engine"],
     "basica-evalua": ["compute-engine"],
@@ -24,6 +26,7 @@
     "blockly": ["compute-engine", "chunk-EIO", "mermaid", "katex"]
   },
   "required": {
+    "hoja-calculo": ["hoja-calculo-app"],
     "cientifica": ["compute-engine"],
     "pizarra": ["chunk-EIO"],
     "diagramas": ["mermaid.core"],

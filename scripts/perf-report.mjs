@@ -90,6 +90,11 @@ const FLOWS = [
     roots: [browserEntry, "app/board.tsx"],
   },
   {
+    id: "hoja-calculo",
+    label: "Hoja de cálculo → abrir",
+    roots: ["app/board/apps/hoja-calculo/hoja-calculo-app.tsx"],
+  },
+  {
     id: "basica",
     label: "Calculadora · abrir Básica",
     roots: ["app/board/apps/calculadora/calculadora-app.tsx"],

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { buildFormulaSheet, computeSheetDisplay, extractFormulaMap, formulaCellKey } from "./hoja-calculo-calc";
+import { buildFormulaSheet, calculateSheet, computeSheetDisplay, extractFormulaMap, formulaCellKey } from "./hoja-calculo-calc";
+import { toCsv } from "./hoja-calculo-model";
 
 describe("capa de cálculo de la hoja", () => {
   it("extrae las fórmulas y calcula los valores visibles", () => {
@@ -28,5 +29,23 @@ describe("capa de cálculo de la hoja", () => {
     expect(data[0][3]).toBe("=B1*C1");
     expect(data[1][3]).toBe("=SUM(D1:D1)");
     expect(data[0][1]).toBe(3);
+    const csv = toCsv(data);
+    expect(csv).toContain("\"'=B1*C1\"");
+    expect(csv).toContain("\"'=SUM(D1:D1)\"");
+    expect(csv).not.toContain("13.5");
+  });
+
+  it("resume fórmulas, errores y límites para la interfaz", () => {
+    const calculation = calculateSheet([
+      ["Materiales", 3, 4.5, "=B1*C1"],
+      ["División", "", "", "=1/0"],
+      ["Rango", "", "", "=SUM(A1:ZZ1000)"],
+    ]);
+
+    expect(calculation.summary.formulas).toBe(3);
+    expect(calculation.summary.errors).toEqual([
+      expect.objectContaining({ label: "D2", error: "#DIV/0!" }),
+      expect.objectContaining({ label: "D3", error: "#VALOR!", limit: "rangeCells" }),
+    ]);
   });
 });

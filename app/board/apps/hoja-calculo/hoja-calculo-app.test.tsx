@@ -70,6 +70,8 @@ describe("Hoja de cálculo", () => {
     expect(options).toMatchObject({ parseFormulas: false, parseHTML: false });
     expect(options.worksheets[0].data).toEqual(computeSheetDisplay(STARTER_SHEET));
     expect(options.worksheets[0].minDimensions).toEqual([6, 20]);
+    expect(screen.getByText("Cálculo correcto")).toBeTruthy();
+    expect(screen.getByText("4 fórmulas")).toBeTruthy();
   });
 
   it("añade filas y columnas", async () => {
@@ -214,6 +216,29 @@ describe("Hoja de cálculo", () => {
     options.onchange?.(spreadsheetMock.worksheet, {}, 3, 7, "=B3*");
 
     expect(spreadsheetMock.worksheet.setValueFromCoords).toHaveBeenCalledWith(3, 7, "#VALOR!", true);
+    await waitFor(() => expect(screen.getByText("1 celda con error")).toBeTruthy());
+    expect(screen.getByText("D8")).toBeTruthy();
+  });
+
+  it("muestra los límites alcanzados y los limpia al reiniciar", async () => {
+    render(<HojaCalculoApp {...props} />);
+    await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
+    const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
+      onchange?: (instance: unknown, cell: unknown, col: number, row: number, value: unknown) => void;
+    };
+    const display = computeSheetDisplay(STARTER_SHEET);
+    display[7][3] = "=SUM(A1:ZZ1000)";
+    spreadsheetMock.worksheet.getData.mockReturnValueOnce(display);
+
+    options.onchange?.(spreadsheetMock.worksheet, {}, 3, 7, "=SUM(A1:ZZ1000)");
+
+    await waitFor(() => expect(screen.getByText("1 celda con error")).toBeTruthy());
+    expect(screen.getByText(/Límite alcanzado: rango demasiado grande/)).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Reiniciar hoja" }));
+
+    await waitFor(() => expect(screen.getByText("Cálculo correcto")).toBeTruthy());
+    expect(screen.getByText("4 fórmulas")).toBeTruthy();
   });
 
   it("carga una hoja guardada", async () => {
@@ -226,6 +251,9 @@ describe("Hoja de cálculo", () => {
 
     await waitFor(() => expect(spreadsheetMock.worksheet.setData).toHaveBeenCalled());
     expect(screen.getByRole("status").textContent).toContain("guardada cargada");
+    const loaded = spreadsheetMock.worksheet.setData.mock.calls.at(-1)?.[0] as Array<Array<string | number | boolean>>;
+    expect(loaded[0][1]).toBe(2);
+    expect(screen.getByText("1 fórmula")).toBeTruthy();
   });
 
   it("aplica el formato guardado al cargar", async () => {
@@ -247,7 +275,9 @@ describe("Hoja de cálculo", () => {
     expect(screen.getByText(/Modo lectura/)).toBeTruthy();
     expect(screen.getByRole("button", { name: "Añadir fila" })).toHaveProperty("disabled", true);
     expect(screen.getByRole("button", { name: "Guardar hoja" })).toHaveProperty("disabled", true);
+    expect(screen.getByRole("button", { name: "Reiniciar hoja" })).toHaveProperty("disabled", true);
     expect(screen.getByRole("button", { name: "Exportar CSV" })).toHaveProperty("disabled", false);
+    expect(screen.getByLabelText("Fórmula de la celda seleccionada")).toHaveProperty("disabled", true);
     const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
       worksheets: Array<{ editable?: boolean }>;
     };

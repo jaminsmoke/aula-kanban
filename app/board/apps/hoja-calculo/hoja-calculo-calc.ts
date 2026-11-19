@@ -1,5 +1,26 @@
-import { evaluateSheetFormulas } from "./hoja-calculo-formula";
-import { normalizeSheet, type SpreadsheetCell } from "./hoja-calculo-model";
+import { evaluateSheetFormulas, type FormulaErrorCode, type FormulaLimit } from "./hoja-calculo-formula";
+import { columnLabel, normalizeSheet, type SpreadsheetCell } from "./hoja-calculo-model";
+
+/** Celda con un error de cálculo. */
+export type SheetCalculationError = {
+  row: number;
+  column: number;
+  label: string;
+  error: FormulaErrorCode;
+  limit?: FormulaLimit;
+};
+
+/** Resumen del estado de cálculo de una hoja. */
+export type SheetCalculationSummary = {
+  formulas: number;
+  errors: SheetCalculationError[];
+};
+
+/** Resultado completo de calcular una hoja. */
+export type SheetCalculation = {
+  display: SpreadsheetCell[][];
+  summary: SheetCalculationSummary;
+};
 
 /**
  * Clave de una celda para el mapa de fórmulas.
@@ -27,14 +48,40 @@ export function extractFormulaMap(data: SpreadsheetCell[][]): Map<string, string
 }
 
 /**
+ * Calcula una hoja y resume sus fórmulas y errores.
+ * @param data - Matriz con fórmulas y valores literales.
+ * @returns La matriz visible y el resumen del cálculo.
+ */
+export function calculateSheet(data: SpreadsheetCell[][]): SheetCalculation {
+  const results = evaluateSheetFormulas(data);
+  let formulas = 0;
+  const errors: SheetCalculationError[] = [];
+  data.forEach((row, rowIndex) => row.forEach((cell, columnIndex) => {
+    if (typeof cell === "string" && cell.trimStart().startsWith("=")) formulas += 1;
+    const result = results[rowIndex]?.[columnIndex];
+    if (result && !result.ok) {
+      errors.push({
+        row: rowIndex,
+        column: columnIndex,
+        label: `${columnLabel(columnIndex)}${rowIndex + 1}`,
+        error: result.error,
+        ...(result.limit ? { limit: result.limit } : {}),
+      });
+    }
+  }));
+  return {
+    display: results.map((row) => row.map((result) => (result.ok ? result.value ?? "" : result.error))),
+    summary: { formulas, errors },
+  };
+}
+
+/**
  * Calcula la matriz que se muestra en la rejilla.
  * @param data - Matriz con fórmulas y valores literales.
  * @returns Valores calculados y códigos de error como texto.
  */
 export function computeSheetDisplay(data: SpreadsheetCell[][]): SpreadsheetCell[][] {
-  return evaluateSheetFormulas(data).map((row) => row.map((result) => (
-    result.ok ? result.value ?? "" : result.error
-  )));
+  return calculateSheet(data).display;
 }
 
 /**

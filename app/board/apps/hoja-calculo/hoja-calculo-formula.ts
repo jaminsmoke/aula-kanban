@@ -6,10 +6,13 @@ export type FormulaErrorCode = "#VALOR!" | "#REF!" | "#DIV/0!" | "#NOMBRE!" | "#
 /** Valor calculado o literal de una celda. */
 export type FormulaValue = number | string | boolean | null;
 
+/** Límite del motor alcanzado al evaluar una fórmula. */
+export type FormulaLimit = "formulaLength" | "rangeCells" | "depth";
+
 /** Resultado de evaluar una celda. */
 export type FormulaResult =
   | { ok: true; value: FormulaValue }
-  | { ok: false; error: FormulaErrorCode };
+  | { ok: false; error: FormulaErrorCode; limit?: FormulaLimit };
 
 /** Tamaño máximo de una fórmula, en caracteres. */
 export const MAX_FORMULA_LENGTH = 2_000;
@@ -20,7 +23,7 @@ export const MAX_FORMULA_DEPTH = 200;
 
 /** Error interno que se propaga durante la evaluación. */
 class FormulaFailure extends Error {
-  constructor(readonly code: FormulaErrorCode) {
+  constructor(readonly code: FormulaErrorCode, readonly limit?: FormulaLimit) {
     super(code);
   }
 }
@@ -70,12 +73,12 @@ export function evaluateSheetFormulas(sheet: SpreadsheetCell[][]): FormulaResult
     ) {
       throw new FormulaFailure("#REF!");
     }
-    if (depth > MAX_FORMULA_DEPTH) throw new FormulaFailure("#CIRC!");
+    if (depth > MAX_FORMULA_DEPTH) throw new FormulaFailure("#CIRC!", "depth");
     const key = cellKey(address);
     const cached = cache.get(key);
     if (cached) {
       if (cached.ok) return cached.value;
-      throw new FormulaFailure(cached.error);
+      throw new FormulaFailure(cached.error, cached.limit);
     }
     if (visiting.has(key)) throw new FormulaFailure("#CIRC!");
 
@@ -87,13 +90,13 @@ export function evaluateSheetFormulas(sheet: SpreadsheetCell[][]): FormulaResult
         try {
           result = { ok: true, value: evaluateFormula(raw, evaluateCell, depth) };
         } catch (error) {
-          result = { ok: false, error: error instanceof FormulaFailure ? error.code : "#VALOR!" };
+          result = failureResult(error);
         }
       } else {
         result = { ok: true, value: raw };
       }
       cache.set(key, result);
-      if (!result.ok) throw new FormulaFailure(result.error);
+      if (!result.ok) throw new FormulaFailure(result.error, result.limit);
       return result.value;
     } finally {
       visiting.delete(key);
@@ -104,9 +107,20 @@ export function evaluateSheetFormulas(sheet: SpreadsheetCell[][]): FormulaResult
     try {
       return { ok: true, value: evaluateCell({ row: rowIndex, column: columnIndex }, 0) };
     } catch (error) {
-      return { ok: false, error: error instanceof FormulaFailure ? error.code : "#VALOR!" };
+      return failureResult(error);
     }
   }));
+}
+
+/**
+ * Convierte una excepción de evaluación en un resultado de celda.
+ * @param error - Excepción capturada.
+ * @returns El error con su límite, si lo tiene.
+ */
+function failureResult(error: unknown): FormulaResult {
+  return error instanceof FormulaFailure
+    ? { ok: false, error: error.code, ...(error.limit ? { limit: error.limit } : {}) }
+    : { ok: false, error: "#VALOR!" };
 }
 
 /**
@@ -121,7 +135,7 @@ function evaluateFormula(
   resolve: (address: CellAddress, depth: number) => FormulaValue,
   startDepth: number,
 ): FormulaValue {
-  if (formula.length > MAX_FORMULA_LENGTH) throw new FormulaFailure("#VALOR!");
+  if (formula.length > MAX_FORMULA_LENGTH) throw new FormulaFailure("#VALOR!", "formulaLength");
   const source = formula.trim().replace(/^=/, "");
   if (!source) throw new FormulaFailure("#VALOR!");
   const parser = new FormulaParser(tokenize(source));
@@ -185,7 +199,7 @@ function evaluateRange(
   const columnStart = Math.min(node.start.column, node.end.column);
   const columnEnd = Math.max(node.start.column, node.end.column);
   if ((rowEnd - rowStart + 1) * (columnEnd - columnStart + 1) > MAX_FORMULA_RANGE_CELLS) {
-    throw new FormulaFailure("#VALOR!");
+    throw new FormulaFailure("#VALOR!", "rangeCells");
   }
   const values: FormulaValue[] = [];
   for (let row = rowStart; row <= rowEnd; row += 1) {

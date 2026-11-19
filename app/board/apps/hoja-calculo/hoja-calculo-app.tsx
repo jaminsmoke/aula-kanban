@@ -22,10 +22,12 @@ import type { StoreRole } from "../types";
 import { useAppDocument } from "../use-app-document";
 import {
   buildFormulaSheet,
-  computeSheetDisplay,
+  calculateSheet,
   extractFormulaMap,
   formulaCellKey,
+  type SheetCalculationSummary,
 } from "./hoja-calculo-calc";
+import type { FormulaLimit } from "./hoja-calculo-formula";
 import {
   SHEET_COLUMNS,
   SHEET_HEADERS,
@@ -43,6 +45,12 @@ import "./hoja-calculo.css";
 
 type Worksheet = jspreadsheet.WorksheetInstance;
 
+const LIMIT_LABELS: Record<FormulaLimit, string> = {
+  formulaLength: "fórmula demasiado larga",
+  rangeCells: "rango demasiado grande",
+  depth: "cadena de dependencias demasiado profunda",
+};
+
 /**
  * Hoja de cálculo con celdas, formato y persistencia por proyecto.
  * @param props - Proyecto activo y rol del usuario.
@@ -53,7 +61,8 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
   const worksheetRef = useRef<Worksheet | null>(null);
   const [documentValue, setDocumentValue] = useState<SpreadsheetDocument>(() => ({ data: cloneSheet(STARTER_SHEET) }));
   const initialDataRef = useRef(documentValue.data);
-  const [initialDisplay] = useState(() => computeSheetDisplay(STARTER_SHEET));
+  const [initialCalculation] = useState(() => calculateSheet(STARTER_SHEET));
+  const initialDisplay = initialCalculation.display;
   const initialStylesRef = useRef(documentValue.styles);
   const pendingDocumentRef = useRef<SpreadsheetDocument | null>(null);
   const formulasRef = useRef(extractFormulaMap(STARTER_SHEET));
@@ -62,6 +71,7 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("Hoja de ejemplo lista.");
+  const [calculation, setCalculation] = useState<SheetCalculationSummary>(initialCalculation.summary);
   const [selectedCell, setSelectedCell] = useState<{ row: number; column: number } | null>(null);
   const [formulaDraft, setFormulaDraft] = useState("");
   const [initError, setInitError] = useState<string | null>(null);
@@ -78,15 +88,17 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
     if (Object.keys(currentStyles).length) worksheet.resetStyle(currentStyles);
     const data = normalizeSheet(document.data);
     formulasRef.current = extractFormulaMap(data);
+    const nextCalculation = calculateSheet(data);
     applyingRef.current = true;
     try {
-      worksheet.setData(computeSheetDisplay(data));
+      worksheet.setData(nextCalculation.display);
       if (document.styles && Object.keys(document.styles).length) {
         worksheet.setStyle(document.styles);
       }
     } finally {
       applyingRef.current = false;
     }
+    setCalculation(nextCalculation.summary);
     setSelectedCell(null);
     setFormulaDraft("");
   }
@@ -136,7 +148,8 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
   function recalculate(worksheet: Worksheet, message: string) {
     const display = normalizeSheet(worksheet.getData() as SpreadsheetCell[][]);
     const data = buildFormulaSheet(display, formulasRef.current);
-    const calculated = computeSheetDisplay(data);
+    const nextCalculation = calculateSheet(data);
+    const calculated = nextCalculation.display;
     applyingRef.current = true;
     try {
       calculated.forEach((row, rowIndex) => row.forEach((value, columnIndex) => {
@@ -147,6 +160,7 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
     } finally {
       applyingRef.current = false;
     }
+    setCalculation(nextCalculation.summary);
     setDocumentValue({
       data,
       styles: worksheet.getStyle() as Record<string, string>,
@@ -406,6 +420,10 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
   const statusText = dirty && !loading && !error
     ? `${displayStatus} Cambios sin guardar.`
     : displayStatus;
+  const errorCount = calculation.errors.length;
+  const limitLabels = [...new Set(calculation.errors.flatMap((entry) => (
+    entry.limit ? [LIMIT_LABELS[entry.limit]] : []
+  )))];
 
   return (
     <div className="hoja-calculo-app">
@@ -503,6 +521,23 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
             <h3>Presupuesto de ejemplo</h3>
             <p>Edita las celdas y cambia cantidades y precios. Las fórmulas se calculan automáticamente y se conservan como texto en el proyecto.</p>
             <p className="hoja-calculo-status" role="status">{statusText}</p>
+            <div className="hoja-calculo-calculation" aria-live="polite">
+              <p className="hoja-calculo-calculation-head">
+                <strong>{errorCount ? `${errorCount} ${errorCount === 1 ? "celda con error" : "celdas con error"}` : "Cálculo correcto"}</strong>
+                <span>{calculation.formulas} {calculation.formulas === 1 ? "fórmula" : "fórmulas"}</span>
+              </p>
+              {errorCount ? (
+                <ul className="hoja-calculo-errors">
+                  {calculation.errors.slice(0, 3).map((entry) => (
+                    <li key={entry.label}><code>{entry.label}</code> {entry.error}</li>
+                  ))}
+                  {errorCount > 3 ? <li>+{errorCount - 3} más</li> : null}
+                </ul>
+              ) : null}
+              {limitLabels.length ? (
+                <p className="hoja-calculo-limit">Límite alcanzado: {limitLabels.join(", ")}.</p>
+              ) : null}
+            </div>
           </section>
           <section className="hoja-calculo-help">
             <h3>Atajos</h3>
