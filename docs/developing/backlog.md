@@ -2,26 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 6 entradas pendientes
+> **Roadmap:** ADOC-08 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 5 entradas pendientes
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-19 — ADOC-08 · Lienzo editorial y tema
-
-- **Prioridad:** P1.
-- **Contexto:** Aula Documentos y Notas usan `--ui-surface-raised` para el papel, así que en tema oscuro el documento completo se vuelve oscuro. La vista previa de Presentaciones también hereda los tokens de la interfaz. La hoja debe ser blanca siempre; el marco de la app puede seguir el tema.
-- **Alcance:**
-  1. Definir un ámbito de tokens claros para el papel de Aula Documentos y Notas: fondo blanco, texto oscuro, enlaces, citas, código, selección y placeholders.
-  2. Aplicar el mismo criterio a las diapositivas y a la vista previa de Presentaciones.
-  3. Revisar los bloques Mermaid, el código y la selección sobre papel blanco en los temas Aula, Claro y Oscuro.
-  4. Alinear la impresión y la exportación HTML con el lienzo visible.
-- **Criterios de aceptación:**
-  - El papel es blanco en los tres temas y el texto mantiene contraste AA.
-  - Los bloques Mermaid y el código siguen legibles en claro y oscuro.
-  - La hoja no cambia de color al cambiar el tema de la interfaz.
-- **Notas:** no es solo un cambio de `background`; hay que aislar los tokens del contenido para no arrastrar el tema oscuro de la ventana.
 
 ## 2026-11-19 — ADOC-09 · Menús y barra de edición
 
