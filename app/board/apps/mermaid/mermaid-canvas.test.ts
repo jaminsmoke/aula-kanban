@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { fitMermaidScale, mermaidSvgSize } from "./mermaid-canvas";
+import {
+  clampMermaidPan,
+  clampMermaidZoom,
+  fitMermaidScale,
+  mermaidStageSize,
+  mermaidSvgSize,
+  zoomMermaidPan,
+} from "./mermaid-canvas";
 
 describe("lienzo de Diagramas", () => {
   it("lee el tamaño del viewBox y prefiere sus dimensiones", () => {
@@ -31,5 +38,29 @@ describe("lienzo de Diagramas", () => {
     expect(fitMermaidScale({ width: 100_000, height: 100_000 }, { width: 100, height: 100 })).toBe(0.02);
     expect(fitMermaidScale(null, { width: 800, height: 600 })).toBe(1);
     expect(fitMermaidScale({ width: 100, height: 100 }, { width: 0, height: 600 })).toBe(1);
+  });
+
+  it("limita el zoom interactivo y calcula el escenario", () => {
+    expect(clampMermaidZoom(0.001)).toBe(0.05);
+    expect(clampMermaidZoom(99)).toBe(4);
+    expect(clampMermaidZoom(Number.NaN)).toBe(1);
+    expect(mermaidStageSize({ width: 400, height: 200 }, 0.5)).toEqual({ width: 200, height: 100 });
+  });
+
+  it("limita el desplazamiento a los bordes visibles", () => {
+    expect(clampMermaidPan({ x: 500, y: -500 }, { width: 500, height: 400 }, { width: 300, height: 200 }))
+      .toEqual({ x: 100, y: -100 });
+    expect(clampMermaidPan({ x: 20, y: -20 }, { width: 200, height: 100 }, { width: 300, height: 200 }))
+      .toEqual({ x: 0, y: 0 });
+  });
+
+  it("mantiene el centro al ampliar alrededor del centro", () => {
+    expect(zoomMermaidPan({ x: 0, y: 0 }, 1, 2, { x: 300, y: 200 }, { width: 600, height: 400 }, { width: 400, height: 200 }))
+      .toEqual({ x: 0, y: 0 });
+  });
+
+  it("conserva el punto bajo el cursor al ampliar", () => {
+    expect(zoomMermaidPan({ x: 0, y: 0 }, 1, 2, { x: 400, y: 200 }, { width: 600, height: 400 }, { width: 800, height: 500 }))
+      .toEqual({ x: -100, y: 0 });
   });
 });

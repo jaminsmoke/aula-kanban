@@ -57,11 +57,11 @@
 
 ### Fase 2 — Zoom, paneo y pantalla completa
 
-- [ ] Añadir controles de acercar, alejar, reiniciar y pantalla completa.
-- [ ] Implementar arrastre y rueda/pinza con límites de zoom y desplazamiento.
-- [ ] Soportar teclado: `+`, `-`, `0`, flechas y Escape.
-- [ ] Añadir una vista de pantalla completa dentro de la ventana con foco y cierre accesibles.
-- [ ] Cubrir con pruebas las acciones de teclado y los límites de navegación.
+- [x] Añadir controles de acercar, alejar, reiniciar y pantalla completa.
+- [x] Implementar arrastre y rueda/pinza con límites de zoom y desplazamiento.
+- [x] Soportar teclado: `+`, `-`, `0`, flechas y Escape.
+- [x] Añadir una vista de pantalla completa dentro de la ventana con foco y cierre accesibles.
+- [x] Cubrir con pruebas las acciones de teclado y los límites de navegación.
 - **Criterios de aceptación:**
   - El zoom y el paneo funcionan con ratón, tacto y teclado.
   - Reiniciar recupera el ajuste inicial.
@@ -110,3 +110,4 @@
 - Punto de partida: `app/board/apps/mermaid/mermaid-app.tsx`, `use-mermaid-preview.ts`, `mermaid-render.ts`, `mermaid-filename.ts`, `mermaid-error.ts` y `mermaid.css`.
 - No se cambia el formato de `{ code }` ni el guardado por proyecto.
 - 2026-11-19: Fase 1 completada. El lienzo usa `--doc-*`, mide el SVG con `ResizeObserver` y aplica un zoom inicial que respeta ancho y alto. Revisado a 390 y 1366 px sin scroll horizontal. Suite completa: 210 archivos / 1.488 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (límite de Diagramas 371.000 B).
+- 2026-11-19: Fase 2 completada. El lienzo incorpora zoom con botones, rueda y pinza; paneo con arrastre y flechas; reinicio al ajuste inicial y pantalla completa con Escape y retorno de foco. Se limitan zoom y desplazamiento, y el estado de vista no llama a `markDirty`. Revisado con controles reales en escritorio y pantalla completa. Suite completa: 211 archivos / 1.497 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (límites de Diagramas 374.000/825.000 B).

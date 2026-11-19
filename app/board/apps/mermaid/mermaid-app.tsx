@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { StoreRole } from "../types";
 import { useVersionedDraft } from "../use-versioned-draft";
 import { useWindowClose } from "../../shared/window-close-guard";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useMermaidPreview } from "./use-mermaid-preview";
-import { fitMermaidScale, mermaidSvgSize, type MermaidCanvasSize } from "./mermaid-canvas";
+import MermaidCanvasView from "./mermaid-canvas-view";
 import { mermaidFileName } from "./mermaid-filename";
 import VersionConflictDialog from "../version-conflict-dialog";
 import UnsavedChangesDialog from "../unsaved-changes-dialog";
@@ -25,8 +25,6 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
   const statusTimer = useRef<number | null>(null);
   const fallbackChecked = useRef(false);
   const editor = useRef<HTMLTextAreaElement>(null);
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const [canvasSize, setCanvasSize] = useState<MermaidCanvasSize | null>(null);
   const readOnly = role === "guest";
   const forceClose = useWindowClose();
 
@@ -74,42 +72,6 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
     }, 0);
     return () => window.clearTimeout(timer);
   }, [draftDirty, draftReady, draftUpdatedAt, flash, markDirty, readOnly, setCode, storageKey]);
-
-  useEffect(() => {
-    const element = canvasRef.current;
-    if (!element) return;
-    let frame = 0;
-    let observer: ResizeObserver | null = null;
-
-    const measure = () => {
-      const style = window.getComputedStyle(element);
-      const horizontalPadding = (Number.parseFloat(style.paddingLeft) || 0) + (Number.parseFloat(style.paddingRight) || 0);
-      const verticalPadding = (Number.parseFloat(style.paddingTop) || 0) + (Number.parseFloat(style.paddingBottom) || 0);
-      const next = {
-        width: Math.max(1, element.clientWidth - horizontalPadding),
-        height: Math.max(1, element.clientHeight - verticalPadding),
-      };
-      setCanvasSize((current) => current?.width === next.width && current.height === next.height ? current : next);
-    };
-
-    const schedule = () => {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(measure);
-    };
-
-    if (typeof ResizeObserver !== "undefined") {
-      observer = new ResizeObserver(schedule);
-      observer.observe(element);
-    }
-    schedule();
-    return () => {
-      window.cancelAnimationFrame(frame);
-      observer?.disconnect();
-    };
-  }, []);
-
-  const svgSize = useMemo(() => mermaidSvgSize(svg), [svg]);
-  const fitScale = useMemo(() => fitMermaidScale(svgSize, canvasSize), [canvasSize, svgSize]);
 
   const save = async () => {
     if (readOnly) return;
@@ -244,36 +206,7 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
           />
         </div>
 
-        <div className="mermaid-preview">
-          <div className="mermaid-preview-head">
-            <span>Vista previa</span>
-            {error ? <span className="mermaid-error" role="alert">{error}</span> : null}
-          </div>
-          <div className="mermaid-canvas" ref={canvasRef} aria-label="Vista previa del diagrama">
-            {svg ? (
-              <div
-                className="mermaid-canvas-stage"
-                style={svgSize ? {
-                  width: svgSize.width * fitScale,
-                  height: svgSize.height * fitScale,
-                } : undefined}
-              >
-                <div
-                  className="mermaid-canvas-svg"
-                  style={svgSize ? {
-                    position: "absolute",
-                    inset: "0 auto auto 0",
-                    width: svgSize.width,
-                    height: svgSize.height,
-                    transform: `scale(${fitScale})`,
-                    transformOrigin: "top left",
-                  } : undefined}
-                  dangerouslySetInnerHTML={{ __html: svg }}
-                />
-              </div>
-            ) : <p className="mermaid-empty">El diagrama aparecerá aquí.</p>}
-          </div>
-        </div>
+        <MermaidCanvasView key={svg} svg={svg} error={error} />
       </div>
 
       <UnsavedChangesDialog

@@ -56,3 +56,86 @@ export function fitMermaidScale(
   const limit = Number.isFinite(max) && max > 0 ? max : 1;
   return Math.max(0.02, Math.min(limit, canvasSize.width / svgSize.width, canvasSize.height / svgSize.height));
 }
+
+/** Punto dentro del lienzo, relativo a su esquina superior izquierda. */
+export type MermaidPoint = { x: number; y: number };
+
+/** Desplazamiento del lienzo respecto al centro del contenedor. */
+export type MermaidPan = { x: number; y: number };
+
+/** Límites de zoom de la vista interactiva. */
+export const MERMAID_MIN_ZOOM = 0.05;
+export const MERMAID_MAX_ZOOM = 4;
+
+/**
+ * Limita el zoom interactivo a un rango usable.
+ * @param scale - Escala propuesta.
+ * @returns La escala limitada.
+ */
+export function clampMermaidZoom(scale: number): number {
+  if (!Number.isFinite(scale)) return 1;
+  return Math.max(MERMAID_MIN_ZOOM, Math.min(MERMAID_MAX_ZOOM, scale));
+}
+
+/**
+ * Calcula el tamaño visual del escenario para una escala.
+ * @param svgSize - Tamaño natural del SVG.
+ * @param scale - Escala aplicada.
+ * @returns El tamaño visual o cero si no hay medidas.
+ */
+export function mermaidStageSize(svgSize: MermaidSvgSize | null, scale: number): MermaidCanvasSize {
+  if (!svgSize) return { width: 0, height: 0 };
+  return { width: svgSize.width * scale, height: svgSize.height * scale };
+}
+
+/**
+ * Evita que el usuario desplace el lienzo fuera de la vista.
+ * @param pan - Desplazamiento propuesto.
+ * @param stage - Tamaño visual del escenario.
+ * @param canvas - Espacio disponible.
+ * @returns El desplazamiento limitado.
+ */
+export function clampMermaidPan(
+  pan: MermaidPan,
+  stage: MermaidCanvasSize,
+  canvas: MermaidCanvasSize | null,
+): MermaidPan {
+  if (!canvas) return pan;
+  const maxX = Math.max(0, (stage.width - canvas.width) / 2);
+  const maxY = Math.max(0, (stage.height - canvas.height) / 2);
+  const clamp = (value: number, limit: number) => limit === 0 ? 0 : Math.max(-limit, Math.min(limit, value));
+  return {
+    x: clamp(pan.x, maxX),
+    y: clamp(pan.y, maxY),
+  };
+}
+
+/**
+ * Mantiene el punto del contenido bajo el ancla al cambiar el zoom.
+ * @param pan - Desplazamiento actual.
+ * @param from - Escala actual.
+ * @param to - Escala nueva.
+ * @param anchor - Punto del lienzo donde se hace zoom.
+ * @param canvas - Espacio disponible.
+ * @param svgSize - Tamaño natural del SVG.
+ * @returns El desplazamiento nuevo, ya limitado.
+ */
+export function zoomMermaidPan(
+  pan: MermaidPan,
+  from: number,
+  to: number,
+  anchor: MermaidPoint,
+  canvas: MermaidCanvasSize | null,
+  svgSize: MermaidSvgSize | null,
+): MermaidPan {
+  if (!canvas || from <= 0 || to <= 0) return pan;
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const contentX = (anchor.x - centerX - pan.x) / from;
+  const contentY = (anchor.y - centerY - pan.y) / from;
+  const next = {
+    x: anchor.x - centerX - contentX * to,
+    y: anchor.y - centerY - contentY * to,
+  };
+  return clampMermaidPan(next, mermaidStageSize(svgSize, to), canvas);
+}
