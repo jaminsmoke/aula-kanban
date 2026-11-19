@@ -21,6 +21,12 @@ import {
 import type { StoreRole } from "../types";
 import { useAppDocument } from "../use-app-document";
 import {
+  buildFormulaSheet,
+  computeSheetDisplay,
+  extractFormulaMap,
+  formulaCellKey,
+} from "./hoja-calculo-calc";
+import {
   SHEET_COLUMNS,
   SHEET_HEADERS,
   SHEET_ROWS,
@@ -47,12 +53,17 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
   const worksheetRef = useRef<Worksheet | null>(null);
   const [documentValue, setDocumentValue] = useState<SpreadsheetDocument>(() => ({ data: cloneSheet(STARTER_SHEET) }));
   const initialDataRef = useRef(documentValue.data);
+  const [initialDisplay] = useState(() => computeSheetDisplay(STARTER_SHEET));
   const initialStylesRef = useRef(documentValue.styles);
   const pendingDocumentRef = useRef<SpreadsheetDocument | null>(null);
+  const formulasRef = useRef(extractFormulaMap(STARTER_SHEET));
+  const applyingRef = useRef(false);
   const [ready, setReady] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("Hoja de ejemplo lista.");
+  const [selectedCell, setSelectedCell] = useState<{ row: number; column: number } | null>(null);
+  const [formulaDraft, setFormulaDraft] = useState("");
   const [initError, setInitError] = useState<string | null>(null);
   const { load, save, loading, error } = useAppDocument<SpreadsheetDocument>(projectId, "hoja-calculo");
   const readOnly = role === "guest";
@@ -65,20 +76,79 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
   function applyWorksheet(document: SpreadsheetDocument, worksheet: Worksheet) {
     const currentStyles = worksheet.getStyle() as Record<string, string>;
     if (Object.keys(currentStyles).length) worksheet.resetStyle(currentStyles);
-    worksheet.setData(document.data);
-    if (document.styles && Object.keys(document.styles).length) {
-      worksheet.setStyle(document.styles);
+    const data = normalizeSheet(document.data);
+    formulasRef.current = extractFormulaMap(data);
+    applyingRef.current = true;
+    try {
+      worksheet.setData(computeSheetDisplay(data));
+      if (document.styles && Object.keys(document.styles).length) {
+        worksheet.setStyle(document.styles);
+      }
+    } finally {
+      applyingRef.current = false;
     }
+    setSelectedCell(null);
+    setFormulaDraft("");
   }
 
   /**
-   * Captura datos y estilos de la rejilla en el estado de React.
+   * Lee el texto visible de una celda de la rejilla.
+   * @param worksheet - Rejilla consultada.
+   * @param row - Fila cero-based.
+   * @param column - Columna cero-based.
+   * @returns El valor visible como texto.
+   */
+  function cellText(worksheet: Worksheet, row: number, column: number): string {
+    const value = worksheet.getValueFromCoords(column, row);
+    return value === null || value === undefined ? "" : String(value);
+  }
+
+  /**
+   * Aplica el texto de la barra de fórmulas a la celda seleccionada.
+   */
+  function commitFormula() {
+    const worksheet = worksheetRef.current;
+    if (!worksheet || readOnly || !selectedCell) return;
+    const value = formulaDraft.trim();
+    const key = formulaCellKey(selectedCell.row, selectedCell.column);
+    const current = formulasRef.current.get(key) ?? cellText(worksheet, selectedCell.row, selectedCell.column);
+    if (value === current) return;
+    if (value.startsWith("=")) {
+      formulasRef.current.set(key, value);
+    } else {
+      formulasRef.current.delete(key);
+      applyingRef.current = true;
+      try {
+        worksheet.setValueFromCoords(selectedCell.column, selectedCell.row, value, true);
+      } finally {
+        applyingRef.current = false;
+      }
+    }
+    recalculate(worksheet, "Fórmula actualizada.");
+    setFormulaDraft(formulasRef.current.get(key) ?? value);
+  }
+
+  /**
+   * Recalcula la rejilla y guarda las fórmulas originales en el estado.
    * @param worksheet - Rejilla que se está editando.
    * @param message - Mensaje de estado.
    */
-  function captureDocument(worksheet: Worksheet, message: string) {
+  function recalculate(worksheet: Worksheet, message: string) {
+    const display = normalizeSheet(worksheet.getData() as SpreadsheetCell[][]);
+    const data = buildFormulaSheet(display, formulasRef.current);
+    const calculated = computeSheetDisplay(data);
+    applyingRef.current = true;
+    try {
+      calculated.forEach((row, rowIndex) => row.forEach((value, columnIndex) => {
+        if (display[rowIndex]?.[columnIndex] !== value) {
+          worksheet.setValueFromCoords(columnIndex, rowIndex, value, true);
+        }
+      }));
+    } finally {
+      applyingRef.current = false;
+    }
     setDocumentValue({
-      data: normalizeSheet(worksheet.getData() as SpreadsheetCell[][]),
+      data,
       styles: worksheet.getStyle() as Record<string, string>,
     });
     setDirty(true);
@@ -117,7 +187,7 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
         parseHTML: false,
         worksheets: [
           {
-            data: initialDataRef.current,
+            data: initialDisplay,
             minDimensions: [SHEET_COLUMNS, SHEET_ROWS],
             columns: SHEET_HEADERS.map((title, index) => ({
               title,
@@ -134,23 +204,42 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
           if (!active) return;
           const worksheet = instance.worksheets[0] ?? null;
           worksheetRef.current = worksheet;
-          const initialStyles = initialStylesRef.current;
-          if (worksheet && initialStyles && Object.keys(initialStyles).length) {
-            worksheet.setStyle(initialStyles);
-          }
-          if (worksheet && pendingDocumentRef.current) {
-            applyWorksheet(pendingDocumentRef.current, worksheet);
-            setDirty(false);
+          if (worksheet) {
+            applyWorksheet(pendingDocumentRef.current ?? {
+              data: initialDataRef.current,
+              styles: initialStylesRef.current,
+            }, worksheet);
+            if (pendingDocumentRef.current) setDirty(false);
           }
           setReady(true);
         },
-        onchange: (instance) => {
-          if (!active) return;
-          captureDocument(instance, "Hoja modificada.");
+        onchange: (instance, _cell, columnIndex, rowIndex, newValue) => {
+          if (!active || applyingRef.current) return;
+          const row = Number(rowIndex);
+          const column = Number(columnIndex);
+          const key = formulaCellKey(row, column);
+          if (typeof newValue === "string" && newValue.trimStart().startsWith("=")) {
+            formulasRef.current.set(key, newValue);
+            setFormulaDraft(newValue);
+          } else {
+            formulasRef.current.delete(key);
+            setFormulaDraft(newValue === null || newValue === undefined ? "" : String(newValue));
+          }
+          setSelectedCell({ row, column });
+          recalculate(instance, "Hoja modificada.");
+        },
+        onselection: (instance, left, top) => {
+          if (!active || applyingRef.current) return;
+          const row = Number(top);
+          const column = Number(left);
+          const formula = formulasRef.current.get(formulaCellKey(row, column));
+          const value = instance.getValueFromCoords(column, row);
+          setSelectedCell({ row, column });
+          setFormulaDraft(formula ?? (value === null || value === undefined ? "" : String(value)));
         },
         onchangestyle: (instance) => {
-          if (!active) return;
-          captureDocument(instance, "Formato actualizado.");
+          if (!active || applyingRef.current) return;
+          recalculate(instance, "Formato actualizado.");
         },
       });
     } catch {
@@ -167,7 +256,7 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
       element.replaceChildren();
       worksheetRef.current = null;
     };
-  }, [readOnly]);
+  }, [readOnly, initialDisplay]);
 
   /**
    * Aplica un documento validado y, si la rejilla ya existe, lo pinta.
@@ -190,7 +279,7 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
   function syncDocument(message: string) {
     const worksheet = worksheetRef.current;
     if (!worksheet) return;
-    captureDocument(worksheet, message);
+    recalculate(worksheet, message);
   }
 
   /**
@@ -245,10 +334,8 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
   function resetSheet() {
     const worksheet = worksheetRef.current;
     if (!worksheet || readOnly) return;
-    const oldStyles = worksheet.getStyle() as Record<string, string>;
     const starter = cloneSheet(STARTER_SHEET);
-    worksheet.setData(starter);
-    if (Object.keys(oldStyles).length) worksheet.resetStyle(oldStyles);
+    applyWorksheet({ data: starter, styles: {} }, worksheet);
     setDocumentValue({ data: starter, styles: {} });
     setDirty(true);
     setStatus("Hoja reiniciada con el ejemplo.");
@@ -263,7 +350,10 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
     const worksheet = worksheetRef.current;
     const document = worksheet
       ? {
-        data: normalizeSheet(worksheet.getData() as SpreadsheetCell[][]),
+        data: buildFormulaSheet(
+          normalizeSheet(worksheet.getData() as SpreadsheetCell[][]),
+          formulasRef.current,
+        ),
         styles: worksheet.getStyle() as Record<string, string>,
       }
       : documentValue;
@@ -296,7 +386,10 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
   function exportCsv() {
     const worksheet = worksheetRef.current;
     if (!worksheet) return;
-    const data = normalizeSheet(worksheet.getData() as SpreadsheetCell[][]);
+    const data = buildFormulaSheet(
+      normalizeSheet(worksheet.getData() as SpreadsheetCell[][]),
+      formulasRef.current,
+    );
     const blob = new Blob([toCsv(data)], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
@@ -375,6 +468,25 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
         </div>
       </header>
 
+      <div className="hoja-calculo-formula-bar">
+        <span aria-hidden>fx</span>
+        <input
+          aria-label="Fórmula de la celda seleccionada"
+          value={formulaDraft}
+          onChange={(event) => setFormulaDraft(event.target.value)}
+          onBlur={commitFormula}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              commitFormula();
+            }
+          }}
+          disabled={!ready || readOnly || !selectedCell}
+          placeholder={selectedCell ? "Escribe un valor o una fórmula" : "Selecciona una celda para ver su fórmula"}
+          spellCheck={false}
+        />
+      </div>
+
       {readOnly ? (
         <p className="hoja-calculo-readonly" role="note">
           Modo lectura: puedes consultar y exportar la hoja, pero no editarla ni guardarla.
@@ -389,13 +501,14 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
         <aside className="hoja-calculo-side">
           <section className="hoja-calculo-info">
             <h3>Presupuesto de ejemplo</h3>
-            <p>Edita las celdas y cambia cantidades y precios. Las fórmulas se conservan como texto, con el cálculo automático desactivado.</p>
+            <p>Edita las celdas y cambia cantidades y precios. Las fórmulas se calculan automáticamente y se conservan como texto en el proyecto.</p>
             <p className="hoja-calculo-status" role="status">{statusText}</p>
           </section>
           <section className="hoja-calculo-help">
             <h3>Atajos</h3>
             <ul>
               <li>Haz clic o arrastra para seleccionar celdas.</li>
+              <li>Selecciona una celda y edita su contenido en la barra <code>fx</code>.</li>
               <li>Las filas y columnas se añaden al final.</li>
             </ul>
           </section>

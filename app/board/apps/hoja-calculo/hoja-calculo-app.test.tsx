@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { computeSheetDisplay } from "./hoja-calculo-calc";
 import { STARTER_SHEET } from "./hoja-calculo-model";
 
 const spreadsheetMock = vi.hoisted(() => {
@@ -10,8 +11,10 @@ const spreadsheetMock = vi.hoisted(() => {
     insertRow: vi.fn(),
     insertColumn: vi.fn(),
     resetStyle: vi.fn(),
-    getData: vi.fn(() => [["Concepto", "Cantidad"], ["Materiales", 2]]),
+    getData: vi.fn((): (string | number | boolean)[][] => [["Concepto", "Cantidad"], ["Materiales", 2]]),
+    getValueFromCoords: vi.fn((): string | number | boolean | null => ""),
     setData: vi.fn(),
+    setValueFromCoords: vi.fn(),
   };
   const instance = { worksheets: [worksheet] };
   const jspreadsheet = vi.fn((_element: HTMLDivElement, options: {
@@ -65,7 +68,7 @@ describe("Hoja de cálculo", () => {
       worksheets: Array<{ data: unknown; minDimensions?: number[] }>;
     };
     expect(options).toMatchObject({ parseFormulas: false, parseHTML: false });
-    expect(options.worksheets[0].data).toEqual(STARTER_SHEET);
+    expect(options.worksheets[0].data).toEqual(computeSheetDisplay(STARTER_SHEET));
     expect(options.worksheets[0].minDimensions).toEqual([6, 20]);
   });
 
@@ -104,7 +107,7 @@ describe("Hoja de cálculo", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Reiniciar hoja" }));
 
-    expect(spreadsheetMock.worksheet.setData).toHaveBeenCalledWith(STARTER_SHEET);
+    expect(spreadsheetMock.worksheet.setData).toHaveBeenCalledWith(computeSheetDisplay(STARTER_SHEET));
     expect(screen.getByRole("status").textContent).toContain("Hoja reiniciada");
   });
 
@@ -115,10 +118,11 @@ describe("Hoja de cálculo", () => {
     const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
       worksheets: Array<{ data: Array<Array<string | number | boolean>> }>;
     };
-    options.worksheets[0].data[3][1] = 5;
+    options.worksheets[0].data[3][1] = 99;
 
     fireEvent.click(screen.getByRole("button", { name: "Reiniciar hoja" }));
 
+    expect(spreadsheetMock.worksheet.setData).toHaveBeenCalledWith(computeSheetDisplay(STARTER_SHEET));
     const reset = spreadsheetMock.worksheet.setData.mock.calls.at(-1)?.[0] as Array<Array<string | number | boolean>>;
     expect(reset[3][1]).toBe(1);
   });
@@ -134,6 +138,82 @@ describe("Hoja de cálculo", () => {
     expect(saved.data).toHaveLength(20);
     expect(saved.styles).toEqual({});
     expect(screen.getByRole("status").textContent).toContain("guardada en el proyecto");
+  });
+
+  it("guarda las fórmulas originales aunque la rejilla muestre resultados", async () => {
+    render(<HojaCalculoApp {...props} />);
+    await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
+    spreadsheetMock.worksheet.getData.mockReturnValueOnce(computeSheetDisplay(STARTER_SHEET));
+
+    fireEvent.click(screen.getByRole("button", { name: "Guardar hoja" }));
+
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as { data: string[][] };
+    expect(saved.data[2][3]).toBe("=B3*C3");
+    expect(saved.data[5][3]).toBe("=SUM(D3:D5)");
+  });
+
+  it("recalcula los totales al editar una cantidad", async () => {
+    render(<HojaCalculoApp {...props} />);
+    await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
+    const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
+      onchange?: (instance: unknown, cell: unknown, col: number, row: number, value: unknown) => void;
+    };
+    const display = computeSheetDisplay(STARTER_SHEET);
+    display[2][1] = 4;
+    spreadsheetMock.worksheet.getData.mockReturnValueOnce(display);
+
+    options.onchange?.(spreadsheetMock.worksheet, {}, 1, 2, 4);
+
+    expect(spreadsheetMock.worksheet.setValueFromCoords).toHaveBeenCalledWith(3, 2, 18, true);
+    expect(spreadsheetMock.worksheet.setValueFromCoords).toHaveBeenCalledWith(3, 5, 36.5, true);
+  });
+
+  it("recalcula una fórmula nueva sin perderla", async () => {
+    render(<HojaCalculoApp {...props} />);
+    await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
+    const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
+      onchange?: (instance: unknown, cell: unknown, col: number, row: number, value: unknown) => void;
+    };
+    const display = computeSheetDisplay(STARTER_SHEET);
+    display[6][3] = "=B3*C3";
+    spreadsheetMock.worksheet.getData.mockReturnValueOnce(display);
+
+    options.onchange?.(spreadsheetMock.worksheet, {}, 3, 6, "=B3*C3");
+
+    expect(spreadsheetMock.worksheet.setValueFromCoords).toHaveBeenCalledWith(3, 6, 13.5, true);
+  });
+
+  it("edita la fórmula de una celda calculada desde la barra fx", async () => {
+    render(<HojaCalculoApp {...props} />);
+    await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
+    const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
+      onselection?: (instance: unknown, left: number, top: number, right: number, bottom: number, origin?: unknown) => void;
+    };
+    spreadsheetMock.worksheet.getData.mockReturnValueOnce(computeSheetDisplay(STARTER_SHEET));
+    options.onselection?.(spreadsheetMock.worksheet, 3, 2, 3, 2);
+
+    const input = screen.getByLabelText("Fórmula de la celda seleccionada") as HTMLInputElement;
+    await waitFor(() => expect(input.value).toBe("=B3*C3"));
+    fireEvent.change(input, { target: { value: "=B3*C3*2" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+
+    expect(spreadsheetMock.worksheet.setValueFromCoords).toHaveBeenCalledWith(3, 2, 27, true);
+  });
+
+  it("muestra un error de fórmula sin romper la rejilla", async () => {
+    render(<HojaCalculoApp {...props} />);
+    await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
+    const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
+      onchange?: (instance: unknown, cell: unknown, col: number, row: number, value: unknown) => void;
+    };
+    const display = computeSheetDisplay(STARTER_SHEET);
+    display[7][3] = "=B3*";
+    spreadsheetMock.worksheet.getData.mockReturnValueOnce(display);
+
+    options.onchange?.(spreadsheetMock.worksheet, {}, 3, 7, "=B3*");
+
+    expect(spreadsheetMock.worksheet.setValueFromCoords).toHaveBeenCalledWith(3, 7, "#VALOR!", true);
   });
 
   it("carga una hoja guardada", async () => {

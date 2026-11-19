@@ -59,12 +59,12 @@
 
 ### Fase 2 — Integración con la rejilla
 
-- [ ] Separar las fórmulas persistidas de la matriz de valores mostrada.
-- [ ] Recalcular al editar una celda y actualizar solo las celdas dependientes.
-- [ ] Conservar la fórmula al seleccionar o mostrar una celda calculada.
-- [ ] Recalcular al cargar, reiniciar y añadir filas o columnas.
-- [ ] Mostrar los totales del presupuesto (`B3*C3`, `B4*C4`, `B5*C5`, `SUM(D3:D5)`).
-- [ ] Cubrir con pruebas edición de cantidades, recálculo, fórmulas nuevas y fórmulas mal formadas.
+- [x] Separar las fórmulas persistidas de la matriz de valores mostrada.
+- [x] Recalcular al editar una celda y actualizar solo las celdas dependientes.
+- [x] Conservar la fórmula al seleccionar o mostrar una celda calculada.
+- [x] Recalcular al cargar, reiniciar y añadir filas o columnas.
+- [x] Mostrar los totales del presupuesto (`B3*C3`, `B4*C4`, `B5*C5`, `SUM(D3:D5)`).
+- [x] Cubrir con pruebas edición de cantidades, recálculo, fórmulas nuevas y fórmulas mal formadas.
 - **Criterios de aceptación:**
   - Cambiar una cantidad actualiza el total correspondiente y el total general.
   - Editar una celda normal no borra fórmulas ajenas.
@@ -114,3 +114,4 @@
 - No se cambia el esquema `{ data, styles? }` ni se migra la app a otro motor de persistencia.
 - DEV-01 queda como única entrada del backlog.
 - 2026-11-19: Fase 1 completada. Se añadió un lexer/parser y evaluador propio con referencias A1, rangos acotados, funciones habituales, comparaciones, errores `#...` y detección de ciclos. No usa `eval` ni `Function`. Suite completa: 214 archivos / 1.514 pruebas; `tsc` y ESLint en verde.
+- 2026-11-19: Fase 2 completada. La rejilla muestra los valores calculados y conserva las fórmulas en un mapa separado; al editar solo se actualizan las celdas cuyo resultado cambia, y guardar/exportar reconstruye el documento desde las fórmulas. Añadida la barra `fx` para consultar y editar la fórmula de la celda seleccionada. Verificado con Jspreadsheet real a 1366 px: cambiar `B3` actualiza `D3` y `D6`; guardar y recargar conserva los totales y las fórmulas. Suite completa: 215 archivos / 1.521 pruebas; `tsc`, ESLint, build y `perf:budget` correctos.
