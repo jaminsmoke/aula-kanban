@@ -57,10 +57,7 @@ import {
   type AulaDocument,
   type AulaPresentationTheme,
 } from "../../../../lib/domain/aula-documentos/document";
-import {
-  importLegacyDocument,
-  type AulaDocumentImportPreview,
-} from "../../../../lib/domain/aula-documentos/importers";
+import type { AulaDocumentImportPreview } from "../../../../lib/domain/aula-documentos/importers";
 import { aulaFileName, aulaRecoveryFileName } from "../../../../lib/domain/aula-documentos/filename";
 import {
   AULA_DOCUMENT_MARKDOWN_MAX_LENGTH,
@@ -408,9 +405,6 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const recoveryRef = useRef<HTMLElement>(null);
   const readOnly = role === "guest";
   const { load, saveVersioned, loading, error } = useAppDocument<AulaDocument>(projectId, "aula-documentos");
-  const notesStore = useAppDocument<unknown>(projectId, "documentos");
-  const mermaidStore = useAppDocument<unknown>(projectId, "mermaid");
-  const presentationsStore = useAppDocument<unknown>(projectId, "presentaciones");
 
   /**
    * Marca el documento como modificado y reinicia el debounce de autosave.
@@ -1406,42 +1400,6 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }
 
   /**
-   * Carga una app antigua y prepara su vista previa.
-   * @param source - App de origen.
-   */
-  async function importFrom(source: "documentos" | "mermaid" | "presentaciones") {
-    setImportLoading(source);
-    setImportError(null);
-    setImportPreview(null);
-    setImportConfirm(false);
-    try {
-      const store = source === "documentos"
-        ? notesStore
-        : source === "mermaid"
-          ? mermaidStore
-          : presentationsStore;
-      const { state, updatedAt } = await store.load();
-      if (state === null) {
-        setImportError(`No hay ningún documento guardado en ${IMPORT_LABELS[source]}.`);
-        return;
-      }
-      const result = importLegacyDocument(source, state);
-      if (!result.ok) {
-        setImportError(result.message);
-        return;
-      }
-      setImportPreview({
-        ...result.preview,
-        sourceUpdatedAt: typeof updatedAt === "number" ? updatedAt : null,
-      });
-    } catch {
-      setImportError("No se pudo leer el documento de origen.");
-    } finally {
-      setImportLoading(null);
-    }
-  }
-
-  /**
    * Lee un archivo Markdown y prepara su vista previa.
    * @param file - Archivo elegido.
    */
@@ -1781,7 +1739,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           </span>
           <span>
             <strong>Aula Documentos</strong>
-            <small>Texto y diagramas</small>
+            <small>Suite documental</small>
           </span>
         </div>
         <div className="aula-documentos-meta" aria-label="Estado del documento">
@@ -2456,20 +2414,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             ) : (
               <div className="aula-documentos-import-menu">
                 <p className="aula-documentos-import-intro">
-                  Elige una app del proyecto, un archivo Markdown o un DOCX/PPTX. La vista previa no cambia el origen.
+                  Elige un archivo Markdown o un DOCX/PPTX. La vista previa no cambia el origen. Para recuperar datos de las
+                  apps documentales anteriores, usa Archivo &gt; Migrar apps antiguas.
                 </p>
-                <button type="button" className="aula-documentos-import-option" onClick={() => { void importFrom("documentos"); }}>
-                  <FileText size={18} aria-hidden />
-                  <span><strong>Notas y documentos</strong><small>Texto enriquecido guardado en el proyecto</small></span>
-                </button>
-                <button type="button" className="aula-documentos-import-option" onClick={() => { void importFrom("mermaid"); }}>
-                  <GitBranch size={18} aria-hidden />
-                  <span><strong>Diagramas</strong><small>Un diagrama Mermaid como bloque</small></span>
-                </button>
-                <button type="button" className="aula-documentos-import-option" onClick={() => { void importFrom("presentaciones"); }}>
-                  <Presentation size={18} aria-hidden />
-                  <span><strong>Presentaciones</strong><small>Diapositivas Markdown con saltos</small></span>
-                </button>
                 <label className="aula-documentos-import-option" htmlFor="aula-documentos-office-file">
                   <Upload size={18} aria-hidden />
                   <span><strong>Documento de Office</strong><small>DOCX o PPTX con vista previa; XLSX se consulta en el visor</small></span>
@@ -2574,8 +2521,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
 
         <aside className="aula-documentos-side">
           <section className="aula-documentos-info">
-            <h3>Texto y diagramas juntos</h3>
-            <p>Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa. La presentación se puede editar por diapositivas o desde <strong>Fuente Markdown</strong>.</p>
+            <h3>La suite documental</h3>
+            <p>Aula Documentos reúne notas, diagramas, presentaciones y Office. Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa. La presentación se puede editar por diapositivas o desde <strong>Fuente Markdown</strong>.</p>
             <p>También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad, abrir el original o cualquier archivo de Office en el visor compartido y exportar copias DOCX/PPTX desde el menú Exportar. XLSX se consulta en Visor Office.</p>
             <p>Las apps documentales anteriores siguen guardando sus datos. Usa <strong>Archivo &gt; Migrar apps antiguas</strong> para reunirlos aquí; la migración conserva copias y se puede deshacer.</p>
             <p className="aula-documentos-status" role="status" aria-live="polite">{statusText}</p>

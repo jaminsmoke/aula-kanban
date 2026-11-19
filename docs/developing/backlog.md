@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** ADOC-13 activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 2 entradas pendientes
+> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas pendientes · ADOC-13 cerrado
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
@@ -17,7 +17,7 @@
   3. Establecer cómo se representan las apps que pasan a ser funciones internas: no deben aparecer como apps instalables duplicadas ni confundir sobre dónde se edita cada cosa.
   4. Dejar el patrón preparado para futuras suites, sin convertir la Tienda en un catálogo de promesas ambiguas.
 - Criterios: la ficha de Aula Documentos explica con claridad qué incluye y qué puede importar/exportar; las tarjetas retiradas dejan de competir con la suite; el patrón se puede reutilizar; no cambia la versión del Site.
-- Notas: depende de ADOC-13 y se ejecuta al cerrar la convergencia o inmediatamente después. Evitar duplicar la misma promesa en la tarjeta de Aula Documentos y en tarjetas individuales que ya no aportan nada.
+- Notas: ADOC-13 ya cerró la convergencia. STORE-18 debe evitar duplicar la misma promesa en la tarjeta de Aula Documentos y en tarjetas individuales que ya no aportan nada.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 

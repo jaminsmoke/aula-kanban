@@ -1,12 +1,12 @@
 # Cobertura MCP de las apps nativas
 
-Estado de la superficie MCP de las diecisiete apps de Aula Store. La fuente de las
+Estado de la superficie MCP de las trece apps actuales de Aula Store. La fuente de las
 herramientas es `lib/server/mcp/apps/registro.ts`; la instalación y los permisos
 se resuelven con `lib/server/mcp/apps/contrato.ts`.
 
 **Última revisión:** 2026-11-18 · **Catálogo:** `0.28.0` · **59 herramientas**
 
-**Estado:** MCP-05B, MCP-05C, MCP-05D y MCP-05E cerrados; las diecisiete apps tienen declaración MCP. Ajedrez, Tarjetas, Física, Geometría, Mapas, Presentaciones, Moléculas 3D, Líneas de tiempo, Hoja de cálculo, Notas y documentos, Visor Office, Aula Documentos y Calculadora no exponen herramientas propias porque su estado de trabajo vive en el navegador o en `app_documents` sin herramientas específicas.
+**Estado:** MCP-05B, MCP-05C, MCP-05D y MCP-05E cerrados; las trece apps actuales tienen declaración MCP. Aula Documentos expone los tres tools de Diagramas; Ajedrez, Tarjetas, Física, Geometría, Mapas, Moléculas 3D, Líneas de tiempo, Hoja de cálculo y Calculadora no exponen herramientas propias porque su estado de trabajo vive en el navegador sin herramientas específicas.
 
 ## Herramientas comunes
 
@@ -25,7 +25,7 @@ entrada:
 - **Programación por bloques (MCP-05D):** `leer_programa_bloques` y
   `guardar_programa_bloques`. Leer requiere acceso al proyecto; escribir exige
   permiso y los invitados no escriben.
-- **Diagramas (MCP-05E):** `leer_diagrama`, `guardar_diagrama` y
+- **Aula Documentos (Diagramas, MCP-05E):** `leer_diagrama`, `guardar_diagrama` y
   `listar_plantillas_diagrama`. Leer y listar plantillas no requieren escritura;
   guardar exige permiso y los invitados no escriben.
 
@@ -44,19 +44,15 @@ reglas de cada app.
 | **Calculadora** (`calculadora`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Cualquier miembro con acceso al proyecto; las cuentas invitadas la usan en local. | Sin estado de servidor: la calculadora, su memoria y su historial viven en el navegador. |
 | **Tabla periódica** (`tabla-periodica`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `consultar_elemento` | No | No | Cualquier cuenta autenticada, incluidas invitadas y cuentas sin proyecto, si la app está instalada. La consulta no usa proyecto. | Una ficha por llamada entre 118 elementos. Los datos de referencia viven en el cliente. |
 | **Programación por bloques** (`blockly`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_programa_bloques` | Sí, `guardar_programa_bloques` | No; la ventana descarga JSON | Lectura: cualquier miembro. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Estado JSON de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. |
-| **Diagramas** (`mermaid`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_diagrama` y `listar_plantillas_diagrama` | Sí, `guardar_diagrama` | No; la ventana exporta SVG | Lectura y plantillas: cualquier miembro con acceso, o cualquier cuenta autenticada para las plantillas si la app está instalada. Escritura: no invitados; el alumnado puede guardar el documento del proyecto. | Código de hasta 200.000 caracteres. Sin revisión optimista: la última escritura gana. La validación y el render de Mermaid se quedan en el navegador. |
 | **Ajedrez** (`ajedrez`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Cualquier miembro con acceso al proyecto; las cuentas invitadas lo usan en local. | Sin estado de servidor: el tablero y la partida viven en el navegador. |
 | **Tarjetas de repaso** (`tarjetas`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Mazos: cualquier miembro con acceso; edición solo para owner, admin, teacher y student; invitados en solo lectura. El repaso local está disponible para todos. | Mazos y tarjetas en `app_documents`; el progreso FSRS vive en `localStorage` por proyecto y navegador. Sin herramientas MCP propias en esta versión. |
 | **Física 2D** (`fisica`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Cualquier miembro con acceso al proyecto; las cuentas invitadas la usan en local. | Sin estado de servidor: la simulación y las escenas viven en el navegador. |
 | **Geometría interactiva** (`geometria`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Cualquier miembro con acceso al proyecto; las cuentas invitadas la usan en local. | Sin estado de servidor: las construcciones, presets y funciones viven en el navegador. |
 | **Mapas conceptuales** (`mapas`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | El mapa se guarda en `app_documents`; la edición, el zoom y la disposición viven en el navegador. Sin herramientas MCP específicas en esta versión. |
-| **Presentaciones** (`presentaciones`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | El documento se guarda en `app_documents`; el editor, la vista previa y el modo presentación viven en el navegador. Sin herramientas MCP específicas en esta versión. |
 | **Moléculas 3D** (`moleculas`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Todos los roles; la vista y la selección son locales. | La vista y la selección viven en el navegador; no hay documento persistente. Sin herramientas MCP específicas en esta versión. |
 | **Líneas de tiempo** (`timeline`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | El documento se guarda en `app_documents`; el lienzo, el zoom y la edición viven en el navegador. Sin herramientas MCP específicas en esta versión. |
 | **Hoja de cálculo** (`hoja-calculo`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | Datos, fórmulas y estilos se guardan en `app_documents`; la edición, el cálculo y la exportación CSV viven en el navegador. Sin herramientas MCP específicas en esta versión. |
-| **Notas y documentos** (`documentos`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | Título y JSON de Tiptap se guardan en `app_documents`; la edición, los enlaces y la exportación HTML viven en el navegador. Sin herramientas MCP específicas en esta versión. |
-| **Visor Office** (`visor-office`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Todos los roles; el archivo se abre en el navegador y no se comparte ni se guarda. | `.docx`, `.xlsx` y `.pptx` de hasta 30 MB en solo lectura; el archivo no se sube ni se persiste. Sin herramientas MCP específicas en esta versión. |
-| **Aula Documentos** (`aula-documentos`) | Sí, `abrir_app` | Sí, MCP-04 | No | No | No | Lectura para cualquier miembro; edición para owner, admin, teacher y student; invitados en solo lectura. | Un documento JSON por proyecto en `app_documents`; texto, Mermaid, importaciones, presentación y exportaciones viven en el navegador. Sin herramientas MCP específicas en esta versión. |
+| **Aula Documentos** (`aula-documentos`) | Sí, `abrir_app` | Sí, MCP-04 | Sí, `leer_diagrama` y `listar_plantillas_diagrama` | Sí, `guardar_diagrama` | No desde MCP; la ventana exporta SVG, HTML, Markdown, DOCX y PPTX | Lectura y plantillas: cualquier miembro con acceso, o cualquier cuenta autenticada para las plantillas si Aula Documentos está instalada. Escritura: no invitados. | Un documento JSON por proyecto en `app_documents`. Los tools operan sobre el primer bloque Mermaid; el resto de la edición, importación, presentación y exportación vive en el navegador. |
 
 ## Qué falta en cada app
 
@@ -86,20 +82,20 @@ reglas de cada app.
 - Cobertura funcional cerrada: no quedan huecos MCP para esta app. El resumen
   del roadmap está en el changelog.
 
-### Diagramas — MCP-05E (completado)
+### Aula Documentos (Diagramas) - MCP-05E (completado)
 
-- Leer y guardar `{ code }` en `app_documents` con `leer_diagrama` y
-  `guardar_diagrama`, con el mismo límite de 200.000 caracteres y el `403` de
-  invitados. La lectura devuelve `{ codigo, actualizado }` o `null` sin crear
-  documento, y la escritura conserva las claves internas.
+- Los tools `leer_diagrama`, `guardar_diagrama` y `listar_plantillas_diagrama`
+  viven ahora en la declaración de Aula Documentos. Leen y escriben el primer
+  bloque Mermaid del documento; si Aula aún no tiene documento, mantienen la
+  fila histórica `mermaid` con el mismo límite de 200.000 caracteres y el `403`
+  de invitados.
 - `listar_plantillas_diagrama` devuelve las seis plantillas con
   `{ id, nombre, codigo }` desde `lib/domain/mermaid/templates.ts`, la misma
   lista que usa el editor, sin exigir proyecto.
 - No se valida sintaxis, no se renderiza SVG y no se exporta desde MCP; la
-  vista previa y la descarga SVG son capacidades del navegador.
-- Cobertura funcional cerrada: no quedan huecos MCP para esta app. El resumen
-  del roadmap está en el changelog.
-
+  vista previa y las exportaciones son capacidades del navegador.
+- `abrir_app` y el control de ventanas aceptan los IDs documentales antiguos y
+  los resuelven como `aula-documentos` por MCP-04.
 ### Ajedrez — sin herramientas
 
 - La partida, el tablero y el rival aleatorio viven en el navegador; no hay
@@ -138,14 +134,6 @@ reglas de cada app.
 - `abrir_app` y el control de ventanas siguen disponibles por MCP-04.
 - La lectura y escritura del documento se valorarán en un roadmap posterior.
 
-### Presentaciones — sin herramientas
-
-- El documento se guarda en `app_documents`, pero el editor, la vista previa y el
-  modo presentación viven en el navegador; no hay herramientas MCP específicas
-  en esta versión.
-- `abrir_app` y el control de ventanas siguen disponibles por MCP-04.
-- La exportación HTML se queda en la ventana; no se genera desde MCP.
-
 ### Moléculas 3D — sin herramientas
 
 - La vista, la molécula seleccionada y las etiquetas viven en el navegador; no
@@ -162,32 +150,6 @@ reglas de cada app.
 - `abrir_app` y el control de ventanas siguen disponibles por MCP-04.
 - Las plantillas y el rango visible se guardan con el documento; no se generan
   desde MCP.
-
-### Notas y documentos — sin herramientas
-
-- El título y el JSON de Tiptap se guardan en `app_documents`, pero la edición,
-  los enlaces y la exportación HTML viven en el navegador; no hay herramientas
-  MCP específicas en esta versión.
-- `abrir_app` y el control de ventanas siguen disponibles por MCP-04.
-- El HTML se genera en la ventana y no se produce desde MCP.
-
-### Visor Office — sin herramientas
-
-- El archivo se elige en el navegador, se lee en memoria y se descarta al
-  cerrar; no se sube, no se guarda en `app_documents` ni queda estado de
-  servidor que leer o escribir.
-- `abrir_app` y el control de ventanas siguen disponibles por MCP-04.
-- La lectura completa del canvas y la edición quedan fuera de esta versión; no
-  se añaden herramientas MCP específicas.
-
-### Aula Documentos — sin herramientas
-
-- El documento se guarda en `app_documents` bajo `aula-documentos`, pero la
-  edición Tiptap, los diagramas Mermaid, las importaciones, la presentación y
-  las exportaciones viven en el navegador.
-- `abrir_app` y el control de ventanas siguen disponibles por MCP-04.
-- No se añaden herramientas MCP de contenido hasta cerrar la paridad y la
-  migración; la app anterior `documentos` conserva su propio estado.
 
 ### Hoja de cálculo — sin herramientas
 
@@ -206,7 +168,7 @@ reglas de cada app.
 ## Revisión de huecos
 
 - **Instalación y catálogo:** cubiertos por MCP-03.
-- **Abrir y controlar ventanas:** cubiertos por MCP-04 para las diecisiete apps.
+- **Abrir y controlar ventanas:** cubiertos por MCP-04 para las trece apps.
 - **Lectura y escritura de contenido:** MCP-05B, MCP-05D y MCP-05E (completados).
 - **Exportación:** no hay una herramienta dedicada. Excalidraw necesita render
   de imagen; Mermaid necesita render de SVG, aunque `leer_diagrama` ya devuelve

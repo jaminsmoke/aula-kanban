@@ -38,10 +38,6 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     appId: "blockly",
     herramientas: herramientasBlockly,
   },
-  mermaid: {
-    appId: "mermaid",
-    herramientas: herramientasMermaid,
-  },
   ajedrez: {
     appId: "ajedrez",
     herramientas: [],
@@ -67,11 +63,6 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     herramientas: [],
     pendiente: "El mapa se guarda en app_documents, pero la edición, el zoom y la disposición viven en el navegador; no hay herramientas MCP específicas en esta versión.",
   },
-  presentaciones: {
-    appId: "presentaciones",
-    herramientas: [],
-    pendiente: "La presentación se guarda en app_documents, pero el editor, la vista previa y el modo presentación viven en el navegador; no hay herramientas MCP específicas en esta versión.",
-  },
   moleculas: {
     appId: "moleculas",
     herramientas: [],
@@ -87,20 +78,9 @@ export const APP_MCP_DECLARACIONES: Record<NativeAppId, AppMcpDeclaracion> = {
     herramientas: [],
     pendiente: "La hoja se guarda en app_documents, pero la edición, el cálculo y la exportación CSV viven en el navegador; no hay herramientas MCP específicas en esta versión.",
   },
-  documentos: {
-    appId: "documentos",
-    herramientas: [],
-    pendiente: "El documento se guarda en app_documents, pero la edición, los enlaces y la exportación HTML viven en el navegador; no hay herramientas MCP específicas en esta versión.",
-  },
-  "visor-office": {
-    appId: "visor-office",
-    herramientas: [],
-    pendiente: "El archivo se abre en el navegador, no se sube ni se guarda y no tiene estado de servidor; no hay herramientas MCP específicas en esta versión.",
-  },
   "aula-documentos": {
     appId: "aula-documentos",
-    herramientas: [],
-    pendiente: "El documento se guarda en app_documents, pero la edición, las importaciones, la exportación y la presentación viven en el navegador; no hay herramientas MCP específicas en esta versión.",
+    herramientas: herramientasMermaid,
   },
 };
 

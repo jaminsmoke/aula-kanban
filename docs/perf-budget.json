@@ -8,32 +8,83 @@
     "basica": 150827,
     "basica-evalua": 150827,
     "cientifica": 2069960,
-    "diagramas": 379000,
-    "diagramas-elk": 830000,
     "espacio": 174779,
     "pizarra": 1348890,
     "pizarra-mermaid": 1560999,
     "blockly": 345631,
-    "blockly-codigo": 383275
+    "blockly-codigo": 383275,
+    "aula-documentos": 370000
   },
   "forbidden": {
-    "tablero": ["compute-engine", "mermaid", "katex", "chunk-EIO", "blockly_compressed", "elk-", "cytoscape"],
-    "hoja-calculo": ["compute-engine", "mermaid", "katex", "blockly_compressed"],
-    "espacio": ["compute-engine", "mermaid", "katex", "chunk-EIO", "blockly_compressed", "elk-", "cytoscape"],
-    "basica": ["compute-engine"],
-    "basica-evalua": ["compute-engine"],
-    "diagramas": ["compute-engine", "chunk-EIO", "blockly_compressed", "elk-", "cytoscape"],
-    "pizarra": ["compute-engine", "blockly_compressed", "mermaid", "katex"],
-    "blockly": ["compute-engine", "chunk-EIO", "mermaid", "katex"]
+    "tablero": [
+      "compute-engine",
+      "mermaid",
+      "katex",
+      "chunk-EIO",
+      "blockly_compressed",
+      "elk-",
+      "cytoscape"
+    ],
+    "hoja-calculo": [
+      "compute-engine",
+      "mermaid",
+      "katex",
+      "blockly_compressed"
+    ],
+    "espacio": [
+      "compute-engine",
+      "mermaid",
+      "katex",
+      "chunk-EIO",
+      "blockly_compressed",
+      "elk-",
+      "cytoscape"
+    ],
+    "basica": [
+      "compute-engine"
+    ],
+    "basica-evalua": [
+      "compute-engine"
+    ],
+    "pizarra": [
+      "compute-engine",
+      "blockly_compressed",
+      "mermaid",
+      "katex"
+    ],
+    "blockly": [
+      "compute-engine",
+      "chunk-EIO",
+      "mermaid",
+      "katex"
+    ],
+    "aula-documentos": [
+      "compute-engine",
+      "blockly_compressed",
+      "katex"
+    ]
   },
   "required": {
-    "hoja-calculo": ["hoja-calculo-app"],
-    "aula-documentos-export": ["pptxgen"],
-    "cientifica": ["compute-engine"],
-    "pizarra": ["chunk-EIO"],
-    "diagramas": ["mermaid.core"],
-    "diagramas-elk": ["elk-"],
-    "blockly": ["blockly_compressed"],
-    "blockly-codigo": ["blockly_compressed"]
+    "hoja-calculo": [
+      "hoja-calculo-app"
+    ],
+    "aula-documentos-export": [
+      "pptxgen"
+    ],
+    "cientifica": [
+      "compute-engine"
+    ],
+    "pizarra": [
+      "chunk-EIO"
+    ],
+    "blockly": [
+      "blockly_compressed"
+    ],
+    "blockly-codigo": [
+      "blockly_compressed"
+    ],
+    "aula-documentos": [
+      "aula-documentos-app"
+    ]
   }
 }

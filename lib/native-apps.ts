@@ -25,9 +25,9 @@ export type NativeCategory = StoreTopCategory;
 export const STORE_CATEGORIES: NativeCategory[] = ["Educación", "Oficina", "Productividad"];
 
 /** Versión de Aula Store como producto, independiente de las apps y del Site. */
-export const AULA_STORE_VERSION = "1.13.0";
+export const AULA_STORE_VERSION = "1.14.0";
 
-export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "presentaciones", "moleculas", "timeline", "hoja-calculo", "documentos", "visor-office", "aula-documentos"] as const;
+export const NATIVE_APP_IDS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "moleculas", "timeline", "hoja-calculo", "aula-documentos"] as const;
 
 export type NativeAppId = (typeof NATIVE_APP_IDS)[number];
 
@@ -161,20 +161,6 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     window: { width: 1080, height: 720 },
   },
   {
-    id: "mermaid",
-    name: "Diagramas",
-    tagline: "Escribe el diagrama en texto y míralo al instante.",
-    description: "Diagramas de flujo, secuencia, Gantt, clases y líneas de tiempo con Mermaid (MIT): vista previa y exportación SVG.",
-    categories: ["Educación", "Productividad"],
-    subcategory: "Diagramas",
-    cover: "/store/mermaid.svg",
-    features: ["Flujos, secuencia, Gantt, clases y estados", "Plantillas listas y vista previa en vivo", "Guardado por proyecto y exportación SVG"],
-    appVersion: "1.0.0",
-    upstream: { name: "mermaid", version: "12.3.0" },
-    window: { width: 1120, height: 720 },
-    hidden: true,
-  },
-  {
     id: "ajedrez",
     name: "Ajedrez",
     tagline: "Dos jugadores o un rival aleatorio en el mismo tablero.",
@@ -241,20 +227,6 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     window: { width: 1120, height: 720 },
   },
   {
-    id: "presentaciones",
-    name: "Presentaciones",
-    tagline: "Escribe diapositivas y preséntalas sin salir del aula.",
-    description: "Presentaciones con reveal.js (MIT): editor Markdown, vista previa, modo presentación, plantillas y exportación HTML; guardado por proyecto en app_documents y modo lectura para invitados.",
-    categories: ["Educación", "Productividad"],
-    subcategory: "Herramientas",
-    cover: "/store/presentaciones.svg",
-    features: ["Editor Markdown y vista previa", "Modo presentación con teclado", "Plantillas, guardado y exportación HTML"],
-    appVersion: "1.0.0",
-    upstream: { name: "reveal.js", version: "6.0.2" },
-    window: { width: 1120, height: 720 },
-    hidden: true,
-  },
-  {
     id: "moleculas",
     name: "Moléculas 3D",
     tagline: "Gira, amplía y explora estructuras moleculares.",
@@ -294,49 +266,15 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     window: { width: 1200, height: 720 },
   },
   {
-    id: "documentos",
-    name: "Notas y documentos",
-    tagline: "Escribe, organiza y comparte ideas con formato.",
-    description: "Notas y documentos con Tiptap (MIT): título, texto enriquecido, listas, citas, código, enlaces y exportación HTML local; guardado por proyecto en app_documents y modo lectura para invitados.",
-    categories: ["Oficina", "Productividad"],
-    subcategory: "Herramientas",
-    cover: "/store/documentos.svg",
-    features: ["Título y texto enriquecido", "Enlaces, listas y código", "Guardado por proyecto y exportación HTML"],
-    appVersion: "1.0.0",
-    upstream: { name: "@tiptap/core", version: "3.34.0" },
-    extras: [
-      { name: "@tiptap/react", version: "3.34.0" },
-      { name: "@tiptap/pm", version: "3.34.0" },
-      { name: "@tiptap/starter-kit", version: "3.34.0" },
-      { name: "@tiptap/extension-link", version: "3.34.0" },
-    ],
-    window: { width: 1200, height: 720 },
-    hidden: true,
-  },
-  {
-    id: "visor-office",
-    name: "Visor Office",
-    tagline: "Abre Word, Excel y PowerPoint sin subirlos.",
-    description: "Visor de archivos .docx, .xlsx y .pptx locales con @silurus/ooxml (MIT): páginas, hojas y diapositivas en solo lectura, con zoom y navegación, sin subir ni guardar el documento.",
-    categories: ["Oficina"],
-    subcategory: "Herramientas",
-    cover: "/store/visor-office.svg",
-    features: ["Word, Excel y PowerPoint en solo lectura", "El archivo no se sube ni se guarda", "Zoom, navegación y recursos servidos desde el Site"],
-    appVersion: "1.0.0",
-    upstream: { name: "@silurus/ooxml", version: "0.90.1" },
-    window: { width: 1200, height: 720 },
-    hidden: true,
-  },
-  {
     id: "aula-documentos",
     name: "Aula Documentos",
-    tagline: "Texto, diagramas, presentaciones y Office en un solo documento.",
-    description: "Documento unificado con Tiptap, Mermaid y reveal.js (MIT): texto enriquecido, diagramas editables, tablas, importación desde las apps anteriores y desde DOCX/PPTX, exportación HTML/Markdown/DOCX/PPTX y modo presentación; guardado por proyecto en app_documents y lectura para invitados.",
+    tagline: "La suite documental del aula: texto, diagramas, presentaciones y Office.",
+    description: "Suite documental con Tiptap, Mermaid y reveal.js (MIT): texto enriquecido, tablas, diagramas editables, presentaciones, notas del orador y visor de Office; migra los datos de Notas, Diagramas y Presentaciones, importa DOCX/PPTX y exporta HTML, Markdown, DOCX y PPTX. Guardado por proyecto en app_documents y lectura para invitados.",
     categories: ["Oficina", "Productividad"],
     subcategory: "Herramientas",
     cover: "/store/aula-documentos.svg",
-    features: ["Texto enriquecido, tablas y diagramas en el mismo documento", "Importa Notas, Diagramas, Presentaciones y Office", "Exporta HTML, Markdown, DOCX y PPTX y presenta sin salir"],
-    appVersion: "1.1.0",
+    features: ["Notas, diagramas y presentaciones en un mismo documento", "Office local con DOCX, XLSX y PPTX sin subir archivos", "Migra datos anteriores y exporta HTML, Markdown, DOCX y PPTX"],
+    appVersion: "1.2.0",
     upstream: { name: "@tiptap/core", version: "3.34.0" },
     extras: [
       { name: "@tiptap/react", version: "3.34.0" },

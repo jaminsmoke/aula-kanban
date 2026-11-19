@@ -7,7 +7,7 @@
 
 - **Aula Documentos es la fuente de verdad.** Office es un formato de intercambio: se importa para convertirlo en documento Aula y se exporta como copia de salida.
 - No habrá edición de OOXML ni round-trip con pérdida cero. El visor actual no expone mutaciones y no se va a convertir en un editor de Word, Excel o PowerPoint.
-- El visor se comparte desde `app/board/shared/office/`; `visor-office` queda como cáscara de la app independiente mientras exista.
+- El visor se comparte desde `app/board/shared/office/`; la app independiente `visor-office` se retiró en ADOC-13 y Aula Documentos conserva la entrada Abrir Office.
 - **XLSX no se importa como documento Aula en ADOC-12.** Se mantiene en el visor; si se convierte en tablas, se decide junto a Hoja de cálculo en otro bloque.
 - La primera versión **no conserva el archivo original**. Se puede previsualizar en el visor compartido antes de confirmar la importación; después, Aula Documentos conserva únicamente el documento convertido. Si se quiere conservar el adjunto, será otro bloque de almacenamiento.
 

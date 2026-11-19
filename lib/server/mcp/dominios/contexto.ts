@@ -3,7 +3,12 @@ import { z } from "zod";
 import { getDb } from "../../../../db";
 import { instanceApps, students, tasks as taskRows, teachers, userIdentities } from "../../../../db/schema";
 import { ADMINISTRACION_SECTIONS, BOARD_VIEWS, SETTINGS_SECTIONS, type AdministracionSection, type BoardView, type ClassSection, type SettingsSection } from "../../../domain/board-url";
-import { NATIVE_APP_IDS, normalizeNativeAppId } from "../../../native-apps";
+import {
+  DOCUMENT_SUITE_LEGACY_APP_IDS,
+  NATIVE_APP_IDS,
+  normalizeNativeAppId,
+  resolveAppRouteId,
+} from "../../../native-apps";
 import { listInstalledApps } from "../../apps";
 import { comandarVentana } from "../../space-control";
 import { isAdministrator, isOwner } from "../../project-access";
@@ -27,7 +32,11 @@ const vistas = z.enum(BOARD_VIEWS as unknown as [BoardView, ...BoardView[]]).des
 const seccionClase = z.enum(["tareas", "calendario"]).describe("Sección dentro de Clase");
 const seccionAjustes = z.enum(SETTINGS_SECTIONS as unknown as [SettingsSection, ...SettingsSection[]]).describe("Sección dentro de Ajustes");
 const seccionAdministracion = z.enum(ADMINISTRACION_SECTIONS as unknown as [AdministracionSection, ...AdministracionSection[]]).describe("Sección dentro de Administración");
-const appIdApertura = z.enum([...NATIVE_APP_IDS, "edu-tools"] as unknown as [string, ...string[]]).describe("App de Tienda a abrir; edu-tools se resuelve como calculadora");
+const appIdApertura = z.enum([
+  ...NATIVE_APP_IDS,
+  ...DOCUMENT_SUITE_LEGACY_APP_IDS,
+  "edu-tools",
+] as unknown as [string, ...string[]]).describe("App de Tienda a abrir; edu-tools se resuelve como calculadora y los ids documentales antiguos como Aula Documentos");
 
 /**
  * Nombre visible de la cuenta: identidad guardada o el correo.
@@ -95,7 +104,7 @@ async function obtenerEnlace(caller: McpCaller, args: Record<string, unknown>) {
  */
 async function abrirApp(caller: McpCaller, args: Record<string, unknown>) {
   const { proyectoId, appId: rawAppId } = args as { proyectoId: string; appId: string };
-  const appId = normalizeNativeAppId(rawAppId);
+  const appId = resolveAppRouteId(rawAppId);
   const resolved = await resolve(toChatGPTUser(caller), proyectoId);
   if (!resolved.ok) return falloResolucion(resolved);
   const instalada = (await listInstalledApps()).some((estado) => estado.id === appId && estado.status === "installed");

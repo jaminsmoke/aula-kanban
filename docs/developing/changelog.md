@@ -1,11 +1,38 @@
-﻿# Changelog
+# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-13 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
 
+## 2026-11-19 - Roadmap ADOC-13 - Suite documental en Aula Documentos
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Aula Documentos reúne Notas, Diagramas, Presentaciones y Office: texto enriquecido, tablas, bloques Mermaid con plantillas y Gantt guiado, presentaciones con temas y notas, y visor Office para DOCX/XLSX/PPTX locales.
+- Se añaden Fuente Markdown con saltos de diapositiva, plantillas de presentación y **Abrir Office** sin importar ni persistir el archivo.
+- La migración desde **Archivo > Migrar apps antiguas** convierte los datos de `app_documents`, conserva copias internas por origen y del Aula anterior y permite deshacer con restauración exacta.
+- Las apps `documentos`, `mermaid`, `presentaciones` y `visor-office` salen de `NATIVE_APP_IDS`, del catálogo, de la Tienda, del registro lazy y de `app/board/apps/`; también se retiran sus portadas. Sus filas históricas de `app_documents` no se borran.
+- Los enlaces y comandos antiguos resuelven a `aula-documentos`; un enlace `app=mermaid` abre Aula Documentos con la URL canónica.
+- MCP conserva `leer_diagrama`, `guardar_diagrama` y `listar_plantillas_diagrama`: operan sobre el primer bloque Mermaid de Aula Documentos y mantienen la fila histórica `mermaid` como respaldo si aún no hay documento canónico. Las ventanas aceptan los IDs antiguos como alias.
+- Aula Documentos sube a `1.2.0` y Aula Store a `1.14.0`. La ficha y la ayuda presentan la suite, no apps retiradas. STORE-18 queda para el rediseño completo de la ficha de producto.
+
+### Verificación
+
+- Suite completa: **210 archivos / 1.483 pruebas**; `tsc`, ESLint, build, `perf:budget` y `perf:office` correctos.
+- `perf:budget` sustituye los flujos de la app Diagramas por `aula-documentos`: **361.650 / 370.000 B gzip**. `aula-documentos-export`: **329.618 / 340.000 B gzip**; `perf:office`: **196.481 / 210.000 B gzip**.
+- Migración y rollback probados con datos reales: el estado de Aula y de `mermaid` volvió a ser idéntico tras deshacer.
+- Revisado en 393, 1024 y 1374 px en claro y oscuro sin desbordamiento; la Tienda muestra 13 apps y no aparecen entradas retiradas.
+- El Site sigue en `1.1.36`; no se publica nada desde este roadmap. Push único a `github main` con los commits acumulados.
+
+### Seguimiento
+
+- El backlog queda con **STORE-18** (fichas de producto para apps-suites) y **DEV-01** (evaluación de pnpm). El plan completo queda en [`historial/roadmap-adoc-13.md`](../historial/roadmap-adoc-13.md).
+
+---
 ## 2026-11-19 — Roadmap ADOC-12 · Office en Aula Documentos
 
 **Estado:** Completada · Office real pendiente de verificación externa

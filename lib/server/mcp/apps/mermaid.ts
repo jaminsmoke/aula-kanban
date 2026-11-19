@@ -14,9 +14,10 @@ import type { McpToolDefinicion } from "../dominios/tipos";
  * Herramientas MCP de Diagramas (MCP-05E).
  *
  * Aula Documentos es la app canónica: si tiene documento, MCP usa su primer
- * bloque Mermaid. Si no, conserva la fila antigua `appId: "mermaid"` para no
- * romper proyectos que aún no se han migrado. MCP no valida la sintaxis ni
- * renderiza SVG: solo comprueba el código textual y comparte las plantillas.
+ * bloque Mermaid. Si no, lee o escribe directamente la fila histórica
+ * `appId: "mermaid"` para no romper proyectos que aún no se han migrado.
+ * MCP no valida la sintaxis ni renderiza SVG: solo comprueba el código textual
+ * y comparte las plantillas.
  */
 
 const proyectoId = z.string().uuid().describe("Id del proyecto de Aula Kanban");
@@ -51,38 +52,31 @@ async function resolverDocumentoMermaid(
     appId: "aula-documentos",
     ...(proyecto.escritura ? { escritura: true } : {}),
   });
-  if (aula.ok) {
-    const document = await readAppDocument(aula.project.id, "aula-documentos");
-    if (document) {
-      const read = readAulaMermaidCode(document.state);
-      if (read.ok) {
-        return {
-          ok: true,
-          kind: "aula-documentos",
-          project: aula.project,
-          userId: aula.access.user.userId,
-          document,
-          code: read.code,
-        };
-      }
+  if (!aula.ok) return { ok: false, resultado: aula.resultado };
+
+  const document = await readAppDocument(aula.project.id, "aula-documentos");
+  if (document) {
+    const read = readAulaMermaidCode(document.state);
+    if (read.ok) {
+      return {
+        ok: true,
+        kind: "aula-documentos",
+        project: aula.project,
+        userId: aula.access.user.userId,
+        document,
+        code: read.code,
+      };
     }
   }
 
-  const legacy = await resolverAppEnProyecto(caller, {
-    proyectoId: proyecto.proyectoId,
-    appId: "mermaid",
-    ...(proyecto.escritura ? { escritura: true } : {}),
-  });
-  if (!legacy.ok) return { ok: false, resultado: legacy.resultado };
-
-  const document = await readAppDocument(legacy.project.id, "mermaid");
+  const legacyDocument = await readAppDocument(aula.project.id, "mermaid");
   return {
     ok: true,
     kind: "mermaid",
-    project: legacy.project,
-    userId: legacy.access.user.userId,
-    document,
-    code: document ? validarDocumentoMermaid(document.state)?.code ?? null : null,
+    project: aula.project,
+    userId: aula.access.user.userId,
+    document: legacyDocument,
+    code: legacyDocument ? validarDocumentoMermaid(legacyDocument.state)?.code ?? null : null,
   };
 }
 
@@ -157,8 +151,7 @@ async function guardarDiagrama(caller: McpCaller, args: Record<string, unknown>)
  * @returns Las plantillas con identificador, nombre y código.
  */
 async function listarPlantillasDiagrama(_caller: McpCaller, _args: Record<string, unknown>) {
-  const legacy = await resolverAppInstalada("mermaid");
-  const app = legacy.ok ? legacy : await resolverAppInstalada("aula-documentos");
+  const app = await resolverAppInstalada("aula-documentos");
   if (!app.ok) return app.resultado;
 
   return payloadResult({
@@ -175,7 +168,7 @@ export const herramientasMermaid: McpToolDefinicion[] = [
   {
     name: "leer_diagrama",
     title: "Leer diagrama",
-    description: "Lee el código Mermaid guardado en el proyecto y su fecha de actualización; codigo y actualizado son null si aún no hay diagrama. Usa el primer bloque de Aula Documentos si existe y, si no, la fila antigua de Diagramas. Requiere que Aula Documentos o Diagramas esté instalada y acceso al proyecto.",
+    description: "Lee el código Mermaid guardado en el proyecto y su fecha de actualización; codigo y actualizado son null si aún no hay diagrama. Usa el primer bloque de Aula Documentos si existe y, si no, la fila histórica de Diagramas. Requiere que Aula Documentos esté instalada y acceso al proyecto.",
     inputSchema: { proyectoId },
     outputSchema: {
       codigo: z.string().nullable(),
@@ -203,7 +196,7 @@ export const herramientasMermaid: McpToolDefinicion[] = [
   {
     name: "listar_plantillas_diagrama",
     title: "Listar plantillas de diagrama",
-    description: "Devuelve las plantillas de Diagramas con su identificador, nombre y código, las mismas que ofrece Aula Documentos. Requiere que Aula Documentos o Diagramas esté instalada; no necesita proyecto.",
+    description: "Devuelve las plantillas de Diagramas con su identificador, nombre y código, las mismas que ofrece Aula Documentos. Requiere que Aula Documentos esté instalada; no necesita proyecto.",
     inputSchema: {},
     outputSchema: {
       plantillas: z.array(z.object({ id: z.string(), nombre: z.string(), codigo: z.string() })),

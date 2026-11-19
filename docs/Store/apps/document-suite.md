@@ -1,9 +1,10 @@
 # Suite documental: paridad y compatibilidad
 
-> **Estado:** Fase 4 de ADOC-13 · **Fecha:** 2026-11-19
+> **Estado:** Cerrada en Fase 5 de ADOC-13 · **Fecha:** 2026-11-19
 > **Actualización Fase 2:** el bloque Mermaid de Aula Documentos ya incorpora Gantt guiado, plantillas, salto a la línea del error, zoom/paneo, pantalla completa y SVG por bloque.
 > **Actualización Fase 3:** Aula Documentos añade Fuente Markdown, plantillas de presentación y Abrir Office para DOCX/XLSX/PPTX sin importar.
 > **Actualización Fase 4:** las apps antiguas se ocultan de la Tienda y del escritorio, sus enlaces abren Aula Documentos y la migración guarda copias reversibles de origen y destino. MCP de Diagramas lee y escribe el primer bloque Mermaid de Aula cuando existe.
+> **Actualización Fase 5:** las cuatro apps salen de `NATIVE_APP_IDS`, del catálogo, de la Tienda, del registro y de `app/board/apps/`; Aula Documentos queda como única entrada documental. Los enlaces y comandos antiguos siguen resolviendo a Aula Documentos y los datos históricos se pueden migrar con copia reversible.
 > **Apps comparadas:** Notas y documentos, Diagramas, Presentaciones y Visor Office frente a Aula Documentos.
 > **Decisión de producto:** Aula Documentos será la app canónica; las cuatro apps se retiran solo después de demostrar paridad y conservar datos, enlaces, permisos y MCP.
 

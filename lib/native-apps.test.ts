@@ -48,12 +48,12 @@ describe("catálogo de apps nativas", () => {
     expect(covered.has("Oficina")).toBe(true);
   });
 
-  it("oculta las apps documentales antiguas y resuelve sus enlaces a Aula Documentos", () => {
+  it("retira las apps documentales antiguas y resuelve sus enlaces a Aula Documentos", () => {
     for (const id of DOCUMENT_SUITE_LEGACY_APP_IDS) {
-      expect(NATIVE_APPS.find((app) => app.id === id)?.hidden, `${id} debe estar oculta`).toBe(true);
+      expect(NATIVE_APPS.find((app) => app.id === (id as string)), `${id} ya no debe estar en el catálogo`).toBeUndefined();
       expect(resolveAppRouteId(id)).toBe("aula-documentos");
     }
-    expect(NATIVE_APPS.find((app) => app.id === "aula-documentos")?.hidden).not.toBe(true);
+    expect(NATIVE_APPS.find((app) => app.id === "aula-documentos")).toBeTruthy();
     expect(resolveAppRouteId("edu-tools")).toBe("calculadora");
     expect(resolveAppRouteId("calculadora")).toBe("calculadora");
   });

@@ -48,13 +48,13 @@ const request = (method: string, body?: unknown) => new Request(endpoint, {
   body: body === undefined ? undefined : JSON.stringify(body),
 });
 
-const described = [{ id: "mermaid", favorite: true, position: 0, folder: "Mis diagramas", installed: true }];
+const described = [{ id: "aula-documentos", favorite: true, position: 0, folder: "Mis documentos", installed: true }];
 
 describe("ruta del espacio personal", () => {
   beforeEach(() => {
     mocks.status = "ok";
-    mocks.list.mockReset().mockResolvedValue([{ id: "mermaid", favorite: true, position: 0, folder: "Mis diagramas", installed: true }]);
-    mocks.set.mockReset().mockResolvedValue([{ id: "mermaid", favorite: true, position: 0, folder: "Mis diagramas", installed: true }]);
+    mocks.list.mockReset().mockResolvedValue([{ id: "aula-documentos", favorite: true, position: 0, folder: "Mis documentos", installed: true }]);
+    mocks.set.mockReset().mockResolvedValue([{ id: "aula-documentos", favorite: true, position: 0, folder: "Mis documentos", installed: true }]);
     mocks.describe.mockReset().mockReturnValue(described);
   });
 
@@ -67,9 +67,9 @@ describe("ruta del espacio personal", () => {
   });
 
   it("guarda la selección completa y nunca instala", async () => {
-    const response = await PUT(request("PUT", { items: [{ id: "mermaid", favorite: true, position: 0, folder: "Mis diagramas" }] }));
+    const response = await PUT(request("PUT", { items: [{ id: "aula-documentos", favorite: true, position: 0, folder: "Mis documentos" }] }));
     expect(response.status).toBe(200);
-    expect(mocks.set).toHaveBeenCalledWith("p1", "u1", [{ id: "mermaid", favorite: true, position: 0, folder: "Mis diagramas" }]);
+    expect(mocks.set).toHaveBeenCalledWith("p1", "u1", [{ id: "aula-documentos", favorite: true, position: 0, folder: "Mis documentos" }]);
   });
 
   it("rechaza un cuerpo inválido sin guardar", async () => {

@@ -1,5 +1,5 @@
 import { lazy, type ComponentType } from "react";
-import { Atom, CalendarClock, Calculator, FileSearch, FileStack, FlaskConical, GitBranch, Layers3, Network, NotebookPen, Orbit, PencilRuler, Presentation, Puzzle, Ruler, Sheet, Swords } from "lucide-react";
+import { Atom, CalendarClock, Calculator, FileStack, FlaskConical, Layers3, Network, Orbit, PencilRuler, Puzzle, Ruler, Sheet, Swords } from "lucide-react";
 import { NATIVE_APPS, nativeAppMeta, type NativeAppId } from "../../../lib/native-apps";
 import type { StoreIconProps, StoreRole, StoreTool } from "./types";
 
@@ -13,18 +13,14 @@ const ICONS: Record<NativeAppId, ComponentType<StoreIconProps>> = {
   calculadora: Calculator,
   "tabla-periodica": Atom,
   blockly: Puzzle,
-  mermaid: GitBranch,
   ajedrez: Swords,
   tarjetas: Layers3,
   fisica: Orbit,
   geometria: Ruler,
   mapas: Network,
-  presentaciones: Presentation,
   moleculas: FlaskConical,
   timeline: CalendarClock,
   "hoja-calculo": Sheet,
-  documentos: NotebookPen,
-  "visor-office": FileSearch,
   "aula-documentos": FileStack,
 };
 
@@ -35,18 +31,14 @@ const APPS: Record<NativeAppId, ComponentType<StoreAppProps>> = {
   calculadora: lazy(() => import("./calculadora/calculadora-app")),
   "tabla-periodica": lazy(() => import("./tabla-periodica/tabla-periodica-app")),
   blockly: lazy(() => import("./blockly/blockly-app")),
-  mermaid: lazy(() => import("./mermaid/mermaid-app")),
   ajedrez: lazy(() => import("./ajedrez/ajedrez-app")),
   tarjetas: lazy(() => import("./tarjetas/tarjetas-app")),
   fisica: lazy(() => import("./fisica/fisica-app")),
   geometria: lazy(() => import("./geometria/geometria-app")),
   mapas: lazy(() => import("./mapas/mapas-app")),
-  presentaciones: lazy(() => import("./presentaciones/presentaciones-app")),
   moleculas: lazy(() => import("./moleculas/moleculas-app")),
   timeline: lazy(() => import("./timeline/timeline-app")),
   "hoja-calculo": lazy(() => import("./hoja-calculo/hoja-calculo-app")),
-  documentos: lazy(() => import("./documentos/documentos-app")),
-  "visor-office": lazy(() => import("./visor-office/visor-office-app")),
   "aula-documentos": lazy(() => import("./aula-documentos/aula-documentos-app")),
 };
 

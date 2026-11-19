@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { NATIVE_APP_IDS } from "../../../native-apps";
+import {
+  DOCUMENT_SUITE_LEGACY_APP_IDS,
+  NATIVE_APP_IDS,
+  resolveAppRouteId,
+} from "../../../native-apps";
 import { listInstalledApps } from "../../apps";
 import { comandarVentana, ventanasDe } from "../../space-control";
 import { errorHerramienta, falloResolucion, payloadResult, resolve, toChatGPTUser, type McpCaller } from "../contexto";
@@ -15,7 +19,10 @@ import type { McpToolDefinicion } from "./tipos";
  */
 
 const projectId = z.string().uuid().describe("Id del proyecto de Aula Kanban");
-const appIdSchema = z.enum(NATIVE_APP_IDS as unknown as [string, ...string[]]).describe("App de Tienda");
+const appIdSchema = z.enum([
+  ...NATIVE_APP_IDS,
+  ...DOCUMENT_SUITE_LEGACY_APP_IDS,
+] as unknown as [string, ...string[]]).describe("App de Tienda; los ids documentales antiguos abren Aula Documentos");
 
 type ControlArgs = { proyectoId: string; appId: string };
 
@@ -38,7 +45,8 @@ async function listarVentanas(caller: McpCaller, args: Record<string, unknown>) 
  */
 function controlar(accion: "cerrar" | "minimizar" | "restaurar" | "ampliar") {
   return async (caller: McpCaller, args: Record<string, unknown>) => {
-    const { proyectoId, appId } = args as ControlArgs;
+    const { proyectoId, appId: rawAppId } = args as ControlArgs;
+    const appId = resolveAppRouteId(rawAppId);
     const resolved = await resolve(toChatGPTUser(caller), proyectoId);
     if (!resolved.ok) return falloResolucion(resolved);
     const instalada = (await listInstalledApps()).some((estado) => estado.id === appId && estado.status === "installed");

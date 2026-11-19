@@ -78,7 +78,7 @@ vi.mock("../../../db", () => ({
         };
         if (table === projectsTable) return chain([projectRow]);
         if (table === taskRowsTable) return chain([taskRow]);
-        if (table === instanceAppsTable) return chain([{ appId: "mermaid", installed: 1, version: "1.0.0" }, { appId: "calculadora", installed: 1, version: "1.0.0" }]);
+        if (table === instanceAppsTable) return chain([{ appId: "aula-documentos", installed: 1, version: "1.0.0" }, { appId: "calculadora", installed: 1, version: "1.0.0" }]);
         return chain([]);
       },
     }),
@@ -244,11 +244,11 @@ describe("paridad MCP ↔ HTTP", () => {
 
   it("abrir_app responde con el enlace profundo en el contrato correcto", async () => {
     rolActual = "owner";
-    const result = await llamar("abrir_app", identidad.owner, { proyectoId: projectId, appId: "mermaid" });
+    const result = await llamar("abrir_app", identidad.owner, { proyectoId: projectId, appId: "aula-documentos" });
     expect(result.isError).toBeUndefined();
     const enlace = (result.structuredContent as { enlace: string }).enlace;
     expect(enlace).toContain("view=administracion&section=tienda");
-    expect(enlace).toContain("app=mermaid");
+    expect(enlace).toContain("app=aula-documentos");
   });
 
   it("abrir_app acepta el alias edu-tools y devuelve el id nuevo", async () => {
@@ -268,18 +268,18 @@ describe("paridad MCP ↔ HTTP", () => {
     expect(estado.conectadas).toBe(false);
     expect(estado.ventanas).toEqual([]);
     expect(estado.enlace).toContain("view=administracion&section=tienda");
-    const cerrar = await llamar("cerrar_app", identidad.owner, { proyectoId: projectId, appId: "mermaid" });
+    const cerrar = await llamar("cerrar_app", identidad.owner, { proyectoId: projectId, appId: "aula-documentos" });
     expect(cerrar.isError).toBeUndefined();
     const control = cerrar.structuredContent as { ventana_entregada: boolean; enlace: string };
     expect(control.ventana_entregada).toBe(false);
-    expect(control.enlace).toContain("app=mermaid");
+    expect(control.enlace).toContain("app=aula-documentos");
   });
 
   it("instalar/desinstalar apps da el mismo 403 de la ruta para roles no gestores", async () => {
     rolActual = "student";
-    const instalar = await llamar("instalar_app", identidad.student, { appId: "mermaid" });
+    const instalar = await llamar("instalar_app", identidad.student, { appId: "aula-documentos" });
     expect(errorDe(instalar)).toEqual({ codigo: "forbidden", estado: 403, mensaje: "Solo el propietario o un administrador pueden gestionar aplicaciones." });
-    const desinstalar = await llamar("desinstalar_app", identidad.student, { appId: "mermaid", confirmar: true });
+    const desinstalar = await llamar("desinstalar_app", identidad.student, { appId: "aula-documentos", confirmar: true });
     expect(errorDe(desinstalar)).toEqual({ codigo: "forbidden", estado: 403, mensaje: "Solo el propietario o un administrador pueden gestionar aplicaciones." });
   });
 
@@ -288,7 +288,7 @@ describe("paridad MCP ↔ HTTP", () => {
     const result = await llamar("listar_apps", identidad.owner, {});
     expect(result.isError).toBeUndefined();
     const apps = (result.structuredContent as { apps: Array<{ id: string; estado: string }> }).apps;
-    expect(apps.map((app) => app.id)).toEqual(["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "presentaciones", "moleculas", "timeline", "hoja-calculo", "documentos", "visor-office", "aula-documentos"]);
+    expect(apps.map((app) => app.id)).toEqual(["excalidraw", "calculadora", "tabla-periodica", "blockly", "ajedrez", "tarjetas", "fisica", "geometria", "mapas", "moleculas", "timeline", "hoja-calculo", "aula-documentos"]);
     for (const app of apps) {
       expect(["installed", "not_installed"]).toContain(app.estado);
     }
@@ -296,7 +296,7 @@ describe("paridad MCP ↔ HTTP", () => {
 
   it("desinstalar sin confirmar avisa y no desinstala", async () => {
     rolActual = "owner";
-    const result = await llamar("desinstalar_app", identidad.owner, { appId: "mermaid" });
+    const result = await llamar("desinstalar_app", identidad.owner, { appId: "aula-documentos" });
     expect(result.isError).toBeUndefined();
     const contenido = result.structuredContent as { necesitaConfirmacion?: boolean; mensaje?: string };
     expect(contenido.necesitaConfirmacion).toBe(true);

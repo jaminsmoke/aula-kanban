@@ -101,7 +101,7 @@ vi.mock("../../../db", () => ({
           { id: "m-t1", projectId, userId: "u-teacher", email: "teacher@example.com", role: "teacher", studentSection: null, teacherId: "t1", status: "active" },
           { id: "m-t2", projectId, userId: "u-other", email: "otro@example.com", role: "teacher", studentSection: null, teacherId: "t2", status: "pending" },
         ]);
-        if (table === instanceAppsTable) return chain([{ appId: "excalidraw", installed: 1, version: "1.0.0" }, { appId: "calculadora", installed: 1, version: "1.0.0" }, { appId: "tabla-periodica", installed: 1, version: "1.0.0" }, { appId: "mermaid", installed: 1, version: "1.0.0" }, { appId: "blockly", installed: 1, version: "1.0.0" }]);
+        if (table === instanceAppsTable) return chain([{ appId: "excalidraw", installed: 1, version: "1.0.0" }, { appId: "calculadora", installed: 1, version: "1.0.0" }, { appId: "tabla-periodica", installed: 1, version: "1.0.0" }, { appId: "aula-documentos", installed: 1, version: "1.0.0" }, { appId: "blockly", installed: 1, version: "1.0.0" }]);
         if (table === administratorsTable) return chain([administratorRow]);
         return chain([]);
       },
@@ -226,14 +226,14 @@ const args: Record<string, Record<string, unknown>> = {
   listar_calendario: { proyectoId: projectId, desde: "2026-11-01", hasta: "2026-11-30" },
   quien_soy: {},
   obtener_enlace: { proyectoId: projectId },
-  abrir_app: { proyectoId: projectId, appId: "mermaid" },
+  abrir_app: { proyectoId: projectId, appId: "aula-documentos" },
   obtener_resumen_proyecto: { proyectoId: projectId },
   listar_invitaciones_pendientes: {},
   aceptar_invitacion: { id: "123e4567-e89b-42d3-a456-426614174001", ambito: "project" },
   listar_apps: {},
-  obtener_app: { appId: "mermaid" },
-  instalar_app: { appId: "mermaid" },
-  desinstalar_app: { appId: "mermaid", confirmar: true },
+  obtener_app: { appId: "aula-documentos" },
+  instalar_app: { appId: "aula-documentos" },
+  desinstalar_app: { appId: "aula-documentos", confirmar: true },
   leer_pizarra: { proyectoId: projectId, tipo: "space", duenoId: projectId },
   guardar_pizarra: { proyectoId: projectId, tipo: "space", duenoId: projectId, snapshot: '{"elements":[]}', revision: 2 },
   anadir_a_pizarra: { proyectoId: projectId, tipo: "space", duenoId: projectId, revision: 2, elementos: [{ tipo: "rectangulo", x: 0, y: 0, ancho: 10, alto: 10 }] },
@@ -244,10 +244,10 @@ const args: Record<string, Record<string, unknown>> = {
   guardar_diagrama: { proyectoId: projectId, documento: { code: "flowchart TD" } },
   listar_plantillas_diagrama: {},
   listar_ventanas: { proyectoId: projectId },
-  cerrar_app: { proyectoId: projectId, appId: "mermaid" },
-  minimizar_app: { proyectoId: projectId, appId: "mermaid" },
-  restaurar_app: { proyectoId: projectId, appId: "mermaid" },
-  ampliar_app: { proyectoId: projectId, appId: "mermaid" },
+  cerrar_app: { proyectoId: projectId, appId: "aula-documentos" },
+  minimizar_app: { proyectoId: projectId, appId: "aula-documentos" },
+  restaurar_app: { proyectoId: projectId, appId: "aula-documentos" },
+  ampliar_app: { proyectoId: projectId, appId: "aula-documentos" },
   listar_administradores: {},
   crear_administrador: { nombre: "Admin Nuevo", correo: "admin@example.com" },
   actualizar_administrador: { administradorId: administratorRow.id, revision: 1, nombre: "Admin Actualizado" },

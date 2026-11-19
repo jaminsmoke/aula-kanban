@@ -75,7 +75,7 @@ describe("herramientas de Diagramas", () => {
 
     const body = await call("leer_diagrama", { proyectoId: projectId });
     expect(body).toEqual({ codigo: "flowchart TD\n  A --> B", actualizado: 10 });
-    expect(mocks.resolverAppEnProyecto).toHaveBeenCalledWith(caller, { proyectoId: projectId, appId: "mermaid" });
+    expect(mocks.resolverAppEnProyecto).toHaveBeenCalledWith(caller, { proyectoId: projectId, appId: "aula-documentos" });
     expect(mocks.readAppDocument).toHaveBeenCalledWith(projectId, "mermaid");
 
     const guardado = await call("guardar_diagrama", {
@@ -83,7 +83,7 @@ describe("herramientas de Diagramas", () => {
       documento: { code: "sequenceDiagram\n  A->>B: Hola", tema: "claro" },
     });
     expect(guardado.actualizado).toEqual(expect.any(Number));
-    expect(mocks.resolverAppEnProyecto).toHaveBeenCalledWith(caller, { proyectoId: projectId, appId: "mermaid", escritura: true });
+    expect(mocks.resolverAppEnProyecto).toHaveBeenCalledWith(caller, { proyectoId: projectId, appId: "aula-documentos", escritura: true });
     expect(documentos.get(`${projectId}:mermaid`)?.state).toEqual({ code: "sequenceDiagram\n  A->>B: Hola", tema: "claro" });
     expect(await call("leer_diagrama", { proyectoId: projectId })).toMatchObject({ actualizado: guardado.actualizado });
   });
@@ -183,7 +183,7 @@ describe("herramientas de Diagramas", () => {
       nombre: template.label,
       codigo: template.code,
     })));
-    expect(mocks.resolverAppInstalada).toHaveBeenCalledWith("mermaid");
+    expect(mocks.resolverAppInstalada).toHaveBeenCalledWith("aula-documentos");
     expect(mocks.resolverAppEnProyecto).not.toHaveBeenCalled();
   });
 
