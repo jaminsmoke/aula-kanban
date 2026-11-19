@@ -2,26 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 5 entradas pendientes
+> **Roadmap:** ADOC-09 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 4 entradas pendientes
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-19 — ADOC-09 · Menús y barra de edición
-
-- **Prioridad:** P1.
-- **Contexto:** la barra de Aula Documentos es casi toda de iconos y mezcla formato, inserción, archivo y presentación. En móvil, «Acciones» solo agrupa archivo; el formato sigue siendo una fila de iconos sin etiqueta visible. Faltan acciones que el editor ya soporta o que se esperan en un editor de documentos.
-- **Alcance:**
-  1. Agrupar las acciones en menús claros: Archivo, Formato, Insertar y Exportar; eliminar duplicados y dejar una sola entrada para presentar.
-  2. Añadir etiquetas visibles en los menús y conservar tooltips, foco y estados activos/deshabilitados.
-  3. En móvil, ofrecer un menú de formato etiquetado además de «Acciones».
-  4. Incorporar en una primera fase tachado, línea horizontal, limpiar formato, alineación y listas de tareas; valorar tablas, imágenes y buscar/reemplazar en una fase posterior.
-- **Criterios de aceptación:**
-  - Todas las acciones se alcanzan con uno o dos pasos y tienen nombre accesible.
-  - La barra no se desborda a 390, 620, 900, 1024 y 1366 px.
-  - Las acciones nuevas se guardan, exportan y vuelven a cargar sin perder formato.
-- **Notas:** el alcance de tablas e imágenes debe decidirse aparte porque añaden extensiones, validación, almacenamiento y pruebas de exportación.
 
 ## 2026-11-19 — ADOC-10 · Paridad de apps heredadas
 
