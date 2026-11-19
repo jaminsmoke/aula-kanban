@@ -107,10 +107,10 @@ tiempo **STORE-13**, Hoja de cálculo **STORE-14**, Notas y documentos
 **STORE-15**, Visor Office **STORE-16** y Aula Documentos **STORE-17**, además de
 las cinco iniciales) ya están integradas.
 
-No hay roadmap activo. En el backlog quedan la recuperación del cálculo
-automático de Hoja de cálculo y **DEV-01** (evaluación de pnpm, fuera del
-catálogo de apps). ADOC-01 a ADOC-11 y UI-10 están completados. El resto de
-candidatas sigue documentado por categorías, sin entrada hasta que se prioricen.
+En el roadmap queda la **Hoja de cálculo** (motor de fórmulas seguro). En el
+backlog queda **DEV-01** (evaluación de pnpm, fuera del catálogo de apps).
+ADOC-01 a ADOC-11 y UI-10 están completados. El resto de candidatas sigue
+documentado por categorías, sin entrada hasta que se prioricen.
 
 ## Cómo reverificar una licencia
 

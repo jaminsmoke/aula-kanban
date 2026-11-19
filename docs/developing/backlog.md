@@ -2,16 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 2 entradas pendientes
+> **Roadmap:** Hoja de cálculo activa · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 1 entrada pendiente
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01…DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-19 — Hoja de cálculo · Recuperar el cálculo automático
-
-- Las fórmulas se conservan como texto porque Jspreadsheet CE 5.0.4 evalúa las expresiones como JavaScript. El siguiente motor debe evaluar fórmulas de documentos compartidos sin ejecutar JavaScript y acotar el coste de sus rangos y referencias.
-- Verificar que el ejemplo de presupuesto vuelve a calcular sus totales y que las fórmulas guardadas se recuperan sin perderse.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 
