@@ -13,6 +13,8 @@ export type AulaDocumentTemplateId =
   | "notes"
   | "class-project"
   | "presentation"
+  | "presentation-project"
+  | "presentation-blank"
   | "guide";
 
 /** Plantilla que puede crear un documento nuevo. */
@@ -188,6 +190,35 @@ export const AULA_DOCUMENT_TEMPLATES: readonly AulaDocumentTemplate[] = [
       { type: "slideBreak" },
       heading(2, "Cierre"),
       paragraph("Termina con una conclusión y el siguiente paso."),
+    ]),
+  },
+  {
+    id: "presentation-project",
+    name: "Presentación de proyecto",
+    description: "Objetivo, pasos y cierre en diapositivas separadas.",
+    focus: "editor",
+    create: () => templateDocument("Presentación de proyecto", [
+      heading(2, "Objetivo"),
+      paragraph("Explica qué quieres conseguir y por qué importa."),
+      { type: "slideBreak" },
+      heading(2, "Plan"),
+      bulletList([
+        "Primer paso del proyecto.",
+        "Segundo paso y responsables.",
+        "Resultado esperado.",
+      ]),
+      { type: "slideBreak" },
+      heading(2, "Cierre"),
+      paragraph("Resume la conclusión y el siguiente paso."),
+    ]),
+  },
+  {
+    id: "presentation-blank",
+    name: "Presentación en blanco",
+    description: "Una diapositiva vacía para preparar una presentación desde cero.",
+    focus: "editor",
+    create: () => templateDocument("Presentación en blanco", [
+      heading(2, "Diapositiva 1"),
     ]),
   },
   {

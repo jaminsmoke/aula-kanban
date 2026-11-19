@@ -630,6 +630,39 @@ describe("Aula Documentos", () => {
     expect(block?.attrs?.code).toBe(original);
   });
 
+  it("edita la presentación desde la fuente Markdown", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    fireEvent.click(screen.getByRole("button", { name: "Fuente Markdown" }));
+    const source = screen.getByLabelText("Fuente Markdown de la presentación") as HTMLTextAreaElement;
+    expect(source.value).toContain("# ");
+
+    fireEvent.change(source, {
+      target: {
+        value: "# Nueva presentación\n\nPrimera diapositiva.\n\n---\n\n## Segunda\n\nContenido final.",
+      },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Aplicar fuente" }));
+
+    await waitFor(() => expect((screen.getByLabelText("Título del documento") as HTMLInputElement).value).toBe("Nueva presentación"));
+    expect(screen.getByText("2 diapositivas")).toBeTruthy();
+    expect(screen.getByRole("status").textContent).toContain("Fuente Markdown aplicada");
+  });
+
+  it("abre un archivo local en el visor Office", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    const input = screen.getByLabelText("Elegir archivo de Office para el visor") as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { files: [new File(["docx"], "informe.docx", { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" })] },
+    });
+
+    expect(await screen.findByRole("heading", { name: "Visor Office" })).toBeTruthy();
+    expect(screen.getByRole("dialog")).toBeTruthy();
+  });
+
   it("crea un documento vacío desde el selector de plantillas", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());

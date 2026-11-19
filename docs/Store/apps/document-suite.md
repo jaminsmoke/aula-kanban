@@ -2,6 +2,7 @@
 
 > **Estado:** Fase 1 de ADOC-13 · **Fecha:** 2026-11-19
 > **Actualización Fase 2:** el bloque Mermaid de Aula Documentos ya incorpora Gantt guiado, plantillas, salto a la línea del error, zoom/paneo, pantalla completa y SVG por bloque.
+> **Actualización Fase 3:** Aula Documentos añade Fuente Markdown, plantillas de presentación y Abrir Office para DOCX/XLSX/PPTX sin importar.
 > **Apps comparadas:** Notas y documentos, Diagramas, Presentaciones y Visor Office frente a Aula Documentos.
 > **Decisión de producto:** Aula Documentos será la app canónica; las cuatro apps se retiran solo después de demostrar paridad y conservar datos, enlaces, permisos y MCP.
 
@@ -60,8 +61,8 @@ Accesos que deben seguir funcionando durante la transición:
 | Función | App antigua | Aula Documentos | Decisión |
 |---|---|---|---|
 | Diapositivas por saltos | Sí | Sí | Absorbida |
-| Editor Markdown de origen | Sí | No; el documento es Tiptap | **Añadir modo fuente Markdown o equivalente** |
-| Plantillas Clase, Proyecto y Blanco | Sí | Plantillas de documento, no de diapositivas | **Añadir plantillas de presentación** |
+| Editor Markdown de origen | Sí | Sí, modal Fuente Markdown | Absorbida |
+| Plantillas Clase, Proyecto y Blanco | Sí | Presentación breve, Presentación de proyecto y Presentación en blanco | Absorbida |
 | Vista previa de diapositivas | Sí | Sí | Absorbida |
 | Modo presentación | Sí | Sí | Absorbida |
 | Temas de presentación | Parcial | Sí | Aula Documentos es superior |
@@ -70,22 +71,22 @@ Accesos que deben seguir funcionando durante la transición:
 | Autosave y conflicto | Sí | Sí | Conservar Aula Documentos |
 | Modo lectura para invitados | Sí | Sí | Absorbida |
 
-**Conclusión:** faltan la edición Markdown de origen y las plantillas de diapositivas. La primera puede ser un modo fuente sincronizado; la segunda puede reutilizar los presets actuales.
+**Conclusión:** Aula Documentos cubre la edición por diapositivas, la fuente Markdown, las plantillas, temas, notas, vista previa, modo presentación y exportación. La app antigua se mantiene como cáscara hasta la migración.
 
 ### Visor Office
 
 | Función | App antigua | Aula Documentos | Decisión |
 |---|---|---|---|
-| Abrir DOCX local | Sí | Solo como vista previa de importación | **Añadir apertura libre en Aula Documentos** |
-| Abrir XLSX local | Sí | No | **Permitir XLSX en el visor**, sin importarlo como documento |
-| Abrir PPTX local | Sí | Solo como vista previa de importación | **Añadir apertura libre en Aula Documentos** |
+| Abrir DOCX local | Sí | Sí, Abrir Office | Absorbida |
+| Abrir XLSX local | Sí | Sí, Abrir Office; no se importa | Absorbida |
+| Abrir PPTX local | Sí | Sí, Abrir Office | Absorbida |
 | Zoom, navegación y pantalla completa | Sí | Sí en el visor compartido | Reutilizar |
 | Importar DOCX/PPTX | No | Sí | Absorbida |
 | Exportar DOCX/PPTX | No | Sí | Absorbida |
 | Guardar el archivo original | No | No decidido; no se persiste | Mantener sin persistencia |
 | Modo lectura | Sí | Sí | Absorbida |
 
-**Conclusión:** el visor compartido ya es la base; falta una entrada estable “Abrir Office” dentro de Aula Documentos para no depender de la app separada.
+**Conclusión:** el visor compartido ya cubre DOCX, XLSX y PPTX, y Aula Documentos ofrece una entrada estable “Abrir Office” además de la vista previa de importación. La app antigua puede retirarse tras la migración y los alias.
 
 ## 3. Decisiones de migración
 
@@ -103,9 +104,9 @@ Accesos que deben seguir funcionando durante la transición:
 |---|---|---|
 | P0 | Migración de datos y alias de IDs/URLs | 4 |
 | P0 | Compatibilidad MCP de Diagramas | 4 |
-| P0 | Apertura libre de Office en Aula Documentos | 3 |
+| P0 | Apertura libre de Office en Aula Documentos | Hecho en Fase 3 |
 | P1 | Plantillas, Gantt, error y SVG de Diagramas | Hecho en Fase 2 |
-| P1 | Editor Markdown y plantillas de Presentaciones | 3 |
+| P1 | Editor Markdown y plantillas de Presentaciones | Hecho en Fase 3 |
 | P1 | Ficha mínima sin apps retiradas | 5 |
 | P2 | Rediseño reutilizable de tarjetas de suite | STORE-18 |
 

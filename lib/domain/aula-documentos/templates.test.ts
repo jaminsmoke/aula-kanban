@@ -23,6 +23,8 @@ describe("plantillas de Aula Documentos", () => {
       "notes",
       "class-project",
       "presentation",
+      "presentation-project",
+      "presentation-blank",
       "guide",
     ]);
     expect(new Set(AULA_DOCUMENT_TEMPLATES.map((template) => template.name)).size).toBe(AULA_DOCUMENT_TEMPLATES.length);
@@ -75,6 +77,16 @@ describe("plantillas de Aula Documentos", () => {
     expect(slides).toHaveLength(3);
     expect(slides[0].title).toBe("Idea central");
     expect(slides[2].title).toBe("Cierre");
+  });
+
+  it("incluye la presentación de proyecto y la presentación en blanco", () => {
+    const project = validDocument(findAulaDocumentTemplate("presentation-project")!);
+    expect(project.stats.slideBreaks).toBe(2);
+    expect(buildPresentationSlides(project.document.content)).toHaveLength(3);
+
+    const blank = validDocument(findAulaDocumentTemplate("presentation-blank")!);
+    expect(blank.stats.slideBreaks).toBe(0);
+    expect(buildPresentationSlides(blank.document.content)).toHaveLength(1);
   });
 
   it("incluye pasos y consejo en la guía", () => {

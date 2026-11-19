@@ -325,7 +325,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [importOpen, setImportOpen] = useState(false);
   const [importPreview, setImportPreview] = useState<ImportPreviewState | null>(null);
   const [importOfficeSource, setImportOfficeSource] = useState<File | null>(null);
+  const [officeOpenSource, setOfficeOpenSource] = useState<File | null>(null);
   const [officePreviewOpen, setOfficePreviewOpen] = useState(false);
+  const [officePreviewTitle, setOfficePreviewTitle] = useState("Archivo original");
   const [importLoading, setImportLoading] = useState<string | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importConfirm, setImportConfirm] = useState(false);
@@ -340,6 +342,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [exportingPresentation, setExportingPresentation] = useState(false);
   const [exportingOffice, setExportingOffice] = useState(false);
   const [slidePreview, setSlidePreview] = useState<{ title: string; slides: string[]; index: number } | null>(null);
+  const [markdownSourceOpen, setMarkdownSourceOpen] = useState(false);
+  const [markdownSourceDraft, setMarkdownSourceDraft] = useState("");
+  const [markdownSourceError, setMarkdownSourceError] = useState<string | null>(null);
   const [closePromptOpen, setClosePromptOpen] = useState(false);
   const [invalidDocument, setInvalidDocument] = useState<{ raw: unknown; message: string } | null>(null);
   const [invalidResetConfirm, setInvalidResetConfirm] = useState(false);
@@ -372,7 +377,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const closePromptRef = useRef<HTMLElement>(null);
   const importRef = useRef<HTMLElement>(null);
   const officePreviewRef = useRef<HTMLElement>(null);
+  const officeOpenInputRef = useRef<HTMLInputElement>(null);
   const slidePreviewRef = useRef<HTMLElement>(null);
+  const markdownSourceRef = useRef<HTMLElement>(null);
   const conflictRef = useRef<HTMLElement>(null);
   const recoveryRef = useRef<HTMLElement>(null);
   const readOnly = role === "guest";
@@ -421,8 +428,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   useDialogFocus(Boolean(invalidDocument), () => {}, invalidDocumentRef);
   useDialogFocus(closePromptOpen, () => setClosePromptOpen(false), closePromptRef);
   useDialogFocus(importOpen, closeImport, importRef, actionsToggleRef);
-  useDialogFocus(officePreviewOpen, () => setOfficePreviewOpen(false), officePreviewRef);
+  useDialogFocus(officePreviewOpen, closeOfficePreview, officePreviewRef);
   useDialogFocus(Boolean(slidePreview), () => setSlidePreview(null), slidePreviewRef);
+  useDialogFocus(markdownSourceOpen, () => setMarkdownSourceOpen(false), markdownSourceRef);
   useDialogFocus(Boolean(saveConflict), () => {}, conflictRef);
   useDialogFocus(recoveryOpen, closeRecoveryCopies, recoveryRef);
 
@@ -1014,6 +1022,44 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   }
 
   /**
+   * Abre la fuente Markdown del documento para editarla como diapositivas.
+   */
+  function openMarkdownSource() {
+    const document = currentDocument();
+    if (!document) return;
+    setMarkdownSourceDraft(documentToMarkdown(document));
+    setMarkdownSourceError(null);
+    setMarkdownSourceOpen(true);
+  }
+
+  /**
+   * Aplica la fuente Markdown al documento actual conservando tema y notas.
+   */
+  function applyMarkdownSource() {
+    const converted = markdownToDocument(markdownSourceDraft, {
+      slideBreaks: true,
+      stripTitleHeading: true,
+      titleFallback: title || "Presentación",
+    });
+    const parsed = parseAulaDocument({
+      schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
+      title: converted.title,
+      content: converted.content,
+      presentation: {
+        theme: presentationTheme,
+        ...(Object.keys(presentationNotes).length ? { notes: presentationNotes } : {}),
+      },
+    });
+    if (!parsed.ok) {
+      setMarkdownSourceError(parsed.message);
+      return;
+    }
+    applyDocument(parsed.document);
+    markChanged("Fuente Markdown aplicada. Guárdala para conservarla.");
+    setMarkdownSourceOpen(false);
+  }
+
+  /**
    * Cambia el tema de la presentación y lo guarda con el documento.
    * @param theme - Nuevo tema.
    */
@@ -1211,7 +1257,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   function openImport() {
     setImportPreview(null);
     setImportOfficeSource(null);
+    setOfficeOpenSource(null);
     setOfficePreviewOpen(false);
+    setOfficePreviewTitle("Archivo original");
     setImportError(null);
     setImportLoading(null);
     setImportConfirm(false);
@@ -1225,10 +1273,31 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     setImportOpen(false);
     setImportPreview(null);
     setImportOfficeSource(null);
+    setOfficeOpenSource(null);
     setOfficePreviewOpen(false);
     setImportError(null);
     setImportLoading(null);
     setImportConfirm(false);
+  }
+
+  /**
+   * Cierra la vista del archivo de Office.
+   */
+  function closeOfficePreview() {
+    setOfficePreviewOpen(false);
+    setOfficeOpenSource(null);
+    setOfficePreviewTitle("Archivo original");
+  }
+
+  /**
+   * Abre un archivo local en el visor Office sin importarlo.
+   * @param file - Archivo elegido.
+   */
+  function openOfficeViewer(file: File | undefined) {
+    if (!file) return;
+    setOfficeOpenSource(file);
+    setOfficePreviewTitle("Visor Office");
+    setOfficePreviewOpen(true);
   }
 
   /**
@@ -1494,10 +1563,17 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     onClick: openImport,
     disabled: readOnly || !editor || Boolean(invalidDocument),
   };
+  const openOfficeAction: ToolbarAction = {
+    label: "Abrir Office",
+    icon: <FileText size={15} aria-hidden />,
+    onClick: () => officeOpenInputRef.current?.click(),
+    disabled: loading,
+  };
 
   const documentFileActions: ToolbarAction[] = [
     newDocumentAction,
     importDocumentAction,
+    openOfficeAction,
     saveDocumentAction,
     exportHtmlAction,
     printAction,
@@ -1509,6 +1585,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const archiveMenuActions: AulaMenuAction[] = [
     { label: newDocumentAction.label, icon: newDocumentAction.icon, onSelect: newDocumentAction.onClick, disabled: newDocumentAction.disabled },
     { label: importDocumentAction.label, icon: importDocumentAction.icon, onSelect: importDocumentAction.onClick, disabled: importDocumentAction.disabled },
+    { label: openOfficeAction.label, icon: openOfficeAction.icon, onSelect: openOfficeAction.onClick, disabled: openOfficeAction.disabled },
   ];
 
   const formatMenuActions: AulaMenuAction[] = editor && !readOnly ? [
@@ -1602,6 +1679,20 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           <span className="aula-documentos-count">{diagramLabel}</span>
         </div>
       </header>
+
+      <input
+        ref={officeOpenInputRef}
+        className="aula-documentos-file-input"
+        type="file"
+        accept=".docx,.xlsx,.pptx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        aria-label="Elegir archivo de Office para el visor"
+        tabIndex={-1}
+        onChange={(event) => {
+          const file = event.currentTarget.files?.[0];
+          event.currentTarget.value = "";
+          openOfficeViewer(file);
+        }}
+      />
 
       <div className="aula-documentos-toolbar" role="toolbar" aria-label="Acciones del documento">
         <div className="aula-documentos-menubar">
@@ -2219,7 +2310,10 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                     <button
                       type="button"
                       className="aula-documentos-import-secondary"
-                      onClick={() => setOfficePreviewOpen(true)}
+                      onClick={() => {
+                        setOfficePreviewTitle("Archivo original");
+                        setOfficePreviewOpen(true);
+                      }}
                     >
                       <Eye size={14} aria-hidden />
                       Ver original
@@ -2309,14 +2403,14 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         </div>
       ) : null}
 
-      {officePreviewOpen && importOfficeSource ? (
+      {officePreviewOpen && (importOfficeSource || officeOpenSource) ? (
         <div
           className="aula-documentos-modal-backdrop aula-documentos-office-backdrop"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setOfficePreviewOpen(false);
+            if (event.target === event.currentTarget) closeOfficePreview();
           }}
           onKeyDown={(event) => {
-            if (event.key === "Escape") setOfficePreviewOpen(false);
+            if (event.key === "Escape") closeOfficePreview();
           }}
         >
           <section
@@ -2327,19 +2421,19 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             ref={officePreviewRef}
           >
             <header className="aula-documentos-modal-head">
-              <h2 id="aula-documentos-office-preview-title">Archivo original</h2>
+              <h2 id="aula-documentos-office-preview-title">{officePreviewTitle}</h2>
               <button
                 type="button"
                 className="aula-documentos-modal-close"
-                onClick={() => setOfficePreviewOpen(false)}
-                aria-label="Cerrar vista original"
+                onClick={closeOfficePreview}
+                aria-label="Cerrar vista de Office"
                 autoFocus
               >
                 <X size={16} aria-hidden />
               </button>
             </header>
             <div className="aula-documentos-office-preview-body">
-              <OfficeViewer initialFile={importOfficeSource} embedded />
+              <OfficeViewer initialFile={importOfficeSource ?? officeOpenSource} embedded />
             </div>
           </section>
         </div>
@@ -2368,8 +2462,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         <aside className="aula-documentos-side">
           <section className="aula-documentos-info">
             <h3>Texto y diagramas juntos</h3>
-            <p>Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa.</p>
-            <p>También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad, abrir el original en el visor compartido antes de confirmar y exportar copias DOCX/PPTX desde el menú Exportar. XLSX se consulta en Visor Office.</p>
+            <p>Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa. La presentación se puede editar por diapositivas o desde <strong>Fuente Markdown</strong>.</p>
+            <p>También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad, abrir el original o cualquier archivo de Office en el visor compartido y exportar copias DOCX/PPTX desde el menú Exportar. XLSX se consulta en Visor Office.</p>
             <p className="aula-documentos-status" role="status" aria-live="polite">{statusText}</p>
             {saveFailed && !readOnly ? (
               <button
@@ -2416,6 +2510,15 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             >
               {preparingPresentation ? "Preparando…" : "Vista previa"}
             </button>
+            <button
+              type="button"
+              className="aula-documentos-preview-button aula-documentos-markdown-source-button"
+              onClick={openMarkdownSource}
+              disabled={!editor || readOnly}
+            >
+              <Code2 size={14} aria-hidden />
+              Fuente Markdown
+            </button>
           </section>
           <section className="aula-documentos-help">
             <h3>Atajos</h3>
@@ -2429,6 +2532,60 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           </section>
         </aside>
       </div>
+
+      {markdownSourceOpen ? (
+        <div
+          className="aula-documentos-modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setMarkdownSourceOpen(false);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setMarkdownSourceOpen(false);
+          }}
+        >
+          <section
+            className="aula-documentos-modal aula-documentos-markdown-source-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aula-documentos-markdown-source-title"
+            ref={markdownSourceRef}
+          >
+            <header className="aula-documentos-modal-head">
+              <h2 id="aula-documentos-markdown-source-title">Fuente Markdown</h2>
+              <button
+                type="button"
+                className="aula-documentos-modal-close"
+                onClick={() => setMarkdownSourceOpen(false)}
+                aria-label="Cerrar fuente Markdown"
+                autoFocus
+              >
+                <X size={16} aria-hidden />
+              </button>
+            </header>
+            <div className="aula-documentos-import-menu">
+              <p className="aula-documentos-import-intro">
+                Cada bloque separado por <code>---</code> es una diapositiva. Se reemplazará el contenido actual; el tema y las notas se conservan.
+              </p>
+              <textarea
+                className="aula-documentos-markdown-source"
+                value={markdownSourceDraft}
+                onChange={(event) => setMarkdownSourceDraft(event.target.value)}
+                aria-label="Fuente Markdown de la presentación"
+                spellCheck={false}
+              />
+              {markdownSourceError ? <p className="aula-documentos-import-error" role="alert">{markdownSourceError}</p> : null}
+              <div className="aula-documentos-import-actions">
+                <button type="button" className="aula-documentos-import-secondary" onClick={() => setMarkdownSourceOpen(false)}>
+                  Cancelar
+                </button>
+                <button type="button" className="aula-documentos-import-primary" onClick={applyMarkdownSource}>
+                  Aplicar fuente
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : null}
 
       {slidePreview ? (
         <div

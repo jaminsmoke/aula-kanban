@@ -71,11 +71,11 @@
 
 ### Fase 3 — Presentaciones y Office completos en Aula Documentos
 
-- [ ] Cubrir las funciones de Presentaciones: edición por diapositivas, temas, notas, vista previa, modo presentación y exportación.
-- [ ] Decidir y aplicar el modo de edición Markdown o equivalente para presentaciones.
-- [ ] Integrar una apertura estable de Office local en Aula Documentos, además de la vista previa de importación.
-- [ ] Mantener DOCX/PPTX de importación y exportación, tablas y avisos de fidelidad.
-- [ ] Añadir pruebas de paridad de presentación y Office.
+- [x] Cubrir las funciones de Presentaciones: edición por diapositivas, temas, notas, vista previa, modo presentación y exportación.
+- [x] Decidir y aplicar el modo de edición Markdown o equivalente para presentaciones.
+- [x] Integrar una apertura estable de Office local en Aula Documentos, además de la vista previa de importación.
+- [x] Mantener DOCX/PPTX de importación y exportación, tablas y avisos de fidelidad.
+- [x] Añadir pruebas de paridad de presentación y Office.
 - **Criterios de aceptación:**
   - Presentaciones y Visor Office no ofrecen ninguna función imprescindible fuera de Aula Documentos.
   - Los archivos Office se pueden previsualizar sin importarlos.
@@ -128,3 +128,4 @@
 - El Site sigue en `1.1.36`; no se publica nada desde este roadmap.
 - 2026-11-19: Fase 1 completada. Matriz de paridad y mapa de compatibilidad en [`docs/Store/apps/document-suite.md`](../../Store/apps/document-suite.md). Notas y documentos no tiene huecos funcionales; Diagramas necesita plantillas, Gantt guiado, detalle de errores, zoom/paneo y SVG por bloque; Presentaciones necesita edición Markdown de origen y plantillas; Visor Office necesita apertura libre de DOCX/XLSX/PPTX desde Aula Documentos. Mapeados `app_documents`, IDs, URLs, permisos, catálogo y los tres tools MCP de Diagramas. Ninguna app retirada ni dato borrado. No se ejecutan checks de código porque la fase es documental; se registra un commit local de la fase.
 - 2026-11-19: Fase 2 completada. El bloque Mermaid de Aula Documentos incorpora Gantt guiado, selector completo de plantillas, salto a la línea del error, zoom/paneo, pantalla completa y exportación SVG por bloque. El modelo y el editor Gantt se movieron a `lib/domain/mermaid` y `app/board/shared/mermaid`, compartidos con la app Diagramas. Notas ya tenía paridad. Verificado en la app real: Gantt en modo Contenido, edición del título y vuelta a Código; SVG y pantalla completa presentes. Suite completa: 219 archivos / 1.540 pruebas; `tsc`, ESLint, build y presupuestos correctos. `diagramas` ajusta su techo a **379.000 B gzip** (378.062 B).
+- 2026-11-19: Fase 3 completada. Aula Documentos añade Fuente Markdown con saltos de diapositiva, tres plantillas de presentación (breve, proyecto y blanca) y Abrir Office para DOCX/XLSX/PPTX sin importarlos. El visor reutiliza el componente compartido y se abre en un modal. Verificado en la app real: modal de Office con archivo local, fuente Markdown y plantillas. Suite completa: 219 archivos / 1.543 pruebas; `tsc`, ESLint, build, `perf:budget` y `perf:office` correctos.
