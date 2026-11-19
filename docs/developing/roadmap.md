@@ -50,11 +50,11 @@
 
 ### Fase 1 — Arquitectura de menús y escritorio
 
-- [ ] Definir el modelo de acciones y grupos con etiqueta, icono, atajo, estado y comando.
-- [ ] Crear un menú reutilizable con apertura, cierre, teclado y pulsación exterior.
-- [ ] Reorganizar la barra: grupo directo mínimo, Archivo, Formato, Insertar, Exportar y una sola acción Presentar.
-- [ ] Eliminar duplicados entre barra, panel lateral y diálogos.
-- [ ] Cubrir con pruebas el orden, los estados activo/deshabilitado y las acciones disponibles.
+- [x] Definir el modelo de acciones y grupos con etiqueta, icono, atajo, estado y comando.
+- [x] Crear un menú reutilizable con apertura, cierre, teclado y pulsación exterior.
+- [x] Reorganizar la barra: grupo directo mínimo, Archivo, Formato, Insertar, Exportar y una sola acción Presentar.
+- [x] Eliminar duplicados entre barra, panel lateral y diálogos.
+- [x] Cubrir con pruebas el orden, los estados activo/deshabilitado y las acciones disponibles.
 - **Criterios de aceptación:**
   - Cada acción tiene una única ubicación y un nombre accesible.
   - Los menús funcionan con ratón y teclado.
@@ -114,3 +114,4 @@
 - Puntos de partida: `app/board/apps/aula-documentos/aula-documentos-app.tsx`, `aula-documentos.css`, `app/board/shared/aula-documentos/document-extensions.ts`, `lib/domain/aula-documentos/markdown.ts` y las pruebas de la app.
 - Estado actual: barra de iconos, archivo a la derecha, «Acciones» solo en móvil y «Presentar» duplicado. StarterKit ya ofrece tachado y línea horizontal, pero no tienen botón; alineación y listas de tareas requieren extensiones.
 - No se abordan tablas, imágenes ni buscar/reemplazar. La barra debe seguir funcionando con el guardado condicional y la recuperación de ADOC-07.
+- 2026-11-19: Fase 1 completada. La barra usa menús reutilizables Archivo, Formato, Insertar y Exportar, un grupo directo de deshacer/rehacer, B/I/U/enlace, y botones etiquetados Presentar y Guardar. Se eliminó la exportación de presentación duplicada del panel lateral. Los menús no atrapan el foco, cierran con Escape, Tab o clic fuera y recorren acciones con flechas. Verificado a 900, 1024 y 1366 px sin scroll horizontal y en 390/620 px con la barra existente. 50 pruebas focalizadas y 202 archivos / 1.437 pruebas; `tsc` y ESLint en verde.

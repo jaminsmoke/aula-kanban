@@ -63,6 +63,44 @@ vi.mock("../../shared/aula-documentos/mermaid-renderer", () => ({
 const props = { projectId: "p1", role: "owner" as const };
 
 /**
+ * Abre un menú de la barra de Aula Documentos.
+ * @param name - Etiqueta del menú.
+ */
+function openMenu(name: "Archivo" | "Formato" | "Insertar" | "Exportar") {
+  fireEvent.click(screen.getByRole("button", { name }));
+}
+
+/**
+ * Elige una acción de un menú.
+ * @param menu - Menú que se abre.
+ * @param item - Acción que se pulsa.
+ */
+function chooseMenu(menu: "Archivo" | "Formato" | "Insertar" | "Exportar", item: string) {
+  openMenu(menu);
+  fireEvent.click(screen.getByRole("menuitem", { name: item }));
+}
+
+function newDocument() {
+  chooseMenu("Archivo", "Nuevo documento");
+}
+
+function importDocument() {
+  chooseMenu("Archivo", "Importar documento");
+}
+
+function insertMermaid() {
+  chooseMenu("Insertar", "Insertar diagrama Mermaid");
+}
+
+function insertSlideBreak() {
+  chooseMenu("Insertar", "Insertar salto de diapositiva");
+}
+
+function printPdf() {
+  chooseMenu("Exportar", "Imprimir o guardar PDF");
+}
+
+/**
  * Cuenta bloques Mermaid en un JSON de documento.
  * @param content - Contenido Tiptap.
  * @returns Número de bloques.
@@ -135,15 +173,55 @@ describe("Aula Documentos", () => {
 
     expect(screen.getByText("Aula Documentos")).toBeTruthy();
     expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento de ejemplo");
-    expect(screen.getByRole("toolbar", { name: "Formato del documento" })).toBeTruthy();
+    expect(screen.getByRole("toolbar", { name: "Acciones del documento" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Negrita" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Insertar diagrama Mermaid" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Archivo" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Formato" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Insertar" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Exportar" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Guardar documento" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Exportar HTML" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Presentar documento" })).toBeTruthy();
+
+    openMenu("Insertar");
+    expect(screen.getByRole("menuitem", { name: "Insertar diagrama Mermaid" })).toBeTruthy();
+    fireEvent.keyDown(screen.getByRole("menu", { name: "Insertar" }), { key: "Escape" });
+    openMenu("Exportar");
+    expect(screen.getByRole("menuitem", { name: "Exportar HTML" })).toBeTruthy();
 
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
     expect(screen.getByRole("status").textContent).toContain("Documento de ejemplo listo");
     expect(screen.getByText("0 diagramas")).toBeTruthy();
+  });
+
+  it("agrupa las acciones por intención sin duplicar la barra directa", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    openMenu("Archivo");
+    expect(screen.getByRole("menuitem", { name: "Nuevo documento" })).toBeTruthy();
+    expect(screen.getByRole("menuitem", { name: "Importar documento" })).toBeTruthy();
+    expect(screen.queryByRole("menuitem", { name: "Guardar documento" })).toBeNull();
+    fireEvent.keyDown(screen.getByRole("menu", { name: "Archivo" }), { key: "Escape" });
+
+    openMenu("Formato");
+    expect(screen.getByRole("menuitemcheckbox", { name: /Título 1/ })).toBeTruthy();
+    expect(screen.queryByRole("menuitemcheckbox", { name: "Negrita" })).toBeNull();
+    fireEvent.keyDown(screen.getByRole("menu", { name: "Formato" }), { key: "Escape" });
+
+    openMenu("Insertar");
+    expect(screen.getByRole("menuitem", { name: "Insertar diagrama Mermaid" })).toBeTruthy();
+    expect(screen.getByRole("menuitem", { name: "Insertar salto de diapositiva" })).toBeTruthy();
+    fireEvent.keyDown(screen.getByRole("menu", { name: "Insertar" }), { key: "Escape" });
+
+    openMenu("Exportar");
+    for (const name of ["Exportar HTML", "Imprimir o guardar PDF", "Exportar Markdown", "Exportar presentación"]) {
+      expect(screen.getByRole("menuitem", { name })).toBeTruthy();
+    }
+    fireEvent.keyDown(screen.getByRole("menu", { name: "Exportar" }), { key: "Escape" });
+
+    expect(screen.getByRole("button", { name: "Guardar documento" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Presentar documento" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Negrita" })).toBeTruthy();
   });
 
   it("no guarda automáticamente un documento limpio", async () => {
@@ -164,9 +242,8 @@ describe("Aula Documentos", () => {
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
 
     vi.useFakeTimers();
-    const insert = screen.getByRole("button", { name: "Insertar diagrama Mermaid" });
-    fireEvent.click(insert);
-    fireEvent.click(insert);
+    insertMermaid();
+    insertMermaid();
     await act(async () => {
       await vi.advanceTimersByTimeAsync(AUTOSAVE_DELAY_MS + 100);
     });
@@ -183,7 +260,7 @@ describe("Aula Documentos", () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
 
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     fireEvent.keyDown(window, { key: "s", ctrlKey: true });
 
     await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
@@ -196,7 +273,7 @@ describe("Aula Documentos", () => {
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
 
     vi.useFakeTimers();
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     await act(async () => {
       await vi.advanceTimersByTimeAsync(AUTOSAVE_DELAY_MS + 100);
     });
@@ -377,7 +454,7 @@ describe("Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento actual"));
-    fireEvent.click(screen.getByRole("button", { name: "Nuevo documento" }));
+    newDocument();
     fireEvent.click(screen.getByRole("button", { name: /Documento vacío/ }));
     fireEvent.click(screen.getByRole("button", { name: "Crear documento" }));
 
@@ -396,7 +473,7 @@ describe("Aula Documentos", () => {
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
 
     vi.useFakeTimers();
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     await act(async () => {
       await vi.advanceTimersByTimeAsync(AUTOSAVE_DELAY_MS + 100);
     });
@@ -408,7 +485,7 @@ describe("Aula Documentos", () => {
   it("guarda un borrador Mermaid sin pulsar Aplicar", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
 
     const nextCode = "flowchart TD\nX --> Y";
@@ -424,7 +501,7 @@ describe("Aula Documentos", () => {
   it("autoguarda el borrador Mermaid sin cerrar el editor", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
 
     const nextCode = "flowchart LR\nAntes --> Después";
@@ -446,7 +523,7 @@ describe("Aula Documentos", () => {
   it("guarda con Ctrl+S mientras se edita un diagrama", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
 
     const nextCode = "flowchart TD\nCtrl --> S";
@@ -464,7 +541,7 @@ describe("Aula Documentos", () => {
   it("aplica el borrador Mermaid al salir del textarea", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
 
     const nextCode = "flowchart TD\nSalida --> Aplicada";
@@ -483,7 +560,7 @@ describe("Aula Documentos", () => {
   it("descarta el borrador Mermaid y conserva el código anterior", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
     const original = (screen.getByLabelText("Código Mermaid") as HTMLTextAreaElement).value;
 
@@ -504,7 +581,7 @@ describe("Aula Documentos", () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
 
-    fireEvent.click(screen.getByRole("button", { name: "Nuevo documento" }));
+    newDocument();
     expect(screen.getByRole("dialog", { name: "Nuevo documento" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /Documento vacío/ }));
 
@@ -520,7 +597,7 @@ describe("Aula Documentos", () => {
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
     fireEvent.change(screen.getByLabelText("Título del documento"), { target: { value: "Cambios pendientes" } });
 
-    fireEvent.click(screen.getByRole("button", { name: "Nuevo documento" }));
+    newDocument();
     expect(screen.getByText("Hay cambios sin guardar en el documento actual.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /Apuntes de clase/ }));
     expect(screen.getByText("Hay cambios sin guardar. Se sustituirán por el contenido de esta plantilla.")).toBeTruthy();
@@ -534,7 +611,7 @@ describe("Aula Documentos", () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
 
-    fireEvent.click(screen.getByRole("button", { name: "Nuevo documento" }));
+    newDocument();
     fireEvent.click(screen.getByRole("button", { name: /Proyecto de clase/ }));
     fireEvent.click(screen.getByRole("button", { name: "Crear documento" }));
 
@@ -552,7 +629,7 @@ describe("Aula Documentos", () => {
     const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
 
     const select = screen.getByLabelText("Insertar plantilla Mermaid");
@@ -577,7 +654,7 @@ describe("Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     await waitFor(() => expect(document.querySelector(".aula-mermaid-svg")).toBeTruthy());
     fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
     const original = (screen.getByLabelText("Código Mermaid") as HTMLTextAreaElement).value;
@@ -594,7 +671,7 @@ describe("Aula Documentos", () => {
   it("descarta el borrador aunque el autosave ya lo haya aplicado", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     await waitFor(() => expect(document.querySelector(".aula-mermaid-svg")).toBeTruthy());
     fireEvent.click(await screen.findByRole("button", { name: "Editar" }));
     const original = (screen.getByLabelText("Código Mermaid") as HTMLTextAreaElement).value;
@@ -622,7 +699,7 @@ describe("Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     await screen.findByRole("button", { name: "Editar" });
     fireEvent.click(screen.getByRole("button", { name: "Copiar código Mermaid" }));
 
@@ -633,7 +710,7 @@ describe("Aula Documentos", () => {
   it("permite ampliar y restablecer el zoom del diagrama", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     await waitFor(() => expect(document.querySelector(".aula-mermaid-svg")).toBeTruthy());
 
     expect(screen.getByText("100%")).toBeTruthy();
@@ -652,7 +729,7 @@ describe("Aula Documentos", () => {
   it("prepara una impresión autónoma sin la interfaz del editor", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Imprimir o guardar PDF" }));
+    printPdf();
 
     await waitFor(() => expect(printMock).toHaveBeenCalledTimes(1));
     const html = printMock.mock.calls[0][0] as string;
@@ -749,9 +826,8 @@ describe("Aula Documentos", () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
 
-    const insert = screen.getByRole("button", { name: "Insertar diagrama Mermaid" });
-    fireEvent.click(insert);
-    fireEvent.click(insert);
+    insertMermaid();
+    insertMermaid();
     await waitFor(() => expect(screen.getAllByText("Diagrama Mermaid")).toHaveLength(2));
 
     fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
@@ -804,7 +880,7 @@ describe("Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Insertar diagrama Mermaid" }));
+    insertMermaid();
     await waitFor(() => expect(screen.getByRole("button", { name: "Editar" })).toBeTruthy());
 
     fireEvent.click(screen.getByRole("button", { name: "Editar" }));
@@ -930,7 +1006,7 @@ describe("Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Importar documento" }));
+    importDocument();
 
     expect(screen.getByRole("dialog", { name: "Importar documento" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /Notas y documentos/ }));
@@ -948,7 +1024,7 @@ describe("Aula Documentos", () => {
   it("inserta un salto de diapositiva y lo guarda", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Insertar salto de diapositiva" }));
+    insertSlideBreak();
     expect(await screen.findByText("Salto de diapositiva")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
@@ -974,7 +1050,7 @@ describe("Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Importar documento" }));
+    importDocument();
     fireEvent.click(screen.getByRole("button", { name: /Notas y documentos/ }));
 
     expect(await screen.findByRole("heading", { name: "Notas de clase" })).toBeTruthy();
@@ -991,7 +1067,7 @@ describe("Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Importar documento" }));
+    importDocument();
     fireEvent.click(screen.getByRole("button", { name: /Diagramas/ }));
 
     expect(await screen.findByRole("heading", { name: "Diagrama importado" })).toBeTruthy();
@@ -1007,7 +1083,7 @@ describe("Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Importar documento" }));
+    importDocument();
     fireEvent.click(screen.getByRole("button", { name: /Notas y documentos/ }));
 
     expect(await screen.findByText("El documento de Notas y documentos no tiene un título válido.")).toBeTruthy();
@@ -1024,7 +1100,7 @@ describe("Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Importar documento" }));
+    importDocument();
     fireEvent.click(screen.getByRole("button", { name: /Presentaciones/ }));
 
     expect(await screen.findByRole("heading", { name: "Presentación" })).toBeTruthy();
@@ -1040,7 +1116,7 @@ describe("Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    fireEvent.click(screen.getByRole("button", { name: "Importar documento" }));
+    importDocument();
     fireEvent.change(screen.getByLabelText(/Archivo Markdown/), {
       target: { files: [file] },
     });
@@ -1060,12 +1136,17 @@ describe("Aula Documentos", () => {
 
     expect(screen.getByText(/Modo lectura/)).toBeTruthy();
     expect(screen.getByLabelText("Título del documento")).toHaveProperty("readOnly", true);
-    expect(screen.getByRole("button", { name: "Nuevo documento" })).toHaveProperty("disabled", true);
-    expect(screen.getByRole("button", { name: "Importar documento" })).toHaveProperty("disabled", true);
+    openMenu("Archivo");
+    expect(screen.getByRole("menuitem", { name: "Nuevo documento" })).toHaveProperty("disabled", true);
+    expect(screen.getByRole("menuitem", { name: "Importar documento" })).toHaveProperty("disabled", true);
+    fireEvent.keyDown(screen.getByRole("menu", { name: "Archivo" }), { key: "Escape" });
     expect(screen.getByRole("button", { name: "Guardar documento" })).toHaveProperty("disabled", true);
-    expect(screen.getByRole("button", { name: "Exportar HTML" })).toHaveProperty("disabled", false);
+    expect(screen.getByRole("button", { name: "Formato" })).toHaveProperty("disabled", true);
+    expect(screen.getByRole("button", { name: "Insertar" })).toHaveProperty("disabled", true);
+    openMenu("Exportar");
+    expect(screen.getByRole("menuitem", { name: "Exportar HTML" })).toHaveProperty("disabled", false);
+    fireEvent.keyDown(screen.getByRole("menu", { name: "Exportar" }), { key: "Escape" });
     expect(screen.queryByRole("button", { name: "Negrita" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Insertar diagrama Mermaid" })).toBeNull();
     expect(screen.getByLabelText("Contenido del documento").getAttribute("contenteditable")).toBe("false");
     fireEvent.keyDown(window, { key: "s", ctrlKey: true });
     expect(documentMock.save).not.toHaveBeenCalled();

@@ -82,6 +82,7 @@ import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../../shared/a
 import { getMermaidRenderer } from "../../shared/aula-documentos/mermaid-renderer";
 import { printHtmlDocument } from "../../shared/aula-documentos/print-html";
 import { useDialogFocus } from "../../shared/use-dialog-focus";
+import { AulaMenu, type AulaMenuAction } from "./aula-documentos-menu";
 import "./aula-documentos.css";
 
 const PresentationView = lazy(() => import("../../shared/aula-documentos/presentation-view").then((module) => ({
@@ -172,15 +173,6 @@ function ToolButton({ action }: { action: ToolbarAction }) {
       {action.icon}
     </button>
   );
-}
-
-/**
- * Acciones de archivo de la barra de formato.
- * @param props - Acciones disponibles.
- * @returns Los botones en orden.
- */
-function FileActions({ actions }: { actions: ToolbarAction[] }) {
-  return <>{actions.map((action) => <ToolButton action={action} key={action.label} />)}</>;
 }
 
 /**
@@ -1340,92 +1332,109 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     ? countMermaidBlocks(newDocumentPreview.document.content)
     : 0;
 
+  const saveDocumentAction: ToolbarAction = {
+    label: "Guardar documento",
+    icon: <Save size={15} aria-hidden />,
+    onClick: () => { void saveCurrent(false); },
+    disabled: readOnly || saving || loading || !editor || Boolean(invalidDocument) || Boolean(saveConflict),
+  };
+  const exportHtmlAction: ToolbarAction = {
+    label: "Exportar HTML",
+    icon: exporting ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <Download size={15} aria-hidden />,
+    onClick: () => { void exportHtml(); },
+    disabled: !editor || exporting || Boolean(invalidDocument),
+  };
+  const printAction: ToolbarAction = {
+    label: "Imprimir o guardar PDF",
+    icon: printing ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <Printer size={15} aria-hidden />,
+    onClick: () => { void printDocument(); },
+    disabled: !editor || printing || Boolean(invalidDocument),
+  };
+  const exportMarkdownAction: ToolbarAction = {
+    label: "Exportar Markdown",
+    icon: <FileDown size={15} aria-hidden />,
+    onClick: exportMarkdown,
+    disabled: !editor || Boolean(invalidDocument),
+  };
+  const presentAction: ToolbarAction = {
+    label: "Presentar documento",
+    icon: <MonitorPlay size={15} aria-hidden />,
+    onClick: () => { void startPresentation(); },
+    disabled: preparingPresentation || Boolean(presentation),
+  };
+  const exportPresentationAction: ToolbarAction = {
+    label: "Exportar presentación",
+    icon: exportingPresentation ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <Presentation size={15} aria-hidden />,
+    onClick: () => { void exportPresentation(); },
+    disabled: !editor || exportingPresentation,
+  };
+  const newDocumentAction: ToolbarAction = {
+    label: "Nuevo documento",
+    icon: <FilePlus2 size={15} aria-hidden />,
+    onClick: openNewDocument,
+    disabled: readOnly || !editor || Boolean(invalidDocument) || saving || loading,
+  };
+  const importDocumentAction: ToolbarAction = {
+    label: "Importar documento",
+    icon: <Upload size={15} aria-hidden />,
+    onClick: openImport,
+    disabled: readOnly || !editor || Boolean(invalidDocument),
+  };
+
   const documentFileActions: ToolbarAction[] = [
-    {
-      label: "Nuevo documento",
-      icon: <FilePlus2 size={15} aria-hidden />,
-      onClick: openNewDocument,
-      disabled: readOnly || !editor || Boolean(invalidDocument) || saving || loading,
-    },
-    {
-      label: "Importar documento",
-      icon: <Upload size={15} aria-hidden />,
-      onClick: openImport,
-      disabled: readOnly || !editor || Boolean(invalidDocument),
-    },
-    {
-      label: "Guardar documento",
-      icon: <Save size={15} aria-hidden />,
-      onClick: () => { void saveCurrent(false); },
-      disabled: readOnly || saving || loading || !editor || Boolean(invalidDocument) || Boolean(saveConflict),
-    },
-    {
-      label: "Exportar HTML",
-      icon: exporting ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <Download size={15} aria-hidden />,
-      onClick: () => { void exportHtml(); },
-      disabled: !editor || exporting || Boolean(invalidDocument),
-    },
-    {
-      label: "Imprimir o guardar PDF",
-      icon: printing ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <Printer size={15} aria-hidden />,
-      onClick: () => { void printDocument(); },
-      disabled: !editor || printing || Boolean(invalidDocument),
-    },
-    {
-      label: "Exportar Markdown",
-      icon: <FileDown size={15} aria-hidden />,
-      onClick: exportMarkdown,
-      disabled: !editor || Boolean(invalidDocument),
-    },
+    newDocumentAction,
+    importDocumentAction,
+    saveDocumentAction,
+    exportHtmlAction,
+    printAction,
+    exportMarkdownAction,
   ];
 
   const mobileActions: ToolbarAction[] = [
     ...documentFileActions,
-    {
-      label: "Presentar documento",
-      icon: <MonitorPlay size={15} aria-hidden />,
-      onClick: () => { void startPresentation(); },
-      disabled: preparingPresentation || Boolean(presentation),
-    },
-    {
-      label: "Exportar presentación",
-      icon: exportingPresentation ? <Loader2 size={15} className="aula-documentos-spin" aria-hidden /> : <Presentation size={15} aria-hidden />,
-      onClick: () => { void exportPresentation(); },
-      disabled: !editor || exportingPresentation,
-    },
+    presentAction,
+    exportPresentationAction,
+  ];
+
+  const archiveMenuActions: AulaMenuAction[] = [
+    { label: newDocumentAction.label, icon: newDocumentAction.icon, onSelect: newDocumentAction.onClick, disabled: newDocumentAction.disabled },
+    { label: importDocumentAction.label, icon: importDocumentAction.icon, onSelect: importDocumentAction.onClick, disabled: importDocumentAction.disabled },
+  ];
+
+  const formatMenuActions: AulaMenuAction[] = editor && !readOnly ? [
+    { label: "Párrafo", icon: <Pilcrow size={15} aria-hidden />, active: toolbar.paragraph, onSelect: () => editor.chain().focus().setParagraph().run() },
+    { label: "Título 1", icon: <Heading1 size={15} aria-hidden />, active: toolbar.heading1, shortcut: "Ctrl+Alt+1", onSelect: () => editor.chain().focus().toggleHeading({ level: 1 }).run() },
+    { label: "Título 2", icon: <Heading2 size={15} aria-hidden />, active: toolbar.heading2, shortcut: "Ctrl+Alt+2", onSelect: () => editor.chain().focus().toggleHeading({ level: 2 }).run() },
+    { label: "Título 3", icon: <Heading3 size={15} aria-hidden />, active: toolbar.heading3, shortcut: "Ctrl+Alt+3", onSelect: () => editor.chain().focus().toggleHeading({ level: 3 }).run() },
+    { label: "Lista con viñetas", icon: <List size={15} aria-hidden />, active: toolbar.bulletList, onSelect: () => editor.chain().focus().toggleBulletList().run() },
+    { label: "Lista numerada", icon: <ListOrdered size={15} aria-hidden />, active: toolbar.orderedList, onSelect: () => editor.chain().focus().toggleOrderedList().run() },
+    { label: "Cita", icon: <Quote size={15} aria-hidden />, active: toolbar.blockquote, onSelect: () => editor.chain().focus().toggleBlockquote().run() },
+    { label: "Código en línea", icon: <Code size={15} aria-hidden />, active: toolbar.code, onSelect: () => editor.chain().focus().toggleCode().run() },
+    { label: "Bloque de código", icon: <Code2 size={15} aria-hidden />, active: toolbar.codeBlock, onSelect: () => editor.chain().focus().toggleCodeBlock().run() },
+  ] : [];
+
+  const insertMenuActions: AulaMenuAction[] = editor && !readOnly ? [
+    { label: "Insertar diagrama Mermaid", icon: <GitBranch size={15} aria-hidden />, onSelect: insertMermaid },
+    { label: "Insertar salto de diapositiva", icon: <SeparatorHorizontal size={15} aria-hidden />, onSelect: insertSlideBreak },
+  ] : [];
+
+  const exportMenuActions: AulaMenuAction[] = [
+    { label: exportHtmlAction.label, icon: exportHtmlAction.icon, onSelect: exportHtmlAction.onClick, disabled: exportHtmlAction.disabled },
+    { label: printAction.label, icon: printAction.icon, onSelect: printAction.onClick, disabled: printAction.disabled },
+    { label: exportMarkdownAction.label, icon: exportMarkdownAction.icon, onSelect: exportMarkdownAction.onClick, disabled: exportMarkdownAction.disabled },
+    { label: exportPresentationAction.label, icon: exportPresentationAction.icon, onSelect: exportPresentationAction.onClick, disabled: exportPresentationAction.disabled },
   ];
 
   const groups: ToolbarAction[][] = editor && !readOnly ? [
     [
-      { label: "Párrafo", icon: <Pilcrow size={15} aria-hidden />, active: toolbar.paragraph, onClick: () => editor.chain().focus().setParagraph().run() },
-      { label: "Título 1", icon: <Heading1 size={15} aria-hidden />, active: toolbar.heading1, onClick: () => editor.chain().focus().toggleHeading({ level: 1 }).run() },
-      { label: "Título 2", icon: <Heading2 size={15} aria-hidden />, active: toolbar.heading2, onClick: () => editor.chain().focus().toggleHeading({ level: 2 }).run() },
-      { label: "Título 3", icon: <Heading3 size={15} aria-hidden />, active: toolbar.heading3, onClick: () => editor.chain().focus().toggleHeading({ level: 3 }).run() },
+      { label: "Deshacer", icon: <Undo2 size={15} aria-hidden />, disabled: !toolbar.canUndo, onClick: () => editor.chain().focus().undo().run() },
+      { label: "Rehacer", icon: <Redo2 size={15} aria-hidden />, disabled: !toolbar.canRedo, onClick: () => editor.chain().focus().redo().run() },
     ],
     [
       { label: "Negrita", icon: <Bold size={15} aria-hidden />, active: toolbar.bold, onClick: () => editor.chain().focus().toggleBold().run() },
       { label: "Cursiva", icon: <Italic size={15} aria-hidden />, active: toolbar.italic, onClick: () => editor.chain().focus().toggleItalic().run() },
       { label: "Subrayado", icon: <Underline size={15} aria-hidden />, active: toolbar.underline, onClick: () => editor.chain().focus().toggleUnderline().run() },
-    ],
-    [
-      { label: "Lista con viñetas", icon: <List size={15} aria-hidden />, active: toolbar.bulletList, onClick: () => editor.chain().focus().toggleBulletList().run() },
-      { label: "Lista numerada", icon: <ListOrdered size={15} aria-hidden />, active: toolbar.orderedList, onClick: () => editor.chain().focus().toggleOrderedList().run() },
-    ],
-    [
-      { label: "Cita", icon: <Quote size={15} aria-hidden />, active: toolbar.blockquote, onClick: () => editor.chain().focus().toggleBlockquote().run() },
-      { label: "Código en línea", icon: <Code size={15} aria-hidden />, active: toolbar.code, onClick: () => editor.chain().focus().toggleCode().run() },
-      { label: "Bloque de código", icon: <Code2 size={15} aria-hidden />, active: toolbar.codeBlock, onClick: () => editor.chain().focus().toggleCodeBlock().run() },
-    ],
-    [
       { label: "Insertar o editar enlace", icon: <Link2 size={15} aria-hidden />, active: toolbar.link, disabled: !toolbar.canLink, onClick: openLinkPanel },
-    ],
-    [
-      { label: "Insertar diagrama Mermaid", icon: <GitBranch size={15} aria-hidden />, onClick: insertMermaid },
-      { label: "Insertar salto de diapositiva", icon: <SeparatorHorizontal size={15} aria-hidden />, onClick: insertSlideBreak },
-    ],
-    [
-      { label: "Deshacer", icon: <Undo2 size={15} aria-hidden />, disabled: !toolbar.canUndo, onClick: () => editor.chain().focus().undo().run() },
-      { label: "Rehacer", icon: <Redo2 size={15} aria-hidden />, disabled: !toolbar.canRedo, onClick: () => editor.chain().focus().redo().run() },
     ],
   ] : [];
 
@@ -1450,26 +1459,39 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         </div>
       </header>
 
-      <div className="aula-documentos-toolbar" role="toolbar" aria-label="Formato del documento">
+      <div className="aula-documentos-toolbar" role="toolbar" aria-label="Acciones del documento">
+        <div className="aula-documentos-menubar">
+          <AulaMenu label="Archivo" actions={archiveMenuActions} />
+          <AulaMenu label="Formato" actions={formatMenuActions} disabled={!editor || readOnly} />
+          <AulaMenu label="Insertar" actions={insertMenuActions} disabled={!editor || readOnly} />
+          <AulaMenu label="Exportar" actions={exportMenuActions} />
+        </div>
         {groups.map((group, index) => (
           <div className="aula-documentos-tool-group" key={index}>
             {group.map((action) => <ToolButton action={action} key={action.label} />)}
           </div>
         ))}
-        {editor ? (
-          <div className="aula-documentos-tool-group aula-documentos-present-action">
-            <ToolButton
-              action={{
-                label: "Presentar documento",
-                icon: <MonitorPlay size={15} aria-hidden />,
-                onClick: () => { void startPresentation(); },
-                disabled: preparingPresentation || Boolean(presentation),
-              }}
-            />
-          </div>
-        ) : null}
-        <div className="aula-documentos-tool-group aula-documentos-file-actions">
-          <FileActions actions={documentFileActions} />
+        <div className="aula-documentos-desktop-actions">
+          <button
+            type="button"
+            className="aula-documentos-action-button"
+            onClick={presentAction.onClick}
+            disabled={presentAction.disabled}
+            aria-label="Presentar documento"
+          >
+            <MonitorPlay size={14} aria-hidden />
+            <span>Presentar</span>
+          </button>
+          <button
+            type="button"
+            className="aula-documentos-action-button primary"
+            onClick={saveDocumentAction.onClick}
+            disabled={saveDocumentAction.disabled}
+            aria-label="Guardar documento"
+          >
+            <Save size={14} aria-hidden />
+            <span>Guardar</span>
+          </button>
         </div>
         <div className="aula-documentos-mobile-actions" ref={actionsRef}>
           <button
@@ -2175,14 +2197,6 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
               disabled={!editor || preparingPresentation}
             >
               {preparingPresentation ? "Preparando…" : "Vista previa"}
-            </button>
-            <button
-              type="button"
-              className="aula-documentos-preview-button"
-              onClick={() => { void exportPresentation(); }}
-              disabled={!editor || exportingPresentation}
-            >
-              {exportingPresentation ? "Exportando…" : "Exportar presentación"}
             </button>
           </section>
           <section className="aula-documentos-help">
