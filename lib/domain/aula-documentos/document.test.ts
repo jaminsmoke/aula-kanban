@@ -63,6 +63,33 @@ describe("modelo de Aula Documentos", () => {
     expect(result.stats.textLength).toBe("PlanUna fuente fiable.".length);
   });
 
+  it("conserva alineación y listas de tareas", () => {
+    const result = parseAulaDocument(candidate([
+      {
+        type: "paragraph",
+        attrs: { textAlign: "center", inventado: true },
+        content: [textNode("Centrado")],
+      },
+      {
+        type: "taskList",
+        content: [{
+          type: "taskItem",
+          attrs: { checked: true },
+          content: [{ type: "paragraph", content: [textNode("Hecha")] }],
+        }],
+      },
+    ]));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const blocks = result.document.content.content ?? [];
+    expect(blocks[0].attrs).toEqual({ textAlign: "center" });
+    expect(blocks[1]).toMatchObject({
+      type: "taskList",
+      content: [{ type: "taskItem", attrs: { checked: true } }],
+    });
+  });
+
   it("normaliza enlaces y descarta protocolos peligrosos", () => {
     expect(normalizeAulaLink("example.com")).toBe("https://example.com/");
     expect(normalizeAulaLink("javascript:alert(1)")).toBeNull();

@@ -53,6 +53,33 @@ describe("exportación HTML de Aula Documentos", () => {
     expect(html).toContain("<pre><code>flowchart TD\nA --&gt; B</code></pre>");
   });
 
+  it("exporta alineación y listas de tareas", () => {
+    const document: AulaDocument = {
+      schemaVersion: 2,
+      title: "Formato",
+      content: {
+        type: "doc",
+        content: [
+          { type: "heading", attrs: { level: 2, textAlign: "center" }, content: [{ type: "text", text: "Centrado" }] },
+          {
+            type: "taskList",
+            content: [
+              { type: "taskItem", attrs: { checked: true }, content: [{ type: "paragraph", content: [{ type: "text", text: "Hecha" }] }] },
+              { type: "taskItem", attrs: { checked: false }, content: [{ type: "paragraph", content: [{ type: "text", text: "Pendiente" }] }] },
+            ],
+          },
+        ],
+      },
+    };
+    const html = buildAulaDocumentHtml(document);
+
+    expect(html).toContain("text-align: center");
+    expect(html).toContain('data-type="taskList"');
+    expect(html).toContain("Hecha");
+    expect(html).toContain("Pendiente");
+    expect(html).toContain("line-through");
+  });
+
   it("distingue un diagrama vacío de uno roto", () => {
     const document: AulaDocument = {
       schemaVersion: 2,

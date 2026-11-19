@@ -224,6 +224,29 @@ describe("Aula Documentos", () => {
     expect(screen.getByRole("button", { name: "Negrita" })).toBeTruthy();
   });
 
+  it("crea listas de tareas y conserva el formato al guardar", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    openMenu("Formato");
+    expect(screen.getByRole("menuitemcheckbox", { name: "Lista de tareas" })).toBeTruthy();
+    expect(screen.getByRole("menuitemcheckbox", { name: "Tachado" })).toBeTruthy();
+    expect(screen.getByRole("menuitemcheckbox", { name: "Centrar" })).toBeTruthy();
+    expect(screen.getByRole("menuitem", { name: "Línea horizontal" })).toBeTruthy();
+    expect(screen.getByRole("menuitem", { name: "Limpiar formato" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "Lista de tareas" }));
+
+    await waitFor(() => expect(document.querySelector('.aula-documentos-prose ul[data-type="taskList"]')).toBeTruthy());
+    openMenu("Formato");
+    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "Centrar" }));
+    await waitFor(() => expect(document.querySelector<HTMLElement>('.aula-documentos-prose p')?.style.textAlign).toBe("center"));
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
+    expect(JSON.stringify(saved.content)).toContain('"taskList"');
+    expect(JSON.stringify(saved.content)).toContain('"textAlign":"center"');
+  });
+
   it("no guarda automáticamente un documento limpio", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());

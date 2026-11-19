@@ -182,6 +182,23 @@ function parseBlocks(source: string, warnings: string[]): JSONContent[] {
       continue;
     }
 
+    if (/^[-*]\s+\[[ xX]\]\s+/.test(line)) {
+      const items: JSONContent[] = [];
+      while (index < lines.length) {
+        const item = /^[-*]\s+\[([ xX])\]\s+(.*)$/.exec(lines[index].trim());
+        if (!item) break;
+        const content = markdownInlineToNodes(item[2]);
+        items.push({
+          type: "taskItem",
+          attrs: { checked: item[1].toLowerCase() === "x" },
+          content: [{ type: "paragraph", ...(content.length ? { content } : {}) }],
+        });
+        index += 1;
+      }
+      blocks.push({ type: "taskList", content: items });
+      continue;
+    }
+
     if (/^[-*]\s+/.test(line) || /^\d+\.\s+/.test(line)) {
       const ordered = /^\d+\.\s+/.test(line);
       const itemPattern = ordered ? /^\d+\.\s+(.*)$/ : /^[-*]\s+(.*)$/;
@@ -326,6 +343,21 @@ function listToMarkdown(node: JSONContent, ordered: boolean): string {
 }
 
 /**
+ * Convierte una lista de tareas a Markdown.
+ * @param node - Nodo de lista de tareas.
+ * @returns Markdown con casillas.
+ */
+function taskListToMarkdown(node: JSONContent): string {
+  return (node.content ?? []).map((item) => {
+    const body = (item.content ?? []).map((child) => blockToMarkdown(child)).join("\n\n");
+    const marker = item.attrs?.checked === true ? "- [x] " : "- [ ] ";
+    return body.split("\n").map((line, lineIndex) => (
+      lineIndex === 0 ? `${marker}${line}` : `${" ".repeat(marker.length)}${line}`
+    )).join("\n");
+  }).join("\n");
+}
+
+/**
  * Convierte un nodo de bloque a Markdown.
  * @param node - Nodo del documento.
  * @returns Markdown del bloque.
@@ -338,6 +370,7 @@ function blockToMarkdown(node: JSONContent): string {
   }
   if (node.type === "bulletList") return listToMarkdown(node, false);
   if (node.type === "orderedList") return listToMarkdown(node, true);
+  if (node.type === "taskList") return taskListToMarkdown(node);
   if (node.type === "blockquote") {
     return (node.content ?? [])
       .map((child) => blockToMarkdown(child))

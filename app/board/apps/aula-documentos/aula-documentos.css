@@ -629,6 +629,41 @@
   padding-left:24px;
 }
 
+.aula-documentos-prose ul[data-type="taskList"] {
+  padding-left:0;
+  list-style:none;
+}
+
+.aula-documentos-prose li[data-type="taskItem"] {
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+}
+
+.aula-documentos-prose li[data-type="taskItem"] > label {
+  display:flex;
+  align-items:center;
+  flex:none;
+  padding-top:2px;
+}
+
+.aula-documentos-prose li[data-type="taskItem"] > label input {
+  width:16px;
+  height:16px;
+  margin:0;
+  accent-color:var(--doc-link);
+}
+
+.aula-documentos-prose li[data-type="taskItem"] > div {
+  flex:1 1 auto;
+  min-width:0;
+}
+
+.aula-documentos-prose li[data-type="taskItem"][data-checked="true"] > div {
+  color:var(--doc-muted);
+  text-decoration:line-through;
+}
+
 .aula-documentos-prose li + li {
   margin-top:4px;
 }

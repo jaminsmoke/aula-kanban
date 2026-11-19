@@ -91,6 +91,8 @@ const ALLOWED_NODES = new Set([
   "bulletList",
   "orderedList",
   "listItem",
+  "taskList",
+  "taskItem",
   "blockquote",
   "codeBlock",
   "hardBreak",
@@ -100,6 +102,7 @@ const ALLOWED_NODES = new Set([
 ]);
 
 const ALLOWED_MARKS = new Set(["bold", "italic", "underline", "strike", "code", "link"]);
+const ALLOWED_TEXT_ALIGNMENTS = new Set(["left", "center", "right", "justify"]);
 
 class DocumentValidationError extends Error {
   constructor(
@@ -181,6 +184,16 @@ function normalizeMarks(value: unknown): NonNullable<JSONContent["marks"]> | nul
     });
   }
   return marks;
+}
+
+/**
+ * Normaliza la alineación de un nodo de texto.
+ * @param attrs - Atributos del nodo.
+ * @returns La alineación admitida o `null`.
+ */
+function normalizeTextAlign(attrs: Record<string, unknown>): string | null {
+  const value = attrs.textAlign;
+  return typeof value === "string" && ALLOWED_TEXT_ALIGNMENTS.has(value) ? value : null;
 }
 
 /**
@@ -274,6 +287,25 @@ function normalizeNode(value: unknown, context: ValidationContext, depth: number
     throw new DocumentValidationError("invalid-content", "El contenido del documento no es válido.");
   }
 
+  if (node.type === "paragraph") {
+    const attrs = typeof node.attrs === "object" && node.attrs !== null
+      ? node.attrs as Record<string, unknown>
+      : {};
+    const textAlign = normalizeTextAlign(attrs);
+    return {
+      type: "paragraph",
+      ...(textAlign ? { attrs: { textAlign } } : {}),
+      content,
+    };
+  }
+
+  if (node.type === "taskItem") {
+    const attrs = typeof node.attrs === "object" && node.attrs !== null
+      ? node.attrs as Record<string, unknown>
+      : {};
+    return { type: "taskItem", attrs: { checked: attrs.checked === true }, content };
+  }
+
   if (node.type === "heading") {
     const attrs = typeof node.attrs === "object" && node.attrs !== null
       ? node.attrs as Record<string, unknown>
@@ -282,7 +314,12 @@ function normalizeNode(value: unknown, context: ValidationContext, depth: number
     if (level !== 1 && level !== 2 && level !== 3) {
       throw new DocumentValidationError("invalid-content", "El documento contiene un título de nivel no válido.");
     }
-    return { type: "heading", attrs: { level }, content };
+    const textAlign = normalizeTextAlign(attrs);
+    return {
+      type: "heading",
+      attrs: { level, ...(textAlign ? { textAlign } : {}) },
+      content,
+    };
   }
 
   if (node.type === "codeBlock") {

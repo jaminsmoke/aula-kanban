@@ -85,4 +85,46 @@ describe("Markdown de Aula Documentos", () => {
     expect(JSON.stringify(parsed.document.content)).toContain("fuerte");
     expect(JSON.stringify(parsed.document.content)).toContain("https://example.com/");
   });
+
+  it("exporta e importa listas de tareas y líneas horizontales", () => {
+    const document: AulaDocument = {
+      schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
+      title: "Tareas",
+      content: {
+        type: "doc",
+        content: [
+          {
+            type: "taskList",
+            content: [
+              { type: "taskItem", attrs: { checked: true }, content: [{ type: "paragraph", content: [{ type: "text", text: "Hecha" }] }] },
+              { type: "taskItem", attrs: { checked: false }, content: [{ type: "paragraph", content: [{ type: "text", text: "Pendiente" }] }] },
+            ],
+          },
+          { type: "horizontalRule" },
+        ],
+      },
+    };
+    const markdown = documentToMarkdown(document);
+    expect(markdown).toContain("- [x] Hecha");
+    expect(markdown).toContain("- [ ] Pendiente");
+    expect(markdown).toContain("---");
+
+    const converted = markdownToDocument(markdown, { stripTitleHeading: true });
+    const parsed = parseAulaDocument({
+      schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
+      title: converted.title,
+      content: converted.content,
+    });
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    const blocks = parsed.document.content.content ?? [];
+    expect(blocks[0]).toMatchObject({
+      type: "taskList",
+      content: [
+        { type: "taskItem", attrs: { checked: true } },
+        { type: "taskItem", attrs: { checked: false } },
+      ],
+    });
+    expect(blocks[1]).toEqual({ type: "horizontalRule" });
+  });
 });

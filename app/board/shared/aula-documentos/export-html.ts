@@ -182,6 +182,12 @@ export function buildAulaPresentationHtml(
   h1 { font-size: 2.4rem; } h2 { font-size: 1.9rem; } h3 { font-size: 1.4rem; }
   p, li { font-size: 1.05rem; }
   ul, ol { padding-left: 1.4em; }
+  ul[data-type="taskList"] { padding-left: 0; list-style: none; }
+  li[data-type="taskItem"] { display: flex; align-items: flex-start; gap: .5em; }
+  li[data-type="taskItem"] > label { flex: none; display: flex; align-items: center; padding-top: .2em; }
+  li[data-type="taskItem"] > label input { width: 1em; height: 1em; margin: 0; accent-color: ${palette.muted}; }
+  li[data-type="taskItem"] > div { flex: 1 1 auto; min-width: 0; }
+  li[data-type="taskItem"][data-checked="true"] > div { color: ${palette.muted}; text-decoration: line-through; }
   blockquote { margin: 1em 0; padding-left: 1em; border-left: 3px solid ${palette.muted}; color: ${palette.muted}; }
   code { padding: .15em .35em; border-radius: 4px; background: ${palette.code}; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
   pre { overflow: auto; padding: 1em; border-radius: 8px; background: ${palette.code}; }
@@ -239,6 +245,12 @@ export function buildAulaDocumentHtml(
   h3 { margin-top: 1.5em; font-size: 1.1rem; }
   p { margin: 0.8em 0; }
   ul, ol { padding-left: 1.5em; }
+  ul[data-type="taskList"] { padding-left: 0; list-style: none; }
+  li[data-type="taskItem"] { display: flex; align-items: flex-start; gap: .5em; }
+  li[data-type="taskItem"] > label { flex: none; display: flex; align-items: center; padding-top: .2em; }
+  li[data-type="taskItem"] > label input { width: 1em; height: 1em; margin: 0; accent-color: #5839be; }
+  li[data-type="taskItem"] > div { flex: 1 1 auto; min-width: 0; }
+  li[data-type="taskItem"][data-checked="true"] > div { color: #625c74; text-decoration: line-through; }
   li + li { margin-top: .3em; }
   blockquote { margin: 1.2em 0; padding: .4em 0 .4em 1em; border-left: 3px solid #5839be; color: #4a4458; font-style: italic; }
   code { padding: .15em .35em; border-radius: 4px; background: #f1eff8; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .92em; }

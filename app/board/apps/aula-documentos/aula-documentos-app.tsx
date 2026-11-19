@@ -3,11 +3,16 @@
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import type { Editor } from "@tiptap/core";
 import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
   Bold,
   Code,
   Code2,
   Download,
   Ellipsis,
+  Eraser,
   FileDown,
   FilePenLine,
   FilePlus2,
@@ -20,8 +25,10 @@ import {
   Italic,
   Link2,
   List,
+  ListChecks,
   ListOrdered,
   Loader2,
+  Minus,
   MonitorPlay,
   NotebookPen,
   Pilcrow,
@@ -31,6 +38,7 @@ import {
   Redo2,
   Save,
   SeparatorHorizontal,
+  Strikethrough,
   Underline,
   Undo2,
   Upload,
@@ -108,12 +116,18 @@ type ToolbarState = {
   bold: boolean;
   italic: boolean;
   underline: boolean;
+  strike: boolean;
   bulletList: boolean;
   orderedList: boolean;
+  taskList: boolean;
   blockquote: boolean;
   code: boolean;
   codeBlock: boolean;
   link: boolean;
+  alignLeft: boolean;
+  alignCenter: boolean;
+  alignRight: boolean;
+  alignJustify: boolean;
   canLink: boolean;
   canUndo: boolean;
   canRedo: boolean;
@@ -127,12 +141,18 @@ const EMPTY_TOOLBAR_STATE: ToolbarState = {
   bold: false,
   italic: false,
   underline: false,
+  strike: false,
   bulletList: false,
   orderedList: false,
+  taskList: false,
   blockquote: false,
   code: false,
   codeBlock: false,
   link: false,
+  alignLeft: false,
+  alignCenter: false,
+  alignRight: false,
+  alignJustify: false,
   canLink: false,
   canUndo: false,
   canRedo: false,
@@ -457,12 +477,18 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         bold: current.isActive("bold"),
         italic: current.isActive("italic"),
         underline: current.isActive("underline"),
+        strike: current.isActive("strike"),
         bulletList: current.isActive("bulletList"),
         orderedList: current.isActive("orderedList"),
+        taskList: current.isActive("taskList"),
         blockquote: current.isActive("blockquote"),
         code: current.isActive("code"),
         codeBlock: current.isActive("codeBlock"),
         link: current.isActive("link"),
+        alignLeft: current.isActive({ textAlign: "left" }),
+        alignCenter: current.isActive({ textAlign: "center" }),
+        alignRight: current.isActive({ textAlign: "right" }),
+        alignJustify: current.isActive({ textAlign: "justify" }),
         canLink: !current.state.selection.empty || current.isActive("link"),
         canUndo: current.can().undo(),
         canRedo: current.can().redo(),
@@ -1405,9 +1431,17 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     { label: "Título 3", icon: <Heading3 size={15} aria-hidden />, active: toolbar.heading3, shortcut: "Ctrl+Alt+3", onSelect: () => editor.chain().focus().toggleHeading({ level: 3 }).run() },
     { label: "Lista con viñetas", icon: <List size={15} aria-hidden />, active: toolbar.bulletList, onSelect: () => editor.chain().focus().toggleBulletList().run() },
     { label: "Lista numerada", icon: <ListOrdered size={15} aria-hidden />, active: toolbar.orderedList, onSelect: () => editor.chain().focus().toggleOrderedList().run() },
+    { label: "Lista de tareas", icon: <ListChecks size={15} aria-hidden />, active: toolbar.taskList, onSelect: () => editor.chain().focus(undefined, { scrollIntoView: false }).toggleTaskList().run() },
     { label: "Cita", icon: <Quote size={15} aria-hidden />, active: toolbar.blockquote, onSelect: () => editor.chain().focus().toggleBlockquote().run() },
     { label: "Código en línea", icon: <Code size={15} aria-hidden />, active: toolbar.code, onSelect: () => editor.chain().focus().toggleCode().run() },
     { label: "Bloque de código", icon: <Code2 size={15} aria-hidden />, active: toolbar.codeBlock, onSelect: () => editor.chain().focus().toggleCodeBlock().run() },
+    { label: "Tachado", icon: <Strikethrough size={15} aria-hidden />, active: toolbar.strike, onSelect: () => editor.chain().focus().toggleStrike().run() },
+    { label: "Alinear a la izquierda", icon: <AlignLeft size={15} aria-hidden />, active: toolbar.alignLeft, onSelect: () => editor.chain().focus(undefined, { scrollIntoView: false }).setTextAlign("left").run() },
+    { label: "Centrar", icon: <AlignCenter size={15} aria-hidden />, active: toolbar.alignCenter, onSelect: () => editor.chain().focus(undefined, { scrollIntoView: false }).setTextAlign("center").run() },
+    { label: "Alinear a la derecha", icon: <AlignRight size={15} aria-hidden />, active: toolbar.alignRight, onSelect: () => editor.chain().focus(undefined, { scrollIntoView: false }).setTextAlign("right").run() },
+    { label: "Justificar", icon: <AlignJustify size={15} aria-hidden />, active: toolbar.alignJustify, onSelect: () => editor.chain().focus(undefined, { scrollIntoView: false }).setTextAlign("justify").run() },
+    { label: "Línea horizontal", icon: <Minus size={15} aria-hidden />, onSelect: () => editor.chain().focus(undefined, { scrollIntoView: false }).setHorizontalRule().run() },
+    { label: "Limpiar formato", icon: <Eraser size={15} aria-hidden />, onSelect: () => editor.chain().focus(undefined, { scrollIntoView: false }).unsetAllMarks().clearNodes().run() },
   ] : [];
 
   const insertMenuActions: AulaMenuAction[] = editor && !readOnly ? [

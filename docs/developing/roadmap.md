@@ -74,11 +74,11 @@
 
 ### Fase 3 — Acciones nuevas y serialización
 
-- [ ] Añadir tachado, línea horizontal y limpiar formato con las capacidades actuales de StarterKit.
-- [ ] Evaluar e incorporar alineación y listas de tareas con las extensiones oficiales de Tiptap 3.34.0.
-- [ ] Extender el Markdown y la exportación HTML para tachado, línea horizontal y listas de tareas; documentar la limitación de alineación en Markdown.
-- [ ] Revisar el impacto en el bundle y el presupuesto de rendimiento.
-- [ ] Cubrir con pruebas guardado, recarga, HTML, impresión y Markdown.
+- [x] Añadir tachado, línea horizontal y limpiar formato con las capacidades actuales de StarterKit.
+- [x] Evaluar e incorporar alineación y listas de tareas con las extensiones oficiales de Tiptap 3.34.0.
+- [x] Extender el Markdown y la exportación HTML para tachado, línea horizontal y listas de tareas; documentar la limitación de alineación en Markdown.
+- [x] Revisar el impacto en el bundle y el presupuesto de rendimiento.
+- [x] Cubrir con pruebas guardado, recarga, HTML, impresión y Markdown.
 - **Criterios de aceptación:**
   - Las acciones nuevas se guardan y vuelven a cargar sin perder formato.
   - HTML e impresión conservan todas las acciones.
@@ -116,3 +116,4 @@
 - No se abordan tablas, imágenes ni buscar/reemplazar. La barra debe seguir funcionando con el guardado condicional y la recuperación de ADOC-07.
 - 2026-11-19: Fase 1 completada. La barra usa menús reutilizables Archivo, Formato, Insertar y Exportar, un grupo directo de deshacer/rehacer, B/I/U/enlace, y botones etiquetados Presentar y Guardar. Se eliminó la exportación de presentación duplicada del panel lateral. Los menús no atrapan el foco, cierran con Escape, Tab o clic fuera y recorren acciones con flechas. Verificado a 900, 1024 y 1366 px sin scroll horizontal y en 390/620 px con la barra existente. 50 pruebas focalizadas y 202 archivos / 1.437 pruebas; `tsc` y ESLint en verde.
 - 2026-11-19: Fase 2 completada. En contenedores estrechos la barra directa y el menú de escritorio se ocultan; aparecen «Formato» y «Acciones» con objetivos de 44 px y etiquetas visibles. El menú de formato incluye formato y acciones frecuentes; Acciones mantiene archivo, inserción, presentación y exportación. Escape devuelve el foco al disparador y el menú de formato reutiliza la navegación por flechas. Verificado a 390, 620 y 900 px sin scroll horizontal. 52 pruebas focalizadas y 203 archivos / 1.439 pruebas; `tsc` y ESLint en verde.
+- 2026-11-19: Fase 3 completada. Se añadieron tachado, línea horizontal y limpiar formato; alineación y listas de tareas usan `@tiptap/extension-text-align`, `@tiptap/extension-task-list` y `@tiptap/extension-task-item` 3.34.0. El validador conserva `textAlign`, `taskList`, `taskItem` y `checked`; Markdown importa/exporta listas de tareas y líneas, y HTML/impresión incluyen las casillas y la alineación. El presupuesto de rendimiento sigue correcto. 70 pruebas focalizadas y 203 archivos / 1.443 pruebas; `tsc`, ESLint y build en verde.
