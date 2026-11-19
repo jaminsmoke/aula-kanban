@@ -104,7 +104,7 @@ La tabla de versiones por app está en [`integradas.md#versiones-por-app`](integ
 
 Las trece apps actuales (Ajedrez **STORE-06**, Física 2D **STORE-07**, Geometría interactiva **STORE-08**, Tarjetas de repaso **STORE-09**, Mapas conceptuales **STORE-10**, Moléculas 3D **STORE-12**, Líneas de tiempo **STORE-13**, Hoja de cálculo **STORE-14** y Aula Documentos **STORE-17**, además de las cinco iniciales) ya están integradas. Presentaciones, Notas y documentos y Visor Office se absorbieron en Aula Documentos con ADOC-13.
 
-No hay roadmap activo. En el backlog quedan **STORE-18** (fichas de producto para apps-suites) y **DEV-01** (evaluación de pnpm, fuera del catálogo de apps). ADOC-13 y los roadmaps anteriores están completados. El resto de candidatas sigue documentado por categorías, sin entrada hasta que se prioricen.
+STORE-18 está activo para las fichas de producto de apps-suites. En el backlog queda **DEV-01** (evaluación de pnpm, fuera del catálogo de apps). ADOC-13 y los roadmaps anteriores están completados. El resto de candidatas sigue documentado por categorías, sin entrada hasta que se prioricen.
 
 ## Cómo reverificar una licencia
 
