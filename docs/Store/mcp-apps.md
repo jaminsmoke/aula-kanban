@@ -219,7 +219,7 @@ reglas de cada app.
 
 ## Referencias
 
-- [`roadmap.md`](../developing/roadmap.md): ADOC-08 activo, lienzo editorial y tema.
+- [`roadmap.md`](../developing/roadmap.md): plantilla del próximo roadmap.
 - [`changelog.md`](../developing/changelog.md): resumen de los roadmaps MCP-05B, MCP-05D y
   MCP-05E.
 - [`backlog.md`](../developing/backlog.md): ADOC-09 a ADOC-11, Hoja de cálculo y

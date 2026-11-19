@@ -1,8 +1,35 @@
 ﻿# Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-08 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-19 — Roadmap ADOC-08 · Lienzo editorial y tema
+
+**Estado:** Completada · Sin publicación
+
+### Cambios
+
+- `globals.css` incorpora tokens `--doc-*` para papel, tinta, texto secundario, bordes, código, Mermaid, acciones, errores y selección. No se sobrescriben en tema oscuro.
+- Aula Documentos y Notas usan una hoja blanca estable en los temas Aula, Claro y Oscuro; el marco de la app sigue el tema de la interfaz.
+- Títulos, formato rico, enlaces, citas, listas, código, selección, foco y placeholders usan el lienzo claro.
+- El bloque Mermaid, su editor, controles, zoom, estados y errores usan superficies claras. El SVG conserva las variables claras del renderizador.
+- La app heredada Presentaciones usa lienzo claro en tarjetas y modo presentación. Los temas Aula, Claro y Oscuro de Aula Documentos no cambian.
+- La exportación HTML y la impresión mantienen fondo blanco; se añadieron pruebas de regresión.
+- La ayuda no mencionaba el tema del papel, así que no necesitó cambios.
+
+### Verificación
+
+- Aula Documentos y Notas revisados en tema oscuro y claro a 390, 620, 900, 1024 y 1366 px; la hoja permanece blanca, la tinta oscura y no hay scroll horizontal.
+- Mermaid revisado en tema oscuro con un diagrama insertado temporalmente; el documento se restauró después.
+- Suite completa: **201 archivos / 1.433 pruebas**; `tsc`, ESLint, build y `perf:budget` correctos.
+- Commits: `7b938c7` (Fase 1), `c8d27da` (Fase 2), `4750f4f` (Fase 3) y este commit de cierre. Push único a `github main`; sin publicación en Sites.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-09, ADOC-10, ADOC-11, Hoja de cálculo y DEV-01**. El plan completo está en [`historial/roadmap-adoc-08.md`](../historial/roadmap-adoc-08.md).
 
 ---
 
