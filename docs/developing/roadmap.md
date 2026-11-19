@@ -48,11 +48,11 @@
 
 ### Fase 1 — Inventario de paridad y decisiones
 
-- [ ] Comparar funciones de Notas y documentos, Diagramas, Presentaciones y Visor Office con Aula Documentos.
-- [ ] Identificar huecos: editor Markdown de presentaciones, plantillas, exportación SVG por diagrama, apertura libre de Office, formatos y atajos.
-- [ ] Mapear estados de `app_documents`, rutas, IDs de ventana, permisos, MCP y enlaces profundos.
-- [ ] Decidir qué funciones pasan a Aula Documentos, cuáles se amplían y cuáles se retiran.
-- [ ] Documentar la matriz de paridad y el plan de reversión.
+- [x] Comparar funciones de Notas y documentos, Diagramas, Presentaciones y Visor Office con Aula Documentos.
+- [x] Identificar huecos: editor Markdown de presentaciones, plantillas, exportación SVG por diagrama, apertura libre de Office, formatos y atajos.
+- [x] Mapear estados de `app_documents`, rutas, IDs de ventana, permisos, MCP y enlaces profundos.
+- [x] Decidir qué funciones pasan a Aula Documentos, cuáles se amplían y cuáles se retiran.
+- [x] Documentar la matriz de paridad y el plan de reversión.
 - **Criterios de aceptación:**
   - Cada función de las cuatro apps tiene una decisión: absorbida, ampliada o descartada.
   - No se retira ninguna app antes de completar la matriz.
@@ -126,3 +126,4 @@
 - STORE-18 queda en el backlog para la ficha reutilizable de apps-suites; ADOC-13 solo actualiza lo mínimo necesario.
 - No se mueven raíces de apps ni se borran datos durante las primeras fases.
 - El Site sigue en `1.1.36`; no se publica nada desde este roadmap.
+- 2026-11-19: Fase 1 completada. Matriz de paridad y mapa de compatibilidad en [`docs/Store/apps/document-suite.md`](../../Store/apps/document-suite.md). Notas y documentos no tiene huecos funcionales; Diagramas necesita plantillas, Gantt guiado, detalle de errores, zoom/paneo y SVG por bloque; Presentaciones necesita edición Markdown de origen y plantillas; Visor Office necesita apertura libre de DOCX/XLSX/PPTX desde Aula Documentos. Mapeados `app_documents`, IDs, URLs, permisos, catálogo y los tres tools MCP de Diagramas. Ninguna app retirada ni dato borrado. No se ejecutan checks de código porque la fase es documental; se registra un commit local de la fase.

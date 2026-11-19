@@ -9,6 +9,7 @@
 | [`apps/README.md`](Store/apps/README.md) | Catálogo de apps nativas: criterios, integración, versiones y candidatas por categoría | Temático |
 | [`apps/integradas.md`](Store/apps/integradas.md) | Apps integradas y versiones por app | Temático |
 | [`apps/office.md`](Store/apps/office.md) | Matriz de fidelidad y límites de Office en Aula Documentos | Temático |
+| [`apps/document-suite.md`](Store/apps/document-suite.md) | Paridad y compatibilidad de la suite documental (ADOC-13) | Temático |
 | [`mcp-apps.md`](Store/mcp-apps.md) | Cobertura MCP, permisos y límites de las apps nativas | Temático |
 | [`matriz-herramientas.md`](Store/matriz-herramientas.md) | Matriz de APP-01: audiencia, alcance, colaboración y acciones | Temático |
 | [`matriz-permisos.md`](Store/matriz-permisos.md) | Matriz de PERM-01: capacidades con ámbito, roles y concesiones | Temático |

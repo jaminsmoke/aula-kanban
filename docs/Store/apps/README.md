@@ -3,13 +3,15 @@
 Lista viva de las aplicaciones nativas de Aula Kanban: qué está integrado, qué es
 candidato y qué se ha descartado, con la licencia y la versión comprobadas en npm.
 
-Última verificación: **2026-11-18**.
+Última verificación: **2026-11-19**.
 
 ## Índice
 
 | Documento | Contenido |
 |---|---|
 | [`integradas.md`](integradas.md) | Apps integradas, versiones y transición de datos |
+| [`office.md`](office.md) | Matriz de fidelidad y límites de Office en Aula Documentos |
+| [`document-suite.md`](document-suite.md) | Paridad y compatibilidad de la suite documental |
 | [`candidatas-aula-evaluacion.md`](candidatas-aula-evaluacion.md) | Evaluación y repaso |
 | [`candidatas-stem-ciencias.md`](candidatas-stem-ciencias.md) | Ciencia, matemáticas y sonido |
 | [`candidatas-diagramas-documentos.md`](candidatas-diagramas-documentos.md) | Diagramas, documentos y productividad |
