@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useWindowAttemptClose, WindowCloseProvider } from "../../shared/window-close-guard";
 import type { VersionedSaveResult } from "../use-app-document";
@@ -12,6 +12,10 @@ const documentMock = vi.hoisted(() => ({
   })),
 }));
 
+const rendererMock = vi.hoisted(() => ({
+  render: vi.fn(async (_code: string) => "<svg />"),
+}));
+
 vi.mock("../use-app-document", () => ({
   useAppDocument: () => ({
     load: documentMock.load,
@@ -23,7 +27,7 @@ vi.mock("../use-app-document", () => ({
 }));
 
 vi.mock("./mermaid-render", () => ({
-  createMermaidRenderer: () => ({ render: async () => "<svg />" }),
+  createMermaidRenderer: () => ({ render: rendererMock.render }),
 }));
 
 describe("Diagramas", () => {
@@ -32,10 +36,11 @@ describe("Diagramas", () => {
     window.localStorage.clear();
     documentMock.load.mockResolvedValue({ state: null, updatedAt: null });
     documentMock.saveVersioned.mockResolvedValue({ status: "saved", updatedAt: 10 });
+    rendererMock.render.mockResolvedValue("<svg />");
   });
 
   it("monta el editor, la vista previa y las acciones", async () => {
-    render(<MermaidApp projectId="p1" role="owner" />);
+    const { container } = render(<MermaidApp projectId="p1" role="owner" />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Guardar" }).hasAttribute("disabled")).toBe(false));
 
     expect(screen.getByLabelText("Código del diagrama")).toBeTruthy();
@@ -43,6 +48,26 @@ describe("Diagramas", () => {
     expect(screen.getByRole("button", { name: "Exportar SVG" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Limpiar" })).toBeTruthy();
     expect(screen.getByText("Vista previa")).toBeTruthy();
+    expect(container.querySelectorAll(".mermaid-line-numbers span").length).toBeGreaterThan(1);
+    expect(container.querySelector(".mermaid-highlight")?.textContent).toContain("flowchart TD");
+  });
+
+  it("muestra el detalle del error y permite saltar a su línea", async () => {
+    render(<MermaidApp projectId="p1" role="owner" />);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Guardar" }).hasAttribute("disabled")).toBe(false));
+    rendererMock.render.mockRejectedValueOnce(new Error("Parse error on line 2:\nExpecting NODE_STRING"));
+
+    fireEvent.change(screen.getByLabelText("Código del diagrama"), { target: { value: "graph TD\nA -->" } });
+
+    expect(await screen.findByRole("region", { name: "Detalle del error" })).toBeTruthy();
+    const detail = screen.getByRole("region", { name: "Detalle del error" });
+    expect(within(detail).getByText(/No se pudo dibujar el diagrama \(línea 2\)/)).toBeTruthy();
+    expect(within(detail).getByText(/Expecting NODE_STRING/)).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Ir a la línea 2" }));
+    const textarea = screen.getByLabelText("Código del diagrama") as HTMLTextAreaElement;
+    expect(document.activeElement).toBe(textarea);
+    expect(textarea.selectionStart).toBeGreaterThan(0);
   });
 
   it("guarda con versión y muestra el estado en la barra", async () => {

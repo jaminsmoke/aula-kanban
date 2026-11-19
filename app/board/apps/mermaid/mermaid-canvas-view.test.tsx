@@ -44,7 +44,8 @@ describe("vista interactiva de Diagramas", () => {
 
     fireEvent.keyDown(document, { key: "Escape" });
     await waitFor(() => expect(screen.queryByRole("button", { name: "Salir de pantalla completa" })).toBeNull());
-    expect(screen.getByText("100%")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Pantalla completa" })).toBeTruthy();
+    expect(screen.getByRole("region", { name: "Lienzo del diagrama" })).toBeTruthy();
   });
 
   it("deja el lienzo vacío cuando no hay SVG", () => {

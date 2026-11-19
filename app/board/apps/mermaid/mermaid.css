@@ -27,9 +27,41 @@
 
 .mermaid-editor-label { flex:none; padding:8px 12px; color:var(--ui-text-muted); font-size:11px; font-weight:750; letter-spacing:.06em; text-transform:uppercase; }
 
-.mermaid-editor textarea { flex:1 1 auto; min-height:0; width:100%; padding:12px 14px; border:0; background:transparent; color:var(--ui-text-primary); font:13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; resize:none; tab-size:2; }
+.mermaid-editor-body { flex:1 1 auto; min-width:0; min-height:0; display:flex; }
+
+.mermaid-line-numbers { flex:none; width:38px; min-height:0; overflow:hidden; padding:12px 8px 12px 4px; border-right:var(--border-width-hairline) solid var(--ui-border-subtle); color:var(--ui-text-muted); font:13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-align:right; user-select:none; }
+
+.mermaid-line-numbers span { display:block; height:1.55em; }
+
+.mermaid-line-numbers span.is-error { color:var(--ui-danger-ink); background:var(--ui-danger-soft); font-weight:750; }
+
+.mermaid-editor-code { position:relative; flex:1 1 auto; min-width:0; min-height:0; }
+
+.mermaid-highlight { position:absolute; inset:0; margin:0; padding:12px 14px; overflow:hidden; pointer-events:none; color:var(--ui-text-primary); font:13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space:pre; tab-size:2; }
+
+.mermaid-highlight code { font:inherit; white-space:inherit; }
+
+.mermaid-token-comment { color:var(--ui-text-muted); font-style:italic; }
+.mermaid-token-keyword { color:var(--ui-action-text); font-weight:650; }
+.mermaid-token-string { color:var(--ui-success); }
+.mermaid-token-arrow { color:var(--ui-warning-ink); }
+.mermaid-token-number { color:var(--ui-info-ink); }
+
+.mermaid-editor textarea { position:absolute; inset:0; width:100%; height:100%; min-height:0; padding:12px 14px; border:0; background:transparent; color:transparent; -webkit-text-fill-color:transparent; caret-color:var(--ui-text-primary); font:13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; resize:none; white-space:pre; tab-size:2; overflow:auto; }
+
+.mermaid-editor textarea::selection { background:color-mix(in srgb, var(--ui-action-soft) 65%, transparent); color:transparent; }
 
 .mermaid-editor textarea:focus-visible { outline:none; box-shadow:inset 0 0 0 2px var(--ui-glow-primary-faint); }
+
+.mermaid-error-detail { flex:none; max-height:42%; overflow:auto; padding:8px 12px 10px; border-top:var(--border-width-hairline) solid var(--doc-danger-border); background:var(--doc-danger-surface); color:var(--doc-danger-ink); font-size:11.5px; line-height:1.45; }
+
+.mermaid-error-detail p { margin:0 0 5px; font-weight:700; }
+
+.mermaid-error-detail pre { max-height:80px; margin:0 0 7px; overflow:auto; white-space:pre-wrap; font:11px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+.mermaid-error-detail button { padding:4px 8px; border:var(--border-width-hairline) solid var(--doc-danger-border); border-radius:var(--radius-xs); background:var(--doc-control-surface); color:var(--doc-danger-ink); font:inherit; font-weight:700; cursor:pointer; }
+
+.mermaid-error-detail button:focus-visible { outline:var(--border-width-strong) solid var(--doc-focus); outline-offset:1px; }
 
 .mermaid-preview { flex:1 1 auto; min-width:0; min-height:0; display:flex; flex-direction:column; position:relative; }
 

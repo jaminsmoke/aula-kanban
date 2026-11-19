@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { formatMermaidError, type MermaidErrorInfo } from "../../shared/aula-documentos/mermaid-error";
 import { createMermaidRenderer } from "./mermaid-render";
 
 /**
@@ -11,7 +12,7 @@ import { createMermaidRenderer } from "./mermaid-render";
 export function useMermaidPreview(initialCode: string) {
   const [code, setCode] = useState(initialCode);
   const [svg, setSvg] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<MermaidErrorInfo | null>(null);
   const [renderer] = useState(createMermaidRenderer);
 
   // Vista previa con retardo mientras se escribe.
@@ -24,7 +25,7 @@ export function useMermaidPreview(initialCode: string) {
         setError(null);
       }).catch((caught: unknown) => {
         if (cancelled) return;
-        setError(caught instanceof Error ? caught.message.split("\n")[0] : "No se pudo dibujar el diagrama.");
+        setError(formatMermaidError(caught));
       });
     }, 350);
     return () => { cancelled = true; window.clearTimeout(timer); };

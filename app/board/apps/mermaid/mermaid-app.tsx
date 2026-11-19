@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type UIEvent } from "react";
 import type { StoreRole } from "../types";
 import { useVersionedDraft } from "../use-versioned-draft";
 import { useWindowClose } from "../../shared/window-close-guard";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import { useMermaidPreview } from "./use-mermaid-preview";
 import MermaidCanvasView from "./mermaid-canvas-view";
+import { tokenizeMermaidLine } from "./mermaid-highlight";
 import { mermaidFileName } from "./mermaid-filename";
 import VersionConflictDialog from "../version-conflict-dialog";
 import UnsavedChangesDialog from "../unsaved-changes-dialog";
@@ -25,6 +26,8 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
   const statusTimer = useRef<number | null>(null);
   const fallbackChecked = useRef(false);
   const editor = useRef<HTMLTextAreaElement>(null);
+  const highlightRef = useRef<HTMLPreElement>(null);
+  const gutterRef = useRef<HTMLDivElement>(null);
   const readOnly = role === "guest";
   const forceClose = useWindowClose();
 
@@ -146,6 +149,28 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
 
   const statusText = flashStatus || draft.error || draft.status;
   const busy = draft.loading || draft.saving;
+  const lines = useMemo(() => code.split("\n"), [code]);
+  const highlightedLines = useMemo(() => lines.map(tokenizeMermaidLine), [lines]);
+  const errorLine = error?.line ?? null;
+
+  function syncEditorScroll(event: UIEvent<HTMLTextAreaElement>) {
+    const { scrollTop, scrollLeft } = event.currentTarget;
+    if (gutterRef.current) gutterRef.current.scrollTop = scrollTop;
+    if (highlightRef.current) {
+      highlightRef.current.scrollTop = scrollTop;
+      highlightRef.current.scrollLeft = scrollLeft;
+    }
+  }
+
+  function jumpToLine(line: number) {
+    const target = editor.current;
+    if (!target) return;
+    const index = Math.max(0, Math.min(lines.length - 1, line - 1));
+    const start = lines.slice(0, index).reduce((total, text) => total + text.length + 1, 0);
+    const end = start + lines[index].length;
+    target.focus();
+    target.setSelectionRange(start, end);
+  }
 
   return (
     <div className="mermaid-app">
@@ -179,34 +204,68 @@ export default function MermaidApp({ projectId, role }: { projectId: string; rol
       <div className="mermaid-body">
         <div className="mermaid-editor">
           <label className="mermaid-editor-label" htmlFor="mermaid-code">Código del diagrama</label>
-          <textarea
-            id="mermaid-code"
-            ref={editor}
-            value={code}
-            spellCheck={false}
-            readOnly={readOnly}
-            onChange={(event) => {
-              if (readOnly) return;
-              setCode(event.target.value);
-              draft.markDirty("Diagrama modificado.");
-            }}
-            onKeyDown={(event) => {
-              if (event.key !== "Tab" || readOnly) return;
-              event.preventDefault();
-              const target = event.currentTarget;
-              const start = target.selectionStart;
-              const end = target.selectionEnd;
-              const next = `${code.slice(0, start)}  ${code.slice(end)}`;
-              setCode(next);
-              draft.markDirty("Diagrama modificado.");
-              window.requestAnimationFrame(() => {
-                editor.current?.setSelectionRange(start + 2, start + 2);
-              });
-            }}
-          />
+          <div className="mermaid-editor-body">
+            <div className="mermaid-line-numbers" ref={gutterRef} aria-hidden>
+              {lines.map((_, index) => (
+                <span key={index} className={index + 1 === errorLine ? "is-error" : undefined}>{index + 1}</span>
+              ))}
+            </div>
+            <div className="mermaid-editor-code">
+              <pre ref={highlightRef} className="mermaid-highlight" aria-hidden>
+                <code>
+                  {highlightedLines.map((tokens, index) => (
+                    <span className="mermaid-highlight-line" key={index}>
+                      {tokens.map((token, tokenIndex) => (
+                        <span className={`mermaid-token mermaid-token-${token.kind}`} key={tokenIndex}>{token.text}</span>
+                      ))}
+                      {index < lines.length - 1 ? "\n" : null}
+                    </span>
+                  ))}
+                </code>
+              </pre>
+              <textarea
+                id="mermaid-code"
+                ref={editor}
+                value={code}
+                spellCheck={false}
+                readOnly={readOnly}
+                wrap="off"
+                onScroll={syncEditorScroll}
+                onChange={(event) => {
+                  if (readOnly) return;
+                  setCode(event.target.value);
+                  draft.markDirty("Diagrama modificado.");
+                }}
+                onKeyDown={(event) => {
+                  if (event.key !== "Tab" || readOnly) return;
+                  event.preventDefault();
+                  const target = event.currentTarget;
+                  const start = target.selectionStart;
+                  const end = target.selectionEnd;
+                  const next = `${code.slice(0, start)}  ${code.slice(end)}`;
+                  setCode(next);
+                  draft.markDirty("Diagrama modificado.");
+                  window.requestAnimationFrame(() => {
+                    editor.current?.setSelectionRange(start + 2, start + 2);
+                  });
+                }}
+              />
+            </div>
+          </div>
+          {error ? (
+            <section className="mermaid-error-detail" role="region" aria-label="Detalle del error">
+              <p>{error.summary}</p>
+              <pre>{error.detail}</pre>
+              {error.line ? (
+                <button type="button" onClick={() => jumpToLine(error.line!)}>
+                  Ir a la línea {error.line}
+                </button>
+              ) : null}
+            </section>
+          ) : null}
         </div>
 
-        <MermaidCanvasView key={svg} svg={svg} error={error} />
+        <MermaidCanvasView key={svg} svg={svg} error={error?.summary ?? null} />
       </div>
 
       <UnsavedChangesDialog

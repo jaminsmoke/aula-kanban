@@ -69,11 +69,11 @@
 
 ### Fase 3 — Editor, números de línea y errores
 
-- [ ] Añadir un gutter de números de línea sincronizado con el scroll del textarea.
-- [ ] Añadir resaltado ligero sin romper la edición, el foco ni la selección.
-- [ ] Mostrar errores con línea, resumen y detalle completo; permitir saltar a la línea.
-- [ ] Revisar la exportación SVG y su nombre legible como regresión.
-- [ ] Medir el tamaño del chunk y ajustar el resaltado si supera el presupuesto.
+- [x] Añadir un gutter de números de línea sincronizado con el scroll del textarea.
+- [x] Añadir resaltado ligero sin romper la edición, el foco ni la selección.
+- [x] Mostrar errores con línea, resumen y detalle completo; permitir saltar a la línea.
+- [x] Revisar la exportación SVG y su nombre legible como regresión.
+- [x] Medir el tamaño del chunk y ajustar el resaltado si supera el presupuesto.
 - **Criterios de aceptación:**
   - Números y texto permanecen alineados al escribir y desplazar.
   - Un error de sintaxis indica línea y detalle sin ocultar el editor.
@@ -111,3 +111,4 @@
 - No se cambia el formato de `{ code }` ni el guardado por proyecto.
 - 2026-11-19: Fase 1 completada. El lienzo usa `--doc-*`, mide el SVG con `ResizeObserver` y aplica un zoom inicial que respeta ancho y alto. Revisado a 390 y 1366 px sin scroll horizontal. Suite completa: 210 archivos / 1.488 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (límite de Diagramas 371.000 B).
 - 2026-11-19: Fase 2 completada. El lienzo incorpora zoom con botones, rueda y pinza; paneo con arrastre y flechas; reinicio al ajuste inicial y pantalla completa con Escape y retorno de foco. Se limitan zoom y desplazamiento, y el estado de vista no llama a `markDirty`. Revisado con controles reales en escritorio y pantalla completa. Suite completa: 211 archivos / 1.497 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (límites de Diagramas 374.000/825.000 B).
+- 2026-11-19: Fase 3 completada. El editor incorpora números de línea sincronizados, resaltado ligero por tokens y errores de Mermaid con resumen, detalle y salto a la línea. Se mantiene el textarea nativo para no añadir un editor pesado. Revisado el error real y la alineación en escritorio. Suite completa: 212 archivos / 1.501 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (límites de Diagramas 375.000/827.000 B).
