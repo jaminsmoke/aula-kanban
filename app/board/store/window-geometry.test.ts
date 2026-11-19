@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   fitWindowGeometry,
+  isNarrowWindowBounds,
   sameWindowGeometry,
   WINDOW_MARGIN,
   WINDOW_MIN_HEIGHT,
   WINDOW_MIN_WIDTH,
+  WINDOW_NARROW_BREAKPOINT,
 } from "./window-geometry";
 
 describe("geometría de ventanas", () => {
@@ -70,5 +72,10 @@ describe("geometría de ventanas", () => {
 
     expect(sameWindowGeometry(geometry, { ...geometry, position: { ...geometry.position } })).toBe(true);
     expect(sameWindowGeometry(geometry, { ...geometry, size: { ...geometry.size, width: 367 } })).toBe(false);
+  });
+
+  it("marca como estrecho el escritorio que llega al umbral móvil", () => {
+    expect(isNarrowWindowBounds({ width: WINDOW_NARROW_BREAKPOINT, height: 700 })).toBe(true);
+    expect(isNarrowWindowBounds({ width: WINDOW_NARROW_BREAKPOINT + 1, height: 700 })).toBe(false);
   });
 });

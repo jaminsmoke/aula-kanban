@@ -31,10 +31,13 @@
 /* Ampliada: ocupa todo el escritorio, sin el margen de 24px que reserva la
    ventana flotante ni sombra o esquinas. */
 .store-window--maximized { max-width:none; border-radius:0; box-shadow:none; }
+.store-window--maximized .store-window-titlebar { cursor:default; }
+.store-window--maximized .store-window-titlebar:active { cursor:default; }
 .store-window-titlebar { display:flex; align-items:center; gap:10px; min-height:38px; padding:0 12px; background:var(--ui-surface-recessed); border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle); cursor:grab; touch-action:none; user-select:none; }
 .store-window-titlebar:active { cursor:grabbing; }
 .store-window-controls { display:flex; gap:8px; }
 .store-traffic { width:12px; height:12px; padding:0; border:0; border-radius:50%; }
+.store-traffic:focus-visible { outline:var(--border-width-strong) solid var(--ui-focus-ring); outline-offset:3px; }
 .store-traffic-close { background:var(--ui-danger-solid); } .store-traffic-minimize { background:var(--ui-accent-amber); } .store-traffic-zoom { background:var(--ui-success); }
 .store-window-title { font-size: var(--text-base); font-weight: var(--weight-semibold); color:var(--ui-text-secondary); }
 .store-window-body { flex:1 1 auto; min-height:0; display:flex; }

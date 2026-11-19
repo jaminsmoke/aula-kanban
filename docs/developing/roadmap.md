@@ -59,11 +59,11 @@
 
 ### Fase 2 — Móvil y modo maximizado
 
-- [ ] Abrir las ventanas maximizadas por debajo del umbral acordado.
-- [ ] Mantener el botón de ampliar/reducir y devolver una geometría segura al reducir.
-- [ ] Ocultar o desactivar arrastre y resize mientras la ventana está maximizada.
-- [ ] Revisar el dock, el cierre y la navegación por teclado en 390 y 620 px.
-- [ ] Cubrir con pruebas el paso de maximizado a ventana y la restauración tras cambiar el escritorio.
+- [x] Abrir las ventanas maximizadas por debajo del umbral acordado.
+- [x] Mantener el botón de ampliar/reducir y devolver una geometría segura al reducir.
+- [x] Ocultar o desactivar arrastre y resize mientras la ventana está maximizada.
+- [x] Revisar el dock, el cierre y la navegación por teclado en 390 y 620 px.
+- [x] Cubrir con pruebas el paso de maximizado a ventana y la restauración tras cambiar el escritorio.
 - **Criterios de aceptación:**
   - En móvil no hay scroll horizontal del escritorio.
   - La ventana activa se puede minimizar, restaurar, ampliar y cerrar.
@@ -109,3 +109,4 @@
 - Puntos de partida: `app/board/store/store-window.tsx`, `app/board/store/use-desktop-windows.ts`, `app/board/store/store-desktop.tsx`, `app/board/store/store-desktop.css` y sus pruebas.
 - El arreglo es transversal a todas las apps de la Tienda. No se cambia el contenido de las apps ni su contrato de guardado.
 - 2026-11-19: Fase 1 completada. `window-geometry.ts` centraliza margen, mínimos y ajuste; apertura, arrastre, resize, restauración y reflujo usan la misma regla. El `ResizeObserver` recoloca las ventanas sin remontarlas y devuelve la misma referencia cuando no hay cambios. Verificado en el navegador: una ventana abierta con escritorio ancho y reducida a 390 px pasa a `x=12`, `right=378`, sin scroll horizontal. 7 pruebas focalizadas y 199 archivos / 1.421 pruebas; `tsc` y ESLint en verde.
+- 2026-11-19: Fase 2 completada. Las ventanas abiertas con un escritorio de 640 px o menos arrancan maximizadas; el botón de reducir devuelve una geometría segura y el reflujo revalida la posición guardada. En maximizado se desactiva el arrastre y desaparece el asa de resize. Verificado en 390 y 620 px con apertura, reducción, minimizar/restaurar desde el dock y cierre; los controles de tráfico tienen foco visible. 10 pruebas focalizadas y 199 archivos / 1.424 pruebas; `tsc` y ESLint en verde.

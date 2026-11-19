@@ -7,6 +7,9 @@ export const WINDOW_MIN_WIDTH = 240;
 /** Alto mínimo usable de una ventana. */
 export const WINDOW_MIN_HEIGHT = 180;
 
+/** Ancho a partir del cual el escritorio se considera estrecho. */
+export const WINDOW_NARROW_BREAKPOINT = 640;
+
 export type WindowBounds = { width: number; height: number };
 
 export type WindowGeometry = {
@@ -55,4 +58,13 @@ export function sameWindowGeometry(left: WindowGeometry, right: WindowGeometry):
     && left.position.y === right.position.y
     && left.size.width === right.size.width
     && left.size.height === right.size.height;
+}
+
+/**
+ * Indica si el escritorio es demasiado estrecho para una ventana flotante.
+ * @param bounds - Tamaño disponible.
+ * @returns `true` si conviene abrir la ventana maximizada.
+ */
+export function isNarrowWindowBounds(bounds: WindowBounds): boolean {
+  return bounds.width <= WINDOW_NARROW_BREAKPOINT;
 }

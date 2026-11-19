@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { StoreTool } from "./tools";
 import {
   fitWindowGeometry,
+  isNarrowWindowBounds,
   sameWindowGeometry,
   WINDOW_MARGIN,
   type WindowBounds,
@@ -110,12 +111,14 @@ export function useDesktopWindows() {
         position: { x: offset, y: WINDOW_MARGIN },
         size: preferred,
       }, bounds);
+      const narrow = isNarrowWindowBounds(bounds);
       return [...current, {
         tool,
         minimized: false,
-        position: geometry.position,
-        size: geometry.size,
-        maximized: false,
+        position: narrow ? { x: 0, y: 0 } : geometry.position,
+        size: narrow ? { width: bounds.width, height: bounds.height } : geometry.size,
+        maximized: narrow,
+        saved: narrow ? { position: geometry.position, size: geometry.size } : undefined,
         zIndex: zCounter.current,
       }];
     });
@@ -153,8 +156,8 @@ export function useDesktopWindows() {
       width: window.innerWidth,
       height: window.innerHeight,
     };
-    if (item.maximized && item.saved) {
-      const restored = fitWindowGeometry(item.saved, bounds);
+    if (item.maximized) {
+      const restored = fitWindowGeometry(item.saved ?? item, bounds);
       return { ...item, maximized: false, position: restored.position, size: restored.size, saved: undefined };
     }
     const rect = desktopRef.current?.getBoundingClientRect();
