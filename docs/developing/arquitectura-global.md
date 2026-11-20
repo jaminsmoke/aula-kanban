@@ -1,0 +1,174 @@
+# Arquitectura global del tablero
+
+> **Estado:** Revisión inicial · **Fecha:** 2026-11-20
+> **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
+> **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
+
+## 1. Resumen
+
+Aula Documentos ya tiene una separación útil: shell mínimo, modelo de vista, hooks por flujo, componentes, estilos divididos y pruebas por comportamiento. El resto del tablero no sigue el mismo nivel de aislamiento. El problema principal ya no es un archivo de 3.000 líneas: es la **ausencia de contratos comunes** para apps, estado de cliente, UI compartida, CSS y pruebas.
+
+Métricas actuales:
+
+| Área | Archivos | Líneas |
+|---|---:|---:|
+| `app/board/apps` | 138 | 23.202 |
+| `app/board/shared` | 66 | 6.978 |
+| `app/board` completo | 339 | 41.488 |
+| `lib/domain` | 69 | 7.869 |
+| `lib/server` | 138 | 14.224 |
+| `app/api` | 52 | 4.188 |
+| CSS | 48 | 9.128 |
+| Pruebas | 227 | 20.417 |
+
+Presupuesto final de referencia: `aula-documentos` **369.596 / 370.000 B gzip**; export **329.693 / 340.000**; Office **196.481 / 210.000**.
+
+## 2. Mapa por niveles
+
+### Nivel 0 · Composición del tablero
+
+`app/board/board.tsx`, `app/board/layout/`, `app/board/store/`, `app/board/shared/use-board-data.ts` y `use-board-url.ts`.
+
+Responsabilidad: ventanas, foco, URL, datos del tablero, temas y shell. No debe contener lógica de una app concreta.
+
+### Nivel 1 · Apps
+
+Cada carpeta de `app/board/apps/<app>/` debe ser una unidad con:
+
+```text
+<app>/
+  <app>-app.tsx          # shell de composición
+  components/            # UI propia
+  hooks/                 # estado y flujos
+  model/ o <app>-model.ts
+  utils/
+  styles/                # si supera un archivo razonable
+  __tests__/             # flujos, no un archivo de 1.000 líneas
+```
+
+Estado actual:
+
+| App | Archivos | Líneas | Señal |
+|---|---:|---:|---|
+| Aula Documentos | 43 | 9.508 | Piloto; shell de 20 líneas |
+| Hoja de cálculo | 9 | 2.055 | `app.tsx` 525 + fórmula 515 |
+| Timeline | 4 | 1.686 | `app.tsx` 676 |
+| Tarjetas | 7 | 1.316 | `app.tsx` 415 y CSS 547 |
+| Moléculas | 6 | 1.116 | app 324 |
+| Mapas | 5 | 1.082 | app 339 |
+| Ajedrez | 5 | 836 | app 284 |
+| Geometría | 5 | 785 | app 349 |
+
+### Nivel 2 · Compartido de tablero
+
+`app/board/shared/` debe contener solo lo que tenga dos consumidores reales o una justificación escrita.
+
+Ya funciona: `useAppDocument`, `useWindowCloseGuard`, `useBoardUrl`, `Modal`, `download` y `date`.
+
+Deuda detectada:
+
+- `useVersionedDraft` (487 líneas) y `versioned-draft-recovery` no tienen consumidores de producto; solo pruebas.
+- `unsaved-changes-dialog` y `version-conflict-dialog` están probados pero no se usan en ninguna app.
+- Hay persistencia local repartida entre calculadora, Blockly, Tarjetas, tema y recuperación.
+- El selector de archivo sigue siendo local a Aula; no hay que extraerlo hasta que otra app lo necesite.
+
+### Nivel 3 · Dominio
+
+`lib/domain/<dominio>/` contiene reglas puras. Aula ya tiene modelo, Markdown, copias, presentación, texto y migración separados.
+
+Prioridad:
+
+- `lib/domain/aula-documentos/document.ts` tiene 655 líneas; separar normalización, validación de tablas y tipos.
+- Revisar `lib/domain/mcp-catalogo.ts` (503) y `demo-data.ts` (455) por mezcla de datos y lógica.
+- Revisar duplicación de `formatNumber`, `presetInfo` y utilidades de fechas entre apps.
+
+### Nivel 4 · Servidor
+
+`lib/server/` tiene 14.224 líneas y 138 archivos. La dirección es correcta: rutas de `app/api` delegan en servicios, no al contrario.
+
+Deuda:
+
+- Conviven `lib/server/mcp/dominios`, `lib/server/tasks`, `lib/server/people`, `lib/server/uploads` y módulos sueltos.
+- Hay que documentar qué es un servicio, qué es un repositorio D1/R2 y qué es un helper HTTP.
+- Revisar `storage.ts` (320 líneas), cuotas, purgas y rutas que comparten validación.
+
+### Nivel 5 · API
+
+52 archivos / 4.188 líneas. Debe quedar como adaptador fino: autenticación, validación de entrada, llamada al servicio y respuesta HTTP. No debe contener reglas de negocio duplicadas.
+
+### Nivel 6 · Estilos y pruebas
+
+- 48 archivos CSS / 9.128 líneas. El mayor es `app/portada.css` (628), seguido de `tarjetas.css` (547), `office-viewer.css` (444), `globals.css` (439) y `timeline.css` (437).
+- No hay una capa declarada de tokens → primitivas → layout → app. Cada app resuelve botones, tarjetas, estados vacíos y modales a su manera.
+- Pruebas: 227 archivos / 20.417 líneas. La división de Aula funciona, pero repite unas 190 líneas de mocks y setup en cinco archivos.
+
+## 3. Hallazgos priorizados
+
+| Prioridad | Hallazgo | Evidencia | Impacto |
+|---|---|---|---|
+| P0 | La configuración de CodArch no representa este repo | `.codarch.yml` declara `packages/**` y `apps/**`; `suggest_architecture` detecta paquetes ajenos | No se pueden hacer cumplir capas ni ciclos |
+| P0 | Apps monolíticas restantes | Timeline 676, Hoja 525, Office viewer 543, Office export 525, Tarjetas 415 | Cambios pequeños obligan a recorrer archivos grandes |
+| P1 | Sistema de borradores versionados muerto | `useVersionedDraft` y sus dos diálogos no tienen consumidores reales | 800+ líneas y pruebas que mantienen una función inexistente |
+| P1 | Persistencia local sin contrato | Calculadora, Blockly, Tarjetas, tema y recuperación usan `localStorage` por separado | Validación, cuotas y migraciones inconsistentes |
+| P1 | CSS sin capas | 48 archivos; primitivas y estilos de app mezclados | Duplicación visual y difícil revisión responsive |
+| P1 | Pruebas duplicadas | Cinco archivos de Aula repiten casi todo el setup | Coste alto al cambiar un mock |
+| P2 | Dominio grande | `document.ts` 655 líneas | Normalización, tablas y tipos acoplados |
+| P2 | Servidor sin mapa explícito | 138 archivos en `lib/server` | Difícil saber dónde vive una regla |
+| P2 | Falta de análisis de código muerto | No hay `knip`, `ts-prune` ni equivalente | Se descubren módulos huérfanos a mano |
+| P2 | Presupuesto de Aula muy ajustado | 369.596 / 370.000 | Cualquier crecimiento futuro rompe el build |
+
+## 4. Árbol objetivo
+
+```text
+app/board/
+  shell/                    # layout, ventanas, URL, tema, datos del tablero
+  apps/
+    <app>/
+      <app>-app.tsx
+      components/
+      hooks/
+      model/
+      styles/
+      __tests__/
+  shared/
+    ui/                     # Modal, botones, estados vacíos, file picker si hay 2 consumidores
+    data/                   # storage, versioned document, API client
+    documents/              # piezas documentales compartidas
+  styles/                   # tokens, base, layout y utilidades globales
+lib/
+  domain/<dominio>/         # reglas puras y tests
+  server/<dominio>/         # repositorios, servicios, HTTP
+app/api/                    # adaptadores finos
+```
+
+Reglas:
+
+1. `app/board/apps` puede importar `app/board/shared` y `lib`.
+2. `app/board/shared` puede importar `lib` y `lib/domain`; nunca una app.
+3. `lib/domain` no importa React, `app` ni `lib/server`.
+4. `lib/server` no importa `app`; las rutas importan servicios.
+5. Una utilidad compartida necesita dos consumidores reales o justificación escrita.
+6. Los archivos nuevos respetan presupuestos: shell <450, componentes/hooks <600, CSS <500, pruebas <600.
+7. Las apps no comparten estado por módulos globales; comparten contratos.
+
+## 5. Programa propuesto
+
+| ID | Bloque | Resultado |
+|---|---|---|
+| ARC-01 | Contratos, CodArch y mapa de capas | Reglas ejecutables y configuración correcta |
+| ARC-02 | Descomposición de apps restantes | Timeline, Hoja, Tarjetas y Office con shell/hooks/componentes |
+| ARC-03 | Estado de cliente y persistencia | Un contrato para storage, autosave y recuperación; retirar o rescatar borradores |
+| ARC-04 | Sistema visual y CSS | Tokens, primitivas, capas y revisión responsive |
+| ARC-05 | Pruebas, harness y presupuestos | Setup compartido, detección de código muerto y límites |
+| ARC-06 | Cierre de deuda y servidor | Módulos muertos fuera, mapa de `lib/server` y rutas finas |
+
+Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-06**. ARC-01 desbloquea todo; ARC-03 elimina ruido y deuda antes de trocear apps.
+
+## 6. Criterios de salida del programa
+
+- CodArch detecta las capas reales y falla ante imports prohibidos y ciclos.
+- Cada app tiene un shell reconocible y ningún archivo de producto supera los límites acordados.
+- No hay módulos de producto sin consumidores ni helpers duplicados sin justificación.
+- El CSS tiene una capa de tokens/primitivas y una revisión de cinco anchos y dos temas.
+- Las pruebas comparten setup sin perder aislamiento y los presupuestos siguen pasando.
+- La documentación explica dónde vive cada responsabilidad y cómo añadir una app nueva.

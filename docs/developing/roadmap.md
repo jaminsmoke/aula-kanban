@@ -12,7 +12,7 @@ ADOC-15 quedó cerrado y archivado en [`historial/roadmap-adoc-15.md`](../histor
 
 ## 2. Siguiente paso
 
-Elegir la siguiente entrada del backlog y planificarla antes de empezar. El candidato inmediato es **ADOC-16 — Importar como flujo propio y más formatos**.
+Elegir la siguiente entrada del backlog y planificarla antes de empezar. El candidato inmediato es **ARC-01 — Contratos de arquitectura y CodArch real**, seguido de ARC-02 a ARC-06 según [`arquitectura-global.md`](arquitectura-global.md).
 
 ## 3. Límites de mantenimiento
 

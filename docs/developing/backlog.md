@@ -3,10 +3,83 @@
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 7 entradas pendientes · siguiente candidato ADOC-16
-> **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
+> **Estado:** 13 entradas pendientes · siguiente candidato ARC-01
+> **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
+> **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
+
+## 2026-11-20 — ARC-01 · Contratos de arquitectura y CodArch real
+
+- Contexto: `.codarch.yml` declara capas `packages/**` y `apps/**` que no existen en este repositorio. `suggest_architecture` detecta paquetes de otro proyecto y no puede vigilar `app/board`, `lib` ni `app/api`.
+- Alcance:
+  1. Definir las capas reales: shell, apps, shared, dominio, servidor y API.
+  2. Configurar CodArch con los patrones de este repo y reglas de dependencia, ciclos y presupuestos.
+  3. Añadir una comprobación local/CI que falle ante imports prohibidos.
+  4. Documentar cómo se clasifica un archivo nuevo y cómo se añade una app.
+  5. Medir archivos y dependencias antes/después.
+- Criterios: CodArch describe este repositorio, falla ante una violación real y no depende de rutas de otro producto.
+- Notas: no hace falta adoptar DDD ni hexagonal completos; la regla es que las dependencias apunten hacia dentro.
+
+## 2026-11-20 — ARC-02 · Descomponer las apps monolíticas restantes
+
+- Contexto: Aula Documentos ya tiene shell, modelo, hooks y componentes; Timeline (676), Hoja de cálculo (525), Office viewer (543), Office export (525) y Tarjetas (415) siguen concentrando demasiado.
+- Alcance:
+  1. Extraer de Timeline su modelo, hooks de edición y componentes de vista.
+  2. Separar Hoja de cálculo en shell, hook de edición, hoja y exportación.
+  3. Dividir el visor y la exportación Office por responsabilidades.
+  4. Aplicar el mismo patrón a Tarjetas, Mapas, Ajedrez y Geometría solo donde el tamaño lo justifique.
+  5. Mantener URLs, permisos, textos y autosave sin cambios.
+- Criterios: cada app tiene un shell reconocible, componentes/hooks por debajo de 600 líneas y pruebas por flujo; suite y presupuestos pasan.
+- Notas: no se trata de copiar la estructura de Aula, sino de aislar estado, UI y dominio.
+
+## 2026-11-20 — ARC-03 · Estado de cliente y persistencia
+
+- Contexto: Calculadora, Blockly, Tarjetas, tema, Aula y el sistema de borradores usan `localStorage` y recuperación por separado. `useVersionedDraft` (487 líneas), `versioned-draft-recovery`, `unsaved-changes-dialog` y `version-conflict-dialog` no tienen consumidores de producto reales.
+- Alcance:
+  1. Decidir si el sistema de borradores versionados se rescata en alguna app o se retira con sus diálogos y pruebas.
+  2. Definir un contrato común de almacenamiento local: claves, validación, cuotas, versión y migración.
+  3. Reutilizar `useAppDocument` y la recuperación donde corresponda.
+  4. Evitar duplicar autosave, conflicto y cierre sin guardar.
+  5. Añadir pruebas de cuota, datos corruptos y migración.
+- Criterios: no quedan módulos de producto sin consumidores; el almacenamiento local tiene una única puerta y cada app conserva su comportamiento.
+- Notas: empezar por retirar o justificar lo muerto antes de abstraer lo vivo.
+
+## 2026-11-20 — ARC-04 · Sistema visual, CSS y responsive
+
+- Contexto: hay 48 archivos CSS y 9.128 líneas; `portada.css` 628, `tarjetas.css` 547, `office-viewer.css` 444, `globals.css` 439 y `timeline.css` 437. Los patrones de botón, tarjeta, modal, estado vacío y barra se repiten sin una capa declarada.
+- Alcance:
+  1. Separar tokens, base, primitivas, layout y estilos de app.
+  2. Unificar botones, tarjetas, diálogos, estados vacíos y barras.
+  3. Revisar cinco anchos y ambos temas en las apps principales.
+  4. Mantener las cargas diferidas y medir el CSS en los presupuestos.
+  5. Documentar las reglas de composición visual.
+- Criterios: cada CSS tiene responsabilidad acotada, no hay primitivas duplicadas y las apps se revisan en cinco anchos y dos temas.
+- Notas: no crear un design system genérico antes de tener dos consumidores reales.
+
+## 2026-11-20 — ARC-05 · Pruebas, harness y presupuestos
+
+- Contexto: 227 archivos / 20.417 líneas de prueba. La suite de Aula funciona pero repite unas 190 líneas de mocks y setup en cinco archivos; no hay detección automática de código muerto.
+- Alcance:
+  1. Extraer un harness de pruebas compartido para Aula y otros flujos con mocks comunes.
+  2. Añadir comprobaciones de tamaño, dependencias y archivos sin consumidores.
+  3. Definir presupuestos por app y por flujo, no solo para Aula.
+  4. Evitar que un cambio de mock obligue a editar cinco archivos.
+  5. Mantener aislamiento entre pruebas.
+- Criterios: el setup compartido no oculta mocks globales, los límites se comprueban automáticamente y los presupuestos cubren las apps principales.
+- Notas: valorar `knip`/`ts-prune` o un script propio antes de añadir otra dependencia.
+
+## 2026-11-20 — ARC-06 · Mapa de servidor, API y deuda residual
+
+- Contexto: `lib/server` tiene 138 archivos / 14.224 líneas y `app/api` 52 archivos / 4.188. La dirección es correcta, pero conviven dominios, repositorios D1/R2, helpers HTTP y validaciones sin un mapa explícito.
+- Alcance:
+  1. Clasificar `lib/server` en dominio, repositorios, servicios y helpers.
+  2. Revisar rutas API para que sean adaptadores finos y no dupliquen reglas.
+  3. Auditar cuotas, purgas, almacenamiento y migraciones.
+  4. Eliminar helpers y rutas sin consumidores.
+  5. Documentar dónde vive cada regla y cómo se prueba.
+- Criterios: una regla de servidor tiene un único hogar, las rutas solo orquestan y no hay imports de `app` desde `lib/server`.
+- Notas: no fusionar servicios solo por tamaño; separar por responsabilidad y consumidor.
 
 ## 2026-11-19 — ADOC-16 · Importar como flujo propio y más formatos
 
