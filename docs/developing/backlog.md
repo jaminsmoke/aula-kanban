@@ -2,24 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 8 entradas pendientes · siguiente candidato ARC-06
+> **Roadmap:** ARC-06 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 7 entradas pendientes · siguiente candidato ADOC-16
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
-
-## 2026-11-20 — ARC-06 · Mapa de servidor, API y deuda residual
-
-- Contexto: `lib/server` tiene 138 archivos / 14.224 líneas y `app/api` 52 archivos / 4.188. La dirección es correcta, pero conviven dominios, repositorios D1/R2, helpers HTTP y validaciones sin un mapa explícito.
-- Alcance:
-  1. Clasificar `lib/server` en dominio, repositorios, servicios y helpers.
-  2. Revisar rutas API para que sean adaptadores finos y no dupliquen reglas.
-  3. Auditar cuotas, purgas, almacenamiento y migraciones.
-  4. Eliminar helpers y rutas sin consumidores.
-  5. Documentar dónde vive cada regla y cómo se prueba.
-- Criterios: una regla de servidor tiene un único hogar, las rutas solo orquestan y no hay imports de `app` desde `lib/server`.
-- Notas: no fusionar servicios solo por tamaño; separar por responsabilidad y consumidor.
 
 ## 2026-11-19 — ADOC-16 · Importar como flujo propio y más formatos
 
