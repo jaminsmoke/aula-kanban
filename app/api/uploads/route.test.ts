@@ -15,10 +15,12 @@ vi.mock("../../../lib/server/project-access", () => ({
     status: status === "unauthenticated" ? 401 : status === "forbidden" ? 403 : status === "not_found" ? 404 : 400,
   }),
 }));
-vi.mock("../../../lib/server/storage", () => ({
+vi.mock("../../../lib/server/storage", () => ({ storeUpload: mocks.store }));
+vi.mock("../../../lib/server/storage/repository", () => ({
   StorageUnavailableError: class StorageUnavailableError extends Error {},
+}));
+vi.mock("../../../lib/server/storage/quota", () => ({
   UploadQuotaExceededError: mocks.QuotaError,
-  storeUpload: mocks.store,
   uploadPurposes: ["task-image", "document-image"],
   validateUpload: mocks.validate,
 }));

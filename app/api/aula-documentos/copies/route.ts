@@ -2,14 +2,9 @@ import { inspectAulaDocumentCopy, AULA_COPY_MAX_ZIP_BYTES } from "../../../../li
 import { createDocumentCopy, listDocumentCopies, type DocumentCopyRow } from "../../../../lib/server/document-copies";
 import { isSameOrigin, json, storageUnavailable } from "../../../../lib/server/http";
 import { withProjectRoute } from "../../../../lib/server/route-helpers";
-import {
-  DocumentCopyLimitExceededError,
-  DocumentCopyQuotaExceededError,
-  StorageUnavailableError,
-  deleteUpload,
-  storeUpload,
-  validateUpload,
-} from "../../../../lib/server/storage";
+import { deleteUpload, storeUpload } from "../../../../lib/server/storage";
+import { DocumentCopyLimitExceededError, DocumentCopyQuotaExceededError, validateUpload } from "../../../../lib/server/storage/quota";
+import { StorageUnavailableError } from "../../../../lib/server/storage/repository";
 
 export const dynamic = "force-dynamic";
 

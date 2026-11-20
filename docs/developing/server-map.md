@@ -1,7 +1,7 @@
 # Mapa del servidor: `lib/server` y `app/api`
 
 > **Estado:** Fase 1 cerrada; Fase 2 en curso · **Fecha:** 2026-11-20
-> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas. Las siete rutas que resolvían el proyecto a mano usan ahora `withProjectRoute`; archivos y copias usan `withResourceProject` porque el ámbito es el del objeto guardado. `tasks/service.ts` absorbe revisión, permisos y decoración; `api/tasks` queda como adaptador de 46 líneas. El 503 de almacenamiento sale de un único `storageUnavailable()` con mensaje y estado compartidos. `api/members` y `api/space-apps` ya tienen prueba de contrato propia. Ninguna ruta de `app/api` importa D1.
+> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas. Las siete rutas que resolvían el proyecto a mano usan ahora `withProjectRoute`; archivos y copias usan `withResourceProject` porque el ámbito es el del objeto guardado. `tasks/service.ts` absorbe revisión, permisos y decoración; `api/tasks` queda como adaptador de 46 líneas. El 503 de almacenamiento sale de un único `storageUnavailable()` con mensaje y estado compartidos. `api/members` y `api/space-apps` ya tienen prueba de contrato propia. Ninguna ruta de `app/api` importa D1. `storage.ts` queda como servicio: el repositorio R2/D1 vive en `storage/repository.ts` y las reglas de cuota en `storage/quota.ts`.
 > **Alcance:** inventario y clasificación provisional. La Fase 1 no movió ni renombró código.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Arquitectura:** [`arquitectura-global.md`](arquitectura-global.md)
 > **Regla de oro:** una regla de servidor tiene un único hogar; las rutas solo analizan, autorizan, delegan y responden.
@@ -123,17 +123,19 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `tasks/queries.ts` | 73 | `R` lectura y decoración | `mcp/dominios/tareas/*`, `tasks/service.ts` | — |
 | `tasks/types.ts` | 48 | `D` tipos de tarea | `tasks/*`, `api/tasks` | 1 |
 
-### 3.4 Almacenamiento, subidas y cuotas (5)
+### 3.4 Almacenamiento, subidas y cuotas (7)
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
-| `storage.ts` | 346 | **`MX`** `B`+`R`+cuotas+diagnóstico | 13 archivos: rutas de ficheros, subidas, copias, purga | 8 |
+| `storage.ts` | 155 | `S` servicio de subidas | rutas de ficheros, subidas y copias | 8 |
+| `storage/repository.ts` | 240 | `R` R2 + `uploads`/`document_copies` | `storage.ts`, inventario y purga | — |
+| `storage/quota.ts` | 132 | `V` reglas puras de cuota y MIME | `storage.ts`, `api/uploads`, copias, MCP | 8 |
 | `uploads/inventory.ts` | 83 | `S` cotejo R2/D1 | `api/storage/inventory` | 1 |
 | `uploads/purge.ts` | 163 | `S` purga con relectura | `api/storage/purge` | 1 |
 | `uploads/stats.ts` | 60 | `R` agregados de `uploads` | `api/storage/status` | 1 |
 | `uploads/usage.ts` | 119 | `R` referencias + `D` | `uploads/purge.ts` | 1 |
 
-**Hallazgo P1:** `storage.ts` mezcla repositorio R2, repositorio D1 de `uploads`, reglas de cuota, validación MIME y diagnóstico de despliegue. Es el mayor archivo del servidor (346 líneas) y el que más consumidores tiene.
+**Hallazgo P1 resuelto (2026-11-20):** `storage.ts` mezclaba repositorio R2, repositorio D1 de `uploads`, reglas de cuota, validación MIME y diagnóstico. Ahora el servicio tiene 155 líneas; el acceso a datos vive en `storage/repository.ts` (240) y las reglas puras en `storage/quota.ts` (132).
 
 ### 3.5 MCP (36)
 
@@ -282,13 +284,13 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 
 Un único binding, `BUCKET`. Claves:
 
-- Subidas web/MCP: `${projectId}/${purpose}/${uuid}${ext}` (`storage.ts`).
+- Subidas web/MCP: `${projectId}/${purpose}/${uuid}${ext}` (`storage.ts` con `uploadExtension`).
 - Libros: `storageKey`, `coverKey` y `backKey` propios (`books.ts`).
 - Lectura de subidas: `storage.readUpload`; libros: `books.readBookFile`/`readBookImage`.
-- Listado: `storage.listBucketPage` (página máxima de 100).
+- Listado: `storage/repository.listBucketPage` (página máxima de 100).
 - Borrado: `storage.deleteUpload`, `storage.deleteProjectUploads`, `uploads/purge.ts`.
 
-R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts` o `books.ts`. Esa regla ya se cumple.
+R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `storage/repository.ts` o `books.ts`. Esa regla ya se cumple.
 
 ---
 
@@ -296,21 +298,21 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts` o `bo
 
 | Regla | Valor | Hogar único hoy | Validación | Prueba |
 |---|---|---|---|---|
-| Imagen de subida | 5 MB | `storage.ts` (`MAX_IMAGE_BYTES`) | `validateUpload` + cuota | `storage.test.ts` |
-| Documento suelto | 10 MB | `storage.ts` (`MAX_DOCUMENT_BYTES`) | `validateUpload` | `storage.test.ts` |
-| Imágenes por proyecto | 50 MB | `storage.ts` (`MAX_PROJECT_DOCUMENT_IMAGE_BYTES`, `projectDocumentImageUsage`, `fitsDocumentImageQuota`) | `storeUpload` | `storage.test.ts` |
-| ZIP de copia portable | 60 MB | `lib/domain/aula-documentos/copy.ts` (`AULA_COPY_MAX_ZIP_BYTES`) | dominio + `storage.ts` reexporta | dominio y `storage` |
-| Copias por proyecto | 20 | `AULA_COPY_MAX_PER_PROJECT` | `storeUpload` | `storage.test.ts` |
-| Cuota de copias | 200 MB | `AULA_COPY_PROJECT_QUOTA_BYTES` | `storeUpload` | `storage.test.ts` |
+| Imagen de subida | 5 MB | `storage/quota.ts` (`MAX_IMAGE_BYTES`) | `validateUpload` + cuota | `storage.test.ts` |
+| Documento suelto | 10 MB | `storage/quota.ts` (`MAX_DOCUMENT_BYTES`) | `validateUpload` | `storage.test.ts` |
+| Imágenes por proyecto | 50 MB | `storage/quota.ts` (`MAX_PROJECT_DOCUMENT_IMAGE_BYTES`, `fitsDocumentImageQuota`) + `storage/repository.ts` (`projectDocumentImageUsage`) | `storeUpload` | `storage.test.ts` |
+| ZIP de copia portable | 60 MB | `lib/domain/aula-documentos/copy.ts` (`AULA_COPY_MAX_ZIP_BYTES`) | dominio + `storage/quota.ts` toma el valor | dominio y `storage` |
+| Copias por proyecto | 20 | `storage/quota.ts` (`AULA_COPY_MAX_PER_PROJECT`) | `storeUpload` | `storage.test.ts` |
+| Cuota de copias | 200 MB | `storage/quota.ts` (`AULA_COPY_PROJECT_QUOTA_BYTES`) | `storeUpload` | `storage.test.ts` |
 | Estado de documento de app | 200.000 caracteres | `app-documents.ts` (`MAX_APP_DOCUMENT_CHARS`) | ruta `app-documents` | `app-documents.test.ts` |
 | Perfil borrado (histórico) | 30 días; chequeo 1 h | `deleted-profiles.ts` | purga perezosa desde `api/tasks` | `deleted-profiles` |
 | Auditoría MCP | 90 días; purga 1 h | `mcp/auditoria.ts` | purga perezosa | `mcp/auditoria.test.ts` |
 | Límite MCP | 120/min por token; 30 escrituras/min por cuenta | `mcp/rate-limit.ts` | ventana en memoria del isolate | `rate-limit.test.ts` |
 | Purga de subidas | gracia 7 días; lote 100 (máx. 500); escaneo 1.000 | `uploads/usage.ts` | relectura antes de borrar | `uploads/*.test.ts` |
-| Página de inventario R2 | 100 objetos | `storage.ts` (`MAX_BUCKET_PAGE`) | ruta `storage/inventory` | `storage.test.ts` |
+| Página de inventario R2 | 100 objetos | `storage/repository.ts` (`MAX_BUCKET_PAGE`) | ruta `storage/inventory` | `storage.test.ts` |
 | Cursor de inventario | 8.192 caracteres | `api/storage/inventory/route.ts` (local) | ruta | `route.test.ts` |
 
-**Duplicidad P2 confirmada:** el límite de 5 MB existe dos veces con nombres distintos: `MAX_IMAGE_BYTES` en `storage.ts` y `AULA_IMAGE_MAX_BYTES` en `lib/domain/aula-documentos/image.ts`. Son capas distintas (servidor y cliente), pero el valor debe tener una sola fuente en Fase 4.
+**Duplicidad P2 confirmada:** el límite de 5 MB existe dos veces con nombres distintos: `MAX_IMAGE_BYTES` en `storage/quota.ts` y `AULA_IMAGE_MAX_BYTES` en `lib/domain/aula-documentos/image.ts`. Son capas distintas (servidor y cliente), pero el valor debe tener una sola fuente en Fase 4.
 
 **Purgas existentes:** perfiles borrados (`deleted-profiles.ts`), auditoría MCP (`mcp/auditoria.ts`), subidas sin uso (`uploads/purge.ts`), copias huérfanas (`document-copies.cleanupOrphanDocumentCopies`), subidas de proyectos eliminados (`storage.cleanupOrphanUploads`). No todas tienen disparador automático: `cleanupOrphanUploads` y `cleanupOrphanDocumentCopies` solo se invocan desde pruebas o tareas manuales.
 
@@ -331,11 +333,11 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts` o `bo
 |---|---|---|---|
 | P0 | El adaptador HTTP de personas vivía en el servicio | movido a `app/api/students` y `app/api/teachers` | 2 · **resuelto** |
 | P0 | `api/tasks` decidía reglas y consultaba D1 | movido a `tasks/service.ts`; la ruta queda en 46 líneas | 2 · **resuelto** |
-| P1 | `storage.ts` mezcla R2, D1, cuotas, MIME y diagnóstico | 346 líneas; 13 consumidores | 3 y 4 |
+| P1 | `storage.ts` mezclaba R2, D1, cuotas, MIME y diagnóstico | dividido en servicio, repositorio y reglas | 3 · **resuelto** |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
 | P1 | Cuatro rutas importaban D1 directamente | extraídas a servicios; `app/api` no importa D1 | 2 y 3 · **resuelto** |
-| P2 | 5 MB definido dos veces | `storage.ts` y `domain/aula-documentos/image.ts` | 4 |
+| P2 | 5 MB definido dos veces | `storage/quota.ts` y `domain/aula-documentos/image.ts` | 4 |
 | P2 | `reads.ts` y `writes.ts` no tienen consumidor de producto | solo pruebas y baseline de ARC-05 | 3 |
 | P2 | Purga huérfana sin disparador | `cleanupOrphanUploads`, `cleanupOrphanDocumentCopies` | 4 |
 | P2 | Nombres mezclan español e inglés en la misma capa | `publicarEscena` / `listStudents` | 5 o nunca |

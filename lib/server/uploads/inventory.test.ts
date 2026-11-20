@@ -17,7 +17,7 @@ vi.mock("cloudflare:workers", () => ({
   },
 }));
 
-import { StorageUnavailableError } from "../storage";
+import { StorageUnavailableError } from "../storage/repository";
 import { auditInventoryPage } from "./inventory";
 
 const proyecto = "11111111-1111-4111-8111-111111111111";

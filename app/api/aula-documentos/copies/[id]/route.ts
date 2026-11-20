@@ -2,7 +2,8 @@ import { deleteDocumentCopy, findDocumentCopy } from "../../../../../lib/server/
 import { isSameOrigin, json, storageUnavailable } from "../../../../../lib/server/http";
 import { projectFailureResponse } from "../../../../../lib/server/project-http";
 import { withResourceProject } from "../../../../../lib/server/route-helpers";
-import { StorageUnavailableError, readUpload } from "../../../../../lib/server/storage";
+import { readUpload } from "../../../../../lib/server/storage";
+import { StorageUnavailableError } from "../../../../../lib/server/storage/repository";
 
 export const dynamic = "force-dynamic";
 

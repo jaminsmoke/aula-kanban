@@ -25,10 +25,15 @@ vi.mock("../../project-access", () => ({
 }));
 vi.mock("../../storage", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../../storage")>();
-  return { ...actual, storeUpload: state.store, findUpload: state.find };
+  return { ...actual, storeUpload: state.store };
+});
+vi.mock("../../storage/repository", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../storage/repository")>();
+  return { ...actual, findUpload: state.find };
 });
 
-import { MAX_IMAGE_BYTES, StorageUnavailableError } from "../../storage";
+import { MAX_IMAGE_BYTES } from "../../storage/quota";
+import { StorageUnavailableError } from "../../storage/repository";
 import type { McpCaller } from "../contexto";
 import { herramientasArchivos } from "./archivos";
 

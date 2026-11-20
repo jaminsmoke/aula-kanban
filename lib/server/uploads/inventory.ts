@@ -5,7 +5,7 @@ import {
   type InventoryEntry,
   type UploadRowRef,
 } from "../../domain/uploads/inventory";
-import { listBucketPage } from "../storage";
+import { listBucketPage } from "../storage/repository";
 
 /**
  * Cotejo del inventario de R2 con `uploads` (PER-01B, fase 2).

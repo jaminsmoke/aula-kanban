@@ -15,18 +15,16 @@ vi.mock("cloudflare:workers", () => ({
   },
 }));
 
+import { MAX_BUCKET_PAGE, StorageUnavailableError, listBucketPage } from "./storage/repository";
 import {
-  MAX_BUCKET_PAGE,
   MAX_PROJECT_DOCUMENT_COPIES,
   MAX_PROJECT_DOCUMENT_COPY_BYTES,
   MAX_PROJECT_DOCUMENT_IMAGE_BYTES,
-  StorageUnavailableError,
   fitsDocumentCopyQuota,
   fitsDocumentImageQuota,
-  listBucketPage,
   uploadPurposes,
   validateUpload,
-} from "./storage";
+} from "./storage/quota";
 
 const uploaded = new Date("2026-11-15T10:00:00.000Z");
 

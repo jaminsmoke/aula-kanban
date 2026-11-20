@@ -14,7 +14,7 @@ vi.mock("../../../../lib/server/project-access", () => ({
 }));
 vi.mock("../../../../lib/server/uploads/purge", () => ({ purgeAllUnusedUploads: mocks.purge }));
 
-import { StorageUnavailableError } from "../../../../lib/server/storage";
+import { StorageUnavailableError } from "../../../../lib/server/storage/repository";
 import { POST } from "./route";
 
 const endpoint = "https://site.test/api/storage/purge";

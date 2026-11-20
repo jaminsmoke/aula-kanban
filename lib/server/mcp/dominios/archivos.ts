@@ -1,14 +1,13 @@
 import { z } from "zod";
+import { storeUpload } from "../../storage";
 import {
   MAX_DOCUMENT_BYTES,
   MAX_IMAGE_BYTES,
-  StorageUnavailableError,
-  findUpload,
-  storeUpload,
   uploadPurposes,
   validateUpload,
   type UploadPurpose,
-} from "../../storage";
+} from "../../storage/quota";
+import { StorageUnavailableError, findUpload } from "../../storage/repository";
 import { errorHerramienta, falloResolucion, payloadResult, resolve, toChatGPTUser, type McpCaller } from "../contexto";
 import type { McpToolDefinicion } from "./tipos";
 

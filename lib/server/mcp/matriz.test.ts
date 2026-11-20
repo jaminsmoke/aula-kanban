@@ -181,7 +181,12 @@ vi.mock("cloudflare:workers", () => ({
 vi.mock("../storage", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../storage")>();
   const upload = { id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", projectId: "11111111-1111-4111-8111-111111111111", storageKey: "p/task-image/a.png", url: "/api/files/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", mimeType: "image/png", sizeBytes: 4, purpose: "task-image", ownerUserId: "u-owner", createdAt: 1 };
-  return { ...actual, storeUpload: async () => ({ id: upload.id, url: upload.url }), findUpload: async () => upload };
+  return { ...actual, storeUpload: async () => ({ id: upload.id, url: upload.url }) };
+});
+vi.mock("../storage/repository", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../storage/repository")>();
+  const upload = { id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", projectId: "11111111-1111-4111-8111-111111111111", storageKey: "p/task-image/a.png", url: "/api/files/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", mimeType: "image/png", sizeBytes: 4, purpose: "task-image", ownerUserId: "u-owner", createdAt: 1 };
+  return { ...actual, findUpload: async () => upload };
 });
 
 vi.mock("../tasks/mutations", () => ({

@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
 import { getD1 } from "../../../db";
-import { StorageUnavailableError } from "../storage";
+import { StorageUnavailableError } from "../storage/repository";
 import { findUnusedUploads, projectFileReferences } from "./usage";
 
 /**

@@ -14,7 +14,7 @@ vi.mock("../../../../lib/server/project-access", () => ({
 }));
 vi.mock("../../../../lib/server/uploads/inventory", () => ({ auditInventoryPage: mocks.audit }));
 
-import { StorageUnavailableError } from "../../../../lib/server/storage";
+import { StorageUnavailableError } from "../../../../lib/server/storage/repository";
 import { GET } from "./route";
 
 const endpoint = "https://site.test/api/storage/inventory";

@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { isSameOrigin, json, storageUnavailable } from "../../../lib/server/http";
 import { withProjectRoute } from "../../../lib/server/route-helpers";
-import { StorageUnavailableError, UploadQuotaExceededError, storeUpload, uploadPurposes, validateUpload } from "../../../lib/server/storage";
+import { storeUpload } from "../../../lib/server/storage";
+import { UploadQuotaExceededError, uploadPurposes, validateUpload } from "../../../lib/server/storage/quota";
+import { StorageUnavailableError } from "../../../lib/server/storage/repository";
 
 export const dynamic = "force-dynamic";
 

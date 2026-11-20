@@ -3,7 +3,7 @@ import { getChatGPTUser } from "../../../../lib/server/auth";
 import { json, storageUnavailable } from "../../../../lib/server/http";
 import { isAdministrator, isOwner } from "../../../../lib/server/project-access";
 import { withJsonMutation } from "../../../../lib/server/route-helpers";
-import { StorageUnavailableError } from "../../../../lib/server/storage";
+import { StorageUnavailableError } from "../../../../lib/server/storage/repository";
 import { purgeAllUnusedUploads } from "../../../../lib/server/uploads/purge";
 
 export const dynamic = "force-dynamic";

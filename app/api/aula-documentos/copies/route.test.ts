@@ -42,12 +42,16 @@ vi.mock("../../../../lib/server/document-copies", () => ({
 }));
 
 vi.mock("../../../../lib/server/storage", () => ({
-  DocumentCopyQuotaExceededError: mocks.quotaError,
-  DocumentCopyLimitExceededError: mocks.limitError,
-  StorageUnavailableError: mocks.storageError,
   deleteUpload: vi.fn(),
   storeUpload: mocks.store,
+}));
+vi.mock("../../../../lib/server/storage/quota", () => ({
+  DocumentCopyQuotaExceededError: mocks.quotaError,
+  DocumentCopyLimitExceededError: mocks.limitError,
   validateUpload: mocks.validate,
+}));
+vi.mock("../../../../lib/server/storage/repository", () => ({
+  StorageUnavailableError: mocks.storageError,
 }));
 
 import { GET, POST } from "./route";

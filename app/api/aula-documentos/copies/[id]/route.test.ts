@@ -38,9 +38,9 @@ vi.mock("../../../../../lib/server/document-copies", () => ({
   deleteDocumentCopy: mocks.remove,
 }));
 
-vi.mock("../../../../../lib/server/storage", () => ({
+vi.mock("../../../../../lib/server/storage", () => ({ readUpload: mocks.read }));
+vi.mock("../../../../../lib/server/storage/repository", () => ({
   StorageUnavailableError: mocks.storageError,
-  readUpload: mocks.read,
 }));
 
 import { DELETE, GET } from "./route";
