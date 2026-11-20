@@ -98,10 +98,10 @@ Medición del 2026-11-20, antes de empezar:
 
 ### Fase 4 — Tarjetas y apps secundarias
 
-- [ ] Extraer de Tarjetas el shell, el editor de mazos/tarjetas y la sesión de repaso a componentes/hooks separados.
-- [ ] Mantener FSRS, progreso local, permisos y autosave sin cambios.
-- [ ] Medir Mapas, Ajedrez y Geometría; extraer solo si hay una responsabilidad clara y dejar por escrito la decisión cuando no la haya.
-- [ ] Cubrir creación/edición/borrado, repaso, progreso y estados vacíos de Tarjetas.
+- [x] Extraer de Tarjetas el shell, el editor de mazos/tarjetas y la sesión de repaso a componentes/hooks separados.
+- [x] Mantener FSRS, progreso local, permisos y autosave sin cambios.
+- [x] Medir Mapas, Ajedrez y Geometría; extraer solo si hay una responsabilidad clara y dejar por escrito la decisión cuando no la haya.
+- [x] Cubrir creación/edición/borrado, repaso, progreso y estados vacíos de Tarjetas.
 - **Criterios:** Tarjetas con shell reconocible y archivos TS/TSX <600; Mapas, Ajedrez y Geometría quedan igual o mejor justificados, sin refactors cosméticos; CSS sigue en ARC-04; pruebas y presupuestos pasan.
 
 ### Fase 5 — Residual de Aula Documentos
@@ -138,4 +138,5 @@ Medición del 2026-11-20, antes de empezar:
 - 2026-11-20: **Fase 1 completada.** Timeline pasa de un `timeline-app.tsx` de 720 líneas a un shell de 100 líneas, hooks de editor/lienzo y tarjetas de vista separadas. Se retiró su excepción de `largeFiles`; `arch:check` queda en **364 archivos / 923 imports / 0 problemas**. Suite: **228 archivos / 1.584 pruebas**; build, `perf:budget` y `perf:office` correctos.
 - 2026-11-20: **Fase 2 completada.** Hoja de cálculo queda con un shell de 80 líneas, hooks de documento y rejilla, barra de herramientas, barra `fx`, panel lateral y exportación CSV separada. Se conservaron fórmulas, estilos, límites, autosave y lectura invitada. Suite: **229 archivos / 1.585 pruebas**; `arch:check` en **370 archivos / 933 imports / 0 problemas**; `hoja-calculo` en **310.192 / 315.000 B gzip**.
 - 2026-11-20: **Fase 3 completada.** El visor Office queda con un hook de archivo/visor y componentes de cabecera, controles, error y estado vacío. La exportación se separa en utilidades comunes, DOCX y PPTX, manteniendo el barrel público. Añadidas pruebas del estado vacío, formato inválido y modo embebido. Suite: **230 archivos / 1.589 pruebas**; `arch:check` en **379 archivos / 951 imports / 0 problemas**; `aula-documentos` 369.601, export 329.694 y Office 196.481 B gzip.
+- 2026-11-20: **Fase 4 completada.** Tarjetas pasa de un `tarjetas-app.tsx` de 442 líneas a un shell de 98 líneas, hooks de editor/repaso y componentes de mazos, formulario, lista y sesión. Se mantienen FSRS, localStorage, permisos y autosave. Mapas (362), Ajedrez (309) y Geometría (382) no se refactorizan: están por debajo de 600 líneas, no tienen excepción en el baseline y no hay una separación que justifique el churn. `tarjetas.css` sigue siendo ARC-04. Suite: **230 archivos / 1.590 pruebas**; `arch:check` en **389 archivos / 970 imports / 0 problemas**; `hoja-calculo` 310.201, `aula-documentos` 369.609, export 329.701 y Office 196.481 B gzip.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

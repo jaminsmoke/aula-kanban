@@ -218,7 +218,7 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 ## 8. Estado tras ARC-01 y DEV-02
 
 - `npm run arch:check` y `npm run check` están disponibles; CI ejecuta `arch:check`.
-- Resultado actual: **379 archivos de producto / 951 imports / 5 violaciones base / 0 ciclos / 0 problemas nuevos**.
+- Resultado actual: **389 archivos de producto / 970 imports / 5 violaciones base / 0 ciclos / 0 problemas nuevos**.
 - Las excepciones de tamaño y las cinco dependencias `features → layout` siguen asignadas a ARC-02/ARC-04 y tienen caducidad.
 - El ciclo `auth ↔ demo` se eliminó con `lib/server/auth-user.ts`.
 - La configuración global de CodArch se retiró. DEV-02 quedó cerrado con el guard de MCP por repositorio, el inventario en [`mcp-tooling-audit.md`](mcp-tooling-audit.md) y la plantilla local [`mcp-project.example.json`](mcp-project.example.json).

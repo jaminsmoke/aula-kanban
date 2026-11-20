@@ -64,6 +64,31 @@ describe("Tarjetas de repaso", () => {
     expect((again as HTMLButtonElement).disabled).toBe(true);
   });
 
+  it("edita y elimina una tarjeta, y borra el mazo", async () => {
+    const state = {
+      version: 1,
+      decks: [{
+        id: "d1",
+        name: "Vocabulario",
+        createdAt: "2026-11-16T00:00:00.000Z",
+        cards: [{ id: "c1", front: "casa", back: "house", createdAt: "2026-11-16T00:00:00.000Z" }],
+      }],
+    };
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ state, updatedAt: 1 })));
+    render(<TarjetasApp projectId="p1" role="owner" />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Editar casa" }));
+    fireEvent.change(screen.getByLabelText("Anverso"), { target: { value: "casa grande" } });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar tarjeta" }));
+    expect(screen.getByText("casa grande")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Eliminar casa grande" }));
+    expect(screen.queryByText("casa grande")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Borrar mazo" }));
+    expect(await screen.findByText("Crea tu primer mazo")).toBeTruthy();
+  });
+
   it("deja la app en solo lectura para invitados", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ state: null, updatedAt: null })));
     render(<TarjetasApp projectId="p1" role="guest" />);
