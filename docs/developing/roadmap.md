@@ -42,10 +42,11 @@
 
 ### Fase 1 — Inventario y modelo de amenaza
 
-- [ ] Inventariar MCP globales y locales, comandos, URLs, variables de entorno y raíces.
-- [ ] Identificar qué datos puede leer cada herramienta y desde qué workspace.
-- [ ] Documentar el incidente de CodArch como caso de regresión.
-- [ ] Definir qué configuraciones se permiten en el repo y cuáles quedan fuera.
+- [x] Inventariar MCP globales y locales, comandos, URLs, variables de entorno y raíces.
+- [x] Identificar qué datos puede leer cada herramienta y desde qué workspace.
+- [x] Documentar el incidente de CodArch como caso de regresión.
+- [x] Definir qué configuraciones se permiten en el repo y cuáles quedan fuera.
+- **Inventario:** [`mcp-tooling-audit.md`](mcp-tooling-audit.md), con MCP activos, fuentes de configuración, modelo de amenaza y política permitido/prohibido.
 - **Criterios:** hay un inventario completo y un modelo de amenaza comprensible; no se ejecutan herramientas sin conocer su raíz.
 
 ### Fase 2 — Guard local y pruebas
@@ -85,4 +86,5 @@
 
 - 2026-11-20: DEV-02 sale del backlog y pasa a ser el roadmap activo. El bloque `codarch` de la configuración global de OpenCode apuntaba a `Visual Software Architecture`; se retiró y se guardó una copia previa en `opencode.json.before-codarch-removal`. El catálogo activo ya no expone CodArch.
 - La revisión inicial de ARC-01 añadió el guard de configuraciones MCP del proyecto en `architecture-check`; este roadmap amplía el aislamiento y lo documenta.
+- 2026-11-20: **Fase 1 completada.** Inventariados MCP activos, fuentes globales, copias inactivas y configuración de proyecto en [`mcp-tooling-audit.md`](mcp-tooling-audit.md). `unreal` y `blender-mcp` no declaran raíz de repositorio; CodArch quedó retirado y su copia previa marcada como inactiva. Definidos el modelo de amenaza y la política permitido/prohibido.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

@@ -221,4 +221,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - Resultado actual: **357 archivos de producto / 907 imports / 5 violaciones base / 0 ciclos / 0 problemas nuevos**.
 - Las excepciones de tamaño y las cinco dependencias `features → layout` siguen asignadas a ARC-02/ARC-04 y tienen caducidad.
 - El ciclo `auth ↔ demo` se eliminó con `lib/server/auth-user.ts`.
-- La configuración global de CodArch se retiró; DEV-02 mantiene el guard de MCP por repositorio.
+- La configuración global de CodArch se retiró; DEV-02 mantiene el guard de MCP por repositorio y su inventario vive en [`mcp-tooling-audit.md`](mcp-tooling-audit.md).
