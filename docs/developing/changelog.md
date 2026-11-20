@@ -1,8 +1,34 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-15 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-20 — Roadmap ARC-01 — Contratos de arquitectura y verificación local
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Documentado el mapa por capas del tablero y una línea base de excepciones en `docs/developing/arquitectura-global.md` y `docs/developing/arch-baseline.json`.
+- Añadido `scripts/architecture-check.mjs` con `npm run arch:check`, salida legible/`--json`, detección de imports prohibidos, ciclos, presupuestos y configuraciones MCP con raíz externa.
+- Integrado en `npm run check` y en CI.
+- Corregido el ciclo `lib/server/auth ↔ demo` moviendo `ChatGPTUser` a `lib/server/auth-user.ts`.
+- Documentado el flujo para añadir apps y retirar excepciones.
+- El MCP global de CodArch que apuntaba a otro repositorio quedó retirado; DEV-02 conserva el guard de tooling.
+
+### Verificación
+
+- `npm run arch:check`: **357 archivos de producto / 907 imports / 0 violaciones nuevas / 0 ciclos / 0 problemas de presupuesto / 0 problemas MCP**.
+- Suite completa: **228 archivos / 1.580 pruebas**; `npm run check`, `tsc`, ESLint, build, `perf:budget` y `perf:office` correctos.
+- `aula-documentos`: **369.601 / 370.000 B gzip**; export **329.694 / 340.000 B gzip**; Office **196.481 / 210.000 B gzip**.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-01 archivado en [`historial/roadmap-arc-01.md`](../historial/roadmap-arc-01.md). El backlog queda con **13 entradas**; siguiente candidato **DEV-02**.
 
 ---
 
