@@ -85,7 +85,7 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `access/administradores.ts` | 194 | `S` administradores | `mcp/dominios/administracion.ts`, `api/administrators` | ruta |
 | `access/administradores-repository.ts` | 108 | `R` `administrators_unified` | `access/administradores.ts` | integración |
 | `access/members.ts` | 172 | `S` miembros e invitaciones | `mcp/dominios/personas/*`, `api/members` | ruta |
-| `access/members-repository.ts` | 156 | `R` `project_members`, `students`, `teachers` | `access/members.ts` | — |
+| `access/members-repository.ts` | 156 | `R` `project_members`, `students`, `teachers` | `access/members.ts` | 1 |
 | `access/invitaciones.ts` | 69 | `S` invitaciones | `mcp/dominios/invitaciones.ts`, `api/invitations` | ruta |
 | `access/invitaciones-repository.ts` | 67 | `R` `project_members` y `administrators_unified` | `access/invitaciones.ts` | — |
 | `access/profile-update.ts` | 43 | `S` perfil + miembro | `people/students.ts`, `people/teachers.ts` | — |
@@ -112,7 +112,7 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `aula-documentos/aula-documentos-migration.ts` | 284 | `S` migración transaccional | `api/aula-documentos/migration` | 1 |
 | `aula-documentos/document-copies.ts` | 90 | `R` `document_copies` + borrado R2 | `api/aula-documentos/copies[/:id]` | — |
 | `projects/projects.ts` | 125 | `S` proyectos | `mcp/dominios`, `api/projects` | ruta |
-| `projects/projects-repository.ts` | 109 | `R` proyectos y recuentos | `projects/projects.ts` | — |
+| `projects/projects-repository.ts` | 109 | `R` proyectos y recuentos | `projects/projects.ts` | 1 |
 | `projects/project-overview.ts` | 92 | `S` lectura agregada | `api/projects` | 1 |
 | `projects/project-rekey.ts` | 49 | `S` migración de id | `projects/project-access.ts`, `projects/project-overview.ts` | 1 |
 | `books/project-books.ts` | 73 | `S` libros por proyecto | `api/project-books` | 1 |
@@ -407,3 +407,14 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En Fase 
 3. **Hecho (2026-11-20):** `tasks/service.ts` orquesta revisión, permisos y decoración; `api/tasks` solo valida y responde.
 4. **Hecho (2026-11-20):** `storageUnavailable()` en `http.ts` centraliza el 503; las ocho rutas afectadas lo consumen.
 5. **Hecho (2026-11-20):** `members` y `space-apps` tienen contrato; `projects` lo recibe al abrir la Fase 3.
+
+---
+
+## 12. Criterios de aceptación de Fase 3
+
+- [x] Cada regla tiene un hogar: servicios de aplicación, repositorios D1/R2 y reglas puras separados por dominio.
+- [x] Sin ciclos nuevos: **417 archivos de producto / 1.018 imports / 0 violaciones / 0 ciclos**.
+- [x] `lib/server` no importa `app` (regla de arquitectura en verde).
+- [x] Las pruebas de dominio y de repositorio corren sin D1 ni R2 reales: **31 archivos / 165 pruebas dirigidas**.
+- [x] Fachadas MCP revisadas: `reads.ts` y `writes.ts` retiradas; `registro.ts` es la puerta única y el baseline queda sin `testOnlyModules`.
+- [x] Suite final: **242 archivos / 1.644 pruebas**; `dead:check`, `app:budget` y ESLint sin problemas.
