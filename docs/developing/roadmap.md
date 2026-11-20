@@ -63,11 +63,11 @@ Medición del 2026-11-20:
 
 ### Fase 1 — Inventario y contrato del harness
 
-- [ ] Inventariar mocks, factories, respuestas, datos y helpers de los cinco archivos de Aula.
-- [ ] Identificar qué partes son entorno global y qué partes pertenecen a un flujo.
-- [ ] Definir la API del harness: documento, sesión, fetch, descargas y estados de error.
-- [ ] Documentar qué no puede hacer el harness: ocultar mocks, compartir estado mutable ni saltarse `cleanup`.
-- [ ] Mapear qué otros flujos pueden consumir las mismas factorías.
+- [x] Inventariar mocks, factories, respuestas, datos y helpers de los cinco archivos de Aula.
+- [x] Identificar qué partes son entorno global y qué partes pertenecen a un flujo.
+- [x] Definir la API del harness: documento, sesión, fetch, descargas y estados de error.
+- [x] Documentar qué no puede hacer el harness: ocultar mocks, compartir estado mutable ni saltarse `cleanup`.
+- [x] Mapear qué otros flujos pueden consumir las mismas factorías.
 - **Criterios:** inventario completo y límites explícitos; ninguna prueba migrada todavía.
 
 ### Fase 2 — Extraer el harness y migrar Aula
@@ -121,4 +121,5 @@ Medición del 2026-11-20:
 - 2026-11-20: ARC-05 sale del backlog y pasa a ser el roadmap activo. El backlog queda con **8 entradas**; siguiente candidato **ARC-06**.
 - La suite actual tiene **234 archivos / 20.642 líneas**; las cifras del backlog estaban desactualizadas.
 - `vitest.setup.ts` ya cubre shims de jsdom; el harness no sustituye ese setup global.
+- 2026-11-20: **Fase 1 completada.** Inventario en [`test-harness-audit.md`](test-harness-audit.md): 234 archivos / 20.642 líneas, cinco tests de Aula, ~190 líneas repetidas, capas de setup, contrato del harness y candidatos de Office/Tarjetas/Timeline/Hoja. Sin cambios de pruebas.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
