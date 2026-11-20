@@ -80,3 +80,43 @@ if (typeof globalThis.ResizeObserver === "undefined") {
   }
   Object.defineProperty(globalThis, "ResizeObserver", { configurable: true, value: ResizeObserverStub });
 }
+
+/* ProseMirror mide rangos al cambiar la selección; jsdom no implementa esas
+   medidas y el editor de Aula Documentos fallaría al montar. */
+if (typeof Range !== "undefined" && !Range.prototype.getClientRects) {
+  Range.prototype.getClientRects = () => [] as unknown as DOMRectList;
+}
+if (typeof Range !== "undefined" && !Range.prototype.getBoundingClientRect) {
+  Range.prototype.getBoundingClientRect = () => ({
+    x: 0,
+    y: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: 0,
+    height: 0,
+    toJSON: () => ({}),
+  }) as DOMRect;
+}
+if (typeof Element !== "undefined" && !Element.prototype.getClientRects) {
+  Element.prototype.getClientRects = () => [] as unknown as DOMRectList;
+}
+if (typeof Node !== "undefined") {
+  const nodePrototype = Node.prototype as unknown as {
+    getClientRects?: () => DOMRectList;
+    getBoundingClientRect?: () => DOMRect;
+  };
+  nodePrototype.getClientRects ??= () => [] as unknown as DOMRectList;
+  nodePrototype.getBoundingClientRect ??= () => ({
+    x: 0,
+    y: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: 0,
+    height: 0,
+    toJSON: () => ({}),
+  }) as DOMRect;
+}

@@ -1,12 +1,13 @@
 # Auditoría de tests, harness y presupuestos
 
-> **Estado:** Fase 1 de ARC-05 · **Fecha:** 2026-11-20
+> **Estado:** Fases 1 y 2 de ARC-05 · **Fecha:** 2026-11-20
 > **Alcance:** mocks, setup, datos de prueba y presupuestos de la suite.
 > **Regla:** el harness reduce duplicación sin ocultar mocks ni compartir estado mutable entre pruebas.
 
 ## 1. Resumen
 
-- **234 archivos de prueba / 20.642 líneas**.
+- **234 archivos / 1.597 pruebas** al iniciar ARC-05.
+- Tras la Fase 2: **235 archivos / 1.599 pruebas** y **1.297 líneas eliminadas** de los seis tests de Aula.
 - Aula Documentos concentra cinco archivos grandes:
   - `aula-documentos-copies.test.tsx`: 582 líneas.
   - `aula-documentos-presentation.test.tsx`: 525.
@@ -40,8 +41,8 @@ No mover aquí:
 
 Debe seguir siendo local:
 
-- `vi.mock` de módulos de producto y su sustitución concreta.
-- El estado de `documentMock` y sus valores iniciales.
+- La importación explícita del harness del flujo, que registra sus propios mocks.
+- Los overrides concretos de `documentMock` y sus valores iniciales.
 - Los timers, `localStorage`, `URL.createObjectURL` y spies de descarga.
 - Las aserciones y los nombres de menús/acciones.
 
@@ -64,6 +65,7 @@ Debe aportar:
 | `aula-documentos-autosave.test.tsx` | 491 | mismas | shims DOM, `documentMock`, `savedDocument`, menús |
 | `aula-documentos-documents.test.tsx` | 464 | mismas | shims DOM, `documentMock`, `savedDocument`, menús |
 | `aula-documentos-recovery.test.tsx` | 420 | mismas | shims DOM, `documentMock`, `savedDocument`, menús |
+| `aula-documentos-tables.test.tsx` | 324 | mismas | shims DOM, `documentMock`, menús, descarga |
 
 Bloques candidatos:
 
@@ -75,36 +77,42 @@ Bloques candidatos:
 6. `props`, `openMenu`, `chooseMenu`, `savedDocument`, `stubDownload` y `countMermaid`.
 7. `afterEach` de reseteo de mocks, timers, storage y URLs.
 
-## 4. Contrato propuesto
+## 4. Contrato implementado
 
-### `aula-documentos/testing/aula-harness.tsx`
+### `test-utils/aula-documentos.tsx`
 
-Debe exportar, como mínimo:
+Vive fuera del catálogo de producto para no alterar `arch:check`. Exporta:
 
 ```ts
-createAulaMocks(): {
-  document: DocumentMock;
-  mermaid: MermaidMock;
-  print: PrintMock;
-  copy: CopyMock;
-  officeImport: OfficeImportMock;
-};
-
-savedAulaDocument(title: string): AulaDocument;
-stubAulaDownload(): Mock;
-resetAulaMocks(mocks): void;
-openAulaMenu(name): void;
-chooseAulaMenu(menu, item): void;
-renderAulaDocumentos(props): RenderResult;
+documentMock;
+mermaidMock;
+printMock;
+copyMock;
+officeImportMock;
+props;
+CloseTrigger;
+WindowCloseProvider;
+savedDocument(title);
+stubDownload();
+countMermaid(content);
+openMenu(name);
+chooseMenu(menu, item);
+newDocument();
+openCopies();
+importDocument();
+insertMermaid();
+insertSlideBreak();
+printPdf();
+resetAulaDocumentMocks();
 ```
 
 Reglas:
 
-- Los `vi.mock` siguen en el archivo de prueba, usando los objetos devueltos por `createAulaMocks()`.
-- `resetAulaMocks` restaura valores base después de cada prueba.
-- `renderAulaDocumentos` envuelve `WindowCloseProvider` solo cuando el test lo necesite; no debe ocultar providers globales.
-- Los shims de `Range`/`Element`/`Node` se mueven a `vitest.setup.ts` en la Fase 2, porque son del entorno jsdom.
-- El harness no importa ni muta estado de otra prueba.
+- Los `vi.mock` viven en el harness, no en `vitest.setup.ts`, y solo se registran cuando un test de Aula lo importa.
+- El test importa primero el harness y después `AulaDocumentosApp`, para que los mocks existan antes de cargar la app.
+- `resetAulaDocumentMocks` restaura valores base y se registra con `afterEach` en cada archivo.
+- Los shims de `Range`/`Element`/`Node` se movieron a `vitest.setup.ts` porque son del entorno jsdom.
+- El harness no importa ni muta estado de otra prueba; la prueba de aislamiento está en `aula-documentos-harness.test.tsx`.
 
 ### Otros flujos
 
@@ -115,7 +123,7 @@ Reglas:
 | Timeline | `vis-timeline/standalone` | factoría de instancia del lienzo |
 | Hoja | `jspreadsheet-ce` | factoría de worksheet |
 
-No se extrae una utilidad hasta que tenga dos consumidores reales.
+Revisados en la Fase 2: ningún flujo fuera de Aula tiene hoy dos consumidores reales de la misma factoría. `jsonResponse` y `stubLocation` siguen en el setup global; Office, Tarjetas, Timeline y Hoja quedan como candidatos, no como código extraído. No se extrae una utilidad hasta que tenga dos consumidores reales.
 
 ## 5. Código muerto y presupuestos
 
@@ -130,5 +138,5 @@ No se extrae una utilidad hasta que tenga dos consumidores reales.
 - Inventario de mocks y helpers repetidos completo.
 - Separación entre setup global, setup local y harness definida.
 - Contrato del harness de Aula y candidatos de otros flujos documentados.
-- Sin cambios de pruebas todavía.
+- En la Fase 1 no se migraron pruebas; la migración llegó en la Fase 2.
 - `npm run check` y `arch:check` siguen pasando.

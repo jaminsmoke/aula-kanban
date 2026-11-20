@@ -111,7 +111,7 @@ Deuda:
 | P1 | Sistema de borradores versionados muerto | `useVersionedDraft` y sus dos diálogos no tenían consumidores reales | Retirado en ARC-03 Fase 1: 1.694 líneas menos |
 | P1 | Persistencia local sin contrato | Calculadora, Blockly, Tarjetas, tema y recuperación usaban `localStorage` por separado | Resuelto en ARC-03 con un contrato versionado único |
 | P1 | CSS sin capas | 48 archivos; primitivas y estilos de app mezclados | Tokens, primitivas, layout y estilos de app ordenados en ARC-04; queda la revisión responsive |
-| P1 | Pruebas duplicadas | Cinco archivos de Aula repiten casi todo el setup | Auditoría y contrato del harness en ARC-05; migración en Fase 2 |
+| P1 | Pruebas duplicadas | Cinco archivos de Aula repiten casi todo el setup | Harness extraído y seis tests migrados en ARC-05 Fase 2 |
 | P2 | Dominio grande | `document.ts` 655 líneas | Normalización, tablas y tipos acoplados |
 | P2 | Servidor sin mapa explícito | 138 archivos en `lib/server` | Difícil saber dónde vive una regla |
 | P2 | Falta de análisis de código muerto | No hay `knip`, `ts-prune` ni equivalente | Se descubren módulos huérfanos a mano |

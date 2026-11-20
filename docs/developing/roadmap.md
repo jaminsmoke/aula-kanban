@@ -47,7 +47,7 @@
 
 Medición del 2026-11-20:
 
-- **234 archivos de prueba / 20.642 líneas**.
+- **234 archivos / 1.597 pruebas** al iniciar ARC-05.
 - Aula Documentos concentra cinco archivos grandes:
   - `aula-documentos-copies.test.tsx`: 582 líneas.
   - `aula-documentos-presentation.test.tsx`: 525.
@@ -72,12 +72,12 @@ Medición del 2026-11-20:
 
 ### Fase 2 — Extraer el harness y migrar Aula
 
-- [ ] Crear el harness de Aula con factorías explícitas y estado por prueba.
-- [ ] Migrar los cinco archivos grandes sin cambiar las aserciones de comportamiento.
-- [ ] Extraer respuestas y utilidades comunes de Office, Tarjetas y Timeline con consumidores reales.
-- [ ] Mantener `vitest.setup.ts` solo para shims de entorno y limpieza global.
-- [ ] Añadir una prueba de aislamiento que falle si dos pruebas comparten estado mutable.
-- **Criterios:** los cinco archivos usan el harness, las pruebas siguen pasando y no aparecen mocks globales nuevos.
+- [x] Crear el harness de Aula con factorías explícitas y estado por prueba.
+- [x] Migrar los seis archivos de Aula (cinco grandes y `tables`) sin cambiar las aserciones de comportamiento.
+- [x] Revisar las respuestas y utilidades comunes de Office, Tarjetas, Timeline y Hoja; no hay dos consumidores reales fuera de Aula.
+- [x] Mantener `vitest.setup.ts` solo para shims de entorno y limpieza global.
+- [x] Añadir una prueba de aislamiento que falle si dos pruebas comparten estado mutable.
+- **Criterios:** los seis archivos usan el harness, las pruebas siguen pasando y no aparecen mocks globales nuevos.
 
 ### Fase 3 — Código muerto y dependencias
 
@@ -119,7 +119,8 @@ Medición del 2026-11-20:
 ## 7. Notas de sesión
 
 - 2026-11-20: ARC-05 sale del backlog y pasa a ser el roadmap activo. El backlog queda con **8 entradas**; siguiente candidato **ARC-06**.
-- La suite actual tiene **234 archivos / 20.642 líneas**; las cifras del backlog estaban desactualizadas.
+- La suite al iniciar ARC-05 tenía **234 archivos / 1.597 pruebas**; las cifras del backlog estaban desactualizadas.
 - `vitest.setup.ts` ya cubre shims de jsdom; el harness no sustituye ese setup global.
-- 2026-11-20: **Fase 1 completada.** Inventario en [`test-harness-audit.md`](test-harness-audit.md): 234 archivos / 20.642 líneas, cinco tests de Aula, ~190 líneas repetidas, capas de setup, contrato del harness y candidatos de Office/Tarjetas/Timeline/Hoja. Sin cambios de pruebas.
+- 2026-11-20: **Fase 1 completada.** Inventario en [`test-harness-audit.md`](test-harness-audit.md): 234 archivos / 1.597 pruebas, cinco tests de Aula, ~190 líneas repetidas, capas de setup, contrato del harness y candidatos de Office/Tarjetas/Timeline/Hoja. Sin cambios de pruebas.
+- 2026-11-20: **Fase 2 completada.** Harness en `test-utils/aula-documentos.tsx` (fuera del catálogo de producto); seis tests migrados, **1.297 líneas eliminadas**, `Range`/`Element`/`Node` movidos al setup global y prueba de aislamiento añadida. Suite: **235 archivos / 1.599 pruebas**. No hay dos consumidores reales para factorías fuera de Aula.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
