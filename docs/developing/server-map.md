@@ -313,7 +313,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 
 | Regla | Valor | Hogar único hoy | Validación | Prueba |
 |---|---|---|---|---|
-| Imagen de subida | 5 MB | `storage/quota.ts` (`MAX_IMAGE_BYTES`) | `validateUpload` + cuota | `storage.test.ts` |
+| Imagen de subida | 5 MB | `lib/domain/aula-documentos/image.ts` (`AULA_IMAGE_MAX_BYTES`); `storage/quota.ts` lo reexporta como `MAX_IMAGE_BYTES` | `validateUpload`, MCP y cliente | `storage.test.ts`, `image-upload.test.ts` |
 | Documento suelto | 10 MB | `storage/quota.ts` (`MAX_DOCUMENT_BYTES`) | `validateUpload` | `storage.test.ts` |
 | Imágenes por proyecto | 50 MB | `storage/quota.ts` (`MAX_PROJECT_DOCUMENT_IMAGE_BYTES`, `fitsDocumentImageQuota`) + `storage/repository.ts` (`projectDocumentImageUsage`) | `storeUpload` | `storage.test.ts` |
 | ZIP de copia portable | 60 MB | `lib/domain/aula-documentos/copy.ts` (`AULA_COPY_MAX_ZIP_BYTES`) | dominio + `storage/quota.ts` toma el valor | dominio y `storage` |
@@ -327,9 +327,9 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 | Página de inventario R2 | 100 objetos | `storage/repository.ts` (`MAX_BUCKET_PAGE`) | ruta `storage/inventory` | `storage.test.ts` |
 | Cursor de inventario | 8.192 caracteres | `api/storage/inventory/route.ts` (local) | ruta | `route.test.ts` |
 
-**Duplicidad P2 confirmada:** el límite de 5 MB existe dos veces con nombres distintos: `MAX_IMAGE_BYTES` en `storage/quota.ts` y `AULA_IMAGE_MAX_BYTES` en `lib/domain/aula-documentos/image.ts`. Son capas distintas (servidor y cliente), pero el valor debe tener una sola fuente en Fase 4.
+**Duplicidad P2 resuelta (Fase 4):** el valor canónico es `AULA_IMAGE_MAX_BYTES` en `lib/domain/aula-documentos/image.ts`. `storage/quota.ts` lo reexporta como `MAX_IMAGE_BYTES` y toma de ahí también la lista de MIME; API, MCP, copias y cliente comparten una sola fuente. `uploadLimitBytes` concentra el límite por finalidad.
 
-**Purgas existentes:** perfiles borrados (`access/deleted-profiles.ts`), auditoría MCP (`mcp/auditoria.ts`), subidas sin uso (`uploads/purge.ts`), copias huérfanas (`document-copies.cleanupOrphanDocumentCopies`), subidas de proyectos eliminados (`storage.cleanupOrphanUploads`). No todas tienen disparador automático: `cleanupOrphanUploads` y `cleanupOrphanDocumentCopies` solo se invocan desde pruebas o tareas manuales.
+**Purgas existentes:** perfiles borrados (`access/deleted-profiles.ts`), auditoría MCP (`mcp/auditoria.ts`), subidas sin uso (`uploads/purge.ts`), copias huérfanas (`document-copies.cleanupOrphanDocumentCopies`), subidas de proyectos eliminados (`storage.cleanupOrphanUploads`). **Auditoría Fase 4:** `cleanupOrphanUploads` y `cleanupOrphanDocumentCopies` solo se invocan desde pruebas o tareas manuales; se mantienen como limpieza manual documentada, sin scheduler en ARC-06. La purga de subidas relee referencias antes de borrar, conserva la fila si R2 falla y es idempotente.
 
 ---
 

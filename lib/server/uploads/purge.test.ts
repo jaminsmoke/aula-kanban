@@ -92,6 +92,15 @@ describe("purga de archivos sin uso", () => {
     expect(mocks.bucket?.delete).toHaveBeenCalledTimes(1);
   });
 
+  it("es idempotente: una segunda pasada ya no encuentra candidatos", async () => {
+    upload("uno", 1);
+    expect(await purgeUnusedUploads({ projectId, now, simulate: false }))
+      .toMatchObject({ candidates: 1, deleted: 1, failed: 0, bytes: 10 });
+    expect(await purgeUnusedUploads({ projectId, now, simulate: false }))
+      .toMatchObject({ candidates: 0, deleted: 0, failed: 0, bytes: 0 });
+    expect(mocks.bucket?.delete).toHaveBeenCalledTimes(1);
+  });
+
   it("la simulación no toca R2 ni la base de datos", async () => {
     upload("bbbb", 1);
     const report = await purgeUnusedUploads({ projectId, now });

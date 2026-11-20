@@ -2,7 +2,7 @@ import { z } from "zod";
 import { storeUpload } from "../../storage";
 import {
   MAX_DOCUMENT_BYTES,
-  MAX_IMAGE_BYTES,
+  uploadLimitBytes,
   uploadPurposes,
   validateUpload,
   type UploadPurpose,
@@ -88,7 +88,7 @@ async function subirArchivo(caller: McpCaller, args: Record<string, unknown>) {
   if (!bytes) return errorHerramienta("invalid", "El contenido base64 no es válido.");
   if (bytes.byteLength === 0) return errorHerramienta("invalid", "El archivo está vacío.");
 
-  const max = a.finalidad === "document" ? MAX_DOCUMENT_BYTES : MAX_IMAGE_BYTES;
+  const max = uploadLimitBytes(a.finalidad);
   if (bytes.byteLength > max) {
     return errorHerramienta("too_large", a.finalidad === "document" ? "El documento supera los 10 MB permitidos." : "La imagen supera los 5 MB permitidos.");
   }

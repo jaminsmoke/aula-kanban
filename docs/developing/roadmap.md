@@ -102,11 +102,12 @@ Medición del 2026-11-20 al abrir ARC-06:
 
 ### Fase 4 — Cuotas, purgas, almacenamiento y migraciones
 
-- [ ] Auditar límites de almacenamiento, cuotas, inventario, purgas y recursos huérfanos.
-- [ ] Unificar la fuente de cada límite y su validación en API y MCP.
+- [x] Auditar límites de almacenamiento, cuotas, inventario, purgas y recursos huérfanos.
+- [x] Unificar la fuente de cada límite y su validación en API y MCP.
 - [ ] Revisar migraciones locales, rollback y datos anteriores sin tocar producción.
-- [ ] Probar idempotencia de purgas y recuperación ante fallos parciales.
+- [x] Probar idempotencia de purgas y recuperación ante fallos parciales.
 - **Criterios:** cada límite y purga tiene un único hogar, pruebas de borde y ninguna migración remota.
+- **Avance (2026-11-20):** auditoría de la tabla de límites y purgas en `server-map.md`. El límite de 5 MB y la lista MIME de imagen pasan a `lib/domain/aula-documentos/image.ts`; `storage/quota.ts` los reexporta y `uploadLimitBytes` concentra el máximo por finalidad para web y MCP. La purga de subidas añade prueba de idempotencia; recuperación parcial, relectura y fallo de R2 ya estaban cubiertos. `cleanupOrphanUploads` y `cleanupOrphanDocumentCopies` quedan documentados como limpieza manual, sin scheduler.
 
 ### Fase 5 — Cierre
 
@@ -149,6 +150,7 @@ Medición del 2026-11-20 al abrir ARC-06:
 - 2026-11-20 — Fase 3, undécimo bloque y último `S+R`: `projects/project-access.ts` separa administradores, membresías y filas de proyecto en `projects/access-repository.ts`. La propiedad de la instancia, el bootstrap, la demo y `resolveProject` conservan su comportamiento; `ProjectRow` se mantiene como alias del tipo del repositorio. Suite completa en verde.
 - 2026-11-20 — Fase 3, duodécimo bloque: revisión de las fachadas MCP. `mcp/reads.ts` y `mcp/writes.ts` solo eran importadas por sus tests; se retiraron y sus pruebas pasan a `registro.registerTools` con `READ_TOOL_NAMES`/`WRITE_TOOL_NAMES`. `dead-code-baseline.json` queda con `testOnlyModules: []` y el mapa documenta la revisión. También se retiró `contexto.toolError`, que solo existía para la reexportación de compatibilidad de la fachada.
 - 2026-11-20 — Fase 3 cerrada: contratos de `projects-repository` (alta, recuentos y orden de borrado) y `members-repository` (fichas, invitación condicional y baja) con fixtures D1; `lib/domain` y repositorios corren sin bindings. Suite **242 archivos / 1.644 pruebas**, arquitectura sin ciclos y baseline limpio.
+- 2026-11-20 — Fase 4, primer bloque: límite de imagen y MIME con fuente única en el dominio; `uploadLimitBytes` unifica la validación web/MCP; purga de subidas idempotente; auditoría de purgas manuales documentada.
 - 2026-11-20 — Fase 2, quinto bloque: pruebas de contrato para `api/members` (11 casos) y `api/space-apps` (8 casos), con guardas de origen/JSON, 401/403/404, validación, estados de servicio y cuerpos exactos. No se cambió código de producto.
 - 2026-11-20 — Fase 2, cuarto bloque: `storageUnavailable()` y `STORAGE_UNAVAILABLE_MESSAGE` viven en `lib/server/http.ts`; ocho rutas de archivos, copias, subidas, inventario y purga comparten el 503. Se conservan los códigos y se unifica el texto; la prueba de `files/[id]` se ajusta al mensaje único. MCP mantiene su propio mensaje de herramienta.
 - 2026-11-20 — Fase 2, tercer bloque: `lib/server/tasks/service.ts` (144 líneas) absorbe listado, revisión, permisos, responsables y decoración; `api/tasks` pasa de 76 a 46 líneas y deja de importar D1 y Drizzle. `taskAtRevision` se añade a `tasks/queries.ts` y `taskWriteDenial` a `tasks/permissions.ts`. Sin cambios de URLs, estados ni mensajes; 11 pruebas de tareas en verde.

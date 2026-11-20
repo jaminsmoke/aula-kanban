@@ -15,13 +15,16 @@ vi.mock("cloudflare:workers", () => ({
   },
 }));
 
+import { AULA_IMAGE_MAX_BYTES } from "../domain/aula-documentos/image";
 import { MAX_BUCKET_PAGE, StorageUnavailableError, listBucketPage } from "./storage/repository";
 import {
+  MAX_IMAGE_BYTES,
   MAX_PROJECT_DOCUMENT_COPIES,
   MAX_PROJECT_DOCUMENT_COPY_BYTES,
   MAX_PROJECT_DOCUMENT_IMAGE_BYTES,
   fitsDocumentCopyQuota,
   fitsDocumentImageQuota,
+  uploadLimitBytes,
   uploadPurposes,
   validateUpload,
 } from "./storage/quota";
@@ -96,6 +99,10 @@ describe("subidas de imágenes de documento", () => {
   });
 
   it("aplica el límite de 5 MB por imagen y la cuota de 50 MB por proyecto", () => {
+    expect(MAX_IMAGE_BYTES).toBe(AULA_IMAGE_MAX_BYTES);
+    expect(uploadLimitBytes("task-image")).toBe(AULA_IMAGE_MAX_BYTES);
+    expect(uploadLimitBytes("document")).toBe(10 * 1024 * 1024);
+    expect(uploadLimitBytes("document-copy")).toBe(60 * 1024 * 1024);
     expect(validateUpload("document-image", "image/png", 5 * 1024 * 1024 + 1)).toContain("5 MB");
     expect(MAX_PROJECT_DOCUMENT_IMAGE_BYTES).toBe(50 * 1024 * 1024);
     expect(fitsDocumentImageQuota(0, MAX_PROJECT_DOCUMENT_IMAGE_BYTES)).toBe(true);

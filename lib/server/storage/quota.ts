@@ -3,6 +3,7 @@ import {
   AULA_COPY_MAX_ZIP_BYTES,
   AULA_COPY_PROJECT_QUOTA_BYTES,
 } from "../../domain/aula-documentos/copy";
+import { AULA_IMAGE_MAX_BYTES, AULA_IMAGE_MIME_TYPES } from "../../domain/aula-documentos/image";
 
 /**
  * Reglas puras de las subidas: finalidades, tipos admitidos, límites y cuotas.
@@ -19,7 +20,7 @@ export type UploadOrigin = "web" | "mcp";
 export const uploadPurposes = ["task-image", "board-asset", "document", "document-image", "document-copy"] as const;
 export type UploadPurpose = (typeof uploadPurposes)[number];
 
-const IMAGE_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+const IMAGE_MIME_TYPES: readonly string[] = AULA_IMAGE_MIME_TYPES;
 const DOCUMENT_MIME_TYPES = ["application/pdf", "text/plain", "text/markdown", "text/csv", ...IMAGE_MIME_TYPES];
 const COPY_MIME_TYPES = ["application/zip", "application/x-zip-compressed"];
 const EXTENSIONS: Record<string, string> = {
@@ -34,7 +35,8 @@ const EXTENSIONS: Record<string, string> = {
   "application/zip": ".zip",
   "application/x-zip-compressed": ".zip",
 };
-export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+/** Límite de imagen del dominio: una sola fuente para web, MCP y copias. */
+export const MAX_IMAGE_BYTES = AULA_IMAGE_MAX_BYTES;
 export const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
 const MAX_DOCUMENT_COPY_BYTES = AULA_COPY_MAX_ZIP_BYTES;
 export const MAX_PROJECT_DOCUMENT_COPY_BYTES = AULA_COPY_PROJECT_QUOTA_BYTES;
@@ -85,6 +87,17 @@ export function uploadExtension(mimeType: string): string {
 }
 
 /**
+ * Devuelve el límite de bytes de una finalidad de subida.
+ * @param purpose - Finalidad declarada.
+ * @returns El máximo permitido en bytes.
+ */
+export function uploadLimitBytes(purpose: UploadPurpose): number {
+  if (purpose === "document") return MAX_DOCUMENT_BYTES;
+  if (purpose === "document-copy") return MAX_DOCUMENT_COPY_BYTES;
+  return MAX_IMAGE_BYTES;
+}
+
+/**
  * Comprueba si una imagen cabe en la cuota del proyecto.
  * @param used - Bytes ya usados.
  * @param incoming - Bytes de la imagen nueva.
@@ -118,11 +131,7 @@ export function validateUpload(purpose: UploadPurpose, mimeType: string, sizeByt
       ? COPY_MIME_TYPES
       : IMAGE_MIME_TYPES;
   if (!allowed.includes(mimeType)) return "Tipo de archivo no admitido para esta subida.";
-  const max = purpose === "document"
-    ? MAX_DOCUMENT_BYTES
-    : purpose === "document-copy"
-      ? MAX_DOCUMENT_COPY_BYTES
-      : MAX_IMAGE_BYTES;
+  const max = uploadLimitBytes(purpose);
   if (!sizeBytes || sizeBytes > max) {
     if (purpose === "document") return "El documento supera los 10 MB permitidos.";
     if (purpose === "document-copy") return "La copia supera el tamaño máximo permitido.";
