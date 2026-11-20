@@ -1,9 +1,10 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { AULA_DOCUMENTOS_CSS } from "./board/apps/aula-documentos/test-css";
 
 const GLOBALS = readFileSync(join(process.cwd(), "app", "globals.css"), "utf8");
-const AULA_CSS = readFileSync(join(process.cwd(), "app", "board", "apps", "aula-documentos", "aula-documentos.css"), "utf8");
+const AULA_CSS = AULA_DOCUMENTOS_CSS;
 
 /**
  * Lee las declaraciones de una hoja de estilos.

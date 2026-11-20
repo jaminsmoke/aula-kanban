@@ -1,8 +1,5 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-
-const CSS = readFileSync(join(process.cwd(), "app", "board", "apps", "aula-documentos", "aula-documentos.css"), "utf8");
+import { AULA_DOCUMENTOS_CSS as CSS } from "./test-css";
 
 describe("barra móvil de Aula Documentos", () => {
   it("oculta la barra directa y usa menús de 44 px", () => {

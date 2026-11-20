@@ -1,7 +1,7 @@
 "use client";
 
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
-import type { Editor, JSONContent } from "@tiptap/core";
+import type { Editor } from "@tiptap/core";
 import {
   AlignCenter,
   AlignJustify,
@@ -54,57 +54,37 @@ import {
   AULA_PRESENTATION_THEMES,
   DEFAULT_AULA_PRESENTATION,
   createEmptyAulaDocument,
-  normalizeAulaLink,
   parseAulaDocument,
   type AulaDocument,
-  type AulaDocumentStats,
   type AulaPresentationTheme,
 } from "../../../../lib/domain/aula-documentos/document";
-import type { AulaDocumentImportPreview } from "../../../../lib/domain/aula-documentos/importers";
-import type { AulaCopyAsset, AulaCopyBuildResult, AulaCopyManifest } from "../../../../lib/domain/aula-documentos/copy";
-import { aulaFileName, aulaRecoveryFileName } from "../../../../lib/domain/aula-documentos/filename";
-import {
-  AULA_DOCUMENT_MARKDOWN_MAX_LENGTH,
-  documentToMarkdown,
-  markdownToDocument,
-} from "../../../../lib/domain/aula-documentos/markdown";
-import {
-  AULA_MIGRATION_SOURCE_LABELS,
-  type AulaMigrationSource,
-} from "../../../../lib/domain/aula-documentos/migration";
+import { aulaRecoveryFileName } from "../../../../lib/domain/aula-documentos/filename";
+import { AULA_MIGRATION_SOURCE_LABELS } from "../../../../lib/domain/aula-documentos/migration";
 import { buildPresentationSlides } from "../../../../lib/domain/aula-documentos/presentation";
 import { createStarterAulaDocument } from "../../../../lib/domain/aula-documentos/starter";
-import {
-  AULA_DOCUMENT_TEMPLATES,
-  type AulaDocumentTemplate,
-} from "../../../../lib/domain/aula-documentos/templates";
-import {
-  AULA_RECOVERY_REASON_LABELS,
-  listAulaRecoveryCopies,
-  saveAulaRecoveryCopy,
-  type AulaRecoveryCopy,
-  type AulaRecoveryReason,
-} from "../../../../lib/domain/aula-documentos/recovery";
-import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
+import { AULA_DOCUMENT_TEMPLATES } from "../../../../lib/domain/aula-documentos/templates";
+import { AULA_RECOVERY_REASON_LABELS } from "../../../../lib/domain/aula-documentos/recovery";
 import { useAppDocument, type VersionedSaveResult } from "../use-app-document";
 import { useWindowClose, useWindowCloseGuard } from "../../shared/window-close-guard";
 import type { StoreRole } from "../types";
-import { importOfficeFile } from "../../shared/office/office-import";
-import { exportAulaDocx, exportAulaPptx } from "../../shared/office/office-export";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
 import { AULA_IMAGE_ACCEPT } from "../../../../lib/domain/aula-documentos/image";
-import { imageFilesFromDataTransfer, uploadAulaImage } from "../../shared/aula-documentos/image-upload";
-import {
-  type AulaCopySummary,
-} from "../../shared/aula-documentos/copy-client";
-import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
+import { imageFilesFromDataTransfer } from "../../shared/aula-documentos/image-upload";
+import { countMermaidBlocks } from "../../shared/aula-documentos/export-html";
 import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../../shared/aula-documentos/mermaid-block";
-import { getMermaidRenderer } from "../../shared/aula-documentos/mermaid-renderer";
-import { printHtmlDocument } from "../../shared/aula-documentos/print-html";
 import { useDialogFocus } from "../../shared/use-dialog-focus";
 import { AulaMenu, type AulaMenuAction } from "./aula-documentos-menu";
 import "./aula-documentos.css";
-import { countWords, contentText, downloadBlob, downloadTextFile, formatSavedTime, formatSourceDate, remapCopyImageUrls } from "./utils/document-view";
+import { countWords, contentText, downloadTextFile, formatSavedTime, formatSourceDate } from "./utils/document-view";
+import { useAulaRecovery } from "./hooks/use-aula-recovery";
+import { useAulaMigration } from "./hooks/use-aula-migration";
+import { useAulaCopies } from "./hooks/use-aula-copies";
+import { useAulaPresentation } from "./hooks/use-aula-presentation";
+import { useAulaExports } from "./hooks/use-aula-exports";
+import { useAulaNewDocument } from "./hooks/use-aula-new-document";
+import { IMPORT_LABELS, useAulaImport } from "./hooks/use-aula-import";
+import { useAulaImages } from "./hooks/use-aula-images";
+import { useAulaLink } from "./hooks/use-aula-link";
 
 const PresentationView = lazy(() => import("../../shared/aula-documentos/presentation-view").then((module) => ({
   default: module.PresentationView,
@@ -185,51 +165,10 @@ const EMPTY_TOOLBAR_STATE: ToolbarState = {
   canRedo: false,
 };
 
-const IMPORT_LABELS: Record<AulaDocumentImportPreview["source"], string> = {
-  documentos: "Notas y documentos",
-  mermaid: "Diagramas",
-  presentaciones: "Presentaciones",
-  markdown: "Markdown",
-  office: "Documento de Office",
-};
-
-type ImportPreviewState = AulaDocumentImportPreview & {
-  sourceUpdatedAt: number | null;
-};
-
-type CopyImportPreview = {
-  fileName: string;
-  document: AulaDocument;
-  manifest: AulaCopyManifest;
-  assets: AulaCopyAsset[];
-  stats: AulaDocumentStats;
-  warnings: string[];
-  createdAtLabel: string;
-};
-
-type AulaCopyView = AulaCopySummary & {
-  sizeLabel: string;
-  dateLabel: string;
-};
-
 type SaveConflict = {
   updatedAt: number | null;
   keepConfirm: boolean;
 };
-
-type MigrationStatus = {
-  aula: { exists: boolean; updatedAt: number | null };
-  sources: Array<{
-    source: AulaMigrationSource;
-    exists: boolean;
-    updatedAt: number | null;
-    valid: boolean;
-    message?: string;
-  }>;
-  migration: { active: boolean; createdAt: number | null };
-};
-
-type MigrationLoadState = "status" | "migrate" | "rollback";
 
 /**
  * Botón de la barra de formato.
@@ -287,40 +226,7 @@ function MobileActions({
 
 
 
-/**
- * Carga las imágenes internas solo cuando se inicia una exportación.
- * @param content - Contenido del documento.
- * @returns Imágenes resueltas y fallos.
- */
-async function loadExportImages(content: JSONContent) {
-  const { loadAulaImageAssets } = await import("../../shared/aula-documentos/export-images");
-  return loadAulaImageAssets(content);
-}
 
-/**
- * Construye una copia portable con las imágenes del documento.
- * @param document - Documento que se quiere archivar.
- * @returns El ZIP y el manifiesto, o un error legible.
- */
-async function buildPortableCopy(document: AulaDocument): Promise<AulaCopyBuildResult> {
-  const images = await loadExportImages(document.content);
-  if (images.failed.length) {
-    return {
-      ok: false,
-      code: "missing-asset",
-      message: "No se pudo leer una imagen del documento. La copia no se ha generado.",
-    };
-  }
-  const { buildAulaDocumentCopy } = await import("../../../../lib/domain/aula-documentos/copy");
-  return buildAulaDocumentCopy(
-    document,
-    [...images.assets.values()].map(({ source, mime, bytes }) => ({
-      id: source.split("/").pop() ?? "",
-      mime: mime as AulaCopyAsset["mime"],
-      bytes,
-    })),
-  );
-}
 
 
 
@@ -334,76 +240,20 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [title, setTitle] = useState(initialDocument.title);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [printing, setPrinting] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
   const [editVersion, setEditVersion] = useState(0);
-  const [exporting, setExporting] = useState(false);
   const [status, setStatus] = useState("Cargando documento…");
   const [wordCount, setWordCount] = useState(0);
   const [diagramCount, setDiagramCount] = useState(0);
-  const [linkOpen, setLinkOpen] = useState(false);
-  const [linkUrl, setLinkUrl] = useState("");
-  const [linkError, setLinkError] = useState<string | null>(null);
-  const [importOpen, setImportOpen] = useState(false);
-  const [importPreview, setImportPreview] = useState<ImportPreviewState | null>(null);
-  const [importOfficeSource, setImportOfficeSource] = useState<File | null>(null);
-  const [officeOpenSource, setOfficeOpenSource] = useState<File | null>(null);
-  const [officePreviewOpen, setOfficePreviewOpen] = useState(false);
-  const [officePreviewTitle, setOfficePreviewTitle] = useState("Archivo original");
-  const [imageUploading, setImageUploading] = useState(false);
-  const [importLoading, setImportLoading] = useState<string | null>(null);
-  const [importError, setImportError] = useState<string | null>(null);
-  const [importConfirm, setImportConfirm] = useState(false);
-  const [newDocumentOpen, setNewDocumentOpen] = useState(false);
-  const [newDocumentPreview, setNewDocumentPreview] = useState<{ template: AulaDocumentTemplate; document: AulaDocument } | null>(null);
-  const [newDocumentError, setNewDocumentError] = useState<string | null>(null);
   const [actionsOpen, setActionsOpen] = useState(false);
-  const [preparingPresentation, setPreparingPresentation] = useState(false);
-  const [presentation, setPresentation] = useState<{ title: string; slides: string[] } | null>(null);
   const [presentationTheme, setPresentationTheme] = useState<AulaPresentationTheme>(DEFAULT_AULA_PRESENTATION.theme);
   const [presentationNotes, setPresentationNotes] = useState<Record<string, string>>({});
-  const [exportingPresentation, setExportingPresentation] = useState(false);
-  const [exportingOffice, setExportingOffice] = useState(false);
-  const [slidePreview, setSlidePreview] = useState<{ title: string; slides: string[]; index: number } | null>(null);
-  const [markdownSourceOpen, setMarkdownSourceOpen] = useState(false);
-  const [markdownSourceDraft, setMarkdownSourceDraft] = useState("");
-  const [markdownSourceError, setMarkdownSourceError] = useState<string | null>(null);
   const [closePromptOpen, setClosePromptOpen] = useState(false);
   const [invalidDocument, setInvalidDocument] = useState<{ raw: unknown; message: string } | null>(null);
   const [invalidResetConfirm, setInvalidResetConfirm] = useState(false);
   const [saveConflict, setSaveConflict] = useState<SaveConflict | null>(null);
   const [conflictNotice, setConflictNotice] = useState<string | null>(null);
-  const [recoveryOpen, setRecoveryOpen] = useState(false);
-  const [recoveryCopies, setRecoveryCopies] = useState<AulaRecoveryCopy[]>([]);
-  const [recoveryCount, setRecoveryCount] = useState(() => {
-    if (typeof window === "undefined") return 0;
-    try {
-      return listAulaRecoveryCopies(window.localStorage, projectId).length;
-    } catch {
-      return 0;
-    }
-  });
-  const [recoveryRestoreId, setRecoveryRestoreId] = useState<string | null>(null);
-  const [recoveryNotice, setRecoveryNotice] = useState<string | null>(null);
-  const [copiesOpen, setCopiesOpen] = useState(false);
-  const [copies, setCopies] = useState<AulaCopyView[]>([]);
-  const [copiesLoading, setCopiesLoading] = useState(false);
-  const [copiesError, setCopiesError] = useState<string | null>(null);
-  const [copyNotice, setCopyNotice] = useState<string | null>(null);
-  const [copySaving, setCopySaving] = useState(false);
-  const [copyDeleteId, setCopyDeleteId] = useState<string | null>(null);
-  const [copyImport, setCopyImport] = useState<CopyImportPreview | null>(null);
-  const [copyImportOpen, setCopyImportOpen] = useState(false);
-  const [copyImportConfirm, setCopyImportConfirm] = useState(false);
-  const [copyImportBusy, setCopyImportBusy] = useState(false);
-  const [copyImportError, setCopyImportError] = useState<string | null>(null);
-  const [migrationOpen, setMigrationOpen] = useState(false);
-  const [migrationStatus, setMigrationStatus] = useState<MigrationStatus | null>(null);
-  const [migrationLoading, setMigrationLoading] = useState<MigrationLoadState | null>(null);
-  const [migrationError, setMigrationError] = useState<string | null>(null);
-  const [migrationNotice, setMigrationNotice] = useState<string | null>(null);
-  const migrationRef = useRef<HTMLElement>(null);
   const editorRef = useRef<Editor | null>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const pendingDocumentRef = useRef<AulaDocument | null>(null);
@@ -414,20 +264,24 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const documentVersionRef = useRef<number | null>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
   const actionsToggleRef = useRef<HTMLButtonElement>(null);
-  const newDocumentRef = useRef<HTMLElement>(null);
   const invalidDocumentRef = useRef<HTMLElement>(null);
   const closePromptRef = useRef<HTMLElement>(null);
-  const importRef = useRef<HTMLElement>(null);
-  const officePreviewRef = useRef<HTMLElement>(null);
-  const officeOpenInputRef = useRef<HTMLInputElement>(null);
-  const slidePreviewRef = useRef<HTMLElement>(null);
-  const markdownSourceRef = useRef<HTMLElement>(null);
   const conflictRef = useRef<HTMLElement>(null);
-  const recoveryRef = useRef<HTMLElement>(null);
-  const copiesRef = useRef<HTMLElement>(null);
-  const copyImportRef = useRef<HTMLElement>(null);
   const readOnly = role === "guest";
   const { load, saveVersioned, loading, error } = useAppDocument<AulaDocument>(projectId, "aula-documentos");
+
+  const {
+    imageUploading,
+    openImagePicker,
+    insertImageFiles,
+    insertMermaid,
+    insertSlideBreak,
+  } = useAulaImages({
+    editorRef,
+    readOnly,
+    projectId,
+    setStatus,
+  });
 
   /**
    * Marca el documento como modificado y reinicia el debounce de autosave.
@@ -465,18 +319,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     };
   }, [actionsOpen]);
 
-  useDialogFocus(newDocumentOpen, closeNewDocument, newDocumentRef, actionsToggleRef);
   useDialogFocus(Boolean(invalidDocument), () => {}, invalidDocumentRef);
   useDialogFocus(closePromptOpen, () => setClosePromptOpen(false), closePromptRef);
-  useDialogFocus(importOpen, closeImport, importRef, actionsToggleRef);
-  useDialogFocus(officePreviewOpen, closeOfficePreview, officePreviewRef);
-  useDialogFocus(Boolean(slidePreview), () => setSlidePreview(null), slidePreviewRef);
-  useDialogFocus(markdownSourceOpen, () => setMarkdownSourceOpen(false), markdownSourceRef);
   useDialogFocus(Boolean(saveConflict), () => {}, conflictRef);
-  useDialogFocus(recoveryOpen, closeRecoveryCopies, recoveryRef);
-  useDialogFocus(copiesOpen, closeCopies, copiesRef);
-  useDialogFocus(copyImportOpen, closeCopyImport, copyImportRef);
-  useDialogFocus(migrationOpen, () => setMigrationOpen(false), migrationRef);
 
   const requestWindowClose = useWindowClose();
   const closeGuard = useCallback(() => {
@@ -582,6 +427,18 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     },
   }) ?? EMPTY_TOOLBAR_STATE;
 
+  const {
+    linkOpen,
+    setLinkOpen,
+    linkUrl,
+    setLinkUrl,
+    linkError,
+    setLinkError,
+    openLinkPanel,
+    applyLink,
+    removeLink,
+  } = useAulaLink({ editor, readOnly, setStatus });
+
   /**
    * Aplica un documento validado al editor y al título.
    * @param document - Documento que se muestra.
@@ -602,11 +459,6 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     setDirty(false);
     setSaveFailed(false);
     setStatus("Documento guardado cargado.");
-  }, []);
-
-  const closePresentation = useCallback(() => {
-    setPresentation(null);
-    setStatus("Presentación cerrada.");
   }, []);
 
   /**
@@ -682,86 +534,27 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     applyLoadedState(state, updatedAt);
   }
 
-  /**
-   * Consulta qué datos antiguos quedan y si hay una migración reversible.
-   * @param showSpinner - Si debe mostrarse el estado de carga inicial.
-   */
-  async function refreshMigrationStatus(showSpinner = true) {
-    if (showSpinner) setMigrationLoading("status");
-    try {
-      const response = await fetch(`/api/aula-documentos/migration?project=${encodeURIComponent(projectId)}`, { cache: "no-store" });
-      if (!response.ok) throw new Error();
-      setMigrationStatus(await response.json() as MigrationStatus);
-      setMigrationError(null);
-    } catch {
-      setMigrationError("No se pudo consultar la migración documental.");
-    } finally {
-      if (showSpinner) setMigrationLoading(null);
-    }
-  }
-
-  /**
-   * Abre el panel de migración y consulta el estado actual.
-   */
-  function openMigration() {
-    setMigrationError(null);
-    setMigrationNotice(null);
-    setMigrationOpen(true);
-    void refreshMigrationStatus();
-  }
-
-  /**
-   * Ejecuta o deshace la migración de las apps documentales antiguas.
-   * @param action - Acción solicitada.
-   */
-  async function runMigration(action: "migrate" | "rollback") {
-    if (dirty || savingRef.current) return;
-    setMigrationLoading(action);
-    setMigrationError(null);
-    setMigrationNotice(null);
-    try {
-      const response = await fetch(`/api/aula-documentos/migration?project=${encodeURIComponent(projectId)}`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action }),
-      });
-      const data = await response.json().catch(() => null) as {
-        message?: string;
-        document?: unknown;
-        updatedAt?: number | null;
-        warnings?: string[];
-      } | null;
-      if (!response.ok) {
-        setMigrationError(data?.message ?? "No se pudo completar la migración documental.");
-        return;
-      }
-
-      if (action === "migrate") {
-        if (data?.document !== undefined && data.document !== null) {
-          applyLoadedState(data.document, data.updatedAt ?? null);
-        }
-        const warningText = data?.warnings?.length ? ` Avisos: ${data.warnings.join(" ")}` : "";
-        setMigrationNotice(`Migración aplicada. Los documentos originales siguen guardados.${warningText}`);
-        setStatus("Datos antiguos migrados a Aula Documentos.");
-      } else {
-        if (data?.document === null) {
-          applyDocument(createEmptyAulaDocument("Documento sin título"));
-          setLastSavedAt(null);
-          setDirty(false);
-          setStatus("Migración deshecha. No había documento de Aula guardado.");
-        } else if (data?.document !== undefined) {
-          applyLoadedState(data.document, data.updatedAt ?? null);
-        }
-        setMigrationNotice("Migración deshecha. El documento anterior de Aula se ha restaurado.");
-        setStatus("Migración documental deshecha.");
-      }
-      await refreshMigrationStatus(false);
-    } catch {
-      setMigrationError("No se pudo completar la migración documental.");
-    } finally {
-      setMigrationLoading(null);
-    }
-  }
+  const {
+    migrationOpen,
+    setMigrationOpen,
+    migrationStatus,
+    migrationLoading,
+    migrationError,
+    migrationNotice,
+    migrationRef,
+    openMigration,
+    runMigration,
+  } = useAulaMigration({
+    projectId,
+    dirty,
+    savingRef,
+    applyLoadedState,
+    applyDocument,
+    setLastSavedAt,
+    setDirty,
+    setStatus,
+  });
+  useDialogFocus(migrationOpen, () => setMigrationOpen(false), migrationRef);
 
   useEffect(() => {
     let active = true;
@@ -805,331 +598,169 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     return parsed.document;
   }, [editor, presentationNotes, presentationTheme, title]);
 
-  /**
-   * Guarda una copia local del documento antes de una operación destructiva.
-   * @param reason - Motivo de la copia.
-   * @param serverUpdatedAt - Versión del servidor asociada; por defecto, la cargada.
-   * @returns `true` si la copia quedó almacenada en el navegador.
-   */
-  function storeRecoveryCopy(
-    reason: AulaRecoveryReason,
-    serverUpdatedAt: number | null = documentVersionRef.current,
-  ): boolean {
-    const document = currentDocument();
-    if (!document) return false;
-    try {
-      const result = saveAulaRecoveryCopy(window.localStorage, projectId, {
-        document,
-        reason,
-        serverUpdatedAt,
-      });
-      if (!result.ok) {
-        setStatus(result.reason === "quota"
-          ? "No hay espacio para la copia local. Descarga el documento antes de continuar."
-          : "La copia local supera el tamaño permitido. Descarga el documento antes de continuar.");
-        return false;
-      }
-      setRecoveryCount(result.copies.length);
-      return true;
-    } catch {
-      setStatus("No se pudo guardar la copia local en este navegador.");
-      return false;
-    }
-  }
+  const {
+    preparingPresentation,
+    presentation,
+    exportingPresentation,
+    slidePreview,
+    setSlidePreview,
+    markdownSourceOpen,
+    setMarkdownSourceOpen,
+    markdownSourceDraft,
+    setMarkdownSourceDraft,
+    markdownSourceError,
+    slidePreviewRef,
+    markdownSourceRef,
+    startPresentation,
+    openSlidePreview,
+    openMarkdownSource,
+    applyMarkdownSource,
+    changePresentationTheme,
+    changeSlideNote,
+    exportPresentation,
+    closePresentation,
+  } = useAulaPresentation({
+    currentDocument,
+    title,
+    presentationTheme,
+    presentationNotes,
+    setPresentationTheme,
+    setPresentationNotes,
+    applyDocument,
+    markChanged,
+    setStatus,
+  });
+  useDialogFocus(Boolean(slidePreview), () => setSlidePreview(null), slidePreviewRef);
+  useDialogFocus(markdownSourceOpen, () => setMarkdownSourceOpen(false), markdownSourceRef);
 
-  /**
-   * Abre la lista de copias locales guardadas en el navegador.
-   */
-  function openRecoveryCopies() {
-    try {
-      const copies = listAulaRecoveryCopies(window.localStorage, projectId);
-      setRecoveryCopies(copies);
-      setRecoveryCount(copies.length);
-    } catch {
-      setRecoveryCopies([]);
-      setRecoveryCount(0);
-    }
-    setRecoveryRestoreId(null);
-    setRecoveryNotice(null);
-    setRecoveryOpen(true);
-  }
+  const {
+    exporting,
+    printing,
+    exportingOffice,
+    exportHtml,
+    printDocument,
+    exportMarkdown,
+    exportOffice,
+  } = useAulaExports({
+    currentDocument,
+    presentationNotes,
+    setStatus,
+  });
 
-  /**
-   * Cierra la lista de copias locales.
-   */
-  function closeRecoveryCopies() {
-    setRecoveryOpen(false);
-    setRecoveryRestoreId(null);
-    setRecoveryNotice(null);
-  }
+  const {
+    recoveryOpen,
+    recoveryCopies,
+    recoveryCount,
+    recoveryRestoreId,
+    setRecoveryRestoreId,
+    recoveryNotice,
+    setRecoveryNotice,
+    recoveryRef,
+    storeRecoveryCopy,
+    openRecoveryCopies,
+    closeRecoveryCopies,
+    downloadRecoveryCopy,
+    restoreRecoveryCopy,
+  } = useAulaRecovery({
+    projectId,
+    currentDocument,
+    applyDocument,
+    markChanged,
+    setStatus,
+    documentVersionRef,
+  });
+  useDialogFocus(recoveryOpen, closeRecoveryCopies, recoveryRef);
 
-  /**
-   * Abre el panel de copias portables.
-   */
-  function openCopies() {
-    setCopiesOpen(true);
-    setCopyNotice(null);
-    setCopiesError(null);
-    setCopyDeleteId(null);
-    void refreshCopies();
-  }
+  const {
+    copiesOpen,
+    copies,
+    copiesLoading,
+    copiesError,
+    copyNotice,
+    copySaving,
+    copyDeleteId,
+    setCopyDeleteId,
+    copyImport,
+    copyImportOpen,
+    copyImportConfirm,
+    setCopyImportConfirm,
+    copyImportBusy,
+    copyImportError,
+    copiesRef,
+    copyImportRef,
+    openCopies,
+    closeCopies,
+    saveCurrentCopy,
+    downloadLocalCopy,
+    downloadStoredCopy,
+    removeStoredCopy,
+    openCopyImportPicker,
+    prepareCopyImport,
+    closeCopyImport,
+    applyCopyImport,
+  } = useAulaCopies({
+    projectId,
+    readOnly,
+    currentDocument,
+    storeRecoveryCopy,
+    applyDocument,
+    markChanged,
+    setStatus,
+  });
+  useDialogFocus(copiesOpen, closeCopies, copiesRef);
+  useDialogFocus(copyImportOpen, closeCopyImport, copyImportRef);
 
-  /**
-   * Cierra el panel de copias portables.
-   */
-  function closeCopies() {
-    setCopiesOpen(false);
-    setCopyDeleteId(null);
-    setCopyNotice(null);
-  }
+  const {
+    newDocumentOpen,
+    newDocumentPreview,
+    setNewDocumentPreview,
+    newDocumentError,
+    newDocumentRef,
+    openNewDocument,
+    closeNewDocument,
+    selectNewDocumentTemplate,
+    applyNewDocument,
+  } = useAulaNewDocument({
+    storeRecoveryCopy,
+    applyDocument,
+    markChanged,
+    titleRef,
+    editorRef,
+  });
+  useDialogFocus(newDocumentOpen, closeNewDocument, newDocumentRef, actionsToggleRef);
 
-  /**
-   * Recarga las copias guardadas en el proyecto.
-   */
-  async function refreshCopies() {
-    setCopiesLoading(true);
-    setCopiesError(null);
-    const { aulaCopyDateLabel, aulaCopySizeLabel, listAulaCopies } = await import("../../shared/aula-documentos/copy-client");
-    const result = await listAulaCopies(projectId);
-    setCopiesLoading(false);
-    if (!result || !result.ok) {
-      setCopies([]);
-      setCopiesError(result?.message ?? "No se pudieron leer las copias.");
-      return;
-    }
-    setCopies(result.copies.map((copy) => ({
-      ...copy,
-      dateLabel: aulaCopyDateLabel(copy.createdAt),
-      sizeLabel: aulaCopySizeLabel(copy.sizeBytes),
-    })));
-  }
-
-  /**
-   * Guarda una copia portable del documento actual en el proyecto.
-   */
-  async function saveCurrentCopy() {
-    const document = currentDocument();
-    if (!document || readOnly || copySaving) return;
-    setCopySaving(true);
-    setCopyNotice("Preparando copia portable…");
-    try {
-      const built = await buildPortableCopy(document);
-      if (!built.ok) {
-        setCopyNotice(built.message);
-        return;
-      }
-      const { saveAulaCopy } = await import("../../shared/aula-documentos/copy-client");
-      const result = await saveAulaCopy(projectId, built.bytes, aulaFileName(document.title, "aula.zip"));
-      if (!result.ok) {
-        setCopyNotice(result.message);
-        return;
-      }
-      setCopyNotice("Copia guardada en el proyecto.");
-      setStatus("Copia portable guardada.");
-      await refreshCopies();
-    } catch {
-      setCopyNotice("No se pudo guardar la copia portable.");
-    } finally {
-      setCopySaving(false);
-    }
-  }
-
-  /**
-   * Descarga una copia portable generada en el navegador, sin usar R2.
-   */
-  async function downloadLocalCopy() {
-    const document = currentDocument();
-    if (!document) return;
-    setCopyNotice("Preparando copia local…");
-    try {
-      const built = await buildPortableCopy(document);
-      if (!built.ok) {
-        setCopyNotice(built.message);
-        return;
-      }
-      downloadBlob(
-        new Blob([built.bytes.slice().buffer as ArrayBuffer], { type: "application/zip" }),
-        aulaFileName(document.title, "aula.zip"),
-      );
-      setCopyNotice("Copia local descargada.");
-    } catch {
-      setCopyNotice("No se pudo descargar la copia local.");
-    }
-  }
-
-  /**
-   * Descarga una copia guardada en R2.
-   * @param copy - Copia elegida.
-   */
-  async function downloadStoredCopy(copy: AulaCopySummary) {
-    setCopyNotice("Descargando copia…");
-    const { downloadAulaCopy } = await import("../../shared/aula-documentos/copy-client");
-    const result = await downloadAulaCopy(copy);
-    if (!result.ok) {
-      setCopyNotice(result.message);
-      return;
-    }
-    downloadBlob(result.blob, aulaFileName(copy.title, "aula.zip"));
-    setCopyNotice("Copia descargada.");
-  }
-
-  /**
-   * Borra una copia guardada en R2.
-   * @param copy - Copia elegida.
-   */
-  async function removeStoredCopy(copy: AulaCopySummary) {
-    setCopyNotice("Borrando copia…");
-    const { deleteAulaCopy } = await import("../../shared/aula-documentos/copy-client");
-    const result = await deleteAulaCopy(copy);
-    if (!result.ok) {
-      setCopyNotice(result.message);
-      return;
-    }
-    setCopies((current) => current.filter((item) => item.id !== copy.id));
-    setCopyDeleteId(null);
-    setCopyNotice("Copia borrada.");
-    setStatus("Copia portable borrada.");
-  }
-
-  /**
-   * Abre el selector de una copia portable.
-   */
-  function openCopyImportPicker() {
-    if (readOnly) return;
-    const input = document.getElementById("aula-documentos-copy-file") as HTMLInputElement | null;
-    input?.click();
-  }
-
-  /**
-   * Lee una copia portable y prepara su vista previa.
-   * @param file - Archivo elegido.
-   */
-  async function prepareCopyImport(file: File | undefined) {
-    if (!file || readOnly) return;
-    setStatus("Leyendo copia portable…");
-    setCopyImportError(null);
-    try {
-      const bytes = new Uint8Array(await file.arrayBuffer());
-      const { readAulaDocumentCopy } = await import("../../../../lib/domain/aula-documentos/copy");
-      const { aulaCopyDateLabel } = await import("../../shared/aula-documentos/copy-client");
-      const result = await readAulaDocumentCopy(bytes);
-      if (!result.ok) {
-        setStatus(result.message);
-        return;
-      }
-      const parsed = parseAulaDocument(result.document);
-      if (!parsed.ok) {
-        setStatus(parsed.message);
-        return;
-      }
-      setCopyImport({
-        fileName: file.name,
-        document: result.document,
-        manifest: result.manifest,
-        assets: result.assets,
-        stats: parsed.stats,
-        createdAtLabel: aulaCopyDateLabel(Date.parse(result.manifest.createdAt)),
-        warnings: result.assets.length
-          ? [`La copia incluye ${result.assets.length} ${result.assets.length === 1 ? "imagen" : "imágenes"}; se volverán a subir al proyecto al importar.`]
-          : [],
-      });
-      setCopyImportConfirm(false);
-      setCopyImportOpen(true);
-      setStatus("Copia lista para importar.");
-    } catch {
-      setStatus("No se pudo leer la copia portable.");
-    }
-  }
-
-  /**
-   * Cierra la vista previa de una copia portable.
-   */
-  function closeCopyImport() {
-    if (copyImportBusy) return;
-    setCopyImportOpen(false);
-    setCopyImport(null);
-    setCopyImportConfirm(false);
-    setCopyImportError(null);
-  }
-
-  /**
-   * Sustituye el documento actual por una copia portable confirmada.
-   */
-  async function applyCopyImport() {
-    if (!copyImport || !copyImportConfirm || copyImportBusy) return;
-    setCopyImportBusy(true);
-    setCopyImportError(null);
-    try {
-      const urls = new Map<string, string>();
-      for (const asset of copyImport.assets) {
-        const extension = asset.mime.split("/", 2)[1] ?? "bin";
-        const file = new File(
-          [asset.bytes.slice().buffer as ArrayBuffer],
-          `${asset.id}.${extension}`,
-          { type: asset.mime },
-        );
-        const uploaded = await uploadAulaImage(projectId, file);
-        if (!uploaded.ok) {
-          setCopyImportError(uploaded.message);
-          return;
-        }
-        urls.set(asset.id, uploaded.url);
-      }
-
-      const imported = parseAulaDocument(remapCopyImageUrls(copyImport.document, urls));
-      if (!imported.ok) {
-        setCopyImportError(imported.message);
-        return;
-      }
-      if (!storeRecoveryCopy("replace")) {
-        setCopyImportError("No se pudo guardar una copia local antes de reemplazar. El documento actual no ha cambiado.");
-        return;
-      }
-      applyDocument(imported.document);
-      markChanged(`Copia portable importada desde ${copyImport.fileName}. Guárdala para conservarla.`);
-      setStatus("Copia portable importada. Guárdala para conservarla en el proyecto.");
-      setCopyImportOpen(false);
-      setCopyImport(null);
-      setCopyImportConfirm(false);
-    } catch {
-      setCopyImportError("No se pudo importar la copia portable.");
-    } finally {
-      setCopyImportBusy(false);
-    }
-  }
-
-  /**
-   * Descarga una copia local como JSON.
-   * @param copy - Copia elegida.
-   */
-  function downloadRecoveryCopy(copy: AulaRecoveryCopy) {
-    try {
-      downloadTextFile(
-        JSON.stringify(copy.document, null, 2),
-        "application/json;charset=utf-8",
-        aulaRecoveryFileName(copy.title),
-      );
-      setRecoveryNotice("Copia descargada.");
-    } catch {
-      setRecoveryNotice("No se pudo descargar la copia.");
-    }
-  }
-
-  /**
-   * Restaura una copia local en el editor, sin guardarla todavía en el servidor.
-   * @param copy - Copia confirmada.
-   */
-  function restoreRecoveryCopy(copy: AulaRecoveryCopy) {
-    const parsed = parseAulaDocument(copy.document);
-    if (!parsed.ok) {
-      setRecoveryNotice(parsed.message);
-      return;
-    }
-    applyDocument(parsed.document);
-    closeRecoveryCopies();
-    markChanged("Copia local restaurada. Guárdala para conservarla en el proyecto.");
-    setStatus("Copia local restaurada en el editor. Todavía no se ha guardado en el servidor.");
-  }
+  const {
+    importOpen,
+    importPreview,
+    setImportPreview,
+    importOfficeSource,
+    officeOpenSource,
+    officePreviewOpen,
+    setOfficePreviewOpen,
+    officePreviewTitle,
+    setOfficePreviewTitle,
+    importLoading,
+    importError,
+    setImportError,
+    importConfirm,
+    setImportConfirm,
+    importRef,
+    officePreviewRef,
+    officeOpenInputRef,
+    openImport,
+    closeImport,
+    closeOfficePreview,
+    openOfficeViewer,
+    importMarkdown,
+    importOffice,
+    applyImport,
+  } = useAulaImport({
+    storeRecoveryCopy,
+    applyDocument,
+    markChanged,
+  });
+  useDialogFocus(importOpen, closeImport, importRef, actionsToggleRef);
+  useDialogFocus(officePreviewOpen, closeOfficePreview, officePreviewRef);
 
   /**
    * Persiste un documento y actualiza el estado de guardado.
@@ -1314,557 +945,6 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [saveCurrent]);
-
-  /**
-   * Abre el selector local de imágenes.
-   */
-  function openImagePicker() {
-    if (!editor || readOnly) return;
-    const input = document.getElementById("aula-documentos-image-file") as HTMLInputElement | null;
-    input?.click();
-  }
-
-  /**
-   * Sube imágenes y las inserta en la posición indicada.
-   * @param files - Imágenes locales.
-   * @param position - Posición del documento; si falta, usa la selección actual.
-   */
-  async function insertImageFiles(files: File[], position?: number) {
-    if (!editor || readOnly || !files.length) return;
-    setImageUploading(true);
-    setStatus(files.length === 1 ? "Subiendo imagen…" : `Subiendo ${files.length} imágenes…`);
-    const nodes: Array<{ type: "aulaImage"; attrs: Record<string, unknown> }> = [];
-    let error: string | null = null;
-    for (const file of files) {
-      const result = await uploadAulaImage(projectId, file);
-      if (!result.ok) {
-        error = result.message;
-        continue;
-      }
-      nodes.push({
-        type: "aulaImage",
-        attrs: {
-          src: result.url,
-          alt: file.name.replace(/\.[^.]+$/, ""),
-          caption: "",
-          width: 100,
-          alignment: "center",
-        },
-      });
-    }
-    if (nodes.length) {
-      const at = typeof position === "number" ? position : editor.state.selection.from;
-      editor.chain().focus(undefined, { scrollIntoView: false }).insertContentAt(at, nodes).run();
-    }
-    setImageUploading(false);
-    if (error) setStatus(`No se pudo insertar una imagen: ${error}`);
-    else if (nodes.length) setStatus(nodes.length === 1 ? "Imagen insertada." : `${nodes.length} imágenes insertadas.`);
-  }
-
-  /**
-   * Inserta un bloque Mermaid con la plantilla de flujo.
-   */
-  function insertMermaid() {
-    if (!editor || readOnly) return;
-    editor.chain().focus(undefined, { scrollIntoView: false }).insertContent({
-      type: "mermaidBlock",
-      attrs: { code: MERMAID_TEMPLATES[0].code },
-    }).run();
-    setStatus("Diagrama insertado. Edita el código si lo necesitas.");
-  }
-
-  /**
-   * Inserta un salto de diapositiva en el documento.
-   */
-  function insertSlideBreak() {
-    if (!editor || readOnly) return;
-    editor.chain().focus(undefined, { scrollIntoView: false }).insertContent({ type: "slideBreak" }).run();
-    setStatus("Salto de diapositiva insertado.");
-  }
-
-  /**
-   * Construye el HTML de cada diapositiva con sus diagramas.
-   * @param document - Documento validado.
-   * @returns Diapositivas listas para presentar o previsualizar.
-   */
-  async function buildPresentationHtml(document: AulaDocument): Promise<string[]> {
-    const slides = buildPresentationSlides(document.content);
-    const content = { type: "doc", content: slides.flatMap((slide) => slide.content) };
-    const svgByCode = await renderMermaidSvgs(
-      collectMermaidCodes(content),
-      (code) => getMermaidRenderer().render(code),
-    );
-    const images = await loadExportImages(content);
-    const failedImages = new Set(images.failed);
-    return slides.map((slide) => renderAulaContentHtml(
-      { type: "doc", content: slide.content },
-      svgByCode,
-      images.sources,
-      failedImages,
-    ));
-  }
-
-  /**
-   * Construye y abre la presentación del documento actual.
-   */
-  async function startPresentation() {
-    const document = currentDocument();
-    if (!document) return;
-    setPreparingPresentation(true);
-    setStatus("Preparando presentación…");
-    try {
-      const html = await buildPresentationHtml(document);
-      setPresentation({
-        title: document.title.trim() || "Aula Documentos",
-        slides: html,
-      });
-      setStatus("Presentación abierta.");
-    } catch {
-      setStatus("No se pudo preparar la presentación.");
-    } finally {
-      setPreparingPresentation(false);
-    }
-  }
-
-  /**
-   * Abre una vista previa con navegación entre diapositivas.
-   */
-  async function openSlidePreview() {
-    const document = currentDocument();
-    if (!document) return;
-    setPreparingPresentation(true);
-    setStatus("Preparando vista previa…");
-    try {
-      const html = await buildPresentationHtml(document);
-      setSlidePreview({
-        title: document.title.trim() || "Aula Documentos",
-        slides: html,
-        index: 0,
-      });
-      setStatus(`Vista previa abierta: ${html.length} ${html.length === 1 ? "diapositiva" : "diapositivas"}.`);
-    } catch {
-      setStatus("No se pudo preparar la vista previa.");
-    } finally {
-      setPreparingPresentation(false);
-    }
-  }
-
-  /**
-   * Abre la fuente Markdown del documento para editarla como diapositivas.
-   */
-  function openMarkdownSource() {
-    const document = currentDocument();
-    if (!document) return;
-    setMarkdownSourceDraft(documentToMarkdown(document));
-    setMarkdownSourceError(null);
-    setMarkdownSourceOpen(true);
-  }
-
-  /**
-   * Aplica la fuente Markdown al documento actual conservando tema y notas.
-   */
-  function applyMarkdownSource() {
-    const converted = markdownToDocument(markdownSourceDraft, {
-      slideBreaks: true,
-      stripTitleHeading: true,
-      titleFallback: title || "Presentación",
-    });
-    const parsed = parseAulaDocument({
-      schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
-      title: converted.title,
-      content: converted.content,
-      presentation: {
-        theme: presentationTheme,
-        ...(Object.keys(presentationNotes).length ? { notes: presentationNotes } : {}),
-      },
-    });
-    if (!parsed.ok) {
-      setMarkdownSourceError(parsed.message);
-      return;
-    }
-    applyDocument(parsed.document);
-    markChanged("Fuente Markdown aplicada. Guárdala para conservarla.");
-    setMarkdownSourceOpen(false);
-  }
-
-  /**
-   * Cambia el tema de la presentación y lo guarda con el documento.
-   * @param theme - Nuevo tema.
-   */
-  function changePresentationTheme(theme: AulaPresentationTheme) {
-    setPresentationTheme(theme);
-    markChanged("Tema de presentación actualizado.");
-  }
-
-  /**
-   * Actualiza las notas de una diapositiva.
-   * @param index - Índice de la diapositiva.
-   * @param value - Texto de la nota.
-   */
-  function changeSlideNote(index: number, value: string) {
-    setPresentationNotes((current) => {
-      const next = { ...current };
-      if (value) next[String(index)] = value;
-      else delete next[String(index)];
-      return next;
-    });
-    markChanged("Notas de presentación actualizadas.");
-  }
-
-  /**
-   * Prepara y descarga el HTML autónomo del documento.
-   */
-  async function exportHtml() {
-    const document = currentDocument();
-    if (!document) return;
-    setExporting(true);
-    setStatus("Preparando HTML, diagramas e imágenes…");
-    try {
-      const svgByCode = await renderMermaidSvgs(
-        collectMermaidCodes(document.content),
-        (code) => getMermaidRenderer().render(code),
-      );
-      const images = await loadExportImages(document.content);
-      const html = buildAulaDocumentHtml(
-        document,
-        svgByCode,
-        images.sources,
-        new Set(images.failed),
-      );
-      downloadTextFile(html, "text/html;charset=utf-8", aulaFileName(document.title, "html"));
-      setStatus(images.failed.length
-        ? `HTML descargado con ${images.failed.length} ${images.failed.length === 1 ? "imagen no disponible" : "imágenes no disponibles"}.`
-        : "HTML descargado.");
-    } catch {
-      setStatus("No se pudo preparar el HTML del documento.");
-    } finally {
-      setExporting(false);
-    }
-  }
-
-  /**
-   * Prepara y abre la impresión o el PDF del documento.
-   */
-  async function printDocument() {
-    const document = currentDocument();
-    if (!document) return;
-    setPrinting(true);
-    setStatus("Preparando impresión, diagramas e imágenes…");
-    try {
-      const svgByCode = await renderMermaidSvgs(
-        collectMermaidCodes(document.content),
-        (code) => getMermaidRenderer().render(code),
-      );
-      const images = await loadExportImages(document.content);
-      printHtmlDocument(buildAulaDocumentHtml(
-        document,
-        svgByCode,
-        images.sources,
-        new Set(images.failed),
-      ));
-      setStatus(images.failed.length
-        ? `Vista de impresión abierta con ${images.failed.length} ${images.failed.length === 1 ? "imagen no disponible" : "imágenes no disponibles"}.`
-        : "Vista de impresión abierta.");
-    } catch {
-      setStatus("No se pudo preparar la impresión del documento.");
-    } finally {
-      setPrinting(false);
-    }
-  }
-
-  /**
-   * Exporta una presentación HTML estática con tema y notas.
-   */
-  async function exportPresentation() {
-    const document = currentDocument();
-    if (!document) return;
-    setExportingPresentation(true);
-    setStatus("Preparando la presentación exportada…");
-    try {
-      const slides = await buildPresentationHtml(document);
-      const html = buildAulaPresentationHtml(document, slides, {
-        theme: presentationTheme,
-        notes: presentationNotes,
-        includeNotes: true,
-      });
-      downloadTextFile(
-        html,
-        "text/html;charset=utf-8",
-        aulaFileName(`${document.title} presentación`, "html"),
-      );
-      setStatus("Presentación exportada.");
-    } catch {
-      setStatus("No se pudo exportar la presentación.");
-    } finally {
-      setExportingPresentation(false);
-    }
-  }
-
-  /**
-   * Exporta el documento al subconjunto Markdown.
-   */
-  function exportMarkdown() {
-    const document = currentDocument();
-    if (!document) return;
-    downloadTextFile(
-      documentToMarkdown(document),
-      "text/markdown;charset=utf-8",
-      aulaFileName(document.title, "md"),
-    );
-    setStatus("Markdown descargado.");
-  }
-
-  /**
-   * Exporta el documento a una copia DOCX o PPTX.
-   * @param format - Formato de destino.
-   */
-  async function exportOffice(format: "docx" | "pptx") {
-    const document = currentDocument();
-    if (!document) return;
-    setExportingOffice(true);
-    setStatus(`Preparando ${format.toUpperCase()}…`);
-    try {
-      const images = await loadExportImages(document.content);
-      const result = format === "docx"
-        ? await exportAulaDocx(document, images.assets)
-        : await exportAulaPptx(document, presentationNotes, images.assets);
-      downloadBlob(result.blob, aulaFileName(document.title, format));
-      setStatus(result.warnings.length
-        ? `${format.toUpperCase()} descargado. ${result.warnings.join(" ")}`
-        : `${format.toUpperCase()} descargado.`);
-    } catch {
-      setStatus(`No se pudo preparar el archivo ${format.toUpperCase()}.`);
-    } finally {
-      setExportingOffice(false);
-    }
-  }
-
-  /**
-   * Abre el selector de plantillas para un documento nuevo.
-   */
-  function openNewDocument() {
-    setNewDocumentPreview(null);
-    setNewDocumentError(null);
-    setNewDocumentOpen(true);
-  }
-
-  /**
-   * Cierra el selector de plantillas y limpia su estado.
-   */
-  function closeNewDocument() {
-    setNewDocumentOpen(false);
-    setNewDocumentPreview(null);
-    setNewDocumentError(null);
-  }
-
-  /**
-   * Prepara la vista previa de una plantilla antes de reemplazar el documento.
-   * @param template - Plantilla elegida.
-   */
-  function selectNewDocumentTemplate(template: AulaDocumentTemplate) {
-    const parsed = parseAulaDocument(template.create());
-    if (!parsed.ok) {
-      setNewDocumentPreview(null);
-      setNewDocumentError(parsed.message);
-      return;
-    }
-    setNewDocumentPreview({ template, document: parsed.document });
-    setNewDocumentError(null);
-  }
-
-  /**
-   * Sustituye el documento actual por la plantilla confirmada.
-   */
-  function applyNewDocument() {
-    if (!newDocumentPreview) return;
-    const { template, document } = newDocumentPreview;
-    if (!storeRecoveryCopy("replace")) {
-      setNewDocumentError("No se pudo guardar una copia local antes de reemplazar. El documento actual no ha cambiado.");
-      return;
-    }
-    applyDocument(document);
-    markChanged(`Documento creado desde «${template.name}». Guárdalo para conservarlo.`);
-    closeNewDocument();
-    window.setTimeout(() => {
-      if (template.focus === "title") {
-        titleRef.current?.focus();
-        titleRef.current?.scrollIntoView?.({ block: "nearest" });
-      } else {
-        editorRef.current?.commands.focus("end", { scrollIntoView: false });
-        editorRef.current?.view.dom.scrollIntoView?.({ block: "nearest" });
-      }
-    }, 0);
-  }
-
-  /**
-   * Abre el diálogo de importación y limpia su estado.
-   */
-  function openImport() {
-    setImportPreview(null);
-    setImportOfficeSource(null);
-    setOfficeOpenSource(null);
-    setOfficePreviewOpen(false);
-    setOfficePreviewTitle("Archivo original");
-    setImportError(null);
-    setImportLoading(null);
-    setImportConfirm(false);
-    setImportOpen(true);
-  }
-
-  /**
-   * Cierra el diálogo de importación.
-   */
-  function closeImport() {
-    setImportOpen(false);
-    setImportPreview(null);
-    setImportOfficeSource(null);
-    setOfficeOpenSource(null);
-    setOfficePreviewOpen(false);
-    setImportError(null);
-    setImportLoading(null);
-    setImportConfirm(false);
-  }
-
-  /**
-   * Cierra la vista del archivo de Office.
-   */
-  function closeOfficePreview() {
-    setOfficePreviewOpen(false);
-    setOfficeOpenSource(null);
-    setOfficePreviewTitle("Archivo original");
-  }
-
-  /**
-   * Abre un archivo local en el visor Office sin importarlo.
-   * @param file - Archivo elegido.
-   */
-  function openOfficeViewer(file: File | undefined) {
-    if (!file) return;
-    setOfficeOpenSource(file);
-    setOfficePreviewTitle("Visor Office");
-    setOfficePreviewOpen(true);
-  }
-
-  /**
-   * Lee un archivo Markdown y prepara su vista previa.
-   * @param file - Archivo elegido.
-   */
-  async function importMarkdown(file: File | undefined) {
-    if (!file) return;
-    setImportLoading("markdown");
-    setImportError(null);
-    setImportPreview(null);
-    setImportConfirm(false);
-    try {
-      const source = await file.text();
-      if (source.length > AULA_DOCUMENT_MARKDOWN_MAX_LENGTH) {
-        setImportError("El Markdown supera el tamaño permitido.");
-        return;
-      }
-      const converted = markdownToDocument(source, {
-        stripTitleHeading: true,
-        titleFallback: file.name.replace(/\.[^.]+$/, "") || "Documento importado",
-      });
-      const parsed = parseAulaDocument({
-        schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
-        title: converted.title,
-        content: converted.content,
-      });
-      if (!parsed.ok) {
-        setImportError(parsed.message);
-        return;
-      }
-      setImportPreview({
-        source: "markdown",
-        document: parsed.document,
-        stats: parsed.stats,
-        warnings: converted.warnings,
-        sourceUpdatedAt: null,
-      });
-    } catch {
-      setImportError("No se pudo leer el archivo Markdown.");
-    } finally {
-      setImportLoading(null);
-    }
-  }
-
-  /**
-   * Lee un DOCX/PPTX y prepara su vista previa.
-   * @param file - Archivo elegido.
-   */
-  async function importOffice(file: File | undefined) {
-    if (!file) return;
-    setImportOfficeSource(file);
-    setImportLoading("office");
-    setImportError(null);
-    setImportPreview(null);
-    setImportConfirm(false);
-    try {
-      const result = await importOfficeFile(file);
-      if (!result.ok) {
-        setImportError(result.message);
-        return;
-      }
-      setImportPreview({
-        ...result.preview,
-        sourceUpdatedAt: null,
-      });
-    } catch {
-      setImportError("No se pudo leer el archivo de Office.");
-    } finally {
-      setImportLoading(null);
-    }
-  }
-
-  /**
-   * Sustituye el documento actual por la vista previa confirmada.
-   */
-  function applyImport() {
-    if (!importPreview || !importConfirm) return;
-    if (!storeRecoveryCopy("replace")) {
-      setImportError("No se pudo guardar una copia local antes de reemplazar. El documento actual no ha cambiado.");
-      return;
-    }
-    applyDocument(importPreview.document);
-    markChanged(`Documento importado desde ${IMPORT_LABELS[importPreview.source]}. Guárdalo para conservarlo.`);
-    closeImport();
-  }
-
-  /**
-   * Abre el panel de enlaces.
-   */
-  function openLinkPanel() {
-    if (!editor || readOnly) return;
-    const current = editor.getAttributes("link").href;
-    setLinkUrl(typeof current === "string" ? current : "");
-    setLinkError(null);
-    setLinkOpen(true);
-  }
-
-  /**
-   * Aplica el enlace escrito al texto seleccionado.
-   */
-  function applyLink() {
-    if (!editor || readOnly) return;
-    const href = normalizeAulaLink(linkUrl);
-    if (!href) {
-      setLinkError("Escribe un enlace http, https o un correo válido.");
-      return;
-    }
-    editor.chain().focus().extendMarkRange("link").setLink({ href }).run();
-    setLinkOpen(false);
-    setStatus("Enlace aplicado.");
-  }
-
-  /**
-   * Quita el enlace del texto seleccionado.
-   */
-  function removeLink() {
-    if (!editor || readOnly) return;
-    editor.chain().focus().extendMarkRange("link").unsetLink().run();
-    setLinkOpen(false);
-    setStatus("Enlace quitado.");
-  }
 
   /**
    * Actualiza el título y marca cambios.
