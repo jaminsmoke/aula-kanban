@@ -1,6 +1,6 @@
 # Arquitectura de Aula Documentos
 
-> **Estado:** Auditoría inicial de ADOC-15 · **Fecha:** 2026-11-20
+> **Estado:** Fase 2 completada · **Fecha:** 2026-11-20
 > **Objetivo:** reducir la complejidad estructural sin cambiar el comportamiento antes de continuar con las tablas.
 > **Alcance:** `app/board/apps/aula-documentos`, `app/board/shared/aula-documentos`, `app/board/shared/office` y `lib/domain/aula-documentos`.
 
@@ -155,3 +155,12 @@ lib/server/aula-documentos/     # servicios de copias, migración y persistencia
 - Los diálogos comparten el mismo `useDialogFocus`; la extracción debe conservar foco, Escape y retorno al control de origen.
 - Las pruebas actuales tienen mocks globales de documentos, Mermaid y copias; deben dividirse sin perder cobertura.
 - El presupuesto de `aula-documentos` sigue siendo estrecho: cada extracción debe medirse y las cargas diferidas deben conservarse.
+
+## 9. Estado tras la Fase 2
+
+- `aula-documentos-app.tsx` queda en **20 líneas**: solo compone el modelo, el proveedor de contexto y la vista.
+- `hooks/use-aula-documentos-model.ts` concentra la composición de flujos y los valores derivados; queda por debajo de 600 líneas.
+- La UI vive en `components/document-toolbar.tsx`, `components/document-workspace.tsx` y tres grupos de diálogos bajo `components/dialogs/`.
+- Los diálogos se cargan con `lazy` solo cuando su estado está abierto; la barra principal y el editor siguen en el chunk de apertura.
+- Las pruebas se dividieron en cinco flujos y una prueba de arquitectura que verifica los límites de líneas y evita imports de componentes hacia el shell.
+- Verificación final: **222 archivos / 1.559 pruebas**, `tsc`, ESLint, build y presupuesto `aula-documentos` **368.419 / 370.000 B gzip** correctos.

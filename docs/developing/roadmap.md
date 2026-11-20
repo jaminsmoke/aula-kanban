@@ -69,12 +69,12 @@
 
 ### Fase 2 — Descomposición interna de Aula Documentos
 
-- [ ] Reducir `aula-documentos-app.tsx` a un shell de orquestación; extraer toolbar, menús, diálogos, panel lateral y estados de presentación.
-- [ ] Extraer hooks de autosave/conflicto, copias, importación, imágenes, presentación y migración.
+- [x] Reducir `aula-documentos-app.tsx` a un shell de orquestación; extraer toolbar, menús, diálogos, panel lateral y estados de presentación.
+- [x] Extraer hooks de autosave/conflicto, copias, importación, imágenes, presentación y migración.
 - [x] Dividir `aula-documentos.css` por layout, barra, editor, bloques, diálogos y panel lateral.
-- [ ] Dividir las pruebas por componente, hook y flujo, conservando los casos actuales.
-- [ ] Mantener intactos autosave, permisos, URLs, atajos, textos visibles y orden de los diálogos.
-- [ ] Añadir comprobaciones de tamaño y de dependencias internas para evitar que el archivo vuelva a crecer.
+- [x] Dividir las pruebas por componente, hook y flujo, conservando los casos actuales.
+- [x] Mantener intactos autosave, permisos, URLs, atajos, textos visibles y orden de los diálogos.
+- [x] Añadir comprobaciones de tamaño y de dependencias internas para evitar que el archivo vuelva a crecer.
 - **Criterios de aceptación:**
   - El archivo principal queda por debajo de 450 líneas y ningún componente/hook nuevo supera 600 líneas.
   - Cada bloque de CSS vive en un archivo de responsabilidad acotada.
@@ -162,3 +162,4 @@
 - 2026-11-20: Fase 1 de emergencia completada. Documentado el mapa de responsabilidades, árbol objetivo, reglas de dependencia, duplicación detectada y límites de mantenimiento en [`aula-documentos-arquitectura.md`](aula-documentos-arquitectura.md). Línea base registrada: `aula-documentos-app.tsx` 3.338 líneas, CSS 1.742, prueba principal 1.342, 217 archivos / 1.554 pruebas y presupuestos 366.306 / 329.689 / 196.481 B gzip. Sin cambios de comportamiento.
 - 2026-11-20: Fase 2 en curso. CSS dividido en `styles/layout.css` (467 líneas), `editor.css` (257), `blocks.css` (484), `dialogs.css` (328) y `sidebar.css` (487), todos por debajo de 500; `aula-documentos.css` queda como agregador. Extraídos a `utils/document-view.ts` los helpers de palabras, fechas, descarga, texto y remapeo de imágenes, con el mismo comportamiento. La app principal sigue pendiente de descomposición; no se marca la fase como completada.
 - 2026-11-20: Fase 2, bloque 2. Extraídos a `hooks/` los flujos de copias, recuperación, migración, presentación, exportación, importación, documento nuevo, imágenes y enlaces. `aula-documentos-app.tsx` baja de 3.253 a 2.382 líneas; cada hook queda por debajo de 600 líneas. Las pruebas de CSS leen ahora los estilos divididos. Suite completa: 217 archivos / 1.554 pruebas; `tsc`, ESLint y build correctos. Autosave/conflicto, JSX y pruebas siguen pendientes de extracción.
+- 2026-11-20: Fase 2 completada. `aula-documentos-app.tsx` queda en 20 líneas como shell de orquestación; el modelo compartido vive en `hooks/use-aula-documentos-model.ts` (533 líneas) y la UI en `components/`. Cada hook/componente queda por debajo de 600 líneas, cada CSS por debajo de 500 y cada prueba por debajo de 600. Los diálogos se cargan bajo demanda para no romper el presupuesto. Pruebas divididas en cinco flujos más una comprobación de arquitectura y tamaños. Suite completa: 222 archivos / 1.559 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (aula-documentos: 368.419 / 370.000 B gzip).
