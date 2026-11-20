@@ -249,10 +249,11 @@ describe("Hoja de cálculo", () => {
 
     render(<HojaCalculoApp {...props} />);
 
-    await waitFor(() => expect(spreadsheetMock.worksheet.setData).toHaveBeenCalled());
+    await waitFor(() => {
+      const loaded = spreadsheetMock.worksheet.setData.mock.calls.at(-1)?.[0] as Array<Array<string | number | boolean>>;
+      expect(loaded[0][1]).toBe(2);
+    });
     expect(screen.getByRole("status").textContent).toContain("guardada cargada");
-    const loaded = spreadsheetMock.worksheet.setData.mock.calls.at(-1)?.[0] as Array<Array<string | number | boolean>>;
-    expect(loaded[0][1]).toBe(2);
     expect(screen.getByText("1 fórmula")).toBeTruthy();
   });
 

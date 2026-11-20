@@ -80,11 +80,11 @@ Medición del 2026-11-20, antes de empezar:
 
 ### Fase 2 — Hoja de cálculo
 
-- [ ] Separar el shell de `hoja-calculo-app.tsx` de la inicialización y el ciclo de vida de la rejilla.
-- [ ] Extraer selección, barra de fórmulas, formato y exportación CSV a hooks/componentes con límites claros.
-- [ ] Mantener `hoja-calculo-formula.ts` y `hoja-calculo-model.ts` como módulos de dominio; dividirlos solo si la fase descubre responsabilidades mezcladas.
-- [ ] Conservar fórmulas, estilos, límites, autosave y lectura invitada.
-- [ ] Añadir o ajustar pruebas de edición, fórmulas, formato, CSV, guardado/carga y errores.
+- [x] Separar el shell de `hoja-calculo-app.tsx` de la inicialización y el ciclo de vida de la rejilla.
+- [x] Extraer selección, barra de fórmulas, formato y exportación CSV a hooks/componentes con límites claros.
+- [x] Mantener `hoja-calculo-formula.ts` y `hoja-calculo-model.ts` como módulos de dominio; dividirlos solo si la fase descubre responsabilidades mezcladas.
+- [x] Conservar fórmulas, estilos, límites, autosave y lectura invitada.
+- [x] Añadir o ajustar pruebas de edición, fórmulas, formato, CSV, guardado/carga y errores.
 - **Criterios:** shell <450 líneas y componentes/hooks <600; semántica de fórmulas y formato intacta; sin cambios de datos o persistencia; suite, `arch:check` y presupuestos pasan.
 
 ### Fase 3 — Office: visor y exportación
@@ -136,4 +136,5 @@ Medición del 2026-11-20, antes de empezar:
 - La medición de partida se tomó de los archivos actuales; algunas cifras del backlog habían quedado desactualizadas.
 - `arch:check` sigue siendo la puerta de arquitectura: 357 archivos de producto, 907 imports y 0 problemas nuevos al abrir este roadmap.
 - 2026-11-20: **Fase 1 completada.** Timeline pasa de un `timeline-app.tsx` de 720 líneas a un shell de 100 líneas, hooks de editor/lienzo y tarjetas de vista separadas. Se retiró su excepción de `largeFiles`; `arch:check` queda en **364 archivos / 923 imports / 0 problemas**. Suite: **228 archivos / 1.584 pruebas**; build, `perf:budget` y `perf:office` correctos.
+- 2026-11-20: **Fase 2 completada.** Hoja de cálculo queda con un shell de 80 líneas, hooks de documento y rejilla, barra de herramientas, barra `fx`, panel lateral y exportación CSV separada. Se conservaron fórmulas, estilos, límites, autosave y lectura invitada. Suite: **229 archivos / 1.585 pruebas**; `arch:check` en **370 archivos / 933 imports / 0 problemas**; `hoja-calculo` en **310.192 / 315.000 B gzip**.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
