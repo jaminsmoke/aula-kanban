@@ -2,24 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 10 entradas pendientes · siguiente candidato ARC-04
+> **Roadmap:** ARC-04 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 9 entradas pendientes · siguiente candidato ARC-05
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
-
-## 2026-11-20 — ARC-04 · Sistema visual, CSS y responsive
-
-- Contexto: hay 48 archivos CSS y 9.128 líneas; `portada.css` 628, `tarjetas.css` 547, `office-viewer.css` 444, `globals.css` 439 y `timeline.css` 437. Los patrones de botón, tarjeta, modal, estado vacío y barra se repiten sin una capa declarada.
-- Alcance:
-  1. Separar tokens, base, primitivas, layout y estilos de app.
-  2. Unificar botones, tarjetas, diálogos, estados vacíos y barras.
-  3. Revisar cinco anchos y ambos temas en las apps principales.
-  4. Mantener las cargas diferidas y medir el CSS en los presupuestos.
-  5. Documentar las reglas de composición visual.
-- Criterios: cada CSS tiene responsabilidad acotada, no hay primitivas duplicadas y las apps se revisan en cinco anchos y dos temas.
-- Notas: no crear un design system genérico antes de tener dos consumidores reales.
 
 ## 2026-11-20 — ARC-05 · Pruebas, harness y presupuestos
 
