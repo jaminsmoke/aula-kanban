@@ -7,6 +7,25 @@ import { useWindowAttemptClose, WindowCloseProvider } from "../../shared/window-
 import type { VersionedSaveResult } from "../use-app-document";
 import AulaDocumentosApp, { AUTOSAVE_DELAY_MS } from "./aula-documentos-app";
 
+// jsdom no implementa las medidas de rango que ProseMirror usa al cambiar la selección.
+if (typeof Range !== "undefined" && !Range.prototype.getClientRects) {
+  Range.prototype.getClientRects = () => [] as unknown as DOMRectList;
+}
+if (typeof Range !== "undefined" && !Range.prototype.getBoundingClientRect) {
+  Range.prototype.getBoundingClientRect = () => ({ x: 0, y: 0, top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0, toJSON: () => ({}) }) as DOMRect;
+}
+if (typeof Element !== "undefined" && !Element.prototype.getClientRects) {
+  Element.prototype.getClientRects = () => [] as unknown as DOMRectList;
+}
+if (typeof Node !== "undefined") {
+  const nodePrototype = Node.prototype as unknown as {
+    getClientRects?: () => DOMRectList;
+    getBoundingClientRect?: () => DOMRect;
+  };
+  nodePrototype.getClientRects ??= () => [] as unknown as DOMRectList;
+  nodePrototype.getBoundingClientRect ??= () => ({ x: 0, y: 0, top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0, toJSON: () => ({}) }) as DOMRect;
+}
+
 const officeImportMock = vi.hoisted(() => ({
   importOfficeFile: vi.fn(),
 }));
@@ -57,7 +76,7 @@ vi.mock("../../shared/aula-documentos/copy-client", () => ({
   saveAulaCopy: copyMock.save,
   downloadAulaCopy: copyMock.download,
   deleteAulaCopy: copyMock.remove,
-  aulaCopySizeLabel: (bytes: number) => `${bytes} B`,
+  aulaCopySizeLabel: () => "4.0 KB",
   aulaCopyDateLabel: () => "20 nov 2026",
 }));
 
@@ -1272,12 +1291,12 @@ describe("Aula Documentos", () => {
     expect(screen.getByText(/4\.0 KB · Otro miembro/)).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Descargar" }));
-    await waitFor(() => expect(copyMock.download).toHaveBeenCalledWith(copy));
+    await waitFor(() => expect(copyMock.download).toHaveBeenCalledWith(expect.objectContaining(copy)));
     expect(createObjectURL).toHaveBeenCalledTimes(1);
 
     fireEvent.click(screen.getByRole("button", { name: "Borrar" }));
     fireEvent.click(screen.getByRole("button", { name: "Confirmar borrado" }));
-    await waitFor(() => expect(copyMock.remove).toHaveBeenCalledWith(copy));
+    await waitFor(() => expect(copyMock.remove).toHaveBeenCalledWith(expect.objectContaining(copy)));
     await waitFor(() => expect(screen.queryByText("Copia de clase")).toBeNull());
   });
 
@@ -1469,6 +1488,36 @@ describe("Aula Documentos", () => {
     const exported = ((createObjectURL.mock.calls as unknown) as [[Blob]])[0][0];
     await expect(exported.text()).resolves.toContain("data:image/png;base64,");
     await expect(exported.text()).resolves.not.toContain("/api/files/00000000-0000-4000-8000-000000000001");
+  });
+
+  it("inserta una tabla y edita su estructura desde la barra contextual", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    await waitFor(() => expect(document.querySelector("[data-aula-table-ready]")).toBeTruthy());
+
+    chooseMenu("Insertar", "Insertar tabla");
+    expect(await screen.findByRole("dialog", { name: "Insertar tabla" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("gridcell", { name: "Crear tabla de 3 filas y 2 columnas" }));
+
+    await waitFor(() => expect(document.querySelectorAll(".aula-documentos-prose table tr")).toHaveLength(3));
+    expect(document.querySelectorAll(".aula-documentos-prose table th")).toHaveLength(2);
+    expect(await screen.findByRole("toolbar", { name: "Herramientas de tabla" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Añadir fila abajo" }));
+    await waitFor(() => expect(document.querySelectorAll(".aula-documentos-prose table tr")).toHaveLength(4));
+
+    fireEvent.click(screen.getByRole("button", { name: "Añadir columna a la derecha" }));
+    await waitFor(() => expect(document.querySelectorAll(".aula-documentos-prose table th")).toHaveLength(3));
+
+    fireEvent.click(screen.getByRole("button", { name: "Eliminar tabla" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar borrado" }));
+    await waitFor(() => expect(document.querySelector(".aula-documentos-prose table")).toBeNull());
+  });
+
+  it("no ofrece insertar tablas a invitados", async () => {
+    render(<AulaDocumentosApp {...props} role="guest" />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    expect(screen.getByRole("button", { name: "Insertar" })).toHaveProperty("disabled", true);
   });
 
   it("inserta un salto de diapositiva y lo guarda", async () => {

@@ -91,7 +91,6 @@ import { useWindowClose, useWindowCloseGuard } from "../../shared/window-close-g
 import type { StoreRole } from "../types";
 import { importOfficeFile } from "../../shared/office/office-import";
 import { exportAulaDocx, exportAulaPptx } from "../../shared/office/office-export";
-import OfficeViewer from "../../shared/office/office-viewer";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
 import { AULA_IMAGE_ACCEPT } from "../../../../lib/domain/aula-documentos/image";
 import { imageFilesFromDataTransfer, uploadAulaImage } from "../../shared/aula-documentos/image-upload";
@@ -108,6 +107,20 @@ import "./aula-documentos.css";
 
 const PresentationView = lazy(() => import("../../shared/aula-documentos/presentation-view").then((module) => ({
   default: module.PresentationView,
+})));
+
+const OfficeViewer = lazy(() => import("../../shared/office/office-viewer"));
+
+const TableUi = lazy(() => import("./aula-documentos-table-tools").then((module) => ({
+  default: module.AulaTableUi,
+})));
+
+const DocumentHelp = lazy(() => import("./aula-documentos-help").then((module) => ({
+  default: module.AulaDocumentosHelp,
+})));
+
+const DocumentShortcuts = lazy(() => import("./aula-documentos-help").then((module) => ({
+  default: module.AulaDocumentosShortcuts,
 })));
 
 /** Espera antes de guardar automáticamente tras una edición. */
@@ -190,6 +203,12 @@ type CopyImportPreview = {
   assets: AulaCopyAsset[];
   stats: AulaDocumentStats;
   warnings: string[];
+  createdAtLabel: string;
+};
+
+type AulaCopyView = AulaCopySummary & {
+  sizeLabel: string;
+  dateLabel: string;
 };
 
 type SaveConflict = {
@@ -379,26 +398,6 @@ function remapCopyImageUrls(document: AulaDocument, urls: ReadonlyMap<string, st
 }
 
 /**
- * Formatea el tamaño de una copia.
- * @param bytes - Tamaño en bytes.
- * @returns Texto legible.
- */
-function copySizeLabel(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-/**
- * Formatea la fecha de una copia.
- * @param value - Milisegundos desde epoch.
- * @returns Fecha local legible.
- */
-function copyDateLabel(value: number): string {
-  return new Intl.DateTimeFormat("es", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
-}
-
-/**
  * Extrae el texto visible de un contenido para la vista previa.
  * @param value - Nodo Tiptap.
  * @returns Texto plano.
@@ -473,7 +472,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [recoveryRestoreId, setRecoveryRestoreId] = useState<string | null>(null);
   const [recoveryNotice, setRecoveryNotice] = useState<string | null>(null);
   const [copiesOpen, setCopiesOpen] = useState(false);
-  const [copies, setCopies] = useState<AulaCopySummary[]>([]);
+  const [copies, setCopies] = useState<AulaCopyView[]>([]);
   const [copiesLoading, setCopiesLoading] = useState(false);
   const [copiesError, setCopiesError] = useState<string | null>(null);
   const [copyNotice, setCopyNotice] = useState<string | null>(null);
@@ -975,7 +974,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   async function refreshCopies() {
     setCopiesLoading(true);
     setCopiesError(null);
-    const { listAulaCopies } = await import("../../shared/aula-documentos/copy-client");
+    const { aulaCopyDateLabel, aulaCopySizeLabel, listAulaCopies } = await import("../../shared/aula-documentos/copy-client");
     const result = await listAulaCopies(projectId);
     setCopiesLoading(false);
     if (!result || !result.ok) {
@@ -983,7 +982,11 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       setCopiesError(result?.message ?? "No se pudieron leer las copias.");
       return;
     }
-    setCopies(result.copies);
+    setCopies(result.copies.map((copy) => ({
+      ...copy,
+      dateLabel: aulaCopyDateLabel(copy.createdAt),
+      sizeLabel: aulaCopySizeLabel(copy.sizeBytes),
+    })));
   }
 
   /**
@@ -1093,6 +1096,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     try {
       const bytes = new Uint8Array(await file.arrayBuffer());
       const { readAulaDocumentCopy } = await import("../../../../lib/domain/aula-documentos/copy");
+      const { aulaCopyDateLabel } = await import("../../shared/aula-documentos/copy-client");
       const result = await readAulaDocumentCopy(bytes);
       if (!result.ok) {
         setStatus(result.message);
@@ -1109,6 +1113,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         manifest: result.manifest,
         assets: result.assets,
         stats: parsed.stats,
+        createdAtLabel: aulaCopyDateLabel(Date.parse(result.manifest.createdAt)),
         warnings: result.assets.length
           ? [`La copia incluye ${result.assets.length} ${result.assets.length === 1 ? "imagen" : "imágenes"}; se volverán a subir al proyecto al importar.`]
           : [],
@@ -2124,6 +2129,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   ] : [];
 
   const insertMenuActions: AulaMenuAction[] = editor && !readOnly ? [
+    { label: "Insertar tabla", icon: <List size={15} aria-hidden />, onSelect: () => window.dispatchEvent(new Event("aula-documentos:insert-table")) },
     { label: "Insertar imagen", icon: <ImagePlus size={15} aria-hidden />, onSelect: openImagePicker, disabled: imageUploading },
     { label: "Insertar diagrama Mermaid", icon: <GitBranch size={15} aria-hidden />, onSelect: insertMermaid },
     { label: "Insertar salto de diapositiva", icon: <SeparatorHorizontal size={15} aria-hidden />, onSelect: insertSlideBreak },
@@ -2301,6 +2307,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             </div>
           ))}
         </div>
+        <Suspense fallback={null}>
+          <TableUi editor={editor} readOnly={readOnly} />
+        </Suspense>
         {!editor ? <span className="aula-documentos-loading">Preparando editor...</span> : null}
       </div>
       {readOnly ? (
@@ -2843,7 +2852,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                         <div className="aula-documentos-copy-info">
                           <strong>{copy.title || "Documento sin título"}</strong>
                           <p className="aula-documentos-import-meta">
-                            {copyDateLabel(copy.createdAt)} · {copySizeLabel(copy.sizeBytes)} · {copy.author}
+                            {copy.dateLabel} · {copy.sizeLabel} · {copy.author}
                           </p>
                           <p className="aula-documentos-import-meta">
                             Formato v{copy.formatVersion} · esquema v{copy.schemaVersion}
@@ -2920,7 +2929,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                 {copyImport.stats.textLength} caracteres · {copyImport.stats.images === 1 ? "1 imagen" : `${copyImport.stats.images} imágenes`} · {copyImport.stats.mermaidBlocks === 1 ? "1 diagrama" : `${copyImport.stats.mermaidBlocks} diagramas`}
               </p>
               <p className="aula-documentos-import-meta">
-                Creada: {copyDateLabel(Date.parse(copyImport.manifest.createdAt))} · formato v{copyImport.manifest.formatVersion} · esquema v{copyImport.manifest.schemaVersion}
+                Creada: {copyImport.createdAtLabel} · formato v{copyImport.manifest.formatVersion} · esquema v{copyImport.manifest.schemaVersion}
               </p>
               <p className="aula-documentos-import-excerpt">
                 {contentText(copyImport.document.content) || "El documento no contiene texto."}
@@ -3127,7 +3136,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
               </button>
             </header>
             <div className="aula-documentos-office-preview-body">
-              <OfficeViewer initialFile={importOfficeSource ?? officeOpenSource} embedded />
+              <Suspense fallback={<p className="aula-documentos-loading">Preparando visor...</p>}>
+                <OfficeViewer initialFile={importOfficeSource ?? officeOpenSource} embedded />
+              </Suspense>
             </div>
           </section>
         </div>
@@ -3156,9 +3167,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         <aside className="aula-documentos-side">
           <section className="aula-documentos-info">
             <h3>La suite documental</h3>
-            <p>Aula Documentos reúne notas, imágenes, diagramas, presentaciones y Office. Escribe el documento, usa <strong>Insertar &gt; Insertar imagen</strong> para añadir una imagen local y <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa. La presentación se puede editar por diapositivas o desde <strong>Fuente Markdown</strong>.</p>
-            <p>Las imágenes se incrustan en HTML, presentación, impresión/PDF, DOCX y PPTX con texto alternativo y pie; si falla un recurso, se avisa. <strong>Archivo &gt; Copias portables</strong> guarda o descarga una copia completa; <strong>Importar &gt; Importar copia</strong> la restaura. También puedes importar y exportar DOCX/PPTX y abrir archivos de Office en el visor; XLSX: Visor Office.</p>
-            <p>Las apps documentales anteriores siguen guardando sus datos. Usa <strong>Importar &gt; Migrar apps antiguas</strong> para reunirlos aquí; la migración conserva copias y se puede deshacer.</p>
+            <Suspense fallback={null}>
+              <DocumentHelp />
+            </Suspense>
             <p className="aula-documentos-status" role="status" aria-live="polite">{statusText}</p>
             {saveFailed && !readOnly ? (
               <button
@@ -3216,14 +3227,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             </button>
           </section>
           <section className="aula-documentos-help">
-            <h3>Atajos</h3>
-            <ul>
-              <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>B</kbd> negrita</li>
-              <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>I</kbd> cursiva</li>
-              <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> enlace</li>
-              <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>S</kbd> guardar</li>
-              <li>En un diagrama, <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Intro</kbd> aplica el código.</li>
-            </ul>
+            <Suspense fallback={null}>
+              <DocumentShortcuts />
+            </Suspense>
           </section>
         </aside>
       </div>

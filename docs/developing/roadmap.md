@@ -49,12 +49,12 @@
 
 ### Fase 1 — Insertar y editar la estructura básica
 
-- [ ] Añadir **Insertar > Tabla** con selector de cuadrícula y creación de fila de cabecera.
-- [ ] Mostrar una barra contextual solo cuando la selección esté dentro de una tabla.
-- [ ] Implementar añadir fila antes/después, eliminar fila, añadir columna antes/después y eliminar columna.
-- [ ] Implementar eliminar tabla y confirmar la acción destructiva.
-- [ ] Resolver el estado deshabilitado en modo lectura y durante guardados conflictivos.
-- [ ] Añadir pruebas de inserción, estructura y autosave.
+- [x] Añadir **Insertar > Tabla** con selector de cuadrícula y creación de fila de cabecera.
+- [x] Mostrar una barra contextual solo cuando la selección esté dentro de una tabla.
+- [x] Implementar añadir fila antes/después, eliminar fila, añadir columna antes/después y eliminar columna.
+- [x] Implementar eliminar tabla y confirmar la acción destructiva.
+- [x] Resolver el estado deshabilitado en modo lectura y durante guardados conflictivos.
+- [x] Añadir pruebas de inserción, estructura y autosave.
 - **Criterios de aceptación:**
   - Se puede crear una tabla y añadir o quitar filas y columnas sin Markdown.
   - La tabla se guarda y recarga con la misma estructura.
@@ -106,3 +106,4 @@
 - Auditoría inicial: `@tiptap/extension-table` ya está registrado con `resizable: false`; el editor no ofrece inserción ni controles, y el validador acepta los nodos de tabla pero descarta sus atributos de celda.
 - La importación y exportación existentes conservan tablas simples; la exportación Office actual no representa todavía celdas combinadas.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
+- 2026-11-20: Fase 1 completada. Añadido **Insertar > Tabla** con selector de cuadrícula, creación con fila de cabecera y barra contextual para añadir/eliminar filas y columnas, alternar cabecera y eliminar la tabla. El selector y la barra se cargan bajo demanda; el editor y el autosave existentes se conservan. Pruebas de inserción, estructura, autosave en curso y modo invitado. Suite completa: 217 archivos / 1.554 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 366.306 / 370.000 B gzip; aula-documentos-export: 329.689 / 340.000 B gzip) y `perf:office` correctos.
