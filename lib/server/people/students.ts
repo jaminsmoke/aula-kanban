@@ -1,22 +1,22 @@
 import { env } from "cloudflare:workers";
-import { and, asc, eq } from "drizzle-orm";
-import { getDb } from "../../../db";
-import { projectMembers, students } from "../../../db/schema";
+import { findMemberRowByStudentSection, listProjectMemberRows } from "../access/members-repository";
 import { updateProfile } from "../access/profile-update";
 import type { Access, ProjectWithAccess } from "../projects/project-access";
 import { maySeeStudentEmail, type BajaResult, type FichaResult } from "./campos";
+import { deleteStudentWithHistory, findStudentRow, insertStudentRow, listStudentRows, type StudentRow } from "./students-repository";
 
 /**
  * Fichas de alumnado: la lista que pinta la web y las altas, ediciones y
  * bajas (histórico de 30 días) de `/api/students`. La lógica vive aquí para
  * que la ruta HTTP y el catálogo MCP (MCP-06) compartan permisos y mensajes.
+ * El acceso D1 vive en `students-repository.ts`.
  */
 
 /** Valores de una ficha que llegan desde la web o desde el MCP. */
 export type StudentInput = { name: string; displayName: string; role: string; activities: string; aiHelp: string };
 
 /** Ficha de alumno con su estado de cuenta y, si procede, el correo vinculado. */
-export type StudentFicha = Omit<typeof students.$inferSelect, "mutationToken"> & {
+export type StudentFicha = Omit<StudentRow, "mutationToken"> & {
   accountStatus: string;
   accountEmail?: string;
   accountMemberId?: string | null;
@@ -29,9 +29,8 @@ export type StudentFicha = Omit<typeof students.$inferSelect, "mutationToken"> &
  * @returns Las fichas sin el token de mutación.
  */
 export async function listStudents(projectId: string, access: Access): Promise<StudentFicha[]> {
-  const db = getDb();
-  const rows = await db.select().from(students).where(eq(students.projectId, projectId)).orderBy(asc(students.section));
-  const members = await db.select().from(projectMembers).where(eq(projectMembers.projectId, projectId));
+  const rows = await listStudentRows(projectId);
+  const members = await listProjectMemberRows(projectId);
   return rows
     .filter((student) => student.deleted === 0)
     .map((student) => {
@@ -60,17 +59,9 @@ export async function createStudent(
   const name = input.name || input.displayName;
   if (!name) return { ok: false, status: 400, message: "Escribe un nombre para la ficha." };
   const { section, accountEmail: email, ...values } = input;
-  const db = getDb();
   try {
-    const insert = db.insert(students).values({ ...values, name, section, projectId: project.id }).returning();
-    const [created] = email
-      ? (
-          await db.batch([
-            insert,
-            db.insert(projectMembers).values({ id: crypto.randomUUID(), projectId: project.id, email, role: "student", studentSection: section, status: "pending" }).returning(),
-          ])
-        )[0]
-      : await insert;
+    const created = await insertStudentRow(project.id, { ...values, name, section }, email);
+    if (!created) throw new Error("El alta no devolvió la ficha creada.");
     const { mutationToken: _token, ...safeStudent } = created;
     return { ok: true, ficha: { ...safeStudent, accountStatus: email ? "pending" : "unlinked", accountEmail: email } };
   } catch {
@@ -98,9 +89,9 @@ export async function updateStudent(
   if (!name) return { ok: false, status: 400, message: "Escribe un nombre para la ficha." };
   const result = await updateProfile(project, "student", section, revision, { ...values, name }, email);
   if (!result.ok) return result;
-  const db = getDb();
-  const [updated] = await db.select().from(students).where(and(eq(students.section, section), eq(students.projectId, project.id)));
-  const [member] = await db.select().from(projectMembers).where(and(eq(projectMembers.studentSection, section), eq(projectMembers.projectId, project.id)));
+  const updated = await findStudentRow(project.id, section);
+  if (!updated) throw new Error("La ficha actualizada no está disponible.");
+  const member = await findMemberRowByStudentSection(project.id, section);
   const { mutationToken: _token, ...safeStudent } = updated;
   return {
     ok: true,
@@ -120,19 +111,9 @@ export async function deleteStudent(project: ProjectWithAccess, section: string,
   // The ficha moves to the history table: assignments keep pointing at it for 30 days, then purge.
   const binding = env.DB;
   if (!binding) return { ok: false, status: 503, message: "Base de datos no disponible." };
-  const deletedAt = Date.now();
   try {
-    const result = await binding.batch([
-      binding.prepare(`INSERT INTO deleted_students (section, project_id, name, display_name, user_id, deleted_at)
-        SELECT s.section, s.project_id, COALESCE(NULLIF(s.name, ''), s.display_name), s.display_name,
-          (SELECT m.user_id FROM project_members m WHERE m.project_id = s.project_id AND m.student_section = s.section), ?
-        FROM students s WHERE s.section = ? AND s.project_id = ? AND s.revision = ? AND s.deleted = 0
-        ON CONFLICT(section) DO UPDATE SET name = excluded.name, display_name = excluded.display_name, user_id = excluded.user_id, deleted_at = excluded.deleted_at
-        RETURNING section`).bind(deletedAt, section, project.id, revision),
-      binding.prepare("DELETE FROM project_members WHERE project_id = ? AND student_section = ? AND EXISTS (SELECT 1 FROM deleted_students WHERE section = ? AND deleted_at = ?)").bind(project.id, section, section, deletedAt),
-      binding.prepare("DELETE FROM students WHERE section = ? AND project_id = ? AND EXISTS (SELECT 1 FROM deleted_students WHERE section = ? AND deleted_at = ?) RETURNING section").bind(section, project.id, section, deletedAt),
-    ]);
-    return result[0].results?.length
+    const deleted = await deleteStudentWithHistory(binding, project.id, section, revision);
+    return deleted
       ? { ok: true }
       : { ok: false, status: 409, message: "La ficha ha cambiado en otra sesión. Cierra el formulario y vuelve a abrirla para ver los cambios." };
   } catch {

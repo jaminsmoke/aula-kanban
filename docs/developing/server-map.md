@@ -65,11 +65,11 @@ Estas son las definiciones que gobiernan ARC-06. La clasificación de cada archi
 
 ---
 
-## 3. Inventario de `lib/server` (94 archivos)
+## 3. Inventario de `lib/server` (96 archivos)
 
 Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servicio, `H` helper HTTP, `P` plataforma, `A` adaptador MCP, `MX` mixto. La columna **Prueba** cuenta las pruebas que importan el módulo directamente; `—` no significa necesariamente ausencia de cobertura indirecta.
 
-### 3.1 Identidad, acceso y personas (19)
+### 3.1 Identidad, acceso y personas (21)
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
@@ -90,8 +90,10 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `access/profile-update.ts` | 43 | `S` perfil + miembro | `people/students.ts`, `people/teachers.ts` | — |
 | `access/deleted-profiles.ts` | 49 | `R` histórico + purga | `api/tasks` (purga perezosa) | — |
 | `people/campos.ts` | 49 | `D` referencia y visibilidad | `people/students.ts`, `people/teachers.ts` | — |
-| `people/students.ts` | 140 | `S`+`R` | `mcp/dominios/personas/*`, `api/students` | paridad |
-| `people/teachers.ts` | 133 | `S`+`R` | `mcp/dominios/personas/*`, `api/teachers` | paridad |
+| `people/students.ts` | 122 | `S` alumnado | `mcp/dominios/personas/*`, `api/students` | paridad |
+| `people/students-repository.ts` | 95 | `R` `students` + invitación | `people/students.ts` | — |
+| `people/teachers.ts` | 115 | `S` profesorado | `mcp/dominios/personas/*`, `api/teachers` | paridad |
+| `people/teachers-repository.ts` | 95 | `R` `teachers` + invitación | `people/teachers.ts` | — |
 
 **Resuelto en Fase 2:** `mutateStudent`/`mutateTeacher` vivían en el servicio y construían `Request`/`Response`. El adaptador se movió a las rutas (`students` 59 líneas, `teachers` 66); los servicios bajaron a 140 y 133 líneas y ya no importan `http`, `project-http` ni `project-access` salvo los tipos.
 
@@ -262,7 +264,7 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 | Tabla | Escritura principal | Lectura principal |
 |---|---|---|
 | `projects` | `projects/projects-repository.ts` (alta/baja), `projects/project-rekey.ts` | `projects/project-access.ts`, `projects/project-overview.ts`, MCP |
-| `project_members` | `access/members-repository.ts`, `access/invitaciones-repository.ts`, `access/profile-update.ts`, `people/*` | `people/*`, `access/members.ts`, `projects/project-access.ts`, `tasks/queries.ts` |
+| `project_members` | `access/members-repository.ts`, `access/invitaciones-repository.ts`, `access/profile-update.ts`, `people/students-repository.ts`, `people/teachers-repository.ts` | `people/students-repository.ts`, `people/teachers-repository.ts`, `access/members.ts`, `projects/project-access.ts`, `tasks/queries.ts` |
 | `administrators_unified` | `access/administradores-repository.ts`; sincronización de correo en `projects/project-access.ts` | `access/administradores.ts`, `projects/project-access.ts` |
 | `instance_owner` | `access/owner-repository.ts` | `access/owner-repository.ts`, `projects/project-access.ts` |
 | `instance_apps` | `apps/apps.ts` | `apps/apps.ts`, `apps/personal-apps.ts`, MCP |
@@ -271,8 +273,8 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 | `boards` | `board/boards.ts`; snapshot en vivo en `board/board-room.ts` | `board/boards.ts`, `uploads/usage.ts` |
 | `tasks` | `tasks/mutations.ts`; `access/deleted-profiles.ts` (crédito y purga) | `tasks/queries.ts`, `board/boards.ts`, `projects/projects.ts`, `uploads/usage.ts` |
 | `task_assignees` | `tasks/mutations.ts` | `tasks/queries.ts`, `board/boards.ts`, `access/deleted-profiles.ts` |
-| `students` | `people/students.ts` | `people/students.ts`, `access/members.ts`, `tasks/queries.ts` |
-| `teachers` | `people/teachers.ts` | `people/teachers.ts`, `access/members.ts`, `tasks/queries.ts` |
+| `students` | `people/students-repository.ts` | `people/students-repository.ts`, `access/members-repository.ts`, `tasks/queries.ts` |
+| `teachers` | `people/teachers-repository.ts` | `people/teachers-repository.ts`, `access/members-repository.ts`, `tasks/queries.ts` |
 | `deleted_students` / `deleted_teachers` | `people/*` (baja), `access/deleted-profiles.ts` (purga) | `access/deleted-profiles.ts`, `tasks/queries.ts` |
 | `project_books` | `books/project-books.ts` | `books/project-books.ts`, `projects/project-overview.ts` |
 | `project_rekeys` | `projects/project-rekey.ts` | `projects/project-access.ts`, `projects/project-overview.ts` |
@@ -341,6 +343,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 | P1 | `storage.ts` mezclaba R2, D1, cuotas, MIME y diagnóstico | dividido en servicio, repositorio y reglas | 3 · **resuelto** |
 | P1 | Proyectos y miembros mezclaban reglas y D1 | `projects/projects-repository.ts` y `access/members-repository.ts` concentran la persistencia | 3 · **resuelto** |
 | P1 | Propietario, invitaciones y administradores mezclaban reglas y D1 | `access/{owner,invitaciones,administradores}-repository.ts` concentran las filas | 3 · **resuelto** |
+| P1 | Alumnado y profesorado mezclaban reglas y D1 | `people/students-repository.ts` y `people/teachers-repository.ts` concentran fichas e invitaciones | 3 · **resuelto** |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
 | P1 | Cuatro rutas importaban D1 directamente | extraídas a servicios; `app/api` no importa D1 | 2 y 3 · **resuelto** |
@@ -372,7 +375,7 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 
 ## 10. Criterios de aceptación de Fase 1
 
-- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (94/94).
+- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (96/96).
 - [x] Cada ruta de `app/api` tiene clase provisional y servicios identificados (26/26).
 - [x] Están identificadas las reglas duplicadas entre rutas, servicios, MCP y almacenamiento.
 - [x] Está mapeado el acceso a D1 y R2, con tablas, claves y responsables.
