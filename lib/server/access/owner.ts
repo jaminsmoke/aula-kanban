@@ -1,16 +1,11 @@
 import type { ChatGPTUser } from "./auth";
+import { claimOwnerRow, readOwnerRow, updateOwnerEmailRow, type InstanceOwnerRow } from "./owner-repository";
 
 /** Identidad persistida del propietario de la instancia. */
-export type InstanceOwner = {
-  userId: string;
-  email: string;
-  claimedAt: number;
-};
+export type InstanceOwner = InstanceOwnerRow;
 
 /** Datos mínimos de una cuenta para resolver la propiedad. */
 export type OwnerUser = Pick<ChatGPTUser, "userId" | "email">;
-
-const OWNER_ROW_ID = "owner";
 
 /**
  * Devuelve el correo configurado para el bootstrap, con el valor local de desarrollo.
@@ -40,9 +35,7 @@ export function isBootstrapOwnerEmail(email: string, configured?: string) {
  */
 export async function readInstanceOwner(db: D1Database): Promise<InstanceOwner | null> {
   try {
-    return await db.prepare("SELECT user_id AS userId, email, claimed_at AS claimedAt FROM instance_owner WHERE id = ?")
-      .bind(OWNER_ROW_ID)
-      .first<InstanceOwner>() ?? null;
+    return await readOwnerRow(db);
   } catch {
     return null;
   }
@@ -62,9 +55,7 @@ export async function ensureInstanceOwner(db: D1Database, user: OwnerUser, confi
   if (existing) {
     if (existing.userId === user.userId && existing.email !== email) {
       try {
-        await db.prepare("UPDATE instance_owner SET email = ? WHERE id = ? AND user_id = ?")
-          .bind(email, OWNER_ROW_ID, user.userId)
-          .run();
+        await updateOwnerEmailRow(db, user.userId, email);
         return { ...existing, email };
       } catch {
         return existing;
@@ -74,9 +65,7 @@ export async function ensureInstanceOwner(db: D1Database, user: OwnerUser, confi
   }
   if (!isBootstrapOwnerEmail(email, configured)) return null;
   try {
-    await db.prepare("INSERT INTO instance_owner (id, user_id, email, claimed_at) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO NOTHING")
-      .bind(OWNER_ROW_ID, user.userId, email, Date.now())
-      .run();
+    await claimOwnerRow(db, user.userId, email, Date.now());
   } catch {
     return null;
   }

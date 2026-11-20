@@ -1,7 +1,5 @@
-import { and, eq, isNull } from "drizzle-orm";
-import { getDb } from "../../../db";
-import { administrators, projectMembers, projects } from "../../../db/schema";
 import type { ChatGPTUser } from "./auth";
+import { activateAdminInvitation, activateProjectInvitation, listPendingInvitationRows } from "./invitaciones-repository";
 
 /**
  * Invitaciones pendientes de una cuenta y su aceptación.
@@ -10,7 +8,8 @@ import type { ChatGPTUser } from "./auth";
  * y las herramientas MCP (`listar_invitaciones_pendientes`,
  * `aceptar_invitacion`) llamen a la misma función con la misma cuenta
  * (MCP-01). Una invitación nunca se envía por correo: la persona la acepta
- * en la app o con la herramienta desde su propia cuenta.
+ * en la app o con la herramienta desde su propia cuenta. El acceso D1 vive
+ * en `invitaciones-repository.ts`.
  */
 
 /** Invitación de proyecto pendiente. */
@@ -36,15 +35,11 @@ export type AcceptInvitationResult =
  * @returns Las invitaciones pendientes con su ámbito.
  */
 export async function listPendingInvitations(user: ChatGPTUser): Promise<PendingInvitation[]> {
-  const db = getDb();
   const email = user.email.trim().toLowerCase();
-  const [rows, adminInvitations] = await Promise.all([
-    db.select({ id: projectMembers.id, projectId: projects.id, projectName: projects.name, role: projectMembers.role }).from(projectMembers).innerJoin(projects, eq(projects.id, projectMembers.projectId)).where(and(eq(projectMembers.email, email), eq(projectMembers.status, "pending"))),
-    db.select({ id: administrators.id }).from(administrators).where(and(eq(administrators.email, email), isNull(administrators.userId))),
-  ]);
+  const { projectRows, adminRows } = await listPendingInvitationRows(email);
   return [
-    ...rows.map((row) => ({ ...row, scope: "project" as const })),
-    ...adminInvitations.map((row) => ({ id: row.id, projectId: null, projectName: "Administración de Aula Kanban", role: "admin" as const, scope: "site" as const })),
+    ...projectRows.map((row) => ({ ...row, scope: "project" as const })),
+    ...adminRows.map((row) => ({ id: row.id, projectId: null, projectName: "Administración de Aula Kanban", role: "admin" as const, scope: "site" as const })),
   ];
 }
 
@@ -59,14 +54,14 @@ export async function acceptInvitation(user: ChatGPTUser, id: string, scope: Acc
   const email = user.email.trim().toLowerCase();
   try {
     if (scope === "site") {
-      const [row] = await getDb().update(administrators).set({ userId: user.userId }).where(and(eq(administrators.id, id), eq(administrators.email, email), isNull(administrators.userId))).returning({ id: administrators.id });
-      return row
+      const activated = await activateAdminInvitation(id, email, user.userId);
+      return activated
         ? { ok: true, projectId: null, scope: "site" }
         : { ok: false, codigo: "not_found", mensaje: "La invitación ya no está disponible para esta cuenta." };
     }
-    const [row] = await getDb().update(projectMembers).set({ status: "active", userId: user.userId }).where(and(eq(projectMembers.id, id), eq(projectMembers.email, email), eq(projectMembers.status, "pending"))).returning({ projectId: projectMembers.projectId });
-    return row
-      ? { ok: true, projectId: row.projectId, scope: "project" }
+    const projectId = await activateProjectInvitation(id, email, user.userId);
+    return projectId
+      ? { ok: true, projectId, scope: "project" }
       : { ok: false, codigo: "not_found", mensaje: "La invitación ya no está disponible para esta cuenta." };
   } catch {
     return { ok: false, codigo: "conflict", mensaje: "No se pudo aceptar la invitación. Es posible que tu cuenta ya pertenezca al proyecto." };

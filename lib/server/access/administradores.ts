@@ -1,16 +1,23 @@
 import { env } from "cloudflare:workers";
-import { asc, eq } from "drizzle-orm";
-import { getDb } from "../../../db";
-import { administrators } from "../../../db/schema";
 import type { ChatGPTUser } from "./auth";
 import { isAdministrator, isOwner, isOwnerContactEmail } from "../projects/project-access";
+import {
+  deleteAdministratorRow,
+  findAdministratorRow,
+  insertAdministratorRow,
+  listAdministratorRows,
+  updateAdministratorRow,
+  type AdministratorRow,
+  type AdministratorScope,
+} from "./administradores-repository";
 
 /**
  * Administradores de la instancia.
  *
  * La ruta `/api/administrators` y el dominio MCP comparten estas funciones:
  * la comprobación global de propietario o administrador, la invitación por
- * correo, la revisión y los mismos mensajes de error.
+ * correo, la revisión y los mismos mensajes de error. El acceso D1 vive en
+ * `administradores-repository.ts`.
  */
 
 /** Mensaje único para las cuentas sin permiso de administración. */
@@ -31,14 +38,12 @@ export type AdministradorResult<T> =
   | { ok: true; valor: T }
   | { ok: false; status: number; message: string };
 
-type Row = typeof administrators.$inferSelect;
-
 /**
  * Convierte una fila en la ficha pública.
  * @param row - Fila de `administrators_unified`.
  * @returns La ficha sin `userId` ni `mutationToken`.
  */
-function vista(row: Row): AdministradorView {
+function vista(row: AdministratorRow): AdministradorView {
   return {
     id: row.id,
     displayName: row.displayName,
@@ -47,18 +52,6 @@ function vista(row: Row): AdministradorView {
     accountStatus: row.userId ? "active" : row.email ? "pending" : "unlinked",
     active: Boolean(row.userId),
   };
-}
-
-/**
- * Guarda SQL que limita la mutación a propietario o administrador.
- * @param user - Cuenta autenticada.
- * @param owner - Si la cuenta es propietaria.
- * @returns La condición y sus argumentos.
- */
-function guard(user: ChatGPTUser, owner: boolean) {
-  return owner
-    ? { sql: "1 = 1", args: [] as string[] }
-    : { sql: "EXISTS (SELECT 1 FROM administrators_unified WHERE user_id = ?)", args: [user.userId] };
 }
 
 /**
@@ -89,7 +82,7 @@ export async function puedeGestionarAdministradores(user: ChatGPTUser) {
 export async function listarAdministradores(user: ChatGPTUser): Promise<AdministradorResult<AdministradorView[]>> {
   const acceso = await autorizacion(user);
   if (!acceso.ok) return acceso;
-  const rows = await getDb().select().from(administrators).orderBy(asc(administrators.displayName), asc(administrators.email));
+  const rows = await listAdministratorRows();
   return { ok: true, valor: rows.map(vista) };
 }
 
@@ -114,15 +107,11 @@ export async function crearAdministrador(user: ChatGPTUser, input: CrearAdminist
   const binding = env.DB;
   if (!binding) return { ok: false, status: 503, message: "Base de datos no disponible." };
   const id = crypto.randomUUID();
-  const auth = guard(user, acceso.owner);
+  const scope: AdministratorScope = acceso.owner ? "owner" : { userId: user.userId };
   try {
-    const createdAt = Date.now();
-    const result = await binding
-      .prepare(`INSERT INTO administrators_unified (id, email, user_id, display_name, revision, created_at) SELECT ?, ?, NULL, ?, 1, ? WHERE ${auth.sql} RETURNING id`)
-      .bind(id, email || null, displayName, createdAt, ...auth.args)
-      .all();
-    if (!result.results?.length) return { ok: false, status: 403, message: "Ya no tienes permiso para crear fichas de administrador." };
-    const [created] = await getDb().select().from(administrators).where(eq(administrators.id, id));
+    const inserted = await insertAdministratorRow(binding, { id, email, displayName, createdAt: Date.now() }, scope);
+    if (!inserted) return { ok: false, status: 403, message: "Ya no tienes permiso para crear fichas de administrador." };
+    const created = await findAdministratorRow(id);
     if (!created) return { ok: false, status: 409, message: "No se pudo crear la ficha. Comprueba que el correo no esté ya asignado a otro administrador." };
     return { ok: true, valor: vista(created) };
   } catch {
@@ -149,8 +138,7 @@ export async function actualizarAdministrador(user: ChatGPTUser, input: Actualiz
   if (!acceso.ok) return acceso;
   const correoPedido = input.email === undefined ? undefined : input.email.trim().toLowerCase();
   if (correoPedido && (await isOwnerContactEmail(correoPedido))) return { ok: false, status: 400, message: "La cuenta propietaria ya es administradora." };
-  const db = getDb();
-  const [current] = await db.select().from(administrators).where(eq(administrators.id, input.id));
+  const current = await findAdministratorRow(input.id);
   if (!current) return { ok: false, status: 404, message: "La ficha ya no existe." };
   const nextEmail = correoPedido === undefined ? (current.email ?? "") : correoPedido;
   const displayName = input.displayName ?? current.displayName;
@@ -158,18 +146,19 @@ export async function actualizarAdministrador(user: ChatGPTUser, input: Actualiz
   const userId = current.email !== null && current.email === nextEmail ? current.userId : null;
   const binding = env.DB;
   if (!binding) return { ok: false, status: 503, message: "Base de datos no disponible." };
-  const auth = guard(user, acceso.owner);
+  const scope: AdministratorScope = acceso.owner ? "owner" : { userId: user.userId };
   try {
-    const result = await binding
-      .prepare(
-        `UPDATE administrators_unified SET display_name = ?, email = ?, user_id = ?, revision = revision + 1, mutation_token = ? WHERE id = ? AND revision = ? AND ${auth.sql} RETURNING id`,
-      )
-      .bind(displayName, nextEmail || null, userId, crypto.randomUUID(), input.id, input.revision ?? current.revision, ...auth.args)
-      .all();
-    if (!result.results?.length) return { ok: false, status: 409, message: "La ficha cambió o ya no tienes permiso. Actualiza y vuelve a intentarlo." };
-    const [updated] = await db.select().from(administrators).where(eq(administrators.id, input.id));
+    const updated = await updateAdministratorRow(binding, {
+      id: input.id,
+      revision: input.revision ?? current.revision,
+      displayName,
+      email: nextEmail,
+      userId,
+    }, scope);
     if (!updated) return { ok: false, status: 409, message: "La ficha cambió o ya no tienes permiso. Actualiza y vuelve a intentarlo." };
-    return { ok: true, valor: vista(updated) };
+    const saved = await findAdministratorRow(input.id);
+    if (!saved) return { ok: false, status: 409, message: "La ficha cambió o ya no tienes permiso. Actualiza y vuelve a intentarlo." };
+    return { ok: true, valor: vista(saved) };
   } catch {
     return { ok: false, status: 409, message: "No se guardaron los cambios. Comprueba que el correo no esté asignado a otro administrador." };
   }
@@ -190,18 +179,14 @@ export type EliminarAdministradorInput = {
 export async function eliminarAdministrador(user: ChatGPTUser, input: EliminarAdministradorInput): Promise<AdministradorResult<{ id: string }>> {
   const acceso = await autorizacion(user);
   if (!acceso.ok) return acceso;
-  const db = getDb();
-  const [current] = await db.select().from(administrators).where(eq(administrators.id, input.id));
+  const current = await findAdministratorRow(input.id);
   if (!current) return { ok: false, status: 404, message: "La ficha ya no existe." };
   const binding = env.DB;
   if (!binding) return { ok: false, status: 503, message: "Base de datos no disponible." };
-  const auth = guard(user, acceso.owner);
+  const scope: AdministratorScope = acceso.owner ? "owner" : { userId: user.userId };
   try {
-    const result = await binding
-      .prepare(`DELETE FROM administrators_unified WHERE id = ? AND revision = ? AND ${auth.sql} RETURNING id`)
-      .bind(input.id, input.revision ?? current.revision, ...auth.args)
-      .all();
-    if (!result.results?.length) return { ok: false, status: 409, message: "La ficha cambió o ya no tienes permiso. Actualiza y vuelve a intentarlo." };
+    const deleted = await deleteAdministratorRow(binding, { id: input.id, revision: input.revision ?? current.revision }, scope);
+    if (!deleted) return { ok: false, status: 409, message: "La ficha cambió o ya no tienes permiso. Actualiza y vuelve a intentarlo." };
     return { ok: true, valor: { id: input.id } };
   } catch {
     return { ok: false, status: 409, message: "No se pudo eliminar la ficha." };
