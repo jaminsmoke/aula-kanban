@@ -17,7 +17,7 @@
     "test": 600
   },
   "inventory": {
-    "productFiles": 397,
+    "productFiles": 396,
     "localImportEdges": 988,
     "baselineViolations": 0,
     "baselineCycles": 0

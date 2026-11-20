@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-20",
+  "scopeSource": "docs/developing/arch-baseline.json",
+  "publicModules": [
+    {
+      "path": "lib/connectors.ts",
+      "owner": "ARC-06",
+      "reason": "API pública de conectores; el binding se consume desde el worker y los scripts de preview, no desde una ruta estática."
+    }
+  ],
+  "testOnlyModules": [
+    {
+      "path": "lib/server/mcp/reads.ts",
+      "owner": "ARC-06",
+      "reason": "Fachada de compatibilidad del contrato MCP; se mantiene para consumidores externos aunque hoy solo la cubra su prueba."
+    },
+    {
+      "path": "lib/server/mcp/writes.ts",
+      "owner": "ARC-06",
+      "reason": "Fachada de compatibilidad del contrato MCP; se mantiene para consumidores externos aunque hoy solo la cubra su prueba."
+    }
+  ],
+  "unusedExports": [
+    "app/board/apps/blockly/blockly-storage.ts:parseBlocklyState",
+    "app/board/apps/hoja-calculo/hoja-calculo-formula.ts:MAX_FORMULA_DEPTH",
+    "app/board/apps/hoja-calculo/hoja-calculo-formula.ts:MAX_FORMULA_RANGE_CELLS",
+    "app/board/apps/timeline/timeline-model.ts:PROJECT_TIMELINE",
+    "app/board/shared/aula-documentos/mermaid-block.tsx:registerMermaidDraft",
+    "app/board/shared/aula-documentos/mermaid-block.tsx:unregisterMermaidDraft",
+    "app/board/shared/aula-documentos/mermaid-renderer.ts:createMermaidRenderer",
+    "app/board/shared/aula-documentos/mermaid-renderer.ts:normalizeMermaidSvg",
+    "app/board/shared/board-url.ts:ADMINISTRACION_SECTIONS",
+    "app/board/shared/board-url.ts:BOARD_VIEWS",
+    "app/board/shared/board-url.ts:CLASS_SECTIONS",
+    "app/board/shared/board-url.ts:SETTINGS_SECTIONS",
+    "app/board/shared/image-thumbnail.ts:MINIATURA_TIPOS",
+    "app/board/store/tools.ts:STORE_TOP_CATEGORIES",
+    "app/board/store/tools.ts:storeTools",
+    "app/board/store/tools.ts:toolApps",
+    "app/board/store/tools.ts:toolWindow",
+    "lib/domain/aula-documentos/markdown.ts:markdownInlineToNodes",
+    "lib/domain/boards/excalidraw-elements.ts:COLOR_POR_DEFECTO",
+    "lib/domain/mermaid/gantt.ts:normalizeGanttDuration",
+    "lib/domain/space-windows.ts:MAX_VENTANAS",
+    "lib/domain/uploads/inventory.ts:UPLOAD_KEY_PATTERN",
+    "lib/native-apps.ts:DOCUMENT_SUITE_CANONICAL_APP_ID",
+    "lib/native-apps.ts:LEGACY_NATIVE_APP_ALIASES",
+    "lib/server/auth.ts:chatGPTSignOutPath",
+    "lib/server/auth.ts:requireChatGPTUser",
+    "lib/server/deleted-profiles.ts:DELETED_PROFILE_TTL_MS",
+    "lib/server/deleted-profiles.ts:OWNER_CREDIT",
+    "lib/server/document-copies.ts:cleanupOrphanDocumentCopies",
+    "lib/server/mcp/auditoria.ts:purgeAuditLog",
+    "lib/server/mcp/dominios/tareas/comun.ts:GUEST_ERROR",
+    "lib/server/mcp/registro.ts:MCP_INSTRUCTIONS",
+    "lib/server/mcp/registro.ts:leerRecursoUi",
+    "lib/server/mcp/registro.ts:listarRecursosUi",
+    "lib/server/mcp/registro.ts:scopeForTool",
+    "lib/server/mcp/tokens.ts:newTokenMaterial",
+    "lib/server/mcp/ui-apertura.ts:UI_APERTURA_HTML",
+    "lib/server/mcp/ui-apertura.ts:UI_MIME_TYPE",
+    "lib/server/owner.ts:configuredOwnerEmail",
+    "lib/server/project-access.ts:defaultProjectId",
+    "lib/server/project-access.ts:isOwnerEmail",
+    "lib/server/project-access.ts:projectAccess",
+    "lib/server/project-books.ts:enabledBookIds",
+    "lib/server/space-control.ts:hayPestana",
+    "lib/server/storage.ts:MAX_DOCUMENT_COPY_BYTES",
+    "lib/server/storage.ts:projectDocumentCopyUsage",
+    "lib/server/storage.ts:projectDocumentImageUsage",
+    "lib/server/storage.ts:storageAvailable",
+    "lib/server/storage.ts:uploadOrigins",
+    "lib/server/uploads/usage.ts:UPLOAD_BATCH_LIMIT",
+    "lib/server/uploads/usage.ts:UPLOAD_GRACE_DAYS"
+  ],
+  "dependencyExceptions": [
+    {
+      "name": "react-dom",
+      "owner": "ARC-06",
+      "reason": "Peer runtime de React/Next; no se importa directamente en el código de la app."
+    }
+  ],
+  "undeclaredImportExceptions": [
+    {
+      "name": "@excalidraw/mermaid-to-excalidraw",
+      "owner": "ARC-06",
+      "reason": "Dependencia transitiva de Excalidraw usada por la prueba de conversión Mermaid; se declarará directamente al revisar dependencias."
+    }
+  ],
+  "cssExceptions": []
+}

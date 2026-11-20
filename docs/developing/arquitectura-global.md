@@ -218,11 +218,11 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 ## 8. Estado tras ARC-01, DEV-02 y ARC-02
 
 - `npm run arch:check` y `npm run check` están disponibles; CI ejecuta `arch:check`.
-- Resultado actual: **397 archivos de producto / 988 imports / 0 violaciones base / 0 ciclos / 0 problemas nuevos**.
+- Resultado actual: **396 archivos de producto / 988 imports / 0 violaciones base / 0 ciclos / 0 problemas nuevos**.
 - No quedan excepciones de tamaño ni dependencias `features → layout`; el layout compartido vive en `app/board/shared/ui/`.
 - El ciclo `auth ↔ demo` se eliminó con `lib/server/auth-user.ts`.
 - La configuración global de CodArch se retiró. DEV-02 quedó cerrado con el guard de MCP por repositorio, el inventario en [`mcp-tooling-audit.md`](mcp-tooling-audit.md) y la plantilla local [`mcp-project.example.json`](mcp-project.example.json).
 - ARC-02 quedó cerrado y archivado en [`historial/roadmap-arc-02.md`](../historial/roadmap-arc-02.md): Timeline, Hoja de cálculo, Office, Tarjetas y el residual de Aula Documentos tienen shell, hooks y componentes separados.
 - ARC-03 quedó cerrado y archivado en [`historial/roadmap-arc-03.md`](../historial/roadmap-arc-03.md): el estado local usa un contrato versionado único y `useAppDocument` sigue siendo la persistencia de documentos compartidos.
 - ARC-04 quedó cerrado y archivado en [`historial/roadmap-arc-04.md`](../historial/roadmap-arc-04.md): tokens, primitivas, layout, estilos de app y revisión responsive están ordenados; `baselineViolations` y `largeCss` quedan vacíos.
-- ARC-05 está activo en [`roadmap.md`](roadmap.md) para extraer el harness de pruebas, detectar código muerto y ampliar los presupuestos por app y flujo.
+- ARC-05 está activo en [`roadmap.md`](roadmap.md); el harness y el checker de código muerto están completados y quedan los presupuestos por app y flujo.

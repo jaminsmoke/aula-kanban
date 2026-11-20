@@ -8,6 +8,7 @@
 
 - **234 archivos / 1.597 pruebas** al iniciar ARC-05.
 - Tras la Fase 2: **235 archivos / 1.599 pruebas** y **1.297 líneas eliminadas** de los seis tests de Aula.
+- Tras la Fase 3: **236 archivos / 1.603 pruebas**, con las pruebas del checker de código muerto.
 - Aula Documentos concentra cinco archivos grandes:
   - `aula-documentos-copies.test.tsx`: 582 líneas.
   - `aula-documentos-presentation.test.tsx`: 525.

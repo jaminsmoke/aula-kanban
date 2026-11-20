@@ -79,13 +79,13 @@ Medición del 2026-11-20:
 - [x] Añadir una prueba de aislamiento que falle si dos pruebas comparten estado mutable.
 - **Criterios:** los seis archivos usan el harness, las pruebas siguen pasando y no aparecen mocks globales nuevos.
 
-### Fase 3 — Código muerto y dependencias
+### Fase 3 - Código muerto y dependencias
 
-- [ ] Evaluar `knip`, `ts-prune` y un script local con el checker actual como referencia.
-- [ ] Implementar la opción elegida sin añadir dependencia si el script local cubre el caso.
-- [ ] Detectar módulos, exports y dependencias de producto sin consumidores.
-- [ ] Excluir pruebas, scripts, entradas dinámicas y APIs públicas justificadas.
-- [ ] Integrar el check en `npm run check` y CI con un baseline explícito para deuda conocida.
+- [x] Evaluar `knip`, `ts-prune` y un script local con el checker actual como referencia.
+- [x] Implementar la opción elegida sin añadir dependencia si el script local cubre el caso.
+- [x] Detectar módulos, exports y dependencias de producto sin consumidores.
+- [x] Excluir pruebas, scripts, entradas dinámicas y APIs públicas justificadas.
+- [x] Integrar el check en `npm run check` y CI con un baseline explícito para deuda conocida.
 - **Criterios:** un archivo o dependencia sin consumidores falla de forma determinista; no hay falsos positivos en entradas dinámicas; CI lo ejecuta.
 
 ### Fase 4 — Presupuestos por app y por flujo
@@ -123,4 +123,5 @@ Medición del 2026-11-20:
 - `vitest.setup.ts` ya cubre shims de jsdom; el harness no sustituye ese setup global.
 - 2026-11-20: **Fase 1 completada.** Inventario en [`test-harness-audit.md`](test-harness-audit.md): 234 archivos / 1.597 pruebas, cinco tests de Aula, ~190 líneas repetidas, capas de setup, contrato del harness y candidatos de Office/Tarjetas/Timeline/Hoja. Sin cambios de pruebas.
 - 2026-11-20: **Fase 2 completada.** Harness en `test-utils/aula-documentos.tsx` (fuera del catálogo de producto); seis tests migrados, **1.297 líneas eliminadas**, `Range`/`Element`/`Node` movidos al setup global y prueba de aislamiento añadida. Suite: **235 archivos / 1.599 pruebas**. No hay dos consumidores reales para factorías fuera de Aula.
+- 2026-11-20: **Fase 3 completada.** `dead-code-check` local en `scripts/dead-code-check.mjs`, baseline en [`dead-code-baseline.json`](dead-code-baseline.json) y decisiones en [`dead-code-check.md`](dead-code-check.md). Detecta 0 huérfanos, 0 dependencias sin uso y 0 CSS sin uso; 51 exports quedan como deuda conocida. `test-css.ts` pasó a `test-utils/aula-documentos-css.ts`. CI y `npm run check` ejecutan el checker.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AULA_DOCUMENTOS_CSS as CSS } from "./test-css";
+import { AULA_DOCUMENTOS_CSS as CSS } from "../../../../test-utils/aula-documentos-css";
 
 describe("barra móvil de Aula Documentos", () => {
   it("oculta la barra directa y usa menús de 44 px", () => {
