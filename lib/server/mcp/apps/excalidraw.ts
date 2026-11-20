@@ -18,8 +18,8 @@ import {
   saveBoard,
   type BoardFailure,
   type BoardOwnerType,
-} from "../../boards";
-import { publicarEscena } from "../../board-control";
+} from "../../board/boards";
+import { publicarEscena } from "../../board/board-control";
 import { errorHerramienta, payloadResult, type McpCaller } from "../contexto";
 import { resolverAppEnProyecto } from "./contrato";
 import type { McpToolDefinicion } from "../dominios/tipos";

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { inviteMember, listMembers, removeMember } from "../../../lib/server/members";
+import { inviteMember, listMembers, removeMember } from "../../../lib/server/access/members";
 import { json } from "../../../lib/server/http";
 import { withJsonMutation, withProjectRoute } from "../../../lib/server/route-helpers";
 

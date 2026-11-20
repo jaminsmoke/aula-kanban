@@ -1,4 +1,4 @@
-import { findMember, inviteMember, listMembers, removeMember } from "../../../members";
+import { findMember, inviteMember, listMembers, removeMember } from "../../../access/members";
 import { errorHerramienta, falloResolucion, payloadResult, resolve, toChatGPTUser, type McpCaller } from "../../contexto";
 import { falloFicha, miembro } from "./comun";
 

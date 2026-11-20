@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({
   set: vi.fn(),
 }));
 
-vi.mock("../../../lib/server/project-access", () => ({
+vi.mock("../../../lib/server/projects/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? { status: "ok", project: { id: "p1", access: { user: { userId: "u1" }, role: mocks.role, studentSection: null, teacherId: null } } }
     : { status: mocks.status },
@@ -19,7 +19,7 @@ vi.mock("../../../lib/server/project-access", () => ({
   globalRoleForUser: async () => (mocks.role === "owner" || mocks.role === "admin" ? mocks.role : null),
   projectAccessForUser: async () => ({ user: { userId: "u1" }, role: mocks.role, studentSection: null, teacherId: null }),
 }));
-vi.mock("../../../lib/server/project-books", () => {
+vi.mock("../../../lib/server/books/project-books", () => {
   class ProjectBooksError extends Error {
     status: number;
     constructor(message: string, status: number) {

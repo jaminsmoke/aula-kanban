@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AULA_STORE_VERSION, NATIVE_APP_IDS, NATIVE_APPS, nativeAppMeta, type NativeAppId, type NativeAppMeta } from "../../../native-apps";
-import { listInstalledApps, setAppInstalled, MANAGE_APPS_FORBIDDEN, type AppInstalledState } from "../../apps";
-import { tieneCapacidad } from "../../capabilities";
+import { listInstalledApps, setAppInstalled, MANAGE_APPS_FORBIDDEN, type AppInstalledState } from "../../apps/apps";
+import { tieneCapacidad } from "../../access/capabilities";
 import { errorHerramienta, falloResolucion, payloadResult, resolve, toChatGPTUser, type McpCaller } from "../contexto";
 import type { McpToolDefinicion } from "./tipos";
 

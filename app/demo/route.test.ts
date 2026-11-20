@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 const { findProject } = vi.hoisted(() => ({ findProject: vi.fn() }));
 
-vi.mock("../../lib/server/project-access", () => ({ findProject }));
+vi.mock("../../lib/server/projects/project-access", () => ({ findProject }));
 
 import { GET } from "./route";
 import { DEMO_PROJECT_ID } from "../../lib/domain/demo";

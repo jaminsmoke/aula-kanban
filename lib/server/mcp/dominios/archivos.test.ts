@@ -10,7 +10,7 @@ const state = vi.hoisted(() => ({
 }));
 
 vi.mock("cloudflare:workers", () => ({ env: {} }));
-vi.mock("../../project-access", () => ({
+vi.mock("../../projects/project-access", () => ({
   PROJECT_FAILURE_RESPONSES: {
     unauthenticated: { status: 401, message: "Inicia sesión para continuar." },
     invalid: { status: 400, message: "Proyecto no válido." },

@@ -1,7 +1,7 @@
-import { getChatGPTUser } from "../../../../lib/server/auth";
-import { seedDemoProject } from "../../../../lib/server/demo-seed";
+import { getChatGPTUser } from "../../../../lib/server/access/auth";
+import { seedDemoProject } from "../../../../lib/server/demo/demo-seed";
 import { json } from "../../../../lib/server/http";
-import { isOwner } from "../../../../lib/server/project-access";
+import { isOwner } from "../../../../lib/server/projects/project-access";
 import { withJsonMutation } from "../../../../lib/server/route-helpers";
 
 export const dynamic = "force-dynamic";

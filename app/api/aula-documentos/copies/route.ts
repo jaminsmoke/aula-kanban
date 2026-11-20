@@ -1,5 +1,5 @@
 import { inspectAulaDocumentCopy, AULA_COPY_MAX_ZIP_BYTES } from "../../../../lib/domain/aula-documentos/copy";
-import { createDocumentCopy, listDocumentCopies, type DocumentCopyRow } from "../../../../lib/server/document-copies";
+import { createDocumentCopy, listDocumentCopies, type DocumentCopyRow } from "../../../../lib/server/aula-documentos/document-copies";
 import { isSameOrigin, json, storageUnavailable } from "../../../../lib/server/http";
 import { withProjectRoute } from "../../../../lib/server/route-helpers";
 import { deleteUpload, storeUpload } from "../../../../lib/server/storage";

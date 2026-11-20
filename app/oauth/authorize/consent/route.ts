@@ -1,5 +1,5 @@
 import { getD1 } from "../../../../db";
-import { chatGPTSignInPath, getChatGPTUser } from "../../../../lib/server/auth";
+import { chatGPTSignInPath, getChatGPTUser } from "../../../../lib/server/access/auth";
 import { isSameOrigin } from "../../../../lib/server/http";
 import { createAuthorizationCode, getClient, normalizeScopes } from "../../../../lib/server/oauth/service";
 

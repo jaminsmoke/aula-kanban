@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { isDemoUser } from "../../../lib/domain/demo";
-import { getChatGPTUser } from "../../../lib/server/auth";
-import { acceptInvitation, listPendingInvitations } from "../../../lib/server/invitaciones";
-import { projectFailureResponse } from "../../../lib/server/project-http";
+import { getChatGPTUser } from "../../../lib/server/access/auth";
+import { acceptInvitation, listPendingInvitations } from "../../../lib/server/access/invitaciones";
+import { projectFailureResponse } from "../../../lib/server/projects/project-http";
 import { json } from "../../../lib/server/http";
 import { withJsonMutation } from "../../../lib/server/route-helpers";
 

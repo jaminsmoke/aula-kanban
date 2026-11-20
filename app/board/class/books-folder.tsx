@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { BookOpen, TriangleAlert } from "lucide-react";
 import type { StoreTool } from "../store/tools";
 import "./books-folder.css";
-import type { BookWithAvailability } from "../../../lib/server/books";
+import type { BookWithAvailability } from "../../../lib/server/books/books";
 import { BOOK_LEVELS } from "../../../lib/books";
 
 /**

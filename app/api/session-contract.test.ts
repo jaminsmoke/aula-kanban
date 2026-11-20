@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ChatGPTUser } from "../../lib/server/auth";
+import type { ChatGPTUser } from "../../lib/server/access/auth";
 
 const mocks = vi.hoisted(() => ({
   user: null as ChatGPTUser | null,
@@ -16,9 +16,9 @@ const currentUser: ChatGPTUser = {
   fullName: null,
 };
 
-vi.mock("../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user }));
-vi.mock("../../lib/server/project-access", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../lib/server/project-access")>();
+vi.mock("../../lib/server/access/auth", () => ({ getChatGPTUser: async () => mocks.user }));
+vi.mock("../../lib/server/projects/project-access", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../lib/server/projects/project-access")>();
   return {
     ...actual,
     resolveProject: async () => mocks.status === "ok"

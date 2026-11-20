@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { getChatGPTUser } from "../../../lib/server/auth";
-import { tieneCapacidad } from "../../../lib/server/capabilities";
-import { projectFailureResponse } from "../../../lib/server/project-http";
+import { getChatGPTUser } from "../../../lib/server/access/auth";
+import { tieneCapacidad } from "../../../lib/server/access/capabilities";
+import { projectFailureResponse } from "../../../lib/server/projects/project-http";
 import { NATIVE_APP_IDS } from "../../../lib/native-apps";
-import { listInstalledApps, setAppInstalled, MANAGE_APPS_FORBIDDEN } from "../../../lib/server/apps";
+import { listInstalledApps, setAppInstalled, MANAGE_APPS_FORBIDDEN } from "../../../lib/server/apps/apps";
 import { json } from "../../../lib/server/http";
 import { withJsonMutation, withProjectRoute } from "../../../lib/server/route-helpers";
 

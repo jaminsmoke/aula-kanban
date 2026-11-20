@@ -3,9 +3,9 @@ import { drizzle } from "drizzle-orm/d1";
 import handler from "vinext/server/fetch-handler";
 import { administrators, projectMembers, projects, tasks } from "../db/schema";
 import { runWithConnectorBinding } from "../lib/connector-context";
-import { BoardRoom } from "../lib/server/board-room";
-import { ensureInstanceOwner, isInstanceOwner } from "../lib/server/owner";
-import { SpaceRoom } from "../lib/server/space-room";
+import { BoardRoom } from "../lib/server/board/board-room";
+import { ensureInstanceOwner, isInstanceOwner } from "../lib/server/access/owner";
+import { SpaceRoom } from "../lib/server/space/space-room";
 import type { ConnectorBinding } from "../lib/connector-contract.mjs";
 
 export { BoardRoom, SpaceRoom };

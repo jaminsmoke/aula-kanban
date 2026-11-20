@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { isOwner } from "../../project-access";
-import { createProject, deleteProject, listVisibleProjects, projectDeletionInfo } from "../../projects";
+import { isOwner } from "../../projects/project-access";
+import { createProject, deleteProject, listVisibleProjects, projectDeletionInfo } from "../../projects/projects";
 import { calendarUrl, projectUrl } from "../enlaces";
 import { errorHerramienta, payloadResult, toChatGPTUser, type McpCaller } from "../contexto";
 import { paginaDe, paginaDesde, type McpToolDefinicion } from "./tipos";

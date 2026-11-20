@@ -73,18 +73,18 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
-| `auth.ts` | 111 | `P` sesión | 27 archivos: rutas, MCP, páginas | 9 |
-| `auth-user.ts` | 8 | `D` tipo de cuenta | `auth.ts`, `demo.ts` | — |
-| `owner.ts` | 95 | `S`+`R` `instance_owner` | `board-room.ts`, `project-access.ts`, `space-room.ts` | 1 |
-| `project-access.ts` | 179 | `S` autorización + `R` proyectos | 31 archivos: rutas, MCP, servicios | 5 |
-| `project-contract.ts` | 10 | `D` mensajes de fallo | `project-http.ts`, `projects.ts`, `mcp/contexto.ts` | — |
-| `project-http.ts` | 21 | `H` fallo de proyecto | 14 rutas y servicios de personas | 2 |
-| `capabilities.ts` | 51 | `S` matriz de permisos | `mcp/dominios/apps.ts`, `project-books`, `space-apps` | 1 |
-| `administradores.ts` | 210 | `S`+`R` administradores | `mcp/dominios/administracion.ts`, `api/administrators` | 1 |
-| `members.ts` | 185 | `S`+`R` `project_members` | `mcp/dominios/personas/*`, `api/members` | — |
-| `invitaciones.ts` | 75 | `S`+`R` invitaciones | `mcp/dominios/invitaciones.ts`, `api/invitations` | — |
-| `profile-update.ts` | 43 | `S` perfil + miembro | `people/students.ts`, `people/teachers.ts` | — |
-| `deleted-profiles.ts` | 49 | `R` histórico + purga | `api/tasks` (purga perezosa) | — |
+| `access/auth.ts` | 111 | `P` sesión | 27 archivos: rutas, MCP, páginas | 9 |
+| `access/auth-user.ts` | 8 | `D` tipo de cuenta | `access/auth.ts`, `demo/demo.ts` | — |
+| `access/owner.ts` | 95 | `S`+`R` `instance_owner` | `board/board-room.ts`, `projects/project-access.ts`, `space/space-room.ts` | 1 |
+| `projects/project-access.ts` | 179 | `S` autorización + `R` proyectos | 31 archivos: rutas, MCP, servicios | 5 |
+| `projects/project-contract.ts` | 10 | `D` mensajes de fallo | `projects/project-http.ts`, `projects/projects.ts`, `mcp/contexto.ts` | — |
+| `projects/project-http.ts` | 21 | `H` fallo de proyecto | 14 rutas y servicios de personas | 2 |
+| `access/capabilities.ts` | 51 | `S` matriz de permisos | `mcp/dominios/apps.ts`, `project-books`, `space-apps` | 1 |
+| `access/administradores.ts` | 210 | `S`+`R` administradores | `mcp/dominios/administracion.ts`, `api/administrators` | 1 |
+| `access/members.ts` | 185 | `S`+`R` `project_members` | `mcp/dominios/personas/*`, `api/members` | — |
+| `access/invitaciones.ts` | 75 | `S`+`R` invitaciones | `mcp/dominios/invitaciones.ts`, `api/invitations` | — |
+| `access/profile-update.ts` | 43 | `S` perfil + miembro | `people/students.ts`, `people/teachers.ts` | — |
+| `access/deleted-profiles.ts` | 49 | `R` histórico + purga | `api/tasks` (purga perezosa) | — |
 | `people/campos.ts` | 49 | `D` referencia y visibilidad | `people/students.ts`, `people/teachers.ts` | — |
 | `people/students.ts` | 140 | `S`+`R` | `mcp/dominios/personas/*`, `api/students` | paridad |
 | `people/teachers.ts` | 133 | `S`+`R` | `mcp/dominios/personas/*`, `api/teachers` | paridad |
@@ -95,28 +95,28 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
-| `apps.ts` | 60 | `S`+`R` `instance_apps` | `mcp/apps`, `mcp/dominios`, `personal-apps`, `space-apps` | — |
-| `app-migration.ts` | 30 | `S` migración legacy | `apps.ts`, `personal-apps.ts` | 1 |
-| `personal-apps.ts` | 204 | `S`+`R` `app_preferences` | `api/personal-apps` | 1 |
-| `app-documents.ts` | 105 | `S`+`R` `app_documents` | `migration`, `mcp/apps`, `api/app-documents` | 2 |
-| `aula-documentos-migration.ts` | 284 | `S` migración transaccional | `api/aula-documentos/migration` | 1 |
-| `document-copies.ts` | 90 | `R` `document_copies` + borrado R2 | `api/aula-documentos/copies[/:id]` | — |
-| `projects.ts` | 161 | `S`+`R` proyectos | `mcp/dominios`, `api/projects` | — |
-| `project-overview.ts` | 92 | `S` lectura agregada | `api/projects` | 1 |
-| `project-rekey.ts` | 49 | `S` migración de id | `project-access.ts`, `project-overview.ts` | 1 |
-| `project-books.ts` | 81 | `S`+`R` `project_books` | `api/project-books` | 1 |
-| `books.ts` | 81 | `S`+`R`+`B` catálogo de libros | rutas `api/books`, visor de clase | 1 |
+| `apps/apps.ts` | 60 | `S`+`R` `instance_apps` | `mcp/apps`, `mcp/dominios`, `personal-apps`, `space-apps` | — |
+| `apps/app-migration.ts` | 30 | `S` migración legacy | `apps/apps.ts`, `apps/personal-apps.ts` | 1 |
+| `apps/personal-apps.ts` | 204 | `S`+`R` `app_preferences` | `api/personal-apps` | 1 |
+| `apps/app-documents.ts` | 105 | `S`+`R` `app_documents` | `migration`, `mcp/apps`, `api/app-documents` | 2 |
+| `aula-documentos/aula-documentos-migration.ts` | 284 | `S` migración transaccional | `api/aula-documentos/migration` | 1 |
+| `aula-documentos/document-copies.ts` | 90 | `R` `document_copies` + borrado R2 | `api/aula-documentos/copies[/:id]` | — |
+| `projects/projects.ts` | 161 | `S`+`R` proyectos | `mcp/dominios`, `api/projects` | — |
+| `projects/project-overview.ts` | 92 | `S` lectura agregada | `api/projects` | 1 |
+| `projects/project-rekey.ts` | 49 | `S` migración de id | `projects/project-access.ts`, `projects/project-overview.ts` | 1 |
+| `books/project-books.ts` | 81 | `S`+`R` `project_books` | `api/project-books` | 1 |
+| `books/books.ts` | 81 | `S`+`R`+`B` catálogo de libros | rutas `api/books`, visor de clase | 1 |
 
 ### 3.3 Tablero, ventanas y tareas (10)
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
-| `boards.ts` | 182 | `S`+`R` `boards`/`tasks` | `board-control.ts`, `mcp/apps/excalidraw.ts`, `api/boards` | 2 |
-| `board-control.ts` | 34 | `S` publicación en sala | `mcp/apps/excalidraw.ts` | 1 |
-| `board-room.ts` | 151 | `P` Durable Object WebSocket | `board-control.ts` | 1 |
-| `board-stats.ts` | 107 | `R` métricas del tablero | `api/storage/status` | 1 |
-| `space-control.ts` | 65 | `S` sala de espacio | `mcp/dominios/contexto.ts`, `ventanas.ts` | — |
-| `space-room.ts` | 135 | `P` Durable Object WebSocket | `space-control.ts` | — |
+| `board/boards.ts` | 182 | `S`+`R` `boards`/`tasks` | `board/board-control.ts`, `mcp/apps/excalidraw.ts`, `api/boards` | 2 |
+| `board/board-control.ts` | 34 | `S` publicación en sala | `mcp/apps/excalidraw.ts` | 1 |
+| `board/board-room.ts` | 151 | `P` Durable Object WebSocket | `board/board-control.ts` | 1 |
+| `board/board-stats.ts` | 107 | `R` métricas del tablero | `api/storage/status` | 1 |
+| `space/space-control.ts` | 65 | `S` sala de espacio | `mcp/dominios/contexto.ts`, `ventanas.ts` | — |
+| `space/space-room.ts` | 135 | `P` Durable Object WebSocket | `space/space-control.ts` | — |
 | `tasks/service.ts` | 144 | `S` aplicación de tareas | `api/tasks` | ruta |
 | `tasks/mutations.ts` | 158 | `S`+`R` `tasks` | `mcp/dominios/tareas/escritura.ts`, `tasks/service.ts` | — |
 | `tasks/permissions.ts` | 105 | `D` permisos + guard SQL | `mcp/dominios/tareas/*`, `tasks/service.ts`, `api/tasks` | 1 |
@@ -180,7 +180,7 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `mcp/dominios/tareas/lectura.ts` | 99 | `A` lectura de tareas | `tareas/index.ts` | — |
 | `mcp/dominios/tareas/filtros.ts` | 90 | `D` filtros | `tareas/lectura.ts` | — |
 
-**Nota:** `mcp/dominios/*` son adaptadores de herramienta, no servicios de dominio: validan esquema, autorizan alcance y delegan en `tasks/*`, `people/*`, `projects.ts`, etc. Los casos donde vuelven a decidir reglas son deuda de Fase 2.
+**Nota:** `mcp/dominios/*` son adaptadores de herramienta, no servicios de dominio: validan esquema, autorizan alcance y delegan en `tasks/*`, `people/*`, `projects/projects.ts`, etc. Los casos donde vuelven a decidir reglas son deuda de Fase 2.
 
 ### 3.6 OAuth (7)
 
@@ -201,9 +201,9 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `http.ts` | 40 | `H` `json`, same-origin, JSON, 503 de almacenamiento | 31 archivos | 2 |
 | `route-helpers.ts` | 53 | `H` composición de rutas | 21 rutas | 1 |
 | `bounded-json.ts` | 26 | `H` cuerpo acotado | `api/app-documents` | — |
-| `demo.ts` | 27 | `P` cookie y cuenta demo | `auth.ts` | 1 |
-| `demo-seed.ts` | 27 | `S` lote de la demo | `api/admin/demo` | ruta |
-| `demo-availability.ts` | 16 | `S` disponibilidad demo | `app/page.tsx` | 1 |
+| `demo/demo.ts` | 27 | `P` cookie y cuenta demo | `access/auth.ts` | 1 |
+| `demo/demo-seed.ts` | 27 | `S` lote de la demo | `api/admin/demo` | ruta |
+| `demo/demo-availability.ts` | 16 | `S` disponibilidad demo | `app/page.tsx` | 1 |
 
 ---
 
@@ -256,27 +256,27 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 
 | Tabla | Escritura principal | Lectura principal |
 |---|---|---|
-| `projects` | `projects.ts` (alta/baja), `project-rekey.ts` | `project-access.ts`, `project-overview.ts`, MCP |
-| `project_members` | `members.ts`, `invitaciones.ts`, `profile-update.ts`, `people/*` | `people/*`, `members.ts`, `project-access.ts`, `tasks/queries.ts` |
-| `administrators_unified` | `administradores.ts`; sincronización de correo en `project-access.ts` | `administradores.ts`, `project-access.ts` |
-| `instance_owner` | `owner.ts` | `owner.ts`, `project-access.ts` |
-| `instance_apps` | `apps.ts` | `apps.ts`, `personal-apps.ts`, MCP |
-| `app_documents` | `app-documents.ts` | `aula-documentos-migration.ts`, MCP de apps, `uploads/usage.ts` |
-| `app_preferences` | `personal-apps.ts` | `personal-apps.ts` |
-| `boards` | `boards.ts`; snapshot en vivo en `board-room.ts` | `boards.ts`, `uploads/usage.ts` |
-| `tasks` | `tasks/mutations.ts`; `deleted-profiles.ts` (crédito y purga) | `tasks/queries.ts`, `boards.ts`, `projects.ts`, `uploads/usage.ts` |
-| `task_assignees` | `tasks/mutations.ts` | `tasks/queries.ts`, `boards.ts`, `deleted-profiles.ts` |
-| `students` | `people/students.ts` | `people/students.ts`, `members.ts`, `tasks/queries.ts` |
-| `teachers` | `people/teachers.ts` | `people/teachers.ts`, `members.ts`, `tasks/queries.ts` |
-| `deleted_students` / `deleted_teachers` | `people/*` (baja), `deleted-profiles.ts` (purga) | `deleted-profiles.ts`, `tasks/queries.ts` |
-| `project_books` | `project-books.ts` | `project-books.ts`, `project-overview.ts` |
-| `project_rekeys` | `project-rekey.ts` | `project-access.ts`, `project-overview.ts` |
-| `document_copies` | `document-copies.ts`; `storage.deleteProjectUploads` | `document-copies.ts`, rutas de copias |
-| `uploads` | `storage.storeUpload`, `storage.deleteUpload`, `uploads/purge.ts` | `storage.ts`, `uploads/*`, `projects.ts` (baja) |
+| `projects` | `projects/projects.ts` (alta/baja), `projects/project-rekey.ts` | `projects/project-access.ts`, `projects/project-overview.ts`, MCP |
+| `project_members` | `access/members.ts`, `access/invitaciones.ts`, `access/profile-update.ts`, `people/*` | `people/*`, `access/members.ts`, `projects/project-access.ts`, `tasks/queries.ts` |
+| `administrators_unified` | `access/administradores.ts`; sincronización de correo en `projects/project-access.ts` | `access/administradores.ts`, `projects/project-access.ts` |
+| `instance_owner` | `access/owner.ts` | `access/owner.ts`, `projects/project-access.ts` |
+| `instance_apps` | `apps/apps.ts` | `apps/apps.ts`, `apps/personal-apps.ts`, MCP |
+| `app_documents` | `apps/app-documents.ts` | `aula-documentos/aula-documentos-migration.ts`, MCP de apps, `uploads/usage.ts` |
+| `app_preferences` | `apps/personal-apps.ts` | `apps/personal-apps.ts` |
+| `boards` | `board/boards.ts`; snapshot en vivo en `board/board-room.ts` | `board/boards.ts`, `uploads/usage.ts` |
+| `tasks` | `tasks/mutations.ts`; `access/deleted-profiles.ts` (crédito y purga) | `tasks/queries.ts`, `board/boards.ts`, `projects/projects.ts`, `uploads/usage.ts` |
+| `task_assignees` | `tasks/mutations.ts` | `tasks/queries.ts`, `board/boards.ts`, `access/deleted-profiles.ts` |
+| `students` | `people/students.ts` | `people/students.ts`, `access/members.ts`, `tasks/queries.ts` |
+| `teachers` | `people/teachers.ts` | `people/teachers.ts`, `access/members.ts`, `tasks/queries.ts` |
+| `deleted_students` / `deleted_teachers` | `people/*` (baja), `access/deleted-profiles.ts` (purga) | `access/deleted-profiles.ts`, `tasks/queries.ts` |
+| `project_books` | `books/project-books.ts` | `books/project-books.ts`, `projects/project-overview.ts` |
+| `project_rekeys` | `projects/project-rekey.ts` | `projects/project-access.ts`, `projects/project-overview.ts` |
+| `document_copies` | `aula-documentos/document-copies.ts`; `storage.deleteProjectUploads` | `aula-documentos/document-copies.ts`, rutas de copias |
+| `uploads` | `storage.storeUpload`, `storage.deleteUpload`, `uploads/purge.ts` | `storage.ts`, `uploads/*`, `projects/projects.ts` (baja) |
 | `mcp_tokens` | `mcp/tokens.ts` | `mcp/auth.ts`, `mcp/dominios/administracion.ts` |
 | `mcp_audit_log` | `mcp/auditoria.ts` | `mcp/auditoria.ts`, `administracion.ts` |
 | `oauth_clients` / `oauth_authorization_codes` / `oauth_access_tokens` / `oauth_refresh_tokens` | `oauth/{clientes,codigos,tokens}.ts` | `oauth/service.ts` |
-| `user_identities` | `project-overview.ts` (nombre); `deleted-profiles.ts` (limpieza) | `project-overview.ts`, `tasks/queries.ts`, `mcp/dominios/contexto.ts` |
+| `user_identities` | `projects/project-overview.ts` (nombre); `access/deleted-profiles.ts` (limpieza) | `projects/project-overview.ts`, `tasks/queries.ts`, `mcp/dominios/contexto.ts` |
 
 **Pendiente de verificar en Fase 3:** no aparece en `lib/server` el alta inicial de `user_identities`. Se crea fuera de este árbol (bootstrap o seed). No se toca aquí; queda anotado para que el repositorio de identidad tenga un hogar explícito.
 
@@ -285,12 +285,12 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 Un único binding, `BUCKET`. Claves:
 
 - Subidas web/MCP: `${projectId}/${purpose}/${uuid}${ext}` (`storage.ts` con `uploadExtension`).
-- Libros: `storageKey`, `coverKey` y `backKey` propios (`books.ts`).
+- Libros: `storageKey`, `coverKey` y `backKey` propios (`books/books.ts`).
 - Lectura de subidas: `storage.readUpload`; libros: `books.readBookFile`/`readBookImage`.
 - Listado: `storage/repository.listBucketPage` (página máxima de 100).
 - Borrado: `storage.deleteUpload`, `storage.deleteProjectUploads`, `uploads/purge.ts`.
 
-R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `storage/repository.ts` o `books.ts`. Esa regla ya se cumple.
+R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `storage/repository.ts` o `books/books.ts`. Esa regla ya se cumple.
 
 ---
 
@@ -304,8 +304,8 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 | ZIP de copia portable | 60 MB | `lib/domain/aula-documentos/copy.ts` (`AULA_COPY_MAX_ZIP_BYTES`) | dominio + `storage/quota.ts` toma el valor | dominio y `storage` |
 | Copias por proyecto | 20 | `storage/quota.ts` (`AULA_COPY_MAX_PER_PROJECT`) | `storeUpload` | `storage.test.ts` |
 | Cuota de copias | 200 MB | `storage/quota.ts` (`AULA_COPY_PROJECT_QUOTA_BYTES`) | `storeUpload` | `storage.test.ts` |
-| Estado de documento de app | 200.000 caracteres | `app-documents.ts` (`MAX_APP_DOCUMENT_CHARS`) | ruta `app-documents` | `app-documents.test.ts` |
-| Perfil borrado (histórico) | 30 días; chequeo 1 h | `deleted-profiles.ts` | purga perezosa desde `api/tasks` | `deleted-profiles` |
+| Estado de documento de app | 200.000 caracteres | `apps/app-documents.ts` (`MAX_APP_DOCUMENT_CHARS`) | ruta `app-documents` | `app-documents.test.ts` |
+| Perfil borrado (histórico) | 30 días; chequeo 1 h | `access/deleted-profiles.ts` | purga perezosa desde `api/tasks` | `deleted-profiles` |
 | Auditoría MCP | 90 días; purga 1 h | `mcp/auditoria.ts` | purga perezosa | `mcp/auditoria.test.ts` |
 | Límite MCP | 120/min por token; 30 escrituras/min por cuenta | `mcp/rate-limit.ts` | ventana en memoria del isolate | `rate-limit.test.ts` |
 | Purga de subidas | gracia 7 días; lote 100 (máx. 500); escaneo 1.000 | `uploads/usage.ts` | relectura antes de borrar | `uploads/*.test.ts` |
@@ -314,7 +314,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 
 **Duplicidad P2 confirmada:** el límite de 5 MB existe dos veces con nombres distintos: `MAX_IMAGE_BYTES` en `storage/quota.ts` y `AULA_IMAGE_MAX_BYTES` en `lib/domain/aula-documentos/image.ts`. Son capas distintas (servidor y cliente), pero el valor debe tener una sola fuente en Fase 4.
 
-**Purgas existentes:** perfiles borrados (`deleted-profiles.ts`), auditoría MCP (`mcp/auditoria.ts`), subidas sin uso (`uploads/purge.ts`), copias huérfanas (`document-copies.cleanupOrphanDocumentCopies`), subidas de proyectos eliminados (`storage.cleanupOrphanUploads`). No todas tienen disparador automático: `cleanupOrphanUploads` y `cleanupOrphanDocumentCopies` solo se invocan desde pruebas o tareas manuales.
+**Purgas existentes:** perfiles borrados (`access/deleted-profiles.ts`), auditoría MCP (`mcp/auditoria.ts`), subidas sin uso (`uploads/purge.ts`), copias huérfanas (`document-copies.cleanupOrphanDocumentCopies`), subidas de proyectos eliminados (`storage.cleanupOrphanUploads`). No todas tienen disparador automático: `cleanupOrphanUploads` y `cleanupOrphanDocumentCopies` solo se invocan desde pruebas o tareas manuales.
 
 ---
 
@@ -322,7 +322,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 
 - **Esquema:** `db/schema.ts` + `drizzle/0000…0041`. Son 42 migraciones; la última es `0041_tranquil_sunset_bain.sql`, que crea `document_copies`.
 - **Aplicación:** solo local (`wrangler --local --persist-to .wrangler/state-v20`). ARC-06 prohíbe migraciones remotas y cambios de datos reales.
-- **Migraciones de datos en runtime:** `app-migration.ts` (apps y preferencias legacy), `aula-documentos-migration.ts` (documentos de apps antiguas, transaccional), `project-rekey.ts` (id canónico de proyecto). Se ejecutan por petición, no por despliegue.
+- **Migraciones de datos en runtime:** `apps/app-migration.ts` (apps y preferencias legacy), `aula-documentos/aula-documentos-migration.ts` (documentos de apps antiguas, transaccional), `projects/project-rekey.ts` (id canónico de proyecto). Se ejecutan por petición, no por despliegue.
 - **Riesgo:** las tres migraciones de datos viven en `lib/server` como servicios; las de esquema viven en `drizzle/`. Esa separación es correcta y no se cambia en ARC-06.
 
 ---

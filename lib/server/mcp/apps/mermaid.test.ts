@@ -11,7 +11,7 @@ vi.mock("./contrato", () => ({
   resolverAppEnProyecto: mocks.resolverAppEnProyecto,
   resolverAppInstalada: mocks.resolverAppInstalada,
 }));
-vi.mock("../../app-documents", () => ({
+vi.mock("../../apps/app-documents", () => ({
   MAX_APP_DOCUMENT_CHARS: 200_000,
   readAppDocument: mocks.readAppDocument,
   saveAppDocument: mocks.saveAppDocument,

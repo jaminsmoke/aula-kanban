@@ -5,7 +5,7 @@ import {
 } from "../../../domain/aula-documentos/mermaid-compat";
 import { validarDocumentoMermaid } from "../../../domain/mermaid/document";
 import { MERMAID_TEMPLATES } from "../../../domain/mermaid/templates";
-import { MAX_APP_DOCUMENT_CHARS, readAppDocument, saveAppDocument } from "../../app-documents";
+import { MAX_APP_DOCUMENT_CHARS, readAppDocument, saveAppDocument } from "../../apps/app-documents";
 import { errorHerramienta, payloadResult, type McpCaller } from "../contexto";
 import { resolverAppEnProyecto, resolverAppInstalada } from "./contrato";
 import type { McpToolDefinicion } from "../dominios/tipos";

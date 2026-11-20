@@ -1,6 +1,6 @@
 import { isJsonRequest, isSameOrigin, json } from "./http";
-import { projectFailureResponse } from "./project-http";
-import { resolveProject, type ProjectWithAccess } from "./project-access";
+import { projectFailureResponse } from "./projects/project-http";
+import { resolveProject, type ProjectWithAccess } from "./projects/project-access";
 
 type RouteHandler = (request: Request) => Promise<Response> | Response;
 type ProjectHandler = (request: Request, project: ProjectWithAccess) => Promise<Response> | Response;

@@ -1,4 +1,4 @@
-import { chatGPTSignInPath } from "../../lib/server/auth";
+import { chatGPTSignInPath } from "../../lib/server/access/auth";
 import DocsPublic from "./docs-public";
 
 /**

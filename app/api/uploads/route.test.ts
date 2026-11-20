@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({
   store: vi.fn(),
   QuotaError: class UploadQuotaExceededError extends Error {},
 }));
-vi.mock("../../../lib/server/project-access", () => ({
+vi.mock("../../../lib/server/projects/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? { status: "ok", project: { id: "project1", access: { user: { userId: "user1", displayName: "Alumno", email: "alumno@example.com", fullName: null }, role: mocks.role } } }
     : { status: mocks.status },

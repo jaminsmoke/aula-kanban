@@ -50,7 +50,7 @@ const state = vi.hoisted(() => {
   return { user: null as Usuario | null, tokens, db };
 });
 
-vi.mock("../../../lib/server/auth", () => ({ getChatGPTUser: async () => state.user }));
+vi.mock("../../../lib/server/access/auth", () => ({ getChatGPTUser: async () => state.user }));
 vi.mock("../../../db", () => ({ getD1: () => state.db }));
 
 import { DELETE as revocarHttp, GET as listarHttp } from "./tokens/route";

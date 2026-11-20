@@ -21,7 +21,7 @@ const proyecto = { id: "11111111-1111-4111-8111-111111111111", name: "Proyecto u
 let proyectosMock: Array<typeof proyecto> = [proyecto];
 let uploadsMock: unknown[] = [];
 
-vi.mock("../../lib/server/auth", () => ({ getChatGPTUser: async () => usuarioActual }));
+vi.mock("../../lib/server/access/auth", () => ({ getChatGPTUser: async () => usuarioActual }));
 
 vi.mock("../../db", () => ({
   getDb: () => ({
@@ -45,7 +45,7 @@ vi.mock("../../db", () => ({
   }),
 }));
 
-vi.mock("../../lib/server/project-access", () => ({
+vi.mock("../../lib/server/projects/project-access", () => ({
   isOwner: async (user: Usuario) => user.userId === "u-owner",
   isAdministrator: async (user: Usuario) => user.userId === "u-admin",
   PROJECT_FAILURE_RESPONSES: {

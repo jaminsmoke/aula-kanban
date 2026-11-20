@@ -2,8 +2,8 @@ import { env } from "cloudflare:workers";
 import { and, asc, eq } from "drizzle-orm";
 import { getDb } from "../../../db";
 import { projectMembers, teachers } from "../../../db/schema";
-import { updateProfile } from "../profile-update";
-import type { Access, ProjectWithAccess } from "../project-access";
+import { updateProfile } from "../access/profile-update";
+import type { Access, ProjectWithAccess } from "../projects/project-access";
 import { maySeeTeacherEmail, type BajaResult, type FichaResult } from "./campos";
 
 /**

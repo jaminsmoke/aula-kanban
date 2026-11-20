@@ -28,12 +28,12 @@ const updateTask = vi.fn(async (_input: unknown) => ({ ok: true as const, value:
 const deleteTask: ReturnType<typeof vi.fn<(_input: unknown) => Promise<{ ok: true; value: { id: string } } | { ok: false; status: number; message: string }>>> = vi.fn(async (_input: unknown) => ({ ok: true as const, value: { id: taskId } }));
 
 vi.mock("../../../db", () => ({ getDb: vi.fn() }));
-vi.mock("../project-access", () => ({ findProject: vi.fn(async (id: string) => ({ id })), projectAccessForUser: vi.fn(async () => ({ user: accessUser, role: "owner", studentSection: null, teacherId: null })) }));
+vi.mock("../projects/project-access", () => ({ findProject: vi.fn(async (id: string) => ({ id })), projectAccessForUser: vi.fn(async () => ({ user: accessUser, role: "owner", studentSection: null, teacherId: null })) }));
 vi.mock("../tasks/queries", () => ({ projectData: vi.fn(async () => data), decorate: vi.fn((row: Record<string, unknown>) => ({ ...row })) }));
 vi.mock("../tasks/mutations", () => ({ createTask: (input: unknown) => createTask(input), updateTask: (input: unknown) => updateTask(input), deleteTask: (input: unknown) => deleteTask(input) }));
 
 import { getDb } from "../../../db";
-import { projectAccessForUser } from "../project-access";
+import { projectAccessForUser } from "../projects/project-access";
 
 function setDb(taskRows: unknown[] = [taskRow]) {
   const query = vi.fn(async () => taskRows);

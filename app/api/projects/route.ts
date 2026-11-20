@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { getChatGPTUser } from "../../../lib/server/auth";
-import { projectFailureResponse } from "../../../lib/server/project-http";
-import { createProject, deleteProject } from "../../../lib/server/projects";
+import { getChatGPTUser } from "../../../lib/server/access/auth";
+import { projectFailureResponse } from "../../../lib/server/projects/project-http";
+import { createProject, deleteProject } from "../../../lib/server/projects/projects";
 import { json } from "../../../lib/server/http";
 import { withJsonMutation } from "../../../lib/server/route-helpers";
-import { loadProjectsOverview } from "../../../lib/server/project-overview";
+import { loadProjectsOverview } from "../../../lib/server/projects/project-overview";
 
 export const dynamic = "force-dynamic";
 

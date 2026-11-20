@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { getChatGPTUser } from "../../../../lib/server/auth";
+import { getChatGPTUser } from "../../../../lib/server/access/auth";
 import { isJsonRequest, isSameOrigin, json } from "../../../../lib/server/http";
 import { createOwnMcpToken, listOwnMcpTokens, revokeOwnMcpToken, tokenAccessDenial } from "../../../../lib/server/mcp/token-service";
 

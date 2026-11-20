@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { validarEstadoBlockly } from "../../../domain/blockly/serialization";
-import { MAX_APP_DOCUMENT_CHARS, readAppDocument, saveAppDocument } from "../../app-documents";
+import { MAX_APP_DOCUMENT_CHARS, readAppDocument, saveAppDocument } from "../../apps/app-documents";
 import { errorHerramienta, payloadResult, type McpCaller } from "../contexto";
 import { resolverAppEnProyecto } from "./contrato";
 import type { McpToolDefinicion } from "../dominios/tipos";

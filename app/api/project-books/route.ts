@@ -1,7 +1,7 @@
-import { tieneCapacidad } from "../../../lib/server/capabilities";
+import { tieneCapacidad } from "../../../lib/server/access/capabilities";
 import { json } from "../../../lib/server/http";
 import { withProjectRoute } from "../../../lib/server/route-helpers";
-import { ProjectBooksError, listProjectBooks, parseProjectBooks, setProjectBooks } from "../../../lib/server/project-books";
+import { ProjectBooksError, listProjectBooks, parseProjectBooks, setProjectBooks } from "../../../lib/server/books/project-books";
 
 export const dynamic = "force-dynamic";
 

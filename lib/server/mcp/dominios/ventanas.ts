@@ -4,8 +4,8 @@ import {
   NATIVE_APP_IDS,
   resolveAppRouteId,
 } from "../../../native-apps";
-import { listInstalledApps } from "../../apps";
-import { comandarVentana, ventanasDe } from "../../space-control";
+import { listInstalledApps } from "../../apps/apps";
+import { comandarVentana, ventanasDe } from "../../space/space-control";
 import { errorHerramienta, falloResolucion, payloadResult, resolve, toChatGPTUser, type McpCaller } from "../contexto";
 import { enlace } from "../enlaces";
 import type { McpToolDefinicion } from "./tipos";

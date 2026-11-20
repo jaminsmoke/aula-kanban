@@ -1,6 +1,6 @@
-import { getChatGPTUser } from "../../../../lib/server/auth";
+import { getChatGPTUser } from "../../../../lib/server/access/auth";
 import { json, storageUnavailable } from "../../../../lib/server/http";
-import { projectFailureResponse } from "../../../../lib/server/project-http";
+import { projectFailureResponse } from "../../../../lib/server/projects/project-http";
 import { withResourceProject } from "../../../../lib/server/route-helpers";
 import { readUpload } from "../../../../lib/server/storage";
 

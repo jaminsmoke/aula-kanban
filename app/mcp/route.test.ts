@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DEMO_USER } from "../../lib/domain/demo";
 
 const mocks = vi.hoisted(() => ({ user: null as null | { userId: string; email: string }, handler: vi.fn() }));
-vi.mock("../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user }));
+vi.mock("../../lib/server/access/auth", () => ({ getChatGPTUser: async () => mocks.user }));
 vi.mock("../../lib/server/mcp/registro", async () => {
   const { z } = await import("zod");
   const tool = { name: "listar_proyectos", description: "Lista proyectos", inputSchema: { proyectoId: z.string().optional() }, outputSchema: {}, annotations: {}, handler: mocks.handler };

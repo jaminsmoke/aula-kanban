@@ -15,7 +15,7 @@ const mocks = vi.hoisted(() => ({
   storageError: class StorageUnavailableError extends Error {},
 }));
 
-vi.mock("../../../../lib/server/project-access", () => ({
+vi.mock("../../../../lib/server/projects/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? {
       status: "ok",
@@ -30,13 +30,13 @@ vi.mock("../../../../lib/server/project-access", () => ({
     : { status: mocks.status },
 }));
 
-vi.mock("../../../../lib/server/project-http", () => ({
+vi.mock("../../../../lib/server/projects/project-http", () => ({
   projectFailureResponse: (status: string) => new Response(JSON.stringify({ message: status }), {
     status: status === "unauthenticated" ? 401 : status === "forbidden" ? 403 : status === "not_found" ? 404 : 400,
   }),
 }));
 
-vi.mock("../../../../lib/server/document-copies", () => ({
+vi.mock("../../../../lib/server/aula-documentos/document-copies", () => ({
   listDocumentCopies: mocks.list,
   createDocumentCopy: mocks.create,
 }));

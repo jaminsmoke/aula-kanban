@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Member } from "../../../members";
+import type { Member } from "../../../access/members";
 import type { StudentFicha } from "../../../people/students";
 import type { TeacherFicha } from "../../../people/teachers";
 import { errorHerramienta, payloadResult, type ToolResult } from "../../contexto";

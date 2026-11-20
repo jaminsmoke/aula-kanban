@@ -8,14 +8,14 @@ const mocks = vi.hoisted(() => ({
   set: vi.fn(),
 }));
 
-vi.mock("../../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user }));
-vi.mock("../../../lib/server/capabilities", () => ({ tieneCapacidad: async () => mocks.capability }));
-vi.mock("../../../lib/server/apps", () => ({
+vi.mock("../../../lib/server/access/auth", () => ({ getChatGPTUser: async () => mocks.user }));
+vi.mock("../../../lib/server/access/capabilities", () => ({ tieneCapacidad: async () => mocks.capability }));
+vi.mock("../../../lib/server/apps/apps", () => ({
   listInstalledApps: mocks.list,
   setAppInstalled: mocks.set,
   MANAGE_APPS_FORBIDDEN: "Solo el propietario o un administrador pueden gestionar aplicaciones.",
 }));
-vi.mock("../../../lib/server/project-access", () => ({
+vi.mock("../../../lib/server/projects/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? {
       status: "ok",

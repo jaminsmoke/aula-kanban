@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Access } from "../project-access";
+import type { Access } from "../projects/project-access";
 
 /**
  * Piezas compartidas de las fichas de alumnado y profesorado: el correo de

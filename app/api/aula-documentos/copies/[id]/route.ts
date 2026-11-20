@@ -1,6 +1,6 @@
-import { deleteDocumentCopy, findDocumentCopy } from "../../../../../lib/server/document-copies";
+import { deleteDocumentCopy, findDocumentCopy } from "../../../../../lib/server/aula-documentos/document-copies";
 import { isSameOrigin, json, storageUnavailable } from "../../../../../lib/server/http";
-import { projectFailureResponse } from "../../../../../lib/server/project-http";
+import { projectFailureResponse } from "../../../../../lib/server/projects/project-http";
 import { withResourceProject } from "../../../../../lib/server/route-helpers";
 import { readUpload } from "../../../../../lib/server/storage";
 import { StorageUnavailableError } from "../../../../../lib/server/storage/repository";

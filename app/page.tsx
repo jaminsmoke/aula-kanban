@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import { chatGPTSignInPath, getChatGPTUser } from "../lib/server/auth";
+import { chatGPTSignInPath, getChatGPTUser } from "../lib/server/access/auth";
 import { isDemoUser } from "../lib/domain/demo";
-import { isDemoAvailable } from "../lib/server/demo-availability";
+import { isDemoAvailable } from "../lib/server/demo/demo-availability";
 import Board from "./board";
 import Portada from "./portada";
 import { buildBoardUrl, parseBoardUrl } from "./board/shared/board-url";

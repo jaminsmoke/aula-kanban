@@ -1,8 +1,8 @@
 import { asc, eq } from "drizzle-orm";
 import { getDb } from "../../../db";
 import { tasks } from "../../../db/schema";
-import { purgeDeletedProfiles } from "../deleted-profiles";
-import type { ProjectWithAccess } from "../project-access";
+import { purgeDeletedProfiles } from "../access/deleted-profiles";
+import type { ProjectWithAccess } from "../projects/project-access";
 import { createTask, deleteTask, updateTask, type MutationResult } from "./mutations";
 import { createTaskPermissions, taskAuthGuard, taskWriteDenial, unassigned, validateRefs } from "./permissions";
 import { decorate, projectData, taskAtRevision } from "./queries";

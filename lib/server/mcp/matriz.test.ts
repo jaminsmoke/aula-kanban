@@ -4,7 +4,7 @@ import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 // Estas pruebas simulan D1 y cubren permisos/paridad; la transición tiene su propia suite SQLite.
-vi.mock("../app-migration", () => ({ migrateLegacyAppInstall: async () => {}, migrateLegacyAppPreferences: async () => {} }));
+vi.mock("../apps/app-migration", () => ({ migrateLegacyAppInstall: async () => {}, migrateLegacyAppPreferences: async () => {} }));
 
 /**
  * Matriz de roles por herramienta (MCP-12): cada una de las 8 herramientas
@@ -119,7 +119,7 @@ vi.mock("../../../db", () => ({
   }),
 }));
 
-vi.mock("../project-access", () => ({
+vi.mock("../projects/project-access", () => ({
   isOwner: async (user: { userId: string }) => user.userId === "u-owner",
   isAdministrator: async (user: { userId: string }) => user.userId === "u-admin",
   isOwnerContactEmail: async () => false,
@@ -158,7 +158,7 @@ vi.mock("../tasks/queries", () => ({
   decorate: (row: Record<string, unknown>) => ({ ...row }),
 }));
 
-vi.mock("../profile-update", () => ({ updateProfile: async () => ({ ok: true as const }) }));
+vi.mock("../access/profile-update", () => ({ updateProfile: async () => ({ ok: true as const }) }));
 
 vi.mock("cloudflare:workers", () => ({
   env: {

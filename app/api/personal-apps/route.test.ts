@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
   describe: vi.fn(),
 }));
 
-vi.mock("../../../lib/server/project-access", () => ({
+vi.mock("../../../lib/server/projects/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? { status: "ok", project: { id: "p1", access: { user: mocks.user, role: "student", studentSection: "s1", teacherId: null } } }
     : { status: mocks.status },
@@ -17,7 +17,7 @@ vi.mock("../../../lib/server/project-access", () => ({
     status: status === "unauthenticated" ? 401 : 403,
   }),
 }));
-vi.mock("../../../lib/server/personal-apps", () => {
+vi.mock("../../../lib/server/apps/personal-apps", () => {
   class PersonalAppsError extends Error {
     status: number;
     constructor(message: string, status: number) {

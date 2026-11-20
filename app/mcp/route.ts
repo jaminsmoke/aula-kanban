@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { isDemoUser } from "../../lib/domain/demo";
-import { getChatGPTUser } from "../../lib/server/auth";
+import { getChatGPTUser } from "../../lib/server/access/auth";
 import { promptByName, promptListEntries } from "../../lib/domain/mcp-prompts";
 import { MCP_INSTRUCTIONS } from "../../lib/server/mcp/instrucciones";
 import { MCP_CATALOG_VERSION, pluginCatalog, toolsListEntries } from "../../lib/server/mcp/registro";

@@ -1,6 +1,6 @@
 import { getD1 } from "../../../db";
 import { isDemoUser } from "../../domain/demo";
-import type { ChatGPTUser } from "../auth";
+import type { ChatGPTUser } from "../access/auth";
 import { createMcpToken, listMcpTokens, revokeMcpToken, type McpTokenMeta, type TokenDatabase } from "./tokens";
 
 /**

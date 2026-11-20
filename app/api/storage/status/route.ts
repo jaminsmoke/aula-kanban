@@ -1,9 +1,9 @@
-import { getChatGPTUser } from "../../../../lib/server/auth";
-import { isAdministrator, isOwner } from "../../../../lib/server/project-access";
+import { getChatGPTUser } from "../../../../lib/server/access/auth";
+import { isAdministrator, isOwner } from "../../../../lib/server/projects/project-access";
 import { json } from "../../../../lib/server/http";
 import { storageStatus } from "../../../../lib/server/storage";
 import { uploadStats } from "../../../../lib/server/uploads/stats";
-import { boardStats } from "../../../../lib/server/board-stats";
+import { boardStats } from "../../../../lib/server/board/board-stats";
 
 export const dynamic = "force-dynamic";
 

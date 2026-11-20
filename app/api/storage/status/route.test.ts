@@ -9,14 +9,14 @@ const mocks = vi.hoisted(() => ({
   boards: { boards: 1, totalChars: 10, maxChars: 10, averageChars: 10, over1mb: 0, over1_5mb: 0, largest: [] },
 }));
 
-vi.mock("../../../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user }));
-vi.mock("../../../../lib/server/project-access", () => ({
+vi.mock("../../../../lib/server/access/auth", () => ({ getChatGPTUser: async () => mocks.user }));
+vi.mock("../../../../lib/server/projects/project-access", () => ({
   isOwner: async () => mocks.owner,
   isAdministrator: async () => mocks.admin,
 }));
 vi.mock("../../../../lib/server/storage", () => ({ storageStatus: async () => mocks.status }));
 vi.mock("../../../../lib/server/uploads/stats", () => ({ uploadStats: async () => mocks.stats }));
-vi.mock("../../../../lib/server/board-stats", () => ({ boardStats: async () => mocks.boards }));
+vi.mock("../../../../lib/server/board/board-stats", () => ({ boardStats: async () => mocks.boards }));
 
 import { GET } from "./route";
 

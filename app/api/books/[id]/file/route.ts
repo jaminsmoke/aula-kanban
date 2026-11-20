@@ -1,4 +1,4 @@
-import { readBookFile } from "../../../../../lib/server/books";
+import { readBookFile } from "../../../../../lib/server/books/books";
 import { json, storageUnavailable } from "../../../../../lib/server/http";
 import { withProjectRoute } from "../../../../../lib/server/route-helpers";
 

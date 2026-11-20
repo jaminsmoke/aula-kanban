@@ -5,7 +5,7 @@ import { tasks as taskRows } from "../../../../../db/schema";
 import { taskAuthGuard } from "../../../tasks/permissions";
 import { decorate, projectData } from "../../../tasks/queries";
 import type { ProjectData, TaskRef, TaskRow } from "../../../tasks/types";
-import type { Access } from "../../../project-access";
+import type { Access } from "../../../projects/project-access";
 import { errorHerramienta, falloResolucion, resolve, toChatGPTUser, CODIGO_ESTADO, type McpCaller } from "../../contexto";
 
 /**

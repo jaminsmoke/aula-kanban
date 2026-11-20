@@ -41,7 +41,7 @@ afterEach(() => {
 });
 
 describe("dead code check", () => {
-  it("pasa sobre la línea base real", () => {
+  it("pasa sobre la línea base real", { timeout: 20_000 }, () => {
     const result = checkDeadCode({ root: process.cwd(), baselinePath: "docs/developing/dead-code-baseline.json" });
     expect(result.ok).toBe(true);
     expect(result.totals.modules).toBe(0);

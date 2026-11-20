@@ -8,13 +8,13 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("./contrato", () => ({ resolverAppEnProyecto: mocks.resolverAppEnProyecto }));
-vi.mock("../../boards", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../boards")>();
+vi.mock("../../board/boards", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../board/boards")>();
   return { ...actual, readBoard: mocks.readBoard, saveBoard: mocks.saveBoard };
 });
-vi.mock("../../board-control", () => ({ publicarEscena: mocks.publicarEscena }));
+vi.mock("../../board/board-control", () => ({ publicarEscena: mocks.publicarEscena }));
 
-import { MAX_BOARD_SNAPSHOT_BYTES } from "../../boards";
+import { MAX_BOARD_SNAPSHOT_BYTES } from "../../board/boards";
 import { MAX_ELEMENTOS_ANADIDOS } from "../../../domain/boards/excalidraw-elements";
 import { herramientasExcalidraw } from "./excalidraw";
 

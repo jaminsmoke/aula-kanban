@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   decorate: vi.fn(),
 }));
 
-vi.mock("../../../lib/server/project-access", () => ({
+vi.mock("../../../lib/server/projects/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? { status: "ok", project: { id: "p1", access: { user: { userId: "u1", displayName: "Admin", email: "admin@example.com", fullName: null }, role: mocks.role, studentSection: mocks.studentSection, teacherId: null } } }
     : { status: mocks.status },
@@ -20,7 +20,7 @@ vi.mock("../../../lib/server/project-access", () => ({
     status: status === "unauthenticated" ? 401 : status === "forbidden" ? 403 : status === "not_found" ? 404 : 400,
   }),
 }));
-vi.mock("../../../lib/server/deleted-profiles", () => ({ purgeDeletedProfiles: async () => {} }));
+vi.mock("../../../lib/server/access/deleted-profiles", () => ({ purgeDeletedProfiles: async () => {} }));
 vi.mock("../../../lib/server/tasks/queries", () => ({
   projectData: mocks.projectData,
   decorate: mocks.decorate,

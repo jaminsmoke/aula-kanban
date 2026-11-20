@@ -4,7 +4,7 @@ import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 // Estas pruebas simulan D1 y cubren permisos/paridad; la transición tiene su propia suite SQLite.
-vi.mock("../app-migration", () => ({ migrateLegacyAppInstall: async () => {}, migrateLegacyAppPreferences: async () => {} }));
+vi.mock("../apps/app-migration", () => ({ migrateLegacyAppInstall: async () => {}, migrateLegacyAppPreferences: async () => {} }));
 
 /**
  * Paridad MCP ↔ HTTP (MCP-12): para cada operación, el mismo caso da el
@@ -96,7 +96,7 @@ vi.mock("../../../db", () => ({
 /** Filas que devuelve el UPDATE de aceptación (`[]` = invitación ajena). */
 let retornoAceptar: unknown[] = [];
 
-vi.mock("../project-access", () => ({
+vi.mock("../projects/project-access", () => ({
   isOwner: async (user: { userId: string }) => user.userId === "u-owner",
   isAdministrator: async () => false,
   PROJECT_FAILURE_RESPONSES: {

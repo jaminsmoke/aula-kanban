@@ -7,7 +7,7 @@ import {
   listPersonalApps,
   parsePersonalItems,
   setPersonalApps,
-} from "../../../lib/server/personal-apps";
+} from "../../../lib/server/apps/personal-apps";
 
 export const dynamic = "force-dynamic";
 

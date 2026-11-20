@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({
   saveIfCurrent: vi.fn(),
   read: vi.fn(),
 }));
-vi.mock("../../../lib/server/project-access", () => ({
+vi.mock("../../../lib/server/projects/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? { status: "ok", project: { id: "project1", access: { user: { userId: "user1", displayName: "Alumno", email: "alumno@example.com", fullName: null }, role: mocks.role } } }
     : { status: mocks.status },
@@ -15,9 +15,9 @@ vi.mock("../../../lib/server/project-access", () => ({
     status: status === "unauthenticated" ? 401 : status === "forbidden" ? 403 : status === "not_found" ? 404 : 400,
   }),
 }));
-vi.mock("../../../lib/server/app-documents", () => ({ MAX_APP_DOCUMENT_CHARS: 200_000, saveAppDocument: mocks.save, saveAppDocumentIfCurrent: mocks.saveIfCurrent, readAppDocument: mocks.read }));
+vi.mock("../../../lib/server/apps/app-documents", () => ({ MAX_APP_DOCUMENT_CHARS: 200_000, saveAppDocument: mocks.save, saveAppDocumentIfCurrent: mocks.saveIfCurrent, readAppDocument: mocks.read }));
 
-import { MAX_APP_DOCUMENT_CHARS } from "../../../lib/server/app-documents";
+import { MAX_APP_DOCUMENT_CHARS } from "../../../lib/server/apps/app-documents";
 import { GET, POST } from "./route";
 
 const endpoint = "https://site.test/api/app-documents?project=project1&app=blockly";

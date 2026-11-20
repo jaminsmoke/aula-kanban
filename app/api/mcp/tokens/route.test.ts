@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DEMO_USER } from "../../../../lib/domain/demo";
-import type { ChatGPTUser } from "../../../../lib/server/auth";
+import type { ChatGPTUser } from "../../../../lib/server/access/auth";
 
 const mocks = vi.hoisted(() => ({
   user: null as ChatGPTUser | null,
@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
   revoked: false,
 }));
 
-vi.mock("../../../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user }));
+vi.mock("../../../../lib/server/access/auth", () => ({ getChatGPTUser: async () => mocks.user }));
 vi.mock("../../../../db", () => ({ getD1: () => ({}) }));
 vi.mock("../../../../lib/server/mcp/tokens", () => ({
   createMcpToken: async () => mocks.created,

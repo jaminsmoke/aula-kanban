@@ -12,7 +12,7 @@ const state = vi.hoisted(() => ({ d1: null as unknown }));
 
 vi.mock("cloudflare:workers", () => ({ env: { DB: null } }));
 vi.mock("../../../../db", () => ({ getD1: () => state.d1, getDb: () => ({}) }));
-vi.mock("../../project-access", () => ({
+vi.mock("../../projects/project-access", () => ({
   isOwner: async (user: { userId: string }) => user.userId === "u-owner",
   isAdministrator: async (user: { userId: string }) => user.userId === "u-admin",
   isOwnerContactEmail: async () => false,

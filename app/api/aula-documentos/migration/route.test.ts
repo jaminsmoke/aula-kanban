@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   rollback: vi.fn(),
 }));
 
-vi.mock("../../../../lib/server/project-access", () => ({
+vi.mock("../../../../lib/server/projects/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? {
       status: "ok",
@@ -26,7 +26,7 @@ vi.mock("../../../../lib/server/project-access", () => ({
   }),
 }));
 
-vi.mock("../../../../lib/server/aula-documentos-migration", () => ({
+vi.mock("../../../../lib/server/aula-documentos/aula-documentos-migration", () => ({
   readAulaMigrationStatus: mocks.statusResult,
   migrateAulaDocuments: mocks.migrate,
   rollbackAulaMigration: mocks.rollback,

@@ -58,14 +58,16 @@ describe("arquitectura de Aula Documentos", () => {
 
   it("mantiene shared y lib sin dependencias de apps", () => {
     const roots = [
-      join(process.cwd(), "app", "board", "shared"),
-      join(process.cwd(), "lib", "domain"),
-      join(process.cwd(), "lib", "server"),
+      // En `shared`, `../apps/…` apunta a las apps de la UI.
+      { dir: join(process.cwd(), "app", "board", "shared"), apps: /from\s+"[^"]*(?:app\/(?:board|api)|\.\.\/apps\/)/ },
+      // En `lib`, solo se prohíben las rutas al árbol `app/`.
+      { dir: join(process.cwd(), "lib", "domain"), apps: /from\s+"[^"]*app\/(?:board|api)/ },
+      { dir: join(process.cwd(), "lib", "server"), apps: /from\s+"[^"]*app\/(?:board|api)/ },
     ];
-    for (const root of roots) {
+    for (const { dir: root, apps } of roots) {
       for (const file of readdirSync(root, { recursive: true }).map(String).filter((name) => /\.(ts|tsx)$/.test(name))) {
         const source = readFileSync(join(root, file), "utf8");
-        expect(source, `${root}/${file}`).not.toMatch(/from\s+"[^"]*(?:app\/(?:board|api)|\.\.\/apps\/)/);
+        expect(source, `${root}/${file}`).not.toMatch(apps);
         if (root.endsWith("domain") && !file.endsWith(".test.ts")) {
           expect(source, `${root}/${file}`).not.toMatch(/from\s+"react"/);
         }

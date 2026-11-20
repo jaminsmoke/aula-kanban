@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   remove: vi.fn(),
 }));
 
-vi.mock("../../../lib/server/project-access", () => ({
+vi.mock("../../../lib/server/projects/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? {
       status: "ok",
@@ -25,7 +25,7 @@ vi.mock("../../../lib/server/project-access", () => ({
     : { status: mocks.status },
 }));
 
-vi.mock("../../../lib/server/members", () => ({
+vi.mock("../../../lib/server/access/members", () => ({
   listMembers: mocks.list,
   inviteMember: mocks.invite,
   removeMember: mocks.remove,

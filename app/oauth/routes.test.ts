@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("../../db", () => ({ getDb: () => ({}), getD1: () => mocks.d1 }));
-vi.mock("../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user, chatGPTSignInPath: (returnTo: string) => `/signin-with-chatgpt?return_to=${returnTo}` }));
+vi.mock("../../lib/server/access/auth", () => ({ getChatGPTUser: async () => mocks.user, chatGPTSignInPath: (returnTo: string) => `/signin-with-chatgpt?return_to=${returnTo}` }));
 
 type StatementParam = string | number | bigint | Uint8Array | null;
 

@@ -9,10 +9,10 @@ import {
   normalizeNativeAppId,
   resolveAppRouteId,
 } from "../../../native-apps";
-import { listInstalledApps } from "../../apps";
-import { comandarVentana } from "../../space-control";
-import { isAdministrator, isOwner } from "../../project-access";
-import { listVisibleProjects } from "../../projects";
+import { listInstalledApps } from "../../apps/apps";
+import { comandarVentana } from "../../space/space-control";
+import { isAdministrator, isOwner } from "../../projects/project-access";
+import { listVisibleProjects } from "../../projects/projects";
 import { decorate, projectData } from "../../tasks/queries";
 import { errorHerramienta, falloResolucion, payloadResult, resolve, toChatGPTUser, type McpCaller } from "../contexto";
 import { UI_APERTURA_URI } from "../ui-apertura";

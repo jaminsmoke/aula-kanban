@@ -41,7 +41,7 @@ const ficha = (extra: Partial<Ficha> = {}): Ficha => ({
 });
 let fichas: Ficha[] = [];
 
-vi.mock("../../../lib/server/auth", () => ({ getChatGPTUser: async () => usuarioActual }));
+vi.mock("../../../lib/server/access/auth", () => ({ getChatGPTUser: async () => usuarioActual }));
 
 vi.mock("../../../db", () => ({
   getDb: () => ({
@@ -62,7 +62,7 @@ vi.mock("../../../db", () => ({
   }),
 }));
 
-vi.mock("../../../lib/server/project-access", () => ({
+vi.mock("../../../lib/server/projects/project-access", () => ({
   isOwner: async (user: Usuario) => user.userId === "u-owner",
   isAdministrator: async (user: Usuario) => user.userId === "u-admin",
   isOwnerContactEmail: async (email: string) => email.trim().toLowerCase() === "owner@example.com",
@@ -72,7 +72,7 @@ vi.mock("../../../lib/server/project-access", () => ({
     not_found: { status: 404, message: "No se encuentra el proyecto." },
     forbidden: { status: 403, message: "No tienes acceso a este proyecto." },
   },
-  projectFailureResponse: (status: keyof typeof import("../../../lib/server/project-http").PROJECT_FAILURE_RESPONSES) =>
+  projectFailureResponse: (status: keyof typeof import("../../../lib/server/projects/project-http").PROJECT_FAILURE_RESPONSES) =>
     Response.json({ message: status }, { status: 401 }),
   findProject: async () => null,
   projectAccessForUser: async () => null,

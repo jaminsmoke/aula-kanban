@@ -7,7 +7,7 @@ import {
   MAX_BOARD_SNAPSHOT_BYTES,
   readBoard,
   saveBoard,
-} from "../../../lib/server/boards";
+} from "../../../lib/server/board/boards";
 
 export const dynamic = "force-dynamic";
 

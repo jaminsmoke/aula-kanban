@@ -3,7 +3,7 @@ import {
   migrateAulaDocuments,
   readAulaMigrationStatus,
   rollbackAulaMigration,
-} from "../../../../lib/server/aula-documentos-migration";
+} from "../../../../lib/server/aula-documentos/aula-documentos-migration";
 import { json } from "../../../../lib/server/http";
 import { withJsonMutation, withProjectRoute } from "../../../../lib/server/route-helpers";
 

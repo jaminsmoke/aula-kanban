@@ -6,8 +6,8 @@ const mocks = vi.hoisted(() => ({
   resolved: { status: "ok" } as { status: string },
 }));
 
-vi.mock("../../../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user }));
-vi.mock("../../../../lib/server/project-access", () => ({
+vi.mock("../../../../lib/server/access/auth", () => ({ getChatGPTUser: async () => mocks.user }));
+vi.mock("../../../../lib/server/projects/project-access", () => ({
   resolveProject: async () => mocks.resolved,
   projectFailureResponse: (status: string) => new Response(status, { status: status === "unauthenticated" ? 401 : status === "forbidden" ? 403 : status === "not_found" ? 404 : 400 }),
 }));

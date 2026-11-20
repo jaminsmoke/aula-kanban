@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getD1 } from "../../../db";
-import { chatGPTSignInPath, getChatGPTUser } from "../../../lib/server/auth";
+import { chatGPTSignInPath, getChatGPTUser } from "../../../lib/server/access/auth";
 import { ALL_SCOPES, getClient, normalizeScopes } from "../../../lib/server/oauth/service";
 import "./authorize.css";
 

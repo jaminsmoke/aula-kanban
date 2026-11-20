@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { acceptInvitation, listPendingInvitations } from "../../invitaciones";
+import { acceptInvitation, listPendingInvitations } from "../../access/invitaciones";
 import { errorHerramienta, payloadResult, toChatGPTUser, type McpCaller } from "../contexto";
 import type { McpToolDefinicion } from "./tipos";
 

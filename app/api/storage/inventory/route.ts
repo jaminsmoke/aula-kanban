@@ -1,6 +1,6 @@
-import { getChatGPTUser } from "../../../../lib/server/auth";
+import { getChatGPTUser } from "../../../../lib/server/access/auth";
 import { json, storageUnavailable } from "../../../../lib/server/http";
-import { isAdministrator, isOwner } from "../../../../lib/server/project-access";
+import { isAdministrator, isOwner } from "../../../../lib/server/projects/project-access";
 import { MAX_BUCKET_PAGE, StorageUnavailableError } from "../../../../lib/server/storage/repository";
 import { auditInventoryPage } from "../../../../lib/server/uploads/inventory";
 

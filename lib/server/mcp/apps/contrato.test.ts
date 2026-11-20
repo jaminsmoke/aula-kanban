@@ -38,7 +38,7 @@ vi.mock("../contexto", () => ({
   }),
 }));
 
-vi.mock("../../apps", () => ({ listInstalledApps: mocks.listInstalledApps }));
+vi.mock("../../apps/apps", () => ({ listInstalledApps: mocks.listInstalledApps }));
 
 import { APP_INVITADO_SIN_ESCRITURA, APP_NO_EXISTE, APP_NO_INSTALADA, resolverAppEnProyecto, resolverAppInstalada } from "./contrato";
 

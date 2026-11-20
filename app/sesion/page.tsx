@@ -1,4 +1,4 @@
-import { chatGPTSignInPath } from "../../lib/server/auth";
+import { chatGPTSignInPath } from "../../lib/server/access/auth";
 
 /**
  * Pantalla tras cerrar sesión con enlace para volver a entrar.

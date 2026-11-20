@@ -1,6 +1,6 @@
-import type { ChatGPTUser } from "../auth";
-import { findProject, projectAccessForUser, type Access, type ProjectFailure, type ProjectRow } from "../project-access";
-import { PROJECT_FAILURE_MESSAGES } from "../project-contract";
+import type { ChatGPTUser } from "../access/auth";
+import { findProject, projectAccessForUser, type Access, type ProjectFailure, type ProjectRow } from "../projects/project-access";
+import { PROJECT_FAILURE_MESSAGES } from "../projects/project-contract";
 
 /**
  * Contexto compartido de las herramientas MCP: cuenta llamante, resolución

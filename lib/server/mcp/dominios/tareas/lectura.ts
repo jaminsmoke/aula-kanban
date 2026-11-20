@@ -1,5 +1,5 @@
 import { calendarUrl, projectUrl } from "../../enlaces";
-import { listVisibleProjects } from "../../../projects";
+import { listVisibleProjects } from "../../../projects/projects";
 import { errorHerramienta, falloResolucion, payloadResult, resolve, toChatGPTUser, type McpCaller } from "../../contexto";
 import { paginaDe, paginaDesde } from "../tipos";
 import { decoratedTasks, type DecoratedTask } from "./comun";

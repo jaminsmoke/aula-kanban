@@ -7,8 +7,8 @@ const mocks = vi.hoisted(() => ({
   batch: vi.fn(),
 }));
 vi.mock("../../../../db", () => ({ getD1: () => ({ prepare: mocks.prepare, batch: mocks.batch }) }));
-vi.mock("../../../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user }));
-vi.mock("../../../../lib/server/project-access", () => ({ isOwner: async () => mocks.owner }));
+vi.mock("../../../../lib/server/access/auth", () => ({ getChatGPTUser: async () => mocks.user }));
+vi.mock("../../../../lib/server/projects/project-access", () => ({ isOwner: async () => mocks.owner }));
 import { POST } from "./route";
 
 function request(origin = "https://site.test") {

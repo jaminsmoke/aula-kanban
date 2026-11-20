@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { TriangleAlert } from "lucide-react";
-import type { BookWithAvailability } from "../../../lib/server/books";
+import type { BookWithAvailability } from "../../../lib/server/books/books";
 
 /**
  * Visor embebido de solo lectura (STORE-04): el PDF del libro en

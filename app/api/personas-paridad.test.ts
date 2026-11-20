@@ -68,7 +68,7 @@ vi.mock("../../db", () => ({
   }),
 }));
 
-vi.mock("../../lib/server/project-access", () => ({
+vi.mock("../../lib/server/projects/project-access", () => ({
   isOwner: async (user: { userId: string }) => user.userId === "u-owner",
   isAdministrator: async () => false,
   PROJECT_FAILURE_RESPONSES: {
@@ -123,7 +123,7 @@ vi.mock("cloudflare:workers", () => ({
   },
 }));
 
-vi.mock("../../lib/server/profile-update", () => ({
+vi.mock("../../lib/server/access/profile-update", () => ({
   updateProfile: async () => (falloPerfil ? { ok: false as const, ...falloPerfil } : { ok: true as const }),
 }));
 

@@ -1,5 +1,5 @@
 import { DEMO_COOKIE, DEMO_PROJECT_ID } from "../../lib/domain/demo";
-import { findProject } from "../../lib/server/project-access";
+import { findProject } from "../../lib/server/projects/project-access";
 
 export const dynamic = "force-dynamic";
 

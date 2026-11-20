@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({
   save: vi.fn(),
 }));
 
-vi.mock("../../../lib/server/project-access", () => ({
+vi.mock("../../../lib/server/projects/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? {
         status: "ok",
@@ -23,7 +23,7 @@ vi.mock("../../../lib/server/project-access", () => ({
     : { status: mocks.status },
 }));
 
-vi.mock("../../../lib/server/boards", () => ({
+vi.mock("../../../lib/server/board/boards", () => ({
   BOARD_INVALID: "La pizarra no es válida o supera los 2 MB.",
   BOARD_OWNER_TYPES: ["task", "project", "space"],
   MAX_BOARD_SNAPSHOT_BYTES: 2 * 1024 * 1024,

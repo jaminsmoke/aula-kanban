@@ -1,7 +1,7 @@
 import { nativeAppMeta, type NativeAppMeta } from "../../../native-apps";
-import { listInstalledApps } from "../../apps";
+import { listInstalledApps } from "../../apps/apps";
 import { errorHerramienta, falloResolucion, resolve, toChatGPTUser, type McpCaller, type ToolResult } from "../contexto";
-import type { Access, ProjectRow } from "../../project-access";
+import type { Access, ProjectRow } from "../../projects/project-access";
 
 /**
  * Contrato común de las herramientas MCP de apps nativas (MCP-05A).

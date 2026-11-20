@@ -4,7 +4,7 @@ const mocks = vi.hoisted(() => ({
   status: "ok" as "ok" | "unauthenticated" | "forbidden" | "not_found" | "invalid",
 }));
 
-vi.mock("./project-access", () => ({
+vi.mock("./projects/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
     ? { status: "ok", project: { id: "p1", access: { user: { userId: "u1" }, role: "student" } } }
     : { status: mocks.status },

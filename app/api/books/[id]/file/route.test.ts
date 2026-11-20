@@ -6,10 +6,10 @@ const mocks = vi.hoisted(() => ({
   read: vi.fn(),
 }));
 
-vi.mock("../../../../../lib/server/auth", () => ({
+vi.mock("../../../../../lib/server/access/auth", () => ({
   getChatGPTUser: async () => mocks.user,
 }));
-vi.mock("../../../../../lib/server/project-access", () => ({
+vi.mock("../../../../../lib/server/projects/project-access", () => ({
   resolveProject: async () => {
     if (!mocks.user) return { status: "unauthenticated" };
     return mocks.status === "ok"
@@ -17,12 +17,12 @@ vi.mock("../../../../../lib/server/project-access", () => ({
       : { status: mocks.status };
   },
 }));
-vi.mock("../../../../../lib/server/project-http", () => ({
+vi.mock("../../../../../lib/server/projects/project-http", () => ({
   projectFailureResponse: (status: string) => new Response(JSON.stringify({ message: status }), {
     status: status === "unauthenticated" ? 401 : 403,
   }),
 }));
-vi.mock("../../../../../lib/server/books", () => ({
+vi.mock("../../../../../lib/server/books/books", () => ({
   readBookFile: mocks.read,
 }));
 

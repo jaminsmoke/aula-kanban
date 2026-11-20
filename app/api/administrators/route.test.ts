@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ChatGPTUser } from "../../../lib/server/auth";
+import type { ChatGPTUser } from "../../../lib/server/access/auth";
 
 /**
  * Contrato HTTP de `/api/administrators` (MCP-09): la ruta es una envoltura de
@@ -23,7 +23,7 @@ const mocks = vi.hoisted(() => ({
   failInsert: false,
 }));
 
-vi.mock("../../../lib/server/auth", () => ({ getChatGPTUser: async () => mocks.user }));
+vi.mock("../../../lib/server/access/auth", () => ({ getChatGPTUser: async () => mocks.user }));
 
 vi.mock("../../../db", () => ({
   getDb: () => ({
@@ -39,7 +39,7 @@ vi.mock("../../../db", () => ({
   }),
 }));
 
-vi.mock("../../../lib/server/project-access", () => ({
+vi.mock("../../../lib/server/projects/project-access", () => ({
   isOwner: async (user: ChatGPTUser) => user.userId === "u-owner",
   isAdministrator: async (user: ChatGPTUser) => user.userId === "u-admin",
   isOwnerContactEmail: async (email: string) => email.trim().toLowerCase() === "owner@example.com",
