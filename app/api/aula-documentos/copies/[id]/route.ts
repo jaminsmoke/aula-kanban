@@ -1,5 +1,5 @@
 import { deleteDocumentCopy, findDocumentCopy } from "../../../../../lib/server/document-copies";
-import { isSameOrigin, json } from "../../../../../lib/server/http";
+import { isSameOrigin, json, storageUnavailable } from "../../../../../lib/server/http";
 import { projectFailureResponse } from "../../../../../lib/server/project-http";
 import { withResourceProject } from "../../../../../lib/server/route-helpers";
 import { StorageUnavailableError, readUpload } from "../../../../../lib/server/storage";
@@ -19,9 +19,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   return withResourceProject(copy.projectId, async () => {
     try {
       const upload = await readUpload(id);
-      if (upload.status === "storage_unavailable") {
-        return json({ message: "El almacenamiento de copias no está configurado en este despliegue." }, 503);
-      }
+      if (upload.status === "storage_unavailable") return storageUnavailable();
       if (upload.status !== "ok" || upload.row.purpose !== "document-copy") {
         return json({ message: "Copia no encontrada." }, 404);
       }
@@ -59,9 +57,7 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
       if (!(await deleteDocumentCopy(id))) return json({ message: "Copia no encontrada." }, 404);
       return new Response(null, { status: 204 });
     } catch (error) {
-      if (error instanceof StorageUnavailableError) {
-        return json({ message: "El almacenamiento de copias no está configurado en este despliegue." }, 503);
-      }
+      if (error instanceof StorageUnavailableError) return storageUnavailable();
       return json({ message: "No se pudo borrar la copia." }, 502);
     }
   });

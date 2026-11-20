@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isSameOrigin, json } from "../../../lib/server/http";
+import { isSameOrigin, json, storageUnavailable } from "../../../lib/server/http";
 import { withProjectRoute } from "../../../lib/server/route-helpers";
 import { StorageUnavailableError, UploadQuotaExceededError, storeUpload, uploadPurposes, validateUpload } from "../../../lib/server/storage";
 
@@ -30,7 +30,7 @@ const uploadFile = withProjectRoute(async (request, project) => {
     if (error instanceof UploadQuotaExceededError) {
       return json({ message: "La cuota de imágenes del proyecto está llena. Elimina imágenes o descarga el documento antes de añadir más." }, 413);
     }
-    if (error instanceof StorageUnavailableError) return json({ message: "La subida de archivos aún no está habilitada en este despliegue. Usa una URL externa de momento." }, 503);
+    if (error instanceof StorageUnavailableError) return storageUnavailable();
     throw error;
   }
 });

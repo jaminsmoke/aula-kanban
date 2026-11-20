@@ -1,7 +1,7 @@
 # Mapa del servidor: `lib/server` y `app/api`
 
 > **Estado:** Fase 1 cerrada; Fase 2 en curso · **Fecha:** 2026-11-20
-> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas. Las siete rutas que resolvían el proyecto a mano usan ahora `withProjectRoute`; archivos y copias usan `withResourceProject` porque el ámbito es el del objeto guardado. `tasks/service.ts` absorbe revisión, permisos y decoración; `api/tasks` queda como adaptador de 46 líneas.
+> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas. Las siete rutas que resolvían el proyecto a mano usan ahora `withProjectRoute`; archivos y copias usan `withResourceProject` porque el ámbito es el del objeto guardado. `tasks/service.ts` absorbe revisión, permisos y decoración; `api/tasks` queda como adaptador de 46 líneas. El 503 de almacenamiento sale de un único `storageUnavailable()` con mensaje y estado compartidos.
 > **Alcance:** inventario y clasificación provisional. La Fase 1 no movió ni renombró código.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Arquitectura:** [`arquitectura-global.md`](arquitectura-global.md)
 > **Regla de oro:** una regla de servidor tiene un único hogar; las rutas solo analizan, autorizan, delegan y responden.
@@ -194,7 +194,7 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
-| `http.ts` | 30 | `H` `json`, same-origin, JSON | 31 archivos | 2 |
+| `http.ts` | 40 | `H` `json`, same-origin, JSON, 503 de almacenamiento | 31 archivos | 2 |
 | `route-helpers.ts` | 53 | `H` composición de rutas | 21 rutas | 1 |
 | `bounded-json.ts` | 26 | `H` cuerpo acotado | `api/app-documents` | — |
 | `demo.ts` | 27 | `P` cookie y cuenta demo | `auth.ts` | 1 |
@@ -330,7 +330,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts` o `bo
 | P0 | `api/tasks` decidía reglas y consultaba D1 | movido a `tasks/service.ts`; la ruta queda en 46 líneas | 2 · **resuelto** |
 | P1 | `storage.ts` mezcla R2, D1, cuotas, MIME y diagnóstico | 346 líneas; 13 consumidores | 3 y 4 |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
-| P1 | Respuesta de almacenamiento no disponible duplicada con 3 textos y 2 estados | `books/[id]/*`, `files/[id]`, `copies`, `uploads`, `storage/*` | 2 |
+| P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
 | P1 | Cuatro rutas importan D1 directamente | `admin/demo`, `mcp`, `mcp/tokens`, `tasks` | 2 y 3 |
 | P2 | 5 MB definido dos veces | `storage.ts` y `domain/aula-documentos/image.ts` | 4 |
 | P2 | `reads.ts` y `writes.ts` no tienen consumidor de producto | solo pruebas y baseline de ARC-05 | 3 |
@@ -376,5 +376,5 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 1. **Hecho (2026-11-20):** `mutateStudent`/`mutateTeacher` salieron de los servicios; las rutas validan y autorizan, y los servicios reciben datos.
 2. **Hecho (2026-11-20):** las 7 rutas usan `withProjectRoute`; archivos y copias, `withResourceProject`.
 3. **Hecho (2026-11-20):** `tasks/service.ts` orquesta revisión, permisos y decoración; `api/tasks` solo valida y responde.
-4. Unificar el mapeo de `StorageUnavailableError` y de subida en un helper HTTP con estado y mensaje únicos.
+4. **Hecho (2026-11-20):** `storageUnavailable()` en `http.ts` centraliza el 503; las ocho rutas afectadas lo consumen.
 5. Añadir pruebas de contrato a `members` y `space-apps` al tocar sus rutas.

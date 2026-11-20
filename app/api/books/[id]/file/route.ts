@@ -1,5 +1,5 @@
 import { readBookFile } from "../../../../../lib/server/books";
-import { json } from "../../../../../lib/server/http";
+import { json, storageUnavailable } from "../../../../../lib/server/http";
 import { withProjectRoute } from "../../../../../lib/server/route-helpers";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,7 @@ export const GET = withProjectRoute<{ params: Promise<{ id: string }> }>(async (
 ) => {
   const { id } = await context.params;
   const found = await readBookFile(id);
-  if (found.status === "storage_unavailable") return json({ message: "El almacenamiento de archivos no está configurado en este despliegue." }, 503);
+  if (found.status === "storage_unavailable") return storageUnavailable();
   if (found.status !== "ok") return json({ message: "Libro no encontrado." }, 404);
   return new Response(found.object.body, {
     headers: {

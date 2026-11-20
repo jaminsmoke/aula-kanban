@@ -1,6 +1,6 @@
 import { inspectAulaDocumentCopy, AULA_COPY_MAX_ZIP_BYTES } from "../../../../lib/domain/aula-documentos/copy";
 import { createDocumentCopy, listDocumentCopies, type DocumentCopyRow } from "../../../../lib/server/document-copies";
-import { isSameOrigin, json } from "../../../../lib/server/http";
+import { isSameOrigin, json, storageUnavailable } from "../../../../lib/server/http";
 import { withProjectRoute } from "../../../../lib/server/route-helpers";
 import {
   DocumentCopyLimitExceededError,
@@ -105,9 +105,7 @@ const saveCopy = withProjectRoute(async (request, project) => {
     if (error instanceof DocumentCopyLimitExceededError) {
       return json({ message: "El proyecto alcanzó el máximo de copias guardadas. Borra una antes de guardar otra." }, 409);
     }
-    if (error instanceof StorageUnavailableError) {
-      return json({ message: "El almacenamiento de copias no está configurado en este despliegue." }, 503);
-    }
+    if (error instanceof StorageUnavailableError) return storageUnavailable();
     return json({ message: "No se pudo guardar la copia." }, 502);
   }
 });

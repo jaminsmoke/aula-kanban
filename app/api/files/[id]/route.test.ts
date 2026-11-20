@@ -39,7 +39,7 @@ describe("GET /api/files/[id]", () => {
     mocks.found = { status: "storage_unavailable" };
     const unavailable = await GET(new Request("https://site.test/api/files/f1"), context);
     expect(unavailable.status).toBe(503);
-    expect(await unavailable.json()).toEqual({ message: "El almacenamiento de archivos no está configurado en este despliegue." });
+    expect(await unavailable.json()).toEqual({ message: "El almacenamiento no está disponible en este despliegue." });
 
     mocks.found = { status: "object_missing" };
     expect((await GET(new Request("https://site.test/api/files/f1"), context)).status).toBe(404);

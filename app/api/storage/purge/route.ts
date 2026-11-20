@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { getChatGPTUser } from "../../../../lib/server/auth";
-import { json } from "../../../../lib/server/http";
+import { json, storageUnavailable } from "../../../../lib/server/http";
 import { isAdministrator, isOwner } from "../../../../lib/server/project-access";
 import { withJsonMutation } from "../../../../lib/server/route-helpers";
 import { StorageUnavailableError } from "../../../../lib/server/storage";
@@ -41,9 +41,7 @@ export const POST = withJsonMutation(async (request) => {
       limit: parsed.data.limite,
     }));
   } catch (error) {
-    if (error instanceof StorageUnavailableError) {
-      return json({ message: "El almacenamiento de archivos no está configurado en este despliegue." }, 503);
-    }
+    if (error instanceof StorageUnavailableError) return storageUnavailable();
     return json({ message: "No se pudieron limpiar los archivos." }, 502);
   }
 });

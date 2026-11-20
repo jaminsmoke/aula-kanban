@@ -1,5 +1,5 @@
 import { getChatGPTUser } from "../../../../lib/server/auth";
-import { json } from "../../../../lib/server/http";
+import { json, storageUnavailable } from "../../../../lib/server/http";
 import { isAdministrator, isOwner } from "../../../../lib/server/project-access";
 import { MAX_BUCKET_PAGE, StorageUnavailableError } from "../../../../lib/server/storage";
 import { auditInventoryPage } from "../../../../lib/server/uploads/inventory";
@@ -39,9 +39,7 @@ export async function GET(request: Request) {
   try {
     return json(await auditInventoryPage({ cursor, limit }));
   } catch (error) {
-    if (error instanceof StorageUnavailableError) {
-      return json({ message: "El almacenamiento de archivos no está configurado en este despliegue." }, 503);
-    }
+    if (error instanceof StorageUnavailableError) return storageUnavailable();
     return json({ message: "No se pudo revisar el almacenamiento." }, 502);
   }
 }

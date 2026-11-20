@@ -27,3 +27,14 @@ export function isJsonRequest(request: Request): boolean {
   const contentType = request.headers.get("content-type");
   return contentType?.split(";")[0].trim().toLowerCase() === "application/json";
 }
+
+/** Mensaje único cuando el binding R2 no está disponible en el despliegue. */
+const STORAGE_UNAVAILABLE_MESSAGE = "El almacenamiento no está disponible en este despliegue.";
+
+/**
+ * Respuesta común de almacenamiento no disponible.
+ * @returns Respuesta JSON 503 con el mensaje único.
+ */
+export function storageUnavailable(): Response {
+  return json({ message: STORAGE_UNAVAILABLE_MESSAGE }, 503);
+}

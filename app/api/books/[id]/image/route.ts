@@ -1,5 +1,5 @@
 import { readBookImage, type BookImageKind } from "../../../../../lib/server/books";
-import { json } from "../../../../../lib/server/http";
+import { json, storageUnavailable } from "../../../../../lib/server/http";
 import { withProjectRoute } from "../../../../../lib/server/route-helpers";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +22,7 @@ export const GET = withProjectRoute<{ params: Promise<{ id: string }> }>(async (
   const kind = new URL(request.url).searchParams.get("kind");
   if (kind !== "cover" && kind !== "back") return json({ message: "Tipo de imagen no válido." }, 400);
   const found = await readBookImage(id, kind as BookImageKind);
-  if (found.status === "storage_unavailable") return json({ message: "El almacenamiento de archivos no está configurado en este despliegue." }, 503);
+  if (found.status === "storage_unavailable") return storageUnavailable();
   if (found.status !== "ok") return json({ message: "Imagen no encontrada." }, 404);
   return new Response(found.object.body, {
     headers: {

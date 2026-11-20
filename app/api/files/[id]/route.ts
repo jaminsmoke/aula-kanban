@@ -1,5 +1,5 @@
 import { getChatGPTUser } from "../../../../lib/server/auth";
-import { json } from "../../../../lib/server/http";
+import { json, storageUnavailable } from "../../../../lib/server/http";
 import { projectFailureResponse } from "../../../../lib/server/project-http";
 import { withResourceProject } from "../../../../lib/server/route-helpers";
 import { readUpload } from "../../../../lib/server/storage";
@@ -19,7 +19,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   const user = await getChatGPTUser();
   if (!user) return projectFailureResponse("unauthenticated");
   const found = await readUpload(id);
-  if (found.status === "storage_unavailable") return json({ message: "El almacenamiento de archivos no está configurado en este despliegue." }, 503);
+  if (found.status === "storage_unavailable") return storageUnavailable();
   if (found.status !== "ok") return json({ message: "Archivo no encontrado." }, 404);
   return withResourceProject(found.row.projectId, async () => new Response(found.object.body, {
     headers: {
