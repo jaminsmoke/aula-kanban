@@ -1,6 +1,6 @@
 # Arquitectura de Aula Documentos
 
-> **Estado:** Fase 3 completada · **Fecha:** 2026-11-20
+> **Estado:** ADOC-15 completado · **Fecha:** 2026-11-20
 > **Objetivo:** reducir la complejidad estructural sin cambiar el comportamiento antes de continuar con las tablas.
 > **Alcance:** `app/board/apps/aula-documentos`, `app/board/shared/aula-documentos`, `app/board/shared/office` y `lib/domain/aula-documentos`.
 
@@ -184,3 +184,11 @@ lib/server/aula-documentos/     # servicios de copias, migración y persistencia
 - Límites: 20 tablas, 50 filas, 20 columnas, 400 celdas por tabla y 1.000 celdas por documento.
 - La tabla usa el wrapper de Tiptap para scroll horizontal; en impresión se muestra completa.
 - El teclado usa la navegación nativa de Tiptap para Tab/Shift+Tab; Escape devuelve el foco al editor. Los controles móviles tienen 44 px.
+
+## 12. Estado tras la Fase 6
+
+- HTML, presentación e impresión comparten `renderAulaContentHtml`; Tiptap genera `th`, `td`, `colspan` y `rowspan`.
+- DOCX usa `columnSpan`, `rowSpan`, sombreado y `tableHeader`; PPTX usa `colspan`, `rowspan`, negrita y relleno de cabecera.
+- `documentToMarkdownExport` devuelve el Markdown y avisos de fidelidad; `documentToMarkdown` se mantiene como API de cadena para la fuente Markdown.
+- Presupuesto final: `aula-documentos` 369.596 / 370.000 B gzip; export 329.694 / 340.000; Office 196.481 / 210.000.
+- El roadmap ADOC-15 está archivado y `roadmap.md` queda sin roadmap activo; el siguiente candidato es ADOC-16.

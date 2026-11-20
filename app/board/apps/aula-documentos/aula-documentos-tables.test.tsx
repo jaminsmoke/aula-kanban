@@ -269,6 +269,41 @@ describe("Tablas de Aula Documentos", () => {
     expect(table?.content?.[1]?.content?.[0]?.attrs).toMatchObject({ colspan: 1, rowspan: 2 });
   });
 
+  it("avisa al exportar una tabla combinada a Markdown", async () => {
+    const merged = {
+      schemaVersion: 3,
+      title: "Tabla combinada",
+      content: {
+        type: "doc",
+        content: [{
+          type: "table",
+          content: [
+            {
+              type: "tableRow",
+              content: [{ type: "tableHeader", attrs: { colspan: 2 }, content: [{ type: "paragraph", content: [{ type: "text", text: "Cabecera" }] }] }],
+            },
+            {
+              type: "tableRow",
+              content: [
+                { type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text: "Dato" }] }] },
+                { type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text: "Otro" }] }] },
+              ],
+            },
+          ],
+        }],
+      },
+    };
+    documentMock.load.mockResolvedValue({ state: merged, updatedAt: 5, ok: true });
+    stubDownload();
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(document.querySelector(".aula-documentos-prose table")).toBeTruthy());
+
+    openMenu("Exportar");
+    fireEvent.click(screen.getByRole("menuitem", { name: "Exportar Markdown" }));
+
+    await waitFor(() => expect(screen.getByRole("status").textContent).toContain("celdas combinadas"));
+  });
+
   it("ofrece cabeceras, combinación y foco al salir de la tabla", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());

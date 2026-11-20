@@ -6,6 +6,32 @@
 
 ---
 
+## 2026-11-20 — Roadmap ADOC-15 — Tablas completas en el editor
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Aula Documentos incorpora tablas editables con selector de tamaño, filas y columnas, cabecera de fila/columna/celda, combinación y división de celdas.
+- El documento conserva `colspan`/`rowspan`, rechaza cuadrículas imposibles y aplica límites de 20 tablas, 50 filas, 20 columnas, 400 celdas por tabla y 1.000 celdas por documento.
+- La navegación por teclado usa Tab/Shift+Tab de Tiptap; Escape devuelve el foco al editor. La tabla tiene scroll horizontal en pantalla, ajuste en impresión y controles móviles de 44 px.
+- HTML, presentación e impresión conservan tablas, cabeceras y spans. DOCX exporta `colspan`/`rowspan` y cabeceras; PPTX conserva cabeceras y celdas combinadas. Markdown avisa cuando una tabla combinada pierde estructura.
+- Aula Documentos se descompuso en shell, hooks, componentes, estilos y pruebas; las utilidades de descarga/fecha y la lógica pura se movieron a `shared`/`lib` con consumidores reales.
+- Actualizados ayuda, ficha de suite, documentación Office, arquitectura y roadmap.
+
+### Verificación
+
+- Suite completa: **227 archivos / 1.576 pruebas**; `tsc`, ESLint, build, `perf:budget` y `perf:office` correctos.
+- `aula-documentos`: **369.596 / 370.000 B gzip**; `aula-documentos-export`: **329.694 / 340.000 B gzip**; `perf:office`: **196.481 / 210.000 B gzip**.
+- Pruebas de spans, límites, recarga, exportación HTML/DOCX/PPTX, avisos de Markdown, foco, teclado y CSS móvil.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ADOC-15 archivado en [`historial/roadmap-adoc-15.md`](../historial/roadmap-adoc-15.md). El backlog queda con **ADOC-16 a ADOC-20**, **UI-11** y **DEV-01**; el siguiente candidato es ADOC-16.
+
+---
+
 ## 2026-11-20 — Roadmap ADOC-21 — Copias portables del documento
 
 **Estado:** Completada - Sin publicación en Sites

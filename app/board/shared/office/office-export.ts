@@ -138,11 +138,24 @@ function listParagraphs(node: JSONContent, ordered: boolean, level: number, docx
  * @returns La tabla.
  */
 function tableToDocx(node: JSONContent, docx: DocxModule, warnings: string[], images: AulaImageAssetMap): DocxTable {
-  const rows = (node.content ?? []).map((row) => new docx.TableRow({
-    children: (row.content ?? []).map((cell) => new docx.TableCell({
-      children: (cell.content ?? []).flatMap((child) => blockToDocx(child, docx, warnings, images)),
-    })),
-  }));
+  const rows = (node.content ?? []).map((row) => {
+    const cells = row.content ?? [];
+    return new docx.TableRow({
+      tableHeader: cells.some((cell) => cell.type === "tableHeader"),
+      children: cells.map((cell) => {
+        const colspan = Math.max(1, Number(cell.attrs?.colspan) || 1);
+        const rowspan = Math.max(1, Number(cell.attrs?.rowspan) || 1);
+        return new docx.TableCell({
+          children: (cell.content ?? []).flatMap((child) => blockToDocx(child, docx, warnings, images)),
+          ...(colspan > 1 ? { columnSpan: colspan } : {}),
+          ...(rowspan > 1 ? { rowSpan: rowspan } : {}),
+          ...(cell.type === "tableHeader"
+            ? { shading: { type: docx.ShadingType.CLEAR, fill: "F1EFF8" } }
+            : {}),
+        });
+      }),
+    });
+  });
   return new docx.Table({
     rows,
     width: { size: 100, type: docx.WidthType.PERCENTAGE },
@@ -336,10 +349,18 @@ export async function exportAulaDocx(
   return { blob: await docx.Packer.toBlob(doc), warnings };
 }
 
+/** Celda de una tabla PPTX con su estructura visual. */
+type PptxTableCell = {
+  text: string;
+  colspan: number;
+  rowspan: number;
+  header: boolean;
+};
+
 /** Elemento de una diapositiva en el orden del documento. */
 type PptxSlideItem =
   | { kind: "text"; text: string; bullet: boolean; heading: boolean }
-  | { kind: "table"; rows: string[][] }
+  | { kind: "table"; rows: PptxTableCell[][] }
   | { kind: "image"; source: string; alt: string; caption: string; width: number; alignment: string };
 
 /**
@@ -366,7 +387,12 @@ function slideContent(blocks: JSONContent[], title: string): { items: PptxSlideI
       } else if (node.type === "table") {
         items.push({
           kind: "table",
-          rows: (node.content ?? []).map((row) => (row.content ?? []).map((cell) => nodeText(cell))),
+          rows: (node.content ?? []).map((row) => (row.content ?? []).map((cell) => ({
+            text: nodeText(cell),
+            colspan: Math.max(1, Number(cell.attrs?.colspan) || 1),
+            rowspan: Math.max(1, Number(cell.attrs?.rowspan) || 1),
+            header: cell.type === "tableHeader",
+          }))),
         });
       } else if (node.type === "codeBlock" || node.type === "mermaidBlock") {
         const text = node.type === "mermaidBlock" ? String(node.attrs?.code ?? "") : nodeText(node);
@@ -440,7 +466,14 @@ export async function exportAulaPptx(
       }
 
       if (item.kind === "table") {
-        slide.addTable(item.rows.map((row) => row.map((cell) => ({ text: cell }))), {
+        slide.addTable(item.rows.map((row) => row.map((cell) => ({
+          text: cell.text,
+          options: {
+            ...(cell.colspan > 1 ? { colspan: cell.colspan } : {}),
+            ...(cell.rowspan > 1 ? { rowspan: cell.rowspan } : {}),
+            ...(cell.header ? { bold: true, fill: { color: "F1EFF8" } } : {}),
+          },
+        }))), {
           x: 0.75,
           y,
           w: 11.4,
@@ -448,7 +481,6 @@ export async function exportAulaPptx(
           border: { pt: 1, color: "D9D9D9" },
         });
         y += Math.min(3, item.rows.length * 0.35 + 0.2);
-        addWarning(warnings, "Las tablas se exportan como tablas simples.");
         continue;
       }
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { AulaDocument } from "../../../../../lib/domain/aula-documentos/document";
-import { documentToMarkdown } from "../../../../../lib/domain/aula-documentos/markdown";
+import { documentToMarkdownExport } from "../../../../../lib/domain/aula-documentos/markdown";
 import { aulaFileName } from "../../../../../lib/domain/aula-documentos/filename";
 import { buildAulaDocumentHtml, collectMermaidCodes, renderMermaidSvgs } from "../../../shared/aula-documentos/export-html";
 import { getMermaidRenderer } from "../../../shared/aula-documentos/mermaid-renderer";
@@ -92,12 +92,15 @@ export function useAulaExports({ currentDocument, presentationNotes, setStatus }
   function exportMarkdown() {
     const document = currentDocument();
     if (!document) return;
+    const exported = documentToMarkdownExport(document);
     downloadTextFile(
-      documentToMarkdown(document),
+      exported.markdown,
       "text/markdown;charset=utf-8",
       aulaFileName(document.title, "md"),
     );
-    setStatus("Markdown descargado.");
+    setStatus(exported.warnings.length
+      ? `Markdown descargado. ${exported.warnings.join(" ")}`
+      : "Markdown descargado.");
   }
 
   /**

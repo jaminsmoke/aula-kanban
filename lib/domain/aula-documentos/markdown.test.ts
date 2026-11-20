@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { AULA_DOCUMENT_SCHEMA_VERSION, parseAulaDocument, type AulaDocument } from "./document";
-import { documentToMarkdown, markdownToDocument } from "./markdown";
+import { documentToMarkdown, documentToMarkdownExport, markdownToDocument } from "./markdown";
 
 const source: AulaDocument = {
   schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
@@ -72,6 +72,37 @@ describe("Markdown de Aula Documentos", () => {
     expect(parsed.document.content.content?.[0]?.type).toBe("table");
     expect(documentToMarkdown(parsed.document)).toContain("| Columna A | Columna B |");
     expect(documentToMarkdown(parsed.document)).toContain("| Dato 1 | Dato 2 |");
+  });
+
+  it("avisa de celdas combinadas y cabeceras no representables", () => {
+    const merged: AulaDocument = {
+      schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
+      title: "Tabla compleja",
+      content: {
+        type: "doc",
+        content: [{
+          type: "table",
+          content: [
+            {
+              type: "tableRow",
+              content: [
+                { type: "tableHeader", attrs: { colspan: 2 }, content: [{ type: "paragraph", content: [{ type: "text", text: "Cabecera" }] }] },
+              ],
+            },
+            {
+              type: "tableRow",
+              content: [
+                { type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text: "Dato" }] }] },
+              ],
+            },
+          ],
+        }],
+      },
+    };
+
+    const result = documentToMarkdownExport(merged);
+    expect(result.markdown).toContain("| Cabecera |");
+    expect(result.warnings).toContain("Las celdas combinadas se exportan como celdas simples en Markdown.");
   });
 
   it("exporta título, formato, listas y Mermaid", () => {

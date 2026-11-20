@@ -2,6 +2,7 @@
 
 > **Estado:** Spike de ADOC-12 — **Última medición:** 2026-11-20
 > **Actualización ADOC-14:** las imágenes locales de Aula Documentos se incrustan en DOCX/PPTX con texto alternativo y pie. WebP se convierte a PNG para Office; una imagen ausente se sustituye por un aviso y no rompe el archivo.
+> **Actualización ADOC-15:** las tablas exportadas a DOCX conservan cabeceras, `colspan` y `rowspan`; PPTX conserva cabeceras y celdas combinadas cuando el diseño lo permite. Markdown solo representa tablas simples y avisa de las celdas combinadas.
 > **Fuente:** `@silurus/ooxml` 0.90.1 (solo lectura) y fixtures propios generados con `docx` 9.16.0 y `pptxgenjs` 4.0.1.
 
 ## 1. Decisión
@@ -49,7 +50,7 @@ Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de 
 | Encabezados | Sí, por `styleId` | Sí | `Heading1`…`Heading9` se mapean a títulos Aula. |
 | Negrita, cursiva y subrayado | Sí, básico | Sí, básico | Los estilos compuestos pueden simplificarse. |
 | Listas | Sí, viñetas y numeración | Sí, básico | Niveles anidados limitados. |
-| Tablas | Sí, celdas y filas | Sí, tablas simples | Sin fórmulas ni estilos complejos. |
+| Tablas | Sí, celdas y filas | Sí, cabeceras y spans | `colspan`/`rowspan` se exportan; sin fórmulas ni estilos complejos. |
 | Enlaces | Sí | Sí | Se eliminan o aíslan enlaces externos peligrosos. |
 | Imágenes simples | Se omiten con aviso | Sí, incrustadas con texto alternativo y pie | La importación aún no extrae imágenes; las imágenes creadas en Aula sí se exportan. |
 | Cabeceras, pies, notas y comentarios | No garantizado | No | Se avisa si el documento los contiene. |
@@ -64,7 +65,7 @@ Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de 
 | Títulos y texto | Sí | Sí | Se conserva el texto y los párrafos. |
 | Viñetas y niveles | Sí, si el modelo las expone | Sí, básico | Puede simplificarse. |
 | Imágenes simples | Se omiten con aviso | Sí, incrustadas con texto alternativo y pie | La importación aún no extrae imágenes; las imágenes creadas en Aula sí se exportan. |
-| Tablas y gráficos | Limitado / a validar | Tablas simples | Los gráficos no se reconstruyen como objetos editables. |
+| Tablas y gráficos | Limitado / a validar | Tablas con cabeceras y spans | Los gráficos no se reconstruyen como objetos editables. |
 | Posiciones, temas y patrones | No | No | Se genera un diseño Aula estándar. |
 | Animaciones, transiciones y multimedia | No | No | Fuera de alcance. |
 | Notas del orador | Se omiten con aviso | Sí, desde las notas de presentación | Se incluyen en el PPTX exportado si existen. |

@@ -9,6 +9,12 @@ export type MarkdownDocumentResult = {
   warnings: string[];
 };
 
+/** Resultado de exportar Markdown con avisos de fidelidad. */
+export type MarkdownExportResult = {
+  markdown: string;
+  warnings: string[];
+};
+
 /** Límite de entrada para Markdown. */
 export const AULA_DOCUMENT_MARKDOWN_MAX_LENGTH = 200_000;
 
@@ -156,6 +162,34 @@ function tableToMarkdown(node: JSONContent): string {
     line(Array.from({ length: width }, () => "---")),
     ...rows.slice(1).map((row) => line(cells(row))),
   ].join("\n");
+}
+
+/**
+ * Recoge avisos de tablas que Markdown no puede representar completos.
+ * @param content - Contenido del documento.
+ * @returns Avisos únicos de fidelidad.
+ */
+function markdownTableWarnings(content: JSONContent): string[] {
+  const warnings = new Set<string>();
+  const visit = (node: JSONContent) => {
+    if (node.type === "table") {
+      const rows = node.content ?? [];
+      const cells = rows.flatMap((row) => row.content ?? []);
+      if (cells.some((cell) => (Number(cell.attrs?.colspan) || 1) > 1 || (Number(cell.attrs?.rowspan) || 1) > 1)) {
+        warnings.add("Las celdas combinadas se exportan como celdas simples en Markdown.");
+      }
+      const firstRow = rows[0]?.content ?? [];
+      if (firstRow.some((cell) => cell.type !== "tableHeader")) {
+        warnings.add("Markdown usa la primera fila como cabecera; la tabla original no la tenía marcada como cabecera.");
+      }
+      if (rows.slice(1).some((row) => (row.content ?? []).some((cell) => cell.type === "tableHeader"))) {
+        warnings.add("Las cabeceras fuera de la primera fila se exportan como texto normal en Markdown.");
+      }
+    }
+    for (const child of node.content ?? []) visit(child);
+  };
+  visit(content);
+  return [...warnings];
 }
 
 /**
@@ -474,13 +508,25 @@ function blockToMarkdown(node: JSONContent): string {
 /**
  * Exporta el documento al subconjunto Markdown soportado.
  * @param aulaDocument - Documento validado.
- * @returns Markdown con título, contenido y diagramas cercados.
+ * @returns Markdown y avisos de fidelidad.
  */
-export function documentToMarkdown(aulaDocument: AulaDocument): string {
+export function documentToMarkdownExport(aulaDocument: AulaDocument): MarkdownExportResult {
   const title = aulaDocument.title.trim() || "Documento sin título";
   const blocks = [...(aulaDocument.content.content ?? [])];
   const first = blocks[0];
   if (first?.type === "heading" && nodeText(first).trim() === title) blocks.shift();
   const body = blocks.map((block) => blockToMarkdown(block)).filter(Boolean).join("\n\n");
-  return `# ${escapeMarkdownText(title)}${body ? `\n\n${body}` : ""}\n`;
+  return {
+    markdown: `# ${escapeMarkdownText(title)}${body ? `\n\n${body}` : ""}\n`,
+    warnings: markdownTableWarnings(aulaDocument.content),
+  };
+}
+
+/**
+ * Exporta el documento al subconjunto Markdown soportado.
+ * @param aulaDocument - Documento validado.
+ * @returns Markdown con título, contenido y diagramas cercados.
+ */
+export function documentToMarkdown(aulaDocument: AulaDocument): string {
+  return documentToMarkdownExport(aulaDocument).markdown;
 }

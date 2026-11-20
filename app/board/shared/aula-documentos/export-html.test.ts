@@ -78,6 +78,36 @@ describe("exportación HTML de Aula Documentos", () => {
     expect(html).toContain("<td><p>2</p></td>");
   });
 
+  it("conserva cabeceras y spans al exportar HTML", () => {
+    const html = renderAulaContentHtml({
+      type: "doc",
+      content: [{
+        type: "table",
+        content: [
+          {
+            type: "tableRow",
+            content: [{ type: "tableHeader", attrs: { colspan: 2 }, content: [{ type: "paragraph", content: [{ type: "text", text: "Cabecera" }] }] }],
+          },
+          {
+            type: "tableRow",
+            content: [
+              { type: "tableCell", attrs: { rowspan: 2 }, content: [{ type: "paragraph", content: [{ type: "text", text: "Lateral" }] }] },
+              { type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text: "Dato" }] }] },
+            ],
+          },
+          {
+            type: "tableRow",
+            content: [{ type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text: "Final" }] }] }],
+          },
+        ],
+      }],
+    });
+
+    expect(html).toContain('<th colspan="2"');
+    expect(html).toContain('<td rowspan="2"');
+    expect(html).toContain("Cabecera");
+  });
+
   it("deja el código visible y explica el fallback si no hay SVG disponible", () => {
     const html = buildAulaDocumentHtml(documentWithDiagrams());
     expect(html).toContain("No se pudo dibujar el diagrama. Revisa el código Mermaid.");

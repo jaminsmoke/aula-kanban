@@ -120,7 +120,45 @@ describe("exportación Office", () => {
     expect(text).toContain("Informe de exportación");
     expect(text).toContain("Contenido final.");
     expect(text).toContain("Nota de la primera diapositiva.");
-    expect(result.warnings.join(" ")).toContain("tablas");
+  });
+
+  it("conserva cabeceras y spans en DOCX y PPTX", async () => {
+    const merged: AulaDocument = {
+      schemaVersion: 3,
+      title: "Tabla combinada",
+      content: {
+        type: "doc",
+        content: [{
+          type: "table",
+          content: [
+            {
+              type: "tableRow",
+              content: [{ type: "tableHeader", attrs: { colspan: 2 }, content: [{ type: "paragraph", content: [{ type: "text", text: "Cabecera" }] }] }],
+            },
+            {
+              type: "tableRow",
+              content: [
+                { type: "tableCell", attrs: { rowspan: 2 }, content: [{ type: "paragraph", content: [{ type: "text", text: "Lateral" }] }] },
+                { type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text: "Dato" }] }] },
+              ],
+            },
+            {
+              type: "tableRow",
+              content: [{ type: "tableCell", content: [{ type: "paragraph", content: [{ type: "text", text: "Final" }] }] }],
+            },
+          ],
+        }],
+      },
+    };
+
+    const docx = await materializeDocxDocument(new Uint8Array(await (await exportAulaDocx(merged)).blob.arrayBuffer()));
+    expect(JSON.stringify(docx.body)).toContain('"colSpan":2');
+    expect(JSON.stringify(docx.body)).toContain('"vMerge":true');
+
+    const pptx = await materializePptxPresentation(new Uint8Array(await (await exportAulaPptx(merged)).blob.arrayBuffer()));
+    const table = JSON.stringify(pptx.slides);
+    expect(table).toContain('"gridSpan":2');
+    expect(table).toContain('"rowSpan":2');
   });
 
   it("exporta documentos vacíos de forma repetible", async () => {
