@@ -2,23 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 9 entradas pendientes · Aula Documentos y DEV-01
+> **Roadmap:** ADOC-14 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 8 entradas pendientes · ADOC-14 en el roadmap
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-20 — ADOC-14 · Imágenes y recursos dentro del documento
-
-- Contexto: Aula Documentos ya cubre texto, tablas importadas, Mermaid, presentaciones y Office, pero no permite insertar una imagen. Es una ausencia visible para apuntes, materiales de clase y documentos con capturas.
-- Alcance:
-  1. Decidir el almacenamiento de imágenes: recurso subido a R2 frente a incrustación en el JSON, con cuotas, retención, borrado y compatibilidad con invitados.
-  2. Añadir un nodo de imagen con texto alternativo, pie opcional, tamaño, alineación, reemplazo y eliminación.
-  3. Integrar la inserción desde el menú **Insertar**, arrastrar y soltar y pegar desde el portapapeles, con progreso y errores legibles.
-  4. Conservar imágenes y pies en HTML, DOCX/PPTX, impresión/PDF y exportaciones; documentar qué formatos conservan qué.
-  5. Añadir límites de tamaño y cantidad, pruebas de seguridad/accesibilidad y revisión en los cinco anchos y ambos temas.
-- Criterios: una persona puede insertar una imagen local sin romper el autosave, verla en la hoja y en la presentación, exportarla con texto alternativo y recuperarla tras recargar; una imagen no queda accesible para quien no tiene acceso al proyecto.
-- Notas: no usar enlaces externos como única representación. Medir el coste de almacenamiento y el tamaño del documento antes de fijar cuotas.
 
 ## 2026-11-19 — ADOC-15 · Tablas completas en el editor
 
