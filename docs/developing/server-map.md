@@ -363,14 +363,14 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
 | P1 | Cuatro rutas importaban D1 directamente | extraídas a servicios; `app/api` no importa D1 | 2 y 3 · **resuelto** |
-| P2 | 5 MB definido dos veces | `storage/quota.ts` y `domain/aula-documentos/image.ts` | 4 |
+| P2 | 5 MB definido dos veces | fuente única en `lib/domain/aula-documentos/image.ts`; `storage/quota.ts` la reexporta | 4 · **resuelto** |
 | P2 | `reads.ts` y `writes.ts` no tienen consumidor de producto | retirados; sus pruebas usan `registro.registerTools` | 3 · **resuelto** |
-| P2 | Purga huérfana sin disparador | `cleanupOrphanUploads`, `cleanupOrphanDocumentCopies` | 4 |
-| P2 | Nombres mezclan español e inglés en la misma capa | `publicarEscena` / `listStudents` | 5 o nunca |
+| P2 | Purga huérfana sin disparador | limpieza manual documentada; sin scheduler en ARC-06 | 4 · **aceptado** |
+| P2 | Nombres mezclan español e inglés en la misma capa | convención no adoptada; sin impacto funcional | aceptado, sin cambio en ARC-06 |
 
 ### Código muerto y fachadas
 
-El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En Fase 3 se revisaron las dos fachadas MCP sin consumidor de producto: ninguna ruta, conector, paquete ni documento externo importaba `lib/server/mcp/reads.ts` o `writes.ts`, y ambas puertas usan `registro.registerTools`. Se retiraron y sus pruebas registran el subconjunto con el registro central; el baseline queda sin `testOnlyModules`.
+El baseline conserva **46 exports** sin consumidor estático como superficie pública o deuda aceptada, **1 módulo público** y **0 módulos solo-test**. En Fase 3 se revisaron las dos fachadas MCP sin consumidor de producto: ninguna ruta, conector, paquete ni documento externo importaba `lib/server/mcp/reads.ts` o `writes.ts`, y ambas puertas usan `registro.registerTools`. Se retiraron, sus pruebas registran el subconjunto con el registro central y `contexto.toolError` dejó de existir. El checker no detecta exports huérfanos fuera del baseline.
 
 ---
 
@@ -385,7 +385,7 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En Fase 
 | Ruta (`app/api`) | Contrato: método, estado, cuerpo, permisos | SQL y reglas de negocio |
 | MCP (`A`) | Catálogo + prueba de paridad | Duplicar la regla del servicio |
 
-**Huecos de cobertura detectados:** `access/members`, `access/invitaciones`, `access/profile-update` y `access/deleted-profiles` no tienen prueba directa. `api/members` y `api/space-apps` tienen contrato desde la Fase 2 y `api/projects` lo recibe en la Fase 3.
+**Huecos de cobertura declarados:** `access/members`, `access/invitaciones`, `access/profile-update` y `access/deleted-profiles` no tienen prueba directa; se cubren a través de servicios y rutas, sin cambio en ARC-06. `api/members`, `api/space-apps` y `api/projects` tienen contrato propio.
 
 ---
 
@@ -420,3 +420,22 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En Fase 
 - [x] Las pruebas de dominio y de repositorio corren sin D1 ni R2 reales: **31 archivos / 165 pruebas dirigidas**.
 - [x] Fachadas MCP revisadas: `reads.ts` y `writes.ts` retiradas; `registro.ts` es la puerta única y el baseline queda sin `testOnlyModules`.
 - [x] Suite final: **242 archivos / 1.644 pruebas**; `dead:check`, `app:budget` y ESLint sin problemas.
+
+---
+
+## 13. Criterios de aceptación de Fase 4
+
+- [x] Cada límite tiene un hogar único; imagen y MIME viven en el dominio y el servidor los reexporta.
+- [x] `uploadLimitBytes` concentra el máximo por finalidad y web/MCP comparten validación.
+- [x] La purga de subidas es idempotente, relee referencias y recupera fallos de R2.
+- [x] Las 42 migraciones se aplican en orden en local; rollback documentado y sin remoto.
+- [x] Suite **243 archivos / 1.647 pruebas**.
+
+---
+
+## 14. Cierre de ARC-06
+
+- [x] Mapa, rutas y helpers sin deuda sin dueño: P0/P1 resueltos; P2 resueltos o aceptados.
+- [x] Checks locales sin MCP ni rutas externas: `npm run check`, suite, build y presupuestos.
+- [x] Documentación, changelog y backlog actualizados; roadmap archivado y reiniciado.
+- [x] `1.1.37` sin cambios; sin push ni publicación en este cierre local.

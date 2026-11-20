@@ -1,8 +1,37 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-06 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-20 — Roadmap ARC-06 — Mapa de servidor, API y deuda residual
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- `docs/developing/server-map.md` clasifica **104 módulos** de `lib/server` y **26 rutas** de `app/api`, con accesos D1/R2, límites, purgas, inventario y migraciones.
+- Las rutas de `app/api` quedan como adaptadores: ninguna importa D1 ni `resolveProject`; las siete rutas manuales usan `withProjectRoute`/`withResourceProject` y el 503 de almacenamiento es único.
+- Quince bloques `S+R` se parten en servicio + repositorio por dominio (proyectos, miembros, acceso, personas, apps, libros, tablero, tareas, tokens y resolución de proyecto), con contratos nuevos para `projects-repository`, `members-repository` y `api/projects`.
+- Se retiran `mcp/reads.ts`, `mcp/writes.ts` y `contexto.toolError`; las pruebas registran con `registro.registerTools` y el baseline queda sin `testOnlyModules`.
+- El límite de imagen y los MIME tienen una sola fuente en `lib/domain/aula-documentos/image.ts`; `uploadLimitBytes` unifica web y MCP; la purga de subidas es idempotente.
+- Las **42 migraciones** coinciden con el journal y se aplican en orden sobre SQLite en memoria; rollback local documentado, sin migraciones remotas.
+- Sin cambios de URLs, códigos, permisos, textos de producto ni versión del Site.
+
+### Verificación
+
+- `npm run check`: ESLint, `tsc`, `arch:check`, `dead:check` y `app:budget` correctos.
+- `arch:check`: **417 archivos / 1.019 imports / 0 violaciones / 0 ciclos**.
+- `dead:check`: **0** huérfanos, **0** solo-test, **0** exports sin consumidores fuera del baseline.
+- Suite completa: **243 archivos / 1.647 pruebas**.
+- Build, `perf:budget`, `perf:office` y `app:budget` correctos.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-06 archivado en [`historial/roadmap-arc-06.md`](../historial/roadmap-arc-06.md). El backlog queda con **7 entradas**; siguiente candidato **ADOC-16**.
 
 ---
 
