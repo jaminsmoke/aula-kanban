@@ -1,3 +1,12 @@
+/** Tipos MIME admitidos para imágenes locales. */
+export const AULA_IMAGE_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"] as const;
+
+/** Tamaño máximo de una imagen local (5 MB). */
+export const AULA_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+
+/** Valor de `accept` para los selectores de archivo. */
+export const AULA_IMAGE_ACCEPT = AULA_IMAGE_MIME_TYPES.join(",");
+
 /** Alineaciones permitidas para una imagen del documento. */
 export const AULA_IMAGE_ALIGNMENTS = ["left", "center", "right"] as const;
 

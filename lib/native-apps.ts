@@ -311,12 +311,12 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
   {
     id: "aula-documentos",
     name: "Aula Documentos",
-    tagline: "La suite documental del aula: texto, diagramas, presentaciones y Office.",
-    description: "Suite documental con Tiptap, Mermaid y reveal.js (MIT): texto enriquecido, tablas, diagramas editables, presentaciones, notas del orador y visor de Office; migra los datos de Notas, Diagramas y Presentaciones, importa DOCX/PPTX y exporta HTML, Markdown, DOCX y PPTX. Guardado por proyecto en app_documents y lectura para invitados.",
+    tagline: "La suite documental del aula: texto, imágenes, diagramas, presentaciones y Office.",
+    description: "Suite documental con Tiptap, Mermaid y reveal.js (MIT): texto enriquecido, tablas, imágenes locales, diagramas editables, presentaciones, notas del orador y visor de Office; migra los datos de Notas, Diagramas y Presentaciones, importa DOCX/PPTX y exporta HTML, Markdown, DOCX y PPTX. Guardado por proyecto en app_documents y lectura para invitados.",
     categories: ["Oficina", "Productividad"],
     subcategory: "Herramientas",
     cover: "/store/aula-documentos.svg",
-    features: ["Notas, diagramas y presentaciones en un mismo documento", "Office local con DOCX, XLSX y PPTX sin subir archivos", "Migra datos anteriores y exporta HTML, Markdown, DOCX y PPTX"],
+    features: ["Notas, imágenes, diagramas y presentaciones en un mismo documento", "Office local con DOCX, XLSX y PPTX sin subir archivos", "Migra datos anteriores y exporta HTML, Markdown, DOCX y PPTX"],
     appVersion: "1.2.0",
     upstream: { name: "@tiptap/core", version: "3.34.0" },
     extras: [
@@ -374,7 +374,7 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
       screenshots: [{
         src: "/capturas/aula-documentos-suite.webp",
         alt: "Aula Documentos con un documento de texto, un diagrama y dos diapositivas",
-        caption: "Notas, diagramas y presentaciones en el mismo documento.",
+        caption: "Notas, imágenes, diagramas y presentaciones en el mismo documento.",
       }],
       migration: {
         replaces: [

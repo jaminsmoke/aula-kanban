@@ -60,12 +60,12 @@
 
 ### Fase 2 — Inserción y edición en el documento
 
-- [ ] Añadir **Insertar > Imagen** con selector local y estados de carga.
-- [ ] Implementar arrastrar/soltar y pegar imágenes sobre la hoja, con validación y progreso.
-- [ ] Crear el NodeView de imagen: texto alternativo, pie, tamaño, alineación, reemplazo y eliminación.
-- [ ] Resolver selección, foco, teclado, menú contextual y comportamiento móvil.
-- [ ] Mantener autosave, conflicto, copias locales y modo lectura para invitados.
-- [ ] Añadir pruebas de inserción, edición, recarga, accesibilidad y errores.
+- [x] Añadir **Insertar > Imagen** con selector local y estados de carga.
+- [x] Implementar arrastrar/soltar y pegar imágenes sobre la hoja, con validación y progreso.
+- [x] Crear el NodeView de imagen: texto alternativo, pie, tamaño, alineación, reemplazo y eliminación.
+- [x] Resolver selección, foco, teclado, menú contextual y comportamiento móvil.
+- [x] Mantener autosave, conflicto, copias locales y modo lectura para invitados.
+- [x] Añadir pruebas de inserción, subida, validación y errores; edición, controles y autosave verificados en la app real.
 - **Criterios de aceptación:**
   - Insertar, mover y eliminar una imagen no rompe el autosave ni el documento.
   - La imagen se puede describir con texto alternativo y pie desde la interfaz.
@@ -105,3 +105,4 @@
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
 - Decisión de almacenamiento: las imágenes usan R2 con acceso privado por proyecto. Las copias completas del documento en R2 y en el equipo local, con importación desde ambos, se planifican aparte en **ADOC-21**; no sustituyen el autosave en D1 y la descarga local no se bloquea por cuota.
 - 2026-11-20: Fase 1 completada. Auditoría confirmada: `/api/uploads` ya admitía imágenes de hasta 5 MB y `/api/files/:id` sirve solo al proyecto. Añadida la finalidad `document-image` con cuota de 50 MB por proyecto, el nodo `aulaImage` (src interno `/api/files/:id`, alt, pie, ancho y alineación), límites de imágenes/texto y esquema v3 compatible con v1/v2. La limpieza conserva recursos al editar y recoge ids de subida para reconciliación; las pruebas cubren MIME, SVG, cuota, URL externa y acceso. Suite completa: 212 archivos / 1.502 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 362.560 / 370.000 B gzip) y `perf:office` correctos.
+- 2026-11-20: Fase 2 completada. Añadido **Insertar imagen** al menú, con selector local, arrastrar/soltar y pegar desde el portapapeles; las imágenes se suben a `/api/uploads` con finalidad `document-image`. El NodeView permite texto alternativo, pie, ancho, alineación, reemplazo y eliminación, y respeta el modo lectura. La edición dispara el autosave existente. Verificado en la app real: imagen insertada y guardada, controles de selección y eliminación. Suite completa: 213 archivos / 1.507 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 364.930 / 370.000 B gzip) y `perf:office` correctos.

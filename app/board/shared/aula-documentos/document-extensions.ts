@@ -4,14 +4,16 @@ import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
 import TextAlign from "@tiptap/extension-text-align";
 import StarterKit from "@tiptap/starter-kit";
+import { AulaImage } from "./image-block";
 import { MermaidBlock } from "./mermaid-block";
 import { SlideBreak } from "./slide-break";
 
 /**
  * Extensiones del editor de Aula Documentos.
+ * @param projectId - Proyecto activo para resolver las imágenes locales.
  * @returns La configuración cerrada de texto y bloques.
  */
-export function createAulaDocumentExtensions() {
+export function createAulaDocumentExtensions(projectId = "") {
   return [
     StarterKit.configure({
       heading: { levels: [1, 2, 3] },
@@ -34,6 +36,7 @@ export function createAulaDocumentExtensions() {
     TextAlign.configure({ types: ["heading", "paragraph"] }),
     TaskList,
     TaskItem.configure({ nested: true }),
+    AulaImage.configure({ projectId }),
     MermaidBlock,
     SlideBreak,
   ];

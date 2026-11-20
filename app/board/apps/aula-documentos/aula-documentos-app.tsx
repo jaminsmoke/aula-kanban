@@ -22,6 +22,7 @@ import {
   Heading2,
   Heading3,
   History,
+  ImagePlus,
   Italic,
   Link2,
   List,
@@ -88,6 +89,8 @@ import { importOfficeFile } from "../../shared/office/office-import";
 import { exportAulaDocx, exportAulaPptx } from "../../shared/office/office-export";
 import OfficeViewer from "../../shared/office/office-viewer";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
+import { AULA_IMAGE_ACCEPT } from "../../../../lib/domain/aula-documentos/image";
+import { imageFilesFromDataTransfer, uploadAulaImage } from "../../shared/aula-documentos/image-upload";
 import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
 import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../../shared/aula-documentos/mermaid-block";
 import { getMermaidRenderer } from "../../shared/aula-documentos/mermaid-renderer";
@@ -342,6 +345,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const [officeOpenSource, setOfficeOpenSource] = useState<File | null>(null);
   const [officePreviewOpen, setOfficePreviewOpen] = useState(false);
   const [officePreviewTitle, setOfficePreviewTitle] = useState("Archivo original");
+  const [imageUploading, setImageUploading] = useState(false);
   const [importLoading, setImportLoading] = useState<string | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importConfirm, setImportConfirm] = useState(false);
@@ -475,13 +479,30 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const editor = useEditor({
     immediatelyRender: false,
     editable: !readOnly,
-    extensions: createAulaDocumentExtensions(),
+    extensions: createAulaDocumentExtensions(projectId),
     content: initialDocument.content,
     editorProps: {
       attributes: {
         class: "aula-documentos-prose",
         "aria-label": "Contenido del documento",
         spellcheck: "true",
+      },
+      handlePaste: (view, event) => {
+        if (readOnly) return false;
+        const files = imageFilesFromDataTransfer(event.clipboardData);
+        if (!files.length) return false;
+        event.preventDefault();
+        void insertImageFiles(files, view.state.selection.from);
+        return true;
+      },
+      handleDrop: (view, event) => {
+        if (readOnly) return false;
+        const files = imageFilesFromDataTransfer(event.dataTransfer);
+        if (!files.length) return false;
+        event.preventDefault();
+        const position = view.posAtCoords({ left: event.clientX, top: event.clientY })?.pos;
+        void insertImageFiles(files, position);
+        return true;
       },
     },
     onCreate: ({ editor: current }) => {
@@ -1036,6 +1057,52 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [saveCurrent]);
+
+  /**
+   * Abre el selector local de imágenes.
+   */
+  function openImagePicker() {
+    if (!editor || readOnly) return;
+    const input = document.getElementById("aula-documentos-image-file") as HTMLInputElement | null;
+    input?.click();
+  }
+
+  /**
+   * Sube imágenes y las inserta en la posición indicada.
+   * @param files - Imágenes locales.
+   * @param position - Posición del documento; si falta, usa la selección actual.
+   */
+  async function insertImageFiles(files: File[], position?: number) {
+    if (!editor || readOnly || !files.length) return;
+    setImageUploading(true);
+    setStatus(files.length === 1 ? "Subiendo imagen…" : `Subiendo ${files.length} imágenes…`);
+    const nodes: Array<{ type: "aulaImage"; attrs: Record<string, unknown> }> = [];
+    let error: string | null = null;
+    for (const file of files) {
+      const result = await uploadAulaImage(projectId, file);
+      if (!result.ok) {
+        error = result.message;
+        continue;
+      }
+      nodes.push({
+        type: "aulaImage",
+        attrs: {
+          src: result.url,
+          alt: file.name.replace(/\.[^.]+$/, ""),
+          caption: "",
+          width: 100,
+          alignment: "center",
+        },
+      });
+    }
+    if (nodes.length) {
+      const at = typeof position === "number" ? position : editor.state.selection.from;
+      editor.chain().focus(undefined, { scrollIntoView: false }).insertContentAt(at, nodes).run();
+    }
+    setImageUploading(false);
+    if (error) setStatus(`No se pudo insertar una imagen: ${error}`);
+    else if (nodes.length) setStatus(nodes.length === 1 ? "Imagen insertada." : `${nodes.length} imágenes insertadas.`);
+  }
 
   /**
    * Inserta un bloque Mermaid con la plantilla de flujo.
@@ -1682,6 +1749,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   ] : [];
 
   const insertMenuActions: AulaMenuAction[] = editor && !readOnly ? [
+    { label: "Insertar imagen", icon: <ImagePlus size={15} aria-hidden />, onSelect: openImagePicker, disabled: imageUploading },
     { label: "Insertar diagrama Mermaid", icon: <GitBranch size={15} aria-hidden />, onSelect: insertMermaid },
     { label: "Insertar salto de diapositiva", icon: <SeparatorHorizontal size={15} aria-hidden />, onSelect: insertSlideBreak },
   ] : [];
@@ -1691,7 +1759,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     ...insertMenuActions.map((action) => ({
       label: action.label,
       icon: action.icon,
-      onClick: action.onSelect,
+      onClick: () => action.onSelect(),
       disabled: action.disabled,
     })),
     presentAction,
@@ -1815,6 +1883,20 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           const file = event.currentTarget.files?.[0];
           event.currentTarget.value = "";
           openOfficeViewer(file);
+        }}
+      />
+
+      <input
+        id="aula-documentos-image-file"
+        className="aula-documentos-file-input"
+        type="file"
+        accept={AULA_IMAGE_ACCEPT}
+        aria-label="Elegir imagen para el documento"
+        tabIndex={-1}
+        onChange={(event: ChangeEvent<HTMLInputElement>) => {
+          const file = event.currentTarget.files?.[0];
+          event.currentTarget.value = "";
+          if (file) void insertImageFiles([file]);
         }}
       />
 

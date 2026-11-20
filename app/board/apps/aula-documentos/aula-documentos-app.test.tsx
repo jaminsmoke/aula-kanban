@@ -1179,6 +1179,29 @@ describe("Aula Documentos", () => {
     vi.unstubAllGlobals();
   });
 
+  it("inserta una imagen local desde el selector del documento", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (input: string) => {
+      if (String(input).includes("/api/uploads")) {
+        return new Response(JSON.stringify({ url: "/api/files/foto" }), { status: 201 });
+      }
+      return new Response("{}", { status: 200 });
+    }));
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    fireEvent.change(screen.getByLabelText("Elegir imagen para el documento"), {
+      target: { files: [new File(["png"], "foto.png", { type: "image/png" })] },
+    });
+
+    await waitFor(() => {
+      expect(document.querySelector(".aula-image-block img")?.getAttribute("src")).toBe("/api/files/foto");
+    });
+    const img = document.querySelector(".aula-image-block img");
+    expect(img?.getAttribute("alt")).toBe("foto");
+    expect(screen.getByRole("status").textContent).toContain("Imagen insertada");
+  });
+
   it("inserta un salto de diapositiva y lo guarda", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
