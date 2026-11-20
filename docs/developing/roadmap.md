@@ -1,21 +1,91 @@
-# Roadmap activo
+# Roadmap ARC-01 — Contratos de arquitectura y verificación local
 
-> **Estado:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
-> **Changelog:** [`changelog.md`](changelog.md)
-> **Publicación:** la despliega y verifica Codex de OpenAI; este archivo no cambia la versión del Site.
+> **Estado:** Activo · **Origen:** ARC-01 del backlog (2026-11-20)
+> **Backlog:** DEV-02, ARC-02 a ARC-06, ADOC-16 a ADOC-20, UI-11 y DEV-01 · **Changelog:** [`changelog.md`](changelog.md)
+> **Publicación:** la despliega y verifica Codex de OpenAI; este roadmap no cambia la versión del Site.
 
 ---
 
-## 1. Estado
+## 1. Objetivo
 
-ADOC-15 quedó cerrado y archivado en [`historial/roadmap-adoc-15.md`](../historial/roadmap-adoc-15.md). No hay trabajo de roadmap en curso.
+- [ ] Convertir el mapa de [`arquitectura-global.md`](arquitectura-global.md) en contratos comprobables dentro de este repositorio.
+- [ ] Evitar que una herramienta externa o un MCP global vuelva a introducir capas, rutas o diagnósticos de otro proyecto.
+- [ ] Criterio de éxito: `npm run arch:check` describe solo `aula-kanban`, detecta imports prohibidos, ciclos y crecimientos no justificados, y puede ejecutarse en local y CI sin depender de CodArch.
 
-## 2. Siguiente paso
+## 2. Alcance
 
-Elegir la siguiente entrada del backlog y planificarla antes de empezar. El candidato inmediato es **DEV-02 — Aislar MCP y tooling por repositorio**, seguido de **ARC-01 — Contratos de arquitectura y verificación local** según [`arquitectura-global.md`](arquitectura-global.md).
+**Dentro:**
 
-## 3. Límites de mantenimiento
+- Clasificar los archivos reales en shell, apps, shared, dominio, servidor y API.
+- Definir reglas de dependencia, ciclos, presupuestos y excepciones justificadas.
+- Implementar un checker local con una línea base para no bloquear el trabajo actual.
+- Integrarlo en los checks del proyecto.
+- Documentar cómo se añade un archivo, una app o una excepción.
 
-- El roadmap se divide en las fases que necesite el trabajo, sin fases de relleno.
-- Cada fase agrupa un bloque verificable y se revisa antes de pasar a la siguiente.
-- No se publica en Sites desde el roadmap; la publicación la confirma Codex de OpenAI.
+**Fuera:**
+
+- Trocear las apps monolíticas; eso es ARC-02.
+- Retirar el sistema de borradores; eso es ARC-03.
+- Rediseñar CSS; eso es ARC-04.
+- Cambiar comportamiento de producto, URLs, permisos o datos.
+- Usar CodArch como requisito. Si se adopta, será una integración opcional por repositorio.
+
+## 3. Decisiones de arquitectura
+
+1. La fuente de verdad es este repositorio, no un MCP global.
+2. Las dependencias apuntan hacia dentro: apps → shared → dominio; servidor no importa apps; dominio no importa React, app ni servidor.
+3. Las reglas se ejecutan en local. CodArch no es dependencia obligatoria.
+4. La línea base registra excepciones existentes; una excepción nueva debe justificarse y caducar.
+5. Los límites no sustituyen la revisión: shell <450, componentes/hooks <600, CSS <500 y pruebas <600, salvo excepción documentada.
+6. Ningún checker puede leer una ruta fuera del workspace.
+
+## 4. Fases
+
+### Fase 1 — Mapa definitivo y contratos
+
+- [ ] Inventariar imports reales entre shell, apps, shared, dominio, servidor y API.
+- [ ] Clasificar cada archivo y documentar los casos dudosos.
+- [ ] Definir reglas de dirección, ciclos y presupuestos con severidad.
+- [ ] Crear una línea base de excepciones existentes.
+- [ ] Acordar el formato del checker y su salida.
+- **Criterios:** existe un contrato legible y una lista inicial de violaciones separada de las excepciones aceptadas.
+
+### Fase 2 — Checker local y línea base
+
+- [ ] Implementar `scripts/architecture-check.mjs` o el mecanismo local acordado.
+- [ ] Resolver imports relativos/estáticos y excluir `node_modules`, `dist`, `.next` y `.vinext`.
+- [ ] Detectar imports prohibidos, ciclos y archivos por encima del presupuesto.
+- [ ] Hacer que una ruta fuera del workspace falle cerrada.
+- [ ] Añadir `npm run arch:check` y una prueba del propio checker.
+- **Criterios:** el checker pasa sobre la línea base y falla con un caso artificial de import prohibido, ciclo o ruta externa.
+
+### Fase 3 — Integración, correcciones y enforcement
+
+- [ ] Corregir las violaciones pequeñas que no pertenezcan a ARC-02/03/04.
+- [ ] Clasificar las excepciones de archivos grandes y enlazarlas con su roadmap.
+- [ ] Integrar `arch:check` en los checks locales y en CI.
+- [ ] Añadir una comprobación de que no hay MCP con raíz externa en la configuración del proyecto.
+- [ ] Documentar el flujo para añadir una app y para retirar una excepción.
+- **Criterios:** el check es obligatorio, no hay violaciones nuevas sin justificar y las excepciones tienen dueño y fecha.
+
+### Fase 4 — Cierre
+
+- [ ] Actualizar `arquitectura-global.md`, backlog y changelog.
+- [ ] Ejecutar suite, `tsc`, ESLint, build y presupuestos.
+- [ ] Archivar este roadmap si el siguiente bloque lo requiere.
+- **Criterios:** no queda trabajo de arquitectura básica sin dueño; el repositorio puede crecer sin volver a depender de una configuración externa.
+
+## 5. Riesgos y bloqueos
+
+| Riesgo | Impacto | Mitigación |
+|---|---|---|
+| Checker demasiado estricto | Bloquea trabajo legítimo | Línea base, severidades y excepciones con caducidad |
+| Checker demasiado superficial | Falsa sensación de seguridad | Probar imports prohibidos, ciclos y rutas externas |
+| Resolver imports de forma incompleta | Falsos negativos | Empezar por imports relativos y documentar límites |
+| CodArch vuelve a colarse | Diagnósticos de otro repo | Regla de workspace, configuración por repo y fallo cerrado |
+| Duplicar reglas con otras herramientas | Mantenimiento doble | Una sola fuente y salida legible |
+
+## 6. Notas de sesión
+
+- 2026-11-20: ARC-01 sale del backlog y pasa a ser el roadmap activo. El repositorio no tiene `.codarch.yml`; la revisión inicial se contaminó por un MCP global apuntando a otro proyecto. Ese MCP se retiró y DEV-02 queda como guard de tooling.
+- El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
