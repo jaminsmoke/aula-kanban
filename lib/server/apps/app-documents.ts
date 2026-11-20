@@ -1,6 +1,11 @@
-import { and, eq, sql } from "drizzle-orm";
-import { getDb } from "../../../db";
-import { appDocuments } from "../../../db/schema";
+import {
+  insertAppDocumentRow,
+  selectAppDocumentRow,
+  selectAppDocumentUpdatedAt,
+  updateAppDocumentRowIfCurrent,
+  upsertAppDocumentRow,
+  type AppDocumentWrite,
+} from "./app-documents-repository";
 
 /** Límite del estado serializado de un documento de app (200 KB). */
 export const MAX_APP_DOCUMENT_CHARS = 200_000;
@@ -15,9 +20,7 @@ export type AppDocument = { state: unknown; updatedAt: number };
  * @returns El documento o `null` si nunca se guardó.
  */
 export async function readAppDocument(projectId: string, appId: string): Promise<AppDocument | null> {
-  const db = getDb();
-  const [row] = await db.select().from(appDocuments)
-    .where(and(eq(appDocuments.projectId, projectId), eq(appDocuments.appId, appId)));
+  const row = await selectAppDocumentRow(projectId, appId);
   return row ? { state: JSON.parse(row.state) as unknown, updatedAt: row.updatedAt } : null;
 }
 
@@ -28,28 +31,8 @@ export async function readAppDocument(projectId: string, appId: string): Promise
  * @param input - Proyecto, app, estado ya serializado y autor.
  * @returns La fecha de actualización aplicada.
  */
-export async function saveAppDocument(input: {
-  projectId: string;
-  appId: string;
-  state: string;
-  updatedByUserId: string | null;
-}): Promise<number> {
-  const now = Date.now();
-  const [saved] = await getDb().insert(appDocuments).values({
-    projectId: input.projectId,
-    appId: input.appId,
-    state: input.state,
-    updatedAt: now,
-    updatedByUserId: input.updatedByUserId,
-  }).onConflictDoUpdate({
-    target: [appDocuments.projectId, appDocuments.appId],
-    set: {
-      state: input.state,
-      updatedAt: sql<number>`max(${now}, ${appDocuments.updatedAt} + 1)`,
-      updatedByUserId: input.updatedByUserId,
-    },
-  }).returning({ updatedAt: appDocuments.updatedAt });
-  return saved.updatedAt;
+export async function saveAppDocument(input: AppDocumentWrite): Promise<number> {
+  return upsertAppDocumentRow(input);
 }
 
 /** Resultado de un guardado condicionado a la versión conocida por el cliente. */
@@ -64,41 +47,10 @@ export type SaveAppDocumentResult =
  * @param input - Proyecto, app, estado serializado, autor y versión esperada.
  * @returns El resultado del guardado y la versión vigente.
  */
-export async function saveAppDocumentIfCurrent(input: {
-  projectId: string;
-  appId: string;
-  state: string;
-  updatedByUserId: string | null;
-  expectedUpdatedAt: number | null;
-}): Promise<SaveAppDocumentResult> {
-  const db = getDb();
-  const now = Date.now();
-
-  if (input.expectedUpdatedAt === null) {
-    const [inserted] = await db.insert(appDocuments).values({
-      projectId: input.projectId,
-      appId: input.appId,
-      state: input.state,
-      updatedAt: now,
-      updatedByUserId: input.updatedByUserId,
-    }).onConflictDoNothing({
-      target: [appDocuments.projectId, appDocuments.appId],
-    }).returning({ updatedAt: appDocuments.updatedAt });
-    if (inserted) return { status: "saved", updatedAt: inserted.updatedAt };
-  } else {
-    const [updated] = await db.update(appDocuments).set({
-      state: input.state,
-      updatedAt: sql<number>`max(${now}, ${appDocuments.updatedAt} + 1)`,
-      updatedByUserId: input.updatedByUserId,
-    }).where(and(
-      eq(appDocuments.projectId, input.projectId),
-      eq(appDocuments.appId, input.appId),
-      eq(appDocuments.updatedAt, input.expectedUpdatedAt),
-    )).returning({ updatedAt: appDocuments.updatedAt });
-    if (updated) return { status: "saved", updatedAt: updated.updatedAt };
-  }
-
-  const [current] = await db.select({ updatedAt: appDocuments.updatedAt }).from(appDocuments)
-    .where(and(eq(appDocuments.projectId, input.projectId), eq(appDocuments.appId, input.appId)));
-  return { status: "conflict", updatedAt: current?.updatedAt ?? null };
+export async function saveAppDocumentIfCurrent(input: AppDocumentWrite & { expectedUpdatedAt: number | null }): Promise<SaveAppDocumentResult> {
+  const saved = input.expectedUpdatedAt === null
+    ? await insertAppDocumentRow(input)
+    : await updateAppDocumentRowIfCurrent({ ...input, expectedUpdatedAt: input.expectedUpdatedAt });
+  if (saved !== null) return { status: "saved", updatedAt: saved };
+  return { status: "conflict", updatedAt: await selectAppDocumentUpdatedAt(input.projectId, input.appId) };
 }

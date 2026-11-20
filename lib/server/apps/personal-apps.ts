@@ -1,7 +1,5 @@
 import { migrateLegacyAppPreferences } from "./app-migration";
-import { and, asc, eq, inArray } from "drizzle-orm";
-import { getDb } from "../../../db";
-import { appPreferences } from "../../../db/schema";
+import { deleteAppPreferenceRows, insertAppPreferenceRows, listAppPreferenceRows } from "./personal-apps-repository";
 import { NATIVE_APP_IDS, nativeAppMeta, type NativeAppId } from "../../native-apps";
 import { listInstalledApps } from "./apps";
 
@@ -18,7 +16,8 @@ import { listInstalledApps } from "./apps";
  * apps no instaladas se conservan pero no se listan mientras la app no
  * esté instalada; al perder la membresía activa el usuario deja de
  * poder leer o escribir sus preferencias de ese proyecto (el servidor
- * exige la membresía, como en el resto de rutas).
+ * exige la membresía, como en el resto de rutas). El acceso D1 vive en
+ * `personal-apps-repository.ts`.
  */
 
 /** Preferencia personal de una app: puede ser favorita y tener posición. */
@@ -95,12 +94,9 @@ export function orderPersonalApps(items: readonly PersonalAppItem[]): PersonalAp
  * @returns Solo las apps instaladas, con su favorito y posición, ordenadas.
  */
 export async function listPersonalApps(projectId: string, userId: string): Promise<PersonalAppItem[]> {
-  const db = getDb();
   const installedState = await listInstalledApps();
   await migrateLegacyAppPreferences(projectId, userId);
-  const stored = await db.select().from(appPreferences)
-    .where(and(eq(appPreferences.projectId, projectId), eq(appPreferences.userId, userId)))
-    .orderBy(asc(appPreferences.position));
+  const stored = await listAppPreferenceRows(projectId, userId);
   const installed = new Set(installedState.filter((item) => item.status === "installed").map((item) => item.id));
   const preferences: PersonalAppPreference[] = [];
   for (const row of stored) {
@@ -158,33 +154,22 @@ export async function setPersonalApps(projectId: string, userId: string, items: 
   if (items.some((item) => !installed.has(item.id))) {
     throw new PersonalAppsError("Solo puedes guardar herramientas instaladas en la instancia.", 400);
   }
-  const db = getDb();
   const now = Date.now();
   // Solo se sustituyen las filas de las apps enviadas: las preferencias de
   // apps desinstaladas (que la interfaz no envía) se conservan y vuelven a
   // ser visibles si la app se reinstala.
-  if (items.length > 0) {
-    await db
-      .delete(appPreferences)
-      .where(and(
-        eq(appPreferences.projectId, projectId),
-        eq(appPreferences.userId, userId),
-        inArray(appPreferences.appId, items.map((item) => item.id)),
-      ));
-  }
-  if (items.length > 0) {
-    await db.insert(appPreferences).values(
-      items.map((item) => ({
-        projectId,
-        userId,
-        appId: item.id,
-        favorite: item.favorite ? 1 : 0,
-        position: item.position,
-        folder: item.folder,
-        updatedAt: now,
-      })),
-    );
-  }
+  await deleteAppPreferenceRows(projectId, userId, items.map((item) => item.id));
+  await insertAppPreferenceRows(
+    items.map((item) => ({
+      projectId,
+      userId,
+      appId: item.id,
+      favorite: item.favorite ? 1 : 0,
+      position: item.position,
+      folder: item.folder,
+      updatedAt: now,
+    })),
+  );
   return listPersonalApps(projectId, userId);
 }
 

@@ -65,7 +65,7 @@ Estas son las definiciones que gobiernan ARC-06. La clasificación de cada archi
 
 ---
 
-## 3. Inventario de `lib/server` (96 archivos)
+## 3. Inventario de `lib/server` (99 archivos)
 
 Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servicio, `H` helper HTTP, `P` plataforma, `A` adaptador MCP, `MX` mixto. La columna **Prueba** cuenta las pruebas que importan el módulo directamente; `—` no significa necesariamente ausencia de cobertura indirecta.
 
@@ -97,14 +97,17 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 
 **Resuelto en Fase 2:** `mutateStudent`/`mutateTeacher` vivían en el servicio y construían `Request`/`Response`. El adaptador se movió a las rutas (`students` 59 líneas, `teachers` 66); los servicios bajaron a 140 y 133 líneas y ya no importan `http`, `project-http` ni `project-access` salvo los tipos.
 
-### 3.2 Proyectos, apps y documentos (12)
+### 3.2 Proyectos, apps y documentos (15)
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
-| `apps/apps.ts` | 60 | `S`+`R` `instance_apps` | `mcp/apps`, `mcp/dominios`, `personal-apps`, `space-apps` | — |
+| `apps/apps.ts` | 61 | `S` instalación de apps | `mcp/apps`, `mcp/dominios`, `personal-apps`, `space-apps` | ruta |
+| `apps/apps-repository.ts` | 47 | `R` `instance_apps` | `apps/apps.ts` | — |
 | `apps/app-migration.ts` | 30 | `S` migración legacy | `apps/apps.ts`, `apps/personal-apps.ts` | 1 |
-| `apps/personal-apps.ts` | 204 | `S`+`R` `app_preferences` | `api/personal-apps` | 1 |
-| `apps/app-documents.ts` | 105 | `S`+`R` `app_documents` | `migration`, `mcp/apps`, `api/app-documents` | 2 |
+| `apps/personal-apps.ts` | 188 | `S` preferencias personales | `api/personal-apps` | 1 |
+| `apps/personal-apps-repository.ts` | 53 | `R` `app_preferences` | `apps/personal-apps.ts` | — |
+| `apps/app-documents.ts` | 56 | `S` documentos de app | `migration`, `mcp/apps`, `api/app-documents` | 2 |
+| `apps/app-documents-repository.ts` | 110 | `R` `app_documents` | `apps/app-documents.ts` | — |
 | `aula-documentos/aula-documentos-migration.ts` | 284 | `S` migración transaccional | `api/aula-documentos/migration` | 1 |
 | `aula-documentos/document-copies.ts` | 90 | `R` `document_copies` + borrado R2 | `api/aula-documentos/copies[/:id]` | — |
 | `projects/projects.ts` | 125 | `S` proyectos | `mcp/dominios`, `api/projects` | ruta |
@@ -267,8 +270,8 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 | `project_members` | `access/members-repository.ts`, `access/invitaciones-repository.ts`, `access/profile-update.ts`, `people/students-repository.ts`, `people/teachers-repository.ts` | `people/students-repository.ts`, `people/teachers-repository.ts`, `access/members.ts`, `projects/project-access.ts`, `tasks/queries.ts` |
 | `administrators_unified` | `access/administradores-repository.ts`; sincronización de correo en `projects/project-access.ts` | `access/administradores.ts`, `projects/project-access.ts` |
 | `instance_owner` | `access/owner-repository.ts` | `access/owner-repository.ts`, `projects/project-access.ts` |
-| `instance_apps` | `apps/apps.ts` | `apps/apps.ts`, `apps/personal-apps.ts`, MCP |
-| `app_documents` | `apps/app-documents.ts` | `aula-documentos/aula-documentos-migration.ts`, MCP de apps, `uploads/usage.ts` |
+| `instance_apps` | `apps/apps-repository.ts` | `apps/apps-repository.ts`, `apps/personal-apps.ts`, MCP |
+| `app_documents` | `apps/app-documents-repository.ts` | `aula-documentos/aula-documentos-migration.ts`, MCP de apps, `uploads/usage.ts` |
 | `app_preferences` | `apps/personal-apps.ts` | `apps/personal-apps.ts` |
 | `boards` | `board/boards.ts`; snapshot en vivo en `board/board-room.ts` | `board/boards.ts`, `uploads/usage.ts` |
 | `tasks` | `tasks/mutations.ts`; `access/deleted-profiles.ts` (crédito y purga) | `tasks/queries.ts`, `board/boards.ts`, `projects/projects.ts`, `uploads/usage.ts` |
@@ -344,6 +347,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 | P1 | Proyectos y miembros mezclaban reglas y D1 | `projects/projects-repository.ts` y `access/members-repository.ts` concentran la persistencia | 3 · **resuelto** |
 | P1 | Propietario, invitaciones y administradores mezclaban reglas y D1 | `access/{owner,invitaciones,administradores}-repository.ts` concentran las filas | 3 · **resuelto** |
 | P1 | Alumnado y profesorado mezclaban reglas y D1 | `people/students-repository.ts` y `people/teachers-repository.ts` concentran fichas e invitaciones | 3 · **resuelto** |
+| P1 | Apps, preferencias y documentos mezclaban reglas y D1 | `apps/{apps,personal-apps,app-documents}-repository.ts` concentran las filas | 3 · **resuelto** |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
 | P1 | Cuatro rutas importaban D1 directamente | extraídas a servicios; `app/api` no importa D1 | 2 y 3 · **resuelto** |
@@ -375,7 +379,7 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 
 ## 10. Criterios de aceptación de Fase 1
 
-- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (96/96).
+- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (99/99).
 - [x] Cada ruta de `app/api` tiene clase provisional y servicios identificados (26/26).
 - [x] Están identificadas las reglas duplicadas entre rutas, servicios, MCP y almacenamiento.
 - [x] Está mapeado el acceso a D1 y R2, con tablas, claves y responsables.
