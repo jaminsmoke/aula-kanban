@@ -28,6 +28,14 @@ export const AULA_DOCUMENT_MAX_MERMAID_TOTAL_LENGTH = 80_000;
 export const AULA_DOCUMENT_MAX_IMAGES = 30;
 export const AULA_DOCUMENT_MAX_IMAGE_TEXT_TOTAL = 20_000;
 
+/** Límites defensivos de las tablas. */
+export const AULA_DOCUMENT_MAX_TABLES = 20;
+export const AULA_DOCUMENT_MAX_TABLE_ROWS = 50;
+export const AULA_DOCUMENT_MAX_TABLE_COLUMNS = 20;
+export const AULA_DOCUMENT_MAX_TABLE_CELLS = 400;
+export const AULA_DOCUMENT_MAX_TABLE_CELLS_TOTAL = 1_000;
+export const AULA_TABLE_MAX_SPAN = 20;
+
 /** Temas de presentación disponibles. */
 export const AULA_PRESENTATION_THEMES = ["aula", "claro", "oscuro"] as const;
 
@@ -85,7 +93,10 @@ export type AulaDocumentErrorCode =
   | "mermaid-too-large"
   | "invalid-image"
   | "too-many-images"
-  | "image-text-too-long";
+  | "image-text-too-long"
+  | "invalid-table"
+  | "too-many-tables"
+  | "table-too-large";
 
 /** Resultado de validar un valor guardado. */
 export type AulaDocumentParseResult =
@@ -137,6 +148,8 @@ type ValidationContext = {
   mermaidCodeLength: number;
   images: number;
   imageTextLength: number;
+  tables: number;
+  tableCells: number;
 };
 
 /**
@@ -213,13 +226,97 @@ function normalizeTextAlign(attrs: Record<string, unknown>): string | null {
 }
 
 /**
+ * Normaliza un span de tabla.
+ * @param value - Valor candidato.
+ * @param label - Nombre del atributo para el mensaje.
+ * @returns El span válido.
+ */
+function normalizeTableSpan(value: unknown, label: string): number {
+  if (value === undefined || value === null) return 1;
+  if (!Number.isInteger(value) || Number(value) < 1 || Number(value) > AULA_TABLE_MAX_SPAN) {
+    throw new DocumentValidationError(
+      "invalid-table",
+      `La tabla tiene un ${label} no válido. El máximo es ${AULA_TABLE_MAX_SPAN}.`,
+    );
+  }
+  return Number(value);
+}
+
+/**
+ * Comprueba que una tabla forma una cuadrícula segura.
+ * @param rows - Filas normalizadas.
+ * @returns El número de columnas.
+ */
+function validateTableGrid(rows: JSONContent[]): number {
+  if (!rows.length) {
+    throw new DocumentValidationError("invalid-table", "La tabla no tiene filas.");
+  }
+  if (rows.length > AULA_DOCUMENT_MAX_TABLE_ROWS) {
+    throw new DocumentValidationError(
+      "table-too-large",
+      `Una tabla supera el límite de ${AULA_DOCUMENT_MAX_TABLE_ROWS} filas.`,
+    );
+  }
+
+  const occupied = rows.map(() => new Set<number>());
+  let columns = 0;
+  for (let rowIndex = 0; rowIndex < rows.length; rowIndex += 1) {
+    const cells = rows[rowIndex].content ?? [];
+    if (!cells.length) {
+      throw new DocumentValidationError("invalid-table", "Una fila de la tabla está vacía.");
+    }
+    let column = 0;
+    for (const cell of cells) {
+      while (occupied[rowIndex].has(column)) column += 1;
+      const attrs = (cell.attrs ?? {}) as { colspan?: number; rowspan?: number };
+      const colspan = attrs.colspan ?? 1;
+      const rowspan = attrs.rowspan ?? 1;
+      if (column + colspan > AULA_DOCUMENT_MAX_TABLE_COLUMNS) {
+        throw new DocumentValidationError(
+          "table-too-large",
+          `Una tabla supera el límite de ${AULA_DOCUMENT_MAX_TABLE_COLUMNS} columnas.`,
+        );
+      }
+      if (rowIndex + rowspan > rows.length) {
+        throw new DocumentValidationError("invalid-table", "Una celda combinada sobresale de la tabla.");
+      }
+      for (let row = rowIndex; row < rowIndex + rowspan; row += 1) {
+        for (let col = column; col < column + colspan; col += 1) {
+          if (occupied[row].has(col)) {
+            throw new DocumentValidationError("invalid-table", "La tabla tiene celdas combinadas superpuestas.");
+          }
+          occupied[row].add(col);
+        }
+      }
+      column += colspan;
+      columns = Math.max(columns, column);
+    }
+  }
+
+  for (const row of occupied) {
+    for (let col = 0; col < columns; col += 1) {
+      if (!row.has(col)) {
+        throw new DocumentValidationError("invalid-table", "La tabla tiene huecos entre celdas.");
+      }
+    }
+  }
+  return columns;
+}
+
+/**
  * Valida un nodo del documento y descarta atributos no reconocidos.
  * @param value - Nodo candidato.
  * @param context - Contadores compartidos.
  * @param depth - Profundidad actual.
+ * @param parentType - Tipo del nodo padre.
  * @returns El nodo validado.
  */
-function normalizeNode(value: unknown, context: ValidationContext, depth: number): JSONContent {
+function normalizeNode(
+  value: unknown,
+  context: ValidationContext,
+  depth: number,
+  parentType: string | null,
+): JSONContent {
   if (depth > AULA_DOCUMENT_MAX_DEPTH) {
     throw new DocumentValidationError("too-deep", "El documento está anidado demasiado profundamente.");
   }
@@ -323,11 +420,81 @@ function normalizeNode(value: unknown, context: ValidationContext, depth: number
     };
   }
 
+  if (node.type === "table") {
+    if (parentType !== "doc") {
+      throw new DocumentValidationError("invalid-table", "Una tabla está dentro de un bloque no permitido.");
+    }
+    context.tables += 1;
+    if (context.tables > AULA_DOCUMENT_MAX_TABLES) {
+      throw new DocumentValidationError(
+        "too-many-tables",
+        `El documento supera el límite de ${AULA_DOCUMENT_MAX_TABLES} tablas.`,
+      );
+    }
+    const content = normalizeContent(node.content, context, depth, "table");
+    if (content === null || content.some((child) => child.type !== "tableRow")) {
+      throw new DocumentValidationError("invalid-table", "La tabla contiene elementos que no son filas.");
+    }
+    const tableCellCount = content.reduce((total, row) => total + (row.content?.length ?? 0), 0);
+    if (tableCellCount > AULA_DOCUMENT_MAX_TABLE_CELLS) {
+      throw new DocumentValidationError(
+        "table-too-large",
+        `Una tabla supera el límite de ${AULA_DOCUMENT_MAX_TABLE_CELLS} celdas.`,
+      );
+    }
+    const columns = validateTableGrid(content);
+    if (columns > AULA_DOCUMENT_MAX_TABLE_COLUMNS) {
+      throw new DocumentValidationError(
+        "table-too-large",
+        `Una tabla supera el límite de ${AULA_DOCUMENT_MAX_TABLE_COLUMNS} columnas.`,
+      );
+    }
+    return { type: "table", content };
+  }
+
+  if (node.type === "tableRow") {
+    if (parentType !== "table") {
+      throw new DocumentValidationError("invalid-table", "Una fila de tabla está fuera de una tabla.");
+    }
+    const content = normalizeContent(node.content, context, depth, "tableRow");
+    if (content === null || content.some((child) => child.type !== "tableCell" && child.type !== "tableHeader")) {
+      throw new DocumentValidationError("invalid-table", "Una fila contiene elementos que no son celdas.");
+    }
+    return { type: "tableRow", content };
+  }
+
+  if (node.type === "tableCell" || node.type === "tableHeader") {
+    if (parentType !== "tableRow") {
+      throw new DocumentValidationError("invalid-table", "Una celda está fuera de una fila de tabla.");
+    }
+    const attrs = typeof node.attrs === "object" && node.attrs !== null
+      ? node.attrs as Record<string, unknown>
+      : {};
+    const colspan = normalizeTableSpan(attrs.colspan, "colspan");
+    const rowspan = normalizeTableSpan(attrs.rowspan, "rowspan");
+    const content = normalizeContent(node.content, context, depth, node.type);
+    if (content === null) {
+      throw new DocumentValidationError("invalid-table", "Una celda de tabla no tiene contenido válido.");
+    }
+    context.tableCells += 1;
+    if (context.tableCells > AULA_DOCUMENT_MAX_TABLE_CELLS_TOTAL) {
+      throw new DocumentValidationError(
+        "table-too-large",
+        `El documento supera el límite de ${AULA_DOCUMENT_MAX_TABLE_CELLS_TOTAL} celdas de tabla.`,
+      );
+    }
+    return {
+      type: node.type,
+      attrs: { colspan, rowspan },
+      content,
+    };
+  }
+
   if (node.type === "doc" && depth !== 0) {
     throw new DocumentValidationError("invalid-content", "El documento tiene un nodo raíz anidado.");
   }
 
-  const content = normalizeContent(node.content, context, depth);
+  const content = normalizeContent(node.content, context, depth, node.type);
   if (content === null) {
     throw new DocumentValidationError("invalid-content", "El contenido del documento no es válido.");
   }
@@ -397,9 +564,15 @@ function normalizeNode(value: unknown, context: ValidationContext, depth: number
  * @param value - Contenido candidato.
  * @param context - Contadores compartidos.
  * @param depth - Profundidad del padre.
+ * @param parentType - Tipo del nodo padre.
  * @returns Los hijos validados o `null` si la forma no es válida.
  */
-function normalizeContent(value: unknown, context: ValidationContext, depth: number): JSONContent[] | null {
+function normalizeContent(
+  value: unknown,
+  context: ValidationContext,
+  depth: number,
+  parentType: string,
+): JSONContent[] | null {
   if (value === undefined) return [];
   if (!Array.isArray(value)) return null;
   if (value.length > AULA_DOCUMENT_MAX_CHILDREN) {
@@ -407,7 +580,7 @@ function normalizeContent(value: unknown, context: ValidationContext, depth: num
   }
   const content: JSONContent[] = [];
   for (const child of value) {
-    content.push(normalizeNode(child, context, depth + 1));
+    content.push(normalizeNode(child, context, depth + 1, parentType));
   }
   return content;
 }
@@ -508,9 +681,11 @@ export function parseAulaDocument(value: unknown): AulaDocumentParseResult {
     mermaidCodeLength: 0,
     images: 0,
     imageTextLength: 0,
+    tables: 0,
+    tableCells: 0,
   };
   try {
-    const content = normalizeNode(candidate.content, context, 0);
+    const content = normalizeNode(candidate.content, context, 0, null);
     if (content.type !== "doc") {
       return { ok: false, code: "invalid-content", message: "El documento no tiene un nodo raíz válido." };
     }

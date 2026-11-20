@@ -1,0 +1,44 @@
+.aula-documentos-prose .tableWrapper {
+  max-width:100%;
+  overflow-x:auto;
+}
+
+.aula-documentos-prose table {
+  min-width:100%;
+}
+
+.aula-table-controls {
+  overflow-x:auto;
+}
+
+.aula-table-action {
+  min-height:28px;
+}
+
+.aula-table-picker-cell {
+  min-width:28px;
+  min-height:28px;
+}
+
+@media (max-width: 720px) {
+  .aula-table-action {
+    min-height:44px;
+    padding-inline:10px;
+  }
+
+  .aula-table-picker-cell {
+    min-width:44px;
+    min-height:44px;
+  }
+}
+
+@media print {
+  .aula-documentos-prose .tableWrapper {
+    overflow:visible;
+  }
+
+  .aula-documentos-prose table {
+    width:100%;
+    min-width:0;
+  }
+}

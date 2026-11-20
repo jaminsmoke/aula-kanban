@@ -108,13 +108,13 @@
 
 ### Fase 5 — Celdas, cabecera, teclado y límites
 
-- [ ] Implementar cabecera de fila y convertir celdas normales en celdas de cabecera.
-- [ ] Implementar combinar y dividir celdas, conservando `colspan` y `rowspan` al guardar y recargar.
-- [ ] Actualizar la normalización y validación del documento para aceptar spans seguros y rechazar estructuras imposibles.
-- [ ] Añadir límites de tablas, filas, columnas y celdas por documento, con mensajes claros.
-- [ ] Resolver Tab/Shift+Tab, selección, foco, Escape y acciones móviles de 44 px.
-- [ ] Evitar que la tabla desborde la hoja: scroll horizontal controlado en pantalla y ajuste en impresión.
-- [ ] Añadir pruebas de spans, límites, teclado, foco, móvil y recarga.
+- [x] Implementar cabecera de fila y convertir celdas normales en celdas de cabecera.
+- [x] Implementar combinar y dividir celdas, conservando `colspan` y `rowspan` al guardar y recargar.
+- [x] Actualizar la normalización y validación del documento para aceptar spans seguros y rechazar estructuras imposibles.
+- [x] Añadir límites de tablas, filas, columnas y celdas por documento, con mensajes claros.
+- [x] Resolver Tab/Shift+Tab, selección, foco, Escape y acciones móviles de 44 px.
+- [x] Evitar que la tabla desborde la hoja: scroll horizontal controlado en pantalla y ajuste en impresión.
+- [x] Añadir pruebas de spans, límites, teclado, foco, móvil y recarga.
 - **Criterios de aceptación:**
   - Combinar y dividir celdas no rompe el documento ni el autosave.
   - La navegación por teclado permite recorrer la tabla sin salir de la hoja.
@@ -164,3 +164,4 @@
 - 2026-11-20: Fase 2, bloque 2. Extraídos a `hooks/` los flujos de copias, recuperación, migración, presentación, exportación, importación, documento nuevo, imágenes y enlaces. `aula-documentos-app.tsx` baja de 3.253 a 2.382 líneas; cada hook queda por debajo de 600 líneas. Las pruebas de CSS leen ahora los estilos divididos. Suite completa: 217 archivos / 1.554 pruebas; `tsc`, ESLint y build correctos. Autosave/conflicto, JSX y pruebas siguen pendientes de extracción.
 - 2026-11-20: Fase 2 completada. `aula-documentos-app.tsx` queda en 20 líneas como shell de orquestación; el modelo compartido vive en `hooks/use-aula-documentos-model.ts` (533 líneas) y la UI en `components/`. Cada hook/componente queda por debajo de 600 líneas, cada CSS por debajo de 500 y cada prueba por debajo de 600. Los diálogos se cargan bajo demanda para no romper el presupuesto. Pruebas divididas en cinco flujos más una comprobación de arquitectura y tamaños. Suite completa: 222 archivos / 1.559 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (aula-documentos: 368.419 / 370.000 B gzip).
 - 2026-11-20: Fase 3 completada. Descargas y formato de fecha compartidos en `app/board/shared/ui` con consumidores reales en Aula Documentos, Hoja de cálculo, Mermaid, borradores versionados y el diálogo de conflicto. `countWords`, `contentText` y el remapeo de imágenes pasan a `lib/domain/aula-documentos`; los servicios de copias y migración ya estaban en `lib/server`. Se mantienen locales los selectores de archivo y el patrón de diálogo por falta de un segundo consumidor. Añadidas pruebas de utilidades y una comprobación de dependencias shared/lib. Suite completa: 226 archivos / 1.566 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos 368.382 / 370.000 B gzip) y `perf:office` (196.481 / 210.000 B gzip) correctos.
+- 2026-11-20: Fase 5 completada. La barra de tabla permite alternar cabecera de fila/columna/celda, combinar y dividir celdas. El validador conserva `colspan`/`rowspan`, rechaza spans imposibles y aplica límites de 20 tablas, 50 filas, 20 columnas, 400 celdas por tabla y 1.000 celdas por documento. Tiptap conserva Tab/Shift+Tab dentro de la tabla y Escape devuelve el foco al editor. La tabla se envuelve con scroll horizontal en pantalla y se ajusta al ancho de impresión; las acciones móviles y el selector alcanzan 44 px. Añadidas pruebas de spans, límites, recarga, foco y CSS móvil. Suite completa: 227 archivos / 1.572 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos 369.183 / 370.000 B gzip) y `perf:office` correctos.

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const STYLES = ["layout.css", "editor.css", "blocks.css", "dialogs.css", "sidebar.css"];
+const STYLES = ["layout.css", "editor.css", "table.css", "blocks.css", "dialogs.css", "sidebar.css"];
 
 /** Lee y concatena los estilos divididos de Aula Documentos para las pruebas. */
 export const AULA_DOCUMENTOS_CSS = STYLES

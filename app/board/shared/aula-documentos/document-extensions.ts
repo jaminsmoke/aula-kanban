@@ -29,7 +29,7 @@ export function createAulaDocumentExtensions(projectId = "") {
         rel: "noopener noreferrer nofollow",
       },
     }),
-    Table.configure({ resizable: false }),
+    Table.configure({ resizable: false, renderWrapper: true }),
     TableRow,
     TableHeader,
     TableCell,

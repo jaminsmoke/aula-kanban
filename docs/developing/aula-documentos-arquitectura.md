@@ -176,3 +176,11 @@ lib/server/aula-documentos/     # servicios de copias, migración y persistencia
 - La lógica de servidor sigue en `lib/server` (`document-copies`, `aula-documentos-migration`, `app-documents`); las rutas solo orquestan.
 - Se mantienen locales los selectores de archivo, el menú y los patrones de diálogo porque no alcanzan dos consumidores reales fuera de Aula Documentos.
 - La prueba de arquitectura comprueba tamaños y que `shared`/`lib` no importen apps ni React desde dominio.
+
+## 11. Estado tras la Fase 5
+
+- La barra contextual de tabla añade cabecera de celda/columna, combinar y dividir; `toggleHeaderRow` sigue disponible.
+- `parseAulaDocument` conserva `colspan`/`rowspan` y valida la cuadrícula: solapes, huecos, spans fuera de la tabla y estructuras huérfanas se rechazan.
+- Límites: 20 tablas, 50 filas, 20 columnas, 400 celdas por tabla y 1.000 celdas por documento.
+- La tabla usa el wrapper de Tiptap para scroll horizontal; en impresión se muestra completa.
+- El teclado usa la navegación nativa de Tiptap para Tab/Shift+Tab; Escape devuelve el foco al editor. Los controles móviles tienen 44 px.

@@ -5,7 +5,6 @@ import { useEditorState } from "@tiptap/react";
 import { useEffect, useState } from "react";
 
 const buttonStyle = {
-  minHeight: 28,
   padding: "3px 7px",
   border: "var(--border-width-hairline) solid var(--ui-border-control)",
   borderRadius: "var(--radius-xs)",
@@ -85,6 +84,7 @@ export function AulaTablePicker({
                   key={`${row}-${col}`}
                   type="button"
                   role="gridcell"
+                  className="aula-table-picker-cell"
                   aria-label={`Crear tabla de ${row + 1} filas y ${col + 1} columnas`}
                   aria-selected={active}
                   autoFocus={row === 0 && col === 0}
@@ -112,7 +112,7 @@ export function AulaTablePicker({
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginTop: 10 }}>
           <span style={{ color: "var(--ui-text-muted)", fontSize: 11.5 }}>{rows} × {cols}</span>
-          <button type="button" onClick={onClose} style={buttonStyle}>Cancelar</button>
+          <button type="button" className="aula-table-action" onClick={onClose} style={buttonStyle}>Cancelar</button>
         </div>
       </section>
     </div>
@@ -122,13 +122,17 @@ export function AulaTablePicker({
 /**
  * Barra contextual para editar la tabla activa.
  * @param props - Editor de Tiptap.
- * @returns Acciones de filas, columnas y tabla.
+ * @returns Acciones de filas, columnas, cabeceras y combinación.
  */
 export function AulaTableControls({ editor }: { editor: Editor }) {
-  const header = useEditorState({
+  const tableState = useEditorState({
     editor,
-    selector: ({ editor: current }) => current?.isActive("tableHeader") ?? false,
-  }) ?? false;
+    selector: ({ editor: current }) => ({
+      headerCell: current?.isActive("tableHeader") ?? false,
+      canMerge: current?.can().mergeCells() ?? false,
+      canSplit: current?.can().splitCell() ?? false,
+    }),
+  }) ?? { headerCell: false, canMerge: false, canSplit: false };
   const [confirming, setConfirming] = useState(false);
 
   /**
@@ -144,31 +148,78 @@ export function AulaTableControls({ editor }: { editor: Editor }) {
     <div
       role="toolbar"
       aria-label="Herramientas de tabla"
+      className="aula-table-controls"
       style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 4, width: "100%", marginTop: 5 }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          editor.commands.focus(undefined, { scrollIntoView: false });
+        }
+      }}
     >
       <span style={{ marginRight: 2, color: "var(--ui-text-muted)", fontSize: 11, fontWeight: 700 }}>Tabla</span>
-      <button type="button" style={buttonStyle} aria-label="Añadir fila arriba" onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).addRowBefore().run())}>Fila ↑</button>
-      <button type="button" style={buttonStyle} aria-label="Añadir fila abajo" onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).addRowAfter().run())}>Fila ↓</button>
-      <button type="button" style={buttonStyle} aria-label="Eliminar fila" onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).deleteRow().run())}>− Fila</button>
-      <button type="button" style={buttonStyle} aria-label="Añadir columna a la izquierda" onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).addColumnBefore().run())}>Col ←</button>
-      <button type="button" style={buttonStyle} aria-label="Añadir columna a la derecha" onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).addColumnAfter().run())}>Col →</button>
-      <button type="button" style={buttonStyle} aria-label="Eliminar columna" onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).deleteColumn().run())}>− Col</button>
+      <button type="button" className="aula-table-action" style={buttonStyle} aria-label="Añadir fila arriba" onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).addRowBefore().run())}>Fila ↑</button>
+      <button type="button" className="aula-table-action" style={buttonStyle} aria-label="Añadir fila abajo" onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).addRowAfter().run())}>Fila ↓</button>
+      <button type="button" className="aula-table-action" style={buttonStyle} aria-label="Eliminar fila" onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).deleteRow().run())}>− Fila</button>
+      <button type="button" className="aula-table-action" style={buttonStyle} aria-label="Añadir columna a la izquierda" onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).addColumnBefore().run())}>Col ←</button>
+      <button type="button" className="aula-table-action" style={buttonStyle} aria-label="Añadir columna a la derecha" onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).addColumnAfter().run())}>Col →</button>
+      <button type="button" className="aula-table-action" style={buttonStyle} aria-label="Eliminar columna" onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).deleteColumn().run())}>− Col</button>
       <button
         type="button"
-        style={{ ...buttonStyle, background: header ? "var(--ui-action-soft)" : "var(--ui-surface-raised)" }}
+        className="aula-table-action"
+        style={{ ...buttonStyle, background: tableState.headerCell ? "var(--ui-action-soft)" : "var(--ui-surface-raised)" }}
         aria-label="Alternar fila de cabecera"
-        aria-pressed={header}
+        aria-pressed={tableState.headerCell}
         onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).toggleHeaderRow().run())}
       >
         Cabecera
       </button>
+      <button
+        type="button"
+        className="aula-table-action"
+        style={{ ...buttonStyle, background: tableState.headerCell ? "var(--ui-action-soft)" : "var(--ui-surface-raised)" }}
+        aria-label="Convertir celda en cabecera"
+        aria-pressed={tableState.headerCell}
+        onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).toggleHeaderCell().run())}
+      >
+        Celda cabecera
+      </button>
+      <button
+        type="button"
+        className="aula-table-action"
+        style={buttonStyle}
+        aria-label="Alternar columna de cabecera"
+        onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).toggleHeaderColumn().run())}
+      >
+        Columna cabecera
+      </button>
+      <button
+        type="button"
+        className="aula-table-action"
+        style={buttonStyle}
+        aria-label="Combinar celdas"
+        disabled={!tableState.canMerge}
+        onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).mergeCells().run())}
+      >
+        Combinar
+      </button>
+      <button
+        type="button"
+        className="aula-table-action"
+        style={buttonStyle}
+        aria-label="Dividir celda"
+        disabled={!tableState.canSplit}
+        onClick={() => run(() => editor.chain().focus(undefined, { scrollIntoView: false }).splitCell().run())}
+      >
+        Dividir
+      </button>
       {confirming ? (
         <>
-          <button type="button" style={buttonStyle} onClick={() => setConfirming(false)}>Cancelar</button>
-          <button type="button" style={{ ...buttonStyle, color: "var(--ui-danger-ink)" }} onClick={() => run(() => editor.commands.deleteTable())}>Confirmar borrado</button>
+          <button type="button" className="aula-table-action" style={buttonStyle} onClick={() => setConfirming(false)}>Cancelar</button>
+          <button type="button" className="aula-table-action" style={{ ...buttonStyle, color: "var(--ui-danger-ink)" }} onClick={() => run(() => editor.commands.deleteTable())}>Confirmar borrado</button>
         </>
       ) : (
-        <button type="button" style={{ ...buttonStyle, color: "var(--ui-danger-ink)" }} onClick={() => setConfirming(true)} aria-label="Eliminar tabla">Eliminar tabla</button>
+        <button type="button" className="aula-table-action" style={{ ...buttonStyle, color: "var(--ui-danger-ink)" }} onClick={() => setConfirming(true)} aria-label="Eliminar tabla">Eliminar tabla</button>
       )}
     </div>
   );

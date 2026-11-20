@@ -6,8 +6,13 @@ import {
   AULA_DOCUMENT_MAX_IMAGES,
   AULA_DOCUMENT_MAX_MERMAID_BLOCKS,
   AULA_DOCUMENT_MAX_MERMAID_CODE_LENGTH,
+  AULA_DOCUMENT_MAX_TABLE_CELLS,
+  AULA_DOCUMENT_MAX_TABLE_COLUMNS,
+  AULA_DOCUMENT_MAX_TABLE_ROWS,
+  AULA_DOCUMENT_MAX_TABLES,
   AULA_DOCUMENT_MAX_TEXT_LENGTH,
   AULA_DOCUMENT_SCHEMA_VERSION,
+  AULA_TABLE_MAX_SPAN,
   createEmptyAulaDocument,
   normalizeAulaLink,
   parseAulaDocument,
@@ -249,6 +254,106 @@ describe("modelo de Aula Documentos", () => {
       type: "aulaImage",
       attrs: { src, caption: "x".repeat(1_001) },
     }]))).toMatchObject({ ok: false, code: "invalid-image" });
+  });
+
+  it("conserva spans válidos de una tabla", () => {
+    const result = parseAulaDocument(candidate([{
+      type: "table",
+      content: [
+        {
+          type: "tableRow",
+          content: [
+            { type: "tableHeader", attrs: { colspan: 2 }, content: [{ type: "paragraph" }] },
+          ],
+        },
+        {
+          type: "tableRow",
+          content: [
+            { type: "tableCell", attrs: { rowspan: 2 }, content: [{ type: "paragraph" }] },
+            { type: "tableCell", content: [{ type: "paragraph" }] },
+          ],
+        },
+        {
+          type: "tableRow",
+          content: [
+            { type: "tableCell", content: [{ type: "paragraph" }] },
+          ],
+        },
+      ],
+    }]));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const table = result.document.content.content?.[0];
+    expect(table?.content?.[0]?.content?.[0]?.attrs).toMatchObject({ colspan: 2, rowspan: 1 });
+    expect(table?.content?.[1]?.content?.[0]?.attrs).toMatchObject({ colspan: 1, rowspan: 2 });
+  });
+
+  it("rechaza spans y estructuras de tabla imposibles", () => {
+    const oversized = parseAulaDocument(candidate([{
+      type: "table",
+      content: [{
+        type: "tableRow",
+        content: [{ type: "tableCell", attrs: { colspan: AULA_TABLE_MAX_SPAN + 1 }, content: [{ type: "paragraph" }] }],
+      }],
+    }]));
+    expect(oversized).toMatchObject({ ok: false, code: "invalid-table" });
+
+    const beyondRows = parseAulaDocument(candidate([{
+      type: "table",
+      content: [
+        { type: "tableRow", content: [{ type: "tableCell", attrs: { rowspan: 2 }, content: [{ type: "paragraph" }] }] },
+      ],
+    }]));
+    expect(beyondRows).toMatchObject({ ok: false, code: "invalid-table" });
+
+    const orphanRow = parseAulaDocument(candidate([{
+      type: "tableRow",
+      content: [{ type: "tableCell", content: [{ type: "paragraph" }] }],
+    }]));
+    expect(orphanRow).toMatchObject({ ok: false, code: "invalid-table" });
+  });
+
+  it("aplica límites de tablas, filas, columnas y celdas", () => {
+    const tooWide = parseAulaDocument(candidate([{
+      type: "table",
+      content: [{
+        type: "tableRow",
+        content: Array.from({ length: AULA_DOCUMENT_MAX_TABLE_COLUMNS + 1 }, () => ({
+          type: "tableCell",
+          content: [{ type: "paragraph" }],
+        })),
+      }],
+    }]));
+    expect(tooWide).toMatchObject({ ok: false, code: "table-too-large" });
+
+    const tooManyRows = parseAulaDocument(candidate([{
+      type: "table",
+      content: Array.from({ length: AULA_DOCUMENT_MAX_TABLE_ROWS + 1 }, () => ({
+        type: "tableRow",
+        content: [{ type: "tableCell", content: [{ type: "paragraph" }] }],
+      })),
+    }]));
+    expect(tooManyRows).toMatchObject({ ok: false, code: "table-too-large" });
+
+    const tooManyCells = parseAulaDocument(candidate([{
+      type: "table",
+      content: Array.from({ length: AULA_DOCUMENT_MAX_TABLE_ROWS }, () => ({
+        type: "tableRow",
+        content: Array.from({ length: 9 }, () => ({
+          type: "tableCell",
+          content: [{ type: "paragraph" }],
+        })),
+      })),
+    }]));
+    expect(tooManyCells).toMatchObject({ ok: false, code: "table-too-large" });
+    expect(AULA_DOCUMENT_MAX_TABLE_CELLS).toBeLessThan(9 * AULA_DOCUMENT_MAX_TABLE_ROWS);
+
+    const tooManyTables = parseAulaDocument(candidate(Array.from({ length: AULA_DOCUMENT_MAX_TABLES + 1 }, () => ({
+      type: "table",
+      content: [{ type: "tableRow", content: [{ type: "tableCell", content: [{ type: "paragraph" }] }] }],
+    }))));
+    expect(tooManyTables).toMatchObject({ ok: false, code: "too-many-tables" });
   });
 
   it("crea un documento vacío válido", () => {
