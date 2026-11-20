@@ -1,8 +1,34 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-21 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-20 — Roadmap ADOC-21 — Copias portables del documento
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Aula Documentos puede guardar copias portables completas en R2 o descargarlas como `.aula.zip`; D1 sigue siendo la fuente viva y R2 no sustituye el autosave.
+- Nuevo formato con manifiesto v1, documento, imágenes, hashes SHA-256 y validación estricta de rutas, MIME, tamaños, entradas duplicadas y versiones futuras.
+- Nueva finalidad `document-copy`, cuota de 200 MB y máximo de 20 copias por proyecto. La migración `0041` crea `document_copies`.
+- API privada para listar, guardar, descargar y borrar copias. Los invitados pueden consultar y descargar, pero no crear ni borrar.
+- **Archivo > Copias portables** permite guardar, listar, descargar y borrar; la descarga local funciona sin depender de R2.
+- **Importar > Importar copia** muestra vista previa, avisa de las imágenes y la versión, exige confirmación y vuelve a subir las imágenes antes de aplicar. Un fallo deja el documento actual intacto y conserva una copia local de recuperación.
+
+### Verificación
+
+- Suite completa: **217 archivos / 1.552 pruebas**; `tsc`, ESLint, build, `perf:budget` y `perf:office` correctos.
+- `aula-documentos`: **369.962 / 370.000 B gzip**; `aula-documentos-export`: **329.696 / 340.000 B gzip**; `perf:office`: **196.481 / 210.000 B gzip**.
+- Copia guardada, listada, descargada y borrada en la app real con la migración local `0041` aplicada. Importación con imágenes y fallo de cuota cubiertos por pruebas. Revisión de la interfaz de copias en 393, 560, 860, 1024 y 1374 px en claro y oscuro sin desbordamiento.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-15 a ADOC-20**, **UI-11** y **DEV-01**. El plan completo queda en [`historial/roadmap-adoc-21.md`](../historial/roadmap-adoc-21.md).
 
 ---
 

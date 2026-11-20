@@ -1338,6 +1338,90 @@ describe("Aula Documentos", () => {
     expect(screen.getByRole("status").textContent).toContain("Copia portable importada");
   });
 
+  it("importa una copia con imágenes y vuelve a subir sus recursos", async () => {
+    const oldId = "00000000-0000-4000-8000-000000000001";
+    const newId = "11111111-1111-4111-8111-111111111111";
+    const png = Uint8Array.from(
+      atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nTQAAAAASUVORK5CYII="),
+      (char) => char.charCodeAt(0),
+    );
+    const built = await buildAulaDocumentCopy({
+      schemaVersion: 3,
+      title: "Copia con imagen",
+      content: {
+        type: "doc",
+        content: [{
+          type: "aulaImage",
+          attrs: { src: `/api/files/${oldId}`, alt: "Foto", caption: "Pie", width: 80, alignment: "center" },
+        }],
+      },
+    }, [{ id: oldId, mime: "image/png", bytes: png }], { createdAt: "2026-11-20T10:00:00.000Z" });
+    if (!built.ok) throw new Error(built.message);
+
+    vi.stubGlobal("fetch", vi.fn(async (input: string) => {
+      if (String(input).includes("/api/uploads")) {
+        return new Response(JSON.stringify({ url: `/api/files/${newId}` }), { status: 201 });
+      }
+      return new Response("{}", { status: 200 });
+    }));
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.change(screen.getByLabelText("Elegir copia portable para importar"), {
+      target: { files: [new File([built.bytes.slice().buffer as ArrayBuffer], "copia-con-imagen.aula.zip", { type: "application/zip" })] },
+    });
+
+    expect(await screen.findByRole("dialog", { name: "Importar copia portable" })).toBeTruthy();
+    expect(screen.getAllByText(/1 imagen/).length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("button", { name: "Importar y reemplazar" }));
+
+    await waitFor(() => {
+      expect(document.querySelector(".aula-image-block img")?.getAttribute("src")).toBe(`/api/files/${newId}`);
+    });
+    expect(document.querySelector(".aula-image-block img")?.getAttribute("alt")).toBe("Foto");
+    expect(document.querySelector(".aula-image-block figcaption")?.textContent).toBe("Pie");
+    expect(screen.getByRole("status").textContent).toContain("Copia portable importada");
+  });
+
+  it("no cambia el documento si falla la subida de una imagen de la copia", async () => {
+    const oldId = "00000000-0000-4000-8000-000000000001";
+    const png = Uint8Array.from(
+      atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nTQAAAAASUVORK5CYII="),
+      (char) => char.charCodeAt(0),
+    );
+    const built = await buildAulaDocumentCopy({
+      schemaVersion: 3,
+      title: "Copia con imagen",
+      content: {
+        type: "doc",
+        content: [{
+          type: "aulaImage",
+          attrs: { src: `/api/files/${oldId}`, alt: "Foto", caption: "", width: 80, alignment: "center" },
+        }],
+      },
+    }, [{ id: oldId, mime: "image/png", bytes: png }], { createdAt: "2026-11-20T10:00:00.000Z" });
+    if (!built.ok) throw new Error(built.message);
+
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(
+      JSON.stringify({ message: "La cuota de imágenes del proyecto está llena." }),
+      { status: 413 },
+    )));
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.change(screen.getByLabelText("Elegir copia portable para importar"), {
+      target: { files: [new File([built.bytes.slice().buffer as ArrayBuffer], "copia-con-imagen.aula.zip", { type: "application/zip" })] },
+    });
+    await screen.findByRole("dialog", { name: "Importar copia portable" });
+    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("button", { name: "Importar y reemplazar" }));
+
+    expect(await screen.findByText("La cuota de imágenes del proyecto está llena.")).toBeTruthy();
+    expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento de ejemplo");
+    expect(screen.getByRole("dialog", { name: "Importar copia portable" })).toBeTruthy();
+  });
+
   it("muestra el aviso de cuota llena al guardar una copia", async () => {
     copyMock.list.mockResolvedValue({ ok: true, copies: [] });
     copyMock.save.mockResolvedValue({ ok: false, message: "La cuota de copias del proyecto está llena." });
