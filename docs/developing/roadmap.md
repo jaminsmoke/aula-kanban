@@ -9,12 +9,14 @@
 ## 1. Objetivo
 
 - [ ] Integrar las tablas Tiptap en la interfaz de Aula Documentos para crearlas, editarlas y exportarlas sin recurrir a Markdown ni atajos ocultos.
-- [ ] Criterio de éxito: una persona puede insertar una tabla, añadir o quitar filas y columnas, marcar cabeceras, combinar y dividir celdas, navegar con teclado y sobrevivir a guardado, recarga y exportación con una estructura predecible.
+- [ ] Antes de continuar, reducir la complejidad estructural de Aula Documentos y extraer a `shared`/`lib` lo que ya se repite o no pertenece a la app.
+- [ ] Criterio de éxito: una persona puede insertar una tabla, añadir o quitar filas y columnas, marcar cabeceras, combinar y dividir celdas, navegar con teclado y sobrevivir a guardado, recarga y exportación con una estructura predecible; además, el código queda dividido por responsabilidades y sin duplicación evidente.
 
 ## 2. Alcance
 
 **Dentro:**
 
+- Auditar y modularizar Aula Documentos antes de ampliar tablas.
 - **Insertar tabla** desde el menú, con selector de filas y columnas.
 - Barra contextual de tabla con acciones de filas, columnas, cabecera, celdas y borrado.
 - Navegación por celdas con teclado, selección y foco predecible.
@@ -36,6 +38,11 @@
 
 | Decisión | Alternativa descartada | Motivo |
 |---|---|---|
+| Shell de app como orquestador | Mantener un archivo de más de 3.000 líneas | Los cambios pequeños no deben obligar a navegar por toda la app ni a mezclar responsabilidades. |
+| Carpetas por responsabilidad dentro de Aula Documentos | Un único archivo y un CSS monolítico | Facilita revisar, probar y sustituir partes sin tocar el flujo completo. |
+| Extraer a `shared` solo con dos consumidores reales | Crear abstracciones preventivas | Evita una capa compartida artificial y mantiene el coste de mantenimiento bajo control. |
+| Lógica pura en `lib/domain` y servidor en `lib/server` | Mezclar helpers de dominio en la app | Conserva la dirección de dependencias y permite probar sin React. |
+| Refactor sin cambio funcional | Aprovechar para rediseñar la interfaz | Primero se estabiliza la base; las mejoras visuales van en sus fases. |
 | Reutilizar `@tiptap/extension-table` | Añadir otra librería de tablas | El documento ya permite nodos `table`, `tableRow`, `tableHeader` y `tableCell`; no hace falta otro modelo. |
 | Barra contextual dentro de la barra del documento | Barra flotante sobre la tabla | Evita tapar el contenido, duplicar controles y perder el foco; se oculta fuera de una tabla. |
 | Selector de cuadrícula para insertar | Diálogo con campos numéricos | Es directo, accesible y habitual; se conserva una acción para tamaños mayores si hace falta. |
@@ -47,7 +54,46 @@
 
 ## 4. Fases
 
-### Fase 1 — Insertar y editar la estructura básica
+### Fase 1 — Auditoría, límites y mapa de extracción
+
+- [ ] Inventariar responsabilidades, tamaño y dependencias de `aula-documentos-app.tsx`, su CSS y sus pruebas.
+- [ ] Medir duplicación entre Aula Documentos, `app/board/shared` y el resto de apps; identificar utilidades candidatas a `shared` y lógica pura candidata a `lib`.
+- [ ] Acordar el árbol de carpetas y los límites: app shell, componentes, hooks, estilos, pruebas y módulos de servidor.
+- [ ] Documentar el mapa de dependencias y las reglas de importación (app → shared/lib, nunca al contrario).
+- [ ] Registrar una línea base de pruebas, chunks y presupuestos antes de mover código.
+- [ ] Revisar riesgos de regresión, conflicto de merges y cambios de exportación.
+- **Criterios de aceptación:**
+  - Existe un documento de arquitectura con responsabilidades, árbol objetivo y límites verificables.
+  - Cada posible extracción a `shared`/`lib` tiene consumidor y motivo, sin abstracciones especulativas.
+  - La línea base queda registrada antes de tocar la implementación.
+
+### Fase 2 — Descomposición interna de Aula Documentos
+
+- [ ] Reducir `aula-documentos-app.tsx` a un shell de orquestación; extraer toolbar, menús, diálogos, panel lateral y estados de presentación.
+- [ ] Extraer hooks de autosave/conflicto, copias, importación, imágenes, presentación y migración.
+- [ ] Dividir `aula-documentos.css` por layout, barra, editor, bloques, diálogos y panel lateral.
+- [ ] Dividir las pruebas por componente, hook y flujo, conservando los casos actuales.
+- [ ] Mantener intactos autosave, permisos, URLs, atajos, textos visibles y orden de los diálogos.
+- [ ] Añadir comprobaciones de tamaño y de dependencias internas para evitar que el archivo vuelva a crecer.
+- **Criterios de aceptación:**
+  - El archivo principal queda por debajo de 450 líneas y ningún componente/hook nuevo supera 600 líneas.
+  - Cada bloque de CSS vive en un archivo de responsabilidad acotada.
+  - La suite completa pasa sin cambios funcionales y el bundle no empeora de forma injustificada.
+
+### Fase 3 — Extracción a shared/lib y deduplicación
+
+- [ ] Extraer utilidades genéricas repetidas (`descarga`, fechas, selectores de archivo, primitivas de diálogo) a `app/board/shared`.
+- [ ] Mover lógica pura específica a `lib/domain/aula-documentos` y servicios de servidor a `lib/server/aula-documentos`.
+- [ ] Auditar otras apps (`hoja-calculo`, Mermaid, Office) para reutilizar lo extraído sin acoplar Aula Documentos.
+- [ ] Eliminar helpers, estilos y pruebas duplicadas; revisar imports muertos y dependencias circulares.
+- [ ] Mantener las cargas diferidas necesarias y medir el presupuesto de `aula-documentos` y `aula-documentos-export`.
+- [ ] Actualizar la documentación de arquitectura y los límites de mantenimiento.
+- **Criterios de aceptación:**
+  - Las utilidades compartidas tienen al menos dos consumidores reales o una justificación escrita.
+  - No hay imports de `app` desde `shared`/`lib` ni lógica de dominio duplicada.
+  - La suite, el build y los presupuestos pasan con margen suficiente para continuar las tablas.
+
+### Fase 4 — Insertar y editar la estructura básica
 
 - [x] Añadir **Insertar > Tabla** con selector de cuadrícula y creación de fila de cabecera.
 - [x] Mostrar una barra contextual solo cuando la selección esté dentro de una tabla.
@@ -60,7 +106,7 @@
   - La tabla se guarda y recarga con la misma estructura.
   - Los invitados la ven, pero no pueden modificarla.
 
-### Fase 2 — Celdas, cabecera, teclado y límites
+### Fase 5 — Celdas, cabecera, teclado y límites
 
 - [ ] Implementar cabecera de fila y convertir celdas normales en celdas de cabecera.
 - [ ] Implementar combinar y dividir celdas, conservando `colspan` y `rowspan` al guardar y recargar.
@@ -74,7 +120,7 @@
   - La navegación por teclado permite recorrer la tabla sin salir de la hoja.
   - Una tabla que supera los límites se rechaza con un mensaje comprensible.
 
-### Fase 3 — Exportación, documentación y cierre
+### Fase 6 — Exportación, documentación y cierre
 
 - [ ] Conservar tablas, cabeceras y celdas combinadas en HTML, impresión/PDF y presentación.
 - [ ] Exportar tablas a DOCX/PPTX con cabeceras y spans cuando sea posible; añadir avisos de fidelidad cuando no.
@@ -92,6 +138,11 @@
 
 | Riesgo | Impacto | Mitigación |
 |---|---|---|
+| Refactor con regresiones | Se rompe autosave, permisos o exportación | Fases sin cambio funcional, pruebas movidas con el código y comparación de comportamiento. |
+| Mover código entre app/shared/lib | Imports circulares o capas invertidas | Mapa de dependencias y regla app → shared/lib; revisar con build y lint. |
+| Archivos movidos y merges | Conflictos difíciles de revisar | Commits por fase y cambios mecánicos separados de las mejoras. |
+| Duplicación aparente | Abstraer de más y acoplar apps | Extraer solo con dos consumidores reales o justificación escrita. |
+| Presupuesto ajustado | El nuevo reparto aumenta el chunk | Mantener cargas diferidas y medir en cada fase. |
 | Spans descartados por el normalizador | Las celdas combinadas se pierden al recargar | Validar y conservar `colspan`/`rowspan` en la misma fase que la UI. |
 | Tablas demasiado grandes | Documento lento o difícil de editar | Límites por tabla y por documento antes de guardar. |
 | Desbordamiento en móvil | Contenido inaccesible | Scroll horizontal contenido y controles en la barra, no flotantes. |
@@ -106,4 +157,5 @@
 - Auditoría inicial: `@tiptap/extension-table` ya está registrado con `resizable: false`; el editor no ofrece inserción ni controles, y el validador acepta los nodos de tabla pero descarta sus atributos de celda.
 - La importación y exportación existentes conservan tablas simples; la exportación Office actual no representa todavía celdas combinadas.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
-- 2026-11-20: Fase 1 completada. Añadido **Insertar > Tabla** con selector de cuadrícula, creación con fila de cabecera y barra contextual para añadir/eliminar filas y columnas, alternar cabecera y eliminar la tabla. El selector y la barra se cargan bajo demanda; el editor y el autosave existentes se conservan. Pruebas de inserción, estructura, autosave en curso y modo invitado. Suite completa: 217 archivos / 1.554 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 366.306 / 370.000 B gzip; aula-documentos-export: 329.689 / 340.000 B gzip) y `perf:office` correctos.
+- 2026-11-20: Fase 4 completada. Añadido **Insertar > Tabla** con selector de cuadrícula, creación con fila de cabecera y barra contextual para añadir/eliminar filas y columnas, alternar cabecera y eliminar la tabla. El selector y la barra se cargan bajo demanda; el editor y el autosave existentes se conservan. Pruebas de inserción, estructura, autosave en curso y modo invitado. Suite completa: 217 archivos / 1.554 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 366.306 / 370.000 B gzip; aula-documentos-export: 329.689 / 340.000 B gzip) y `perf:office` correctos.
+- 2026-11-20: Añadidas tres fases de emergencia antes de continuar tablas: auditoría y mapa de extracción, descomposición interna y extracción a shared/lib con deduplicación. Línea base: app/board/apps/aula-documentos/aula-documentos-app.tsx 3.338 líneas, CSS 1.742, prueba principal 1.342, mermaid-block 614, export-html 327, export-images 283. La Fase 1 de tablas ya estaba completada y pasa a ser Fase 4; celdas/teclado pasa a Fase 5 y exportación/cierre a Fase 6.
