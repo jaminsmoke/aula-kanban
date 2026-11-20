@@ -38,18 +38,18 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 
 | Flujo | Bruto | Gzip | Presupuesto vigente | Archivos |
 |---|---:|---:|---:|---:|
-| Tablero | 572,5 KiB | 169,9 KiB (174.016 B) | 175.656 B | 32 |
-| Hoja de cálculo · abrir | 1.050,9 KiB | 302,9 KiB (310.209 B) | 315.000 B | 25 |
-| Aula Documentos · exportar Office | 1.045,3 KiB | 322,0 KiB (329.694 B) | 340.000 B | 14 |
-| Calculadora · abrir Básica | 439,9 KiB | 130,5 KiB (133.645 B) | 150.827 B | 17 |
-| Calculadora · primer `=` en Básica | 439,9 KiB | 130,5 KiB (133.645 B) | 150.827 B | 17 |
-| Calculadora · Científica/Ecuaciones | 6.606,2 KiB | 1.915,4 KiB (1.961.389 B) | 2.069.960 B | 19 |
+| Tablero | 572,6 KiB | 170,0 KiB (174.044 B) | 175.656 B | 32 |
+| Hoja de cálculo · abrir | 1.050,9 KiB | 302,9 KiB (310.215 B) | 315.000 B | 25 |
+| Aula Documentos · exportar Office | 1.045,3 KiB | 322,0 KiB (329.701 B) | 340.000 B | 14 |
+| Calculadora · abrir Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
+| Calculadora · primer `=` en Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
+| Calculadora · Científica/Ecuaciones | 6.606,2 KiB | 1.915,4 KiB (1.961.393 B) | 2.069.960 B | 19 |
 | Aula Documentos · abrir | 1.179,6 KiB | 360,7 KiB (369.351 B) | 370.000 B | 48 |
-| Tienda · abrir | 544,7 KiB | 169,1 KiB (173.191 B) | 174.779 B | 20 |
-| Pizarra · abrir | 3.441,7 KiB | 1.214,2 KiB (1.243.293 B) | 1.348.890 B | 23 |
-| Pizarra · conversión Mermaid | 4.206,4 KiB | 1.412,2 KiB (1.446.110 B) | 1.560.999 B | 51 |
-| Blockly · abrir | 1.157,2 KiB | 323,2 KiB (330.958 B) | 345.631 B | 18 |
-| Blockly · panel de código | 1.291,4 KiB | 358,2 KiB (366.811 B) | 383.275 B | 21 |
+| Tienda · abrir | 544,7 KiB | 169,1 KiB (173.195 B) | 174.779 B | 20 |
+| Pizarra · abrir | 3.441,7 KiB | 1.214,2 KiB (1.243.296 B) | 1.348.890 B | 23 |
+| Pizarra · conversión Mermaid | 4.206,4 KiB | 1.412,2 KiB (1.446.106 B) | 1.560.999 B | 51 |
+| Blockly · abrir | 1.157,2 KiB | 323,2 KiB (330.964 B) | 345.631 B | 18 |
+| Blockly · panel de código | 1.291,4 KiB | 358,2 KiB (366.817 B) | 383.275 B | 21 |
 
 Línea base regenerada el 2026-11-20 con la build `1.1.37`. La raíz de los flujos de la calculadora es `app/board/apps/calculadora/calculadora-app.tsx`; la Tienda sigue midiendo desde `app/board/store/store-desktop.tsx` y las secciones «Cambio de fase 2», «Cambio de fase 3» y «Cambio PROMO-06» conservan las cifras históricas de sus mediciones.
 

@@ -1,8 +1,42 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-05 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-20 — Roadmap ARC-05 — Pruebas, harness y presupuestos
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Inventariados **234 archivos / 1.597 pruebas** en `docs/developing/test-harness-audit.md`; documentadas las capas de setup y el contrato del harness.
+- Creado `test-utils/aula-documentos.tsx`, fuera del catálogo de producto, con mocks explícitos, factorías, helpers de menú, descarga, `savedDocument` y reset por prueba.
+- Migrados los seis tests de Aula Documentos; **1.297 líneas eliminadas** y shims de `Range`/`Element`/`Node` movidos a `vitest.setup.ts`.
+- Añadida una prueba de aislamiento para comprobar que los mocks no comparten estado mutable.
+- Implementado `scripts/dead-code-check.mjs` con baseline en `docs/developing/dead-code-baseline.json`: 0 módulos huérfanos, 0 dependencias sin uso, 0 imports no declarados y 0 CSS sin uso; 51 exports quedan como deuda conocida para ARC-06.
+- Movido `test-css.ts` a `test-utils/aula-documentos-css.ts`.
+- Añadido `scripts/app-budget.mjs`: presupuestos de test, CSS, latencia registrada e imágenes para 7 apps.
+- Ampliado `perf-budget` para asignar los 12 flujos a apps y validar gzip por app.
+- Integrados `dead:check` y `app:budget` en `npm run check` y CI; `perf:budget` sigue ejecutándose tras build.
+- Documentados los presupuestos en `docs/rendimiento.md` y `docs/miniaturas.md`; baseline de imágenes en `docs/image-baseline.json`.
+
+### Verificación
+
+- `npm run check`: ESLint sin errores, `tsc`, `arch:check`, `dead:check` y `app:budget` correctos.
+- `arch:check`: **396 archivos de producto / 988 imports / 0 violaciones nuevas / 0 ciclos / 0 problemas de presupuesto / 0 problemas MCP**.
+- Dead code: **0 huérfanos / 0 dependencias sin uso / 0 imports no declarados / 0 CSS sin uso**.
+- `app:budget`: **7 apps / 2 modos de latencia / 6 escenarios de imagen** correctos.
+- `perf:budget`: **12 flujos y 7 apps** dentro de presupuesto.
+- Suite completa: **237 archivos / 1.607 pruebas**.
+- Build, `perf:budget` y `perf:office` correctos.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-05 archivado en [`historial/roadmap-arc-05.md`](../historial/roadmap-arc-05.md). El backlog queda con **8 entradas**; siguiente candidato **ARC-06**.
 
 ---
 

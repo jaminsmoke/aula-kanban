@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01, DEV-02, ARC-02, ARC-03 y ARC-04 completados; ARC-05 activo · **Fecha:** 2026-11-20
+> **Estado:** ARC-01, DEV-02, ARC-02, ARC-03, ARC-04 y ARC-05 completados; sin roadmap activo · **Fecha:** 2026-11-20
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -110,12 +110,12 @@ Deuda:
 | P0 | Apps monolíticas restantes | Timeline 676, Hoja 525, Office viewer 543, Office export 525, Tarjetas 415 | Cambios pequeños obligan a recorrer archivos grandes |
 | P1 | Sistema de borradores versionados muerto | `useVersionedDraft` y sus dos diálogos no tenían consumidores reales | Retirado en ARC-03 Fase 1: 1.694 líneas menos |
 | P1 | Persistencia local sin contrato | Calculadora, Blockly, Tarjetas, tema y recuperación usaban `localStorage` por separado | Resuelto en ARC-03 con un contrato versionado único |
-| P1 | CSS sin capas | 48 archivos; primitivas y estilos de app mezclados | Tokens, primitivas, layout y estilos de app ordenados en ARC-04; queda la revisión responsive |
-| P1 | Pruebas duplicadas | Cinco archivos de Aula repiten casi todo el setup | Harness extraído y seis tests migrados en ARC-05 Fase 2 |
+| P1 | CSS sin capas | 48 archivos; primitivas y estilos de app mezclados | Resuelto en ARC-04: tokens, primitivas, layout y estilos ordenados |
+| P1 | Pruebas duplicadas | Cinco archivos de Aula repiten casi todo el setup | Resuelto en ARC-05: harness y seis tests migrados |
 | P2 | Dominio grande | `document.ts` 655 líneas | Normalización, tablas y tipos acoplados |
-| P2 | Servidor sin mapa explícito | 138 archivos en `lib/server` | Difícil saber dónde vive una regla |
-| P2 | Falta de análisis de código muerto | No hay `knip`, `ts-prune` ni equivalente | Se descubren módulos huérfanos a mano |
-| P2 | Presupuesto de Aula muy ajustado | 369.596 / 370.000 | Cualquier crecimiento futuro rompe el build |
+| P2 | Servidor sin mapa explícito | 138 archivos en `lib/server` | Difícil saber dónde vive una regla; siguiente ARC-06 |
+| P2 | Falta de análisis de código muerto | No hay `knip`, `ts-prune` ni equivalente | Resuelto en ARC-05 con checker local y baseline |
+| P2 | Presupuesto de Aula muy ajustado | 369.351 / 370.000 | Presupuesto por app/flujo en ARC-05; cualquier crecimiento sigue siendo una puerta |
 
 ## 4. Árbol objetivo
 
@@ -225,4 +225,5 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - ARC-02 quedó cerrado y archivado en [`historial/roadmap-arc-02.md`](../historial/roadmap-arc-02.md): Timeline, Hoja de cálculo, Office, Tarjetas y el residual de Aula Documentos tienen shell, hooks y componentes separados.
 - ARC-03 quedó cerrado y archivado en [`historial/roadmap-arc-03.md`](../historial/roadmap-arc-03.md): el estado local usa un contrato versionado único y `useAppDocument` sigue siendo la persistencia de documentos compartidos.
 - ARC-04 quedó cerrado y archivado en [`historial/roadmap-arc-04.md`](../historial/roadmap-arc-04.md): tokens, primitivas, layout, estilos de app y revisión responsive están ordenados; `baselineViolations` y `largeCss` quedan vacíos.
-- ARC-05 está activo en [`roadmap.md`](roadmap.md); el harness y el checker de código muerto están completados y quedan los presupuestos por app y flujo.
+- ARC-05 quedó cerrado y archivado en [`historial/roadmap-arc-05.md`](../historial/roadmap-arc-05.md): harness explícito, checker de código muerto y presupuestos por app/flujo.
+- No hay roadmap activo en [`roadmap.md`](roadmap.md); el siguiente candidato es **ARC-06**.
