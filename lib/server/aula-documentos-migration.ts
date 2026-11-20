@@ -1,3 +1,4 @@
+import { getD1 } from "../../db";
 import { parseAulaDocument, type AulaDocument } from "../domain/aula-documentos/document";
 import {
   AULA_MIGRATION_SOURCES,
@@ -6,9 +7,7 @@ import {
 } from "../domain/aula-documentos/migration";
 import { importLegacyDocument } from "../domain/aula-documentos/importers";
 import {
-  deleteAppDocument,
   readAppDocument,
-  saveAppDocument,
   type AppDocument,
 } from "./app-documents";
 
@@ -18,6 +17,7 @@ export const AULA_MIGRATION_BACKUP_PREFIX = "__aula-documentos-migration:";
 const META_APP_ID = `${AULA_MIGRATION_BACKUP_PREFIX}meta`;
 /** Fila con el documento de Aula anterior a la migración. */
 const AULA_BACKUP_APP_ID = `${AULA_MIGRATION_BACKUP_PREFIX}aula-documentos`;
+const AULA_APP_ID = "aula-documentos";
 
 /**
  * Identificador interno de la copia de una app antigua.
@@ -30,6 +30,7 @@ function sourceBackupAppId(source: AulaMigrationSource): string {
 
 type MigrationMeta = {
   createdAt: number;
+  aulaUpdatedAt: number;
   sources: AulaMigrationSource[];
 };
 
@@ -69,6 +70,7 @@ export type AulaMigrationActionResult =
   | { status: "already-migrated" }
   | { status: "no-data" }
   | { status: "no-backup" }
+  | { status: "conflict"; message: string }
   | { status: "invalid"; message: string; warnings?: string[] };
 
 /**
@@ -126,24 +128,42 @@ function backupPayload(backup: AppDocument): StoredBackup | null {
 }
 
 /**
- * Guarda una copia interna de un documento antes de sobrescribirlo.
- * @param projectId - Proyecto activo.
- * @param appId - Id reservado de la copia.
- * @param document - Documento que se conserva.
- * @param userId - Cuenta que ejecuta la migración.
+ * Comprueba las versiones y escribe documentos y copias en un solo lote de D1.
+ * La primera sentencia falla si cambió una fila y D1 revierte el lote.
+ * @param input - Proyecto, versiones leídas y escrituras preparadas.
+ * @returns Si el lote se ejecutó con las versiones esperadas.
  */
-async function saveBackup(
-  projectId: string,
-  appId: string,
-  document: AppDocument,
-  userId: string,
-): Promise<void> {
-  await saveAppDocument({
-    projectId,
-    appId,
-    state: JSON.stringify({ state: document.state, updatedAt: document.updatedAt }),
-    updatedByUserId: userId,
-  });
+async function writeMigration(input: {
+  projectId: string;
+  userId: string;
+  updatedAt: number;
+  expected: Map<string, number | null>;
+  documents: Map<string, unknown>;
+  remove: string[];
+}): Promise<boolean> {
+  const db = getD1();
+  const checks = [...input.expected].map(() => (
+    "(SELECT updated_at FROM app_documents WHERE project_id = ? AND app_id = ?) IS NOT ?"
+  )).join(" OR ");
+  const guard = db.prepare(`SELECT CASE WHEN ${checks} THEN json('aula migration conflict') ELSE 0 END`)
+    .bind(...[...input.expected].flatMap(([appId, updatedAt]) => [input.projectId, appId, updatedAt]));
+  const writes = [...input.documents].map(([appId, state]) => db.prepare(`
+    INSERT INTO app_documents (project_id, app_id, state, updated_at, updated_by_user_id)
+    VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT(project_id, app_id) DO UPDATE SET
+      state = excluded.state, updated_at = excluded.updated_at, updated_by_user_id = excluded.updated_by_user_id
+  `).bind(input.projectId, appId, JSON.stringify(state), input.updatedAt, input.userId));
+  const removes = input.remove.map((appId) => db.prepare(
+    "DELETE FROM app_documents WHERE project_id = ? AND app_id = ?",
+  ).bind(input.projectId, appId));
+
+  try {
+    await db.batch([guard, ...writes, ...removes]);
+    return true;
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("malformed JSON")) return false;
+    throw error;
+  }
 }
 
 /**
@@ -191,28 +211,20 @@ export async function migrateAulaDocuments(input: {
     return { status: "invalid", message: built.message, warnings: built.warnings };
   }
 
-  for (const [source, document] of sourceDocuments) {
-    await saveBackup(input.projectId, sourceBackupAppId(source), document, input.userId);
-  }
-  if (existing) {
-    await saveBackup(input.projectId, AULA_BACKUP_APP_ID, existing, input.userId);
-  }
-
-  await saveAppDocument({
-    projectId: input.projectId,
-    appId: META_APP_ID,
-    state: JSON.stringify({
-      createdAt: Date.now(),
-      sources: built.importedSources,
-    } satisfies MigrationMeta),
-    updatedByUserId: input.userId,
-  });
-  const updatedAt = await saveAppDocument({
-    projectId: input.projectId,
-    appId: "aula-documentos",
-    state: JSON.stringify(built.document),
-    updatedByUserId: input.userId,
-  });
+  const updatedAt = Math.max(Date.now(), (existing?.updatedAt ?? 0) + 1);
+  const expected = new Map<string, number | null>([
+    [AULA_APP_ID, existing?.updatedAt ?? null],
+    [META_APP_ID, null],
+    ...AULA_MIGRATION_SOURCES.map((source) => [source, sourceDocuments.get(source)?.updatedAt ?? null] as const),
+  ]);
+  const documents = new Map<string, unknown>([
+    [AULA_APP_ID, built.document],
+    [META_APP_ID, { createdAt: Date.now(), aulaUpdatedAt: updatedAt, sources: built.importedSources } satisfies MigrationMeta],
+  ]);
+  for (const [source, document] of sourceDocuments) documents.set(sourceBackupAppId(source), document);
+  if (existing) documents.set(AULA_BACKUP_APP_ID, existing);
+  const written = await writeMigration({ ...input, updatedAt, expected, documents, remove: [] });
+  if (!written) return { status: "conflict", message: "Los documentos cambiaron durante la migración. Vuelve a consultar el estado." };
 
   return {
     status: "migrated",
@@ -235,50 +247,37 @@ export async function rollbackAulaMigration(input: {
   const meta = await readAppDocument(input.projectId, META_APP_ID);
   if (!meta) return { status: "no-backup" };
 
-  const restoredSources: AulaMigrationSource[] = [];
-  for (const source of AULA_MIGRATION_SOURCES) {
-    const backup = await readAppDocument(input.projectId, sourceBackupAppId(source));
-    if (!backup) continue;
-    const payload = backupPayload(backup);
-    if (!payload) continue;
-    await saveAppDocument({
-      projectId: input.projectId,
-      appId: source,
-      state: JSON.stringify(payload.state),
-      updatedByUserId: input.userId,
-    });
-    await deleteAppDocument(input.projectId, sourceBackupAppId(source));
-    restoredSources.push(source);
-  }
-
-  const aulaBackup = await readAppDocument(input.projectId, AULA_BACKUP_APP_ID);
+  const [current, aulaBackup] = await Promise.all([
+    readAppDocument(input.projectId, AULA_APP_ID),
+    readAppDocument(input.projectId, AULA_BACKUP_APP_ID),
+  ]);
+  const state = meta.state as Partial<MigrationMeta> | null;
+  const conflict = { status: "conflict", message: "Aula Documentos cambió desde la migración. Se conservan el documento actual y sus copias." } as const;
+  if (!current || current.updatedAt !== state?.aulaUpdatedAt) return conflict;
   const aulaPayload = aulaBackup ? backupPayload(aulaBackup) : null;
-  if (aulaPayload) {
-    const updatedAt = await saveAppDocument({
-      projectId: input.projectId,
-      appId: "aula-documentos",
-      state: JSON.stringify(aulaPayload.state),
-      updatedByUserId: input.userId,
-    });
-    await deleteAppDocument(input.projectId, AULA_BACKUP_APP_ID);
-    await deleteAppDocument(input.projectId, META_APP_ID);
-    return {
-      status: "rolled-back",
-      document: aulaPayload.state,
-      updatedAt,
-      sources: restoredSources,
-      warnings: [],
-    };
-  }
+  if (aulaBackup && !aulaPayload) return { status: "invalid", message: "La copia previa de Aula Documentos no se puede leer." };
 
-  await deleteAppDocument(input.projectId, "aula-documentos");
-  await deleteAppDocument(input.projectId, AULA_BACKUP_APP_ID);
-  await deleteAppDocument(input.projectId, META_APP_ID);
+  const updatedAt = Math.max(Date.now(), current.updatedAt + 1);
+  const written = await writeMigration({
+    ...input,
+    updatedAt,
+    expected: new Map([
+      [AULA_APP_ID, current.updatedAt],
+      [META_APP_ID, meta.updatedAt],
+      [AULA_BACKUP_APP_ID, aulaBackup?.updatedAt ?? null],
+    ]),
+    documents: aulaPayload ? new Map([[AULA_APP_ID, aulaPayload.state]]) : new Map(),
+    remove: [
+      META_APP_ID, AULA_BACKUP_APP_ID, ...AULA_MIGRATION_SOURCES.map(sourceBackupAppId),
+      ...(aulaPayload ? [] : [AULA_APP_ID]),
+    ],
+  });
+  if (!written) return conflict;
   return {
     status: "rolled-back",
-    document: null,
-    updatedAt: null,
-    sources: restoredSources,
+    document: aulaPayload?.state ?? null,
+    updatedAt: aulaPayload ? updatedAt : null,
+    sources: [],
     warnings: [],
   };
 }

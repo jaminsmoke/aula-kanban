@@ -111,7 +111,7 @@ vi.mock("../../../db", () => ({
     insert: () => ({
       values: () => ({
         returning: () => Promise.resolve([{ section: "s1", id: "t1", projectId, name: "Ada", displayName: "Ada", role: "", activities: "", aiHelp: "", deleted: 0, revision: 1, mutationToken: null }]),
-        onConflictDoUpdate: () => Promise.resolve(),
+        onConflictDoUpdate: () => ({ returning: () => Promise.resolve([{ updatedAt: 6 }]) }),
         onConflictDoNothing: () => ({ returning: () => Promise.resolve([{ id: "t1", projectId, name: "Ada", createdAt: 1 }]) }),
       }),
     }),

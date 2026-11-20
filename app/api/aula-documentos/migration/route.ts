@@ -47,6 +47,9 @@ export const POST = withJsonMutation(withProjectRoute(async (request, project) =
     if (result.status === "no-backup") {
       return json({ message: "No hay una migración documental que deshacer.", status: result.status }, 409);
     }
+    if (result.status === "conflict") {
+      return json({ message: result.message, status: result.status }, 409);
+    }
     if (result.status === "invalid") {
       return json({ message: result.message, status: result.status, warnings: result.warnings ?? [] }, 400);
     }

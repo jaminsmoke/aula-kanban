@@ -673,6 +673,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
    * @param action - Acción solicitada.
    */
   async function runMigration(action: "migrate" | "rollback") {
+    if (dirty || savingRef.current) return;
     setMigrationLoading(action);
     setMigrationError(null);
     setMigrationNotice(null);
@@ -2653,8 +2654,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
               {migrationStatus?.migration.active ? (
                 <p className="aula-documentos-import-warning">
                   Migración aplicada{migrationStatus.migration.createdAt ? ` el ${formatSourceDate(migrationStatus.migration.createdAt)}` : ""}.
-                  Los datos de origen siguen guardados. Deshacer restaura el estado anterior de Aula y descarta los cambios
-                  hechos desde la migración.
+                  Los datos de origen siguen guardados. Puedes deshacer la migración si el documento de Aula sigue en la versión que se creó al migrar.
                 </p>
               ) : (
                 <>
@@ -2663,13 +2663,13 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                       Aula Documentos ya tiene un documento. Los datos antiguos se añadirán al final para no borrar tu trabajo.
                     </p>
                   ) : null}
-                  {dirty ? (
-                    <p className="aula-documentos-import-warning">
-                      Hay cambios sin guardar en Aula Documentos. Guárdalos antes de migrar para no mezclarlos.
-                    </p>
-                  ) : null}
                 </>
               )}
+              {dirty ? (
+                <p className="aula-documentos-import-warning">
+                  Hay cambios sin guardar en Aula Documentos. Guárdalos antes de continuar.
+                </p>
+              ) : null}
               {migrationError ? <p className="aula-documentos-import-error" role="alert">{migrationError}</p> : null}
               {migrationNotice ? <p className="aula-documentos-import-status" role="status">{migrationNotice}</p> : null}
               <div className="aula-documentos-import-actions">
@@ -2681,7 +2681,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                     type="button"
                     className="aula-documentos-import-primary"
                     onClick={() => { void runMigration("rollback"); }}
-                    disabled={readOnly || migrationLoading !== null}
+                    disabled={readOnly || dirty || saving || migrationLoading !== null}
                   >
                     {migrationLoading === "rollback" ? "Deshaciendo…" : "Deshacer migración"}
                   </button>
@@ -2693,6 +2693,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
                     disabled={
                       readOnly
                       || dirty
+                      || saving
                       || migrationLoading !== null
                       || !migrationStatus
                       || !migrationStatus.sources.some((candidate) => candidate.exists && candidate.valid)

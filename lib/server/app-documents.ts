@@ -22,16 +22,6 @@ export async function readAppDocument(projectId: string, appId: string): Promise
 }
 
 /**
- * Borra el documento de una app del proyecto.
- * @param projectId - Proyecto activo.
- * @param appId - Identificador de la app.
- */
-export async function deleteAppDocument(projectId: string, appId: string): Promise<void> {
-  await getDb().delete(appDocuments)
-    .where(and(eq(appDocuments.projectId, projectId), eq(appDocuments.appId, appId)));
-}
-
-/**
  * Guarda (o reemplaza) el documento de una app para el proyecto sin comprobar
  * la versión. Se conserva para los clientes anteriores y las herramientas MCP;
  * la web usa `saveAppDocumentIfCurrent`.
@@ -45,7 +35,7 @@ export async function saveAppDocument(input: {
   updatedByUserId: string | null;
 }): Promise<number> {
   const now = Date.now();
-  await getDb().insert(appDocuments).values({
+  const [saved] = await getDb().insert(appDocuments).values({
     projectId: input.projectId,
     appId: input.appId,
     state: input.state,
@@ -53,9 +43,13 @@ export async function saveAppDocument(input: {
     updatedByUserId: input.updatedByUserId,
   }).onConflictDoUpdate({
     target: [appDocuments.projectId, appDocuments.appId],
-    set: { state: input.state, updatedAt: now, updatedByUserId: input.updatedByUserId },
-  });
-  return now;
+    set: {
+      state: input.state,
+      updatedAt: sql<number>`max(${now}, ${appDocuments.updatedAt} + 1)`,
+      updatedByUserId: input.updatedByUserId,
+    },
+  }).returning({ updatedAt: appDocuments.updatedAt });
+  return saved.updatedAt;
 }
 
 /** Resultado de un guardado condicionado a la versión conocida por el cliente. */

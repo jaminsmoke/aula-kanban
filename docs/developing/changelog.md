@@ -6,6 +6,17 @@
 
 ---
 
+## 2026-11-20 — Publicación 1.1.37
+
+**Estado:** Publicada en Sites.
+
+- Aula Documentos reúne Notas, Diagramas, Presentaciones y Office. La ficha de Aula Store muestra los cuatro módulos y el plugin devuelve la suite en el catálogo publicado.
+- Hoja de cálculo recupera el cálculo automático con un evaluador propio que no ejecuta las fórmulas como JavaScript.
+- La migración de documentos antiguos comprueba las versiones y guarda los cambios en un único lote. Si se edita el documento después de migrar, deshacer conserva la versión actual y sus copias.
+- Pasaron 1.493 pruebas, TypeScript, ESLint, la compilación y los presupuestos de rendimiento general y Office. Se verificaron la portada, la documentación y el catálogo de 13 aplicaciones en producción. La publicación no requiere cambios de esquema.
+
+---
+
 ## 2026-11-19 - Roadmap STORE-18 - Fichas de producto para apps-suites
 
 **Estado:** Completada - Sin publicación en Sites
