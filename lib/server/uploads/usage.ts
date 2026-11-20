@@ -58,11 +58,12 @@ function batchLimit(limit: number | undefined): number {
  */
 export async function projectFileReferences(projectId: string): Promise<Set<string> | null> {
   const db = getD1();
-  const [tasks, boards, documents] = await Promise.all([
+  const [tasks, boards, documents, copies] = await Promise.all([
     db.prepare("SELECT image_url AS imageUrl FROM tasks WHERE project_id = ? AND image_url IS NOT NULL AND image_url <> ''")
       .bind(projectId).all<FileRow>(),
     db.prepare("SELECT snapshot FROM boards WHERE project_id = ?").bind(projectId).all<SnapshotRow>(),
     db.prepare("SELECT state FROM app_documents WHERE project_id = ?").bind(projectId).all<DocumentRow>(),
+    db.prepare("SELECT id FROM document_copies WHERE project_id = ?").bind(projectId).all<{ id: string }>(),
   ]);
 
   const references = new Set<string>();
@@ -79,6 +80,7 @@ export async function projectFileReferences(projectId: string): Promise<Set<stri
     if (ids === null) return null;
     for (const id of ids) references.add(id);
   }
+  for (const row of copies.results) references.add(row.id);
   return references;
 }
 

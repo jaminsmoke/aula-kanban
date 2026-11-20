@@ -66,13 +66,13 @@
 
 ### Fase 2 — Persistencia en R2 y API de copias
 
-- [ ] Añadir la finalidad `document-copy`, el MIME `application/zip`, el límite por copia y la cuota por proyecto.
-- [ ] Crear la tabla `document_copies` y su migración: id, proyecto, título, formato, versión de esquema, tamaño, autor y fecha.
-- [ ] Implementar `GET` de listado, `POST` de creación, `GET` de descarga y `DELETE` de una copia.
-- [ ] Servir la descarga con nombre de archivo y cabeceras privadas; no exponer objetos de otros proyectos.
-- [ ] Aplicar cuota y límite de copias por proyecto; devolver errores distintos para cuota llena, R2 no disponible y copia no encontrada.
-- [ ] Limpiar objetos y metadatos al borrar una copia o un proyecto; reconciliar huérfanos sin tocar el documento vivo.
-- [ ] Probar listado, permisos de invitado, descarga, borrado, cuota, R2 caído y aislamiento entre proyectos.
+- [x] Añadir la finalidad `document-copy`, el MIME `application/zip`, el límite por copia y la cuota por proyecto.
+- [x] Crear la tabla `document_copies` y su migración: id, proyecto, título, formato, versión de esquema, tamaño, autor y fecha.
+- [x] Implementar `GET` de listado, `POST` de creación, `GET` de descarga y `DELETE` de una copia.
+- [x] Servir la descarga con nombre de archivo y cabeceras privadas; no exponer objetos de otros proyectos.
+- [x] Aplicar cuota y límite de copias por proyecto; devolver errores distintos para cuota llena, R2 no disponible y copia no encontrada.
+- [x] Limpiar objetos y metadatos al borrar una copia o un proyecto; reconciliar huérfanos sin tocar el documento vivo.
+- [x] Probar listado, permisos de invitado, descarga, borrado, cuota, R2 caído y aislamiento entre proyectos.
 - **Criterios de aceptación:**
   - Una copia válida se guarda en R2 y solo la lista y descarga el proyecto autorizado.
   - La cuota llena no bloquea la edición ni la descarga local.
@@ -126,3 +126,4 @@
 - Las copias locales de recuperación actuales son un mecanismo de seguridad del autosave; no son una copia portable completa con imágenes ni un catálogo importable.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
 - 2026-11-20: Fase 1 completada. Añadida `fflate` 0.8.3 (MIT) como dependencia directa y el módulo `lib/domain/aula-documentos/copy.ts` con el formato `.aula.zip`: manifiesto v1, `document.json`, assets con ruta segura, hash SHA-256, límites de tamaño/entradas y validación de MIME real. Las pruebas cubren copia válida, falta o exceso de assets, ZIP corrupto, path traversal, zip bomb, formato/versión futura, hash alterado y manifiesto incompleto. Suite completa: 215 archivos / 1.528 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 366.772 / 370.000 B gzip; aula-documentos-export: 329.621 / 340.000 B gzip) y `perf:office` correctos.
+- 2026-11-20: Fase 2 completada. Añadida la finalidad `document-copy` (ZIP hasta 60 MB), cuota de 200 MB y máximo de 20 copias por proyecto. La migración `0041` crea `document_copies`; la API ofrece listado, alta, descarga con nombre de archivo y borrado. El alta inspecciona manifiesto y documento sin descomprimir las imágenes, y R2 guarda el ZIP privado. MCP no expone la finalidad nueva y la purga de archivos protege las copias. Pruebas de API, cuotas, permisos, descarga, borrado, R2 caído y aislamiento entre proyectos. Suite completa: 217 archivos / 1.544 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 366.844 / 370.000 B gzip; aula-documentos-export: 329.698 / 340.000 B gzip) y `perf:office` correctos.

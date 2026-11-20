@@ -53,22 +53,25 @@ beforeEach(() => {
     CREATE TABLE tasks (id TEXT, project_id TEXT, image_url TEXT);
     CREATE TABLE boards (project_id TEXT, snapshot TEXT);
     CREATE TABLE app_documents (project_id TEXT, state TEXT);
+    CREATE TABLE document_copies (id TEXT, project_id TEXT);
     CREATE TABLE uploads (id TEXT, project_id TEXT, storage_key TEXT, url TEXT, mime_type TEXT, size_bytes INTEGER, purpose TEXT, created_at INTEGER);
   `);
   mocks.db = fakeD1();
 });
 
 describe("inventario de archivos sin uso", () => {
-  it("protege los archivos referenciados por tareas, pizarras y documentos", async () => {
+  it("protege los archivos referenciados por tareas, pizarras, documentos y copias", async () => {
     sqlite.prepare("INSERT INTO tasks VALUES ('t1', ?, '/api/files/aaaa')").run(projectId);
     sqlite.prepare("INSERT INTO boards VALUES (?, ?)").run(projectId, JSON.stringify({ files: { f1: { dataURL: "/api/files/bbbb" } } }));
     sqlite.prepare("INSERT INTO app_documents VALUES (?, ?)").run(projectId, JSON.stringify({ code: "imagen /api/files/cccc" }));
+    sqlite.prepare("INSERT INTO document_copies VALUES ('dddd', ?)").run(projectId);
     upload("aaaa", 1);
     upload("bbbb", 2);
     upload("cccc", 3);
+    upload("dddd", 4);
 
     const report = await findUnusedUploads({ projectId, now });
-    expect(report).toMatchObject({ ok: true, references: 3, candidates: [], hasMore: false });
+    expect(report).toMatchObject({ ok: true, references: 4, candidates: [], hasMore: false });
   });
 
   it("devuelve solo los huérfanos fuera del periodo de gracia", async () => {

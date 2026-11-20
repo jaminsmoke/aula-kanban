@@ -38,6 +38,12 @@ export const AULA_COPY_MAX_ASSETS_BYTES = 50 * 1024 * 1024;
 /** Entradas ZIP admitidas: manifiesto, documento y assets. */
 export const AULA_COPY_MAX_ENTRIES = AULA_COPY_MAX_ASSETS + 2;
 
+/** Cuota de copias por proyecto (200 MB). */
+export const AULA_COPY_PROJECT_QUOTA_BYTES = 200 * 1024 * 1024;
+
+/** Número máximo de copias retenidas por proyecto. */
+export const AULA_COPY_MAX_PER_PROJECT = 20;
+
 /** Nombres reservados del contenedor. */
 export const AULA_COPY_MANIFEST_FILE = "manifest.json";
 export const AULA_COPY_DOCUMENT_FILE = "document.json";
@@ -93,6 +99,11 @@ export type AulaCopyBuildResult =
 /** Resultado de leer y validar una copia. */
 export type AulaCopyReadResult =
   | { ok: true; document: AulaDocument; manifest: AulaCopyManifest; assets: AulaCopyAsset[] }
+  | { ok: false; code: AulaCopyErrorCode; message: string };
+
+/** Resultado de inspeccionar una copia sin descomprimir sus imágenes. */
+export type AulaCopyInspectResult =
+  | { ok: true; document: AulaDocument; manifest: AulaCopyManifest }
   | { ok: false; code: AulaCopyErrorCode; message: string };
 
 /** Opciones de construcción de una copia. */
@@ -495,5 +506,133 @@ export async function readAulaDocumentCopy(bytes: Uint8Array): Promise<AulaCopyR
   }
 
   return { ok: true, document: parsed.document, manifest, assets };
+}
+
+/**
+ * Inspecciona una copia y valida manifiesto, documento y presencia de assets
+ * sin descomprimir las imágenes en el servidor.
+ * @param bytes - ZIP recibido de R2 o del equipo local.
+ * @returns El documento y el manifiesto validados.
+ */
+export async function inspectAulaDocumentCopy(bytes: Uint8Array): Promise<AulaCopyInspectResult> {
+  if (!bytes.length || bytes.length > AULA_COPY_MAX_ZIP_BYTES) {
+    return { ok: false, code: "too-large", message: "La copia está vacía o supera el tamaño máximo." };
+  }
+
+  let entryCount = 0;
+  let totalUncompressed = 0;
+  let unsafe = false;
+  let tooLarge = false;
+  let duplicate = false;
+  const seen = new Set<string>();
+  const assetPaths = new Set<string>();
+  const filter = (file: UnzipFileInfo): boolean => {
+    entryCount += 1;
+    if (entryCount > AULA_COPY_MAX_ENTRIES) return false;
+    if (seen.has(file.name)) {
+      duplicate = true;
+      return false;
+    }
+    seen.add(file.name);
+    if (file.name === AULA_COPY_MANIFEST_FILE) {
+      if (file.originalSize > AULA_COPY_MAX_MANIFEST_BYTES) {
+        tooLarge = true;
+        return false;
+      }
+      totalUncompressed += file.originalSize;
+      return true;
+    }
+    if (file.name === AULA_COPY_DOCUMENT_FILE) {
+      if (file.originalSize > AULA_COPY_MAX_DOCUMENT_BYTES) {
+        tooLarge = true;
+        return false;
+      }
+      totalUncompressed += file.originalSize;
+      return true;
+    }
+    if (!ASSET_PATH_PATTERN.test(file.name)) {
+      unsafe = true;
+      return false;
+    }
+    assetPaths.add(file.name);
+    if (file.originalSize <= 0 || file.originalSize > AULA_IMAGE_MAX_BYTES) {
+      tooLarge = true;
+      return false;
+    }
+    totalUncompressed += file.originalSize;
+    if (totalUncompressed > AULA_COPY_MAX_UNCOMPRESSED_BYTES) {
+      tooLarge = true;
+      return false;
+    }
+    return false;
+  };
+
+  let files: Record<string, Uint8Array>;
+  try {
+    files = unzipSync(bytes, { filter });
+  } catch {
+    return { ok: false, code: "invalid-zip", message: "La copia no es un archivo ZIP válido." };
+  }
+  if (duplicate) return { ok: false, code: "duplicate-entry", message: "La copia contiene entradas repetidas." };
+  if (unsafe) return { ok: false, code: "unsafe-path", message: "La copia contiene archivos no permitidos." };
+  if (tooLarge || totalUncompressed > AULA_COPY_MAX_UNCOMPRESSED_BYTES) {
+    return { ok: false, code: "too-large", message: "La copia supera el tamaño descomprimido permitido." };
+  }
+  if (entryCount > AULA_COPY_MAX_ENTRIES) {
+    return { ok: false, code: "too-many-entries", message: "La copia contiene demasiados archivos." };
+  }
+
+  const manifestBytes = files[AULA_COPY_MANIFEST_FILE];
+  const documentBytes = files[AULA_COPY_DOCUMENT_FILE];
+  if (!manifestBytes || !documentBytes) {
+    return { ok: false, code: "invalid-manifest", message: "La copia no contiene el manifiesto y el documento." };
+  }
+
+  let manifestValue: unknown;
+  let documentValue: unknown;
+  try {
+    manifestValue = JSON.parse(new TextDecoder().decode(manifestBytes));
+    documentValue = JSON.parse(new TextDecoder().decode(documentBytes));
+  } catch {
+    return { ok: false, code: "invalid-manifest", message: "La copia contiene JSON ilegible." };
+  }
+
+  const manifestResult = parseManifest(manifestValue);
+  if (!manifestResult.ok) return manifestResult;
+  const manifest = manifestResult.manifest;
+  if (manifest.schemaVersion > AULA_DOCUMENT_SCHEMA_VERSION) {
+    return { ok: false, code: "unsupported-version", message: "La copia usa un documento más nuevo de lo que entiende esta app." };
+  }
+  const parsed = parseAulaDocument(documentValue);
+  if (!parsed.ok) {
+    return { ok: false, code: "invalid-document", message: `El documento de la copia no es válido: ${parsed.message}` };
+  }
+  if (manifest.title !== parsed.document.title || manifest.schemaVersion !== parsed.document.schemaVersion) {
+    return { ok: false, code: "invalid-manifest", message: "El manifiesto no coincide con el documento." };
+  }
+
+  const imageIds = new Set([...collectAulaImageUploadIds(parsed.document.content)].map((id) => id.toLowerCase()));
+  const manifestIds = new Set(manifest.assets.map((asset) => asset.id.toLowerCase()));
+  const manifestPaths = new Set(manifest.assets.map((asset) => asset.path));
+  for (const id of imageIds) {
+    if (!manifestIds.has(id)) {
+      return { ok: false, code: "missing-asset", message: "Falta una imagen del documento en la copia." };
+    }
+  }
+  for (const asset of manifest.assets) {
+    if (!imageIds.has(asset.id)) {
+      return { ok: false, code: "unused-asset", message: "La copia incluye una imagen que el documento no usa." };
+    }
+    if (!assetPaths.has(asset.path)) {
+      return { ok: false, code: "missing-asset", message: "Falta el archivo de una imagen de la copia." };
+    }
+  }
+  for (const path of assetPaths) {
+    if (!manifestPaths.has(path)) {
+      return { ok: false, code: "unused-asset", message: "La copia incluye una imagen no declarada." };
+    }
+  }
+
+  return { ok: true, document: parsed.document, manifest };
 }
 

@@ -71,6 +71,7 @@ beforeEach(() => {
     CREATE TABLE tasks (id TEXT, project_id TEXT, image_url TEXT);
     CREATE TABLE boards (project_id TEXT, snapshot TEXT);
     CREATE TABLE app_documents (project_id TEXT, state TEXT);
+    CREATE TABLE document_copies (id TEXT, project_id TEXT);
     CREATE TABLE uploads (id TEXT, project_id TEXT, storage_key TEXT, url TEXT, mime_type TEXT, size_bytes INTEGER, purpose TEXT, created_at INTEGER);
   `);
   mocks.db = fakeD1();

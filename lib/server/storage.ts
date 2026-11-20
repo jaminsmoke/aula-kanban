@@ -1,9 +1,10 @@
 import { env } from "cloudflare:workers";
 import { and, eq, sql } from "drizzle-orm";
 import { getDb } from "../../db";
-import { uploads } from "../../db/schema";
+import { documentCopies, uploads } from "../../db/schema";
+import { AULA_COPY_MAX_PER_PROJECT, AULA_COPY_MAX_ZIP_BYTES, AULA_COPY_PROJECT_QUOTA_BYTES } from "../domain/aula-documentos/copy";
 
-export const uploadPurposes = ["task-image", "board-asset", "document", "document-image"] as const;
+export const uploadPurposes = ["task-image", "board-asset", "document", "document-image", "document-copy"] as const;
 export type UploadPurpose = (typeof uploadPurposes)[number];
 
 /** Vía por la que entró el archivo: la web o el servidor MCP. */
@@ -12,6 +13,7 @@ export type UploadOrigin = (typeof uploadOrigins)[number];
 
 const IMAGE_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 const DOCUMENT_MIME_TYPES = ["application/pdf", "text/plain", "text/markdown", "text/csv", ...IMAGE_MIME_TYPES];
+const COPY_MIME_TYPES = ["application/zip", "application/x-zip-compressed"];
 const EXTENSIONS: Record<string, string> = {
   "image/png": ".png",
   "image/jpeg": ".jpg",
@@ -21,9 +23,14 @@ const EXTENSIONS: Record<string, string> = {
   "text/plain": ".txt",
   "text/markdown": ".md",
   "text/csv": ".csv",
+  "application/zip": ".zip",
+  "application/x-zip-compressed": ".zip",
 };
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 export const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
+export const MAX_DOCUMENT_COPY_BYTES = AULA_COPY_MAX_ZIP_BYTES;
+export const MAX_PROJECT_DOCUMENT_COPY_BYTES = AULA_COPY_PROJECT_QUOTA_BYTES;
+export const MAX_PROJECT_DOCUMENT_COPIES = AULA_COPY_MAX_PER_PROJECT;
 /** Cuota de imágenes de documento por proyecto (50 MB). */
 export const MAX_PROJECT_DOCUMENT_IMAGE_BYTES = 50 * 1024 * 1024;
 
@@ -51,6 +58,28 @@ export class UploadQuotaExceededError extends Error {
   }
 }
 
+/** La cuota de copias portables del proyecto está llena. */
+export class DocumentCopyQuotaExceededError extends Error {
+  /**
+   * Crea el error de cuota de copias.
+   */
+  constructor() {
+    super("document_copy_quota_exceeded");
+    this.name = "DocumentCopyQuotaExceededError";
+  }
+}
+
+/** El proyecto alcanzó el número máximo de copias portables. */
+export class DocumentCopyLimitExceededError extends Error {
+  /**
+   * Crea el error de límite de copias.
+   */
+  constructor() {
+    super("document_copy_limit_exceeded");
+    this.name = "DocumentCopyLimitExceededError";
+  }
+}
+
 /**
  * Suma los bytes de imágenes de documento de un proyecto.
  * @param projectId - Proyecto activo.
@@ -74,6 +103,32 @@ export async function projectDocumentImageUsage(projectId: string): Promise<numb
  */
 export function fitsDocumentImageQuota(used: number, incoming: number): boolean {
   return used >= 0 && incoming >= 0 && used + incoming <= MAX_PROJECT_DOCUMENT_IMAGE_BYTES;
+}
+
+/**
+ * Suma los bytes y el número de copias portables de un proyecto.
+ * @param projectId - Proyecto activo.
+ * @returns Bytes y copias de la finalidad `document-copy`.
+ */
+export async function projectDocumentCopyUsage(projectId: string): Promise<{ bytes: number; count: number }> {
+  const [row] = await getDb().select({
+    total: sql<number>`coalesce(sum(${uploads.sizeBytes}), 0)`,
+    count: sql<number>`count(*)`,
+  }).from(uploads).where(and(
+    eq(uploads.projectId, projectId),
+    eq(uploads.purpose, "document-copy"),
+  ));
+  return { bytes: Number(row?.total ?? 0), count: Number(row?.count ?? 0) };
+}
+
+/**
+ * Comprueba si una copia cabe en la cuota del proyecto.
+ * @param used - Bytes ya usados por copias.
+ * @param incoming - Bytes de la copia nueva.
+ * @returns `true` si la copia cabe.
+ */
+export function fitsDocumentCopyQuota(used: number, incoming: number): boolean {
+  return used >= 0 && incoming >= 0 && used + incoming <= MAX_PROJECT_DOCUMENT_COPY_BYTES;
 }
 
 /**
@@ -130,10 +185,22 @@ export async function storageStatus(): Promise<StorageStatus> {
  * @returns Mensaje de error para el usuario o `null` cuando es válido.
  */
 export function validateUpload(purpose: UploadPurpose, mimeType: string, sizeBytes: number) {
-  const allowed = purpose === "document" ? DOCUMENT_MIME_TYPES : IMAGE_MIME_TYPES;
+  const allowed = purpose === "document"
+    ? DOCUMENT_MIME_TYPES
+    : purpose === "document-copy"
+      ? COPY_MIME_TYPES
+      : IMAGE_MIME_TYPES;
   if (!allowed.includes(mimeType)) return "Tipo de archivo no admitido para esta subida.";
-  const max = purpose === "document" ? MAX_DOCUMENT_BYTES : MAX_IMAGE_BYTES;
-  if (!sizeBytes || sizeBytes > max) return purpose === "document" ? "El documento supera los 10 MB permitidos." : "La imagen supera los 5 MB permitidos.";
+  const max = purpose === "document"
+    ? MAX_DOCUMENT_BYTES
+    : purpose === "document-copy"
+      ? MAX_DOCUMENT_COPY_BYTES
+      : MAX_IMAGE_BYTES;
+  if (!sizeBytes || sizeBytes > max) {
+    if (purpose === "document") return "El documento supera los 10 MB permitidos.";
+    if (purpose === "document-copy") return "La copia supera el tamaño máximo permitido.";
+    return "La imagen supera los 5 MB permitidos.";
+  }
   return null;
 }
 
@@ -149,6 +216,11 @@ export async function storeUpload(input: { projectId: string; purpose: UploadPur
   if (input.purpose === "document-image") {
     const used = await projectDocumentImageUsage(input.projectId);
     if (!fitsDocumentImageQuota(used, input.file.size)) throw new UploadQuotaExceededError();
+  }
+  if (input.purpose === "document-copy") {
+    const usage = await projectDocumentCopyUsage(input.projectId);
+    if (usage.count >= MAX_PROJECT_DOCUMENT_COPIES) throw new DocumentCopyLimitExceededError();
+    if (!fitsDocumentCopyQuota(usage.bytes, input.file.size)) throw new DocumentCopyQuotaExceededError();
   }
   const id = crypto.randomUUID();
   const extension = EXTENSIONS[input.file.type] ?? ".bin";
@@ -176,6 +248,7 @@ export async function storeUpload(input: { projectId: string; purpose: UploadPur
  * @param projectId - Identificador del proyecto eliminado.
  */
 export async function deleteProjectUploads(projectId: string) {
+  await getDb().delete(documentCopies).where(eq(documentCopies.projectId, projectId));
   const rows = await getDb().select().from(uploads).where(eq(uploads.projectId, projectId));
   if (!rows.length) return;
   if (!env.BUCKET) throw new StorageUnavailableError();
@@ -184,6 +257,20 @@ export async function deleteProjectUploads(projectId: string) {
     await env.BUCKET.delete(row.storageKey);
     await getDb().delete(uploads).where(eq(uploads.id, row.id));
   }
+}
+
+/**
+ * Borra un objeto y su fila de subida.
+ * @param id - Identificador de la subida.
+ * @returns `true` si existía y se eliminó.
+ */
+export async function deleteUpload(id: string): Promise<boolean> {
+  const [row] = await getDb().select().from(uploads).where(eq(uploads.id, id));
+  if (!row) return false;
+  if (!env.BUCKET) throw new StorageUnavailableError();
+  await env.BUCKET.delete(row.storageKey);
+  await getDb().delete(uploads).where(eq(uploads.id, id));
+  return true;
 }
 
 /** Reintenta limpiar archivos de proyectos eliminados en una operación anterior. */

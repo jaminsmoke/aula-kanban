@@ -23,6 +23,9 @@ export async function POST(request: Request) {
   const file = form?.get("file");
   const purpose = z.enum(uploadPurposes).safeParse(form?.get("purpose"));
   if (!purpose.success || !(file instanceof File)) return json({ message: "Falta el archivo o la finalidad no es válida." }, 400);
+  if (purpose.data === "document-copy") {
+    return json({ message: "Las copias portables se guardan desde su ruta específica." }, 400);
+  }
   const problem = validateUpload(purpose.data, file.type, file.size);
   if (problem) return json({ message: problem }, 400);
   try {

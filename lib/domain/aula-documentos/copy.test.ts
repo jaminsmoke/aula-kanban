@@ -9,6 +9,7 @@ import {
   AULA_COPY_FORMAT_VERSION,
   buildAulaDocumentCopy,
   readAulaDocumentCopy,
+  inspectAulaDocumentCopy,
   type AulaCopyAsset,
 } from "./copy";
 
@@ -93,6 +94,14 @@ describe("copias portables de Aula Documentos", () => {
     expect(result.assets).toHaveLength(1);
     expect(result.assets[0]).toMatchObject({ id: IMAGE_ID, mime: "image/png" });
     expect(result.assets[0].bytes).toEqual(TINY_PNG);
+  });
+
+  it("inspecciona una copia sin descomprimir sus imágenes para la API", async () => {
+    const result = await inspectAulaDocumentCopy(await validCopy());
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.document.title).toBe("Copia de clase");
+    expect(result.manifest.assets).toHaveLength(1);
   });
 
   it("exige que todas las imágenes del documento estén en la copia", async () => {

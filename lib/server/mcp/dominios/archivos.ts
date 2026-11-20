@@ -120,7 +120,9 @@ async function obtenerArchivo(caller: McpCaller, args: Record<string, unknown>) 
   return payloadResult({ archivo: archivoDe(row, caller.origen) });
 }
 
-const finalidad = z.enum(uploadPurposes).describe("Finalidad de la subida: task-image, board-asset o document");
+const finalidad = z.enum(
+  uploadPurposes.filter((purpose) => purpose !== "document-copy") as [UploadPurpose, ...UploadPurpose[]],
+).describe("Finalidad de la subida: task-image, board-asset o document");
 
 /** Herramientas del dominio de archivos. */
 export const herramientasArchivos: McpToolDefinicion[] = [

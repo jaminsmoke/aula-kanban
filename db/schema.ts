@@ -133,6 +133,21 @@ export const uploads = sqliteTable("uploads", {
   createdAt: integer("created_at").notNull(),
 }, (table) => [index("uploads_project").on(table.projectId, table.createdAt)]);
 
+// Copias portables de Aula Documentos. El id coincide con la fila de
+// `uploads` que guarda el ZIP en R2; esta tabla aporta los metadatos que
+// permiten listar sin abrir el archivo.
+export const documentCopies = sqliteTable("document_copies", {
+  id: text("id").primaryKey().notNull(),
+  projectId: text("project_id").notNull(),
+  title: text("title").notNull(),
+  format: text("format").notNull(),
+  formatVersion: integer("format_version").notNull(),
+  schemaVersion: integer("schema_version").notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  ownerUserId: text("owner_user_id"),
+  createdAt: integer("created_at").notNull(),
+}, (table) => [index("document_copies_project").on(table.projectId, table.createdAt)]);
+
 // Estado de las aplicaciones nativas (librerías npm del propio Site) instaladas
 // en «Tienda». Es por instancia: el dueño o un administrador decide qué
 // aplicaciones están disponibles para toda la instancia de Aula Kanban.

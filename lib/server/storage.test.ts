@@ -17,8 +17,11 @@ vi.mock("cloudflare:workers", () => ({
 
 import {
   MAX_BUCKET_PAGE,
+  MAX_PROJECT_DOCUMENT_COPIES,
+  MAX_PROJECT_DOCUMENT_COPY_BYTES,
   MAX_PROJECT_DOCUMENT_IMAGE_BYTES,
   StorageUnavailableError,
+  fitsDocumentCopyQuota,
   fitsDocumentImageQuota,
   listBucketPage,
   uploadPurposes,
@@ -100,5 +103,23 @@ describe("subidas de imágenes de documento", () => {
     expect(fitsDocumentImageQuota(0, MAX_PROJECT_DOCUMENT_IMAGE_BYTES)).toBe(true);
     expect(fitsDocumentImageQuota(1, MAX_PROJECT_DOCUMENT_IMAGE_BYTES)).toBe(false);
     expect(fitsDocumentImageQuota(-1, 1)).toBe(false);
+  });
+});
+
+describe("copias portables", () => {
+  it("declara la finalidad y acepta ZIP con el límite de copia", () => {
+    expect(uploadPurposes).toContain("document-copy");
+    expect(validateUpload("document-copy", "application/zip", 1_024)).toBeNull();
+    expect(validateUpload("document-copy", "application/zip", 60 * 1024 * 1024)).toBeNull();
+    expect(validateUpload("document-copy", "application/zip", 60 * 1024 * 1024 + 1)).toContain("tamaño máximo");
+    expect(validateUpload("document-copy", "application/octet-stream", 1_024)).toContain("no admitido");
+  });
+
+  it("aplica la cuota y el número máximo de copias", () => {
+    expect(MAX_PROJECT_DOCUMENT_COPY_BYTES).toBe(200 * 1024 * 1024);
+    expect(MAX_PROJECT_DOCUMENT_COPIES).toBe(20);
+    expect(fitsDocumentCopyQuota(0, MAX_PROJECT_DOCUMENT_COPY_BYTES)).toBe(true);
+    expect(fitsDocumentCopyQuota(1, MAX_PROJECT_DOCUMENT_COPY_BYTES)).toBe(false);
+    expect(fitsDocumentCopyQuota(-1, 1)).toBe(false);
   });
 });
