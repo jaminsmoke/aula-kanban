@@ -6,6 +6,12 @@
 - El único publicador en Sites es Codex de OpenAI. Cualquier otro agente se limita a commits locales y al push de cierre al repositorio personal; no despliega, no publica ni aplica migraciones remotas.
 - Un push a GitHub no publica en Sites. Distingue siempre «sincronizado en GitHub» de «publicado y verificado en Sites»; una tarea no está publicada hasta que Codex lo confirma.
 
+## Herramientas y MCP
+
+- Ningún MCP puede fijar una raíz absoluta a otro repositorio. Una herramienta de arquitectura, análisis o búsqueda debe leer esta raíz o fallar cerrada.
+- No uses resultados de un MCP global para tomar decisiones sobre este repositorio sin comprobar antes que su raíz y su snapshot pertenecen a `aula-kanban`.
+- Las integraciones opcionales se configuran por repositorio y se documentan; nunca se dejan acopladas en la configuración global.
+
 ## Roadmaps y fases
 
 - Un roadmap se divide en las fases que necesite el trabajo, no en un número fijo: puede tener una sola fase o varias.

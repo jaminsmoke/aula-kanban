@@ -106,7 +106,7 @@ Deuda:
 
 | Prioridad | Hallazgo | Evidencia | Impacto |
 |---|---|---|---|
-| P0 | La configuración de CodArch no representa este repo | `.codarch.yml` declara `packages/**` y `apps/**`; `suggest_architecture` detecta paquetes ajenos | No se pueden hacer cumplir capas ni ciclos |
+| P0 | El MCP de CodArch estaba enganchado a otro repositorio | La configuración global de OpenCode ejecutaba `codarch-mcp` con `--root` apuntando a `Visual Software Architecture`; este repo no tiene `.codarch.yml` | Herramientas y diagnósticos ajenos contaminan las decisiones; ya se retiró del catálogo activo |
 | P0 | Apps monolíticas restantes | Timeline 676, Hoja 525, Office viewer 543, Office export 525, Tarjetas 415 | Cambios pequeños obligan a recorrer archivos grandes |
 | P1 | Sistema de borradores versionados muerto | `useVersionedDraft` y sus dos diálogos no tienen consumidores reales | 800+ líneas y pruebas que mantienen una función inexistente |
 | P1 | Persistencia local sin contrato | Calculadora, Blockly, Tarjetas, tema y recuperación usan `localStorage` por separado | Validación, cuotas y migraciones inconsistentes |
@@ -155,7 +155,7 @@ Reglas:
 
 | ID | Bloque | Resultado |
 |---|---|---|
-| ARC-01 | Contratos, CodArch y mapa de capas | Reglas ejecutables y configuración correcta |
+| ARC-01 | Contratos, mapa de capas y verificación local | Reglas ejecutables sin depender de un MCP externo |
 | ARC-02 | Descomposición de apps restantes | Timeline, Hoja, Tarjetas y Office con shell/hooks/componentes |
 | ARC-03 | Estado de cliente y persistencia | Un contrato para storage, autosave y recuperación; retirar o rescatar borradores |
 | ARC-04 | Sistema visual y CSS | Tokens, primitivas, capas y revisión responsive |
@@ -166,7 +166,7 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 
 ## 6. Criterios de salida del programa
 
-- CodArch detecta las capas reales y falla ante imports prohibidos y ciclos.
+- La arquitectura local se verifica con un script o configuración dentro del repo y falla ante imports prohibidos y ciclos; ninguna herramienta MCP apunta a una raíz externa.
 - Cada app tiene un shell reconocible y ningún archivo de producto supera los límites acordados.
 - No hay módulos de producto sin consumidores ni helpers duplicados sin justificación.
 - El CSS tiene una capa de tokens/primitivas y una revisión de cinco anchos y dos temas.

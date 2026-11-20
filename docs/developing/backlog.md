@@ -3,23 +3,36 @@
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 13 entradas pendientes · siguiente candidato ARC-01
+> **Estado:** 14 entradas pendientes · siguiente candidato DEV-02
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
 
-## 2026-11-20 — ARC-01 · Contratos de arquitectura y CodArch real
+## 2026-11-20 — DEV-02 · Aislar MCP y tooling por repositorio
 
-- Contexto: `.codarch.yml` declara capas `packages/**` y `apps/**` que no existen en este repositorio. `suggest_architecture` detecta paquetes de otro proyecto y no puede vigilar `app/board`, `lib` ni `app/api`.
+- Contexto: la configuración global de OpenCode tenía un MCP `codarch` ejecutando `codarch-mcp --root "C:/.../Visual Software Architecture"`. Ese repositorio no es `aula-kanban`, no está en esta raíz y no tiene relación con este producto. Las consultas devolvieron capas `packages/**` y `apps/**` ajenas y contaminaron la primera propuesta de backlog.
+- Acción inmediata: retirado el bloque `codarch` de `~/.config/opencode/opencode.json`; queda copia previa en `opencode.json.before-codarch-removal`. El catálogo activo de OpenCode ya no expone CodArch.
+- Alcance:
+  1. Documentar que ningún MCP global debe fijar una raíz absoluta de otro proyecto.
+  2. Si se adopta CodArch, configurarlo por repositorio, con una raíz relativa/validada y snapshot propio.
+  3. Auditar el resto de MCP (`unreal`, `blender-mcp`) para confirmar que no filtran estado de otros proyectos.
+  4. Añadir una comprobación de arranque que rechace una raíz fuera del workspace.
+  5. Registrar el procedimiento para habilitar/deshabilitar MCP por proyecto.
+- Criterios: una consulta de arquitectura en `aula-kanban` solo puede leer `aula-kanban`; si la herramienta no está configurada aquí, falla cerrada y no devuelve datos de otro repo.
+- Notas: este error no era de CodArch como producto; era una configuración global acoplada a otro repositorio.
+
+## 2026-11-20 — ARC-01 · Contratos de arquitectura y verificación local
+
+- Contexto: este repositorio no tiene `.codarch.yml`; la revisión inicial se contaminó porque el MCP de CodArch estaba configurado globalmente contra otro proyecto. Hay que definir las capas reales y comprobarlas con tooling que viva dentro de este repo.
 - Alcance:
   1. Definir las capas reales: shell, apps, shared, dominio, servidor y API.
-  2. Configurar CodArch con los patrones de este repo y reglas de dependencia, ciclos y presupuestos.
-  3. Añadir una comprobación local/CI que falle ante imports prohibidos.
+  2. Elegir un mecanismo local de verificación (script propio, configuración por repo o herramienta instalada aquí).
+  3. Añadir una comprobación local/CI que falle ante imports prohibidos, ciclos y presupuestos.
   4. Documentar cómo se clasifica un archivo nuevo y cómo se añade una app.
   5. Medir archivos y dependencias antes/después.
-- Criterios: CodArch describe este repositorio, falla ante una violación real y no depende de rutas de otro producto.
-- Notas: no hace falta adoptar DDD ni hexagonal completos; la regla es que las dependencias apunten hacia dentro.
+- Criterios: la verificación describe este repositorio, falla ante una violación real y no depende de una raíz externa ni de un MCP global.
+- Notas: no hace falta adoptar DDD ni hexagonal completos; la regla es que las dependencias apunten hacia dentro. CodArch solo se integrará si se configura por repositorio y con una raíz verificable.
 
 ## 2026-11-20 — ARC-02 · Descomponer las apps monolíticas restantes
 
