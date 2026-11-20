@@ -61,11 +61,12 @@
 
 ### Fase 1 — Contrato, matriz de formatos y límites
 
-- [ ] Inventariar las cuatro acciones, sus archivos, límites y pruebas actuales.
-- [ ] Fijar el contrato de entrada (`archivo`, `arrastre` o `pegado`) y la vista previa común.
-- [ ] Crear `docs/developing/aula-documentos-import.md` con la matriz de formatos, límites y pérdidas.
-- [ ] Decidir HTML con una razón escrita y dejar ODT/RTF/XLSX fuera del flujo.
+- [x] Inventariar las cuatro acciones, sus archivos, límites y pruebas actuales.
+- [x] Fijar el contrato de entrada (`archivo`, `arrastre` o `pegado`) y la vista previa común.
+- [x] Crear `docs/developing/aula-documentos-import.md` con la matriz de formatos, límites y pérdidas.
+- [x] Decidir HTML con una razón escrita y dejar ODT/RTF/XLSX fuera del flujo.
 - **Criterios:** la matriz distingue aceptado, rechazado y convertido con aviso; no cambia el comportamiento; las pruebas existentes siguen en verde.
+- **Cierre (2026-11-20):** `aula-documentos-import.md` reúne las cuatro acciones, el contrato de entrada/vista previa, la matriz de formatos, los límites y las pérdidas. HTML se descarta sin parser ni saneado nuevos; TXT será literal y el pegado Markdown; JSON solo canónico. Sin cambios de código; pruebas dirigidas de importación, Office, copias, recuperación y presentación en verde.
 
 ### Fase 2 — Un solo diálogo con archivo, arrastre y pegado
 
