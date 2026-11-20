@@ -339,6 +339,8 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 - **Aplicación:** solo local (`wrangler --local --persist-to .wrangler/state-v20`). ARC-06 prohíbe migraciones remotas y cambios de datos reales.
 - **Migraciones de datos en runtime:** `apps/app-migration.ts` (apps y preferencias legacy), `aula-documentos/aula-documentos-migration.ts` (documentos de apps antiguas, transaccional), `projects/project-rekey.ts` (id canónico de proyecto). Se ejecutan por petición, no por despliegue.
 - **Riesgo:** las tres migraciones de datos viven en `lib/server` como servicios; las de esquema viven en `drizzle/`. Esa separación es correcta y no se cambia en ARC-06.
+- **Revisión local (Fase 4, 2026-11-20):** 42 entradas de journal = 42 archivos; se aplican en orden sobre SQLite en memoria y dejan 25 tablas, incluidas `projects`, `uploads` y `document_copies`. La prueba permanente `scripts/migrations.test.mjs` fija journal, orden y aplicación.
+- **Rollback:** D1 no tiene migraciones inversas. El rollback local consiste en descartar `.wrangler/state-v20` y reaplicar desde cero; no hay comando remoto ni se ejecutará en ARC-06. Las migraciones de datos anteriores (`apps`, `aula-documentos`, tablas legacy) ya tienen pruebas propias, incluidas las transaccionales.
 
 ---
 
