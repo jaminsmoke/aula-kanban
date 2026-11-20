@@ -1,21 +1,124 @@
-# Roadmap activo
+# Roadmap ARC-05 — Pruebas, harness y presupuestos
 
-> **Estado:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
-> **Changelog:** [`changelog.md`](changelog.md)
-> **Publicación:** la despliega y verifica Codex de OpenAI; este archivo no cambia la versión del Site.
+> **Estado:** Activo · **Origen:** ARC-05 del backlog (2026-11-20)
+> **Backlog:** ARC-06, ADOC-16 a ADOC-20, UI-11 y DEV-01 (8 entradas) · **Changelog:** [`changelog.md`](changelog.md)
+> **Publicación:** la despliega y verifica Codex de OpenAI; este roadmap no cambia la versión del Site.
 
 ---
 
-## 1. Estado
+## 1. Objetivo
 
-ARC-04 quedó cerrado y archivado en [`historial/roadmap-arc-04.md`](../historial/roadmap-arc-04.md). El CSS está organizado en tokens, base, primitivas, layout y estilos de app; no quedan excepciones `features → layout` ni `largeCss`.
+- [ ] Extraer un harness de pruebas explícito para Aula y los flujos que comparten mocks.
+- [ ] Evitar que un cambio de mock obligue a editar cinco archivos sin ocultar el setup global.
+- [ ] Detectar archivos y dependencias de producto sin consumidores.
+- [ ] Definir presupuestos por app y por flujo, no solo por el total de Aula.
+- [ ] Criterio de éxito: el setup compartido conserva aislamiento, los presupuestos cubren las apps principales y el código muerto falla de forma determinista.
 
-## 2. Siguiente paso
+## 2. Alcance
 
-Elegir la siguiente entrada del backlog. El candidato inmediato es **ARC-05 — Pruebas, harness y presupuestos**, según [`arquitectura-global.md`](arquitectura-global.md).
+**Dentro:**
 
-## 3. Límites de mantenimiento
+- Inventario de mocks, setup y datos de prueba repetidos.
+- Harness para Aula Documentos y factorías comunes de Office, Tarjetas y Timeline.
+- Detección de módulos, exports y dependencias sin consumidores.
+- Presupuestos por app/flujo y su integración en CI.
+- Documentación, changelog y baseline al cerrar cada bloque.
 
-- El roadmap se divide en las fases que necesite el trabajo, sin fases de relleno.
-- Cada fase agrupa un bloque verificable y se revisa antes de pasar a la siguiente.
-- No se publica en Sites desde el roadmap; la publicación la confirma Codex de OpenAI.
+**Fuera:**
+
+- Cambiar el comportamiento de producto, URLs, permisos o datos.
+- Sustituir Vitest, Testing Library o el framework de build.
+- Rehacer la arquitectura de apps, CSS o servidor de ARC-02/04/06.
+- Añadir una dependencia de análisis sin evaluar antes una alternativa local.
+- Cambiar la versión del Site, publicar o aplicar migraciones.
+
+## 3. Decisiones de arquitectura
+
+| Decisión | Alternativa descartada | Motivo |
+|---|---|---|
+| Harness explícito por flujo | Mocks globales en `vitest.setup.ts` | Un mock global oculta el estado y rompe el aislamiento. |
+| Factorías con parámetros | Fixtures monolíticos compartidos | Cada prueba debe declarar qué documento, tarea o respuesta usa. |
+| Script propio para código muerto | Añadir `knip` sin evaluar | El repo ya tiene checker y no necesita otra dependencia por defecto. |
+| Presupuestos por app y flujo | Un único límite global | Una app pesada puede quedar oculta por el total del tablero. |
+| Cambios de infraestructura de pruebas en pasos pequeños | Refactor masivo de 234 archivos | Permite revisar aislamiento y presupuestos por bloque. |
+| Mantener los shims de jsdom en el setup global | Moverlos al harness | `ResizeObserver`, `IntersectionObserver` y `crypto` son del entorno, no de un flujo. |
+
+## 4. Punto de partida
+
+Medición del 2026-11-20:
+
+- **234 archivos de prueba / 20.642 líneas**.
+- Aula Documentos concentra cinco archivos grandes:
+  - `aula-documentos-copies.test.tsx`: 582 líneas.
+  - `aula-documentos-presentation.test.tsx`: 525.
+  - `aula-documentos-autosave.test.tsx`: 491.
+  - `aula-documentos-documents.test.tsx`: 464.
+  - `aula-documentos-recovery.test.tsx`: 420.
+- Se repiten aproximadamente 190 líneas de mocks y setup entre esos archivos.
+- `vitest.setup.ts` ya contiene shims de entorno y helpers como `jsonResponse`; no se deben convertir en mocks de producto globales.
+- Hay 12 flujos en `docs/perf-budget.json`; no existe una comprobación automática de código muerto ni presupuestos por app.
+- No hay `knip` ni `ts-prune` instalados.
+
+## 5. Fases
+
+### Fase 1 — Inventario y contrato del harness
+
+- [ ] Inventariar mocks, factories, respuestas, datos y helpers de los cinco archivos de Aula.
+- [ ] Identificar qué partes son entorno global y qué partes pertenecen a un flujo.
+- [ ] Definir la API del harness: documento, sesión, fetch, descargas y estados de error.
+- [ ] Documentar qué no puede hacer el harness: ocultar mocks, compartir estado mutable ni saltarse `cleanup`.
+- [ ] Mapear qué otros flujos pueden consumir las mismas factorías.
+- **Criterios:** inventario completo y límites explícitos; ninguna prueba migrada todavía.
+
+### Fase 2 — Extraer el harness y migrar Aula
+
+- [ ] Crear el harness de Aula con factorías explícitas y estado por prueba.
+- [ ] Migrar los cinco archivos grandes sin cambiar las aserciones de comportamiento.
+- [ ] Extraer respuestas y utilidades comunes de Office, Tarjetas y Timeline con consumidores reales.
+- [ ] Mantener `vitest.setup.ts` solo para shims de entorno y limpieza global.
+- [ ] Añadir una prueba de aislamiento que falle si dos pruebas comparten estado mutable.
+- **Criterios:** los cinco archivos usan el harness, las pruebas siguen pasando y no aparecen mocks globales nuevos.
+
+### Fase 3 — Código muerto y dependencias
+
+- [ ] Evaluar `knip`, `ts-prune` y un script local con el checker actual como referencia.
+- [ ] Implementar la opción elegida sin añadir dependencia si el script local cubre el caso.
+- [ ] Detectar módulos, exports y dependencias de producto sin consumidores.
+- [ ] Excluir pruebas, scripts, entradas dinámicas y APIs públicas justificadas.
+- [ ] Integrar el check en `npm run check` y CI con un baseline explícito para deuda conocida.
+- **Criterios:** un archivo o dependencia sin consumidores falla de forma determinista; no hay falsos positivos en entradas dinámicas; CI lo ejecuta.
+
+### Fase 4 — Presupuestos por app y por flujo
+
+- [ ] Revisar los 12 flujos actuales y asignar presupuesto a las apps principales.
+- [ ] Definir límites de test, CSS, bundle, latencia e imágenes donde correspondan.
+- [ ] Añadir una salida legible y una comprobación de crecimiento por app.
+- [ ] Integrar los presupuestos en `npm run check` o en el job de CI adecuado.
+- [ ] Documentar cómo actualizar un presupuesto con evidencia de rendimiento.
+- **Criterios:** cada app principal tiene un presupuesto reconocible, los límites se comprueban automáticamente y una regresión falla.
+
+### Fase 5 — Cierre
+
+- [ ] Revisar que el harness no oculta mocks ni rompe aislamiento.
+- [ ] Revisar que los checks de código muerto y presupuestos no dependen de rutas o MCP externos.
+- [ ] Actualizar documentación, changelog y backlog; archivar este roadmap y reiniciar `roadmap.md`.
+- [ ] Ejecutar `npm run check`, suite completa, build, `perf:budget` y `perf:office`.
+- **Criterios:** harness, detección de muertos y presupuestos estables; suite y CI correctos; sin cambios de versión ni publicación.
+
+## 6. Riesgos y bloqueos
+
+| Riesgo | Impacto | Mitigación |
+|---|---|---|
+| Mocks globales ocultos | Pruebas que pasan por el mock equivocado | Harness explícito y prueba de aislamiento. |
+| Falsos positivos de código muerto | Bloqueo de código dinámico legítimo | Exclusiones documentadas y baseline con caducidad. |
+| Presupuestos ruidosos | Fallos por bytes o tiempos variables | Margen, medición repetida y límites por flujo. |
+| Cambio masivo de tests | Pérdida de cobertura | Migrar por archivo y conservar aserciones. |
+| Dependencia de análisis nueva | Mantenimiento extra | Preferir script local; justificar cualquier dependencia. |
+| CI más lento | Menos iteraciones | Checks rápidos, caché y ejecución por jobs. |
+
+## 7. Notas de sesión
+
+- 2026-11-20: ARC-05 sale del backlog y pasa a ser el roadmap activo. El backlog queda con **8 entradas**; siguiente candidato **ARC-06**.
+- La suite actual tiene **234 archivos / 20.642 líneas**; las cifras del backlog estaban desactualizadas.
+- `vitest.setup.ts` ya cubre shims de jsdom; el harness no sustituye ese setup global.
+- El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

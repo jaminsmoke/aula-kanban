@@ -2,24 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 9 entradas pendientes · siguiente candidato ARC-05
+> **Roadmap:** ARC-05 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 8 entradas pendientes · siguiente candidato ARC-06
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
-
-## 2026-11-20 — ARC-05 · Pruebas, harness y presupuestos
-
-- Contexto: 227 archivos / 20.417 líneas de prueba. La suite de Aula funciona pero repite unas 190 líneas de mocks y setup en cinco archivos; no hay detección automática de código muerto.
-- Alcance:
-  1. Extraer un harness de pruebas compartido para Aula y otros flujos con mocks comunes.
-  2. Añadir comprobaciones de tamaño, dependencias y archivos sin consumidores.
-  3. Definir presupuestos por app y por flujo, no solo para Aula.
-  4. Evitar que un cambio de mock obligue a editar cinco archivos.
-  5. Mantener aislamiento entre pruebas.
-- Criterios: el setup compartido no oculta mocks globales, los límites se comprueban automáticamente y los presupuestos cubren las apps principales.
-- Notas: valorar `knip`/`ts-prune` o un script propio antes de añadir otra dependencia.
 
 ## 2026-11-20 — ARC-06 · Mapa de servidor, API y deuda residual
 

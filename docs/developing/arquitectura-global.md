@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01, DEV-02, ARC-02, ARC-03 y ARC-04 completados · **Fecha:** 2026-11-20
+> **Estado:** ARC-01, DEV-02, ARC-02, ARC-03 y ARC-04 completados; ARC-05 activo · **Fecha:** 2026-11-20
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -225,3 +225,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - ARC-02 quedó cerrado y archivado en [`historial/roadmap-arc-02.md`](../historial/roadmap-arc-02.md): Timeline, Hoja de cálculo, Office, Tarjetas y el residual de Aula Documentos tienen shell, hooks y componentes separados.
 - ARC-03 quedó cerrado y archivado en [`historial/roadmap-arc-03.md`](../historial/roadmap-arc-03.md): el estado local usa un contrato versionado único y `useAppDocument` sigue siendo la persistencia de documentos compartidos.
 - ARC-04 quedó cerrado y archivado en [`historial/roadmap-arc-04.md`](../historial/roadmap-arc-04.md): tokens, primitivas, layout, estilos de app y revisión responsive están ordenados; `baselineViolations` y `largeCss` quedan vacíos.
+- ARC-05 está activo en [`roadmap.md`](roadmap.md) para extraer el harness de pruebas, detectar código muerto y ampliar los presupuestos por app y flujo.
