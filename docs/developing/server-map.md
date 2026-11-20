@@ -65,7 +65,7 @@ Estas son las definiciones que gobiernan ARC-06. La clasificación de cada archi
 
 ---
 
-## 3. Inventario de `lib/server` (101 archivos)
+## 3. Inventario de `lib/server` (103 archivos)
 
 Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servicio, `H` helper HTTP, `P` plataforma, `A` adaptador MCP, `MX` mixto. La columna **Prueba** cuenta las pruebas que importan el módulo directamente; `—` no significa necesariamente ausencia de cobertura indirecta.
 
@@ -119,11 +119,13 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `books/books.ts` | 76 | `S` catálogo de libros | rutas `api/books`, visor de clase | 1 |
 | `books/books-repository.ts` | 25 | `B` R2 del catálogo | `books/books.ts` | — |
 
-### 3.3 Tablero, ventanas y tareas (10)
+### 3.3 Tablero, ventanas y tareas (12)
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
-| `board/boards.ts` | 182 | `S`+`R` `boards`/`tasks` | `board/board-control.ts`, `mcp/apps/excalidraw.ts`, `api/boards` | 2 |
+| `board/boards.ts` | 170 | `S` pizarras | `board/board-control.ts`, `mcp/apps/excalidraw.ts`, `api/boards` | 2 |
+| `board/boards-repository.ts` | 90 | `R` `boards`, `tasks` y `task_assignees` | `board/boards.ts` | — |
+| `board/board-types.ts` | 13 | `D` dueño de pizarra | `board/boards.ts`, `board/boards-repository.ts` | — |
 | `board/board-control.ts` | 34 | `S` publicación en sala | `mcp/apps/excalidraw.ts` | 1 |
 | `board/board-room.ts` | 151 | `P` Durable Object WebSocket | `board/board-control.ts` | 1 |
 | `board/board-stats.ts` | 107 | `R` métricas del tablero | `api/storage/status` | 1 |
@@ -275,7 +277,7 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 | `instance_apps` | `apps/apps-repository.ts` | `apps/apps-repository.ts`, `apps/personal-apps.ts`, MCP |
 | `app_documents` | `apps/app-documents-repository.ts` | `aula-documentos/aula-documentos-migration.ts`, MCP de apps, `uploads/usage.ts` |
 | `app_preferences` | `apps/personal-apps.ts` | `apps/personal-apps.ts` |
-| `boards` | `board/boards.ts`; snapshot en vivo en `board/board-room.ts` | `board/boards.ts`, `uploads/usage.ts` |
+| `boards` | `board/boards-repository.ts`; snapshot en vivo en `board/board-room.ts` | `board/boards-repository.ts`, `uploads/usage.ts` |
 | `tasks` | `tasks/mutations.ts`; `access/deleted-profiles.ts` (crédito y purga) | `tasks/queries.ts`, `board/boards.ts`, `projects/projects.ts`, `uploads/usage.ts` |
 | `task_assignees` | `tasks/mutations.ts` | `tasks/queries.ts`, `board/boards.ts`, `access/deleted-profiles.ts` |
 | `students` | `people/students-repository.ts` | `people/students-repository.ts`, `access/members-repository.ts`, `tasks/queries.ts` |
@@ -351,6 +353,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 | P1 | Alumnado y profesorado mezclaban reglas y D1 | `people/students-repository.ts` y `people/teachers-repository.ts` concentran fichas e invitaciones | 3 · **resuelto** |
 | P1 | Apps, preferencias y documentos mezclaban reglas y D1 | `apps/{apps,personal-apps,app-documents}-repository.ts` concentran las filas | 3 · **resuelto** |
 | P1 | Catálogo de libros leía R2 y `project_books` desde el servicio | `books/books-repository.ts` (R2) y `books/project-books-repository.ts` (D1) | 3 · **resuelto** |
+| P1 | Pizarras leían `boards` y `task_assignees` desde el servicio | `board/boards-repository.ts` + contrato neutral en `board/board-types.ts` | 3 · **resuelto** |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
 | P1 | Cuatro rutas importaban D1 directamente | extraídas a servicios; `app/api` no importa D1 | 2 y 3 · **resuelto** |
@@ -382,7 +385,7 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 
 ## 10. Criterios de aceptación de Fase 1
 
-- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (101/101).
+- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (103/103).
 - [x] Cada ruta de `app/api` tiene clase provisional y servicios identificados (26/26).
 - [x] Están identificadas las reglas duplicadas entre rutas, servicios, MCP y almacenamiento.
 - [x] Está mapeado el acceso a D1 y R2, con tablas, claves y responsables.

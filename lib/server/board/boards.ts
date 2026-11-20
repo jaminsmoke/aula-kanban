@@ -1,20 +1,25 @@
-import { and, eq, sql } from "drizzle-orm";
-import { getDb } from "../../../db";
-import { boards, taskAssignees, tasks } from "../../../db/schema";
 import type { Access } from "../projects/project-access";
+import { BOARD_OWNER_TYPES, type BoardOwnerType } from "./board-types";
+import {
+  findBoardRow,
+  findTaskAssigneeRows,
+  insertBoardRow,
+  taskExists,
+  updateBoardRowIfCurrent,
+  type BoardRow,
+} from "./boards-repository";
 
 /**
  * Servicio compartido de pizarras.
  *
  * La API HTTP y las herramientas MCP usan esta misma capa para validar el
  * dueño, los permisos y la revisión optimista. La API conserva su contrato de
- * transporte; aquí solo viven las reglas de la pizarra.
+ * transporte; aquí solo viven las reglas de la pizarra. El acceso D1 vive en
+ * `boards-repository.ts`.
  */
 
-/** Tipos de dueño de una pizarra. */
-export const BOARD_OWNER_TYPES = ["task", "project", "space"] as const;
-/** Tipo de dueño de una pizarra. */
-export type BoardOwnerType = (typeof BOARD_OWNER_TYPES)[number];
+export { BOARD_OWNER_TYPES };
+export type { BoardOwnerType };
 
 /** Límite del snapshot serializado, en caracteres. */
 export const MAX_BOARD_SNAPSHOT_BYTES = 2 * 1024 * 1024;
@@ -45,8 +50,6 @@ export type BoardFailure = {
 
 /** Resultado de una operación de pizarra. */
 export type BoardResult = { ok: true; value: BoardRecord } | BoardFailure;
-
-type BoardRow = typeof boards.$inferSelect;
 
 /**
  * Construye un fallo del servicio.
@@ -84,10 +87,7 @@ function view(row: BoardRow): BoardRecord {
  * @returns `true` cuando el dueño existe y pertenece al proyecto.
  */
 export async function ownerExists(projectId: string, ownerType: BoardOwnerType, ownerId: string): Promise<boolean> {
-  if (ownerType === "task") {
-    const [task] = await getDb().select({ id: tasks.id }).from(tasks).where(and(eq(tasks.id, ownerId), eq(tasks.projectId, projectId)));
-    return Boolean(task);
-  }
+  if (ownerType === "task") return taskExists(projectId, ownerId);
   return ownerId === projectId;
 }
 
@@ -103,7 +103,7 @@ export async function canWrite(access: Access, projectId: string, ownerType: Boa
   if (access.role === "guest") return false;
   if (access.role !== "student") return true;
   if (ownerType !== "task" || !access.studentSection) return false;
-  const refs = await getDb().select().from(taskAssignees).where(and(eq(taskAssignees.projectId, projectId), eq(taskAssignees.taskId, ownerId)));
+  const refs = await findTaskAssigneeRows(projectId, ownerId);
   return refs.length === 1 && refs[0].kind === "student" && refs[0].profileId === access.studentSection;
 }
 
@@ -116,11 +116,7 @@ export async function canWrite(access: Access, projectId: string, ownerType: Boa
  */
 export async function readBoard(projectId: string, ownerType: BoardOwnerType, ownerId: string): Promise<BoardResult> {
   if (!await ownerExists(projectId, ownerType, ownerId)) return failure(404, BOARD_OWNER_NOT_FOUND);
-  const [board] = await getDb().select().from(boards).where(and(
-    eq(boards.projectId, projectId),
-    eq(boards.ownerType, ownerType),
-    eq(boards.ownerId, ownerId),
-  ));
+  const board = await findBoardRow(projectId, ownerType, ownerId);
   return {
     ok: true,
     value: board ? view(board) : { ownerType, ownerId, snapshot: "", revision: 0, updatedAt: 0 },
@@ -147,35 +143,28 @@ export async function saveBoard(input: SaveBoardInput): Promise<BoardResult> {
   if (!await ownerExists(input.projectId, input.ownerType, input.ownerId)) return failure(404, BOARD_OWNER_NOT_FOUND);
   if (!await canWrite(input.access, input.projectId, input.ownerType, input.ownerId)) return failure(403, BOARD_WRITE_FORBIDDEN);
 
-  const db = getDb();
-  const now = Date.now();
-  const [saved] = input.revision === 0
-    ? await db.insert(boards).values({
+  const updatedAt = Date.now();
+  const saved = input.revision === 0
+    ? await insertBoardRow({
         id: crypto.randomUUID(),
         projectId: input.projectId,
         ownerType: input.ownerType,
         ownerId: input.ownerId,
         snapshot: input.snapshot,
         revision: 1,
-        updatedAt: now,
-      }).onConflictDoNothing().returning()
-    : await db.update(boards).set({
+        updatedAt,
+      })
+    : await updateBoardRowIfCurrent({
+        projectId: input.projectId,
+        ownerType: input.ownerType,
+        ownerId: input.ownerId,
         snapshot: input.snapshot,
-        revision: sql`${boards.revision} + 1`,
-        updatedAt: now,
-      }).where(and(
-        eq(boards.projectId, input.projectId),
-        eq(boards.ownerType, input.ownerType),
-        eq(boards.ownerId, input.ownerId),
-        eq(boards.revision, input.revision),
-      )).returning();
+        revision: input.revision,
+        updatedAt,
+      });
 
   if (saved) return { ok: true, value: view(saved) };
 
-  const [current] = await db.select().from(boards).where(and(
-    eq(boards.projectId, input.projectId),
-    eq(boards.ownerType, input.ownerType),
-    eq(boards.ownerId, input.ownerId),
-  ));
+  const current = await findBoardRow(input.projectId, input.ownerType, input.ownerId);
   return failure(409, BOARD_CONFLICT, current?.revision);
 }
