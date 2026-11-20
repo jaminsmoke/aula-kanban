@@ -20,6 +20,7 @@
 | Documento | Para qué | Orden |
 |---|---|---|
 | [`roadmap.md`](developing/roadmap.md) | ADOC-15 activo: tablas completas en el editor | Secuencia de ejecución |
+| [`aula-documentos-arquitectura.md`](developing/aula-documentos-arquitectura.md) | Mapa de responsabilidades, árbol objetivo y límites de Aula Documentos | Referencia de refactor |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
