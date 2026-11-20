@@ -67,8 +67,8 @@ Ya funciona: `useAppDocument`, `useWindowCloseGuard`, `useBoardUrl`, `Modal`, `d
 
 Deuda detectada:
 
-- `useVersionedDraft` (487 líneas) y `versioned-draft-recovery` no tienen consumidores de producto; solo pruebas.
-- `unsaved-changes-dialog` y `version-conflict-dialog` están probados pero no se usan en ninguna app.
+- El sistema de borradores versionados se retiró en ARC-03 Fase 1: no tenía consumidores de producto y solo se mantenía por sus pruebas.
+- Los diálogos de cambios sin guardar y conflicto de versión se retiraron con el sistema; Aula Documentos conserva sus propios diálogos de cierre y conflicto.
 - Hay persistencia local repartida entre calculadora, Blockly, Tarjetas, tema y recuperación.
 - El selector de archivo sigue siendo local a Aula; no hay que extraerlo hasta que otra app lo necesite.
 
@@ -108,7 +108,7 @@ Deuda:
 |---|---|---|---|
 | P0 | El MCP de CodArch estaba enganchado a otro repositorio | La configuración global de OpenCode ejecutaba `codarch-mcp` con `--root` apuntando a `Visual Software Architecture`; este repo no tiene `.codarch.yml` | Herramientas y diagnósticos ajenos contaminan las decisiones; ya se retiró del catálogo activo |
 | P0 | Apps monolíticas restantes | Timeline 676, Hoja 525, Office viewer 543, Office export 525, Tarjetas 415 | Cambios pequeños obligan a recorrer archivos grandes |
-| P1 | Sistema de borradores versionados muerto | `useVersionedDraft` y sus dos diálogos no tienen consumidores reales | 800+ líneas y pruebas que mantienen una función inexistente |
+| P1 | Sistema de borradores versionados muerto | `useVersionedDraft` y sus dos diálogos no tenían consumidores reales | Retirado en ARC-03 Fase 1: 1.694 líneas menos |
 | P1 | Persistencia local sin contrato | Calculadora, Blockly, Tarjetas, tema y recuperación usan `localStorage` por separado | Validación, cuotas y migraciones inconsistentes |
 | P1 | CSS sin capas | 48 archivos; primitivas y estilos de app mezclados | Duplicación visual y difícil revisión responsive |
 | P1 | Pruebas duplicadas | Cinco archivos de Aula repiten casi todo el setup | Coste alto al cambiar un mock |
@@ -218,7 +218,7 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 ## 8. Estado tras ARC-01, DEV-02 y ARC-02
 
 - `npm run arch:check` y `npm run check` están disponibles; CI ejecuta `arch:check`.
-- Resultado actual: **396 archivos de producto / 982 imports / 5 violaciones base / 0 ciclos / 0 problemas nuevos**.
+- Resultado actual: **392 archivos de producto / 975 imports / 5 violaciones base / 0 ciclos / 0 problemas nuevos**.
 - No quedan excepciones de tamaño; las cinco dependencias `features → layout` siguen asignadas a ARC-04 y tienen caducidad.
 - El ciclo `auth ↔ demo` se eliminó con `lib/server/auth-user.ts`.
 - La configuración global de CodArch se retiró. DEV-02 quedó cerrado con el guard de MCP por repositorio, el inventario en [`mcp-tooling-audit.md`](mcp-tooling-audit.md) y la plantilla local [`mcp-project.example.json`](mcp-project.example.json).

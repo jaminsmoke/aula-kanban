@@ -64,10 +64,10 @@ El baseline no tiene archivos de código por encima de 600 líneas. `useAppDocum
 
 ### Fase 1 — Inventario y decisión sobre borradores
 
-- [ ] Inventariar claves, formatos, consumidores y pruebas de `localStorage`.
-- [ ] Confirmar si alguna app necesita `useVersionedDraft`; si no, retirarlo con su recuperación, diálogos, estilos y pruebas.
-- [ ] Eliminar imports, CSS y pruebas huérfanas; registrar la decisión y el ahorro.
-- [ ] Añadir una prueba de que ningún módulo de producto sin consumidores queda en el catálogo.
+- [x] Inventariar claves, formatos, consumidores y pruebas de `localStorage`.
+- [x] Confirmar si alguna app necesita `useVersionedDraft`; si no, retirarlo con su recuperación, diálogos, estilos y pruebas.
+- [x] Eliminar imports, CSS y pruebas huérfanas; registrar la decisión y el ahorro.
+- [x] Añadir una prueba de que ningún módulo de producto sin consumidores queda en el catálogo.
 - **Criterios:** no quedan módulos de borradores sin consumidor; no hay imports rotos; suite y `arch:check` pasan.
 
 ### Fase 2 — Contrato único de almacenamiento local
@@ -119,4 +119,5 @@ El baseline no tiene archivos de código por encima de 600 líneas. `useAppDocum
 - 2026-11-20: ARC-03 sale del backlog y pasa a ser el roadmap activo. El backlog queda con **10 entradas**; siguiente candidato **ARC-04**.
 - La persistencia de documentos compartidos sigue en `useAppDocument`; el contrato local no sustituye D1.
 - Estado de partida: **396 archivos de producto / 982 imports / 5 violaciones base / 0 ciclos / 0 problemas**; sin excepciones de tamaño de código.
+- 2026-11-20: **Fase 1 completada.** Inventario de claves y decisión en [`client-storage-audit.md`](client-storage-audit.md). Retirados `useVersionedDraft`, su recuperación, los diálogos de cierre/conflicto, sus CSS y pruebas: **1.694 líneas**. Añadida una prueba de regresión contra su reintroducción. `arch:check`: **392 archivos / 975 imports / 0 problemas**; suite: **229 archivos / 1.573 pruebas**; presupuestos correctos.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
