@@ -1,7 +1,7 @@
 # Auditoría de MCP y tooling
 
-> **Estado:** Fase 1 de DEV-02 · **Fecha:** 2026-11-20
-> **Alcance:** configuración de OpenCode, MCP activos, raíces y datos accesibles desde este workspace.
+> **Estado:** DEV-02 completado · **Fecha:** 2026-11-20
+> **Roadmap:** [`roadmap-dev-02.md`](../historial/roadmap-dev-02.md) · **Alcance:** configuración de OpenCode, MCP activos, raíces y datos accesibles desde este workspace.
 > **Regla:** una herramienta solo puede leer la raíz `aula-kanban` o debe fallar cerrada.
 
 ## 1. Conclusión

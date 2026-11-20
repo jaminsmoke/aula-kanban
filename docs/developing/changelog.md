@@ -6,6 +6,36 @@
 
 ---
 
+## 2026-11-20 — Roadmap DEV-02 — Aislar MCP y tooling por repositorio
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Documentado el inventario de MCP activos, las fuentes de configuración, el modelo de amenaza y la política permitido/prohibido en `docs/developing/mcp-tooling-audit.md`.
+- Registrado el incidente de CodArch: el bloque global apuntaba a `Visual Software Architecture`; se retiró y su copia previa quedó marcada como inactiva.
+- El checker de arquitectura rechaza `--root`, `root`/`cwd`, rutas absolutas o con `..` en `command`/`args`, y configuraciones MCP con JSON inválido.
+- Añadidas pruebas de configuración relativa válida, comando absoluto externo, raíz externa y JSON inválido; el guard se ejecuta en `npm run check` y CI.
+- Documentado el procedimiento para habilitar, deshabilitar y retirar MCP por repositorio, incluida la actuación ante una herramienta contaminada.
+- Añadida la plantilla local `docs/developing/mcp-project.example.json`, relativa y deshabilitada por defecto.
+- Auditados `unreal` y `blender-mcp`: ninguno declara raíz de repositorio; solo se usan para trabajo explícito de Unreal o Blender.
+- No se modificó código de producto, datos ni la versión del Site.
+
+### Verificación
+
+- `npm run check`: ESLint sin errores, `tsc` correcto y `npm run arch:check` correcto.
+- `arch:check`: **357 archivos de producto / 907 imports / 0 violaciones nuevas / 0 ciclos nuevos / 0 problemas de presupuesto / 0 problemas MCP**.
+- Suite completa: **228 archivos / 1.583 pruebas**.
+- Build, `perf:budget` y `perf:office` correctos.
+- `aula-documentos`: **369.601 / 370.000 B gzip**; export **329.693 / 340.000 B gzip**; Office **196.481 / 210.000 B gzip**.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- DEV-02 archivado en [`historial/roadmap-dev-02.md`](../historial/roadmap-dev-02.md). El backlog queda con **12 entradas**; siguiente candidato **ARC-02**.
+
+---
+
 ## 2026-11-20 — Roadmap ARC-01 — Contratos de arquitectura y verificación local
 
 **Estado:** Completada - Sin publicación en Sites
