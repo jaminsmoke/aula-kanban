@@ -71,7 +71,7 @@
 
 - [ ] Reducir `aula-documentos-app.tsx` a un shell de orquestación; extraer toolbar, menús, diálogos, panel lateral y estados de presentación.
 - [ ] Extraer hooks de autosave/conflicto, copias, importación, imágenes, presentación y migración.
-- [ ] Dividir `aula-documentos.css` por layout, barra, editor, bloques, diálogos y panel lateral.
+- [x] Dividir `aula-documentos.css` por layout, barra, editor, bloques, diálogos y panel lateral.
 - [ ] Dividir las pruebas por componente, hook y flujo, conservando los casos actuales.
 - [ ] Mantener intactos autosave, permisos, URLs, atajos, textos visibles y orden de los diálogos.
 - [ ] Añadir comprobaciones de tamaño y de dependencias internas para evitar que el archivo vuelva a crecer.
@@ -160,3 +160,4 @@
 - 2026-11-20: Fase 4 completada. Añadido **Insertar > Tabla** con selector de cuadrícula, creación con fila de cabecera y barra contextual para añadir/eliminar filas y columnas, alternar cabecera y eliminar la tabla. El selector y la barra se cargan bajo demanda; el editor y el autosave existentes se conservan. Pruebas de inserción, estructura, autosave en curso y modo invitado. Suite completa: 217 archivos / 1.554 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 366.306 / 370.000 B gzip; aula-documentos-export: 329.689 / 340.000 B gzip) y `perf:office` correctos.
 - 2026-11-20: Añadidas tres fases de emergencia antes de continuar tablas: auditoría y mapa de extracción, descomposición interna y extracción a shared/lib con deduplicación. Línea base: app/board/apps/aula-documentos/aula-documentos-app.tsx 3.338 líneas, CSS 1.742, prueba principal 1.342, mermaid-block 614, export-html 327, export-images 283. La Fase 1 de tablas ya estaba completada y pasa a ser Fase 4; celdas/teclado pasa a Fase 5 y exportación/cierre a Fase 6.
 - 2026-11-20: Fase 1 de emergencia completada. Documentado el mapa de responsabilidades, árbol objetivo, reglas de dependencia, duplicación detectada y límites de mantenimiento en [`aula-documentos-arquitectura.md`](aula-documentos-arquitectura.md). Línea base registrada: `aula-documentos-app.tsx` 3.338 líneas, CSS 1.742, prueba principal 1.342, 217 archivos / 1.554 pruebas y presupuestos 366.306 / 329.689 / 196.481 B gzip. Sin cambios de comportamiento.
+- 2026-11-20: Fase 2 en curso. CSS dividido en `styles/layout.css` (467 líneas), `editor.css` (257), `blocks.css` (484), `dialogs.css` (328) y `sidebar.css` (487), todos por debajo de 500; `aula-documentos.css` queda como agregador. Extraídos a `utils/document-view.ts` los helpers de palabras, fechas, descarga, texto y remapeo de imágenes, con el mismo comportamiento. La app principal sigue pendiente de descomposición; no se marca la fase como completada.

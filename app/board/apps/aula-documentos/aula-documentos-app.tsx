@@ -104,6 +104,7 @@ import { printHtmlDocument } from "../../shared/aula-documentos/print-html";
 import { useDialogFocus } from "../../shared/use-dialog-focus";
 import { AulaMenu, type AulaMenuAction } from "./aula-documentos-menu";
 import "./aula-documentos.css";
+import { countWords, contentText, downloadBlob, downloadTextFile, formatSavedTime, formatSourceDate, remapCopyImageUrls } from "./utils/document-view";
 
 const PresentationView = lazy(() => import("../../shared/aula-documentos/presentation-view").then((module) => ({
   default: module.PresentationView,
@@ -281,65 +282,10 @@ function MobileActions({
   );
 }
 
-/**
- * Cuenta palabras de texto plano.
- * @param text - Texto del editor.
- * @returns Número de palabras.
- */
-function countWords(text: string): number {
-  const normalized = text.replace(/\s+/g, " ").trim();
-  return normalized ? normalized.split(" ").length : 0;
-}
 
-/**
- * Formatea una marca de tiempo como hora local corta.
- * @param timestamp - Milisegundos desde época o `null`.
- * @returns La hora `HH:MM` o una cadena vacía.
- */
-function formatSavedTime(timestamp: number | null): string {
-  if (timestamp === null) return "";
-  const date = new Date(timestamp);
-  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
-}
 
-/**
- * Formatea la fecha de actualización del documento de origen.
- * @param timestamp - Milisegundos desde época o `null`.
- * @returns Fecha legible o `null` si no está disponible.
- */
-function formatSourceDate(timestamp: number | null): string | null {
-  if (timestamp === null || !Number.isFinite(timestamp)) return null;
-  return new Intl.DateTimeFormat("es-ES", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(timestamp));
-}
 
-/**
- * Descarga un blob.
- * @param blob - Contenido del archivo.
- * @param name - Nombre de descarga.
- */
-function downloadBlob(blob: Blob, name: string) {
-  const url = URL.createObjectURL(blob);
-  const anchor = window.document.createElement("a");
-  anchor.href = url;
-  anchor.download = name;
-  window.document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
-}
 
-/**
- * Descarga un contenido de texto.
- * @param contents - Contenido del archivo.
- * @param type - Tipo MIME.
- * @param name - Nombre de descarga.
- */
-function downloadTextFile(contents: string, type: string, name: string) {
-  downloadBlob(new Blob([contents], { type }), name);
-}
 
 /**
  * Carga las imágenes internas solo cuando se inicia una exportación.
@@ -376,38 +322,7 @@ async function buildPortableCopy(document: AulaDocument): Promise<AulaCopyBuildR
   );
 }
 
-/**
- * Sustituye las URLs de las imágenes de una copia por las recién subidas.
- * @param document - Documento de la copia.
- * @param urls - URLs nuevas indexadas por id de subida antiguo.
- * @returns Una copia independiente con las URLs nuevas.
- */
-function remapCopyImageUrls(document: AulaDocument, urls: ReadonlyMap<string, string>): AulaDocument {
-  const clone = JSON.parse(JSON.stringify(document)) as AulaDocument;
-  const visit = (node: JSONContent) => {
-    if (node.type === "aulaImage" && node.attrs) {
-      const src = typeof node.attrs.src === "string" ? node.attrs.src : "";
-      const id = /^\/api\/files\/([0-9a-f-]{36})$/i.exec(src)?.[1]?.toLowerCase();
-      const url = id ? urls.get(id) : undefined;
-      if (url) node.attrs = { ...node.attrs, src: url };
-    }
-    for (const child of node.content ?? []) visit(child);
-  };
-  visit(clone.content);
-  return clone;
-}
 
-/**
- * Extrae el texto visible de un contenido para la vista previa.
- * @param value - Nodo Tiptap.
- * @returns Texto plano.
- */
-function contentText(value: unknown): string {
-  if (!value || typeof value !== "object") return "";
-  const node = value as { type?: string; text?: string; content?: unknown[] };
-  if (node.type === "text" && typeof node.text === "string") return node.text;
-  return (node.content ?? []).map((child) => contentText(child)).join(" ");
-}
 
 /**
  * Aula Documentos: texto enriquecido con bloques Mermaid en un único documento.

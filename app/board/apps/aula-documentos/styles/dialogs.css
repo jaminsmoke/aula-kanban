@@ -1,0 +1,328 @@
+/* Diálogo de importación */
+
+.aula-documentos-modal-backdrop {
+  position:fixed;
+  inset:0;
+  z-index:80;
+  display:grid;
+  place-items:center;
+  padding:16px;
+  background:var(--ui-scrim);
+}
+
+.aula-documentos-modal {
+  width:min(100%, 520px);
+  max-height:min(86dvh, 720px);
+  overflow:auto;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius:var(--radius-md);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-primary);
+  box-shadow:var(--ui-shadow-card-hover);
+}
+
+.aula-documentos-modal-head {
+  position:sticky;
+  top:0;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-surface-raised);
+}
+
+.aula-documentos-modal-head h2 {
+  flex:1 1 auto;
+  margin:0;
+  font-size:16px;
+  line-height:1.25;
+}
+
+.aula-documentos-modal-close {
+  display:grid;
+  place-items:center;
+  width:30px;
+  height:30px;
+  padding:0;
+  border:0;
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-hover);
+  color:var(--ui-text-secondary);
+  cursor:pointer;
+}
+
+.aula-documentos-modal-close:hover {
+  color:var(--ui-text-primary);
+}
+
+.aula-documentos-modal-close:focus-visible,
+.aula-documentos-import-option:focus-visible,
+.aula-documentos-import-secondary:focus-visible,
+.aula-documentos-import-primary:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:2px;
+}
+
+.aula-documentos-office-backdrop {
+  z-index:90;
+}
+
+.aula-documentos-office-modal {
+  width:min(100%, 1120px);
+  max-height:min(92dvh, 900px);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.aula-documentos-office-preview-body {
+  flex:1 1 auto;
+  min-height:min(70dvh, 700px);
+  display:flex;
+  overflow:auto;
+  background:var(--ui-surface-faint);
+}
+
+.aula-documentos-office-preview-body .visor-office-app {
+  min-height:min(70dvh, 700px);
+}
+
+.aula-documentos-markdown-source-button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  margin-top:8px;
+}
+
+.aula-documentos-markdown-source-modal {
+  width:min(100%, 900px);
+}
+
+.aula-documentos-migration-modal {
+  width:min(100%, 680px);
+}
+
+.aula-documentos-migration-list {
+  display:grid;
+  gap:8px;
+  margin:4px 0 12px;
+}
+
+.aula-documentos-migration-item {
+  padding:10px 12px;
+  border:var(--border-width-hairline) solid var(--ui-border-soft);
+  border-radius:var(--radius-sm);
+  background:var(--ui-surface-pale);
+}
+
+.aula-documentos-migration-head {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:4px 12px;
+}
+
+.aula-documentos-markdown-source {
+  width:100%;
+  min-height:min(55dvh, 480px);
+  padding:10px 12px;
+  border:var(--border-width-hairline) solid var(--ui-border-control);
+  border-radius:var(--radius-sm);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-primary);
+  font-family:var(--font-mono);
+  font-size:12px;
+  line-height:1.55;
+  resize:vertical;
+}
+
+.aula-documentos-markdown-source:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:1px;
+}
+
+.aula-documentos-import-menu,
+.aula-documentos-import-preview {
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  padding:14px;
+}
+
+.aula-documentos-import-intro,
+.aula-documentos-import-meta,
+.aula-documentos-import-warning {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+  line-height:1.5;
+}
+
+.aula-documentos-import-kicker {
+  margin:0;
+  color:var(--ui-action-text);
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+}
+
+.aula-documentos-import-preview h3 {
+  margin:0;
+  font-size:17px;
+  line-height:1.3;
+}
+
+.aula-documentos-import-excerpt {
+  max-height:92px;
+  overflow:auto;
+  margin:0;
+  padding:8px 9px;
+  border:var(--border-width-hairline) solid var(--ui-border-subtle);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-faint);
+  color:var(--ui-text-secondary);
+  font-size:11.5px;
+  line-height:1.5;
+}
+
+.aula-documentos-import-option {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  width:100%;
+  padding:10px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-sm);
+  background:var(--ui-surface-faint);
+  color:var(--ui-text-primary);
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+
+.aula-documentos-import-option:hover {
+  border-color:var(--ui-border-accent);
+  background:var(--ui-surface-hover);
+}
+
+.aula-documentos-import-option > svg {
+  flex:none;
+  margin-top:2px;
+  color:var(--ui-action-text);
+}
+
+.aula-documentos-import-option span {
+  display:block;
+  min-width:0;
+}
+
+.aula-documentos-import-option strong {
+  display:block;
+  font-size:12px;
+}
+
+.aula-documentos-import-option small {
+  display:block;
+  margin-top:2px;
+  color:var(--ui-text-muted);
+  font-size:11px;
+  line-height:1.4;
+}
+
+.aula-documentos-file-input {
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  white-space:nowrap;
+}
+
+.aula-documentos-import-status {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin:2px 0 0;
+  color:var(--ui-text-muted);
+  font-size:11.5px;
+}
+
+.aula-documentos-import-error {
+  margin:2px 0 0;
+  color:var(--ui-danger-ink);
+  font-size:11.5px;
+  line-height:1.5;
+}
+
+.aula-documentos-import-warnings {
+  margin:0;
+  padding-left:18px;
+  color:var(--ui-warning-ink);
+  font-size:11.5px;
+  line-height:1.5;
+}
+
+.aula-documentos-import-warning {
+  padding:8px 9px;
+  border-radius:var(--radius-xs);
+  background:var(--ui-warning-soft);
+  color:var(--ui-warning-ink);
+}
+
+.aula-documentos-import-confirm {
+  display:flex;
+  align-items:flex-start;
+  gap:7px;
+  color:var(--ui-text-secondary);
+  font-size:11.5px;
+  line-height:1.45;
+  cursor:pointer;
+}
+
+.aula-documentos-import-confirm input {
+  margin:2px 0 0;
+  accent-color:var(--ui-action-primary);
+}
+
+.aula-documentos-import-actions {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:7px;
+  margin-top:3px;
+}
+
+.aula-documentos-import-primary,
+.aula-documentos-import-secondary {
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:7px 10px;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius:var(--radius-xs);
+  font:inherit;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.aula-documentos-import-primary {
+  background:var(--ui-action-primary);
+  color:var(--ui-text-inverse);
+}
+
+.aula-documentos-import-secondary {
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+}
+
+.aula-documentos-import-primary:disabled {
+  cursor:not-allowed;
+  opacity:.5;
+}
+
