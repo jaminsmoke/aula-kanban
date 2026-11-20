@@ -108,6 +108,7 @@ describe("API de copias portables", () => {
         formatVersion: 1,
         schemaVersion: 3,
         sizeBytes: 1234,
+        author: "Tú",
         createdAt: 100,
         downloadUrl: "/api/aula-documentos/copies/copy1",
       }],

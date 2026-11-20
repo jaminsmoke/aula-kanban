@@ -80,13 +80,13 @@
 
 ### Fase 3 — Interfaz de copias y descarga local
 
-- [ ] Añadir **Archivo > Copias portables** con acciones para guardar en el proyecto, descargar y borrar.
-- [ ] Mostrar lista con título, fecha, tamaño, autor y estado; estados vacíos y errores legibles.
-- [ ] Mantener la descarga local disponible con R2 caído o cuota llena.
-- [ ] Integrar **Importar > Importar copia** con la vista previa existente y un resumen de imágenes, versión y avisos.
-- [ ] Exigir confirmación antes de sustituir el documento actual y conservar una copia local de recuperación.
-- [ ] Resolver teclado, foco, Escape, modo lectura para invitados y comportamiento en móvil.
-- [ ] Añadir pruebas de UI para guardar, listar, descargar, borrar, R2 caído, cuota llena y permisos.
+- [x] Añadir **Archivo > Copias portables** con acciones para guardar en el proyecto, descargar y borrar.
+- [x] Mostrar lista con título, fecha, tamaño, autor y estado; estados vacíos y errores legibles.
+- [x] Mantener la descarga local disponible con R2 caído o cuota llena.
+- [x] Integrar **Importar > Importar copia** con la vista previa existente y un resumen de imágenes, versión y avisos.
+- [x] Exigir confirmación antes de sustituir el documento actual y conservar una copia local de recuperación.
+- [x] Resolver teclado, foco, Escape, modo lectura para invitados y comportamiento en móvil.
+- [x] Añadir pruebas de UI para guardar, listar, descargar, borrar, R2 caído, cuota llena y permisos.
 - **Criterios de aceptación:**
   - Guardar una copia y verla en la lista no altera el autosave ni el documento abierto.
   - La descarga local funciona sin R2 y conserva documento, imágenes y metadatos.
@@ -127,3 +127,4 @@
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
 - 2026-11-20: Fase 1 completada. Añadida `fflate` 0.8.3 (MIT) como dependencia directa y el módulo `lib/domain/aula-documentos/copy.ts` con el formato `.aula.zip`: manifiesto v1, `document.json`, assets con ruta segura, hash SHA-256, límites de tamaño/entradas y validación de MIME real. Las pruebas cubren copia válida, falta o exceso de assets, ZIP corrupto, path traversal, zip bomb, formato/versión futura, hash alterado y manifiesto incompleto. Suite completa: 215 archivos / 1.528 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 366.772 / 370.000 B gzip; aula-documentos-export: 329.621 / 340.000 B gzip) y `perf:office` correctos.
 - 2026-11-20: Fase 2 completada. Añadida la finalidad `document-copy` (ZIP hasta 60 MB), cuota de 200 MB y máximo de 20 copias por proyecto. La migración `0041` crea `document_copies`; la API ofrece listado, alta, descarga con nombre de archivo y borrado. El alta inspecciona manifiesto y documento sin descomprimir las imágenes, y R2 guarda el ZIP privado. MCP no expone la finalidad nueva y la purga de archivos protege las copias. Pruebas de API, cuotas, permisos, descarga, borrado, R2 caído y aislamiento entre proyectos. Suite completa: 217 archivos / 1.544 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 366.844 / 370.000 B gzip; aula-documentos-export: 329.698 / 340.000 B gzip) y `perf:office` correctos.
+- 2026-11-20: Fase 3 completada. Añadido **Archivo > Copias portables** con guardado en el proyecto, listado, descarga, borrado y descarga local independiente de R2. **Importar > Importar copia** lee el ZIP, muestra título, estadísticas, imágenes, versión y avisos, exige confirmación y guarda una copia local de recuperación antes de aplicar. Los invitados pueden listar y descargar, pero no crear ni borrar. Pruebas de UI para guardar, listar, descargar, borrar, R2 caído, cuota llena, permisos e importación con confirmación. Suite completa: 217 archivos / 1.550 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 369.921 / 370.000 B gzip; aula-documentos-export: 329.694 / 340.000 B gzip) y `perf:office` correctos.

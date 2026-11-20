@@ -18,9 +18,10 @@ export const dynamic = "force-dynamic";
 /**
  * Devuelve la representación pública de una copia.
  * @param row - Fila de metadatos.
+ * @param currentUserId - Cuenta que consulta la lista.
  * @returns Datos para la lista sin la clave de R2.
  */
-function copyJson(row: DocumentCopyRow) {
+function copyJson(row: DocumentCopyRow, currentUserId: string) {
   return {
     id: row.id,
     title: row.title,
@@ -28,6 +29,9 @@ function copyJson(row: DocumentCopyRow) {
     formatVersion: row.formatVersion,
     schemaVersion: row.schemaVersion,
     sizeBytes: row.sizeBytes,
+    author: row.ownerUserId
+      ? row.ownerUserId === currentUserId ? "Tú" : "Otro miembro"
+      : "Sin autor",
     createdAt: row.createdAt,
     downloadUrl: `/api/aula-documentos/copies/${row.id}`,
   };
@@ -37,7 +41,7 @@ function copyJson(row: DocumentCopyRow) {
 export const GET = withProjectRoute(async (_request, project) => {
   try {
     const rows = await listDocumentCopies(project.id);
-    return json({ copies: rows.map(copyJson) });
+    return json({ copies: rows.map((row) => copyJson(row, project.access.user.userId)) });
   } catch {
     return json({ message: "No se pudieron leer las copias del proyecto." }, 502);
   }
@@ -97,7 +101,7 @@ export async function POST(request: Request) {
         ownerUserId: user.userId,
         createdAt: Date.now(),
       });
-      return json({ copy: copyJson(copy) }, 201);
+      return json({ copy: copyJson(copy, user.userId) }, 201);
     } catch {
       // El objeto ya está en R2; si no se puede registrar, se retira para no
       // dejar una copia invisible que consuma cuota.

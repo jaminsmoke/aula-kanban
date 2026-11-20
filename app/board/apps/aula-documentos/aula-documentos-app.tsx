@@ -7,6 +7,7 @@ import {
   AlignJustify,
   AlignLeft,
   AlignRight,
+  Archive,
   Bold,
   Code,
   Code2,
@@ -40,6 +41,7 @@ import {
   Save,
   SeparatorHorizontal,
   Strikethrough,
+  Trash2,
   Underline,
   Undo2,
   Upload,
@@ -55,9 +57,11 @@ import {
   normalizeAulaLink,
   parseAulaDocument,
   type AulaDocument,
+  type AulaDocumentStats,
   type AulaPresentationTheme,
 } from "../../../../lib/domain/aula-documentos/document";
 import type { AulaDocumentImportPreview } from "../../../../lib/domain/aula-documentos/importers";
+import type { AulaCopyAsset, AulaCopyBuildResult, AulaCopyManifest } from "../../../../lib/domain/aula-documentos/copy";
 import { aulaFileName, aulaRecoveryFileName } from "../../../../lib/domain/aula-documentos/filename";
 import {
   AULA_DOCUMENT_MARKDOWN_MAX_LENGTH,
@@ -91,6 +95,9 @@ import OfficeViewer from "../../shared/office/office-viewer";
 import { createAulaDocumentExtensions } from "../../shared/aula-documentos/document-extensions";
 import { AULA_IMAGE_ACCEPT } from "../../../../lib/domain/aula-documentos/image";
 import { imageFilesFromDataTransfer, uploadAulaImage } from "../../shared/aula-documentos/image-upload";
+import {
+  type AulaCopySummary,
+} from "../../shared/aula-documentos/copy-client";
 import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "../../shared/aula-documentos/export-html";
 import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../../shared/aula-documentos/mermaid-block";
 import { getMermaidRenderer } from "../../shared/aula-documentos/mermaid-renderer";
@@ -174,6 +181,15 @@ const IMPORT_LABELS: Record<AulaDocumentImportPreview["source"], string> = {
 
 type ImportPreviewState = AulaDocumentImportPreview & {
   sourceUpdatedAt: number | null;
+};
+
+type CopyImportPreview = {
+  fileName: string;
+  document: AulaDocument;
+  manifest: AulaCopyManifest;
+  assets: AulaCopyAsset[];
+  stats: AulaDocumentStats;
+  warnings: string[];
 };
 
 type SaveConflict = {
@@ -317,6 +333,72 @@ async function loadExportImages(content: JSONContent) {
 }
 
 /**
+ * Construye una copia portable con las imágenes del documento.
+ * @param document - Documento que se quiere archivar.
+ * @returns El ZIP y el manifiesto, o un error legible.
+ */
+async function buildPortableCopy(document: AulaDocument): Promise<AulaCopyBuildResult> {
+  const images = await loadExportImages(document.content);
+  if (images.failed.length) {
+    return {
+      ok: false,
+      code: "missing-asset",
+      message: "No se pudo leer una imagen del documento. La copia no se ha generado.",
+    };
+  }
+  const { buildAulaDocumentCopy } = await import("../../../../lib/domain/aula-documentos/copy");
+  return buildAulaDocumentCopy(
+    document,
+    [...images.assets.values()].map(({ source, mime, bytes }) => ({
+      id: source.split("/").pop() ?? "",
+      mime: mime as AulaCopyAsset["mime"],
+      bytes,
+    })),
+  );
+}
+
+/**
+ * Sustituye las URLs de las imágenes de una copia por las recién subidas.
+ * @param document - Documento de la copia.
+ * @param urls - URLs nuevas indexadas por id de subida antiguo.
+ * @returns Una copia independiente con las URLs nuevas.
+ */
+function remapCopyImageUrls(document: AulaDocument, urls: ReadonlyMap<string, string>): AulaDocument {
+  const clone = JSON.parse(JSON.stringify(document)) as AulaDocument;
+  const visit = (node: JSONContent) => {
+    if (node.type === "aulaImage" && node.attrs) {
+      const src = typeof node.attrs.src === "string" ? node.attrs.src : "";
+      const id = /^\/api\/files\/([0-9a-f-]{36})$/i.exec(src)?.[1]?.toLowerCase();
+      const url = id ? urls.get(id) : undefined;
+      if (url) node.attrs = { ...node.attrs, src: url };
+    }
+    for (const child of node.content ?? []) visit(child);
+  };
+  visit(clone.content);
+  return clone;
+}
+
+/**
+ * Formatea el tamaño de una copia.
+ * @param bytes - Tamaño en bytes.
+ * @returns Texto legible.
+ */
+function copySizeLabel(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/**
+ * Formatea la fecha de una copia.
+ * @param value - Milisegundos desde epoch.
+ * @returns Fecha local legible.
+ */
+function copyDateLabel(value: number): string {
+  return new Intl.DateTimeFormat("es", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
+}
+
+/**
  * Extrae el texto visible de un contenido para la vista previa.
  * @param value - Nodo Tiptap.
  * @returns Texto plano.
@@ -390,6 +472,18 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   });
   const [recoveryRestoreId, setRecoveryRestoreId] = useState<string | null>(null);
   const [recoveryNotice, setRecoveryNotice] = useState<string | null>(null);
+  const [copiesOpen, setCopiesOpen] = useState(false);
+  const [copies, setCopies] = useState<AulaCopySummary[]>([]);
+  const [copiesLoading, setCopiesLoading] = useState(false);
+  const [copiesError, setCopiesError] = useState<string | null>(null);
+  const [copyNotice, setCopyNotice] = useState<string | null>(null);
+  const [copySaving, setCopySaving] = useState(false);
+  const [copyDeleteId, setCopyDeleteId] = useState<string | null>(null);
+  const [copyImport, setCopyImport] = useState<CopyImportPreview | null>(null);
+  const [copyImportOpen, setCopyImportOpen] = useState(false);
+  const [copyImportConfirm, setCopyImportConfirm] = useState(false);
+  const [copyImportBusy, setCopyImportBusy] = useState(false);
+  const [copyImportError, setCopyImportError] = useState<string | null>(null);
   const [migrationOpen, setMigrationOpen] = useState(false);
   const [migrationStatus, setMigrationStatus] = useState<MigrationStatus | null>(null);
   const [migrationLoading, setMigrationLoading] = useState<MigrationLoadState | null>(null);
@@ -416,6 +510,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   const markdownSourceRef = useRef<HTMLElement>(null);
   const conflictRef = useRef<HTMLElement>(null);
   const recoveryRef = useRef<HTMLElement>(null);
+  const copiesRef = useRef<HTMLElement>(null);
+  const copyImportRef = useRef<HTMLElement>(null);
   const readOnly = role === "guest";
   const { load, saveVersioned, loading, error } = useAppDocument<AulaDocument>(projectId, "aula-documentos");
 
@@ -464,6 +560,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
   useDialogFocus(markdownSourceOpen, () => setMarkdownSourceOpen(false), markdownSourceRef);
   useDialogFocus(Boolean(saveConflict), () => {}, conflictRef);
   useDialogFocus(recoveryOpen, closeRecoveryCopies, recoveryRef);
+  useDialogFocus(copiesOpen, closeCopies, copiesRef);
+  useDialogFocus(copyImportOpen, closeCopyImport, copyImportRef);
   useDialogFocus(migrationOpen, () => setMigrationOpen(false), migrationRef);
 
   const requestWindowClose = useWindowClose();
@@ -849,6 +947,235 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     setRecoveryOpen(false);
     setRecoveryRestoreId(null);
     setRecoveryNotice(null);
+  }
+
+  /**
+   * Abre el panel de copias portables.
+   */
+  function openCopies() {
+    setCopiesOpen(true);
+    setCopyNotice(null);
+    setCopiesError(null);
+    setCopyDeleteId(null);
+    void refreshCopies();
+  }
+
+  /**
+   * Cierra el panel de copias portables.
+   */
+  function closeCopies() {
+    setCopiesOpen(false);
+    setCopyDeleteId(null);
+    setCopyNotice(null);
+  }
+
+  /**
+   * Recarga las copias guardadas en el proyecto.
+   */
+  async function refreshCopies() {
+    setCopiesLoading(true);
+    setCopiesError(null);
+    const { listAulaCopies } = await import("../../shared/aula-documentos/copy-client");
+    const result = await listAulaCopies(projectId);
+    setCopiesLoading(false);
+    if (!result || !result.ok) {
+      setCopies([]);
+      setCopiesError(result?.message ?? "No se pudieron leer las copias.");
+      return;
+    }
+    setCopies(result.copies);
+  }
+
+  /**
+   * Guarda una copia portable del documento actual en el proyecto.
+   */
+  async function saveCurrentCopy() {
+    const document = currentDocument();
+    if (!document || readOnly || copySaving) return;
+    setCopySaving(true);
+    setCopyNotice("Preparando copia portable…");
+    try {
+      const built = await buildPortableCopy(document);
+      if (!built.ok) {
+        setCopyNotice(built.message);
+        return;
+      }
+      const { saveAulaCopy } = await import("../../shared/aula-documentos/copy-client");
+      const result = await saveAulaCopy(projectId, built.bytes, aulaFileName(document.title, "aula.zip"));
+      if (!result.ok) {
+        setCopyNotice(result.message);
+        return;
+      }
+      setCopyNotice("Copia guardada en el proyecto.");
+      setStatus("Copia portable guardada.");
+      await refreshCopies();
+    } catch {
+      setCopyNotice("No se pudo guardar la copia portable.");
+    } finally {
+      setCopySaving(false);
+    }
+  }
+
+  /**
+   * Descarga una copia portable generada en el navegador, sin usar R2.
+   */
+  async function downloadLocalCopy() {
+    const document = currentDocument();
+    if (!document) return;
+    setCopyNotice("Preparando copia local…");
+    try {
+      const built = await buildPortableCopy(document);
+      if (!built.ok) {
+        setCopyNotice(built.message);
+        return;
+      }
+      downloadBlob(
+        new Blob([built.bytes.slice().buffer as ArrayBuffer], { type: "application/zip" }),
+        aulaFileName(document.title, "aula.zip"),
+      );
+      setCopyNotice("Copia local descargada.");
+    } catch {
+      setCopyNotice("No se pudo descargar la copia local.");
+    }
+  }
+
+  /**
+   * Descarga una copia guardada en R2.
+   * @param copy - Copia elegida.
+   */
+  async function downloadStoredCopy(copy: AulaCopySummary) {
+    setCopyNotice("Descargando copia…");
+    const { downloadAulaCopy } = await import("../../shared/aula-documentos/copy-client");
+    const result = await downloadAulaCopy(copy);
+    if (!result.ok) {
+      setCopyNotice(result.message);
+      return;
+    }
+    downloadBlob(result.blob, aulaFileName(copy.title, "aula.zip"));
+    setCopyNotice("Copia descargada.");
+  }
+
+  /**
+   * Borra una copia guardada en R2.
+   * @param copy - Copia elegida.
+   */
+  async function removeStoredCopy(copy: AulaCopySummary) {
+    setCopyNotice("Borrando copia…");
+    const { deleteAulaCopy } = await import("../../shared/aula-documentos/copy-client");
+    const result = await deleteAulaCopy(copy);
+    if (!result.ok) {
+      setCopyNotice(result.message);
+      return;
+    }
+    setCopies((current) => current.filter((item) => item.id !== copy.id));
+    setCopyDeleteId(null);
+    setCopyNotice("Copia borrada.");
+    setStatus("Copia portable borrada.");
+  }
+
+  /**
+   * Abre el selector de una copia portable.
+   */
+  function openCopyImportPicker() {
+    if (readOnly) return;
+    const input = document.getElementById("aula-documentos-copy-file") as HTMLInputElement | null;
+    input?.click();
+  }
+
+  /**
+   * Lee una copia portable y prepara su vista previa.
+   * @param file - Archivo elegido.
+   */
+  async function prepareCopyImport(file: File | undefined) {
+    if (!file || readOnly) return;
+    setStatus("Leyendo copia portable…");
+    setCopyImportError(null);
+    try {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const { readAulaDocumentCopy } = await import("../../../../lib/domain/aula-documentos/copy");
+      const result = await readAulaDocumentCopy(bytes);
+      if (!result.ok) {
+        setStatus(result.message);
+        return;
+      }
+      const parsed = parseAulaDocument(result.document);
+      if (!parsed.ok) {
+        setStatus(parsed.message);
+        return;
+      }
+      setCopyImport({
+        fileName: file.name,
+        document: result.document,
+        manifest: result.manifest,
+        assets: result.assets,
+        stats: parsed.stats,
+        warnings: result.assets.length
+          ? [`La copia incluye ${result.assets.length} ${result.assets.length === 1 ? "imagen" : "imágenes"}; se volverán a subir al proyecto al importar.`]
+          : [],
+      });
+      setCopyImportConfirm(false);
+      setCopyImportOpen(true);
+      setStatus("Copia lista para importar.");
+    } catch {
+      setStatus("No se pudo leer la copia portable.");
+    }
+  }
+
+  /**
+   * Cierra la vista previa de una copia portable.
+   */
+  function closeCopyImport() {
+    if (copyImportBusy) return;
+    setCopyImportOpen(false);
+    setCopyImport(null);
+    setCopyImportConfirm(false);
+    setCopyImportError(null);
+  }
+
+  /**
+   * Sustituye el documento actual por una copia portable confirmada.
+   */
+  async function applyCopyImport() {
+    if (!copyImport || !copyImportConfirm || copyImportBusy) return;
+    setCopyImportBusy(true);
+    setCopyImportError(null);
+    try {
+      const urls = new Map<string, string>();
+      for (const asset of copyImport.assets) {
+        const extension = asset.mime.split("/", 2)[1] ?? "bin";
+        const file = new File(
+          [asset.bytes.slice().buffer as ArrayBuffer],
+          `${asset.id}.${extension}`,
+          { type: asset.mime },
+        );
+        const uploaded = await uploadAulaImage(projectId, file);
+        if (!uploaded.ok) {
+          setCopyImportError(uploaded.message);
+          return;
+        }
+        urls.set(asset.id, uploaded.url);
+      }
+
+      const imported = parseAulaDocument(remapCopyImageUrls(copyImport.document, urls));
+      if (!imported.ok) {
+        setCopyImportError(imported.message);
+        return;
+      }
+      if (!storeRecoveryCopy("replace")) {
+        setCopyImportError("No se pudo guardar una copia local antes de reemplazar. El documento actual no ha cambiado.");
+        return;
+      }
+      applyDocument(imported.document);
+      markChanged(`Copia portable importada desde ${copyImport.fileName}. Guárdala para conservarla.`);
+      setStatus("Copia portable importada. Guárdala para conservarla en el proyecto.");
+      setCopyImportOpen(false);
+      setCopyImport(null);
+      setCopyImportConfirm(false);
+    } catch {
+      setCopyImportError("No se pudo importar la copia portable.");
+    } finally {
+      setCopyImportBusy(false);
+    }
   }
 
   /**
@@ -1719,11 +2046,23 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     onClick: openNewDocument,
     disabled: readOnly || !editor || Boolean(invalidDocument) || saving || loading,
   };
+  const copiesAction: ToolbarAction = {
+    label: "Copias portables",
+    icon: <Archive size={15} aria-hidden />,
+    onClick: openCopies,
+    disabled: loading || Boolean(invalidDocument),
+  };
   const importDocumentAction: ToolbarAction = {
     label: "Importar documento",
     icon: <Upload size={15} aria-hidden />,
     onClick: openImport,
     disabled: readOnly || !editor || Boolean(invalidDocument),
+  };
+  const importCopyAction: ToolbarAction = {
+    label: "Importar copia",
+    icon: <Archive size={15} aria-hidden />,
+    onClick: openCopyImportPicker,
+    disabled: readOnly || !editor || Boolean(invalidDocument) || loading,
   };
   const openOfficeAction: ToolbarAction = {
     label: "Abrir Office",
@@ -1740,7 +2079,9 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
 
   const documentFileActions: ToolbarAction[] = [
     newDocumentAction,
+    copiesAction,
     importDocumentAction,
+    importCopyAction,
     openOfficeAction,
     migrationAction,
     saveDocumentAction,
@@ -1753,9 +2094,11 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
 
   const archiveMenuActions: AulaMenuAction[] = [
     { label: newDocumentAction.label, icon: newDocumentAction.icon, onSelect: newDocumentAction.onClick, disabled: newDocumentAction.disabled },
+    { label: copiesAction.label, icon: copiesAction.icon, onSelect: copiesAction.onClick, disabled: copiesAction.disabled },
   ];
   const importMenuActions: AulaMenuAction[] = [
     { label: importDocumentAction.label, icon: importDocumentAction.icon, onSelect: importDocumentAction.onClick, disabled: importDocumentAction.disabled },
+    { label: importCopyAction.label, icon: importCopyAction.icon, onSelect: importCopyAction.onClick, disabled: importCopyAction.disabled },
     { label: openOfficeAction.label, icon: openOfficeAction.icon, onSelect: openOfficeAction.onClick, disabled: openOfficeAction.disabled },
     { label: migrationAction.label, icon: migrationAction.icon, onSelect: migrationAction.onClick, disabled: migrationAction.disabled },
   ];
@@ -1929,6 +2272,20 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           const file = event.currentTarget.files?.[0];
           event.currentTarget.value = "";
           if (file) void insertImageFiles([file]);
+        }}
+      />
+
+      <input
+        id="aula-documentos-copy-file"
+        className="aula-documentos-file-input"
+        type="file"
+        accept=".zip,.aula.zip,application/zip,application/x-zip-compressed"
+        aria-label="Elegir copia portable para importar"
+        tabIndex={-1}
+        onChange={(event: ChangeEvent<HTMLInputElement>) => {
+          const file = event.currentTarget.files?.[0];
+          event.currentTarget.value = "";
+          void prepareCopyImport(file);
         }}
       />
 
@@ -2431,6 +2788,174 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         </div>
       ) : null}
 
+      {copiesOpen ? (
+        <div
+          className="aula-documentos-modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeCopies();
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") closeCopies();
+          }}
+        >
+          <section
+            className="aula-documentos-modal aula-documentos-copies-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aula-documentos-copies-title"
+            ref={copiesRef}
+          >
+            <header className="aula-documentos-modal-head">
+              <h2 id="aula-documentos-copies-title">Copias portables</h2>
+              <button type="button" className="aula-documentos-modal-close" onClick={closeCopies} aria-label="Cerrar copias portables" autoFocus>
+                <X size={16} aria-hidden />
+              </button>
+            </header>
+            <div className="aula-documentos-copy-body">
+              <p className="aula-documentos-import-intro">
+                Guarda una copia completa en el proyecto o descárgala en tu equipo. Las copias guardadas no sustituyen al autosave.
+              </p>
+              {copyNotice ? <p className="aula-documentos-import-status" role="status">{copyNotice}</p> : null}
+              {copiesError ? <p className="aula-documentos-import-error" role="alert">{copiesError}</p> : null}
+              <div className="aula-documentos-copy-actions">
+                {!readOnly ? (
+                  <button type="button" className="aula-documentos-import-primary" onClick={() => { void saveCurrentCopy(); }} disabled={copySaving || loading || Boolean(invalidDocument)}>
+                    {copySaving ? <Loader2 size={14} className="aula-documentos-spin" aria-hidden /> : <Archive size={14} aria-hidden />}
+                    Guardar en el proyecto
+                  </button>
+                ) : null}
+                <button type="button" className="aula-documentos-import-secondary" onClick={() => { void downloadLocalCopy(); }} disabled={loading || Boolean(invalidDocument)}>
+                  <Download size={14} aria-hidden />
+                  Descargar copia local
+                </button>
+              </div>
+              <h3 className="aula-documentos-copy-heading">Copias guardadas</h3>
+              {copiesLoading ? (
+                <p className="aula-documentos-import-meta">Cargando copias…</p>
+              ) : copies.length === 0 ? (
+                <p className="aula-documentos-import-intro">Todavía no hay copias guardadas en este proyecto.</p>
+              ) : (
+                <div className="aula-documentos-copy-list">
+                  {copies.map((copy) => {
+                    const confirming = copyDeleteId === copy.id;
+                    return (
+                      <article className="aula-documentos-copy-item" key={copy.id}>
+                        <div className="aula-documentos-copy-info">
+                          <strong>{copy.title || "Documento sin título"}</strong>
+                          <p className="aula-documentos-import-meta">
+                            {copyDateLabel(copy.createdAt)} · {copySizeLabel(copy.sizeBytes)} · {copy.author}
+                          </p>
+                          <p className="aula-documentos-import-meta">
+                            Formato v{copy.formatVersion} · esquema v{copy.schemaVersion}
+                          </p>
+                        </div>
+                        <div className="aula-documentos-copy-item-actions">
+                          {confirming ? (
+                            <>
+                              <button type="button" className="aula-documentos-import-secondary" onClick={() => setCopyDeleteId(null)}>
+                                Cancelar
+                              </button>
+                              <button type="button" className="aula-documentos-import-danger" onClick={() => { void removeStoredCopy(copy); }}>
+                                <Trash2 size={14} aria-hidden />
+                                Confirmar borrado
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button type="button" className="aula-documentos-import-secondary" onClick={() => { void downloadStoredCopy(copy); }}>
+                                <Download size={14} aria-hidden />
+                                Descargar
+                              </button>
+                              {!readOnly ? (
+                                <button type="button" className="aula-documentos-import-danger" onClick={() => setCopyDeleteId(copy.id)}>
+                                  <Trash2 size={14} aria-hidden />
+                                  Borrar
+                                </button>
+                              ) : null}
+                            </>
+                          )}
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+              <div className="aula-documentos-import-actions">
+                <button type="button" className="aula-documentos-import-secondary" onClick={closeCopies}>
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : null}
+
+      {copyImportOpen && copyImport ? (
+        <div
+          className="aula-documentos-modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeCopyImport();
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") closeCopyImport();
+          }}
+        >
+          <section
+            className="aula-documentos-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aula-documentos-copy-import-title"
+            ref={copyImportRef}
+          >
+            <header className="aula-documentos-modal-head">
+              <h2 id="aula-documentos-copy-import-title">Importar copia portable</h2>
+              <button type="button" className="aula-documentos-modal-close" onClick={closeCopyImport} aria-label="Cerrar importación de copia" autoFocus disabled={copyImportBusy}>
+                <X size={16} aria-hidden />
+              </button>
+            </header>
+            <div className="aula-documentos-import-preview">
+              <p className="aula-documentos-import-kicker">{copyImport.fileName}</p>
+              <h3>{copyImport.document.title || "Documento sin título"}</h3>
+              <p className="aula-documentos-import-meta">
+                {copyImport.stats.textLength} caracteres · {copyImport.stats.images === 1 ? "1 imagen" : `${copyImport.stats.images} imágenes`} · {copyImport.stats.mermaidBlocks === 1 ? "1 diagrama" : `${copyImport.stats.mermaidBlocks} diagramas`}
+              </p>
+              <p className="aula-documentos-import-meta">
+                Creada: {copyDateLabel(Date.parse(copyImport.manifest.createdAt))} · formato v{copyImport.manifest.formatVersion} · esquema v{copyImport.manifest.schemaVersion}
+              </p>
+              <p className="aula-documentos-import-excerpt">
+                {contentText(copyImport.document.content) || "El documento no contiene texto."}
+              </p>
+              {copyImport.warnings.length ? (
+                <ul className="aula-documentos-import-warnings">
+                  {copyImport.warnings.map((warning) => <li key={warning}>{warning}</li>)}
+                </ul>
+              ) : null}
+              {copyImportError ? <p className="aula-documentos-import-error" role="alert">{copyImportError}</p> : null}
+              <p className="aula-documentos-import-warning">
+                Se sustituirá el documento abierto. Se guardará una copia local de recuperación antes de aplicar.
+              </p>
+              <label className="aula-documentos-import-confirm">
+                <input
+                  type="checkbox"
+                  checked={copyImportConfirm}
+                  onChange={(event) => setCopyImportConfirm(event.target.checked)}
+                  disabled={copyImportBusy}
+                />
+                Entiendo que se reemplaza el documento actual.
+              </label>
+              <div className="aula-documentos-import-actions">
+                <button type="button" className="aula-documentos-import-secondary" onClick={closeCopyImport} disabled={copyImportBusy}>
+                  Volver
+                </button>
+                <button type="button" className="aula-documentos-import-primary" onClick={() => { void applyCopyImport(); }} disabled={!copyImportConfirm || copyImportBusy}>
+                  {copyImportBusy ? "Importando…" : "Importar y reemplazar"}
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : null}
+
       {importOpen && !officePreviewOpen ? (
         <div
           className="aula-documentos-modal-backdrop"
@@ -2632,7 +3157,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           <section className="aula-documentos-info">
             <h3>La suite documental</h3>
             <p>Aula Documentos reúne notas, imágenes, diagramas, presentaciones y Office. Escribe el documento, usa <strong>Insertar &gt; Insertar imagen</strong> para añadir una imagen local y <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa. La presentación se puede editar por diapositivas o desde <strong>Fuente Markdown</strong>.</p>
-            <p>Las imágenes se incrustan en HTML, presentación, impresión/PDF, DOCX y PPTX con su texto alternativo y pie; si un recurso no está disponible, la exportación deja un aviso visible en lugar de romperse. También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad, abrir el original o cualquier archivo de Office en el visor compartido y exportar copias DOCX/PPTX desde el menú Exportar. XLSX se consulta en Visor Office.</p>
+            <p>Las imágenes se incrustan en HTML, presentación, impresión/PDF, DOCX y PPTX con texto alternativo y pie; si falla un recurso, se avisa. <strong>Archivo &gt; Copias portables</strong> guarda o descarga una copia completa; <strong>Importar &gt; Importar copia</strong> la restaura. También puedes importar y exportar DOCX/PPTX y abrir archivos de Office en el visor; XLSX: Visor Office.</p>
             <p>Las apps documentales anteriores siguen guardando sus datos. Usa <strong>Importar &gt; Migrar apps antiguas</strong> para reunirlos aquí; la migración conserva copias y se puede deshacer.</p>
             <p className="aula-documentos-status" role="status" aria-live="polite">{statusText}</p>
             {saveFailed && !readOnly ? (

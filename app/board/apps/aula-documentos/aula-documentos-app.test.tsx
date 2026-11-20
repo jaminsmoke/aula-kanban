@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
+import { buildAulaDocumentCopy } from "../../../../lib/domain/aula-documentos/copy";
 import { listAulaRecoveryCopies, saveAulaRecoveryCopy } from "../../../../lib/domain/aula-documentos/recovery";
 import { useWindowAttemptClose, WindowCloseProvider } from "../../shared/window-close-guard";
 import type { VersionedSaveResult } from "../use-app-document";
@@ -42,6 +43,22 @@ const printMock = vi.hoisted(() => vi.fn());
 
 vi.mock("../../shared/aula-documentos/print-html", () => ({
   printHtmlDocument: printMock,
+}));
+
+const copyMock = vi.hoisted(() => ({
+  list: vi.fn(),
+  save: vi.fn(),
+  download: vi.fn(),
+  remove: vi.fn(),
+}));
+
+vi.mock("../../shared/aula-documentos/copy-client", () => ({
+  listAulaCopies: copyMock.list,
+  saveAulaCopy: copyMock.save,
+  downloadAulaCopy: copyMock.download,
+  deleteAulaCopy: copyMock.remove,
+  aulaCopySizeLabel: (bytes: number) => `${bytes} B`,
+  aulaCopyDateLabel: () => "20 nov 2026",
 }));
 
 vi.mock("../use-app-document", () => ({
@@ -88,6 +105,10 @@ function chooseMenu(menu: "Archivo" | "Importar" | "Formato" | "Insertar" | "Exp
 
 function newDocument() {
   chooseMenu("Archivo", "Nuevo documento");
+}
+
+function openCopies() {
+  chooseMenu("Archivo", "Copias portables");
 }
 
 function importDocument() {
@@ -170,6 +191,11 @@ describe("Aula Documentos", () => {
     documentMock.mermaidLoad.mockResolvedValue({ state: null, updatedAt: null });
     documentMock.presentationsLoad.mockResolvedValue({ state: null, updatedAt: null });
     mermaidMock.render.mockImplementation(async (code: string) => `<svg data-mermaid-preview="true"><text>${code}</text></svg>`);
+    copyMock.list.mockReset();
+    copyMock.list.mockResolvedValue({ ok: true, copies: [] });
+    copyMock.save.mockReset();
+    copyMock.download.mockReset();
+    copyMock.remove.mockReset();
     window.localStorage.clear();
     delete (URL as unknown as Record<string, unknown>).createObjectURL;
     delete (URL as unknown as Record<string, unknown>).revokeObjectURL;
@@ -1177,6 +1203,151 @@ describe("Aula Documentos", () => {
     );
 
     vi.unstubAllGlobals();
+  });
+
+  it("abre copias portables y guarda una copia en el proyecto", async () => {
+    copyMock.list.mockResolvedValue({ ok: true, copies: [] });
+    copyMock.save.mockResolvedValue({
+      ok: true,
+      copy: {
+        id: "copy1",
+        title: "Documento de ejemplo",
+        format: "aula-document-copy",
+        formatVersion: 1,
+        schemaVersion: 3,
+        sizeBytes: 1234,
+        author: "Tú",
+        createdAt: 100,
+        downloadUrl: "/api/aula-documentos/copies/copy1",
+      },
+    });
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    openCopies();
+    expect(await screen.findByRole("dialog", { name: "Copias portables" })).toBeTruthy();
+    await waitFor(() => expect(copyMock.list).toHaveBeenCalledWith("p1"));
+
+    fireEvent.click(screen.getByRole("button", { name: "Guardar en el proyecto" }));
+    await waitFor(() => expect(copyMock.save).toHaveBeenCalledTimes(1));
+    expect(copyMock.save).toHaveBeenCalledWith("p1", expect.any(Uint8Array), "documento-de-ejemplo.aula.zip");
+    expect(await screen.findByText("Copia guardada en el proyecto.")).toBeTruthy();
+  });
+
+  it("mantiene la descarga local aunque falle el listado de R2", async () => {
+    const createObjectURL = stubDownload();
+    copyMock.list.mockResolvedValue({ ok: false, message: "R2 no disponible." });
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    openCopies();
+    await waitFor(() => expect(screen.getByText("R2 no disponible.")).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "Descargar copia local" }));
+
+    await waitFor(() => expect(createObjectURL).toHaveBeenCalledTimes(1));
+    expect(await screen.findByText("Copia local descargada.")).toBeTruthy();
+  });
+
+  it("lista, descarga y borra copias guardadas", async () => {
+    const createObjectURL = stubDownload();
+    const copy = {
+      id: "copy1",
+      title: "Copia de clase",
+      format: "aula-document-copy",
+      formatVersion: 1,
+      schemaVersion: 3,
+      sizeBytes: 4096,
+      author: "Otro miembro",
+      createdAt: 100,
+      downloadUrl: "/api/aula-documentos/copies/copy1",
+    };
+    copyMock.list.mockResolvedValue({ ok: true, copies: [copy] });
+    copyMock.download.mockResolvedValue({ ok: true, blob: new Blob(["zip"], { type: "application/zip" }) });
+    copyMock.remove.mockResolvedValue({ ok: true });
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    openCopies();
+    expect(await screen.findByText("Copia de clase")).toBeTruthy();
+    expect(screen.getByText(/4\.0 KB · Otro miembro/)).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Descargar" }));
+    await waitFor(() => expect(copyMock.download).toHaveBeenCalledWith(copy));
+    expect(createObjectURL).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "Borrar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar borrado" }));
+    await waitFor(() => expect(copyMock.remove).toHaveBeenCalledWith(copy));
+    await waitFor(() => expect(screen.queryByText("Copia de clase")).toBeNull());
+  });
+
+  it("no ofrece guardar ni borrar copias a invitados", async () => {
+    copyMock.list.mockResolvedValue({
+      ok: true,
+      copies: [{
+        id: "copy1",
+        title: "Copia de clase",
+        format: "aula-document-copy",
+        formatVersion: 1,
+        schemaVersion: 3,
+        sizeBytes: 4096,
+        author: "Otro miembro",
+        createdAt: 100,
+        downloadUrl: "/api/aula-documentos/copies/copy1",
+      }],
+    });
+    render(<AulaDocumentosApp {...props} role="guest" />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    openCopies();
+    expect(await screen.findByText("Copia de clase")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Guardar en el proyecto" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Borrar" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Descargar" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Descargar copia local" })).toBeTruthy();
+  });
+
+  it("previsualiza e importa una copia portable con confirmación", async () => {
+    const built = await buildAulaDocumentCopy({
+      schemaVersion: 3,
+      title: "Copia importada",
+      content: {
+        type: "doc",
+        content: [{
+          type: "paragraph",
+          content: [{ type: "text", text: "Contenido restaurado." }],
+        }],
+      },
+    }, [], { createdAt: "2026-11-20T10:00:00.000Z" });
+    if (!built.ok) throw new Error(built.message);
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    fireEvent.change(screen.getByLabelText("Elegir copia portable para importar"), {
+      target: { files: [new File([built.bytes.slice().buffer as ArrayBuffer], "copia.aula.zip", { type: "application/zip" })] },
+    });
+
+    expect(await screen.findByRole("dialog", { name: "Importar copia portable" })).toBeTruthy();
+    expect(screen.getByText("Copia importada")).toBeTruthy();
+    expect(screen.getByText("Contenido restaurado.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("button", { name: "Importar y reemplazar" }));
+
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Copia importada"));
+    expect(screen.queryByRole("dialog", { name: "Importar copia portable" })).toBeNull();
+    expect(screen.getByRole("status").textContent).toContain("Copia portable importada");
+  });
+
+  it("muestra el aviso de cuota llena al guardar una copia", async () => {
+    copyMock.list.mockResolvedValue({ ok: true, copies: [] });
+    copyMock.save.mockResolvedValue({ ok: false, message: "La cuota de copias del proyecto está llena." });
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    openCopies();
+    await waitFor(() => expect(copyMock.list).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("button", { name: "Guardar en el proyecto" }));
+    expect(await screen.findByText("La cuota de copias del proyecto está llena.")).toBeTruthy();
   });
 
   it("inserta una imagen local desde el selector del documento", async () => {
