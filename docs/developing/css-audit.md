@@ -1,6 +1,6 @@
 # Auditoría de CSS y sistema visual
 
-> **Estado:** Fases 1–4 de ARC-04 · **Fecha:** 2026-11-20
+> **Estado:** ARC-04 completado · **Fecha:** 2026-11-20
 > **Alcance:** 46 archivos CSS de `app/`, tokens, primitivas, layout, apps, presupuestos y deuda `features → layout`.
 > **Regla:** esta fase no cambia estilos; solo inventaría, clasifica y fija el contrato de capas.
 
@@ -190,4 +190,18 @@ La Fase 4 solo debe dividir los dos CSS que superan el límite; Office (444), Ti
 - `largeCss` queda vacío y ningún CSS de producto supera las 500 líneas con contenido.
 - No se han dividido Office, Timeline ni Aula Documentos porque ya cumplen presupuesto; se revisan por duplicados sin fragmentación cosmética.
 - Estado actual: **49 CSS / 8.893 líneas**.
-- Verificación: `arch:check` **397 archivos / 988 imports / 0 problemas**; presupuestos correctos; `aula-documentos` **369.352 / 370.000 B gzip**.
+- Verificación: `arch:check` **397 archivos / 988 imports / 0 problemas**; presupuestos correctos; `aula-documentos` **369.351 / 370.000 B gzip**.
+
+## 12. Responsive, temas y cierre
+
+Revisión visual con Orca en **393, 560, 860, 1024 y 1374 px**, en claro y oscuro, sobre Tablero, Aula Documentos, Hoja de cálculo y Tarjetas.
+
+- No hay desbordamiento horizontal a nivel de documento en 860, 1024 ni 1374 px.
+- En 393 px la navegación de secciones usa scroll horizontal intencional; en Hoja de cálculo la rejilla conserva su scroll propio.
+- No se detectaron colisiones de texto, controles táctiles inaccesibles ni rupturas del tema oscuro que exigieran cambios de CSS.
+- Los scrolls internos se mantienen: son parte del comportamiento de ventanas y rejillas, no un overflow de página.
+- Tokens, primitivas y layout mantienen el mismo resultado visual en ambos temas.
+- No se cambiaron textos, URLs, permisos, datos ni versión del Site.
+- `arch-baseline.json` queda sin excepciones `features → layout` y sin `largeCss`.
+- Verificación final: `npm run check`, suite, build, `perf:budget` y `perf:office` correctos.
+

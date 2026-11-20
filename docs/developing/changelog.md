@@ -1,8 +1,37 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-04 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-20 — Roadmap ARC-04 — Sistema visual, CSS y responsive
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Documentado el inventario de 46 CSS, las capas visuales y las cinco dependencias `features → layout` en `docs/developing/css-audit.md`.
+- Consolidados tokens de foco, control, iconos y espaciado; corregido el token inexistente `--ui-focus` de `personal-space.css`.
+- Añadida `primitives.css` con `.ui-toolbar` y `.ui-empty`; Tarjetas, Timeline, Hoja, Ajedrez y Tabla periódica consumen las primitivas.
+- Movidos `workspace-layout` y `layout-toggle` a `app/board/shared/ui/`; retiradas las cinco excepciones `features → layout`.
+- Divididos `portada.css` y `tarjetas.css` en hojas por responsabilidad; `largeCss` queda vacío.
+- Revisión visual en 393, 560, 860, 1024 y 1374 px, en claro y oscuro, sobre Tablero, Aula Documentos, Hoja de cálculo y Tarjetas.
+- No se modificó la versión del Site, los datos, las URLs ni los permisos.
+
+### Verificación
+
+- `npm run check`: ESLint sin errores (64 warnings preexistentes), `tsc` y `arch:check` correctos.
+- `arch:check`: **397 archivos de producto / 988 imports / 0 violaciones nuevas / 0 ciclos / 0 problemas de presupuesto / 0 problemas MCP**.
+- Suite completa: **234 archivos / 1.597 pruebas**.
+- Build, `perf:budget` y `perf:office` correctos.
+- Tablero **174.007 / 175.656 B gzip**; `aula-documentos` **369.351 / 370.000**; export **329.695 / 340.000**; Office **196.481 / 210.000**; hoja **310.208 / 315.000**.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-04 archivado en [`historial/roadmap-arc-04.md`](../historial/roadmap-arc-04.md). El backlog queda con **9 entradas**; siguiente candidato **ARC-05**.
 
 ---
 
