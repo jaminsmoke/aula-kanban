@@ -19,7 +19,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | ADOC-14 activo: imágenes y recursos dentro del documento | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | ADOC-21 activo: copias portables del documento en R2 y en local | Secuencia de ejecución |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
