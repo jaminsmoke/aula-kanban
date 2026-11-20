@@ -1,6 +1,6 @@
 # Auditoría de CSS y sistema visual
 
-> **Estado:** Fases 1–3 de ARC-04 · **Fecha:** 2026-11-20
+> **Estado:** Fases 1–4 de ARC-04 · **Fecha:** 2026-11-20
 > **Alcance:** 46 archivos CSS de `app/`, tokens, primitivas, layout, apps, presupuestos y deuda `features → layout`.
 > **Regla:** esta fase no cambia estilos; solo inventaría, clasifica y fija el contrato de capas.
 
@@ -181,3 +181,13 @@ La Fase 4 solo debe dividir los dos CSS que superan el límite; Office (444), Ti
 - Botones, diálogos y `edu-card` se mantienen como primitivas compartidas existentes.
 - Estado actual: **47 CSS / 8.887 líneas**; sin excepciones `features → layout`.
 - Verificación: suite **234 archivos / 1.597 pruebas**; `arch:check` **397 archivos / 988 imports / 0 violaciones**.
+
+## 11. Estilos de apps y presupuestos en la Fase 4
+
+- `app/portada.css` se divide en portada base/héroe/vista previa (293 líneas) y `portada-sections.css` con producto, plugin, pie y responsive (338).
+- `tarjetas.css` se divide en estructura/editor (290) y `tarjetas-review.css` con repaso, resumen y lista (251).
+- Ambas hojas se importan desde su entrypoint correspondiente; no se cargan desde `globals.css`.
+- `largeCss` queda vacío y ningún CSS de producto supera las 500 líneas con contenido.
+- No se han dividido Office, Timeline ni Aula Documentos porque ya cumplen presupuesto; se revisan por duplicados sin fragmentación cosmética.
+- Estado actual: **49 CSS / 8.893 líneas**.
+- Verificación: `arch:check` **397 archivos / 988 imports / 0 problemas**; presupuestos correctos; `aula-documentos` **369.352 / 370.000 B gzip**.

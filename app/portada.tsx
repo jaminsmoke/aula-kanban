@@ -1,4 +1,5 @@
 import "./portada.css";
+import "./portada-sections.css";
 
 /**
  * Portada pública de Aula Kanban: propuesta del producto, bloques de valor,

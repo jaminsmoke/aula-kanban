@@ -9,6 +9,7 @@ import { TarjetasToolbar } from "./tarjetas-toolbar";
 import { useTarjetasEditor } from "./use-tarjetas-editor";
 import { useTarjetasReview } from "./use-tarjetas-review";
 import "./tarjetas.css";
+import "./tarjetas-review.css";
 
 /**
  * Tarjetas de repaso: mazos compartidos por proyecto y editor de tarjetas.

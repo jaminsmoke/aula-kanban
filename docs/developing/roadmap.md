@@ -94,11 +94,11 @@ Hay **46 archivos CSS / 8.900 líneas con contenido**. `arch-baseline.json` cons
 
 ### Fase 4 — Estilos de apps y presupuestos
 
-- [ ] Dividir `portada.css` y `tarjetas.css` por responsabilidad, que son las dos excepciones de `largeCss`.
-- [ ] Revisar Office, Timeline, Aula Documentos y las apps secundarias para retirar duplicados y reglas muertas sin dividir archivos que ya cumplen presupuesto.
-- [ ] Mantener el CSS de cada app en su carga diferida; no mover estilos de app a `globals.css`.
-- [ ] Reducir todos los CSS de producto por debajo de 500 líneas y retirar `largeCss` cuando corresponda.
-- [ ] Actualizar presupuestos por flujo y comprobar que el CSS no se duplica entre apps.
+- [x] Dividir `portada.css` y `tarjetas.css` por responsabilidad, que son las dos excepciones de `largeCss`.
+- [x] Revisar Office, Timeline, Aula Documentos y las apps secundarias para retirar duplicados y reglas muertas sin dividir archivos que ya cumplen presupuesto.
+- [x] Mantener el CSS de cada app en su carga diferida; no mover estilos de app a `globals.css`.
+- [x] Reducir todos los CSS de producto por debajo de 500 líneas y retirar `largeCss` cuando corresponda.
+- [x] Actualizar presupuestos por flujo y comprobar que el CSS no se duplica entre apps.
 - **Criterios:** ningún CSS de producto por encima de 500 líneas sin justificación, sin excepciones de ARC-04 y presupuestos correctos.
 
 ### Fase 5 — Responsive, temas y cierre
@@ -129,4 +129,5 @@ Hay **46 archivos CSS / 8.900 líneas con contenido**. `arch-baseline.json` cons
 - 2026-11-20: **Fase 1 completada.** Inventario y contrato de capas en [`css-audit.md`](css-audit.md): 46 CSS, duplicados, 38 `!important`, cinco dependencias `features → layout` y presupuestos. Sin cambios de estilos. `arch:check` sigue en **397 archivos / 988 imports / 0 problemas**.
 - 2026-11-20: **Fase 2 completada.** Añadidos tokens de foco y medidas compartidas; botones, diálogos y acceso usan `--ui-control-height`, `--ui-icon-button-size` y `--ui-space-*`. El foco visible incluye enlaces. Corregido `--ui-focus` inexistente en `personal-space.css`. Añadida prueba estática de tokens; `globals.css` queda en 445 líneas. Suite: **234 archivos / 1.597 pruebas**; `arch:check` en **397 archivos / 988 imports / 0 problemas**; `aula-documentos` **369.347 / 370.000 B gzip**.
 - 2026-11-20: **Fase 3 completada.** Añadida `primitives.css` con `.ui-toolbar` y `.ui-empty`, aplicada a varias apps; `workspace-layout` y `layout-toggle` se movieron a `shared/ui`. Las cinco dependencias `features → layout` desaparecen y `baselineViolations` queda vacío. Suite: **234 archivos / 1.597 pruebas**; `arch:check` **397 archivos / 988 imports / 0 violaciones nuevas**; `aula-documentos` **369.348 / 370.000 B gzip**.
+- 2026-11-20: **Fase 4 completada.** `portada.css` se divide en `portada-sections.css` y `tarjetas.css` en `tarjetas-review.css`; ambas mantienen la carga desde su entrypoint. `largeCss` queda vacío y todos los CSS de producto cumplen el presupuesto. Estado: **49 CSS / 8.893 líneas**; `arch:check` **397 archivos / 988 imports / 0 problemas**; `aula-documentos` **369.352 / 370.000 B gzip**.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

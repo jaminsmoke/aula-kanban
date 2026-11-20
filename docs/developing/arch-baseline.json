@@ -92,20 +92,5 @@
   "baselineViolations": [],
   "baselineCycles": [],
   "largeFiles": [],
-  "largeCss": [
-    {
-      "path": "app/portada.css",
-      "lines": 628,
-      "limit": 500,
-      "owner": "ARC-04",
-      "reason": "Estilos de portada pendientes de capas y primitivas."
-    },
-    {
-      "path": "app/board/apps/tarjetas/tarjetas.css",
-      "lines": 547,
-      "limit": 500,
-      "owner": "ARC-04",
-      "reason": "Estilos de app pendientes de separar layout y componentes."
-    }
-  ]
+  "largeCss": []
 }
