@@ -67,12 +67,13 @@ Medición del 2026-11-20 al abrir ARC-06:
 
 ### Fase 1 — Inventario y contrato del servidor
 
-- [ ] Inventariar `lib/server` y `app/api` por dominio, responsabilidad, consumidor y prueba.
-- [ ] Identificar reglas duplicadas entre rutas, servicios, MCP y almacenamiento.
-- [ ] Mapear accesos D1/R2, cuotas, purgas, inventario y migraciones.
-- [ ] Definir qué es dominio, repositorio, servicio y helper HTTP.
-- [ ] Documentar el mapa y los límites en `docs/developing/server-map.md`.
+- [x] Inventariar `lib/server` y `app/api` por dominio, responsabilidad, consumidor y prueba.
+- [x] Identificar reglas duplicadas entre rutas, servicios, MCP y almacenamiento.
+- [x] Mapear accesos D1/R2, cuotas, purgas, inventario y migraciones.
+- [x] Definir qué es dominio, repositorio, servicio y helper HTTP.
+- [x] Documentar el mapa y los límites en `docs/developing/server-map.md`.
 - **Criterios:** cada archivo tiene una clasificación provisional y un consumidor conocido; no se mueve código todavía.
+- **Cierre (2026-11-20):** 89 módulos de producto y 26 rutas clasificados; 0 archivos sin consumidor de producto salvo las fachadas MCP `reads.ts` y `writes.ts`; sin cambios de código.
 
 ### Fase 2 — Adaptadores API finos
 
@@ -125,3 +126,4 @@ Medición del 2026-11-20 al abrir ARC-06:
 - `lib/server` tiene 139 archivos / 14.227 líneas y `app/api` 52 / 4.188; la dirección de dependencias ya es correcta.
 - El baseline de código muerto de ARC-05 deja 51 exports y dos fachadas MCP como deuda conocida para revisar aquí.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
+- 2026-11-20 — Fase 1 cerrada: [`server-map.md`](server-map.md) clasifica 89 módulos de producto (`lib/server`) y 26 rutas (`app/api`), con mapa D1/R2, cuotas, purgas, retenciones y migraciones. Medición separada: **89 / 9.906** líneas de producto y **50 / 9.792** de prueba en `lib/server`; **26 / 1.357** rutas y **26 / 3.371** pruebas en `app/api`. No se movió código. Deuda priorizada para Fase 2: adaptador HTTP dentro de `people/students.ts` y `people/teachers.ts`, `api/tasks` con reglas y D1, y resolución manual de proyecto en 7 rutas.
