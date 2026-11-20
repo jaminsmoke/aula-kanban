@@ -1,19 +1,30 @@
-import { and, asc, eq } from "drizzle-orm";
 import { z } from "zod";
-import { getDb } from "../../../db";
-import { projectMembers, students, teachers } from "../../../db/schema";
 import type { Access, ProjectWithAccess } from "../projects/project-access";
+import {
+  deleteMemberRow,
+  findMemberRowByEmail,
+  findMemberRowByStudentSection,
+  findMemberRowByTeacherId,
+  findProjectMemberRow,
+  findStudentRow,
+  findTeacherRow,
+  insertMemberRow,
+  listProjectMemberRows,
+  updateMemberInvitationEmailRow,
+  type ProjectMemberRow,
+} from "./members-repository";
 
 /**
  * Miembros e invitaciones de un proyecto: listar, invitar y retirar cuentas.
  *
  * Extrae la lógica de `app/api/members/route.ts` para que la ruta HTTP y las
  * herramientas MCP de MCP-07 compartan permisos, mensajes y validaciones.
- * Nunca se devuelve `userId`: la web tampoco lo expone.
+ * Nunca se devuelve `userId`: la web tampoco lo expone. El acceso D1 vive en
+ * `members-repository.ts`.
  */
 
 /** Miembro del proyecto tal como lo ven la web y el MCP, sin `userId`. */
-export type Member = Omit<typeof projectMembers.$inferSelect, "userId">;
+export type Member = Omit<ProjectMemberRow, "userId">;
 
 /** Resultado de listar miembros: la lista o el 403 del contrato. */
 export type MemberListResult = { ok: true; miembros: Member[] } | { ok: false; status: number; message: string };
@@ -47,7 +58,7 @@ export type MemberLookupResult = { ok: true; miembro: Member } | { ok: false; st
  * @param row - Fila completa de `project_members`.
  * @returns La fila sin el identificador de cuenta.
  */
-function sinCuenta({ userId: _userId, ...member }: typeof projectMembers.$inferSelect): Member {
+function sinCuenta({ userId: _userId, ...member }: ProjectMemberRow): Member {
   return member;
 }
 
@@ -61,11 +72,7 @@ export async function listMembers(projectId: string, access: Access): Promise<Me
   if (access.role === "student" || access.role === "guest") {
     return { ok: false, status: 403, message: "No tienes permiso para gestionar miembros." };
   }
-  const rows = await getDb()
-    .select()
-    .from(projectMembers)
-    .where(eq(projectMembers.projectId, projectId))
-    .orderBy(asc(projectMembers.email));
+  const rows = await listProjectMemberRows(projectId);
   return {
     ok: true,
     miembros: rows
@@ -102,43 +109,30 @@ export async function inviteMember(project: ProjectWithAccess, body: unknown): P
   if (!privileged && !teacherStudent && !self) {
     return { ok: false, status: 403, message: "No tienes permiso para vincular esta cuenta." };
   }
-  const db = getDb();
-  if (studentSection) {
-    const [row] = await db
-      .select()
-      .from(students)
-      .where(and(eq(students.section, studentSection), eq(students.projectId, project.id), eq(students.deleted, 0)));
-    if (!row) return { ok: false, status: 400, message: "La ficha de alumno no está disponible." };
+  if (studentSection && !(await findStudentRow(project.id, studentSection))) {
+    return { ok: false, status: 400, message: "La ficha de alumno no está disponible." };
   }
-  if (teacherId) {
-    const [row] = await db.select().from(teachers).where(and(eq(teachers.id, teacherId), eq(teachers.projectId, project.id)));
-    if (!row) return { ok: false, status: 400, message: "La ficha de profesor no está disponible." };
+  if (teacherId && !(await findTeacherRow(project.id, teacherId))) {
+    return { ok: false, status: 400, message: "La ficha de profesor no está disponible." };
   }
-  const condition = studentSection
-    ? eq(projectMembers.studentSection, studentSection)
+  const existing = studentSection
+    ? await findMemberRowByStudentSection(project.id, studentSection)
     : teacherId
-      ? eq(projectMembers.teacherId, teacherId)
-      : eq(projectMembers.email, email);
-  const [existing] = await db.select().from(projectMembers).where(and(eq(projectMembers.projectId, project.id), condition));
+      ? await findMemberRowByTeacherId(project.id, teacherId)
+      : await findMemberRowByEmail(project.id, email);
   if (existing && existing.role !== role) {
     return { ok: false, status: 409, message: "Esa cuenta ya tiene otro rol en el proyecto." };
   }
   try {
     if (existing) {
       if (existing.email === email) return { ok: true, miembro: sinCuenta(existing), creada: false };
-      const [updated] = await db
-        .update(projectMembers)
-        .set({ email, status: "pending", userId: null })
-        .where(and(eq(projectMembers.id, existing.id), eq(projectMembers.projectId, project.id), eq(projectMembers.email, existing.email)))
-        .returning();
+      const updated = await updateMemberInvitationEmailRow(project.id, existing.id, existing.email, email);
       return updated
         ? { ok: true, miembro: sinCuenta(updated), creada: false }
         : { ok: false, status: 409, message: "La invitación ha cambiado. Actualiza y vuelve a intentarlo." };
     }
-    const [created] = await db
-      .insert(projectMembers)
-      .values({ id: crypto.randomUUID(), projectId: project.id, email, role, studentSection, teacherId, status: "pending" })
-      .returning();
+    const created = await insertMemberRow({ id: crypto.randomUUID(), projectId: project.id, email, role, studentSection, teacherId, status: "pending" });
+    if (!created) throw new Error("La inserción no devolvió la fila creada.");
     return { ok: true, miembro: sinCuenta(created), creada: true };
   } catch {
     return { ok: false, status: 409, message: "Ese correo o ficha ya está vinculado a otra cuenta del proyecto." };
@@ -152,10 +146,7 @@ export async function inviteMember(project: ProjectWithAccess, body: unknown): P
  * @returns El miembro sin `userId`, 404 si no existe o 403 si no puede retirarlo.
  */
 export async function findMember(project: ProjectWithAccess, id: string): Promise<MemberLookupResult> {
-  const [member] = await getDb()
-    .select()
-    .from(projectMembers)
-    .where(and(eq(projectMembers.id, id), eq(projectMembers.projectId, project.id)));
+  const member = await findProjectMemberRow(project.id, id);
   if (!member) return { ok: false, status: 404, message: "Ese miembro ya no está disponible." };
   const access = project.access;
   const allowed =
@@ -176,9 +167,6 @@ export async function findMember(project: ProjectWithAccess, id: string): Promis
 export async function removeMember(project: ProjectWithAccess, id: string): Promise<MemberRemoveResult> {
   const found = await findMember(project, id);
   if (!found.ok) return found;
-  const [deleted] = await getDb()
-    .delete(projectMembers)
-    .where(and(eq(projectMembers.id, found.miembro.id), eq(projectMembers.projectId, project.id)))
-    .returning({ id: projectMembers.id });
-  return deleted ? { ok: true, id: deleted.id } : { ok: false, status: 404, message: "Ese miembro ya no está disponible." };
+  const deleted = await deleteMemberRow(project.id, found.miembro.id);
+  return deleted ? { ok: true, id: deleted } : { ok: false, status: 404, message: "Ese miembro ya no está disponible." };
 }

@@ -65,11 +65,11 @@ Estas son las definiciones que gobiernan ARC-06. La clasificación de cada archi
 
 ---
 
-## 3. Inventario de `lib/server` (89 archivos)
+## 3. Inventario de `lib/server` (91 archivos)
 
 Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servicio, `H` helper HTTP, `P` plataforma, `A` adaptador MCP, `MX` mixto. La columna **Prueba** cuenta las pruebas que importan el módulo directamente; `—` no significa necesariamente ausencia de cobertura indirecta.
 
-### 3.1 Identidad, acceso y personas (15)
+### 3.1 Identidad, acceso y personas (16)
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
@@ -81,7 +81,8 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `projects/project-http.ts` | 21 | `H` fallo de proyecto | 14 rutas y servicios de personas | 2 |
 | `access/capabilities.ts` | 51 | `S` matriz de permisos | `mcp/dominios/apps.ts`, `project-books`, `space-apps` | 1 |
 | `access/administradores.ts` | 210 | `S`+`R` administradores | `mcp/dominios/administracion.ts`, `api/administrators` | 1 |
-| `access/members.ts` | 185 | `S`+`R` `project_members` | `mcp/dominios/personas/*`, `api/members` | — |
+| `access/members.ts` | 172 | `S` miembros e invitaciones | `mcp/dominios/personas/*`, `api/members` | ruta |
+| `access/members-repository.ts` | 156 | `R` `project_members`, `students`, `teachers` | `access/members.ts` | — |
 | `access/invitaciones.ts` | 75 | `S`+`R` invitaciones | `mcp/dominios/invitaciones.ts`, `api/invitations` | — |
 | `access/profile-update.ts` | 43 | `S` perfil + miembro | `people/students.ts`, `people/teachers.ts` | — |
 | `access/deleted-profiles.ts` | 49 | `R` histórico + purga | `api/tasks` (purga perezosa) | — |
@@ -91,7 +92,7 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 
 **Resuelto en Fase 2:** `mutateStudent`/`mutateTeacher` vivían en el servicio y construían `Request`/`Response`. El adaptador se movió a las rutas (`students` 59 líneas, `teachers` 66); los servicios bajaron a 140 y 133 líneas y ya no importan `http`, `project-http` ni `project-access` salvo los tipos.
 
-### 3.2 Proyectos, apps y documentos (11)
+### 3.2 Proyectos, apps y documentos (12)
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
@@ -101,7 +102,8 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `apps/app-documents.ts` | 105 | `S`+`R` `app_documents` | `migration`, `mcp/apps`, `api/app-documents` | 2 |
 | `aula-documentos/aula-documentos-migration.ts` | 284 | `S` migración transaccional | `api/aula-documentos/migration` | 1 |
 | `aula-documentos/document-copies.ts` | 90 | `R` `document_copies` + borrado R2 | `api/aula-documentos/copies[/:id]` | — |
-| `projects/projects.ts` | 161 | `S`+`R` proyectos | `mcp/dominios`, `api/projects` | — |
+| `projects/projects.ts` | 125 | `S` proyectos | `mcp/dominios`, `api/projects` | ruta |
+| `projects/projects-repository.ts` | 109 | `R` proyectos y recuentos | `projects/projects.ts` | — |
 | `projects/project-overview.ts` | 92 | `S` lectura agregada | `api/projects` | 1 |
 | `projects/project-rekey.ts` | 49 | `S` migración de id | `projects/project-access.ts`, `projects/project-overview.ts` | 1 |
 | `books/project-books.ts` | 81 | `S`+`R` `project_books` | `api/project-books` | 1 |
@@ -230,7 +232,7 @@ Clase actual: **fina** = guardas + un servicio; **mixta** = resuelve proyecto/er
 | `members` | 27 | fina | `members` | **—** |
 | `personal-apps` | 56 | fina | `personal-apps` | 1 |
 | `project-books` | 40 | fina | `capabilities`, `project-books` | 1 |
-| `projects` | 39 | fina | `projects`, `project-overview` | **—** |
+| `projects` | 39 | fina | `projects`, `project-overview` | 1 |
 | `space-apps` | 41 | fina | `apps`, `capabilities`, `route-helpers` | **—** |
 | `storage/inventory` | 48 | mixta (admin) | `uploads/inventory`, `storage` | 1 |
 | `storage/purge` | 50 | mixta (admin) | `uploads/purge`, `storage` | 1 |
@@ -240,7 +242,7 @@ Clase actual: **fina** = guardas + un servicio; **mixta** = resuelve proyecto/er
 | `teachers` | 66 | fina | `people/teachers` + esquema y guardas en la ruta | paridad |
 | `uploads` | 46 | fina (multipart) | `storage`, `route-helpers`, `http` | 1 |
 
-Cobertura de rutas: **23 de 26** tienen `route.test.ts` propio. Sin prueba propia: `projects`, `students` y `teachers`; las dos últimas están cubiertas por las pruebas de paridad de personas. `projects` queda como único hueco de contrato.
+Cobertura de rutas: **24 de 26** tienen `route.test.ts` propio. Sin prueba propia: `students` y `teachers`, cubiertas por las pruebas de paridad de personas.
 
 ### Resolución de proyecto
 
@@ -256,8 +258,8 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 
 | Tabla | Escritura principal | Lectura principal |
 |---|---|---|
-| `projects` | `projects/projects.ts` (alta/baja), `projects/project-rekey.ts` | `projects/project-access.ts`, `projects/project-overview.ts`, MCP |
-| `project_members` | `access/members.ts`, `access/invitaciones.ts`, `access/profile-update.ts`, `people/*` | `people/*`, `access/members.ts`, `projects/project-access.ts`, `tasks/queries.ts` |
+| `projects` | `projects/projects-repository.ts` (alta/baja), `projects/project-rekey.ts` | `projects/project-access.ts`, `projects/project-overview.ts`, MCP |
+| `project_members` | `access/members-repository.ts`, `access/invitaciones.ts`, `access/profile-update.ts`, `people/*` | `people/*`, `access/members.ts`, `projects/project-access.ts`, `tasks/queries.ts` |
 | `administrators_unified` | `access/administradores.ts`; sincronización de correo en `projects/project-access.ts` | `access/administradores.ts`, `projects/project-access.ts` |
 | `instance_owner` | `access/owner.ts` | `access/owner.ts`, `projects/project-access.ts` |
 | `instance_apps` | `apps/apps.ts` | `apps/apps.ts`, `apps/personal-apps.ts`, MCP |
@@ -272,7 +274,7 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 | `project_books` | `books/project-books.ts` | `books/project-books.ts`, `projects/project-overview.ts` |
 | `project_rekeys` | `projects/project-rekey.ts` | `projects/project-access.ts`, `projects/project-overview.ts` |
 | `document_copies` | `aula-documentos/document-copies.ts`; `storage.deleteProjectUploads` | `aula-documentos/document-copies.ts`, rutas de copias |
-| `uploads` | `storage.storeUpload`, `storage.deleteUpload`, `uploads/purge.ts` | `storage.ts`, `uploads/*`, `projects/projects.ts` (baja) |
+| `uploads` | `storage.storeUpload`, `storage.deleteUpload`, `uploads/purge.ts` | `storage.ts`, `uploads/*`, `projects/projects-repository.ts` (baja) |
 | `mcp_tokens` | `mcp/tokens.ts` | `mcp/auth.ts`, `mcp/dominios/administracion.ts` |
 | `mcp_audit_log` | `mcp/auditoria.ts` | `mcp/auditoria.ts`, `administracion.ts` |
 | `oauth_clients` / `oauth_authorization_codes` / `oauth_access_tokens` / `oauth_refresh_tokens` | `oauth/{clientes,codigos,tokens}.ts` | `oauth/service.ts` |
@@ -334,6 +336,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 | P0 | El adaptador HTTP de personas vivía en el servicio | movido a `app/api/students` y `app/api/teachers` | 2 · **resuelto** |
 | P0 | `api/tasks` decidía reglas y consultaba D1 | movido a `tasks/service.ts`; la ruta queda en 46 líneas | 2 · **resuelto** |
 | P1 | `storage.ts` mezclaba R2, D1, cuotas, MIME y diagnóstico | dividido en servicio, repositorio y reglas | 3 · **resuelto** |
+| P1 | Proyectos y miembros mezclaban reglas y D1 | `projects/projects-repository.ts` y `access/members-repository.ts` concentran la persistencia | 3 · **resuelto** |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
 | P1 | Cuatro rutas importaban D1 directamente | extraídas a servicios; `app/api` no importa D1 | 2 y 3 · **resuelto** |
@@ -359,13 +362,13 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 | Ruta (`app/api`) | Contrato: método, estado, cuerpo, permisos | SQL y reglas de negocio |
 | MCP (`A`) | Catálogo + prueba de paridad | Duplicar la regla del servicio |
 
-**Huecos de cobertura detectados:** `api/projects` no tiene prueba propia; `people/members`, `invitaciones`, `profile-update` y `deleted-profiles` no tienen prueba directa. `api/members` y `api/space-apps` ya tienen contrato tras la Fase 2.
+**Huecos de cobertura detectados:** `access/members`, `access/invitaciones`, `access/profile-update` y `access/deleted-profiles` no tienen prueba directa. `api/members` y `api/space-apps` tienen contrato desde la Fase 2 y `api/projects` lo recibe en la Fase 3.
 
 ---
 
 ## 10. Criterios de aceptación de Fase 1
 
-- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (89/89).
+- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (91/91).
 - [x] Cada ruta de `app/api` tiene clase provisional y servicios identificados (26/26).
 - [x] Están identificadas las reglas duplicadas entre rutas, servicios, MCP y almacenamiento.
 - [x] Está mapeado el acceso a D1 y R2, con tablas, claves y responsables.
@@ -382,4 +385,4 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 2. **Hecho (2026-11-20):** las 7 rutas usan `withProjectRoute`; archivos y copias, `withResourceProject`.
 3. **Hecho (2026-11-20):** `tasks/service.ts` orquesta revisión, permisos y decoración; `api/tasks` solo valida y responde.
 4. **Hecho (2026-11-20):** `storageUnavailable()` en `http.ts` centraliza el 503; las ocho rutas afectadas lo consumen.
-5. Añadir pruebas de contrato a `members` y `space-apps` al tocar sus rutas.
+5. **Hecho (2026-11-20):** `members` y `space-apps` tienen contrato; `projects` lo recibe al abrir la Fase 3.
