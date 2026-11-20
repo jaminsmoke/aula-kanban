@@ -1,7 +1,7 @@
 # Mapa del servidor: `lib/server` y `app/api`
 
 > **Estado:** Fase 1 cerrada; Fase 2 en curso · **Fecha:** 2026-11-20
-> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas. Las siete rutas que resolvían el proyecto a mano usan ahora `withProjectRoute`; archivos y copias usan `withResourceProject` porque el ámbito es el del objeto guardado. `tasks/service.ts` absorbe revisión, permisos y decoración; `api/tasks` queda como adaptador de 46 líneas. El 503 de almacenamiento sale de un único `storageUnavailable()` con mensaje y estado compartidos.
+> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas. Las siete rutas que resolvían el proyecto a mano usan ahora `withProjectRoute`; archivos y copias usan `withResourceProject` porque el ámbito es el del objeto guardado. `tasks/service.ts` absorbe revisión, permisos y decoración; `api/tasks` queda como adaptador de 46 líneas. El 503 de almacenamiento sale de un único `storageUnavailable()` con mensaje y estado compartidos. `api/members` y `api/space-apps` ya tienen prueba de contrato propia.
 > **Alcance:** inventario y clasificación provisional. La Fase 1 no movió ni renombró código.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Arquitectura:** [`arquitectura-global.md`](arquitectura-global.md)
 > **Regla de oro:** una regla de servidor tiene un único hogar; las rutas solo analizan, autorizan, delegan y responden.
@@ -235,7 +235,7 @@ Clase actual: **fina** = guardas + un servicio; **mixta** = resuelve proyecto/er
 | `teachers` | 66 | fina | `people/teachers` + esquema y guardas en la ruta | paridad |
 | `uploads` | 46 | fina (multipart) | `storage`, `route-helpers`, `http` | 1 |
 
-Cobertura de rutas: **21 de 26** tienen `route.test.ts` propio. Sin prueba propia: `members`, `projects`, `space-apps`, `students` y `teachers`; las dos últimas están cubiertas por las pruebas de paridad de personas. `members` y `space-apps` no tienen ninguna cobertura directa.
+Cobertura de rutas: **23 de 26** tienen `route.test.ts` propio. Sin prueba propia: `projects`, `students` y `teachers`; las dos últimas están cubiertas por las pruebas de paridad de personas. `projects` queda como único hueco de contrato.
 
 ### Resolución de proyecto
 
@@ -354,7 +354,7 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 | Ruta (`app/api`) | Contrato: método, estado, cuerpo, permisos | SQL y reglas de negocio |
 | MCP (`A`) | Catálogo + prueba de paridad | Duplicar la regla del servicio |
 
-**Huecos de cobertura detectados:** `api/members` y `api/space-apps` no tienen prueba propia; `people/members`, `invitaciones`, `profile-update` y `deleted-profiles` no tienen prueba directa. No se añaden en esta fase: se cubren al extraer los adaptadores de Fase 2.
+**Huecos de cobertura detectados:** `api/projects` no tiene prueba propia; `people/members`, `invitaciones`, `profile-update` y `deleted-profiles` no tienen prueba directa. `api/members` y `api/space-apps` ya tienen contrato tras la Fase 2.
 
 ---
 
