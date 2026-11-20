@@ -76,11 +76,11 @@ Hay **46 archivos CSS / 8.900 líneas con contenido**. `arch-baseline.json` cons
 
 ### Fase 2 — Tokens y base
 
-- [ ] Consolidar tokens semánticos de color, superficie, borde, foco, radio y espaciado en `globals.css`.
-- [ ] Eliminar valores literales duplicados que ya tengan token equivalente.
-- [ ] Revisar tipografía, foco visible, selección, scrollbars y comportamiento en ambos temas.
-- [ ] Mantener las primitivas existentes sin convertir `globals.css` en una hoja de componentes.
-- [ ] Añadir pruebas o comprobaciones estáticas de tokens y presupuestos.
+- [x] Consolidar tokens semánticos de color, superficie, borde, foco, radio y espaciado en `globals.css`.
+- [x] Eliminar valores literales duplicados que ya tengan token equivalente.
+- [x] Revisar tipografía, foco visible, selección, scrollbars y comportamiento en ambos temas.
+- [x] Mantener las primitivas existentes sin convertir `globals.css` en una hoja de componentes.
+- [x] Añadir pruebas o comprobaciones estáticas de tokens y presupuestos.
 - **Criterios:** tokens documentados y sin duplicados evidentes; `globals.css` sigue por debajo de 500 líneas; ningún flujo cambia de comportamiento.
 
 ### Fase 3 — Primitivas compartidas y layout
@@ -127,4 +127,5 @@ Hay **46 archivos CSS / 8.900 líneas con contenido**. `arch-baseline.json` cons
 - Medición actual: **46 CSS / 8.900 líneas con contenido**; las cifras del backlog habían quedado desactualizadas.
 - `globals.css` ya contiene primitivas y tokens `ui-*`; este roadmap los consolida, no crea un sistema paralelo.
 - 2026-11-20: **Fase 1 completada.** Inventario y contrato de capas en [`css-audit.md`](css-audit.md): 46 CSS, duplicados, 38 `!important`, cinco dependencias `features → layout` y presupuestos. Sin cambios de estilos. `arch:check` sigue en **397 archivos / 988 imports / 0 problemas**.
+- 2026-11-20: **Fase 2 completada.** Añadidos tokens de foco y medidas compartidas; botones, diálogos y acceso usan `--ui-control-height`, `--ui-icon-button-size` y `--ui-space-*`. El foco visible incluye enlaces. Corregido `--ui-focus` inexistente en `personal-space.css`. Añadida prueba estática de tokens; `globals.css` queda en 445 líneas. Suite: **234 archivos / 1.597 pruebas**; `arch:check` en **397 archivos / 988 imports / 0 problemas**; `aula-documentos` **369.347 / 370.000 B gzip**.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

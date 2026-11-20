@@ -6,8 +6,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 41px;
+  gap: var(--ui-space-2);
+  min-height: var(--ui-control-height);
   border: var(--border-width-hairline) solid transparent;
   border-radius: var(--radius-sm);
   padding: 0 14px;
@@ -33,9 +33,9 @@
 .icon-button {
   display: inline-grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  flex: 0 0 36px;
+  width: var(--ui-icon-button-size);
+  height: var(--ui-icon-button-size);
+  flex: 0 0 var(--ui-icon-button-size);
   padding: 0;
   color: var(--ui-text-muted);
   background: transparent;

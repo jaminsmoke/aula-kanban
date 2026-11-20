@@ -1,6 +1,6 @@
 # Auditoría de CSS y sistema visual
 
-> **Estado:** Fase 1 de ARC-04 · **Fecha:** 2026-11-20
+> **Estado:** Fases 1–2 de ARC-04 · **Fecha:** 2026-11-20
 > **Alcance:** 46 archivos CSS de `app/`, tokens, primitivas, layout, apps, presupuestos y deuda `features → layout`.
 > **Regla:** esta fase no cambia estilos; solo inventaría, clasifica y fija el contrato de capas.
 
@@ -160,3 +160,13 @@ La Fase 4 solo debe dividir los dos CSS que superan el límite; Office (444), Ti
 - Duplicados y deuda `features → layout` identificados.
 - Sin cambios de estilos, producto, versión ni Site.
 - `npm run arch:check`: **397 archivos de producto / 988 imports / 0 problemas**.
+
+## 9. Tokens y base implementados en la Fase 2
+
+- Añadidos tokens de foco y medidas compartidas: `--ui-focus-offset`, `--ui-control-height`, `--ui-icon-button-size`, `--ui-space-2`, `--ui-space-3`, `--ui-space-4`.
+- La base aplica el mismo foco visible a enlaces, botones, inputs, selects y textareas.
+- Botones, diálogos y acceso consumen las medidas compartidas sin cambiar sus valores visuales.
+- Corregido `personal-space.css`, que usaba el token inexistente `--ui-focus`; ahora usa `--ui-focus-ring`.
+- No se han migrado todavía estilos de apps ni primitivas de layout.
+- Añadida `scripts/css-token-check.test.mjs`: verifica que no se usen primitivas fuera de `globals.css`, que existan los tokens base, que no haya `--ui-*` inexistentes y que `globals.css` siga bajo 500 líneas.
+- Estado actual: **46 CSS / 8.906 líneas**; `globals.css` tiene **445** líneas con contenido.

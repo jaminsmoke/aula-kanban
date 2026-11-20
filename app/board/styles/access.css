@@ -2,7 +2,7 @@
    Acceso, invitaciones y sesión
    ========================================================================== */
 
-.invitation-panel { display:grid; gap:12px; margin-top:24px; padding:18px; border:var(--border-width-hairline) solid var(--ui-border-accent); border-radius: var(--radius); background:var(--ui-action-soft); }
+.invitation-panel { display:grid; gap:var(--ui-space-3); margin-top:24px; padding:18px; border:var(--border-width-hairline) solid var(--ui-border-accent); border-radius: var(--radius); background:var(--ui-action-soft); }
 .invitation-panel h2 { font-size: var(--text-2xl); }
 .invitation-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size: var(--text-md); }
 .access-loading { padding:64px 0; color:var(--ui-text-muted); font-size: var(--text-md); }
@@ -12,12 +12,12 @@
 .access-card > p:not(.eyebrow) { max-width:570px; color:var(--ui-text-muted); font-size: var(--text-lg); line-height: var(--leading-relaxed); }
 .access-invitations { display:grid; gap:10px; width:100%; margin-top:4px; }
 .access-invitations h2 { font-family: var(--font-body); color:var(--ui-text-muted); font-size: var(--text-sm); letter-spacing: var(--tracking-wide); text-transform:uppercase; }
-.access-invitation { display:flex; align-items:center; gap:14px; padding:16px; border:var(--border-width-hairline) solid var(--ui-border-accent); border-radius: var(--radius); background:var(--ui-action-soft); }
+.access-invitation { display:flex; align-items:center; gap:14px; padding:var(--ui-space-4); border:var(--border-width-hairline) solid var(--ui-border-accent); border-radius: var(--radius); background:var(--ui-action-soft); }
 .access-invitation-icon { display:grid; place-items:center; flex:none; width:42px; height:42px; border-radius: var(--radius-md); background:var(--ui-action-soft); color:var(--ui-action-text); }
 .access-invitation-info { flex:1; min-width:0; }
 .access-invitation-info strong,.access-invitation-info small { display:block; overflow-wrap:anywhere; }
 .access-invitation-info small { margin-top:4px; color:var(--ui-text-muted); font-size: var(--text-base); }
-.access-remix { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; width:100%; margin-top:6px; padding-top:20px; border-top:var(--border-width-hairline) solid var(--ui-border-default); }
+.access-remix { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--ui-space-4); width:100%; margin-top:6px; padding-top:20px; border-top:var(--border-width-hairline) solid var(--ui-border-default); }
 .access-remix strong { font-size: var(--text-md); }
 .access-remix p { margin-top:5px; color:var(--ui-text-muted); font-size: var(--text-base); line-height: var(--leading-normal); }
 

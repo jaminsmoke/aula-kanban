@@ -175,6 +175,12 @@
   --ui-action-bright: var(--primitive-violet-bright);
   --ui-focus-ring: var(--primitive-focus);
   --ui-focus-on-dark: var(--primitive-focus-on-dark);
+  --ui-focus-offset: 3px;
+  --ui-control-height: 41px;
+  --ui-icon-button-size: 36px;
+  --ui-space-2: 8px;
+  --ui-space-3: 12px;
+  --ui-space-4: 16px;
   --ui-progress-track: var(--primitive-on-dark-track);
   --ui-action-on-dark-hover: var(--primitive-on-dark-hover);
   --ui-glow-primary: var(--primitive-glow-primary);
@@ -421,9 +427,9 @@ html body { margin: 0; min-width: 280px; background: var(--ui-surface-page); col
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: var(--ui-opacity-disabled); }
-button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: var(--border-width-strong) solid var(--ui-focus-ring);
-  outline-offset: 3px;
+  outline-offset: var(--ui-focus-offset);
 }
 button, input, textarea, select { -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, p { margin: 0; }

@@ -5,16 +5,16 @@
 dialog { width: min(510px, calc(100vw - 26px)); max-height: calc(100dvh - 30px); overflow: auto; padding: 0; color: var(--ui-text-primary); border: var(--border-width-hairline) solid var(--ui-border-default); border-radius: var(--radius-lg); box-shadow: var(--ui-shadow-dialog); }
 dialog::backdrop { background: var(--ui-scrim); animation: fade-in var(--duration-base) var(--ease-out); }
 dialog { transition: width var(--duration-base) var(--ease-out); animation: pop-in var(--duration-base) var(--ease-out); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 17px 21px; border-bottom: var(--border-width-hairline) solid var(--ui-border-default); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; gap: var(--ui-space-3); padding: 17px 21px; border-bottom: var(--border-width-hairline) solid var(--ui-border-default); }
 .modal-header h2 { font-weight: var(--weight-extrabold); letter-spacing: var(--tracking-tight); font-size: var(--text-4xl); }
 .task-form, .share-content { display: grid; gap: 15px; padding: 20px 21px; }
 .task-form label, .share-content label { display: block; font-size: var(--text-base); font-weight: var(--weight-bold); min-width: 0; }
 .task-form label span { color: var(--ui-text-muted); font-weight: var(--weight-regular); }
-.task-form input, .task-form textarea, .task-form select, .share-content input { display: block; width: 100%; min-width: 0; min-height: 41px; margin-top: 6px; padding: 8px 10px; border: var(--border-width-hairline) solid var(--ui-border-control); border-radius: var(--radius-sm); background: var(--ui-surface-raised); color: var(--ui-text-primary); font-size: var(--text-md); font-weight: var(--weight-regular); }
+.task-form input, .task-form textarea, .task-form select, .share-content input { display: block; width: 100%; min-width: 0; min-height: var(--ui-control-height); margin-top: 6px; padding: 8px 10px; border: var(--border-width-hairline) solid var(--ui-border-control); border-radius: var(--radius-sm); background: var(--ui-surface-raised); color: var(--ui-text-primary); font-size: var(--text-md); font-weight: var(--weight-regular); }
 
 .task-form textarea { resize: vertical; min-height: 68px; }
-.form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.modal-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ui-space-3); }
+.modal-actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--ui-space-2); margin-top: 4px; }
 .spacer { flex: 1; }
 .delete-prompt { color: var(--ui-danger-deep); font-size: var(--text-md); }
 .share-content p { color: var(--ui-text-muted); line-height: var(--leading-normal); font-size: var(--text-md); }

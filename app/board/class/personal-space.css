@@ -45,7 +45,7 @@
   cursor: pointer;
 }
 .personal-folder-app:hover { background: var(--ui-surface-hover); }
-.personal-folder-app:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus); outline-offset: 1px; }
+.personal-folder-app:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset: 1px; }
 .personal-folder-app-icon {
   display: grid;
   flex: none;
@@ -94,7 +94,7 @@
 }
 .personal-organizer-save:hover:enabled { background: var(--ui-action-primary-hover); }
 .personal-organizer-save:disabled { opacity: 0.6; cursor: wait; }
-.personal-organizer-save:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus); outline-offset: 2px; }
+.personal-organizer-save:focus-visible { outline: var(--border-width-strong) solid var(--ui-focus-ring); outline-offset: 2px; }
 
 @media (max-width: 520px) {
   .personal-organizer-row { align-items: stretch; flex-direction: column; gap: 3px; }
