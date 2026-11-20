@@ -2,24 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 12 entradas pendientes · siguiente candidato ARC-02
+> **Roadmap:** ARC-02 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 11 entradas pendientes · siguiente candidato ARC-03
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
-
-## 2026-11-20 — ARC-02 · Descomponer las apps monolíticas restantes
-
-- Contexto: Aula Documentos ya tiene shell, modelo, hooks y componentes; Timeline (676), Hoja de cálculo (525), Office viewer (543), Office export (525) y Tarjetas (415) siguen concentrando demasiado.
-- Alcance:
-  1. Extraer de Timeline su modelo, hooks de edición y componentes de vista.
-  2. Separar Hoja de cálculo en shell, hook de edición, hoja y exportación.
-  3. Dividir el visor y la exportación Office por responsabilidades.
-  4. Aplicar el mismo patrón a Tarjetas, Mapas, Ajedrez y Geometría solo donde el tamaño lo justifique.
-  5. Mantener URLs, permisos, textos y autosave sin cambios.
-- Criterios: cada app tiene un shell reconocible, componentes/hooks por debajo de 600 líneas y pruebas por flujo; suite y presupuestos pasan.
-- Notas: no se trata de copiar la estructura de Aula, sino de aislar estado, UI y dominio.
 
 ## 2026-11-20 — ARC-03 · Estado de cliente y persistencia
 
