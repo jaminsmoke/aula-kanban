@@ -1,15 +1,27 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { applyTheme, resolveTheme, THEME_STORAGE_KEY, type ResolvedTheme, type ThemePreference } from "../../theme";
+import { applyTheme, resolveTheme, THEME_STORAGE_KEY, THEME_STORAGE_VERSION, type ResolvedTheme, type ThemePreference } from "../../theme";
+import { createLocalState } from "./client-storage";
+
+/**
+ * Valida la preferencia de tema guardada.
+ * @param value - Valor candidato.
+ * @returns La preferencia válida o `null`.
+ */
+function parsePreference(value: unknown): ThemePreference | null {
+  return value === "light" || value === "dark" || value === "system" ? value : null;
+}
+
+const themeState = createLocalState<ThemePreference>({
+  key: THEME_STORAGE_KEY,
+  version: THEME_STORAGE_VERSION,
+  validate: parsePreference,
+  fallback: () => "system",
+});
 
 function readPreference(): ThemePreference {
-  try {
-    const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
-    return saved === "light" || saved === "dark" || saved === "system" ? saved : "system";
-  } catch {
-    return "system";
-  }
+  return themeState.read();
 }
 
 function systemPrefersDark() {
@@ -56,11 +68,7 @@ export function useTheme() {
   }, []);
 
   const setPreference = useCallback((next: ThemePreference) => {
-    try {
-      window.localStorage.setItem(THEME_STORAGE_KEY, next);
-    } catch {
-      // La preferencia sigue aplicándose en esta pestaña aunque no se pueda guardar.
-    }
+    themeState.write(next);
     const nextResolved = resolveTheme(next, systemPrefersDark());
     setPreferenceState(next);
     setResolved(nextResolved);

@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { evaluateBasic } from "./basic-evaluate";
+import { calculatorHistoryState, calculatorModeState, type CalculatorMode } from "./calculator-storage";
 import { getEngineStatus, subscribeEngineStatus, type EngineStatus } from "./engine-status";
 import { evaluateLatex, preloadEngine } from "./edu-evaluate";
-import { HISTORY_KEY, type HistoryEntry, type Key } from "./calculator-keys";
+import type { HistoryEntry, Key } from "./calculator-keys";
 
-const MODE_KEY = "aula-kanban-calculator-mode";
 const PRELOAD_DELAY_MS = 120;
 
 /**
@@ -20,21 +20,13 @@ export function useCalculator() {
   const [exact, setExact] = useState<string | null>(null);
   const [resultValue, setResultValue] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [keypad, setKeypadState] = useState<"basica" | "cientifica">("basica");
+  const [keypad, setKeypadState] = useState<CalculatorMode>("basica");
   const [sciPage, setSciPage] = useState(0);
   const [showEquations, setShowEquations] = useState(false);
   const [busy, setBusy] = useState(false);
   const [engineStatus, setEngineStatus] = useState<EngineStatus>(getEngineStatus);
   const [memory, setMemory] = useState(0);
-  const [history, setHistory] = useState<HistoryEntry[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const raw = window.localStorage.getItem(HISTORY_KEY);
-      return raw ? (JSON.parse(raw) as HistoryEntry[]) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [history, setHistory] = useState<HistoryEntry[]>(() => calculatorHistoryState.read());
   const [showHistory, setShowHistory] = useState(false);
   const justEvaluated = useRef(false);
   const lastAnswer = useRef("");
@@ -45,22 +37,14 @@ export function useCalculator() {
 
   // Si la última vez se usó la Científica, se adelanta la descarga al abrir.
   useEffect(() => {
-    try {
-      if (window.localStorage.getItem(MODE_KEY) === "cientifica") preloadEngine();
-    } catch {
-      /* sin persistencia */
-    }
+    if (calculatorModeState.read() === "cientifica") preloadEngine();
   }, []);
 
   // El motor solo se adelanta en las vistas que lo necesitan; la calculadora
   // básica sigue abriendo sin descargar compute-engine.
-  const setKeypad = useCallback((mode: "basica" | "cientifica") => {
+  const setKeypad = useCallback((mode: CalculatorMode) => {
     setKeypadState(mode);
-    try {
-      window.localStorage.setItem(MODE_KEY, mode);
-    } catch {
-      /* sin persistencia */
-    }
+    calculatorModeState.write(mode);
     if (mode === "cientifica") preloadEngine();
   }, []);
 
@@ -99,11 +83,7 @@ export function useCalculator() {
   const remember = useCallback((entry: HistoryEntry) => {
     setHistory((current) => {
       const next = [entry, ...current.filter((item) => item.raw !== entry.raw)].slice(0, 20);
-      try {
-        window.localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
-      } catch {
-        /* sin persistencia */
-      }
+      calculatorHistoryState.write(next);
       return next;
     });
   }, []);
@@ -228,7 +208,7 @@ export function useCalculator() {
 
   const clearHistory = () => {
     setHistory([]);
-    try { window.localStorage.removeItem(HISTORY_KEY); } catch { /* sin persistencia */ }
+    calculatorHistoryState.remove();
   };
 
   return {

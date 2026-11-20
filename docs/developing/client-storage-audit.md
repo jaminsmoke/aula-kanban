@@ -1,6 +1,6 @@
 # Auditoría de estado local y persistencia
 
-> **Estado:** Fases 1–2 de ARC-03 · **Fecha:** 2026-11-20
+> **Estado:** Fases 1–3 de ARC-03 · **Fecha:** 2026-11-20
 > **Alcance:** claves de `localStorage`, consumidores, datos y sistema de borradores versionados.
 > **Regla:** los documentos compartidos viven en `useAppDocument`; `localStorage` solo guarda estado local del cliente.
 
@@ -14,9 +14,9 @@ No se conserva como infraestructura preventiva. Si una app necesita autosave loc
 
 | Clave | Formato | Consumidor actual | Decisión |
 |---|---|---|---|
-| `aula-kanban-calculator-mode` | `"basica" \| "cientifica"` | `use-calculator.ts` | Conservar y migrar en Fase 3 |
-| `aula.calc.history` | JSON `HistoryEntry[]` | `use-calculator.ts` | Conservar y migrar en Fase 3 |
-| `aula-kanban-theme` | `"light" \| "dark" \| "system"` | `use-theme.ts` y script de arranque | Conservar, migrar y respetar el arranque temprano |
+| `aula-kanban-calculator-mode` | `"basica" \| "cientifica"` | `calculator-storage.ts` | Migrado en Fase 3 |
+| `aula.calc.history` | JSON `HistoryEntry[]` | `calculator-storage.ts` | Migrado en Fase 3 |
+| `aula-kanban-theme` | `"light" \| "dark" \| "system"` | `use-theme.ts` y script de arranque | Migrado en Fase 3; arranque temprano compatible |
 | `aula.blockly.${projectId}` | JSON de workspace Blockly | `use-blockly.ts` | Conservar como respaldo local; el documento compartido sigue en `useAppDocument` |
 | `aula-kanban-tarjetas:${projectId}` | JSON `TarjetasProgress` | `use-tarjetas-review.ts` | Conservar y migrar en Fase 4 |
 | `aula-kanban:aula-documentos:recuperacion:${projectId}` | JSON de copias de recuperación | `lib/domain/aula-documentos/recovery.ts` | Conservar y migrar en Fase 4 |
@@ -69,3 +69,11 @@ Total: **1.694 líneas** retiradas (877 de producto, 551 de pruebas y 266 de CSS
 - Los datos actuales, antiguos, futuros o corruptos se validan antes de exponerse.
 
 La migración de Calculadora, tema, Blockly, Tarjetas y recuperación de Aula empieza en la Fase 3. El contrato está cubierto por diez pruebas (`client-storage.test.ts`): envoltura, clave ausente, JSON corrupto, legado, migración, versión futura, validación, cuota, SSR y eliminación.
+
+## 7. Migración de Calculadora y tema
+
+- `calculator-storage.ts` define estados versionados para `aula-kanban-calculator-mode` y `aula.calc.history`, con validación de modo e historial.
+- `use-calculator.ts` ya no accede a `localStorage`: lee el modo para precargar el motor, y escribe modo e historial por el contrato.
+- `use-theme.ts` lee y escribe `aula-kanban-theme` por el contrato.
+- `THEME_INIT_SCRIPT` acepta el valor legado sin envoltura y la envoltura versionada; ignora versiones futuras.
+- Pruebas: modo legacy/versionado, historial legado/corrupto, tema legado/versionado/futuro y recarga tras remontar.

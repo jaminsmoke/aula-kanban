@@ -15,6 +15,7 @@ vi.mock("./edu-evaluate", () => ({
 
 vi.mock("./basic-evaluate", () => ({ evaluateBasic: mocks.basic }));
 
+import { CALCULATOR_MODE_KEY } from "./calculator-storage";
 import { useCalculator } from "./use-calculator";
 
 beforeEach(() => {
@@ -51,18 +52,43 @@ describe("carga de la calculadora", () => {
   });
 
   it("guarda el último modo y precarga al abrir si era Científica", () => {
-    window.localStorage.setItem("aula-kanban-calculator-mode", "cientifica");
+    window.localStorage.setItem(CALCULATOR_MODE_KEY, "cientifica");
     renderHook(() => useCalculator());
     expect(mocks.preload).toHaveBeenCalledTimes(1);
   });
 
-  it("guarda el modo al cambiarlo", () => {
+  it("guarda el modo con el contrato versionado", () => {
     const { result } = renderHook(() => useCalculator());
     act(() => result.current.setKeypad("cientifica"));
-    expect(window.localStorage.getItem("aula-kanban-calculator-mode")).toBe("cientifica");
+    expect(JSON.parse(window.localStorage.getItem(CALCULATOR_MODE_KEY) ?? "null")).toMatchObject({
+      __aulaClientStorage: 1,
+      version: 1,
+      data: "cientifica",
+    });
 
     act(() => result.current.setKeypad("basica"));
-    expect(window.localStorage.getItem("aula-kanban-calculator-mode")).toBe("basica");
+    expect(JSON.parse(window.localStorage.getItem(CALCULATOR_MODE_KEY) ?? "null")).toMatchObject({
+      __aulaClientStorage: 1,
+      version: 1,
+      data: "basica",
+    });
+  });
+
+  it("carga y elimina el historial legado", () => {
+    const history = [{ raw: "2+2", result: "4" }];
+    window.localStorage.setItem("aula.calc.history", JSON.stringify(history));
+
+    const { result } = renderHook(() => useCalculator());
+    expect(result.current.history).toEqual(history);
+
+    act(() => result.current.clearHistory());
+    expect(window.localStorage.getItem("aula.calc.history")).toBeNull();
+  });
+
+  it("ignora un historial corrupto", () => {
+    window.localStorage.setItem("aula.calc.history", "{ roto");
+    const { result } = renderHook(() => useCalculator());
+    expect(result.current.history).toEqual([]);
   });
 
   it("precarga por intención tras un retardo corto y se puede cancelar", () => {

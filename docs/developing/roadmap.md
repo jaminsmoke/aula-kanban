@@ -81,10 +81,10 @@ El baseline no tiene archivos de código por encima de 600 líneas. `useAppDocum
 
 ### Fase 3 — Migrar preferencias e historial
 
-- [ ] Migrar el modo e historial de Calculadora al contrato, conservando sus claves o una migración explícita.
-- [ ] Migrar la preferencia de tema y mantener la sincronización entre pestañas.
-- [ ] Preservar el comportamiento cuando el navegador bloquea o llena el almacenamiento.
-- [ ] Añadir pruebas de recarga, valor inválido y migración desde las claves actuales.
+- [x] Migrar el modo e historial de Calculadora al contrato, conservando sus claves o una migración explícita.
+- [x] Migrar la preferencia de tema y mantener la sincronización entre pestañas.
+- [x] Preservar el comportamiento cuando el navegador bloquea o llena el almacenamiento.
+- [x] Añadir pruebas de recarga, valor inválido y migración desde las claves actuales.
 - **Criterios:** Calculadora y tema conservan su comportamiento; no hay accesos directos a `localStorage` en esos módulos; suite y presupuestos pasan.
 
 ### Fase 4 — Migrar Blockly, Tarjetas y recuperación de Aula
@@ -121,4 +121,5 @@ El baseline no tiene archivos de código por encima de 600 líneas. `useAppDocum
 - Estado de partida: **396 archivos de producto / 982 imports / 5 violaciones base / 0 ciclos / 0 problemas**; sin excepciones de tamaño de código.
 - 2026-11-20: **Fase 1 completada.** Inventario de claves y decisión en [`client-storage-audit.md`](client-storage-audit.md). Retirados `useVersionedDraft`, su recuperación, los diálogos de cierre/conflicto, sus CSS y pruebas: **1.694 líneas**. Añadida una prueba de regresión contra su reintroducción. `arch:check`: **392 archivos / 975 imports / 0 problemas**; suite: **229 archivos / 1.573 pruebas**; presupuestos correctos.
 - 2026-11-20: **Fase 2 completada.** Añadido `app/board/shared/client-storage.ts` con envoltura versionada, validación, migración, fallback, almacenamiento inyectable y errores de cuota/unavailable. Diez pruebas cubren clave ausente, corrupción, versiones antigua/futura, cuota, SSR, eliminación y espacio de nombres. `arch:check`: **393 archivos / 975 imports / 0 problemas**; suite: **230 archivos / 1.583 pruebas**; presupuestos correctos.
+- 2026-11-20: **Fase 3 completada.** Calculadora migra modo e historial a `calculator-storage.ts`; tema migra preferencia y el script de arranque entiende tanto el valor legado como la envoltura versionada. Se conservan las claves, la precarga científica y la sincronización entre pestañas. Pruebas de modo, historial legado/corrupto, tema legado/versionado/futuro y recarga. `arch:check`: **394 archivos / 979 imports / 0 problemas**; suite: **231 archivos / 1.590 pruebas**; presupuestos correctos.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

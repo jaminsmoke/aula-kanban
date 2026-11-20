@@ -69,7 +69,7 @@ Deuda detectada:
 
 - El sistema de borradores versionados se retiró en ARC-03 Fase 1: no tenía consumidores de producto y solo se mantenía por sus pruebas.
 - Los diálogos de cambios sin guardar y conflicto de versión se retiraron con el sistema; Aula Documentos conserva sus propios diálogos de cierre y conflicto.
-- Hay persistencia local repartida entre calculadora, Blockly, Tarjetas, tema y recuperación.
+- Calculadora y tema ya usan el contrato local de ARC-03; Blockly, Tarjetas y recuperación de Aula conservan accesos directos hasta la Fase 4.
 - El selector de archivo sigue siendo local a Aula; no hay que extraerlo hasta que otra app lo necesite.
 
 ### Nivel 3 · Dominio
@@ -218,7 +218,7 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 ## 8. Estado tras ARC-01, DEV-02 y ARC-02
 
 - `npm run arch:check` y `npm run check` están disponibles; CI ejecuta `arch:check`.
-- Resultado actual: **393 archivos de producto / 975 imports / 5 violaciones base / 0 ciclos / 0 problemas nuevos**.
+- Resultado actual: **394 archivos de producto / 979 imports / 5 violaciones base / 0 ciclos / 0 problemas nuevos**.
 - No quedan excepciones de tamaño; las cinco dependencias `features → layout` siguen asignadas a ARC-04 y tienen caducidad.
 - El ciclo `auth ↔ demo` se eliminó con `lib/server/auth-user.ts`.
 - La configuración global de CodArch se retiró. DEV-02 quedó cerrado con el guard de MCP por repositorio, el inventario en [`mcp-tooling-audit.md`](mcp-tooling-audit.md) y la plantilla local [`mcp-project.example.json`](mcp-project.example.json).

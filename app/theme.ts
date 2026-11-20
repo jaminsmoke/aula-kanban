@@ -2,6 +2,7 @@ export type ThemePreference = "system" | "light" | "dark";
 export type ResolvedTheme = "light" | "dark";
 
 export const THEME_STORAGE_KEY = "aula-kanban-theme";
+export const THEME_STORAGE_VERSION = 1;
 
 /**
  * Resuelve la preferencia guardada contra la preferencia del sistema.
@@ -23,4 +24,4 @@ export function applyTheme(theme: ResolvedTheme) {
 }
 
 /** Evita el destello de tema claro antes de que hidrate React. */
-export const THEME_INIT_SCRIPT = `(function(){try{var key="${THEME_STORAGE_KEY}";var saved=localStorage.getItem(key);var preference=saved==="light"||saved==="dark"||saved==="system"?saved:"system";var dark=preference==="dark"||(preference==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=dark?"dark":"light";document.documentElement.style.colorScheme=dark?"dark":"light"}catch(e){}})();`;
+export const THEME_INIT_SCRIPT = `(function(){try{var key="${THEME_STORAGE_KEY}";var saved=localStorage.getItem(key);var preference="system";try{var parsed=JSON.parse(saved);if(parsed&&parsed.__aulaClientStorage===1&&parsed.version===${THEME_STORAGE_VERSION}){saved=parsed.data;}}catch(e){}if(saved==="light"||saved==="dark"||saved==="system"){preference=saved;}var dark=preference==="dark"||(preference==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=dark?"dark":"light";document.documentElement.style.colorScheme=dark?"dark":"light"}catch(e){}})();`;

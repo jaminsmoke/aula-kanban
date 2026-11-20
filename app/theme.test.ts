@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { applyTheme, resolveTheme, THEME_INIT_SCRIPT, THEME_STORAGE_KEY } from "./theme";
+import { applyTheme, resolveTheme, THEME_INIT_SCRIPT, THEME_STORAGE_KEY, THEME_STORAGE_VERSION } from "./theme";
 
 function stubSystemTheme(prefersDark: boolean) {
   vi.stubGlobal("matchMedia", (query: string) => ({
@@ -45,6 +45,30 @@ describe("tema", () => {
     expect(document.documentElement.dataset.theme).toBe("dark");
 
     localStorage.setItem(THEME_STORAGE_KEY, "light");
+    runInitScript();
+    expect(document.documentElement.dataset.theme).toBe("light");
+  });
+
+  it("lee la preferencia desde la envoltura versionada", () => {
+    stubSystemTheme(false);
+    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify({
+      __aulaClientStorage: 1,
+      version: THEME_STORAGE_VERSION,
+      data: "dark",
+    }));
+
+    runInitScript();
+    expect(document.documentElement.dataset.theme).toBe("dark");
+  });
+
+  it("ignora una versión futura de la preferencia", () => {
+    stubSystemTheme(false);
+    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify({
+      __aulaClientStorage: 1,
+      version: THEME_STORAGE_VERSION + 1,
+      data: "dark",
+    }));
+
     runInitScript();
     expect(document.documentElement.dataset.theme).toBe("light");
   });

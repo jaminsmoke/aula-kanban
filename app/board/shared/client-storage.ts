@@ -116,9 +116,10 @@ export function createLocalState<T>(options: LocalStateOptions<T>): LocalState<T
    */
   function normalize(value: unknown, fromVersion: number, migrated: boolean): { value: T; migrated: boolean } | null {
     try {
-      const next = options.migrate && fromVersion < options.version
+      const migratedValue = options.migrate && fromVersion < options.version
         ? options.migrate(value, fromVersion)
-        : options.validate(value);
+        : null;
+      const next = migratedValue ?? options.validate(value);
       return next === null ? null : { value: next, migrated };
     } catch {
       return null;
@@ -142,7 +143,10 @@ export function createLocalState<T>(options: LocalStateOptions<T>): LocalState<T
     try {
       parsed = JSON.parse(raw) as unknown;
     } catch {
-      return { value: fallback(), status: "invalid", migrated: false };
+      const legacy = normalize(raw, 0, true);
+      return legacy
+        ? { value: legacy.value, status: "ok", migrated: true }
+        : { value: fallback(), status: "invalid", migrated: false };
     }
 
     if (isEnvelope(parsed)) {
