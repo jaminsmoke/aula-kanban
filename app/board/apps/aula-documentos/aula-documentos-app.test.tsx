@@ -126,7 +126,7 @@ function countMermaid(content: unknown): number {
  */
 function savedDocument(title: string): AulaDocument {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     title,
     content: {
       type: "doc",
@@ -844,7 +844,7 @@ describe("Aula Documentos", () => {
 
     await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
     const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
-    expect(saved.schemaVersion).toBe(2);
+    expect(saved.schemaVersion).toBe(3);
     expect(saved.presentation).toEqual({ theme: "claro" });
   });
 
@@ -950,7 +950,7 @@ describe("Aula Documentos", () => {
     await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
 
     const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
-    expect(saved.schemaVersion).toBe(2);
+    expect(saved.schemaVersion).toBe(3);
     expect(saved.title).toBe("Documento de ejemplo");
     expect(countMermaid(saved.content)).toBe(2);
     expect(screen.getByRole("status").textContent).toContain("guardado en el proyecto");
@@ -1111,7 +1111,7 @@ describe("Aula Documentos", () => {
       preview: {
         source: "office",
         document: savedDocument("Informe Office"),
-        stats: { nodes: 2, depth: 2, textLength: 18, mermaidBlocks: 0, slideBreaks: 0 },
+        stats: { nodes: 2, depth: 2, textLength: 18, mermaidBlocks: 0, slideBreaks: 0, images: 0 },
         warnings: ["La maquetación visual puede cambiar."],
       },
     });

@@ -8,7 +8,7 @@ import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, 
  */
 function documentWithDiagrams(): AulaDocument {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     title: "Documento exportable",
     content: {
       type: "doc",
@@ -86,7 +86,7 @@ describe("exportación HTML de Aula Documentos", () => {
 
   it("exporta alineación y listas de tareas", () => {
     const document: AulaDocument = {
-      schemaVersion: 2,
+      schemaVersion: 3,
       title: "Formato",
       content: {
         type: "doc",
@@ -113,7 +113,7 @@ describe("exportación HTML de Aula Documentos", () => {
 
   it("distingue un diagrama vacío de uno roto", () => {
     const document: AulaDocument = {
-      schemaVersion: 2,
+      schemaVersion: 3,
       title: "Vacío",
       content: {
         type: "doc",
@@ -146,7 +146,7 @@ describe("exportación HTML de Aula Documentos", () => {
   it("exporta diapositivas estáticas con tema y notas sin recursos externos", () => {
     const html = buildAulaPresentationHtml(
       {
-        schemaVersion: 2,
+        schemaVersion: 3,
         title: "Presentación de clase",
         content: { type: "doc", content: [] },
       },
@@ -165,7 +165,7 @@ describe("exportación HTML de Aula Documentos", () => {
 
   it("puede omitir las notas en la exportación", () => {
     const html = buildAulaPresentationHtml(
-      { schemaVersion: 2, title: "Sin notas", content: { type: "doc", content: [] } },
+      { schemaVersion: 3, title: "Sin notas", content: { type: "doc", content: [] } },
       ["<h2>Una</h2>"],
       { theme: "oscuro", notes: { "0": "No debe salir" }, includeNotes: false },
     );

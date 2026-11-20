@@ -92,7 +92,7 @@ describe("herramientas de Diagramas", () => {
     documentos.set(`${projectId}:mermaid`, { state: { code: "flowchart TD\n  Antiguo --> B" }, updatedAt: 10 });
     documentos.set(`${projectId}:aula-documentos`, {
       state: {
-        schemaVersion: 2,
+        schemaVersion: 3,
         title: "Documento unificado",
         content: {
           type: "doc",

@@ -1,10 +1,11 @@
 import type { JSONContent } from "@tiptap/core";
+import { normalizeAulaImageAttrs } from "./image";
 
 /** Versión del documento que entiende esta entrega. */
-export const AULA_DOCUMENT_SCHEMA_VERSION = 2 as const;
+export const AULA_DOCUMENT_SCHEMA_VERSION = 3 as const;
 
 /** Versiones que se pueden migrar al cargar. */
-const AULA_DOCUMENT_SUPPORTED_VERSIONS = new Set([1, 2]);
+const AULA_DOCUMENT_SUPPORTED_VERSIONS = new Set([1, 2, 3]);
 
 /** Título máximo del documento. */
 export const AULA_DOCUMENT_TITLE_MAX_LENGTH = 120;
@@ -22,6 +23,10 @@ export const AULA_DOCUMENT_MAX_TEXT_LENGTH = 100_000;
 export const AULA_DOCUMENT_MAX_MERMAID_BLOCKS = 12;
 export const AULA_DOCUMENT_MAX_MERMAID_CODE_LENGTH = 20_000;
 export const AULA_DOCUMENT_MAX_MERMAID_TOTAL_LENGTH = 80_000;
+
+/** Límites de las imágenes dentro del documento. */
+export const AULA_DOCUMENT_MAX_IMAGES = 30;
+export const AULA_DOCUMENT_MAX_IMAGE_TEXT_TOTAL = 20_000;
 
 /** Temas de presentación disponibles. */
 export const AULA_PRESENTATION_THEMES = ["aula", "claro", "oscuro"] as const;
@@ -59,6 +64,7 @@ export type AulaDocumentStats = {
   textLength: number;
   mermaidBlocks: number;
   slideBreaks: number;
+  images: number;
 };
 
 /** Códigos de error estables para la interfaz. */
@@ -76,7 +82,10 @@ export type AulaDocumentErrorCode =
   | "too-much-text"
   | "too-many-mermaid"
   | "mermaid-too-long"
-  | "mermaid-too-large";
+  | "mermaid-too-large"
+  | "invalid-image"
+  | "too-many-images"
+  | "image-text-too-long";
 
 /** Resultado de validar un valor guardado. */
 export type AulaDocumentParseResult =
@@ -99,6 +108,7 @@ const ALLOWED_NODES = new Set([
   "horizontalRule",
   "mermaidBlock",
   "slideBreak",
+  "aulaImage",
   "table",
   "tableRow",
   "tableHeader",
@@ -125,6 +135,8 @@ type ValidationContext = {
   mermaidBlocks: number;
   slideBreaks: number;
   mermaidCodeLength: number;
+  images: number;
+  imageTextLength: number;
 };
 
 /**
@@ -280,6 +292,35 @@ function normalizeNode(value: unknown, context: ValidationContext, depth: number
       throw new DocumentValidationError("mermaid-too-large", "Los diagramas del documento ocupan demasiado.");
     }
     return { type: "mermaidBlock", attrs: { code } };
+  }
+
+  if (node.type === "aulaImage") {
+    if (node.content !== undefined) {
+      throw new DocumentValidationError("invalid-image", "La imagen no admite contenido.");
+    }
+    const normalized = normalizeAulaImageAttrs(node.attrs);
+    if (!normalized.ok) {
+      throw new DocumentValidationError("invalid-image", normalized.message);
+    }
+    const textLength = normalized.attrs.alt.length + normalized.attrs.caption.length;
+    context.images += 1;
+    context.imageTextLength += textLength;
+    if (context.images > AULA_DOCUMENT_MAX_IMAGES) {
+      throw new DocumentValidationError("too-many-images", "El documento tiene demasiadas imágenes.");
+    }
+    if (context.imageTextLength > AULA_DOCUMENT_MAX_IMAGE_TEXT_TOTAL) {
+      throw new DocumentValidationError("image-text-too-long", "El texto de las imágenes ocupa demasiado.");
+    }
+    return {
+      type: "aulaImage",
+      attrs: {
+        src: normalized.attrs.src,
+        alt: normalized.attrs.alt,
+        ...(normalized.attrs.caption ? { caption: normalized.attrs.caption } : {}),
+        width: normalized.attrs.width,
+        alignment: normalized.attrs.alignment,
+      },
+    };
   }
 
   if (node.type === "doc" && depth !== 0) {
@@ -465,6 +506,8 @@ export function parseAulaDocument(value: unknown): AulaDocumentParseResult {
     mermaidBlocks: 0,
     slideBreaks: 0,
     mermaidCodeLength: 0,
+    images: 0,
+    imageTextLength: 0,
   };
   try {
     const content = normalizeNode(candidate.content, context, 0);
@@ -485,6 +528,7 @@ export function parseAulaDocument(value: unknown): AulaDocumentParseResult {
         textLength: context.textLength,
         mermaidBlocks: context.mermaidBlocks,
         slideBreaks: context.slideBreaks,
+        images: context.images,
       },
     };
   } catch (error) {

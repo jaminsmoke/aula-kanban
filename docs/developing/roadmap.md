@@ -47,12 +47,12 @@
 
 ### Fase 1 — Almacenamiento, esquema y seguridad
 
-- [ ] Auditar el flujo actual de `/api/uploads`, `/api/files/:id`, `uploads` y R2; documentar límites y acceso.
-- [ ] Añadir la finalidad `document-image` con MIME permitidos (PNG, JPEG, WebP y GIF), tamaño máximo y cuota por proyecto.
-- [ ] Definir el nodo `aulaImage` en el esquema: `src`, `alt`, `caption` opcional, `width`, `alignment` y relación con el recurso subido.
-- [ ] Extender `parseAulaDocument` y los límites de JSON/nodos, manteniendo la migración de documentos anteriores.
-- [ ] Definir la limpieza de imágenes huérfanas y la recuperación tras eliminar un proyecto o un documento.
-- [ ] Probar subida, acceso entre proyectos, MIME falsos, límites, SVG y usuarios invitados.
+- [x] Auditar el flujo actual de `/api/uploads`, `/api/files/:id`, `uploads` y R2; documentar límites y acceso.
+- [x] Añadir la finalidad `document-image` con MIME permitidos (PNG, JPEG, WebP y GIF), tamaño máximo y cuota por proyecto.
+- [x] Definir el nodo `aulaImage` en el esquema: `src`, `alt`, `caption` opcional, `width`, `alignment` y relación con el recurso subido.
+- [x] Extender `parseAulaDocument` y los límites de JSON/nodos, manteniendo la migración de documentos anteriores.
+- [x] Definir la limpieza de imágenes huérfanas y la recuperación tras eliminar un proyecto o un documento.
+- [x] Probar subida, acceso entre proyectos, MIME falsos, límites, SVG y usuarios invitados.
 - **Criterios de aceptación:**
   - Una imagen válida se guarda en R2 y solo la sirve el proyecto autorizado.
   - El documento valida imágenes y rechaza recursos o atributos inseguros.
@@ -104,3 +104,4 @@
 - La entrada se limita a imágenes y recursos dentro del documento; tablas, importación ampliada, varios documentos, búsqueda, presentación avanzada y comentarios siguen en el backlog.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
 - Decisión de almacenamiento: las imágenes usan R2 con acceso privado por proyecto. Las copias completas del documento en R2 y en el equipo local, con importación desde ambos, se planifican aparte en **ADOC-21**; no sustituyen el autosave en D1 y la descarga local no se bloquea por cuota.
+- 2026-11-20: Fase 1 completada. Auditoría confirmada: `/api/uploads` ya admitía imágenes de hasta 5 MB y `/api/files/:id` sirve solo al proyecto. Añadida la finalidad `document-image` con cuota de 50 MB por proyecto, el nodo `aulaImage` (src interno `/api/files/:id`, alt, pie, ancho y alineación), límites de imágenes/texto y esquema v3 compatible con v1/v2. La limpieza conserva recursos al editar y recoge ids de subida para reconciliación; las pruebas cubren MIME, SVG, cuota, URL externa y acceso. Suite completa: 212 archivos / 1.502 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 362.560 / 370.000 B gzip) y `perf:office` correctos.

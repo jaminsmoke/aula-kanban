@@ -1,9 +1,9 @@
 import { env } from "cloudflare:workers";
-import { eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { getDb } from "../../db";
 import { uploads } from "../../db/schema";
 
-export const uploadPurposes = ["task-image", "board-asset", "document"] as const;
+export const uploadPurposes = ["task-image", "board-asset", "document", "document-image"] as const;
 export type UploadPurpose = (typeof uploadPurposes)[number];
 
 /** Vía por la que entró el archivo: la web o el servidor MCP. */
@@ -24,6 +24,8 @@ const EXTENSIONS: Record<string, string> = {
 };
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 export const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
+/** Cuota de imágenes de documento por proyecto (50 MB). */
+export const MAX_PROJECT_DOCUMENT_IMAGE_BYTES = 50 * 1024 * 1024;
 
 /**
  * Error lanzado cuando R2 aún no está habilitado en el despliegue.
@@ -36,6 +38,42 @@ export class StorageUnavailableError extends Error {
     super("storage_unavailable");
     this.name = "StorageUnavailableError";
   }
+}
+
+/** La cuota de imágenes de documento del proyecto está llena. */
+export class UploadQuotaExceededError extends Error {
+  /**
+   * Crea el error de cuota de imágenes.
+   */
+  constructor() {
+    super("document_image_quota_exceeded");
+    this.name = "UploadQuotaExceededError";
+  }
+}
+
+/**
+ * Suma los bytes de imágenes de documento de un proyecto.
+ * @param projectId - Proyecto activo.
+ * @returns Bytes ocupados por la finalidad `document-image`.
+ */
+export async function projectDocumentImageUsage(projectId: string): Promise<number> {
+  const [row] = await getDb().select({
+    total: sql<number>`coalesce(sum(${uploads.sizeBytes}), 0)`,
+  }).from(uploads).where(and(
+    eq(uploads.projectId, projectId),
+    eq(uploads.purpose, "document-image"),
+  ));
+  return Number(row?.total ?? 0);
+}
+
+/**
+ * Comprueba si una imagen cabe en la cuota del proyecto.
+ * @param used - Bytes ya usados.
+ * @param incoming - Bytes de la imagen nueva.
+ * @returns `true` si la subida cabe.
+ */
+export function fitsDocumentImageQuota(used: number, incoming: number): boolean {
+  return used >= 0 && incoming >= 0 && used + incoming <= MAX_PROJECT_DOCUMENT_IMAGE_BYTES;
 }
 
 /**
@@ -108,6 +146,10 @@ export async function storeUpload(input: { projectId: string; purpose: UploadPur
   const bucket = env.BUCKET;
   const database = env.DB;
   if (!bucket || !database) throw new StorageUnavailableError();
+  if (input.purpose === "document-image") {
+    const used = await projectDocumentImageUsage(input.projectId);
+    if (!fitsDocumentImageQuota(used, input.file.size)) throw new UploadQuotaExceededError();
+  }
   const id = crypto.randomUUID();
   const extension = EXTENSIONS[input.file.type] ?? ".bin";
   const storageKey = `${input.projectId}/${input.purpose}/${id}${extension}`;

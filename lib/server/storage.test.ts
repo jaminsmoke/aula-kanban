@@ -15,7 +15,15 @@ vi.mock("cloudflare:workers", () => ({
   },
 }));
 
-import { MAX_BUCKET_PAGE, StorageUnavailableError, listBucketPage } from "./storage";
+import {
+  MAX_BUCKET_PAGE,
+  MAX_PROJECT_DOCUMENT_IMAGE_BYTES,
+  StorageUnavailableError,
+  fitsDocumentImageQuota,
+  listBucketPage,
+  uploadPurposes,
+  validateUpload,
+} from "./storage";
 
 const uploaded = new Date("2026-11-15T10:00:00.000Z");
 
@@ -72,5 +80,25 @@ describe("listado paginado del bucket", () => {
   it("falla con storage no disponible si no hay binding", async () => {
     mocks.bucket = null;
     await expect(listBucketPage()).rejects.toBeInstanceOf(StorageUnavailableError);
+  });
+});
+
+describe("subidas de imágenes de documento", () => {
+  it("declara la finalidad y acepta solo imágenes seguras", () => {
+    expect(uploadPurposes).toContain("document-image");
+    expect(validateUpload("document-image", "image/png", 1_024)).toBeNull();
+    expect(validateUpload("document-image", "image/jpeg", 1_024)).toBeNull();
+    expect(validateUpload("document-image", "image/webp", 1_024)).toBeNull();
+    expect(validateUpload("document-image", "image/gif", 1_024)).toBeNull();
+    expect(validateUpload("document-image", "image/svg+xml", 1_024)).toContain("no admitido");
+    expect(validateUpload("document-image", "text/html", 1_024)).toContain("no admitido");
+  });
+
+  it("aplica el límite de 5 MB por imagen y la cuota de 50 MB por proyecto", () => {
+    expect(validateUpload("document-image", "image/png", 5 * 1024 * 1024 + 1)).toContain("5 MB");
+    expect(MAX_PROJECT_DOCUMENT_IMAGE_BYTES).toBe(50 * 1024 * 1024);
+    expect(fitsDocumentImageQuota(0, MAX_PROJECT_DOCUMENT_IMAGE_BYTES)).toBe(true);
+    expect(fitsDocumentImageQuota(1, MAX_PROJECT_DOCUMENT_IMAGE_BYTES)).toBe(false);
+    expect(fitsDocumentImageQuota(-1, 1)).toBe(false);
   });
 });

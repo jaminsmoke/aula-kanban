@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   AULA_DOCUMENT_JSON_MAX_LENGTH,
   AULA_DOCUMENT_MAX_DEPTH,
+  AULA_DOCUMENT_MAX_IMAGES,
   AULA_DOCUMENT_MAX_MERMAID_BLOCKS,
   AULA_DOCUMENT_MAX_MERMAID_CODE_LENGTH,
   AULA_DOCUMENT_MAX_TEXT_LENGTH,
@@ -106,7 +107,7 @@ describe("modelo de Aula Documentos", () => {
   });
 
   it("rechaza versiones futuras y esquemas desconocidos", () => {
-    const future = parseAulaDocument({ ...candidate([]), schemaVersion: 3 });
+    const future = parseAulaDocument({ ...candidate([]), schemaVersion: 4 });
     expect(future).toMatchObject({ ok: false, code: "unsupported-version" });
 
     const unknown = parseAulaDocument({ ...candidate([]), schemaVersion: 0 });
@@ -117,7 +118,7 @@ describe("modelo de Aula Documentos", () => {
     const v1 = parseAulaDocument({ ...candidate([{ type: "paragraph" }]), schemaVersion: 1 });
     expect(v1.ok).toBe(true);
     if (!v1.ok) return;
-    expect(v1.document.schemaVersion).toBe(2);
+    expect(v1.document.schemaVersion).toBe(3);
     expect(v1.document.presentation).toEqual({ theme: "aula" });
 
     const custom = parseAulaDocument({
@@ -213,6 +214,41 @@ describe("modelo de Aula Documentos", () => {
       type: "mermaidBlock",
       attrs: { code: "" },
     }]))).toMatchObject({ ok: true });
+  });
+
+  it("valida imágenes locales y sus límites", () => {
+    const src = "/api/files/123e4567-e89b-42d3-a456-426614174000";
+    const result = parseAulaDocument(candidate([{
+      type: "aulaImage",
+      attrs: { src, alt: "  Esquema de la clase ", caption: "  Figura 1 ", width: 60, alignment: "left" },
+    }]));
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.document.content.content?.[0]).toMatchObject({
+      type: "aulaImage",
+      attrs: { src, alt: "Esquema de la clase", caption: "Figura 1", width: 60, alignment: "left" },
+    });
+    expect(result.stats.images).toBe(1);
+
+    expect(parseAulaDocument(candidate([{
+      type: "aulaImage",
+      attrs: { src: "https://example.com/foto.png", alt: "Externa" },
+    }]))).toMatchObject({ ok: false, code: "invalid-image" });
+
+    expect(parseAulaDocument(candidate([{
+      type: "aulaImage",
+      attrs: { src: "data:image/png;base64,AAAA", alt: "Incrustada" },
+    }]))).toMatchObject({ ok: false, code: "invalid-image" });
+
+    expect(parseAulaDocument(candidate(Array.from({ length: AULA_DOCUMENT_MAX_IMAGES + 1 }, () => ({
+      type: "aulaImage" as const,
+      attrs: { src, alt: "" },
+    }))))).toMatchObject({ ok: false, code: "too-many-images" });
+
+    expect(parseAulaDocument(candidate([{
+      type: "aulaImage",
+      attrs: { src, caption: "x".repeat(1_001) },
+    }]))).toMatchObject({ ok: false, code: "invalid-image" });
   });
 
   it("crea un documento vacío válido", () => {

@@ -6,7 +6,7 @@ import type { AulaDocument } from "../../../../lib/domain/aula-documentos/docume
 import { exportAulaDocx, exportAulaPptx } from "./office-export";
 
 const document: AulaDocument = {
-  schemaVersion: 2,
+  schemaVersion: 3,
   title: "Informe de exportación",
   content: {
     type: "doc",
@@ -95,7 +95,7 @@ describe("exportación Office", () => {
 
   it("exporta documentos vacíos de forma repetible", async () => {
     const empty: AulaDocument = {
-      schemaVersion: 2,
+      schemaVersion: 3,
       title: "Vacío",
       content: { type: "doc", content: [] },
     };

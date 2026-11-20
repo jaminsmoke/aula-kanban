@@ -193,6 +193,7 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
             "task-image",
             "board-asset",
             "document",
+            "document-image",
           ],
           "type": "string",
         },

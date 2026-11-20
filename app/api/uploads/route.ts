@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { projectFailureResponse } from "../../../lib/server/project-http";
 import { resolveProject } from "../../../lib/server/project-access";
-import { StorageUnavailableError, storeUpload, uploadPurposes, validateUpload } from "../../../lib/server/storage";
+import { StorageUnavailableError, UploadQuotaExceededError, storeUpload, uploadPurposes, validateUpload } from "../../../lib/server/storage";
 import { isSameOrigin, json } from "../../../lib/server/http";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +29,9 @@ export async function POST(request: Request) {
     const stored = await storeUpload({ projectId: project.id, purpose: purpose.data, origin: "web", file, ownerUserId: user.userId });
     return json({ ...stored, mimeType: file.type, sizeBytes: file.size }, 201);
   } catch (error) {
+    if (error instanceof UploadQuotaExceededError) {
+      return json({ message: "La cuota de imágenes del proyecto está llena. Elimina imágenes o descarga el documento antes de añadir más." }, 413);
+    }
     if (error instanceof StorageUnavailableError) return json({ message: "La subida de archivos aún no está habilitada en este despliegue. Usa una URL externa de momento." }, 503);
     throw error;
   }

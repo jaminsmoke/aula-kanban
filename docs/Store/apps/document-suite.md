@@ -17,7 +17,7 @@
 | Diagramas | `mermaid` | `{ code }` | Código Mermaid y diagramas Gantt |
 | Presentaciones | `presentaciones` | `{ markdown }` | Markdown, saltos de diapositiva y plantilla |
 | Visor Office | — | Sin estado | El archivo local no se guarda |
-| Aula Documentos | `aula-documentos` | `{ schemaVersion: 2, title, content, presentation? }` | Documento canónico, tema y notas |
+| Aula Documentos | `aula-documentos` | `{ schemaVersion: 3, title, content, presentation? }` | Documento canónico, tema, notas e imágenes |
 
 Accesos que siguen funcionando durante la transición:
 

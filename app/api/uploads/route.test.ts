@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   status: "ok" as "ok" | "unauthenticated" | "forbidden" | "not_found" | "invalid",
   validate: vi.fn(() => null),
   store: vi.fn(),
+  QuotaError: class UploadQuotaExceededError extends Error {},
 }));
 vi.mock("../../../lib/server/project-access", () => ({
   resolveProject: async () => mocks.status === "ok"
@@ -16,8 +17,9 @@ vi.mock("../../../lib/server/project-access", () => ({
 }));
 vi.mock("../../../lib/server/storage", () => ({
   StorageUnavailableError: class StorageUnavailableError extends Error {},
+  UploadQuotaExceededError: mocks.QuotaError,
   storeUpload: mocks.store,
-  uploadPurposes: ["task-image"],
+  uploadPurposes: ["task-image", "document-image"],
   validateUpload: mocks.validate,
 }));
 
@@ -25,6 +27,14 @@ import { POST } from "./route";
 
 const endpoint = "https://site.test/api/uploads?project=project1";
 const request = (headers: Record<string, string>) => new Request(endpoint, { method: "POST", headers });
+const uploadRequest = (purpose: string, type: string, content = "png") => {
+  const form = new FormData();
+  form.append("purpose", purpose);
+  form.append("file", new File([content], "archivo", { type }));
+  const request = new Request(endpoint, { method: "POST", headers: { origin: "https://site.test" } });
+  Object.defineProperty(request, "formData", { value: async () => form });
+  return request;
+};
 
 describe("guardas de subida", () => {
   beforeEach(() => {
@@ -56,5 +66,24 @@ describe("guardas de subida", () => {
     const response = await POST(request({ origin: "https://site.test" }));
     expect(response.status).toBe(403);
     expect(await response.json()).toEqual({ message: "Las cuentas invitadas solo pueden consultar el proyecto." });
+  });
+
+  it("sube una imagen de documento con la finalidad validada", async () => {
+    mocks.store.mockResolvedValue({ id: "upload1", url: "/api/files/upload1" });
+    const response = await POST(uploadRequest("document-image", "image/png"));
+    expect(response.status).toBe(201);
+    expect(mocks.validate).toHaveBeenCalledWith("document-image", "image/png", 3);
+    expect(mocks.store).toHaveBeenCalledWith(expect.objectContaining({
+      projectId: "project1",
+      purpose: "document-image",
+      origin: "web",
+    }));
+  });
+
+  it("devuelve 413 cuando la cuota de imágenes está llena", async () => {
+    mocks.store.mockRejectedValue(new mocks.QuotaError());
+    const response = await POST(uploadRequest("document-image", "image/png"));
+    expect(response.status).toBe(413);
+    expect(((await response.json()) as { message: string }).message).toContain("cuota de imágenes");
   });
 });

@@ -9,7 +9,7 @@ import { readAulaMermaidCode, writeAulaMermaidCode } from "./mermaid-compat";
  */
 function documentWithDiagram(code: string) {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     title: "Documento",
     content: {
       type: "doc",
@@ -44,7 +44,7 @@ describe("compatibilidad MCP de diagramas", () => {
 
   it("añade un diagrama al final si el documento no tiene ninguno", () => {
     const result = writeAulaMermaidCode({
-      schemaVersion: 2,
+      schemaVersion: 3,
       title: "Solo texto",
       content: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Hola." }] }] },
     }, "flowchart TD\nNuevo --> Diagrama");

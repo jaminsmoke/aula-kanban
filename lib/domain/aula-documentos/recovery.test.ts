@@ -16,7 +16,7 @@ import { AULA_DOCUMENT_JSON_MAX_LENGTH, type AulaDocument } from "./document";
  */
 function recoveryDocument(title: string, textLength = 12): AulaDocument {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     title,
     content: {
       type: "doc",
