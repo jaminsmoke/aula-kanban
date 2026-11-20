@@ -65,7 +65,7 @@ Estas son las definiciones que gobiernan ARC-06. La clasificación de cada archi
 
 ---
 
-## 3. Inventario de `lib/server` (104 archivos)
+## 3. Inventario de `lib/server` (105 archivos)
 
 Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servicio, `H` helper HTTP, `P` plataforma, `A` adaptador MCP, `MX` mixto. La columna **Prueba** cuenta las pruebas que importan el módulo directamente; `—` no significa necesariamente ausencia de cobertura indirecta.
 
@@ -152,7 +152,7 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 
 **Hallazgo P1 resuelto (2026-11-20):** `storage.ts` mezclaba repositorio R2, repositorio D1 de `uploads`, reglas de cuota, validación MIME y diagnóstico. Ahora el servicio tiene 155 líneas; el acceso a datos vive en `storage/repository.ts` (240) y las reglas puras en `storage/quota.ts` (132).
 
-### 3.5 MCP (36)
+### 3.5 MCP (37)
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
@@ -160,7 +160,8 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `mcp/auth.ts` | 90 | `S` autenticación por token | `api/mcp` | 1 |
 | `mcp/database.ts` | 14 | `R` apertura D1 | `api/mcp` | ruta |
 | `mcp/token-service.ts` | 85 | `S` tokens de la web | `api/mcp/tokens` | ruta |
-| `mcp/tokens.ts` | 231 | `S`+`R` `mcp_tokens` | `mcp/auth.ts`, `administracion.ts`, `token-service.ts` | 2 |
+| `mcp/tokens.ts` | 206 | `S` formato y verificación de tokens | `mcp/auth.ts`, `administracion.ts`, `token-service.ts` | 2 |
+| `mcp/tokens-repository.ts` | 117 | `R` `mcp_tokens` | `mcp/tokens.ts` | — |
 | `mcp/auditoria.ts` | 149 | `R` `mcp_audit_log` + retención | `administracion.ts`, `registro.ts` | 1 |
 | `mcp/contexto.ts` | 134 | `D`/`H` resultados de herramienta | 22 archivos MCP | 2 |
 | `mcp/enlaces.ts` | 64 | `H` enlaces profundos | 5 dominios | — |
@@ -288,7 +289,7 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 | `project_rekeys` | `projects/project-rekey.ts` | `projects/project-access.ts`, `projects/project-overview.ts` |
 | `document_copies` | `aula-documentos/document-copies.ts`; `storage.deleteProjectUploads` | `aula-documentos/document-copies.ts`, rutas de copias |
 | `uploads` | `storage.storeUpload`, `storage.deleteUpload`, `uploads/purge.ts` | `storage.ts`, `uploads/*`, `projects/projects-repository.ts` (baja) |
-| `mcp_tokens` | `mcp/tokens.ts` | `mcp/auth.ts`, `mcp/dominios/administracion.ts` |
+| `mcp_tokens` | `mcp/tokens-repository.ts` | `mcp/tokens-repository.ts`, `mcp/dominios/administracion.ts` |
 | `mcp_audit_log` | `mcp/auditoria.ts` | `mcp/auditoria.ts`, `administracion.ts` |
 | `oauth_clients` / `oauth_authorization_codes` / `oauth_access_tokens` / `oauth_refresh_tokens` | `oauth/{clientes,codigos,tokens}.ts` | `oauth/service.ts` |
 | `user_identities` | `projects/project-overview.ts` (nombre); `access/deleted-profiles.ts` (limpieza) | `projects/project-overview.ts`, `tasks/queries.ts`, `mcp/dominios/contexto.ts` |
@@ -356,6 +357,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 | P1 | Catálogo de libros leía R2 y `project_books` desde el servicio | `books/books-repository.ts` (R2) y `books/project-books-repository.ts` (D1) | 3 · **resuelto** |
 | P1 | Pizarras leían `boards` y `task_assignees` desde el servicio | `board/boards-repository.ts` + contrato neutral en `board/board-types.ts` | 3 · **resuelto** |
 | P1 | Mutaciones de tareas mezclaban permisos, SQL y lotes | `tasks/mutations-repository.ts` concentra las sentencias; `mutations.ts` conserva las reglas | 3 · **resuelto** |
+| P1 | Tokens MCP mezclaban formato, cifrado y filas | `mcp/tokens-repository.ts` concentra `mcp_tokens`; `tokens.ts` conserva formato y hash | 3 · **resuelto** |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
 | P1 | Cuatro rutas importaban D1 directamente | extraídas a servicios; `app/api` no importa D1 | 2 y 3 · **resuelto** |
@@ -387,7 +389,7 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 
 ## 10. Criterios de aceptación de Fase 1
 
-- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (104/104).
+- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (105/105).
 - [x] Cada ruta de `app/api` tiene clase provisional y servicios identificados (26/26).
 - [x] Están identificadas las reglas duplicadas entre rutas, servicios, MCP y almacenamiento.
 - [x] Está mapeado el acceso a D1 y R2, con tablas, claves y responsables.

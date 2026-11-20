@@ -1,3 +1,12 @@
+import {
+  findTokenRow,
+  insertTokenRow,
+  listTokenRows,
+  revokeTokenRow,
+  touchTokenRow,
+  type TokenDatabase,
+} from "./tokens-repository";
+
 /**
  * Tokens personales del servidor MCP.
  *
@@ -6,34 +15,14 @@
  * con una sal por token: la fila leída con el uuid permite localizarla sin
  * exponer el secreto, y el hash permite comprobarlo.
  *
- * El servicio trabaja con la interfaz `TokenDatabase` (la de D1); los tests le
- * pasan un adaptador de SQLite en memoria sin tocar Cloudflare.
+ * El servicio conserva el formato, el cifrado y los metadatos públicos; las
+ * filas de `mcp_tokens` viven en `tokens-repository.ts`. Los tests le pasan un
+ * adaptador de SQLite en memoria sin tocar Cloudflare.
  */
 
+export type { TokenDatabase } from "./tokens-repository";
+
 const TOKEN_PREFIX = "ak_mcp_";
-
-/** Interfaz mínima de D1 que usa este módulo (`prepare().bind().first/run/all`). */
-export type TokenDatabase = {
-  prepare(sql: string): {
-    bind(...params: Array<string | number | null>): {
-      first<T = unknown>(): Promise<T | null>;
-      all<T = unknown>(): Promise<{ results: T[] }>;
-      run(): Promise<{ meta?: { changes?: number } }>;
-    };
-  };
-};
-
-type TokenRow = {
-  id: string;
-  user_id: string;
-  email: string;
-  label: string;
-  token_hash: string;
-  salt: string;
-  last_used_at: number | null;
-  created_at: number;
-  revoked_at: number | null;
-};
 
 /** Metadatos públicos de un token, sin hash ni sal. */
 export type McpTokenMeta = {
@@ -155,10 +144,7 @@ export async function createMcpToken(db: TokenDatabase, userId: string, email: s
   const tokenHash = await hashSecret(salt, secret);
   const createdAt = Date.now();
   const cleanLabel = label.trim().slice(0, 80);
-  await db
-    .prepare("INSERT INTO mcp_tokens (id, user_id, email, label, token_hash, salt, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
-    .bind(id, userId, email, cleanLabel, tokenHash, salt, createdAt)
-    .run();
+  await insertTokenRow(db, { id, userId, email, label: cleanLabel, tokenHash, salt, createdAt });
   return { id, token: `${TOKEN_PREFIX}${id}_${secret}`, label: cleanLabel, createdAt };
 }
 
@@ -171,14 +157,11 @@ export async function createMcpToken(db: TokenDatabase, userId: string, email: s
 export async function authenticateMcpToken(db: TokenDatabase, token: string): Promise<{ userId: string; email: string; tokenId: string } | null> {
   const parsed = parseToken(token.trim());
   if (!parsed) return null;
-  const row = await db
-    .prepare("SELECT id, user_id, email, label, token_hash, salt, last_used_at, created_at, revoked_at FROM mcp_tokens WHERE id = ?")
-    .bind(parsed.id)
-    .first<TokenRow>();
+  const row = await findTokenRow(db, parsed.id);
   if (!row || row.revoked_at !== null) return null;
   const candidate = await hashSecret(row.salt, parsed.secret);
   if (!equalTexts(candidate, row.token_hash)) return null;
-  await db.prepare("UPDATE mcp_tokens SET last_used_at = ? WHERE id = ?").bind(Date.now(), parsed.id).run();
+  await touchTokenRow(db, parsed.id, Date.now());
   return { userId: row.user_id, email: row.email, tokenId: row.id };
 }
 
@@ -189,11 +172,8 @@ export async function authenticateMcpToken(db: TokenDatabase, token: string): Pr
  * @returns Los metadatos públicos de cada token.
  */
 export async function listMcpTokens(db: TokenDatabase, userId: string): Promise<McpTokenMeta[]> {
-  const { results } = await db
-    .prepare("SELECT id, label, last_used_at, created_at, revoked_at FROM mcp_tokens WHERE user_id = ? ORDER BY created_at DESC, id DESC")
-    .bind(userId)
-    .all<{ id: string; label: string; last_used_at: number | null; created_at: number; revoked_at: number | null }>();
-  return results.map((row) => ({
+  const rows = await listTokenRows(db, userId);
+  return rows.map((row) => ({
     id: row.id,
     label: row.label,
     lastUsedAt: row.last_used_at,
@@ -210,11 +190,7 @@ export async function listMcpTokens(db: TokenDatabase, userId: string): Promise<
  * @returns `true` si se revocó; `false` si no existe o no es de la cuenta.
  */
 export async function revokeMcpToken(db: TokenDatabase, userId: string, id: string): Promise<boolean> {
-  const { meta } = await db
-    .prepare("UPDATE mcp_tokens SET revoked_at = ? WHERE id = ? AND user_id = ? AND revoked_at IS NULL")
-    .bind(Date.now(), id, userId)
-    .run();
-  return (meta?.changes ?? 0) > 0;
+  return revokeTokenRow(db, userId, id, Date.now());
 }
 
 /**
