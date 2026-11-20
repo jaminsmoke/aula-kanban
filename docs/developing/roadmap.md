@@ -89,11 +89,11 @@ Medición del 2026-11-20, antes de empezar:
 
 ### Fase 3 — Office: visor y exportación
 
-- [ ] Dividir el visor en selector/validación de archivo, host de renderizado, controles de zoom y navegación.
-- [ ] Extraer el estado de carga, errores y ciclo de vida de la instancia a un hook.
-- [ ] Separar la exportación en construcción DOCX, construcción PPTX y utilidades compartidas de contenido.
-- [ ] Mantener los mismos formatos aceptados, avisos, nombres de descarga y resultados de exportación.
-- [ ] Cubrir DOCX/PPTX, tablas, imágenes, avisos, controles del visor y errores de archivo.
+- [x] Dividir el visor en selector/validación de archivo, host de renderizado, controles de zoom y navegación.
+- [x] Extraer el estado de carga, errores y ciclo de vida de la instancia a un hook.
+- [x] Separar la exportación en construcción DOCX, construcción PPTX y utilidades compartidas de contenido.
+- [x] Mantener los mismos formatos aceptados, avisos, nombres de descarga y resultados de exportación.
+- [x] Cubrir DOCX/PPTX, tablas, imágenes, avisos, controles del visor y errores de archivo.
 - **Criterios:** archivos TS/TSX de producto <600; salidas Office equivalentes; pruebas existentes y nuevas pasan; sin dependencias nuevas; presupuestos pasan.
 
 ### Fase 4 — Tarjetas y apps secundarias
@@ -137,4 +137,5 @@ Medición del 2026-11-20, antes de empezar:
 - `arch:check` sigue siendo la puerta de arquitectura: 357 archivos de producto, 907 imports y 0 problemas nuevos al abrir este roadmap.
 - 2026-11-20: **Fase 1 completada.** Timeline pasa de un `timeline-app.tsx` de 720 líneas a un shell de 100 líneas, hooks de editor/lienzo y tarjetas de vista separadas. Se retiró su excepción de `largeFiles`; `arch:check` queda en **364 archivos / 923 imports / 0 problemas**. Suite: **228 archivos / 1.584 pruebas**; build, `perf:budget` y `perf:office` correctos.
 - 2026-11-20: **Fase 2 completada.** Hoja de cálculo queda con un shell de 80 líneas, hooks de documento y rejilla, barra de herramientas, barra `fx`, panel lateral y exportación CSV separada. Se conservaron fórmulas, estilos, límites, autosave y lectura invitada. Suite: **229 archivos / 1.585 pruebas**; `arch:check` en **370 archivos / 933 imports / 0 problemas**; `hoja-calculo` en **310.192 / 315.000 B gzip**.
+- 2026-11-20: **Fase 3 completada.** El visor Office queda con un hook de archivo/visor y componentes de cabecera, controles, error y estado vacío. La exportación se separa en utilidades comunes, DOCX y PPTX, manteniendo el barrel público. Añadidas pruebas del estado vacío, formato inválido y modo embebido. Suite: **230 archivos / 1.589 pruebas**; `arch:check` en **379 archivos / 951 imports / 0 problemas**; `aula-documentos` 369.601, export 329.694 y Office 196.481 B gzip.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
