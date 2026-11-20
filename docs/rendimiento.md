@@ -1,7 +1,7 @@
 # Rendimiento del cliente
 
-> **Estado:** línea base de PERF-01 · cierre de APP-02 · build `1.1.31` · 2026-11-16
-> **Informe:** `npm run perf:report` · **Presupuesto:** `npm run perf:budget` · **Datos:** [`perf-baseline.json`](perf-baseline.json) · **Latencia:** [`perf-latency.json`](perf-latency.json)
+> **Estado:** línea base de PERF-01 · presupuestos por app de ARC-05 · build `1.1.37` · 2026-11-20
+> **Informe:** `npm run perf:report` · **Presupuesto de flujo:** `npm run perf:budget` · **Presupuesto de app:** `npm run app:budget` · **Datos:** [`perf-baseline.json`](perf-baseline.json) · **Latencia:** [`perf-latency.json`](perf-latency.json) · **Imágenes:** [`image-baseline.json`](image-baseline.json)
 
 ---
 
@@ -14,12 +14,14 @@ npm run build
 npm run perf:report
 ```
 
-Para comprobar el presupuesto y medir la latencia real:
+Para comprobar los presupuestos y medir la latencia real:
 
 ```bash
+npm run app:budget
 npm run perf:budget
 # Con `npm start -- --port 8791` sirviendo la build:
 node scripts/perf-latency.mjs --runs 5 --json --out docs/perf-latency.json
+npm run perf:images -- --json --out docs/image-baseline.json --runs 3 --widths 800,1600,2048
 ```
 
 Para actualizar la línea base:
@@ -36,21 +38,52 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 
 | Flujo | Bruto | Gzip | Presupuesto vigente | Archivos |
 |---|---:|---:|---:|---:|
-| Tablero | 561,1 KiB | 166,7 KiB (170.713 B) | 175.656 B | 28 |
-| Calculadora · abrir Básica | 435,3 KiB | 129,5 KiB (132.617 B) | 150.827 B | 16 |
-| Calculadora · primer `=` en Básica | 435,3 KiB | 129,5 KiB (132.617 B) | 150.827 B | 16 |
-| Calculadora · Científica/Ecuaciones | 6.601,6 KiB | 1.914,4 KiB (1.960.363 B) | 2.069.960 B | 18 |
-| Diagramas · flujo inicial | 1.141,5 KiB | 309,3 KiB (316.683 B) | 331.923 B | 42 |
-| Diagramas · con ELK | 2.580,2 KiB | 750,4 KiB (768.431 B) | 806.262 B | 40 |
-| Tienda · abrir | 525,7 KiB | 164,0 KiB (167.926 B) | 174.779 B | 20 |
-| Pizarra · abrir | 3.438,8 KiB | 1.213,5 KiB (1.242.609 B) | 1.348.890 B | 21 |
-| Pizarra · conversión Mermaid | 4.202,7 KiB | 1.410,8 KiB (1.444.615 B) | 1.560.999 B | 48 |
-| Blockly · abrir | 1.151,9 KiB | 322,0 KiB (329.717 B) | 345.631 B | 17 |
-| Blockly · panel de código | 1.286,1 KiB | 357,0 KiB (365.568 B) | 383.275 B | 20 |
+| Tablero | 572,5 KiB | 169,9 KiB (174.016 B) | 175.656 B | 32 |
+| Hoja de cálculo · abrir | 1.050,9 KiB | 302,9 KiB (310.209 B) | 315.000 B | 25 |
+| Aula Documentos · exportar Office | 1.045,3 KiB | 322,0 KiB (329.694 B) | 340.000 B | 14 |
+| Calculadora · abrir Básica | 439,9 KiB | 130,5 KiB (133.645 B) | 150.827 B | 17 |
+| Calculadora · primer `=` en Básica | 439,9 KiB | 130,5 KiB (133.645 B) | 150.827 B | 17 |
+| Calculadora · Científica/Ecuaciones | 6.606,2 KiB | 1.915,4 KiB (1.961.389 B) | 2.069.960 B | 19 |
+| Aula Documentos · abrir | 1.179,6 KiB | 360,7 KiB (369.351 B) | 370.000 B | 48 |
+| Tienda · abrir | 544,7 KiB | 169,1 KiB (173.191 B) | 174.779 B | 20 |
+| Pizarra · abrir | 3.441,7 KiB | 1.214,2 KiB (1.243.293 B) | 1.348.890 B | 23 |
+| Pizarra · conversión Mermaid | 4.206,4 KiB | 1.412,2 KiB (1.446.110 B) | 1.560.999 B | 51 |
+| Blockly · abrir | 1.157,2 KiB | 323,2 KiB (330.958 B) | 345.631 B | 18 |
+| Blockly · panel de código | 1.291,4 KiB | 358,2 KiB (366.811 B) | 383.275 B | 21 |
 
-Línea base regenerada el 2026-11-16 con la build de cierre de PROMO-06. La raíz de los flujos de la calculadora es `app/board/apps/calculadora/calculadora-app.tsx`; la Tienda sigue midiendo desde `app/board/store/store-desktop.tsx` y las secciones «Cambio de fase 2», «Cambio de fase 3» y «Cambio PROMO-06» conservan las cifras históricas de sus mediciones.
+Línea base regenerada el 2026-11-20 con la build `1.1.37`. La raíz de los flujos de la calculadora es `app/board/apps/calculadora/calculadora-app.tsx`; la Tienda sigue midiendo desde `app/board/store/store-desktop.tsx` y las secciones «Cambio de fase 2», «Cambio de fase 3» y «Cambio PROMO-06» conservan las cifras históricas de sus mediciones.
 
 Los totales incluyen el framework y la entrada compartida. La comparación útil es entre flujos del mismo informe, no contra una medición externa con otra build.
+
+## Presupuestos por app
+
+`npm run app:budget` comprueba test, CSS, latencia registrada e imágenes registradas. `npm run perf:budget` comprueba los flujos y asigna a cada app su flujo más pesado.
+
+| App | Flujos | Gzip de app | Tests actuales / límite | CSS actual / límite |
+|---|---|---:|---|---|
+| Tablero | 1 | 175.656 B | 29 / 2.226 → 32 / 2.450 | 12 / 1.529 → 13 / 1.650 |
+| Aula Documentos | 2 | 370.000 B | 34 / 3.567 → 38 / 3.900 | 8 / 2.049 → 9 / 2.250 |
+| Hoja de cálculo | 1 | 315.000 B | 5 / 448 → 6 / 500 | 1 / 345 → 2 / 380 |
+| Calculadora | 3 | 2.069.960 B | 6 / 295 → 7 / 330 | 1 / 124 → 2 / 140 |
+| Espacio / Tienda | 1 | 174.779 B | 9 / 723 → 10 / 800 | 2 / 245 → 3 / 270 |
+| Pizarra | 2 | 1.560.999 B | 7 / 439 → 8 / 490 | 1 / 9 → 2 / 12 |
+| Blockly | 2 | 383.275 B | 4 / 113 → 5 / 130 | 1 / 39 → 2 / 50 |
+
+Los límites de test y CSS tienen un margen deliberado para evitar que una prueba pequeña rompa CI; el límite de gzip de la app nunca puede ser menor que el de su flujo más pesado. Los flujos `aula-documentos-export`, `basica`, `basica-evalua`, `pizarra-mermaid` y `blockly-codigo` siguen teniendo su propio presupuesto aunque compartan app.
+
+### Latencia e imágenes
+
+- **Calculadora:** la última medición registrada exige `≤ 4.000 ms` de total para Básica y `≤ 15.000 ms` para Científica, con `engineLoaded` correcto. Se comprueba sobre `docs/perf-latency.json`; Chrome no se ejecuta en CI.
+- **Imágenes:** `docs/image-baseline.json` registra la medición sintética de 800, 1.600 y 2.048 px. `app:budget` comprueba bytes del derivado y PSNR mínimo por escenario. La medición se repite manualmente con `npm run perf:images` cuando cambia el codificador.
+- El detalle de las imágenes está en [`miniaturas.md`](miniaturas.md).
+
+### Cómo actualizar un presupuesto
+
+1. Medir la build actual con `npm run build && npm run perf:report`, `npm run perf:budget` y, si aplica, `npm run perf:latency` y `npm run perf:images`.
+2. Comparar antes/después y explicar la causa del cambio; no subir un límite para ocultar una regresión.
+3. Actualizar `docs/perf-budget.json`. Si se añade un flujo, asignarlo a una app y mantener `apps[id].gzip >= max(flows)`.
+4. Refrescar el JSON de latencia o imágenes solo con una medición nueva y registrar la fecha.
+5. Ejecutar `npm run check`, `npm run build`, `npm run perf:budget` y `npm run app:budget`; adjuntar la evidencia en el changelog o en la revisión.
 
 ## Cambio de fase 2
 
@@ -98,9 +131,9 @@ La apertura es prácticamente la misma en ambos modos (unos 3,4 s). La diferenci
 - **Pizarra:** el wasm de Excalidraw es un coste aceptado de abrir la Pizarra. No se divide ni se sustituye la librería sin una decisión explícita.
 - **Conversión Mermaid:** 1.560.999 B. Abrir la Pizarra no puede incluir Mermaid 11, KaTeX ni `mermaid-to-excalidraw`; la conversión debe conservar su diagrama de flujo de Mermaid 11.
 - **Blockly:** el motor y los generadores son costes de la app; deben seguir cargándose solo al abrirla o al pedir el panel de código.
-- **Cualquier flujo nuevo** debe añadirse al script y a esta tabla antes de considerarse cubierto.
+- **Cualquier flujo nuevo** debe añadirse al script, asignarse a una app y documentarse en esta tabla antes de considerarse cubierto.
 
-`npm run perf:budget` lee `docs/perf-budget.json`, ejecuta el informe y falla si un flujo supera su límite, si falta un flujo o si aparece un chunk prohibido o falta uno obligatorio. CI lo ejecuta después de `npm run build`; el presupuesto es ahora una puerta automática.
+`npm run perf:budget` lee `docs/perf-budget.json`, ejecuta el informe y falla si un flujo supera su límite, si falta un flujo, si una app supera su límite o si aparece un chunk prohibido o falta uno obligatorio. `npm run app:budget` comprueba test, CSS, latencia e imágenes registradas. CI ejecuta `app:budget` en los checks y `perf:budget` después de `npm run build`; ambos son puertas automáticas.
 
 ## Hallazgos
 
@@ -120,4 +153,4 @@ La apertura es prácticamente la misma en ambos modos (unos 3,4 s). La diferenci
 - La conversión se mide con un flowchart de Mermaid 11, que es el caso más habitual; otros tipos de diagrama pueden añadir chunks propios.
 - La latencia se midió en un servidor local con Fast 3G y Chrome headless; no representa la red ni el CDN de producción y no se ejecuta en CI.
 - No se ejecuta un rebuild solo para medir: se reutiliza el `dist/client` actual.
-- Sin cambios de versión; `package.json` sigue en `1.1.31`.
+- Sin cambios de versión; `package.json` sigue en `1.1.37`.

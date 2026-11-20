@@ -38,6 +38,7 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run arch:check
       - run: npm run dead:check
+      - run: npm run app:budget
       - run: npm test
       - run: npm run build
       - run: npm run perf:budget

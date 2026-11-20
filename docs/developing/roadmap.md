@@ -88,13 +88,13 @@ Medición del 2026-11-20:
 - [x] Integrar el check en `npm run check` y CI con un baseline explícito para deuda conocida.
 - **Criterios:** un archivo o dependencia sin consumidores falla de forma determinista; no hay falsos positivos en entradas dinámicas; CI lo ejecuta.
 
-### Fase 4 — Presupuestos por app y por flujo
+### Fase 4 - Presupuestos por app y por flujo
 
-- [ ] Revisar los 12 flujos actuales y asignar presupuesto a las apps principales.
-- [ ] Definir límites de test, CSS, bundle, latencia e imágenes donde correspondan.
-- [ ] Añadir una salida legible y una comprobación de crecimiento por app.
-- [ ] Integrar los presupuestos en `npm run check` o en el job de CI adecuado.
-- [ ] Documentar cómo actualizar un presupuesto con evidencia de rendimiento.
+- [x] Revisar los 12 flujos actuales y asignar presupuesto a las apps principales.
+- [x] Definir límites de test, CSS, bundle, latencia e imágenes donde correspondan.
+- [x] Añadir una salida legible y una comprobación de crecimiento por app.
+- [x] Integrar los presupuestos en `npm run check` y en el job de CI adecuado.
+- [x] Documentar cómo actualizar un presupuesto con evidencia de rendimiento.
 - **Criterios:** cada app principal tiene un presupuesto reconocible, los límites se comprueban automáticamente y una regresión falla.
 
 ### Fase 5 — Cierre
@@ -124,4 +124,5 @@ Medición del 2026-11-20:
 - 2026-11-20: **Fase 1 completada.** Inventario en [`test-harness-audit.md`](test-harness-audit.md): 234 archivos / 1.597 pruebas, cinco tests de Aula, ~190 líneas repetidas, capas de setup, contrato del harness y candidatos de Office/Tarjetas/Timeline/Hoja. Sin cambios de pruebas.
 - 2026-11-20: **Fase 2 completada.** Harness en `test-utils/aula-documentos.tsx` (fuera del catálogo de producto); seis tests migrados, **1.297 líneas eliminadas**, `Range`/`Element`/`Node` movidos al setup global y prueba de aislamiento añadida. Suite: **235 archivos / 1.599 pruebas**. No hay dos consumidores reales para factorías fuera de Aula.
 - 2026-11-20: **Fase 3 completada.** `dead-code-check` local en `scripts/dead-code-check.mjs`, baseline en [`dead-code-baseline.json`](dead-code-baseline.json) y decisiones en [`dead-code-check.md`](dead-code-check.md). Detecta 0 huérfanos, 0 dependencias sin uso y 0 CSS sin uso; 51 exports quedan como deuda conocida. `test-css.ts` pasó a `test-utils/aula-documentos-css.ts`. CI y `npm run check` ejecutan el checker.
+- 2026-11-20: **Fase 4 completada.** `app:budget` comprueba 7 apps (test, CSS, latencia registrada e imágenes); `perf:budget` asigna los 12 flujos a apps y valida gzip por app. `npm run check` y CI ejecutan `app:budget`; CI ejecuta `perf:budget` tras build. Suite: **237 archivos / 1.607 pruebas**. Presupuestos documentados en [`rendimiento.md`](../rendimiento.md) y [`miniaturas.md`](../miniaturas.md).
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

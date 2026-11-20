@@ -1,7 +1,7 @@
 # Miniaturas de imágenes
 
-> **Estado:** PER-02 integrado · PER-04 en medición · build `1.1.28` · 2026-11-15
-> **Medición:** `npm run perf:images` · **Prototipo:** `app/board/shared/image-thumbnail.ts` · **Roadmap:** [`roadmap.md`](developing/roadmap.md)
+> **Estado:** PER-02 integrado · PER-04 en medición · presupuesto de imágenes de ARC-05 · build `1.1.37` · 2026-11-20
+> **Medición:** `npm run perf:images` · **Presupuesto:** `npm run app:budget` · **Datos:** [`image-baseline.json`](image-baseline.json) · **Prototipo:** `app/board/shared/image-thumbnail.ts` · **Roadmap:** [`roadmap.md`](developing/roadmap.md)
 
 ---
 
@@ -102,6 +102,21 @@ El detalle de tarea muestra la imagen a un máximo de 220 px de alto y la tarjet
 - Pruebas del diálogo con el generador simulado: camino feliz, respaldo y GIF sin transformar.
 - README: explicar que las subidas nuevas guardan una versión de 800 px y que el MCP mantiene el original.
 - Sin migraciones, sin cambios en `uploads`, en la purga ni en el inventario.
+
+## Presupuesto de imágenes
+
+`docs/perf-budget.json` fija presupuestos para los derivados de 800, 1.600 y 2.048 px. `npm run app:budget` lee la última medición de `docs/image-baseline.json` y falla si un derivado supera sus bytes o baja de 35 dB de PSNR.
+
+| Escenario | Bytes máximos | PSNR mínimo |
+|---|---:|---:|
+| Foto 12 MP a 800 px | 65.000 B | 35 dB |
+| Foto 2 MP a 800 px | 55.000 B | 35 dB |
+| Foto 12 MP a 1.600 px | 245.000 B | 35 dB |
+| Foto 2 MP a 1.600 px | 185.000 B | 35 dB |
+| Foto 12 MP a 2.048 px | 380.000 B | 35 dB |
+| Foto 2 MP a 2.048 px | 440.000 B | 35 dB |
+
+La medición se refresca a mano con `npm run perf:images -- --json --out docs/image-baseline.json --runs 3 --widths 800,1600,2048`. Chrome no se ejecuta en CI; el check compara la última línea base registrada. Un cambio de codificador, de calidad o de tamaño de derivado exige una medición nueva y una actualización razonada de estos límites.
 
 ## Límites de la medición
 

@@ -1,0 +1,294 @@
+{
+  "measuredAt": "2026-11-20T21:32:28.367Z",
+  "browser": "Chrome headless",
+  "kind": "photos",
+  "note": "Imágenes sintéticas generadas en el navegador; decodificación con createImageBitmap. La transferencia se calcula, no se mide en red.",
+  "network": {
+    "label": "Fast 3G",
+    "bytesPerSecond": 200000
+  },
+  "targetWidths": [
+    800,
+    1600,
+    2048
+  ],
+  "runs": 3,
+  "scenarios": [
+    {
+      "id": "foto-12mp",
+      "label": "Foto 12 MP (4032×3024)",
+      "samples": [
+        {
+          "originalBytes": 4097849,
+          "derivativeBytes": 61978,
+          "decodedBytes": 48771072,
+          "width": 800,
+          "height": 600,
+          "encodeOriginalMs": 90.30000001192093,
+          "decodeOriginalMs": 49.099999994039536,
+          "resizeMs": 0.4000000059604645,
+          "encodeDerivativeMs": 34.599999994039536,
+          "decodeDerivativeMs": 3.9000000059604645,
+          "psnrDb": 35.56992125250028
+        },
+        {
+          "originalBytes": 4097758,
+          "derivativeBytes": 67750,
+          "decodedBytes": 48771072,
+          "width": 800,
+          "height": 600,
+          "encodeOriginalMs": 111.19999998807907,
+          "decodeOriginalMs": 49.5,
+          "resizeMs": 0.30000001192092896,
+          "encodeDerivativeMs": 37.69999998807907,
+          "decodeDerivativeMs": 3.9000000059604645,
+          "psnrDb": 35.842755349444325
+        },
+        {
+          "originalBytes": 4094887,
+          "derivativeBytes": 61438,
+          "decodedBytes": 48771072,
+          "width": 800,
+          "height": 600,
+          "encodeOriginalMs": 91.60000002384186,
+          "decodeOriginalMs": 59,
+          "resizeMs": 0.30000001192092896,
+          "encodeDerivativeMs": 46,
+          "decodeDerivativeMs": 5,
+          "psnrDb": 35.65449648819764
+        }
+      ],
+      "targetWidth": 800
+    },
+    {
+      "id": "foto-2mp",
+      "label": "Foto 2 MP (1920×1080)",
+      "samples": [
+        {
+          "originalBytes": 723583,
+          "derivativeBytes": 52464,
+          "decodedBytes": 8294400,
+          "width": 800,
+          "height": 450,
+          "encodeOriginalMs": 16.400000005960464,
+          "decodeOriginalMs": 8.400000005960464,
+          "resizeMs": 0.30000001192092896,
+          "encodeDerivativeMs": 27.399999976158142,
+          "decodeDerivativeMs": 3.100000023841858,
+          "psnrDb": 35.686335789539655
+        },
+        {
+          "originalBytes": 721253,
+          "derivativeBytes": 51802,
+          "decodedBytes": 8294400,
+          "width": 800,
+          "height": 450,
+          "encodeOriginalMs": 13.400000005960464,
+          "decodeOriginalMs": 8.5,
+          "resizeMs": 0.09999999403953552,
+          "encodeDerivativeMs": 27.69999998807907,
+          "decodeDerivativeMs": 2.9000000059604645,
+          "psnrDb": 35.728518212784905
+        },
+        {
+          "originalBytes": 719813,
+          "derivativeBytes": 50844,
+          "decodedBytes": 8294400,
+          "width": 800,
+          "height": 450,
+          "encodeOriginalMs": 27.200000017881393,
+          "decodeOriginalMs": 8.599999994039536,
+          "resizeMs": 0.30000001192092896,
+          "encodeDerivativeMs": 26.299999982118607,
+          "decodeDerivativeMs": 2.9000000059604645,
+          "psnrDb": 35.74057728976605
+        }
+      ],
+      "targetWidth": 800
+    },
+    {
+      "id": "foto-12mp",
+      "label": "Foto 12 MP (4032×3024)",
+      "samples": [
+        {
+          "originalBytes": 4097849,
+          "derivativeBytes": 228914,
+          "decodedBytes": 48771072,
+          "width": 1600,
+          "height": 1200,
+          "encodeOriginalMs": 97.60000002384186,
+          "decodeOriginalMs": 50.79999998211861,
+          "resizeMs": 1.300000011920929,
+          "encodeDerivativeMs": 130.5,
+          "decodeDerivativeMs": 14.800000011920929,
+          "psnrDb": 36.03828724648566
+        },
+        {
+          "originalBytes": 4097758,
+          "derivativeBytes": 228658,
+          "decodedBytes": 48771072,
+          "width": 1600,
+          "height": 1200,
+          "encodeOriginalMs": 106.40000000596046,
+          "decodeOriginalMs": 43,
+          "resizeMs": 0.9000000059604645,
+          "encodeDerivativeMs": 131.89999997615814,
+          "decodeDerivativeMs": 12.900000005960464,
+          "psnrDb": 36.07456234807798
+        },
+        {
+          "originalBytes": 4094887,
+          "derivativeBytes": 228846,
+          "decodedBytes": 48771072,
+          "width": 1600,
+          "height": 1200,
+          "encodeOriginalMs": 80.40000000596046,
+          "decodeOriginalMs": 46.900000005960464,
+          "resizeMs": 1.0999999940395355,
+          "encodeDerivativeMs": 137,
+          "decodeDerivativeMs": 14.200000017881393,
+          "psnrDb": 36.10840891794207
+        }
+      ],
+      "targetWidth": 1600
+    },
+    {
+      "id": "foto-2mp",
+      "label": "Foto 2 MP (1920×1080)",
+      "samples": [
+        {
+          "originalBytes": 723583,
+          "derivativeBytes": 172474,
+          "decodedBytes": 8294400,
+          "width": 1600,
+          "height": 900,
+          "encodeOriginalMs": 14.400000005960464,
+          "decodeOriginalMs": 8.900000005960464,
+          "resizeMs": 0.699999988079071,
+          "encodeDerivativeMs": 100.40000000596046,
+          "decodeDerivativeMs": 9.599999994039536,
+          "psnrDb": 36.176225657724615
+        },
+        {
+          "originalBytes": 721253,
+          "derivativeBytes": 171344,
+          "decodedBytes": 8294400,
+          "width": 1600,
+          "height": 900,
+          "encodeOriginalMs": 13.800000011920929,
+          "decodeOriginalMs": 8.599999994039536,
+          "resizeMs": 0.800000011920929,
+          "encodeDerivativeMs": 107.39999997615814,
+          "decodeDerivativeMs": 11.599999994039536,
+          "psnrDb": 36.200375677581675
+        },
+        {
+          "originalBytes": 719813,
+          "derivativeBytes": 184108,
+          "decodedBytes": 8294400,
+          "width": 1600,
+          "height": 900,
+          "encodeOriginalMs": 19.099999994039536,
+          "decodeOriginalMs": 9,
+          "resizeMs": 0.9000000059604645,
+          "encodeDerivativeMs": 117.09999999403954,
+          "decodeDerivativeMs": 12,
+          "psnrDb": 36.400306540903244
+        }
+      ],
+      "targetWidth": 1600
+    },
+    {
+      "id": "foto-12mp",
+      "label": "Foto 12 MP (4032×3024)",
+      "samples": [
+        {
+          "originalBytes": 4097849,
+          "derivativeBytes": 357118,
+          "decodedBytes": 48771072,
+          "width": 2048,
+          "height": 1536,
+          "encodeOriginalMs": 98.69999998807907,
+          "decodeOriginalMs": 49.5,
+          "resizeMs": 2.2000000178813934,
+          "encodeDerivativeMs": 212,
+          "decodeDerivativeMs": 21.099999994039536,
+          "psnrDb": 36.256327113970485
+        },
+        {
+          "originalBytes": 4097758,
+          "derivativeBytes": 356390,
+          "decodedBytes": 48771072,
+          "width": 2048,
+          "height": 1536,
+          "encodeOriginalMs": 96.2999999821186,
+          "decodeOriginalMs": 48,
+          "resizeMs": 1.5999999940395355,
+          "encodeDerivativeMs": 210.5,
+          "decodeDerivativeMs": 24.599999994039536,
+          "psnrDb": 36.27895400898127
+        },
+        {
+          "originalBytes": 4094887,
+          "derivativeBytes": 356282,
+          "decodedBytes": 48771072,
+          "width": 2048,
+          "height": 1536,
+          "encodeOriginalMs": 85.2999999821186,
+          "decodeOriginalMs": 48,
+          "resizeMs": 1.699999988079071,
+          "encodeDerivativeMs": 216.19999998807907,
+          "decodeDerivativeMs": 20.200000017881393,
+          "psnrDb": 36.29741421009004
+        }
+      ],
+      "targetWidth": 2048
+    },
+    {
+      "id": "foto-2mp",
+      "label": "Foto 2 MP (1920×1080)",
+      "samples": [
+        {
+          "originalBytes": 723583,
+          "derivativeBytes": 422218,
+          "decodedBytes": 8294400,
+          "width": 1920,
+          "height": 1080,
+          "encodeOriginalMs": 13.599999994039536,
+          "decodeOriginalMs": 8.900000005960464,
+          "resizeMs": 1,
+          "encodeDerivativeMs": 164.60000002384186,
+          "decodeDerivativeMs": 25,
+          "psnrDb": 36.2341448893295
+        },
+        {
+          "originalBytes": 721253,
+          "derivativeBytes": 417864,
+          "decodedBytes": 8294400,
+          "width": 1920,
+          "height": 1080,
+          "encodeOriginalMs": 14.799999982118607,
+          "decodeOriginalMs": 9.400000005960464,
+          "resizeMs": 1.100000023841858,
+          "encodeDerivativeMs": 160.39999997615814,
+          "decodeDerivativeMs": 21.100000023841858,
+          "psnrDb": 36.17247405277033
+        },
+        {
+          "originalBytes": 719813,
+          "derivativeBytes": 409950,
+          "decodedBytes": 8294400,
+          "width": 1920,
+          "height": 1080,
+          "encodeOriginalMs": 14.700000017881393,
+          "decodeOriginalMs": 10,
+          "resizeMs": 1.0999999940395355,
+          "encodeDerivativeMs": 163.59999999403954,
+          "decodeDerivativeMs": 20.599999994039536,
+          "psnrDb": 36.054820355958206
+        }
+      ],
+      "targetWidth": 2048
+    }
+  ]
+}

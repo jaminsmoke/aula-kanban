@@ -1,6 +1,153 @@
 {
+  "version": 2,
   "unit": "bytes",
   "margin": 0.05,
+  "apps": {
+    "tablero": {
+      "label": "Tablero",
+      "paths": [
+        "app/board.tsx",
+        "app/board/layout/**",
+        "app/board/projects/**",
+        "app/board/tasks/**",
+        "app/board/people/**",
+        "app/board/class/**",
+        "app/board/settings/**",
+        "app/board/docs/**"
+      ],
+      "flows": [
+        "tablero"
+      ],
+      "gzip": 175656,
+      "tests": {
+        "maxFiles": 32,
+        "maxLines": 2450
+      },
+      "css": {
+        "maxFiles": 13,
+        "maxLines": 1650
+      }
+    },
+    "aula-documentos": {
+      "label": "Aula Documentos",
+      "paths": [
+        "app/board/apps/aula-documentos/**",
+        "app/board/shared/aula-documentos/**",
+        "lib/domain/aula-documentos/**"
+      ],
+      "flows": [
+        "aula-documentos",
+        "aula-documentos-export"
+      ],
+      "gzip": 370000,
+      "tests": {
+        "maxFiles": 38,
+        "maxLines": 3900
+      },
+      "css": {
+        "maxFiles": 9,
+        "maxLines": 2250
+      }
+    },
+    "hoja-calculo": {
+      "label": "Hoja de calculo",
+      "paths": [
+        "app/board/apps/hoja-calculo/**"
+      ],
+      "flows": [
+        "hoja-calculo"
+      ],
+      "gzip": 315000,
+      "tests": {
+        "maxFiles": 6,
+        "maxLines": 500
+      },
+      "css": {
+        "maxFiles": 2,
+        "maxLines": 380
+      }
+    },
+    "calculadora": {
+      "label": "Calculadora",
+      "paths": [
+        "app/board/apps/calculadora/**",
+        "lib/domain/edu-tools/**"
+      ],
+      "flows": [
+        "basica",
+        "basica-evalua",
+        "cientifica"
+      ],
+      "gzip": 2069960,
+      "tests": {
+        "maxFiles": 7,
+        "maxLines": 330
+      },
+      "css": {
+        "maxFiles": 2,
+        "maxLines": 140
+      }
+    },
+    "espacio": {
+      "label": "Espacio / Tienda",
+      "paths": [
+        "app/board/store/**"
+      ],
+      "flows": [
+        "espacio"
+      ],
+      "gzip": 174779,
+      "tests": {
+        "maxFiles": 10,
+        "maxLines": 800
+      },
+      "css": {
+        "maxFiles": 3,
+        "maxLines": 270
+      }
+    },
+    "pizarra": {
+      "label": "Pizarra",
+      "paths": [
+        "app/board/shared/whiteboard/**",
+        "app/board/apps/excalidraw/**",
+        "lib/domain/boards/**"
+      ],
+      "flows": [
+        "pizarra",
+        "pizarra-mermaid"
+      ],
+      "gzip": 1560999,
+      "tests": {
+        "maxFiles": 8,
+        "maxLines": 490
+      },
+      "css": {
+        "maxFiles": 2,
+        "maxLines": 12
+      }
+    },
+    "blockly": {
+      "label": "Blockly",
+      "paths": [
+        "app/board/apps/blockly/**",
+        "lib/domain/blockly/**"
+      ],
+      "flows": [
+        "blockly",
+        "blockly-codigo"
+      ],
+      "gzip": 383275,
+      "tests": {
+        "maxFiles": 5,
+        "maxLines": 130
+      },
+      "css": {
+        "maxFiles": 2,
+        "maxLines": 50
+      }
+    }
+  },
   "flows": {
     "tablero": 175656,
     "hoja-calculo": 315000,
@@ -86,5 +233,53 @@
     "aula-documentos": [
       "aula-documentos-app"
     ]
+  },
+  "latency": {
+    "source": "docs/perf-latency.json",
+    "note": "Medicion registrada; no se ejecuta Chrome en CI.",
+    "limits": {
+      "basica": {
+        "maxOpenMs": 4000,
+        "maxEvalMs": 500,
+        "maxTotalMs": 4000,
+        "engineLoaded": false
+      },
+      "cientifica": {
+        "maxOpenMs": 4000,
+        "maxEvalMs": 12000,
+        "maxTotalMs": 15000,
+        "engineLoaded": true
+      }
+    }
+  },
+  "images": {
+    "source": "docs/image-baseline.json",
+    "note": "Medicion sintetica de Fast 3G; se comprueba la ultima linea base registrada.",
+    "limits": {
+      "foto-12mp@800": {
+        "maxDerivativeBytes": 65000,
+        "minPsnrDb": 35
+      },
+      "foto-2mp@800": {
+        "maxDerivativeBytes": 55000,
+        "minPsnrDb": 35
+      },
+      "foto-12mp@1600": {
+        "maxDerivativeBytes": 245000,
+        "minPsnrDb": 35
+      },
+      "foto-2mp@1600": {
+        "maxDerivativeBytes": 185000,
+        "minPsnrDb": 35
+      },
+      "foto-12mp@2048": {
+        "maxDerivativeBytes": 380000,
+        "minPsnrDb": 35
+      },
+      "foto-2mp@2048": {
+        "maxDerivativeBytes": 440000,
+        "minPsnrDb": 35
+      }
+    }
   }
 }
