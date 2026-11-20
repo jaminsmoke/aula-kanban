@@ -1,7 +1,7 @@
 # Mapa del servidor: `lib/server` y `app/api`
 
 > **Estado:** Fase 1 cerrada; Fase 2 en curso · **Fecha:** 2026-11-20
-> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas. Las siete rutas que resolvían el proyecto a mano usan ahora `withProjectRoute`; archivos y copias usan `withResourceProject` porque el ámbito es el del objeto guardado. `tasks/service.ts` absorbe revisión, permisos y decoración; `api/tasks` queda como adaptador de 46 líneas. El 503 de almacenamiento sale de un único `storageUnavailable()` con mensaje y estado compartidos. `api/members` y `api/space-apps` ya tienen prueba de contrato propia.
+> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas. Las siete rutas que resolvían el proyecto a mano usan ahora `withProjectRoute`; archivos y copias usan `withResourceProject` porque el ámbito es el del objeto guardado. `tasks/service.ts` absorbe revisión, permisos y decoración; `api/tasks` queda como adaptador de 46 líneas. El 503 de almacenamiento sale de un único `storageUnavailable()` con mensaje y estado compartidos. `api/members` y `api/space-apps` ya tienen prueba de contrato propia. Ninguna ruta de `app/api` importa D1.
 > **Alcance:** inventario y clasificación provisional. La Fase 1 no movió ni renombró código.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Arquitectura:** [`arquitectura-global.md`](arquitectura-global.md)
 > **Regla de oro:** una regla de servidor tiene un único hogar; las rutas solo analizan, autorizan, delegan y responden.
@@ -141,7 +141,9 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 |---|---:|---|---|---|
 | `mcp/registro.ts` | 210 | `A` catálogo de herramientas | `mcp/auth.ts`, `reads`, `writes`, rutas MCP | 9 |
 | `mcp/auth.ts` | 90 | `S` autenticación por token | `api/mcp` | 1 |
-| `mcp/tokens.ts` | 231 | `S`+`R` `mcp_tokens` | `mcp/auth.ts`, `administracion.ts`, `api/mcp/tokens` | 2 |
+| `mcp/database.ts` | 14 | `R` apertura D1 | `api/mcp` | ruta |
+| `mcp/token-service.ts` | 85 | `S` tokens de la web | `api/mcp/tokens` | ruta |
+| `mcp/tokens.ts` | 231 | `S`+`R` `mcp_tokens` | `mcp/auth.ts`, `administracion.ts`, `token-service.ts` | 2 |
 | `mcp/auditoria.ts` | 149 | `R` `mcp_audit_log` + retención | `administracion.ts`, `registro.ts` | 1 |
 | `mcp/contexto.ts` | 134 | `D`/`H` resultados de herramienta | 22 archivos MCP | 2 |
 | `mcp/enlaces.ts` | 64 | `H` enlaces profundos | 5 dominios | — |
@@ -198,6 +200,7 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `route-helpers.ts` | 53 | `H` composición de rutas | 21 rutas | 1 |
 | `bounded-json.ts` | 26 | `H` cuerpo acotado | `api/app-documents` | — |
 | `demo.ts` | 27 | `P` cookie y cuenta demo | `auth.ts` | 1 |
+| `demo-seed.ts` | 27 | `S` lote de la demo | `api/admin/demo` | ruta |
 | `demo-availability.ts` | 16 | `S` disponibilidad demo | `app/page.tsx` | 1 |
 
 ---
@@ -208,7 +211,7 @@ Clase actual: **fina** = guardas + un servicio; **mixta** = resuelve proyecto/er
 
 | Ruta | L | Clase | Servicios usados | Prueba |
 |---|---:|---|---|---|
-| `admin/demo` | 24 | mixta | `getD1`, `buildDemoStatements`, `isOwner` | 1 |
+| `admin/demo` | 19 | fina | `demo-seed`, `isOwner` | 1 |
 | `administrators` | 56 | fina (global) | `administradores`, `auth`, `project-http` | 2 |
 | `app-documents` | 86 | fina | `app-documents`, `bounded-json` | 1 |
 | `aula-documentos/copies` | 123 | fina (multipart) | `document-copies`, `storage`, dominio de copias | 1 |
@@ -220,8 +223,8 @@ Clase actual: **fina** = guardas + un servicio; **mixta** = resuelve proyecto/er
 | `books/[id]/image` | 34 | fina (binario) | `books`, `auth`, `route-helpers` | 1 |
 | `files/[id]` | 31 | fina (binario, recurso) | `storage`, `auth`, `route-helpers` | 1 |
 | `invitations` | 29 | fina | `invitaciones` | 1 |
-| `mcp` | 159 | protocolo | SDK MCP, `mcp/auth`, `registro`, `rate-limit` | 3 |
-| `mcp/tokens` | 79 | mixta | `getD1`, `mcp/tokens`, `http` | 2 |
+| `mcp` | 154 | protocolo | SDK MCP, `mcp/auth`, `registro`, `rate-limit`, `mcp/database` | 3 |
+| `mcp/tokens` | 63 | fina | `mcp/token-service`, `http` | 2 |
 | `members` | 27 | fina | `members` | **—** |
 | `personal-apps` | 56 | fina | `personal-apps` | 1 |
 | `project-books` | 40 | fina | `capabilities`, `project-books` | 1 |
@@ -331,7 +334,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts` o `bo
 | P1 | `storage.ts` mezcla R2, D1, cuotas, MIME y diagnóstico | 346 líneas; 13 consumidores | 3 y 4 |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
-| P1 | Cuatro rutas importan D1 directamente | `admin/demo`, `mcp`, `mcp/tokens`, `tasks` | 2 y 3 |
+| P1 | Cuatro rutas importaban D1 directamente | extraídas a servicios; `app/api` no importa D1 | 2 y 3 · **resuelto** |
 | P2 | 5 MB definido dos veces | `storage.ts` y `domain/aula-documentos/image.ts` | 4 |
 | P2 | `reads.ts` y `writes.ts` no tienen consumidor de producto | solo pruebas y baseline de ARC-05 | 3 |
 | P2 | Purga huérfana sin disparador | `cleanupOrphanUploads`, `cleanupOrphanDocumentCopies` | 4 |

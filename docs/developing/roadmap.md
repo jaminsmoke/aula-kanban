@@ -77,11 +77,12 @@ Medición del 2026-11-20 al abrir ARC-06:
 
 ### Fase 2 — Adaptadores API finos
 
-- [ ] Revisar cada ruta para que solo analice, autorice, delegue y responda.
-- [ ] Extraer validaciones, respuestas y reglas repetidas a servicios o helpers con dos consumidores reales.
-- [ ] Unificar contratos de error y códigos de estado sin cambiar el comportamiento observable.
-- [ ] Añadir pruebas de contrato para rutas con lógica propia.
+- [x] Revisar cada ruta para que solo analice, autorice, delegue y responda.
+- [x] Extraer validaciones, respuestas y reglas repetidas a servicios o helpers con dos consumidores reales.
+- [x] Unificar contratos de error y códigos de estado sin cambiar el comportamiento observable.
+- [x] Añadir pruebas de contrato para rutas con lógica propia.
 - **Criterios:** ninguna ruta decide una regla de negocio; no hay validación duplicada ni cambios de URLs, permisos o respuestas.
+- **Cierre (2026-11-20):** adaptadores de personas, resolución de proyecto, servicio de tareas y 503 único cerrados; `members` y `space-apps` tienen contrato. Ninguna ruta de `app/api` importa ya D1: los dos últimos accesos salieron al abrir Fase 3. 23 de 26 rutas con prueba propia; `api/projects` queda como hueco declarado.
 - **Avance (2026-11-20):** el adaptador HTTP de alumnado y profesorado se movió de `lib/server/people/*` a `app/api/students` y `app/api/teachers`; los servicios ya no reciben `Request` ni devuelven `Response`. La paridad MCP ↔ HTTP sigue en verde (19 pruebas).
 - **Avance (2026-11-20):** `api/members` y `api/space-apps` reciben pruebas de contrato (auth, permisos, validación, códigos y cuerpos). La cobertura propia de rutas sube de 21 a 23 de 26; solo `api/projects` queda sin prueba dedicada.
 - **Avance (2026-11-20):** `storageUnavailable()` en `lib/server/http.ts` devuelve el único 503 de almacenamiento con un solo mensaje; `books/[id]/*`, `files/[id]`, copias, subidas, inventario y purga dejan de fabricar su propia respuesta.
@@ -96,6 +97,7 @@ Medición del 2026-11-20 al abrir ARC-06:
 - [ ] Actualizar el baseline de código muerto al retirar helpers sin consumidores.
 - [ ] Añadir pruebas en las nuevas fronteras y conservar la cobertura existente.
 - **Criterios:** cada regla tiene un hogar; sin ciclos nuevos; `lib/server` no importa `app`; los tests de dominio no necesitan D1/R2.
+- **Avance (2026-11-20):** `admin/demo`, `mcp` y `mcp/tokens` dejan de importar D1; `lib/server/demo-seed.ts` aplica el lote, `lib/server/mcp/token-service.ts` resuelve la base y la regla de la demo, y `lib/server/mcp/database.ts` abre la conexión del transporte. Las tres rutas conservan estados, mensajes y orden de autorización.
 
 ### Fase 4 — Cuotas, purgas, almacenamiento y migraciones
 
@@ -131,6 +133,8 @@ Medición del 2026-11-20 al abrir ARC-06:
 - `lib/server` tiene 139 archivos / 14.227 líneas y `app/api` 52 / 4.188; la dirección de dependencias ya es correcta.
 - El baseline de código muerto de ARC-05 deja 51 exports y dos fachadas MCP como deuda conocida para revisar aquí.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
+- 2026-11-20 — Fase 2 cerrada con 26 rutas revisadas. El adaptador de personas, la resolución de proyecto, el servicio de tareas, el 503 único y los contratos de `members`/`space-apps` dejan las rutas como analizadores y traductores. Sin cambios de URLs, permisos ni respuestas.
+- 2026-11-20 — Fase 3 iniciada: `demo-seed.ts`, `mcp/token-service.ts` y `mcp/database.ts` retiran el último acceso D1 de `app/api`; `admin/demo`, `mcp` y `mcp/tokens` quedan como adaptadores puros. Sin cambios de contrato en las pruebas de MCP (557 en verde).
 - 2026-11-20 — Fase 2, quinto bloque: pruebas de contrato para `api/members` (11 casos) y `api/space-apps` (8 casos), con guardas de origen/JSON, 401/403/404, validación, estados de servicio y cuerpos exactos. No se cambió código de producto.
 - 2026-11-20 — Fase 2, cuarto bloque: `storageUnavailable()` y `STORAGE_UNAVAILABLE_MESSAGE` viven en `lib/server/http.ts`; ocho rutas de archivos, copias, subidas, inventario y purga comparten el 503. Se conservan los códigos y se unifica el texto; la prueba de `files/[id]` se ajusta al mensaje único. MCP mantiene su propio mensaje de herramienta.
 - 2026-11-20 — Fase 2, tercer bloque: `lib/server/tasks/service.ts` (144 líneas) absorbe listado, revisión, permisos, responsables y decoración; `api/tasks` pasa de 76 a 46 líneas y deja de importar D1 y Drizzle. `taskAtRevision` se añade a `tasks/queries.ts` y `taskWriteDenial` a `tasks/permissions.ts`. Sin cambios de URLs, estados ni mensajes; 11 pruebas de tareas en verde.

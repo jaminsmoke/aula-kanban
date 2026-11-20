@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
-import { getD1 } from "../../../db";
+import { openMcpDatabase } from "../../../lib/server/mcp/database";
 import { authenticateMcp, bearerTokenFromRequest, hasScope, scopeForTool, type McpScope } from "../../../lib/server/mcp/auth";
 import { MCP_INSTRUCTIONS } from "../../../lib/server/mcp/instrucciones";
 import { registerPrompts } from "../../../lib/server/mcp/prompts";
@@ -98,12 +98,8 @@ function requiredScopeForBody(body: unknown): McpScope | null {
 async function POST(request: Request) {
   const token = bearerTokenFromRequest(request);
   if (!token) return unauthorized(request);
-  let db;
-  try {
-    db = getD1();
-  } catch {
-    return Response.json({ error: "database_unavailable" }, { status: 503 });
-  }
+  const db = openMcpDatabase();
+  if (!db) return Response.json({ error: "database_unavailable" }, { status: 503 });
   const expectedResource = new URL("/api/mcp", request.url).toString();
   const principal = await authenticateMcp(db, token, expectedResource);
   if (!principal) return unauthorized(request);

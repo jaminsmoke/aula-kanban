@@ -1,6 +1,5 @@
-import { getD1 } from "../../../../db";
-import { buildDemoStatements } from "../../../../lib/domain/demo-sql";
 import { getChatGPTUser } from "../../../../lib/server/auth";
+import { seedDemoProject } from "../../../../lib/server/demo-seed";
 import { json } from "../../../../lib/server/http";
 import { isOwner } from "../../../../lib/server/project-access";
 import { withJsonMutation } from "../../../../lib/server/route-helpers";
@@ -13,11 +12,8 @@ export const POST = withJsonMutation(async () => {
   if (!user) return json({ message: "Inicia sesión para continuar." }, 401);
   if (!(await isOwner(user))) return json({ message: "Solo el propietario puede preparar la demo." }, 403);
 
-  try {
-    const db = getD1();
-    await db.batch(buildDemoStatements().map((statement) => db.prepare(statement)));
-    return json({ message: "La demo está preparada." });
-  } catch {
-    return json({ message: "No se pudo preparar la demo. No se han aplicado cambios; revisa posibles colisiones de identificadores." }, 409);
-  }
+  const result = await seedDemoProject();
+  return result.ok
+    ? json({ message: "La demo está preparada." })
+    : json({ message: result.message }, 409);
 });
