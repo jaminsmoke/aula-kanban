@@ -1,6 +1,6 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, type SQL } from "drizzle-orm";
 import { getDb } from "../../../db";
-import { deletedStudents, deletedTeachers, projectMembers, students, taskAssignees, teachers, userIdentities } from "../../../db/schema";
+import { deletedStudents, deletedTeachers, projectMembers, students, taskAssignees, tasks, teachers, userIdentities } from "../../../db/schema";
 import { personLabel } from "../../domain/assignments";
 import type { DecoratedTask, ProjectData, TaskRef, TaskRow } from "./types";
 
@@ -22,6 +22,26 @@ export async function projectData(projectId: string): Promise<ProjectData> {
     db.select().from(userIdentities),
   ]);
   return { profiles, staff, removedProfiles, removedStaff, refs, members, identities };
+}
+
+/**
+ * Busca una tarea que siga en la revisión esperada y con la guarda vigente.
+ * @param input - Identificador, proyecto, revisión y guarda SQL de autorización.
+ * @returns La fila actual o `null` si cambió o ya no hay permiso.
+ */
+export async function taskAtRevision(input: {
+  id: string;
+  projectId: string;
+  revision: number;
+  guard: SQL;
+}): Promise<TaskRow | null> {
+  const [current] = await getDb().select().from(tasks).where(and(
+    eq(tasks.id, input.id),
+    eq(tasks.revision, input.revision),
+    eq(tasks.projectId, input.projectId),
+    input.guard,
+  ));
+  return current ?? null;
 }
 
 /**

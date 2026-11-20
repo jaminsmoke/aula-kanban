@@ -21,7 +21,11 @@ vi.mock("../../../lib/server/project-access", () => ({
   }),
 }));
 vi.mock("../../../lib/server/deleted-profiles", () => ({ purgeDeletedProfiles: async () => {} }));
-vi.mock("../../../lib/server/tasks/queries", () => ({ projectData: mocks.projectData, decorate: mocks.decorate }));
+vi.mock("../../../lib/server/tasks/queries", () => ({
+  projectData: mocks.projectData,
+  decorate: mocks.decorate,
+  taskAtRevision: async () => mocks.rows[0] ?? null,
+}));
 vi.mock("../../../lib/server/tasks/mutations", () => ({
   createTask: mocks.create,
   updateTask: mocks.update,

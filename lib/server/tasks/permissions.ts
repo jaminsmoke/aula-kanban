@@ -55,6 +55,17 @@ export function unlinkedAssigneeText(refs: TaskRef[], fallback: string): string 
 }
 
 /**
+ * Motivo por el que el rol no puede mutar tareas del proyecto.
+ * @param access - Rol y ficha del actor.
+ * @returns El estado y el mensaje del rechazo, o `null` si puede escribir.
+ */
+export function taskWriteDenial(access: TaskAccess): { status: number; message: string } | null {
+  return access.role === "guest"
+    ? { status: 403, message: "Las cuentas invitadas solo pueden consultar el proyecto." }
+    : null;
+}
+
+/**
  * Construye la guarda SQL que confirma que la cuenta sigue teniendo permiso
  * sobre el proyecto en el momento de la escritura.
  * @param role - Rol del actor en el proyecto.

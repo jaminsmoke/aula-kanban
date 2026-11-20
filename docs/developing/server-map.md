@@ -1,7 +1,7 @@
 # Mapa del servidor: `lib/server` y `app/api`
 
 > **Estado:** Fase 1 cerrada; Fase 2 en curso · **Fecha:** 2026-11-20
-> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas. Las siete rutas que resolvían el proyecto a mano usan ahora `withProjectRoute`; archivos y copias usan `withResourceProject` porque el ámbito es el del objeto guardado.
+> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas. Las siete rutas que resolvían el proyecto a mano usan ahora `withProjectRoute`; archivos y copias usan `withResourceProject` porque el ámbito es el del objeto guardado. `tasks/service.ts` absorbe revisión, permisos y decoración; `api/tasks` queda como adaptador de 46 líneas.
 > **Alcance:** inventario y clasificación provisional. La Fase 1 no movió ni renombró código.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Arquitectura:** [`arquitectura-global.md`](arquitectura-global.md)
 > **Regla de oro:** una regla de servidor tiene un único hogar; las rutas solo analizan, autorizan, delegan y responden.
@@ -117,9 +117,10 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `board-stats.ts` | 107 | `R` métricas del tablero | `api/storage/status` | 1 |
 | `space-control.ts` | 65 | `S` sala de espacio | `mcp/dominios/contexto.ts`, `ventanas.ts` | — |
 | `space-room.ts` | 135 | `P` Durable Object WebSocket | `space-control.ts` | — |
-| `tasks/mutations.ts` | 159 | `S`+`R` `tasks` | `mcp/dominios/tareas/escritura.ts`, `api/tasks` | — |
-| `tasks/permissions.ts` | 95 | `D` permisos + guard SQL | `mcp/dominios/tareas/*`, `api/tasks` | 1 |
-| `tasks/queries.ts` | 54 | `R` lectura y decoración | `mcp/dominios/tareas/*`, `api/tasks` | — |
+| `tasks/service.ts` | 144 | `S` aplicación de tareas | `api/tasks` | ruta |
+| `tasks/mutations.ts` | 158 | `S`+`R` `tasks` | `mcp/dominios/tareas/escritura.ts`, `tasks/service.ts` | — |
+| `tasks/permissions.ts` | 105 | `D` permisos + guard SQL | `mcp/dominios/tareas/*`, `tasks/service.ts`, `api/tasks` | 1 |
+| `tasks/queries.ts` | 73 | `R` lectura y decoración | `mcp/dominios/tareas/*`, `tasks/service.ts` | — |
 | `tasks/types.ts` | 48 | `D` tipos de tarea | `tasks/*`, `api/tasks` | 1 |
 
 ### 3.4 Almacenamiento, subidas y cuotas (5)
@@ -230,7 +231,7 @@ Clase actual: **fina** = guardas + un servicio; **mixta** = resuelve proyecto/er
 | `storage/purge` | 50 | mixta (admin) | `uploads/purge`, `storage` | 1 |
 | `storage/status` | 29 | mixta (admin) | `storage`, `uploads/stats`, `board-stats` | 1 |
 | `students` | 59 | fina | `people/students` + esquema y guardas en la ruta | paridad |
-| `tasks` | 76 | **gruesa** | `tasks/*` + D1 + zod + permisos | 1 |
+| `tasks` | 46 | fina | `tasks/service`; zod y respuesta en la ruta | 1 |
 | `teachers` | 66 | fina | `people/teachers` + esquema y guardas en la ruta | paridad |
 | `uploads` | 46 | fina (multipart) | `storage`, `route-helpers`, `http` | 1 |
 
@@ -326,7 +327,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts` o `bo
 | Prioridad | Hallazgo | Evidencia | Fase |
 |---|---|---|---|
 | P0 | El adaptador HTTP de personas vivía en el servicio | movido a `app/api/students` y `app/api/teachers` | 2 · **resuelto** |
-| P0 | `api/tasks` decide reglas y consulta D1 | revisiones, permisos, decoración y SQL en la ruta (76 líneas) | 2 |
+| P0 | `api/tasks` decidía reglas y consultaba D1 | movido a `tasks/service.ts`; la ruta queda en 46 líneas | 2 · **resuelto** |
 | P1 | `storage.ts` mezcla R2, D1, cuotas, MIME y diagnóstico | 346 líneas; 13 consumidores | 3 y 4 |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con 3 textos y 2 estados | `books/[id]/*`, `files/[id]`, `copies`, `uploads`, `storage/*` | 2 |
@@ -374,6 +375,6 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 
 1. **Hecho (2026-11-20):** `mutateStudent`/`mutateTeacher` salieron de los servicios; las rutas validan y autorizan, y los servicios reciben datos.
 2. **Hecho (2026-11-20):** las 7 rutas usan `withProjectRoute`; archivos y copias, `withResourceProject`.
-3. Mover a `tasks/*` la comprobación de revisión y la decoración que hoy hace `api/tasks`.
+3. **Hecho (2026-11-20):** `tasks/service.ts` orquesta revisión, permisos y decoración; `api/tasks` solo valida y responde.
 4. Unificar el mapeo de `StorageUnavailableError` y de subida en un helper HTTP con estado y mensaje únicos.
 5. Añadir pruebas de contrato a `members` y `space-apps` al tocar sus rutas.
