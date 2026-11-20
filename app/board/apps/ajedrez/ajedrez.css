@@ -22,16 +22,6 @@
   --chess-target-ring:var(--ui-action-text);
 }
 
-.ajedrez-toolbar {
-  flex:none;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:10px 14px;
-  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
-  background:var(--ui-surface-faint);
-}
-
 .ajedrez-heading {
   display:flex;
   align-items:center;
@@ -371,7 +361,6 @@
 .ajedrez-history-empty {
   margin:0;
   padding:14px 12px;
-  color:var(--ui-text-muted);
   font-size:12px;
   line-height:1.45;
 }

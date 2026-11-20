@@ -17,7 +17,7 @@ type TarjetasCardListProps = {
  */
 export function TarjetasCardList({ cards, readOnly, onEdit, onDelete }: TarjetasCardListProps) {
   if (!cards.length) {
-    return <p className="tarjetas-empty">Aún no hay tarjetas en este mazo. Añade la primera arriba.</p>;
+    return <p className="tarjetas-empty ui-empty">Aún no hay tarjetas en este mazo. Añade la primera arriba.</p>;
   }
 
   return (

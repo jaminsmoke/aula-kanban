@@ -113,7 +113,7 @@ export function TimelineEventsCard({
             </div>
           </li>
         ))}
-        {events.length === 0 ? <li className="timeline-empty">No hay eventos.</li> : null}
+        {events.length === 0 ? <li className="timeline-empty ui-empty">No hay eventos.</li> : null}
       </ul>
     </section>
   );

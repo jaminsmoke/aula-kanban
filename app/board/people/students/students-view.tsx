@@ -5,7 +5,7 @@ import { Lock, Plus, Users, Wrench } from "lucide-react";
 import type { Task } from "../../../../lib/domain/task";
 import type { Student } from "../../../../lib/domain/student";
 import { taskBelongsTo } from "../../../../lib/domain/assignments";
-import LayoutToggle from "../../layout/layout-toggle";
+import LayoutToggle from "../../shared/ui/layout-toggle";
 import BooksToolsPanel from "../tools/books-tools-panel";
 import ProjectPermissionsPanel from "../permissions/project-permissions-panel";
 import ProfileCard from "../profile-card";

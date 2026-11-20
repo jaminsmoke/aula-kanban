@@ -3,6 +3,7 @@ import "./globals.css";
 import "./board/styles/buttons.css";
 import "./board/styles/access.css";
 import "./board/styles/dialogs.css";
+import "./board/styles/primitives.css";
 import { THEME_INIT_SCRIPT } from "./theme";
 import { siteUrl, SITE_DESCRIPTION, SITE_NAME, SOCIAL_IMAGE } from "../lib/domain/site";
 

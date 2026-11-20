@@ -19,7 +19,7 @@
   "inventory": {
     "productFiles": 397,
     "localImportEdges": 988,
-    "baselineViolations": 5,
+    "baselineViolations": 0,
     "baselineCycles": 0
   },
   "layers": {
@@ -89,48 +89,7 @@
       "owner": "ARC-04"
     }
   ],
-  "baselineViolations": [
-    {
-      "from": "app/board/class/class-view.tsx",
-      "to": "app/board/layout/workspace-layout.tsx",
-      "rule": "features-shell",
-      "owner": "ARC-04",
-      "reason": "Primitiva de layout usada antes de crear la capa UI compartida.",
-      "expires": "2027-03-31"
-    },
-    {
-      "from": "app/board/people/administration/administration-view.tsx",
-      "to": "app/board/layout/workspace-layout.tsx",
-      "rule": "features-shell",
-      "owner": "ARC-04",
-      "reason": "Primitiva de layout usada antes de crear la capa UI compartida.",
-      "expires": "2027-03-31"
-    },
-    {
-      "from": "app/board/people/students/students-view.tsx",
-      "to": "app/board/layout/layout-toggle.tsx",
-      "rule": "features-shell",
-      "owner": "ARC-04",
-      "reason": "Primitiva de layout usada antes de crear la capa UI compartida.",
-      "expires": "2027-03-31"
-    },
-    {
-      "from": "app/board/people/teachers/teachers-view.tsx",
-      "to": "app/board/layout/layout-toggle.tsx",
-      "rule": "features-shell",
-      "owner": "ARC-04",
-      "reason": "Primitiva de layout usada antes de crear la capa UI compartida.",
-      "expires": "2027-03-31"
-    },
-    {
-      "from": "app/board/settings/settings-view.tsx",
-      "to": "app/board/layout/workspace-layout.tsx",
-      "rule": "features-shell",
-      "owner": "ARC-04",
-      "reason": "Primitiva de layout usada antes de crear la capa UI compartida.",
-      "expires": "2027-03-31"
-    }
-  ],
+  "baselineViolations": [],
   "baselineCycles": [],
   "largeFiles": [],
   "largeCss": [

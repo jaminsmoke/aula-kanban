@@ -51,7 +51,7 @@ export function HojaCalculoToolbar({
   onReset,
 }: HojaCalculoToolbarProps) {
   return (
-    <header className="hoja-calculo-toolbar">
+    <header className="hoja-calculo-toolbar ui-toolbar">
       <div className="hoja-calculo-heading">
         <span className="hoja-calculo-mark" aria-hidden>
           <Sheet size={18} strokeWidth={2} />

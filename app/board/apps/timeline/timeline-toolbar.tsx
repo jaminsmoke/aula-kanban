@@ -31,7 +31,7 @@ export function TimelineToolbar({
   onSave,
 }: TimelineToolbarProps) {
   return (
-    <header className="timeline-toolbar">
+    <header className="timeline-toolbar ui-toolbar">
       <div className="timeline-heading">
         <span className="timeline-mark" aria-hidden>
           <CalendarClock size={18} strokeWidth={2} />

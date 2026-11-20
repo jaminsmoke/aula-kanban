@@ -110,7 +110,7 @@ Deuda:
 | P0 | Apps monolíticas restantes | Timeline 676, Hoja 525, Office viewer 543, Office export 525, Tarjetas 415 | Cambios pequeños obligan a recorrer archivos grandes |
 | P1 | Sistema de borradores versionados muerto | `useVersionedDraft` y sus dos diálogos no tenían consumidores reales | Retirado en ARC-03 Fase 1: 1.694 líneas menos |
 | P1 | Persistencia local sin contrato | Calculadora, Blockly, Tarjetas, tema y recuperación usaban `localStorage` por separado | Resuelto en ARC-03 con un contrato versionado único |
-| P1 | CSS sin capas | 48 archivos; primitivas y estilos de app mezclados | Duplicación visual y difícil revisión responsive |
+| P1 | CSS sin capas | 48 archivos; primitivas y estilos de app mezclados | Tokens, primitivas y layout compartido en ARC-04; quedan estilos de app y revisión responsive |
 | P1 | Pruebas duplicadas | Cinco archivos de Aula repiten casi todo el setup | Coste alto al cambiar un mock |
 | P2 | Dominio grande | `document.ts` 655 líneas | Normalización, tablas y tipos acoplados |
 | P2 | Servidor sin mapa explícito | 138 archivos en `lib/server` | Difícil saber dónde vive una regla |
@@ -218,8 +218,8 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 ## 8. Estado tras ARC-01, DEV-02 y ARC-02
 
 - `npm run arch:check` y `npm run check` están disponibles; CI ejecuta `arch:check`.
-- Resultado actual: **397 archivos de producto / 988 imports / 5 violaciones base / 0 ciclos / 0 problemas nuevos**.
-- No quedan excepciones de tamaño; las cinco dependencias `features → layout` siguen asignadas a ARC-04 y tienen caducidad.
+- Resultado actual: **397 archivos de producto / 988 imports / 0 violaciones base / 0 ciclos / 0 problemas nuevos**.
+- No quedan excepciones de tamaño ni dependencias `features → layout`; el layout compartido vive en `app/board/shared/ui/`.
 - El ciclo `auth ↔ demo` se eliminó con `lib/server/auth-user.ts`.
 - La configuración global de CodArch se retiró. DEV-02 quedó cerrado con el guard de MCP por repositorio, el inventario en [`mcp-tooling-audit.md`](mcp-tooling-audit.md) y la plantilla local [`mcp-project.example.json`](mcp-project.example.json).
 - ARC-02 quedó cerrado y archivado en [`historial/roadmap-arc-02.md`](../historial/roadmap-arc-02.md): Timeline, Hoja de cálculo, Office, Tarjetas y el residual de Aula Documentos tienen shell, hooks y componentes separados.

@@ -17,7 +17,7 @@ type TarjetasToolbarProps = {
  */
 export function TarjetasToolbar({ readOnly, dirty, saving, loading, onSave }: TarjetasToolbarProps) {
   return (
-    <header className="tarjetas-toolbar">
+    <header className="tarjetas-toolbar ui-toolbar">
       <div className="tarjetas-heading">
         <span className="tarjetas-mark" aria-hidden><Layers3 size={18} strokeWidth={2} /></span>
         <span>

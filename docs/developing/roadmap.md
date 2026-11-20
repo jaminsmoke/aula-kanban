@@ -85,11 +85,11 @@ Hay **46 archivos CSS / 8.900 líneas con contenido**. `arch-baseline.json` cons
 
 ### Fase 3 — Primitivas compartidas y layout
 
-- [ ] Consolidar botones, tarjetas, diálogos, estados vacíos y barras con al menos dos consumidores reales.
-- [ ] Crear la capa `shared/ui` para primitivas de layout.
-- [ ] Migrar las cinco vistas `features` que hoy importan `layout` y retirar sus excepciones del baseline.
-- [ ] Mantener nombres de clases y compatibilidad donde otros estilos dependan de ellos.
-- [ ] Revisar foco, teclado, contraste y tamaños táctiles en las primitivas migradas.
+- [x] Consolidar botones, tarjetas, diálogos, estados vacíos y barras con al menos dos consumidores reales.
+- [x] Crear la capa `shared/ui` para primitivas de layout.
+- [x] Migrar las cinco vistas `features` que hoy importan `layout` y retirar sus excepciones del baseline.
+- [x] Mantener nombres de clases y compatibilidad donde otros estilos dependan de ellos.
+- [x] Revisar foco, teclado, contraste y tamaños táctiles en las primitivas migradas.
 - **Criterios:** primitivas con consumidores reales, cero excepciones `features → layout`, comportamiento y accesibilidad equivalentes.
 
 ### Fase 4 — Estilos de apps y presupuestos
@@ -128,4 +128,5 @@ Hay **46 archivos CSS / 8.900 líneas con contenido**. `arch-baseline.json` cons
 - `globals.css` ya contiene primitivas y tokens `ui-*`; este roadmap los consolida, no crea un sistema paralelo.
 - 2026-11-20: **Fase 1 completada.** Inventario y contrato de capas en [`css-audit.md`](css-audit.md): 46 CSS, duplicados, 38 `!important`, cinco dependencias `features → layout` y presupuestos. Sin cambios de estilos. `arch:check` sigue en **397 archivos / 988 imports / 0 problemas**.
 - 2026-11-20: **Fase 2 completada.** Añadidos tokens de foco y medidas compartidas; botones, diálogos y acceso usan `--ui-control-height`, `--ui-icon-button-size` y `--ui-space-*`. El foco visible incluye enlaces. Corregido `--ui-focus` inexistente en `personal-space.css`. Añadida prueba estática de tokens; `globals.css` queda en 445 líneas. Suite: **234 archivos / 1.597 pruebas**; `arch:check` en **397 archivos / 988 imports / 0 problemas**; `aula-documentos` **369.347 / 370.000 B gzip**.
+- 2026-11-20: **Fase 3 completada.** Añadida `primitives.css` con `.ui-toolbar` y `.ui-empty`, aplicada a varias apps; `workspace-layout` y `layout-toggle` se movieron a `shared/ui`. Las cinco dependencias `features → layout` desaparecen y `baselineViolations` queda vacío. Suite: **234 archivos / 1.597 pruebas**; `arch:check` **397 archivos / 988 imports / 0 violaciones nuevas**; `aula-documentos` **369.348 / 370.000 B gzip**.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

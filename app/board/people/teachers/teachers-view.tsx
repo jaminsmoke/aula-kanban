@@ -6,7 +6,7 @@ import { GraduationCap, Lock, Plus, Users, Wrench } from "lucide-react";
 import type { Task } from "../../../../lib/domain/task";
 import type { Student } from "../../../../lib/domain/student";
 import { taskBelongsTo } from "../../../../lib/domain/assignments";
-import LayoutToggle from "../../layout/layout-toggle";
+import LayoutToggle from "../../shared/ui/layout-toggle";
 import ProfileCard from "../profile-card";
 import ProfileDetail from "../profile-detail";
 import PeopleEmptyState from "../empty-state";

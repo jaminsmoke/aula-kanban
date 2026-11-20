@@ -201,7 +201,7 @@ export default function AjedrezApp() {
 
   return (
     <div className="ajedrez-app">
-      <header className="ajedrez-toolbar">
+      <header className="ajedrez-toolbar ui-toolbar">
         <div className="ajedrez-heading">
           <span className="ajedrez-mark" aria-hidden><Swords size={18} strokeWidth={2} /></span>
           <span>
@@ -299,7 +299,7 @@ export default function AjedrezApp() {
                 ))}
               </ol>
             ) : (
-              <p className="ajedrez-history-empty">Aún no hay jugadas.</p>
+              <p className="ajedrez-history-empty ui-empty">Aún no hay jugadas.</p>
             )}
           </section>
         </aside>

@@ -2,7 +2,7 @@
 
 import { Suspense, lazy, useEffect, useState } from "react";
 import { BookOpen, Globe, HardDrive, KeyRound, Lock, Palette, ShieldCheck, UserRound } from "lucide-react";
-import WorkspaceLayout, { type WorkspaceItem } from "../layout/workspace-layout";
+import WorkspaceLayout, { type WorkspaceItem } from "../shared/ui/workspace-layout";
 import type { Project } from "../shared/model";
 import SettingsAccount from "./settings-account";
 import SettingsAdmins from "./settings-admins";

@@ -113,7 +113,7 @@ export function TimelineEpochsCard({
             </div>
           </li>
         ))}
-        {epochs.length === 0 ? <li className="timeline-empty">No hay épocas.</li> : null}
+        {epochs.length === 0 ? <li className="timeline-empty ui-empty">No hay épocas.</li> : null}
       </ul>
     </section>
   );

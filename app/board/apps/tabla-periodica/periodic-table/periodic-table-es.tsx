@@ -293,7 +293,7 @@ export default function PeriodicTableEs() {
               </div>
             </>
           ) : (
-            <p className="pt-empty">Selecciona un elemento para ver su ficha.</p>
+            <p className="pt-empty ui-empty">Selecciona un elemento para ver su ficha.</p>
           )}
         </aside>
       </div>

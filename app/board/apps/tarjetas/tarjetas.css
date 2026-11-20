@@ -16,16 +16,6 @@
   container-name:tarjetasapp;
 }
 
-.tarjetas-toolbar {
-  flex:none;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:10px 14px;
-  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
-  background:var(--ui-surface-faint);
-}
-
 .tarjetas-heading {
   display:flex;
   align-items:center;

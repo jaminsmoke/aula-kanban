@@ -85,7 +85,7 @@
 
 .pt-detail-list dd { margin:0; color:var(--ui-text-primary); font-weight:650; text-align:right; overflow-wrap:anywhere; }
 
-.pt-empty { margin:0; color:var(--ui-text-muted); font-size:12.5px; line-height:1.5; }
+.pt-empty { margin:0; font-size:12.5px; line-height:1.5; }
 
 /* Modelo de Bohr animado. */
 .pt-bohr { display:block; width:100%; max-width:190px; margin:0 auto 10px; }

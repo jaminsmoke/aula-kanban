@@ -3,7 +3,7 @@
 import { Suspense, lazy } from "react";
 import type { ComponentProps } from "react";
 import { Backpack, Briefcase, CalendarDays, Columns3 } from "lucide-react";
-import WorkspaceLayout, { type WorkspaceItem } from "../layout/workspace-layout";
+import WorkspaceLayout, { type WorkspaceItem } from "../shared/ui/workspace-layout";
 import KanbanView from "../tasks/kanban-view";
 import type { StoreRole } from "../store/tools";
 import "./class.css";

@@ -4,7 +4,7 @@ import { Suspense, lazy, type ComponentProps } from "react";
 import { GraduationCap, LayoutGrid, Users } from "lucide-react";
 import type { AdministracionSection } from "../../shared/board-url";
 import type { StoreRole } from "../../store/tools";
-import WorkspaceLayout, { type WorkspaceItem } from "../../layout/workspace-layout";
+import WorkspaceLayout, { type WorkspaceItem } from "../../shared/ui/workspace-layout";
 import StudentsView from "../students/students-view";
 import TeachersView from "../teachers/teachers-view";
 

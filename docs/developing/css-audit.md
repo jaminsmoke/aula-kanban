@@ -1,6 +1,6 @@
 # Auditoría de CSS y sistema visual
 
-> **Estado:** Fases 1–2 de ARC-04 · **Fecha:** 2026-11-20
+> **Estado:** Fases 1–3 de ARC-04 · **Fecha:** 2026-11-20
 > **Alcance:** 46 archivos CSS de `app/`, tokens, primitivas, layout, apps, presupuestos y deuda `features → layout`.
 > **Regla:** esta fase no cambia estilos; solo inventaría, clasifica y fija el contrato de capas.
 
@@ -170,3 +170,14 @@ La Fase 4 solo debe dividir los dos CSS que superan el límite; Office (444), Ti
 - No se han migrado todavía estilos de apps ni primitivas de layout.
 - Añadida `scripts/css-token-check.test.mjs`: verifica que no se usen primitivas fuera de `globals.css`, que existan los tokens base, que no haya `--ui-*` inexistentes y que `globals.css` siga bajo 500 líneas.
 - Estado actual: **46 CSS / 8.906 líneas**; `globals.css` tiene **445** líneas con contenido.
+
+## 10. Primitivas y layout implementados en la Fase 3
+
+- Creado `app/board/styles/primitives.css` con `.ui-toolbar` y `.ui-empty`.
+- `ui-toolbar` se aplica a Tarjetas, Timeline, Hoja de cálculo y Ajedrez; las reglas comunes de estructura, borde, fondo y espaciado viven en la primitiva.
+- `ui-empty` se aplica a Timeline, Tabla periódica y Ajedrez; Tarjetas conserva su variante visual específica.
+- `workspace-layout.tsx`, `workspace-layout.css` y `layout-toggle.tsx` se movieron a `app/board/shared/ui/`.
+- Las cinco vistas de features ya importan la capa compartida; `baselineViolations` queda vacío.
+- Botones, diálogos y `edu-card` se mantienen como primitivas compartidas existentes.
+- Estado actual: **47 CSS / 8.887 líneas**; sin excepciones `features → layout`.
+- Verificación: suite **234 archivos / 1.597 pruebas**; `arch:check` **397 archivos / 988 imports / 0 violaciones**.

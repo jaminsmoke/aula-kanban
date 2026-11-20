@@ -17,14 +17,7 @@
 }
 
 .timeline-toolbar {
-  flex:none;
-  display:flex;
-  align-items:center;
-  gap:12px;
   flex-wrap:wrap;
-  padding:10px 14px;
-  border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
-  background:var(--ui-surface-faint);
 }
 
 .timeline-heading {
@@ -450,7 +443,6 @@
 
 .timeline-empty {
   justify-content:center;
-  color:var(--ui-text-muted);
   font-size:10.5px;
 }
 
