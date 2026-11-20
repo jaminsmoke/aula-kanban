@@ -2,24 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 11 entradas pendientes · siguiente candidato ARC-03
+> **Roadmap:** ARC-03 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 10 entradas pendientes · siguiente candidato ARC-04
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
-
-## 2026-11-20 — ARC-03 · Estado de cliente y persistencia
-
-- Contexto: Calculadora, Blockly, Tarjetas, tema, Aula y el sistema de borradores usan `localStorage` y recuperación por separado. `useVersionedDraft` (487 líneas), `versioned-draft-recovery`, `unsaved-changes-dialog` y `version-conflict-dialog` no tienen consumidores de producto reales.
-- Alcance:
-  1. Decidir si el sistema de borradores versionados se rescata en alguna app o se retira con sus diálogos y pruebas.
-  2. Definir un contrato común de almacenamiento local: claves, validación, cuotas, versión y migración.
-  3. Reutilizar `useAppDocument` y la recuperación donde corresponda.
-  4. Evitar duplicar autosave, conflicto y cierre sin guardar.
-  5. Añadir pruebas de cuota, datos corruptos y migración.
-- Criterios: no quedan módulos de producto sin consumidores; el almacenamiento local tiene una única puerta y cada app conserva su comportamiento.
-- Notas: empezar por retirar o justificar lo muerto antes de abstraer lo vivo.
 
 ## 2026-11-20 — ARC-04 · Sistema visual, CSS y responsive
 
