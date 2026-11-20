@@ -53,11 +53,11 @@
 
 ### Fase 2 — Checker local y línea base
 
-- [ ] Implementar `scripts/architecture-check.mjs` o el mecanismo local acordado.
-- [ ] Resolver imports relativos/estáticos y excluir `node_modules`, `dist`, `.next` y `.vinext`.
-- [ ] Detectar imports prohibidos, ciclos y archivos por encima del presupuesto.
-- [ ] Hacer que una ruta fuera del workspace falle cerrada.
-- [ ] Añadir `npm run arch:check` y una prueba del propio checker.
+- [x] Implementar `scripts/architecture-check.mjs` o el mecanismo local acordado.
+- [x] Resolver imports relativos/estáticos y excluir `node_modules`, `dist`, `.next` y `.vinext`.
+- [x] Detectar imports prohibidos, ciclos y archivos por encima del presupuesto.
+- [x] Hacer que una ruta fuera del workspace falle cerrada.
+- [x] Añadir `npm run arch:check` y una prueba del propio checker.
 - **Criterios:** el checker pasa sobre la línea base y falla con un caso artificial de import prohibido, ciclo o ruta externa.
 
 ### Fase 3 — Integración, correcciones y enforcement
@@ -89,5 +89,6 @@
 ## 6. Notas de sesión
 
 - 2026-11-20: ARC-01 sale del backlog y pasa a ser el roadmap activo. El repositorio no tiene `.codarch.yml`; la revisión inicial se contaminó por un MCP global apuntando a otro proyecto. Ese MCP se retiró y DEV-02 queda como guard de tooling.
-- 2026-11-20: **Fase 1 completada.** Inventario de producto: 356 archivos, 939 imports locales, 5 violaciones base y 1 ciclo base. Capas, reglas de dirección y presupuestos documentados en [`arquitectura-global.md`](arquitectura-global.md); excepciones y archivos grandes registrados en [`arch-baseline.json`](arch-baseline.json). Formato del checker acordado para la Fase 2.
+- 2026-11-20: **Fase 1 completada.** Inventario de producto: 356 archivos, 906 imports locales, 5 violaciones base y 1 ciclo base. Capas, reglas de dirección y presupuestos documentados en [`arquitectura-global.md`](arquitectura-global.md); excepciones y archivos grandes registrados en [`arch-baseline.json`](arch-baseline.json). Formato del checker acordado para la Fase 2.
+- 2026-11-20: **Fase 2 completada.** Añadido `scripts/architecture-check.mjs`, `npm run arch:check` y `--json`; consume el baseline, detecta imports prohibidos, ciclos y presupuestos, y falla cerrado ante una raíz externa. Prueba del checker en `scripts/architecture-check.test.mjs` con fixture de import prohibido, ciclo y CSS sobredimensionado. Resultado real: 356 archivos de producto / 906 imports / 5 violaciones base / 1 ciclo base / 0 problemas nuevos.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

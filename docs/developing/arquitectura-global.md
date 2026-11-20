@@ -155,15 +155,15 @@ Reglas:
 
 El inventario de producto (sin pruebas) queda en:
 
-- **356 archivos**, **939 imports locales**.
+- **356 archivos de producto**, **906 imports locales**.
 - Capas: apps 76 archivos / 14.328 líneas; features 76 / 6.752; shared 39 / 4.962; dominio 40 / 6.198; servidor 88 / 9.902; API 26 / 1.357; infraestructura D1 2 / 337; shell 4 / 476.
 - **5 violaciones base**: cinco vistas de features importan primitivas de `app/board/layout`.
 - **1 ciclo base**: `lib/server/auth.ts ↔ lib/server/demo.ts`.
-- **4 archivos por encima de 600 líneas**: Timeline, `document.ts`, `mermaid-block.tsx` y `copy.ts`.
+- **3 archivos por encima de 600 líneas**: Timeline, `document.ts` y `mermaid-block.tsx`.
 - **2 CSS por encima de 500**: `portada.css` y `tarjetas.css`.
 - `app/theme.ts` se clasifica como shared legado hasta moverlo a `app/board/shared/ui/`.
 
-La línea base está en [`arch-baseline.json`](arch-baseline.json). El checker de la Fase 2 deberá consumirla, aceptar solo estas excepciones y fallar ante cualquier violación nueva.
+La línea base está en [`arch-baseline.json`](arch-baseline.json). El checker local ya la consume con `npm run arch:check` (o `npm run arch:check -- --json`), acepta solo estas excepciones y falla ante cualquier violación nueva.
 
 Reglas de dirección confirmadas:
 

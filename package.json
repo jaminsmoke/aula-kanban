@@ -17,6 +17,7 @@
     "perf:office": "node scripts/office-budget.mjs",
     "perf:latency": "node scripts/perf-latency.mjs",
     "perf:images": "node scripts/image-baseline.mjs",
+    "arch:check": "node scripts/architecture-check.mjs",
     "start": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state-v20 --ip 127.0.0.1 --inspector-port 0",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",

@@ -5,6 +5,7 @@
     "app/board.tsx",
     "app/board/**",
     "app/api/**",
+    "app/**/*.css",
     "db/**",
     "lib/**",
     "app/theme.ts"
@@ -17,26 +18,56 @@
   },
   "inventory": {
     "productFiles": 356,
-    "localImportEdges": 939,
+    "localImportEdges": 906,
     "baselineViolations": 5,
     "baselineCycles": 1
   },
   "layers": {
-    "shell": ["app/board.tsx", "app/board/layout/**", "app/board/styles/**"],
-    "apps": ["app/board/apps/**"],
-    "features": ["app/board/projects/**", "app/board/people/**", "app/board/tasks/**", "app/board/class/**", "app/board/settings/**", "app/board/store/**", "app/board/docs/**"],
-    "shared": ["app/board/shared/**", "app/theme.ts"],
-    "api": ["app/api/**"],
-    "infrastructure": ["db/**"],
-    "domain": ["lib/domain/**"],
-    "server": ["lib/server/**"],
-    "lib": ["lib/**"]
+    "shell": [
+      "app/board.tsx",
+      "app/board/layout/**",
+      "app/board/styles/**"
+    ],
+    "apps": [
+      "app/board/apps/**"
+    ],
+    "features": [
+      "app/board/projects/**",
+      "app/board/people/**",
+      "app/board/tasks/**",
+      "app/board/class/**",
+      "app/board/settings/**",
+      "app/board/store/**",
+      "app/board/docs/**"
+    ],
+    "shared": [
+      "app/board/shared/**",
+      "app/theme.ts"
+    ],
+    "api": [
+      "app/api/**"
+    ],
+    "infrastructure": [
+      "db/**"
+    ],
+    "domain": [
+      "lib/domain/**"
+    ],
+    "server": [
+      "lib/server/**"
+    ],
+    "lib": [
+      "lib/**"
+    ]
   },
   "allowedEdges": [
     {
       "from": "features",
       "to": "apps",
-      "targets": ["app/board/apps/registry.tsx", "app/board/apps/types.ts"],
+      "targets": [
+        "app/board/apps/registry.tsx",
+        "app/board/apps/types.ts"
+      ],
       "reason": "Composición de catálogo y tipos de app; no permite importar implementaciones de apps."
     },
     {
@@ -102,7 +133,11 @@
   ],
   "baselineCycles": [
     {
-      "path": ["lib/server/auth.ts", "lib/server/demo.ts", "lib/server/auth.ts"],
+      "path": [
+        "lib/server/auth.ts",
+        "lib/server/demo.ts",
+        "lib/server/auth.ts"
+      ],
       "owner": "ARC-06",
       "reason": "Separar la comprobación de demo de auth antes de cerrar el mapa de servidor.",
       "expires": "2027-03-31"
@@ -111,31 +146,24 @@
   "largeFiles": [
     {
       "path": "app/board/apps/timeline/timeline-app.tsx",
-      "lines": 721,
+      "lines": 676,
       "limit": 600,
       "owner": "ARC-02",
       "reason": "Pendiente de separar shell, hooks y componentes."
     },
     {
       "path": "lib/domain/aula-documentos/document.ts",
-      "lines": 716,
+      "lines": 655,
       "limit": 600,
       "owner": "ARC-02",
       "reason": "Pendiente de separar normalización, tablas y tipos."
     },
     {
       "path": "app/board/shared/aula-documentos/mermaid-block.tsx",
-      "lines": 641,
+      "lines": 607,
       "limit": 600,
       "owner": "ARC-02",
       "reason": "Pendiente de separar render, editor y acciones."
-    },
-    {
-      "path": "lib/domain/aula-documentos/copy.ts",
-      "lines": 638,
-      "limit": 600,
-      "owner": "ARC-02",
-      "reason": "Pendiente de separar manifiesto, ZIP y validación."
     }
   ],
   "largeCss": [
