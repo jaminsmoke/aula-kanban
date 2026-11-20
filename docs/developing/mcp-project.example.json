@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "ejemplo-local": {
+      "type": "local",
+      "command": ["node", "./scripts/mcp-example.mjs"],
+      "enabled": false
+    }
+  }
+}

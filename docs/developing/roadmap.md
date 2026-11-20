@@ -59,10 +59,10 @@
 
 ### Fase 3 — Aislamiento por proyecto y documentación
 
-- [ ] Documentar el procedimiento para habilitar/deshabilitar MCP por repositorio.
-- [ ] Auditar `unreal` y `blender-mcp` y registrar su alcance.
-- [ ] Definir una plantilla de configuración local si se adopta algún MCP opcional.
-- [ ] Registrar cómo se valida una raíz y qué hacer ante una herramienta contaminada.
+- [x] Documentar el procedimiento para habilitar/deshabilitar MCP por repositorio.
+- [x] Auditar `unreal` y `blender-mcp` y registrar su alcance.
+- [x] Definir una plantilla de configuración local si se adopta algún MCP opcional.
+- [x] Registrar cómo se valida una raíz y qué hacer ante una herramienta contaminada.
 - **Criterios:** cualquier persona puede configurar una herramienta sin afectar a otros repositorios y sabe cómo comprobarlo.
 
 ### Fase 4 — Cierre
@@ -88,4 +88,5 @@
 - La revisión inicial de ARC-01 añadió el guard de configuraciones MCP del proyecto en `architecture-check`; este roadmap amplía el aislamiento y lo documenta.
 - 2026-11-20: **Fase 1 completada.** Inventariados MCP activos, fuentes globales, copias inactivas y configuración de proyecto en [`mcp-tooling-audit.md`](mcp-tooling-audit.md). `unreal` y `blender-mcp` no declaran raíz de repositorio; CodArch quedó retirado y su copia previa marcada como inactiva. Definidos el modelo de amenaza y la política permitido/prohibido.
 - 2026-11-20: **Fase 2 completada.** El checker rechaza `--root`, `root`/`cwd`, rutas absolutas o con `..` en `command`/`args`, y JSON inválido. Pruebas nuevas de configuración relativa válida, comando absoluto externo, JSON inválido y raíz externa. `npm run check` y CI ejecutan el guard. Suite: 228 archivos / 1.583 pruebas; `aula-documentos` 369.614 / 370.000 B gzip.
+- 2026-11-20: **Fase 3 completada.** Añadidos el procedimiento por repositorio, la plantilla [`mcp-project.example.json`](mcp-project.example.json) y la auditoría de alcance de `unreal` y `blender-mcp`. Documentado cómo validar la raíz, desactivar una herramienta y actuar ante una contaminación.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

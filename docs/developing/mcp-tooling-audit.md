@@ -98,3 +98,67 @@ La entrada se retiró el 2026-11-20. El catálogo activo de OpenCode ya no expon
 - El incidente CodArch está documentado como caso de regresión.
 - Las configuraciones permitidas y prohibidas están definidas.
 - Los controles existentes y los huecos de la Fase 2/3 están identificados.
+
+## 9. Procedimiento por repositorio
+
+### Configurar un MCP opcional
+
+1. Crear la configuración **dentro del repositorio**, nunca en la configuración global del cliente.
+2. Usar `opencode.json` o `.opencode/opencode.json`; el checker revisa ambos.
+3. Declarar el servidor deshabilitado por defecto (`"enabled": false`).
+4. Usar comandos y rutas relativas al workspace. No usar `--root` absoluto ni claves `root`/`cwd` externas.
+5. Ejecutar `npm run arch:check` antes de activarlo.
+6. Activar solo mientras se use y volver a ejecutar el check.
+
+Plantilla permitida: [`mcp-project.example.json`](mcp-project.example.json). El comando es ilustrativo: al adoptar un servidor real, sustituirlo por su ejecutable y mantener la ruta relativa.
+
+```json
+{
+  "mcp": {
+    "ejemplo-local": {
+      "type": "local",
+      "command": ["node", "./scripts/mcp-example.mjs"],
+      "enabled": false
+    }
+  }
+}
+```
+
+### Deshabilitar o retirar
+
+1. Poner `"enabled": false` o eliminar la entrada.
+2. Ejecutar `npm run arch:check`.
+3. Confirmar que el catálogo de herramientas ya no expone el servidor.
+4. No restaurar una copia antigua sin revisar su `--root` y su snapshot.
+
+### Si una herramienta devuelve datos de otro repositorio
+
+1. Detener la tarea y no tomar decisiones con esa salida.
+2. Desactivar el servidor en la configuración del proyecto o del cliente.
+3. Revisar la orden de comandos, `--root`, `cwd`, variables de entorno y snapshots.
+4. Retirar la copia contaminada o moverla a cuarentena.
+5. Ejecutar `npm run arch:check` y registrar el incidente.
+
+## 10. Auditoría de `unreal`
+
+- Configuración: remoto en `http://127.0.0.1:8001/mcp`.
+- No declara raíz de repositorio ni rutas de `aula-kanban`.
+- Expone herramientas del editor Unreal: escenas, actores, assets, Blueprints, materiales, animación, Niagara, logs, automatización y UI Slate.
+- Puede modificar estado del editor y assets del proyecto Unreal. No es una herramienta de análisis de este repositorio.
+- Permitido únicamente para trabajo explícito de Unreal; no se le pasan rutas de `aula-kanban`.
+- Riesgo residual: es un servicio local sin autenticación de red visible; se asume confianza en la máquina y en el proceso que escucha el puerto 8001.
+
+## 11. Auditoría de `blender-mcp`
+
+- Configuración: local con `uvx --python 3.11 mcp-for-blender`; host `localhost:9876`.
+- Recursos: viewport, colecciones, materiales y objetos de Blender.
+- No declara raíz de repositorio; no debe recibir archivos ni rutas del proyecto.
+- El proceso local hereda los permisos del usuario; puede acceder a Blender y, si se le pide, a rutas del sistema. Por eso se trata como una herramienta de ejecución local, no como un lector de código.
+- Permitido únicamente para trabajo explícito de Blender; no se usa para inspeccionar `aula-kanban`.
+
+## 12. Verificación de una configuración
+
+- `npm run arch:check` debe mostrar `0 problemas MCP`.
+- Si hay una configuración local, el checker valida JSON, `--root`, `root`, `cwd`, `command` y `args`.
+- Una ruta relativa al workspace es válida; una ruta absoluta externa o con `..` fuera del workspace es un error.
+- CI ejecuta el mismo guard, por lo que una configuración contaminada no puede entrar en `main`.
