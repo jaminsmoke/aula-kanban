@@ -2,24 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 7 entradas pendientes · siguiente candidato ADOC-16
+> **Roadmap:** ADOC-16 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 6 entradas pendientes · siguiente candidato ADOC-17
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
-
-## 2026-11-19 — ADOC-16 · Importar como flujo propio y más formatos
-
-- Contexto: ya existe un menú **Importar** con Importar documento, Abrir Office y Migrar apps antiguas, pero el diálogo interno solo ofrece Markdown y DOCX/PPTX. Falta una entrada clara para pegar, arrastrar o importar otros formatos y explicar qué se convierte y qué se pierde.
-- Alcance:
-  1. Revisar y consolidar el flujo de importación: archivo, arrastrar/soltar, pegar y migración de datos anteriores.
-  2. Evaluar HTML, texto plano, JSON de recuperación y otros formatos viables; no prometer ODT/RTF sin decidir una librería y su fidelidad.
-  3. Unificar vista previa, avisos, confirmación y estados de error.
-  4. Evitar importaciones duplicadas y conservar el origen cuando corresponda.
-  5. Documentar formatos aceptados y límites.
-- Criterios: todas las importaciones entran por una ruta comprensible, muestran vista previa y avisos antes de reemplazar y no obligan a conocer menús antiguos.
-- Notas: la importación no debe convertirse en un editor de formatos externos; el documento canónico sigue siendo el JSON de Aula.
 
 ## 2026-11-19 — ADOC-17 · Varios documentos y gestión de la suite
 
