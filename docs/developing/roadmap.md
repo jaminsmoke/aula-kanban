@@ -52,13 +52,13 @@
 
 ### Fase 1 — Formato de copia, manifiesto y validadores
 
-- [ ] Auditar las utilidades de ZIP disponibles y elegir una dependencia pequeña con licencia compatible; si no encaja, documentar la alternativa y su coste.
-- [ ] Definir `manifest.json`: versión de formato, versión de esquema, título, fechas, origen, tamaño, lista de assets, MIME y hash.
-- [ ] Definir `document.json` como documento Aula completo, sin URLs externas ni estados de autosave.
-- [ ] Empaquetar y desempaquetar la copia con nombres seguros y sin rutas relativas fuera de `assets/`.
-- [ ] Validar tamaño total, número de entradas, tamaños descomprimidos, MIME de imágenes y documento antes de importar.
-- [ ] Rechazar zip bombs, entradas duplicadas, manifiestos incompletos, versiones futuras y assets que no use el documento.
-- [ ] Añadir fixtures de copias válidas, corruptas, antiguas, con imágenes y con intentos de path traversal.
+- [x] Auditar las utilidades de ZIP disponibles y elegir una dependencia pequeña con licencia compatible; si no encaja, documentar la alternativa y su coste.
+- [x] Definir `manifest.json`: versión de formato, versión de esquema, título, fechas, origen, tamaño, lista de assets, MIME y hash.
+- [x] Definir `document.json` como documento Aula completo, sin URLs externas ni estados de autosave.
+- [x] Empaquetar y desempaquetar la copia con nombres seguros y sin rutas relativas fuera de `assets/`.
+- [x] Validar tamaño total, número de entradas, tamaños descomprimidos, MIME de imágenes y documento antes de importar.
+- [x] Rechazar zip bombs, entradas duplicadas, manifiestos incompletos, versiones futuras y assets que no use el documento.
+- [x] Añadir fixtures de copias válidas, corruptas, antiguas, con imágenes y con intentos de path traversal.
 - **Criterios de aceptación:**
   - Una copia generada se puede volver a abrir y validar en otra sesión.
   - Una copia manipulada o sobredimensionada se rechaza con un mensaje claro.
@@ -125,3 +125,4 @@
 - Auditoría inicial: `/api/uploads` ya guarda recursos privados en R2 y `/api/files/:id` comprueba el proyecto, pero no existe una finalidad de copia, una tabla de metadatos ni listado de copias.
 - Las copias locales de recuperación actuales son un mecanismo de seguridad del autosave; no son una copia portable completa con imágenes ni un catálogo importable.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
+- 2026-11-20: Fase 1 completada. Añadida `fflate` 0.8.3 (MIT) como dependencia directa y el módulo `lib/domain/aula-documentos/copy.ts` con el formato `.aula.zip`: manifiesto v1, `document.json`, assets con ruta segura, hash SHA-256, límites de tamaño/entradas y validación de MIME real. Las pruebas cubren copia válida, falta o exceso de assets, ZIP corrupto, path traversal, zip bomb, formato/versión futura, hash alterado y manifiesto incompleto. Suite completa: 215 archivos / 1.528 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos: 366.772 / 370.000 B gzip; aula-documentos-export: 329.621 / 340.000 B gzip) y `perf:office` correctos.
