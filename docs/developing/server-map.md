@@ -65,7 +65,7 @@ Estas son las definiciones que gobiernan ARC-06. La clasificación de cada archi
 
 ---
 
-## 3. Inventario de `lib/server` (99 archivos)
+## 3. Inventario de `lib/server` (101 archivos)
 
 Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servicio, `H` helper HTTP, `P` plataforma, `A` adaptador MCP, `MX` mixto. La columna **Prueba** cuenta las pruebas que importan el módulo directamente; `—` no significa necesariamente ausencia de cobertura indirecta.
 
@@ -97,7 +97,7 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 
 **Resuelto en Fase 2:** `mutateStudent`/`mutateTeacher` vivían en el servicio y construían `Request`/`Response`. El adaptador se movió a las rutas (`students` 59 líneas, `teachers` 66); los servicios bajaron a 140 y 133 líneas y ya no importan `http`, `project-http` ni `project-access` salvo los tipos.
 
-### 3.2 Proyectos, apps y documentos (15)
+### 3.2 Proyectos, apps y documentos (17)
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
@@ -114,8 +114,10 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `projects/projects-repository.ts` | 109 | `R` proyectos y recuentos | `projects/projects.ts` | — |
 | `projects/project-overview.ts` | 92 | `S` lectura agregada | `api/projects` | 1 |
 | `projects/project-rekey.ts` | 49 | `S` migración de id | `projects/project-access.ts`, `projects/project-overview.ts` | 1 |
-| `books/project-books.ts` | 81 | `S`+`R` `project_books` | `api/project-books` | 1 |
-| `books/books.ts` | 81 | `S`+`R`+`B` catálogo de libros | rutas `api/books`, visor de clase | 1 |
+| `books/project-books.ts` | 73 | `S` libros por proyecto | `api/project-books` | 1 |
+| `books/project-books-repository.ts` | 36 | `R` `project_books` | `books/project-books.ts` | — |
+| `books/books.ts` | 76 | `S` catálogo de libros | rutas `api/books`, visor de clase | 1 |
+| `books/books-repository.ts` | 25 | `B` R2 del catálogo | `books/books.ts` | — |
 
 ### 3.3 Tablero, ventanas y tareas (10)
 
@@ -279,7 +281,7 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 | `students` | `people/students-repository.ts` | `people/students-repository.ts`, `access/members-repository.ts`, `tasks/queries.ts` |
 | `teachers` | `people/teachers-repository.ts` | `people/teachers-repository.ts`, `access/members-repository.ts`, `tasks/queries.ts` |
 | `deleted_students` / `deleted_teachers` | `people/*` (baja), `access/deleted-profiles.ts` (purga) | `access/deleted-profiles.ts`, `tasks/queries.ts` |
-| `project_books` | `books/project-books.ts` | `books/project-books.ts`, `projects/project-overview.ts` |
+| `project_books` | `books/project-books-repository.ts` | `books/project-books-repository.ts`, `projects/project-overview.ts` |
 | `project_rekeys` | `projects/project-rekey.ts` | `projects/project-access.ts`, `projects/project-overview.ts` |
 | `document_copies` | `aula-documentos/document-copies.ts`; `storage.deleteProjectUploads` | `aula-documentos/document-copies.ts`, rutas de copias |
 | `uploads` | `storage.storeUpload`, `storage.deleteUpload`, `uploads/purge.ts` | `storage.ts`, `uploads/*`, `projects/projects-repository.ts` (baja) |
@@ -295,7 +297,7 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 Un único binding, `BUCKET`. Claves:
 
 - Subidas web/MCP: `${projectId}/${purpose}/${uuid}${ext}` (`storage.ts` con `uploadExtension`).
-- Libros: `storageKey`, `coverKey` y `backKey` propios (`books/books.ts`).
+- Libros: `storageKey`, `coverKey` y `backKey` propios (`books/books.ts`); lectura en `books/books-repository.ts`.
 - Lectura de subidas: `storage.readUpload`; libros: `books.readBookFile`/`readBookImage`.
 - Listado: `storage/repository.listBucketPage` (página máxima de 100).
 - Borrado: `storage.deleteUpload`, `storage.deleteProjectUploads`, `uploads/purge.ts`.
@@ -348,6 +350,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 | P1 | Propietario, invitaciones y administradores mezclaban reglas y D1 | `access/{owner,invitaciones,administradores}-repository.ts` concentran las filas | 3 · **resuelto** |
 | P1 | Alumnado y profesorado mezclaban reglas y D1 | `people/students-repository.ts` y `people/teachers-repository.ts` concentran fichas e invitaciones | 3 · **resuelto** |
 | P1 | Apps, preferencias y documentos mezclaban reglas y D1 | `apps/{apps,personal-apps,app-documents}-repository.ts` concentran las filas | 3 · **resuelto** |
+| P1 | Catálogo de libros leía R2 y `project_books` desde el servicio | `books/books-repository.ts` (R2) y `books/project-books-repository.ts` (D1) | 3 · **resuelto** |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
 | P1 | Cuatro rutas importaban D1 directamente | extraídas a servicios; `app/api` no importa D1 | 2 y 3 · **resuelto** |
@@ -379,7 +382,7 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 
 ## 10. Criterios de aceptación de Fase 1
 
-- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (99/99).
+- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (101/101).
 - [x] Cada ruta de `app/api` tiene clase provisional y servicios identificados (26/26).
 - [x] Están identificadas las reglas duplicadas entre rutas, servicios, MCP y almacenamiento.
 - [x] Está mapeado el acceso a D1 y R2, con tablas, claves y responsables.

@@ -1,14 +1,13 @@
-import { eq } from "drizzle-orm";
-import { getDb } from "../../../db";
-import { projectBooks } from "../../../db/schema";
 import { BOOKS, bookById, type BookMeta } from "../../books";
+import { listProjectBookRows, replaceProjectBookRows } from "./project-books-repository";
 
 /**
  * Libros habilitados por proyecto (STORE-04): el docente de un proyecto
  * (o un administrador) decide qué libros de `lib/books.ts` son
  * herramienta en la mochila del alumnado y el maletín docente. La
  * ausencia de fila equivale a «no habilitado». El catálogo es código
- * curado; aquí solo vive qué subconjunto toca a cada proyecto.
+ * curado; aquí solo vive qué subconjunto toca a cada proyecto. El acceso
+ * D1 vive en `project-books-repository.ts`.
  */
 
 /** Error tipado para responder con el código HTTP que le corresponde. */
@@ -46,7 +45,7 @@ export function parseProjectBooks(value: unknown): string[] {
 export async function listProjectBooks(projectId: string): Promise<(BookMeta & { enabled: boolean })[]> {
   let enabled = new Set<string>();
   try {
-    const rows = await getDb().select().from(projectBooks).where(eq(projectBooks.projectId, projectId));
+    const rows = await listProjectBookRows(projectId);
     enabled = new Set(rows.map((row) => row.bookId));
   } catch { /* sin tabla (base antigua) equivale a ninguno habilitado */ }
   return BOOKS.map((book) => ({ ...book, enabled: enabled.has(book.id) }));
@@ -60,12 +59,7 @@ export async function listProjectBooks(projectId: string): Promise<(BookMeta & {
  * @returns La lista guardada.
  */
 export async function setProjectBooks(projectId: string, bookIds: string[]): Promise<string[]> {
-  const db = getDb();
-  const now = Date.now();
-  await db.delete(projectBooks).where(eq(projectBooks.projectId, projectId));
-  if (bookIds.length) {
-    await db.insert(projectBooks).values(bookIds.map((bookId) => ({ projectId, bookId, updatedAt: now })));
-  }
+  await replaceProjectBookRows(projectId, bookIds);
   return bookIds;
 }
 
@@ -77,4 +71,3 @@ export async function setProjectBooks(projectId: string, bookIds: string[]): Pro
 export async function enabledBookIds(projectId: string): Promise<string[]> {
   return (await listProjectBooks(projectId)).filter((book) => book.enabled).map((book) => book.id);
 }
-

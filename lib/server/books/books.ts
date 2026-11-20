@@ -1,11 +1,12 @@
-import { env } from "cloudflare:workers";
 import { BOOKS, bookById, type BookMeta } from "../../books";
+import { getBookObject } from "./books-repository";
 
 /**
  * Servido de libros escolares persistidos (STORE-02). Los PDF viven en
  * R2 con la clave versionada del catálogo (`books/<id>/<versión>.pdf`);
  * la licencia y la atribución viajan con cada ficha para que puedan
- * mostrarse junto al visor.
+ * mostrarse junto al visor. La lectura del objeto vive en
+ * `books-repository.ts`.
  */
 
 /** Libro del catálogo con su disponibilidad y URL de archivo. */
@@ -52,10 +53,8 @@ export type BookFileResult =
 export async function readBookFile(id: string): Promise<BookFileResult> {
   const book = bookById(id);
   if (!book?.storageKey) return { status: "not_found" };
-  if (!env.BUCKET) return { status: "storage_unavailable" };
-  const object = await env.BUCKET.get(book.storageKey);
-  if (!object) return { status: "object_missing" };
-  return { status: "ok", book, object };
+  const result = await getBookObject(book.storageKey);
+  return result.status === "ok" ? { status: "ok", book, object: result.object } : result;
 }
 
 /** Resultado tipado de intentar leer una imagen de portada. */
@@ -73,8 +72,5 @@ export async function readBookImage(id: string, kind: BookImageKind): Promise<Bo
   const book = bookById(id);
   const storageKey = kind === "cover" ? book?.coverKey : book?.backKey;
   if (!storageKey) return { status: "not_found" };
-  if (!env.BUCKET) return { status: "storage_unavailable" };
-  const object = await env.BUCKET.get(storageKey);
-  if (!object) return { status: "object_missing" };
-  return { status: "ok", object };
+  return getBookObject(storageKey);
 }
