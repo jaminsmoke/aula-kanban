@@ -41,6 +41,7 @@
 | Validar MIME y tamaño en servidor y cliente | Confiar solo en la extensión del archivo | Evita SVG activo, archivos sobredimensionados y errores silenciosos. |
 | No borrar R2 al quitar un nodo | Borrado inmediato en cada edición | Una operación de edición no debe destruir un recurso compartido o recuperable; la limpieza se reconcilia aparte. |
 | Exportar imágenes con su texto alternativo y pie | Exportar solo el `<img>` sin contexto | Accesibilidad y fidelidad editorial en HTML, DOCX/PPTX y PDF. |
+| D1 sigue siendo la fuente viva del documento | Guardar el documento vivo solo en R2 | Autosave, conflicto, permisos y recuperación ya funcionan en D1; R2 y la copia local son archivos portables, no el estado de trabajo. |
 
 ## 4. Fases
 
@@ -102,3 +103,4 @@
 - Auditoría inicial: `/api/uploads` ya acepta PNG, JPEG, WebP y GIF de hasta 5 MB y `/api/files/:id` sirve el recurso solo a miembros del proyecto; el editor no tiene nodo de imagen ni la validación de documento lo permite todavía.
 - La entrada se limita a imágenes y recursos dentro del documento; tablas, importación ampliada, varios documentos, búsqueda, presentación avanzada y comentarios siguen en el backlog.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
+- Decisión de almacenamiento: las imágenes usan R2 con acceso privado por proyecto. Las copias completas del documento en R2 y en el equipo local, con importación desde ambos, se planifican aparte en **ADOC-21**; no sustituyen el autosave en D1 y la descarga local no se bloquea por cuota.

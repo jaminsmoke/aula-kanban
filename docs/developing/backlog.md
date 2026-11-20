@@ -3,10 +3,23 @@
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap:** ADOC-14 activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 8 entradas pendientes · ADOC-14 en el roadmap
+> **Estado:** 9 entradas pendientes · ADOC-14 en el roadmap
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 
 ---
+
+## 2026-11-20 — ADOC-21 · Copias portables del documento en R2 y en local
+
+- Contexto: el documento vivo se autoguarda en D1, pero no existe una copia portable que el usuario pueda archivar en el almacenamiento del Site o descargar a su equipo. La subida y lectura privada de archivos ya existen; falta decidir el formato, el catálogo y la importación.
+- Alcance:
+  1. Mantener D1 como fuente viva del autosave, conflictos, permisos y recuperación.
+  2. Guardar una copia en R2 con metadatos: título, fecha, autor, formato, tamaño, versión y proyecto; acceso solo para miembros.
+  3. Ofrecer siempre la descarga local del documento y de sus exportaciones, incluso con la cuota de R2 llena.
+  4. Importar una copia desde R2 o desde el equipo local, con vista previa, avisos y restauración sin sobrescribir el documento actual sin confirmación.
+  5. Definir cuota, retención, listado, borrado y reconciliación de copias huérfanas; no borrar el documento vivo al limpiar una copia.
+- Criterios: una persona puede archivar una copia, verla en la lista del proyecto, descargarla o importarla; si R2 no está disponible o la cuota está llena, la edición y la descarga local siguen funcionando con un mensaje claro.
+- Notas: no usar R2 como almacén del autosave ni incrustar el documento completo en `app_documents`. Las imágenes de ADOC-14 usan el mismo almacenamiento, pero esta entrada cubre copias completas e importación desde archivo.
+
 
 ## 2026-11-19 — ADOC-15 · Tablas completas en el editor
 
