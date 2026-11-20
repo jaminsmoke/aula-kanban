@@ -1,7 +1,7 @@
 # Mapa del servidor: `lib/server` y `app/api`
 
 > **Estado:** Fase 1 cerrada; Fase 2 en curso · **Fecha:** 2026-11-20
-> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas.
+> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas. Las siete rutas que resolvían el proyecto a mano usan ahora `withProjectRoute`; archivos y copias usan `withResourceProject` porque el ámbito es el del objeto guardado.
 > **Alcance:** inventario y clasificación provisional. La Fase 1 no movió ni renombró código.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Arquitectura:** [`arquitectura-global.md`](arquitectura-global.md)
 > **Regla de oro:** una regla de servidor tiene un único hogar; las rutas solo analizan, autorizan, delegan y responden.
@@ -194,7 +194,7 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
 | `http.ts` | 30 | `H` `json`, same-origin, JSON | 31 archivos | 2 |
-| `route-helpers.ts` | 33 | `H` composición de rutas | 17 rutas | 1 |
+| `route-helpers.ts` | 53 | `H` composición de rutas | 21 rutas | 1 |
 | `bounded-json.ts` | 26 | `H` cuerpo acotado | `api/app-documents` | — |
 | `demo.ts` | 27 | `P` cookie y cuenta demo | `auth.ts` | 1 |
 | `demo-availability.ts` | 16 | `S` disponibilidad demo | `app/page.tsx` | 1 |
@@ -210,14 +210,14 @@ Clase actual: **fina** = guardas + un servicio; **mixta** = resuelve proyecto/er
 | `admin/demo` | 24 | mixta | `getD1`, `buildDemoStatements`, `isOwner` | 1 |
 | `administrators` | 56 | fina (global) | `administradores`, `auth`, `project-http` | 2 |
 | `app-documents` | 86 | fina | `app-documents`, `bounded-json` | 1 |
-| `aula-documentos/copies` | 124 | mixta | `document-copies`, `storage`, dominio de copias | 1 |
-| `aula-documentos/copies/[id]` | 79 | mixta | `document-copies`, `storage` | 1 |
+| `aula-documentos/copies` | 123 | fina (multipart) | `document-copies`, `storage`, dominio de copias | 1 |
+| `aula-documentos/copies/[id]` | 68 | fina (recurso) | `document-copies`, `storage` | 1 |
 | `aula-documentos/migration` | 69 | fina | `aula-documentos-migration` | 1 |
 | `boards` | 54 | fina | `boards` | 1 |
 | `books` | 21 | fina | `books` | 1 |
-| `books/[id]/file` | 35 | mixta (binario) | `books`, `auth`, `project-access` | 1 |
-| `books/[id]/image` | 36 | mixta (binario) | `books`, `auth`, `project-access` | 1 |
-| `files/[id]` | 35 | mixta (binario) | `storage`, `auth`, `project-access` | 1 |
+| `books/[id]/file` | 33 | fina (binario) | `books`, `auth`, `route-helpers` | 1 |
+| `books/[id]/image` | 34 | fina (binario) | `books`, `auth`, `route-helpers` | 1 |
+| `files/[id]` | 31 | fina (binario, recurso) | `storage`, `auth`, `route-helpers` | 1 |
 | `invitations` | 29 | fina | `invitaciones` | 1 |
 | `mcp` | 159 | protocolo | SDK MCP, `mcp/auth`, `registro`, `rate-limit` | 3 |
 | `mcp/tokens` | 79 | mixta | `getD1`, `mcp/tokens`, `http` | 2 |
@@ -225,27 +225,22 @@ Clase actual: **fina** = guardas + un servicio; **mixta** = resuelve proyecto/er
 | `personal-apps` | 56 | fina | `personal-apps` | 1 |
 | `project-books` | 40 | fina | `capabilities`, `project-books` | 1 |
 | `projects` | 39 | fina | `projects`, `project-overview` | **—** |
-| `space-apps` | 42 | mixta | `apps`, `capabilities`, `project-access` | **—** |
+| `space-apps` | 41 | fina | `apps`, `capabilities`, `route-helpers` | **—** |
 | `storage/inventory` | 48 | mixta (admin) | `uploads/inventory`, `storage` | 1 |
 | `storage/purge` | 50 | mixta (admin) | `uploads/purge`, `storage` | 1 |
 | `storage/status` | 29 | mixta (admin) | `storage`, `uploads/stats`, `board-stats` | 1 |
 | `students` | 59 | fina | `people/students` + esquema y guardas en la ruta | paridad |
 | `tasks` | 76 | **gruesa** | `tasks/*` + D1 + zod + permisos | 1 |
 | `teachers` | 66 | fina | `people/teachers` + esquema y guardas en la ruta | paridad |
-| `uploads` | 42 | mixta | `storage`, `project-access`, `http` | 1 |
+| `uploads` | 46 | fina (multipart) | `storage`, `route-helpers`, `http` | 1 |
 
 Cobertura de rutas: **21 de 26** tienen `route.test.ts` propio. Sin prueba propia: `members`, `projects`, `space-apps`, `students` y `teachers`; las dos últimas están cubiertas por las pruebas de paridad de personas. `members` y `space-apps` no tienen ninguna cobertura directa.
 
-### Rutas que resuelven proyecto a mano
+### Resolución de proyecto
 
-`aula-documentos/copies`, `aula-documentos/copies/[id]`, `books/[id]/file`, `books/[id]/image`, `files/[id]`, `uploads` y `space-apps` repiten:
+Ninguna ruta de `app/api` importa ya `resolveProject`. Las que tienen el proyecto en la URL usan `withProjectRoute`. Las descargas de archivo y de copia no llevan `?project`, así que su ámbito de autorización es el del recurso guardado: usan `withResourceProject(projectId, handler)`, que reutiliza la misma guarda con una petición interna.
 
-```ts
-const resolved = await resolveProject(request);
-if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
-```
-
-`withProjectRoute` ya existe y hace exactamente eso. Se mantiene igual en esta fase; se corrige en Fase 2.
+Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y la comprobación de capacidad antes de resolver el proyecto para no alterar el orden de sus 401/403/400.
 
 ---
 
@@ -333,7 +328,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts` o `bo
 | P0 | El adaptador HTTP de personas vivía en el servicio | movido a `app/api/students` y `app/api/teachers` | 2 · **resuelto** |
 | P0 | `api/tasks` decide reglas y consulta D1 | revisiones, permisos, decoración y SQL en la ruta (76 líneas) | 2 |
 | P1 | `storage.ts` mezcla R2, D1, cuotas, MIME y diagnóstico | 346 líneas; 13 consumidores | 3 y 4 |
-| P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | `withProjectRoute` ya existe | 2 |
+| P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con 3 textos y 2 estados | `books/[id]/*`, `files/[id]`, `copies`, `uploads`, `storage/*` | 2 |
 | P1 | Cuatro rutas importan D1 directamente | `admin/demo`, `mcp`, `mcp/tokens`, `tasks` | 2 y 3 |
 | P2 | 5 MB definido dos veces | `storage.ts` y `domain/aula-documentos/image.ts` | 4 |
@@ -378,7 +373,7 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 ## 11. Orden propuesto para Fase 2
 
 1. **Hecho (2026-11-20):** `mutateStudent`/`mutateTeacher` salieron de los servicios; las rutas validan y autorizan, y los servicios reciben datos.
-2. Sustituir la resolución manual de proyecto por `withProjectRoute` en las 7 rutas listadas.
+2. **Hecho (2026-11-20):** las 7 rutas usan `withProjectRoute`; archivos y copias, `withResourceProject`.
 3. Mover a `tasks/*` la comprobación de revisión y la decoración que hoy hace `api/tasks`.
 4. Unificar el mapeo de `StorageUnavailableError` y de subida en un helper HTTP con estado y mensaje únicos.
 5. Añadir pruebas de contrato a `members` y `space-apps` al tocar sus rutas.

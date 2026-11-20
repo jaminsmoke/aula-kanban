@@ -1,8 +1,6 @@
-import { getChatGPTUser } from "../../../../../lib/server/auth";
-import { projectFailureResponse } from "../../../../../lib/server/project-http";
-import { resolveProject } from "../../../../../lib/server/project-access";
 import { readBookImage, type BookImageKind } from "../../../../../lib/server/books";
 import { json } from "../../../../../lib/server/http";
+import { withProjectRoute } from "../../../../../lib/server/route-helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -11,15 +9,16 @@ export const dynamic = "force-dynamic";
  * los miembros de su proyecto. Las claves son versionadas e inmutables,
  * así que la respuesta se puede cachear un año.
  * @param request - Petición con el proyecto y el tipo de imagen en la query.
+ * @param _project - Proyecto y acceso ya resueltos.
  * @param context - Parámetros de la ruta con el identificador del libro.
  * @returns La imagen o el error correspondiente.
  */
-export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+export const GET = withProjectRoute<{ params: Promise<{ id: string }> }>(async (
+  request,
+  _project,
+  context,
+) => {
   const { id } = await context.params;
-  const user = await getChatGPTUser();
-  if (!user) return projectFailureResponse("unauthenticated");
-  const resolved = await resolveProject(request);
-  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
   const kind = new URL(request.url).searchParams.get("kind");
   if (kind !== "cover" && kind !== "back") return json({ message: "Tipo de imagen no válido." }, 400);
   const found = await readBookImage(id, kind as BookImageKind);
@@ -32,4 +31,4 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
       "Cache-Control": "private, max-age=31536000, immutable",
     },
   });
-}
+});

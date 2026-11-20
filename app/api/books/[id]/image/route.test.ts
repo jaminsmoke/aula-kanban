@@ -10,9 +10,12 @@ vi.mock("../../../../../lib/server/auth", () => ({
   getChatGPTUser: async () => mocks.user,
 }));
 vi.mock("../../../../../lib/server/project-access", () => ({
-  resolveProject: async () => mocks.status === "ok"
-    ? { status: "ok", project: { id: "p1" } }
-    : { status: mocks.status },
+  resolveProject: async () => {
+    if (!mocks.user) return { status: "unauthenticated" };
+    return mocks.status === "ok"
+      ? { status: "ok", project: { id: "p1" } }
+      : { status: mocks.status };
+  },
 }));
 vi.mock("../../../../../lib/server/project-http", () => ({
   projectFailureResponse: (status: string) => new Response(JSON.stringify({ message: status }), {

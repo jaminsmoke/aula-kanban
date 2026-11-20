@@ -1,5 +1,4 @@
-import { projectFailureResponse } from "../../../../lib/server/project-http";
-import { resolveProject } from "../../../../lib/server/project-access";
+import { inspectAulaDocumentCopy, AULA_COPY_MAX_ZIP_BYTES } from "../../../../lib/domain/aula-documentos/copy";
 import { createDocumentCopy, listDocumentCopies, type DocumentCopyRow } from "../../../../lib/server/document-copies";
 import { isSameOrigin, json } from "../../../../lib/server/http";
 import { withProjectRoute } from "../../../../lib/server/route-helpers";
@@ -11,7 +10,6 @@ import {
   storeUpload,
   validateUpload,
 } from "../../../../lib/server/storage";
-import { inspectAulaDocumentCopy, AULA_COPY_MAX_ZIP_BYTES } from "../../../../lib/domain/aula-documentos/copy";
 
 export const dynamic = "force-dynamic";
 
@@ -47,16 +45,8 @@ export const GET = withProjectRoute(async (_request, project) => {
   }
 });
 
-/**
- * Guarda una copia portable ya validada en R2.
- * @param request - Petición multipart con `file` ZIP.
- * @returns La copia creada o el error correspondiente.
- */
-export async function POST(request: Request) {
-  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
-  const resolved = await resolveProject(request);
-  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
-  const project = resolved.project;
+/** Guarda una copia portable ya validada en R2, con el proyecto ya resuelto. */
+const saveCopy = withProjectRoute(async (request, project) => {
   const user = project.access.user;
   if (project.access.role === "guest") {
     return json({ message: "Las cuentas invitadas solo pueden consultar el proyecto." }, 403);
@@ -120,4 +110,14 @@ export async function POST(request: Request) {
     }
     return json({ message: "No se pudo guardar la copia." }, 502);
   }
+});
+
+/**
+ * Guarda una copia portable ya validada en R2.
+ * @param request - Petición multipart con `file` ZIP.
+ * @returns La copia creada o el error correspondiente.
+ */
+export async function POST(request: Request) {
+  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
+  return saveCopy(request);
 }
