@@ -151,7 +151,34 @@ Reglas:
 6. Los archivos nuevos respetan presupuestos: shell <450, componentes/hooks <600, CSS <500, pruebas <600.
 7. Las apps no comparten estado por módulos globales; comparten contratos.
 
-## 5. Programa propuesto
+## 5. Inventario y línea base
+
+El inventario de producto (sin pruebas) queda en:
+
+- **356 archivos**, **939 imports locales**.
+- Capas: apps 76 archivos / 14.328 líneas; features 76 / 6.752; shared 39 / 4.962; dominio 40 / 6.198; servidor 88 / 9.902; API 26 / 1.357; infraestructura D1 2 / 337; shell 4 / 476.
+- **5 violaciones base**: cinco vistas de features importan primitivas de `app/board/layout`.
+- **1 ciclo base**: `lib/server/auth.ts ↔ lib/server/demo.ts`.
+- **4 archivos por encima de 600 líneas**: Timeline, `document.ts`, `mermaid-block.tsx` y `copy.ts`.
+- **2 CSS por encima de 500**: `portada.css` y `tarjetas.css`.
+- `app/theme.ts` se clasifica como shared legado hasta moverlo a `app/board/shared/ui/`.
+
+La línea base está en [`arch-baseline.json`](arch-baseline.json). El checker de la Fase 2 deberá consumirla, aceptar solo estas excepciones y fallar ante cualquier violación nueva.
+
+Reglas de dirección confirmadas:
+
+| Origen | Puede importar | No puede importar |
+|---|---|---|
+| `shell` | apps, features, shared, lib, dominio | — |
+| `features` | shared, lib, dominio; solo `apps/registry.tsx` y `apps/types.ts` de apps | implementaciones de apps, shell |
+| `apps` | shared, lib, dominio | features, shell |
+| `shared` | lib, dominio | apps, features, shell, API |
+| `api` | lib, dominio, server, infraestructura | apps, features, shell, UI compartida |
+| `server` | dominio, lib, infraestructura | apps, features, shell, API |
+| `infraestructura` | lib, dominio | apps, features, shell, API |
+| `domain` | lib puro | React, app, API, server, features, shell |
+
+## 6. Programa propuesto
 
 | ID | Bloque | Resultado |
 |---|---|---|
@@ -164,7 +191,7 @@ Reglas:
 
 Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-06**. ARC-01 desbloquea todo; ARC-03 elimina ruido y deuda antes de trocear apps.
 
-## 6. Criterios de salida del programa
+## 7. Criterios de salida del programa
 
 - La arquitectura local se verifica con un script o configuración dentro del repo y falla ante imports prohibidos y ciclos; ninguna herramienta MCP apunta a una raíz externa.
 - Cada app tiene un shell reconocible y ningún archivo de producto supera los límites acordados.

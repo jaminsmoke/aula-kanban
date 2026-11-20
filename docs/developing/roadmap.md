@@ -43,11 +43,12 @@
 
 ### Fase 1 — Mapa definitivo y contratos
 
-- [ ] Inventariar imports reales entre shell, apps, shared, dominio, servidor y API.
-- [ ] Clasificar cada archivo y documentar los casos dudosos.
-- [ ] Definir reglas de dirección, ciclos y presupuestos con severidad.
-- [ ] Crear una línea base de excepciones existentes.
-- [ ] Acordar el formato del checker y su salida.
+- [x] Inventariar imports reales entre shell, apps, shared, dominio, servidor y API.
+- [x] Clasificar cada archivo y documentar los casos dudosos.
+- [x] Definir reglas de dirección, ciclos y presupuestos con severidad.
+- [x] Crear una línea base de excepciones existentes.
+- [x] Acordar el formato del checker y su salida.
+- **Formato acordado:** salida legible por línea (`ERROR regla: origen -> destino`), resumen `N archivos / N imports / N violaciones / N ciclos`, código de salida 1 si hay violaciones no incluidas en [`arch-baseline.json`](arch-baseline.json), y modo `--json` para CI.
 - **Criterios:** existe un contrato legible y una lista inicial de violaciones separada de las excepciones aceptadas.
 
 ### Fase 2 — Checker local y línea base
@@ -88,4 +89,5 @@
 ## 6. Notas de sesión
 
 - 2026-11-20: ARC-01 sale del backlog y pasa a ser el roadmap activo. El repositorio no tiene `.codarch.yml`; la revisión inicial se contaminó por un MCP global apuntando a otro proyecto. Ese MCP se retiró y DEV-02 queda como guard de tooling.
+- 2026-11-20: **Fase 1 completada.** Inventario de producto: 356 archivos, 939 imports locales, 5 violaciones base y 1 ciclo base. Capas, reglas de dirección y presupuestos documentados en [`arquitectura-global.md`](arquitectura-global.md); excepciones y archivos grandes registrados en [`arch-baseline.json`](arch-baseline.json). Formato del checker acordado para la Fase 2.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
