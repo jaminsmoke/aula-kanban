@@ -65,7 +65,7 @@ Estas son las definiciones que gobiernan ARC-06. La clasificación de cada archi
 
 ---
 
-## 3. Inventario de `lib/server` (103 archivos)
+## 3. Inventario de `lib/server` (104 archivos)
 
 Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servicio, `H` helper HTTP, `P` plataforma, `A` adaptador MCP, `MX` mixto. La columna **Prueba** cuenta las pruebas que importan el módulo directamente; `—` no significa necesariamente ausencia de cobertura indirecta.
 
@@ -119,7 +119,7 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `books/books.ts` | 76 | `S` catálogo de libros | rutas `api/books`, visor de clase | 1 |
 | `books/books-repository.ts` | 25 | `B` R2 del catálogo | `books/books.ts` | — |
 
-### 3.3 Tablero, ventanas y tareas (12)
+### 3.3 Tablero, ventanas y tareas (13)
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
@@ -132,7 +132,8 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `space/space-control.ts` | 65 | `S` sala de espacio | `mcp/dominios/contexto.ts`, `ventanas.ts` | — |
 | `space/space-room.ts` | 135 | `P` Durable Object WebSocket | `space/space-control.ts` | — |
 | `tasks/service.ts` | 144 | `S` aplicación de tareas | `api/tasks` | ruta |
-| `tasks/mutations.ts` | 158 | `S`+`R` `tasks` | `mcp/dominios/tareas/escritura.ts`, `tasks/service.ts` | — |
+| `tasks/mutations.ts` | 186 | `S` mutaciones de tareas | `mcp/dominios/tareas/escritura.ts`, `tasks/service.ts` | — |
+| `tasks/mutations-repository.ts` | 148 | `R` `tasks`, `task_assignees` y `boards` | `tasks/mutations.ts` | — |
 | `tasks/permissions.ts` | 105 | `D` permisos + guard SQL | `mcp/dominios/tareas/*`, `tasks/service.ts`, `api/tasks` | 1 |
 | `tasks/queries.ts` | 73 | `R` lectura y decoración | `mcp/dominios/tareas/*`, `tasks/service.ts` | — |
 | `tasks/types.ts` | 48 | `D` tipos de tarea | `tasks/*`, `api/tasks` | 1 |
@@ -278,8 +279,8 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 | `app_documents` | `apps/app-documents-repository.ts` | `aula-documentos/aula-documentos-migration.ts`, MCP de apps, `uploads/usage.ts` |
 | `app_preferences` | `apps/personal-apps.ts` | `apps/personal-apps.ts` |
 | `boards` | `board/boards-repository.ts`; snapshot en vivo en `board/board-room.ts` | `board/boards-repository.ts`, `uploads/usage.ts` |
-| `tasks` | `tasks/mutations.ts`; `access/deleted-profiles.ts` (crédito y purga) | `tasks/queries.ts`, `board/boards.ts`, `projects/projects.ts`, `uploads/usage.ts` |
-| `task_assignees` | `tasks/mutations.ts` | `tasks/queries.ts`, `board/boards.ts`, `access/deleted-profiles.ts` |
+| `tasks` | `tasks/mutations-repository.ts`; `access/deleted-profiles.ts` (crédito y purga) | `tasks/queries.ts`, `board/boards-repository.ts`, `projects/projects-repository.ts`, `uploads/usage.ts` |
+| `task_assignees` | `tasks/mutations-repository.ts` | `tasks/queries.ts`, `board/boards-repository.ts`, `access/deleted-profiles.ts` |
 | `students` | `people/students-repository.ts` | `people/students-repository.ts`, `access/members-repository.ts`, `tasks/queries.ts` |
 | `teachers` | `people/teachers-repository.ts` | `people/teachers-repository.ts`, `access/members-repository.ts`, `tasks/queries.ts` |
 | `deleted_students` / `deleted_teachers` | `people/*` (baja), `access/deleted-profiles.ts` (purga) | `access/deleted-profiles.ts`, `tasks/queries.ts` |
@@ -354,6 +355,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 | P1 | Apps, preferencias y documentos mezclaban reglas y D1 | `apps/{apps,personal-apps,app-documents}-repository.ts` concentran las filas | 3 · **resuelto** |
 | P1 | Catálogo de libros leía R2 y `project_books` desde el servicio | `books/books-repository.ts` (R2) y `books/project-books-repository.ts` (D1) | 3 · **resuelto** |
 | P1 | Pizarras leían `boards` y `task_assignees` desde el servicio | `board/boards-repository.ts` + contrato neutral en `board/board-types.ts` | 3 · **resuelto** |
+| P1 | Mutaciones de tareas mezclaban permisos, SQL y lotes | `tasks/mutations-repository.ts` concentra las sentencias; `mutations.ts` conserva las reglas | 3 · **resuelto** |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
 | P1 | Cuatro rutas importaban D1 directamente | extraídas a servicios; `app/api` no importa D1 | 2 y 3 · **resuelto** |
@@ -385,7 +387,7 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 
 ## 10. Criterios de aceptación de Fase 1
 
-- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (103/103).
+- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (104/104).
 - [x] Cada ruta de `app/api` tiene clase provisional y servicios identificados (26/26).
 - [x] Están identificadas las reglas duplicadas entre rutas, servicios, MCP y almacenamiento.
 - [x] Está mapeado el acceso a D1 y R2, con tablas, claves y responsables.
