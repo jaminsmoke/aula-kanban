@@ -162,6 +162,18 @@ describe("Líneas de tiempo", () => {
     expect(screen.queryByText("Años 2000")).toBeNull();
   });
 
+  it("edita una época existente", async () => {
+    render(<TimelineApp {...props} />);
+    await waitFor(() => expect(timelineMock.Timeline).toHaveBeenCalled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Editar Carrera espacial" }));
+    fireEvent.change(screen.getByLabelText("Etiqueta de la época"), { target: { value: "Carrera espacial (editada)" } });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar época" }));
+
+    expect(screen.getByText("Carrera espacial (editada)")).toBeTruthy();
+    expect(screen.getByRole("status").textContent).toContain("Época actualizada");
+  });
+
   it("aplica la plantilla de proyecto", async () => {
     render(<TimelineApp {...props} />);
     await waitFor(() => expect(timelineMock.Timeline).toHaveBeenCalled());

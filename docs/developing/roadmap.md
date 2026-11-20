@@ -70,12 +70,12 @@ Medición del 2026-11-20, antes de empezar:
 
 ### Fase 1 — Timeline
 
-- [ ] Extraer el shell de `timeline-app.tsx` y dejar la composición de ventana en un archivo pequeño.
-- [ ] Mover la carga/guardado, la selección, los formularios y las acciones de eventos/épocas a hooks con responsabilidades acotadas.
-- [ ] Separar la barra de herramientas, el panel de edición, los formularios y el host del lienzo en componentes de vista.
-- [ ] Mantener `timeline-model.ts` como contrato del documento y conservar plantillas, zoom, grupos y lectura invitada.
-- [ ] Cubrir crear, editar y borrar eventos/épocas, cambiar plantilla, guardar/cargar y permisos de invitado.
-- [ ] Retirar Timeline de `largeFiles` en `arch-baseline.json`.
+- [x] Extraer el shell de `timeline-app.tsx` y dejar la composición de ventana en un archivo pequeño.
+- [x] Mover la carga/guardado, la selección, los formularios y las acciones de eventos/épocas a hooks con responsabilidades acotadas.
+- [x] Separar la barra de herramientas, el panel de edición, los formularios y el host del lienzo en componentes de vista.
+- [x] Mantener `timeline-model.ts` como contrato del documento y conservar plantillas, zoom, grupos y lectura invitada.
+- [x] Cubrir crear, editar y borrar eventos/épocas, cambiar plantilla, guardar/cargar y permisos de invitado.
+- [x] Retirar Timeline de `largeFiles` en `arch-baseline.json`.
 - **Criterios:** shell <450 líneas; archivos TS/TSX de producto <600; sin cambios de URL, permisos, claves de persistencia ni textos funcionales; tests, `arch:check` y presupuestos pasan.
 
 ### Fase 2 — Hoja de cálculo
@@ -135,4 +135,5 @@ Medición del 2026-11-20, antes de empezar:
 - 2026-11-20: ARC-02 sale del backlog y pasa a ser el roadmap activo. El backlog queda con **11 entradas**; siguiente candidato **ARC-03**.
 - La medición de partida se tomó de los archivos actuales; algunas cifras del backlog habían quedado desactualizadas.
 - `arch:check` sigue siendo la puerta de arquitectura: 357 archivos de producto, 907 imports y 0 problemas nuevos al abrir este roadmap.
+- 2026-11-20: **Fase 1 completada.** Timeline pasa de un `timeline-app.tsx` de 720 líneas a un shell de 100 líneas, hooks de editor/lienzo y tarjetas de vista separadas. Se retiró su excepción de `largeFiles`; `arch:check` queda en **364 archivos / 923 imports / 0 problemas**. Suite: **228 archivos / 1.584 pruebas**; build, `perf:budget` y `perf:office` correctos.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

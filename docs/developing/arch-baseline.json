@@ -17,8 +17,8 @@
     "test": 600
   },
   "inventory": {
-    "productFiles": 357,
-    "localImportEdges": 907,
+    "productFiles": 364,
+    "localImportEdges": 923,
     "baselineViolations": 5,
     "baselineCycles": 0
   },
@@ -133,13 +133,6 @@
   ],
   "baselineCycles": [],
   "largeFiles": [
-    {
-      "path": "app/board/apps/timeline/timeline-app.tsx",
-      "lines": 676,
-      "limit": 600,
-      "owner": "ARC-02",
-      "reason": "Pendiente de separar shell, hooks y componentes."
-    },
     {
       "path": "lib/domain/aula-documentos/document.ts",
       "lines": 655,
