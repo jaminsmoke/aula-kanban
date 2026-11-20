@@ -1,28 +1,16 @@
 import { env } from "cloudflare:workers";
 import { and, asc, eq } from "drizzle-orm";
-import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, teachers } from "../../../db/schema";
-import { isJsonRequest, isSameOrigin, json } from "../http";
 import { updateProfile } from "../profile-update";
-import { projectFailureResponse } from "../project-http";
-import { resolveProject, type Access, type ProjectWithAccess } from "../project-access";
-import { accountEmail, maySeeTeacherEmail, teacherReference, type BajaResult, type FichaResult } from "./campos";
+import type { Access, ProjectWithAccess } from "../project-access";
+import { maySeeTeacherEmail, type BajaResult, type FichaResult } from "./campos";
 
 /**
  * Fichas de profesorado: la lista que pinta la web y las altas, ediciones y
  * bajas (histórico de 30 días) de `/api/teachers`. La lógica vive aquí para
  * que la ruta HTTP y el catálogo MCP (MCP-06) compartan permisos y mensajes.
  */
-
-/** Campos editables de una ficha de profesor; el nombre es obligatorio. */
-const fields = z.object({
-  name: z.string().trim().min(1).max(80),
-  displayName: z.string().trim().max(80).default(""),
-  role: z.string().trim().max(500),
-  activities: z.string().trim().max(2000),
-  aiHelp: z.string().trim().max(2000),
-});
 
 /** Valores de una ficha que llegan desde la web o desde el MCP. */
 export type TeacherInput = { name: string; displayName: string; role: string; activities: string; aiHelp: string };
@@ -143,41 +131,4 @@ export async function deleteTeacher(project: ProjectWithAccess, id: string, revi
   } catch {
     return { ok: false, status: 409, message: "No se pudo eliminar la ficha. Inténtalo de nuevo." };
   }
-}
-
-/**
- * Crea, edita o elimina (histórico de 30 días) una ficha de profesor.
- * @param request - Petición POST, PATCH o DELETE con los datos de la ficha.
- * @returns Respuesta JSON con la ficha resultante o el error.
- */
-export async function mutateTeacher(request: Request): Promise<Response> {
-  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
-  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
-  const resolved = await resolveProject(request);
-  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
-  const project = resolved.project;
-  if (project.access.role === "student" || project.access.role === "guest") return json({ message: "No tienes permiso para gestionar fichas de profesores." }, 403);
-  const body = await request.json().catch(() => null);
-  if (request.method === "POST") {
-    if (project.access.role === "teacher") return json({ message: "Solo un administrador puede añadir profesores." }, 403);
-    const parsed = fields.extend({ id: z.string().uuid(), accountEmail: accountEmail.optional().default("") }).safeParse(body);
-    if (!parsed.success) return json({ message: "Revisa los campos de la ficha." }, 400);
-    const { id, accountEmail: email, ...values } = parsed.data;
-    const result = await createTeacher(project, { ...values, id, accountEmail: email });
-    if (!result.ok) return json({ message: result.message }, result.status);
-    return json(result.ficha, 201);
-  }
-  const parsed = (request.method === "DELETE" ? teacherReference : fields.merge(teacherReference).extend({ accountEmail: accountEmail.optional() })).safeParse(body);
-  if (!parsed.success) return json({ message: "Revisa los datos de la ficha." }, 400);
-  const { id, revision } = parsed.data;
-  if (project.access.role === "teacher" && project.access.teacherId !== id) return json({ message: "Solo puedes gestionar tu propia ficha de profesor." }, 403);
-  if (request.method === "DELETE") {
-    const result = await deleteTeacher(project, id, revision);
-    return result.ok ? json({ id }) : json({ message: result.message }, result.status);
-  }
-  const changes = parsed.data as unknown as z.infer<typeof fields> & { accountEmail?: string };
-  const { accountEmail: email, name, displayName, role, activities, aiHelp } = changes;
-  const result = await updateTeacher(project, id, revision, { name, displayName, role, activities, aiHelp }, email);
-  if (!result.ok) return json({ message: result.message }, result.status);
-  return json(result.ficha);
 }

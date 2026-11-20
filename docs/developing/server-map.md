@@ -1,7 +1,8 @@
 # Mapa del servidor: `lib/server` y `app/api`
 
-> **Estado:** Fase 1 de ARC-06 cerrada · **Fecha:** 2026-11-20
-> **Alcance:** inventario y clasificación provisional. **No se ha movido ni renombrado código.**
+> **Estado:** Fase 1 cerrada; Fase 2 en curso · **Fecha:** 2026-11-20
+> **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas.
+> **Alcance:** inventario y clasificación provisional. La Fase 1 no movió ni renombró código.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Arquitectura:** [`arquitectura-global.md`](arquitectura-global.md)
 > **Regla de oro:** una regla de servidor tiene un único hogar; las rutas solo analizan, autorizan, delegan y responden.
 
@@ -85,10 +86,10 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `profile-update.ts` | 43 | `S` perfil + miembro | `people/students.ts`, `people/teachers.ts` | — |
 | `deleted-profiles.ts` | 49 | `R` histórico + purga | `api/tasks` (purga perezosa) | — |
 | `people/campos.ts` | 49 | `D` referencia y visibilidad | `people/students.ts`, `people/teachers.ts` | — |
-| `people/students.ts` | 192 | **`MX`** `S`+`R`+adaptador HTTP | `mcp/dominios/personas/*`, `api/students` | — |
-| `people/teachers.ts` | 184 | **`MX`** `S`+`R`+adaptador HTTP | `mcp/dominios/personas/*`, `api/teachers` | — |
+| `people/students.ts` | 140 | `S`+`R` | `mcp/dominios/personas/*`, `api/students` | paridad |
+| `people/teachers.ts` | 133 | `S`+`R` | `mcp/dominios/personas/*`, `api/teachers` | paridad |
 
-**Hallazgo P0:** `people/students.ts` y `people/teachers.ts` contienen `mutateStudent`/`mutateTeacher`, que leen `Request`, aplican same-origin, content-type, parsean cuerpo y construyen `Response`. La ruta es de 11 líneas porque el adaptador HTTP vive en el servicio. Duplica `withJsonMutation`/`withProjectRoute`.
+**Resuelto en Fase 2:** `mutateStudent`/`mutateTeacher` vivían en el servicio y construían `Request`/`Response`. El adaptador se movió a las rutas (`students` 59 líneas, `teachers` 66); los servicios bajaron a 140 y 133 líneas y ya no importan `http`, `project-http` ni `project-access` salvo los tipos.
 
 ### 3.2 Proyectos, apps y documentos (11)
 
@@ -228,9 +229,9 @@ Clase actual: **fina** = guardas + un servicio; **mixta** = resuelve proyecto/er
 | `storage/inventory` | 48 | mixta (admin) | `uploads/inventory`, `storage` | 1 |
 | `storage/purge` | 50 | mixta (admin) | `uploads/purge`, `storage` | 1 |
 | `storage/status` | 29 | mixta (admin) | `storage`, `uploads/stats`, `board-stats` | 1 |
-| `students` | 11 | fina + adaptador ajeno | `people/students` (`mutateStudent`) | paridad |
+| `students` | 59 | fina | `people/students` + esquema y guardas en la ruta | paridad |
 | `tasks` | 76 | **gruesa** | `tasks/*` + D1 + zod + permisos | 1 |
-| `teachers` | 11 | fina + adaptador ajeno | `people/teachers` (`mutateTeacher`) | paridad |
+| `teachers` | 66 | fina | `people/teachers` + esquema y guardas en la ruta | paridad |
 | `uploads` | 42 | mixta | `storage`, `project-access`, `http` | 1 |
 
 Cobertura de rutas: **21 de 26** tienen `route.test.ts` propio. Sin prueba propia: `members`, `projects`, `space-apps`, `students` y `teachers`; las dos últimas están cubiertas por las pruebas de paridad de personas. `members` y `space-apps` no tienen ninguna cobertura directa.
@@ -329,7 +330,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts` o `bo
 
 | Prioridad | Hallazgo | Evidencia | Fase |
 |---|---|---|---|
-| P0 | El adaptador HTTP de personas vive en el servicio | `people/students.ts:162`, `people/teachers.ts:154` | 2 |
+| P0 | El adaptador HTTP de personas vivía en el servicio | movido a `app/api/students` y `app/api/teachers` | 2 · **resuelto** |
 | P0 | `api/tasks` decide reglas y consulta D1 | revisiones, permisos, decoración y SQL en la ruta (76 líneas) | 2 |
 | P1 | `storage.ts` mezcla R2, D1, cuotas, MIME y diagnóstico | 346 líneas; 13 consumidores | 3 y 4 |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | `withProjectRoute` ya existe | 2 |
@@ -376,7 +377,7 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 
 ## 11. Orden propuesto para Fase 2
 
-1. Extraer `mutateStudent`/`mutateTeacher` a las rutas y dejar los servicios recibiendo datos, no `Request`.
+1. **Hecho (2026-11-20):** `mutateStudent`/`mutateTeacher` salieron de los servicios; las rutas validan y autorizan, y los servicios reciben datos.
 2. Sustituir la resolución manual de proyecto por `withProjectRoute` en las 7 rutas listadas.
 3. Mover a `tasks/*` la comprobación de revisión y la decoración que hoy hace `api/tasks`.
 4. Unificar el mapeo de `StorageUnavailableError` y de subida en un helper HTTP con estado y mensaje únicos.

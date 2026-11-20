@@ -82,6 +82,7 @@ Medición del 2026-11-20 al abrir ARC-06:
 - [ ] Unificar contratos de error y códigos de estado sin cambiar el comportamiento observable.
 - [ ] Añadir pruebas de contrato para rutas con lógica propia.
 - **Criterios:** ninguna ruta decide una regla de negocio; no hay validación duplicada ni cambios de URLs, permisos o respuestas.
+- **Avance (2026-11-20):** el adaptador HTTP de alumnado y profesorado se movió de `lib/server/people/*` a `app/api/students` y `app/api/teachers`; los servicios ya no reciben `Request` ni devuelven `Response`. La paridad MCP ↔ HTTP sigue en verde (19 pruebas).
 
 ### Fase 3 — Repositorios, servicios y dominio
 
@@ -126,4 +127,5 @@ Medición del 2026-11-20 al abrir ARC-06:
 - `lib/server` tiene 139 archivos / 14.227 líneas y `app/api` 52 / 4.188; la dirección de dependencias ya es correcta.
 - El baseline de código muerto de ARC-05 deja 51 exports y dos fachadas MCP como deuda conocida para revisar aquí.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
+- 2026-11-20 — Fase 2 iniciada: `app/api/students` (59 líneas) y `app/api/teachers` (66) absorben same-origin, formato, validación Zod, permisos y respuesta; `people/students.ts` y `people/teachers.ts` quedan en 140 y 133 líneas como servicio y repositorio. Sin cambios de URLs, estados, mensajes, datos ni versión del Site.
 - 2026-11-20 — Fase 1 cerrada: [`server-map.md`](server-map.md) clasifica 89 módulos de producto (`lib/server`) y 26 rutas (`app/api`), con mapa D1/R2, cuotas, purgas, retenciones y migraciones. Medición separada: **89 / 9.906** líneas de producto y **50 / 9.792** de prueba en `lib/server`; **26 / 1.357** rutas y **26 / 3.371** pruebas en `app/api`. No se movió código. Deuda priorizada para Fase 2: adaptador HTTP dentro de `people/students.ts` y `people/teachers.ts`, `api/tasks` con reglas y D1, y resolución manual de proyecto en 7 rutas.

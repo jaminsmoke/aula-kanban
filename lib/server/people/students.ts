@@ -1,29 +1,16 @@
 import { env } from "cloudflare:workers";
 import { and, asc, eq } from "drizzle-orm";
-import { z } from "zod";
 import { getDb } from "../../../db";
 import { projectMembers, students } from "../../../db/schema";
-import { isJsonRequest, isSameOrigin, json } from "../http";
 import { updateProfile } from "../profile-update";
-import { projectFailureResponse } from "../project-http";
-import { resolveProject, type Access, type ProjectWithAccess } from "../project-access";
-import { accountEmail, maySeeStudentEmail, studentReference, type BajaResult, type FichaResult } from "./campos";
+import type { Access, ProjectWithAccess } from "../project-access";
+import { maySeeStudentEmail, type BajaResult, type FichaResult } from "./campos";
 
 /**
  * Fichas de alumnado: la lista que pinta la web y las altas, ediciones y
  * bajas (histórico de 30 días) de `/api/students`. La lógica vive aquí para
  * que la ruta HTTP y el catálogo MCP (MCP-06) compartan permisos y mensajes.
  */
-
-/** Campos editables de una ficha de alumno; el nombre puede venir vacío al crear. */
-const profile = z.object({
-  name: z.string().trim().max(80).default(""),
-  displayName: z.string().trim().max(80).default(""),
-  role: z.string().trim().max(500),
-  activities: z.string().trim().max(2000),
-  aiHelp: z.string().trim().max(2000),
-});
-const fields = profile.merge(studentReference).extend({ accountEmail: accountEmail.optional() });
 
 /** Valores de una ficha que llegan desde la web o desde el MCP. */
 export type StudentInput = { name: string; displayName: string; role: string; activities: string; aiHelp: string };
@@ -151,41 +138,4 @@ export async function deleteStudent(project: ProjectWithAccess, section: string,
   } catch {
     return { ok: false, status: 409, message: "No se pudo eliminar la ficha. Inténtalo de nuevo." };
   }
-}
-
-/**
- * Crea, edita o elimina (histórico de 30 días) una ficha de alumno.
- * @param request - Petición POST, PATCH o DELETE con los datos de la ficha.
- * @returns Respuesta JSON con la ficha resultante o el error.
- */
-export async function mutateStudent(request: Request): Promise<Response> {
-  if (!isSameOrigin(request)) return json({ message: "Solicitud no válida." }, 403);
-  if (!isJsonRequest(request)) return json({ message: "Formato no válido." }, 415);
-  const resolved = await resolveProject(request);
-  if (resolved.status !== "ok") return projectFailureResponse(resolved.status);
-  const project = resolved.project;
-  const body = await request.json().catch(() => null);
-  if (request.method === "POST") {
-    if (project.access.role === "student" || project.access.role === "guest") return json({ message: "Solo el profesorado puede crear fichas." }, 403);
-    const parsed = profile.extend({ section: z.string().uuid(), accountEmail: accountEmail.optional().default("") }).safeParse(body);
-    if (!parsed.success) return json({ message: "Revisa los campos del perfil." }, 400);
-    const { section, accountEmail: email, ...values } = parsed.data;
-    const result = await createStudent(project, { ...values, section, accountEmail: email });
-    if (!result.ok) return json({ message: result.message }, result.status);
-    return json(result.ficha, 201);
-  }
-  const parsed = (request.method === "DELETE" ? studentReference : fields).safeParse(body);
-  if (!parsed.success) return json({ message: "Revisa los campos del perfil." }, 400);
-  const { section, revision, ...changes } = parsed.data;
-  if (project.access.role === "guest" || (project.access.role === "student" && project.access.studentSection !== section)) {
-    return json({ message: "Solo puedes editar tu propia ficha." }, 403);
-  }
-  if (request.method !== "DELETE") {
-    const { accountEmail: email, name, displayName, role, activities, aiHelp } = changes as z.infer<typeof fields>;
-    const result = await updateStudent(project, section, revision, { name, displayName, role, activities, aiHelp }, email);
-    if (!result.ok) return json({ message: result.message }, result.status);
-    return json(result.ficha);
-  }
-  const result = await deleteStudent(project, section, revision);
-  return result.ok ? json({ section }) : json({ message: result.message }, result.status);
 }
