@@ -72,11 +72,11 @@ El baseline no tiene archivos de código por encima de 600 líneas. `useAppDocum
 
 ### Fase 2 — Contrato único de almacenamiento local
 
-- [ ] Crear un módulo de cliente compartido con lectura, escritura y eliminación tipadas.
-- [ ] Definir claves con espacio de nombres, envoltura de versión, validación por consumidor y fallback seguro.
-- [ ] Manejar ausencia de `window`, JSON corrupto, cuota agotada y migraciones de versión.
-- [ ] Permitir inyectar un almacenamiento en memoria para pruebas.
-- [ ] Cubrir clave ausente, dato corrupto, cuota, versión antigua y versión futura.
+- [x] Crear un módulo de cliente compartido con lectura, escritura y eliminación tipadas.
+- [x] Definir claves con espacio de nombres, envoltura de versión, validación por consumidor y fallback seguro.
+- [x] Manejar ausencia de `window`, JSON corrupto, cuota agotada y migraciones de versión.
+- [x] Permitir inyectar un almacenamiento en memoria para pruebas.
+- [x] Cubrir clave ausente, dato corrupto, cuota, versión antigua y versión futura.
 - **Criterios:** una sola API para el estado local; ningún producto fuera del contrato; pruebas deterministas; `arch:check` sin problemas.
 
 ### Fase 3 — Migrar preferencias e historial
@@ -120,4 +120,5 @@ El baseline no tiene archivos de código por encima de 600 líneas. `useAppDocum
 - La persistencia de documentos compartidos sigue en `useAppDocument`; el contrato local no sustituye D1.
 - Estado de partida: **396 archivos de producto / 982 imports / 5 violaciones base / 0 ciclos / 0 problemas**; sin excepciones de tamaño de código.
 - 2026-11-20: **Fase 1 completada.** Inventario de claves y decisión en [`client-storage-audit.md`](client-storage-audit.md). Retirados `useVersionedDraft`, su recuperación, los diálogos de cierre/conflicto, sus CSS y pruebas: **1.694 líneas**. Añadida una prueba de regresión contra su reintroducción. `arch:check`: **392 archivos / 975 imports / 0 problemas**; suite: **229 archivos / 1.573 pruebas**; presupuestos correctos.
+- 2026-11-20: **Fase 2 completada.** Añadido `app/board/shared/client-storage.ts` con envoltura versionada, validación, migración, fallback, almacenamiento inyectable y errores de cuota/unavailable. Diez pruebas cubren clave ausente, corrupción, versiones antigua/futura, cuota, SSR, eliminación y espacio de nombres. `arch:check`: **393 archivos / 975 imports / 0 problemas**; suite: **230 archivos / 1.583 pruebas**; presupuestos correctos.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

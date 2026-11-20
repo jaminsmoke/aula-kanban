@@ -1,6 +1,6 @@
 # Auditoría de estado local y persistencia
 
-> **Estado:** Fase 1 de ARC-03 · **Fecha:** 2026-11-20
+> **Estado:** Fases 1–2 de ARC-03 · **Fecha:** 2026-11-20
 > **Alcance:** claves de `localStorage`, consumidores, datos y sistema de borradores versionados.
 > **Regla:** los documentos compartidos viven en `useAppDocument`; `localStorage` solo guarda estado local del cliente.
 
@@ -55,3 +55,17 @@ Total: **1.694 líneas** retiradas (877 de producto, 551 de pruebas y 266 de CSS
 - Añadida una prueba de regresión que falla si vuelven a aparecer sus símbolos.
 - `npm run check`, suite y `arch:check` se ejecutan después de la retirada: **392 archivos / 975 imports / 0 problemas**, **229 archivos / 1.573 pruebas**, build y presupuestos correctos.
 - El Site sigue en `1.1.37`; no se publica nada desde esta fase.
+
+## 6. Contrato implementado en la Fase 2
+
+`app/board/shared/client-storage.ts` expone `createLocalState` y `clientStorageKey`:
+
+- `read`: devuelve el valor validado o el fallback.
+- `readResult`: añade `ok`, `missing`, `invalid`, `future` o `unavailable`, y si hubo migración.
+- `write`: guarda `{ __aulaClientStorage: 1, version, data }` y devuelve `quota`, `unavailable` o `serialize` sin lanzar.
+- `remove`: elimina la clave sin romper la app.
+- `storage` inyectable; `null` simula SSR.
+- `migrate` recibe el valor antiguo y su versión; las claves sin envoltura se tratan como legado.
+- Los datos actuales, antiguos, futuros o corruptos se validan antes de exponerse.
+
+La migración de Calculadora, tema, Blockly, Tarjetas y recuperación de Aula empieza en la Fase 3. El contrato está cubierto por diez pruebas (`client-storage.test.ts`): envoltura, clave ausente, JSON corrupto, legado, migración, versión futura, validación, cuota, SSR y eliminación.
