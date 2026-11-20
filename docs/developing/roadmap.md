@@ -50,28 +50,28 @@ Medición del 2026-11-20:
 
 | Archivo | Líneas |
 |---|---:|
-| `app/portada.css` | 733 |
-| `app/board/apps/tarjetas/tarjetas.css` | 621 |
-| `app/board/shared/office/office-viewer.css` | 512 |
-| `app/board/apps/timeline/timeline.css` | 503 |
-| `app/board/apps/aula-documentos/styles/sidebar.css` | 487 |
-| `app/board/apps/aula-documentos/styles/blocks.css` | 484 |
-| `app/board/apps/aula-documentos/styles/layout.css` | 467 |
-| `app/globals.css` | 448 |
-| `app/board/apps/ajedrez/ajedrez.css` | 436 |
-| `app/board/apps/hoja-calculo/hoja-calculo.css` | 409 |
+| `app/portada.css` | 628 |
+| `app/board/apps/tarjetas/tarjetas.css` | 547 |
+| `app/board/shared/office/office-viewer.css` | 444 |
+| `app/globals.css` | 439 |
+| `app/board/apps/timeline/timeline.css` | 437 |
+| `app/board/apps/aula-documentos/styles/blocks.css` | 419 |
+| `app/board/apps/aula-documentos/styles/sidebar.css` | 415 |
+| `app/board/apps/aula-documentos/styles/layout.css` | 407 |
+| `app/board/apps/ajedrez/ajedrez.css` | 384 |
+| `app/board/apps/hoja-calculo/hoja-calculo.css` | 352 |
 
-Hay **46 archivos CSS / 8.900 líneas**. `arch-baseline.json` conserva excepciones de CSS para `portada.css` y `tarjetas.css`, y cinco dependencias `features → layout` asignadas a ARC-04. Aula Documentos ya tiene sus estilos separados en `styles/` y sirve como piloto.
+Hay **46 archivos CSS / 8.900 líneas con contenido**. `arch-baseline.json` conserva excepciones de CSS para `portada.css` (628) y `tarjetas.css` (547), y cinco dependencias `features → layout` asignadas a ARC-04. Aula Documentos ya tiene sus estilos separados en `styles/` y sirve como piloto.
 
 ## 5. Fases
 
 ### Fase 1 — Inventario, capas y contrato visual
 
-- [ ] Clasificar los 46 CSS en tokens, base, primitivas, layout y app.
-- [ ] Localizar duplicados de botón, tarjeta, modal, estado vacío, barra, foco, borde y superficie.
-- [ ] Documentar las reglas de composición y qué capa puede importar cada estilo.
-- [ ] Identificar las cinco dependencias `features → layout` y el destino de sus primitivas.
-- [ ] Fijar el presupuesto de CSS por archivo y por flujo antes de mover estilos.
+- [x] Clasificar los 46 CSS en tokens, base, primitivas, layout y app.
+- [x] Localizar duplicados de botón, tarjeta, modal, estado vacío, barra, foco, borde y superficie.
+- [x] Documentar las reglas de composición y qué capa puede importar cada estilo.
+- [x] Identificar las cinco dependencias `features → layout` y el destino de sus primitivas.
+- [x] Fijar el presupuesto de CSS por archivo y por flujo antes de mover estilos.
 - **Criterios:** inventario completo, capas documentadas y ningún cambio visual aún; `arch:check` sigue pasando.
 
 ### Fase 2 — Tokens y base
@@ -94,8 +94,8 @@ Hay **46 archivos CSS / 8.900 líneas**. `arch-baseline.json` conserva excepcion
 
 ### Fase 4 — Estilos de apps y presupuestos
 
-- [ ] Dividir `portada.css`, `tarjetas.css`, `office-viewer.css` y `timeline.css` por responsabilidad.
-- [ ] Revisar los estilos de Aula Documentos y las apps secundarias para retirar duplicados y reglas muertas.
+- [ ] Dividir `portada.css` y `tarjetas.css` por responsabilidad, que son las dos excepciones de `largeCss`.
+- [ ] Revisar Office, Timeline, Aula Documentos y las apps secundarias para retirar duplicados y reglas muertas sin dividir archivos que ya cumplen presupuesto.
 - [ ] Mantener el CSS de cada app en su carga diferida; no mover estilos de app a `globals.css`.
 - [ ] Reducir todos los CSS de producto por debajo de 500 líneas y retirar `largeCss` cuando corresponda.
 - [ ] Actualizar presupuestos por flujo y comprobar que el CSS no se duplica entre apps.
@@ -124,6 +124,7 @@ Hay **46 archivos CSS / 8.900 líneas**. `arch-baseline.json` conserva excepcion
 ## 7. Notas de sesión
 
 - 2026-11-20: ARC-04 sale del backlog y pasa a ser el roadmap activo. El backlog queda con **9 entradas**; siguiente candidato **ARC-05**.
-- Medición actual: **46 CSS / 8.900 líneas**; las cifras del backlog habían quedado desactualizadas.
+- Medición actual: **46 CSS / 8.900 líneas con contenido**; las cifras del backlog habían quedado desactualizadas.
 - `globals.css` ya contiene primitivas y tokens `ui-*`; este roadmap los consolida, no crea un sistema paralelo.
+- 2026-11-20: **Fase 1 completada.** Inventario y contrato de capas en [`css-audit.md`](css-audit.md): 46 CSS, duplicados, 38 `!important`, cinco dependencias `features → layout` y presupuestos. Sin cambios de estilos. `arch:check` sigue en **397 archivos / 988 imports / 0 problemas**.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
