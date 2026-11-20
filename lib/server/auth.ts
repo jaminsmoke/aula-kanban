@@ -1,13 +1,9 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { isDemoRequested, demoUser } from "./demo";
+import type { ChatGPTUser } from "./auth-user";
 
-export type ChatGPTUser = {
-  userId: string;
-  displayName: string;
-  email: string;
-  fullName: string | null;
-};
+export type { ChatGPTUser } from "./auth-user";
 
 const USER_ID_HEADER = "oai-authenticated-user-id";
 const USER_EMAIL_HEADER = "oai-authenticated-user-email";

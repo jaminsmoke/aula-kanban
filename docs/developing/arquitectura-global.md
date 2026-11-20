@@ -155,10 +155,10 @@ Reglas:
 
 El inventario de producto (sin pruebas) queda en:
 
-- **356 archivos de producto**, **906 imports locales**.
+- **357 archivos de producto**, **907 imports locales**.
 - Capas: apps 76 archivos / 14.328 líneas; features 76 / 6.752; shared 39 / 4.962; dominio 40 / 6.198; servidor 88 / 9.902; API 26 / 1.357; infraestructura D1 2 / 337; shell 4 / 476.
 - **5 violaciones base**: cinco vistas de features importan primitivas de `app/board/layout`.
-- **1 ciclo base**: `lib/server/auth.ts ↔ lib/server/demo.ts`.
+- **0 ciclos base**: el tipo `ChatGPTUser` se movió a `lib/server/auth-user.ts` y se rompió el ciclo `auth ↔ demo`.
 - **3 archivos por encima de 600 líneas**: Timeline, `document.ts` y `mermaid-block.tsx`.
 - **2 CSS por encima de 500**: `portada.css` y `tarjetas.css`.
 - `app/theme.ts` se clasifica como shared legado hasta moverlo a `app/board/shared/ui/`.
@@ -177,6 +177,21 @@ Reglas de dirección confirmadas:
 | `server` | dominio, lib, infraestructura | apps, features, shell, API |
 | `infraestructura` | lib, dominio | apps, features, shell, API |
 | `domain` | lib puro | React, app, API, server, features, shell |
+
+### Cómo añadir una app
+
+1. Crear `app/board/apps/<app>/` con `app.tsx`, componentes, hooks, modelo y estilos propios.
+2. Registrar la app en `app/board/apps/registry.tsx` y en los metadatos de `lib/native-apps.ts`.
+3. Añadir sus pruebas junto al código y una prueba de flujo si toca persistencia o permisos.
+4. Ejecutar `npm run arch:check`; no se puede importar otra app ni el shell.
+5. Si necesita una excepción, añadirla a `arch-baseline.json` con dueño, motivo y caducidad.
+
+### Cómo retirar una excepción
+
+1. Corregir la dependencia o dividir el archivo.
+2. Eliminar su entrada de `arch-baseline.json`.
+3. Ejecutar `npm run arch:check` y la suite.
+4. Si vuelve a aparecer, la excepción no se recupera: se documenta una nueva decisión.
 
 ## 6. Programa propuesto
 

@@ -62,11 +62,11 @@
 
 ### Fase 3 — Integración, correcciones y enforcement
 
-- [ ] Corregir las violaciones pequeñas que no pertenezcan a ARC-02/03/04.
-- [ ] Clasificar las excepciones de archivos grandes y enlazarlas con su roadmap.
-- [ ] Integrar `arch:check` en los checks locales y en CI.
-- [ ] Añadir una comprobación de que no hay MCP con raíz externa en la configuración del proyecto.
-- [ ] Documentar el flujo para añadir una app y para retirar una excepción.
+- [x] Corregir las violaciones pequeñas que no pertenezcan a ARC-02/03/04.
+- [x] Clasificar las excepciones de archivos grandes y enlazarlas con su roadmap.
+- [x] Integrar `arch:check` en los checks locales y en CI.
+- [x] Añadir una comprobación de que no hay MCP con raíz externa en la configuración del proyecto.
+- [x] Documentar el flujo para añadir una app y para retirar una excepción.
 - **Criterios:** el check es obligatorio, no hay violaciones nuevas sin justificar y las excepciones tienen dueño y fecha.
 
 ### Fase 4 — Cierre
@@ -89,6 +89,7 @@
 ## 6. Notas de sesión
 
 - 2026-11-20: ARC-01 sale del backlog y pasa a ser el roadmap activo. El repositorio no tiene `.codarch.yml`; la revisión inicial se contaminó por un MCP global apuntando a otro proyecto. Ese MCP se retiró y DEV-02 queda como guard de tooling.
-- 2026-11-20: **Fase 1 completada.** Inventario de producto: 356 archivos, 906 imports locales, 5 violaciones base y 1 ciclo base. Capas, reglas de dirección y presupuestos documentados en [`arquitectura-global.md`](arquitectura-global.md); excepciones y archivos grandes registrados en [`arch-baseline.json`](arch-baseline.json). Formato del checker acordado para la Fase 2.
-- 2026-11-20: **Fase 2 completada.** Añadido `scripts/architecture-check.mjs`, `npm run arch:check` y `--json`; consume el baseline, detecta imports prohibidos, ciclos y presupuestos, y falla cerrado ante una raíz externa. Prueba del checker en `scripts/architecture-check.test.mjs` con fixture de import prohibido, ciclo y CSS sobredimensionado. Resultado real: 356 archivos de producto / 906 imports / 5 violaciones base / 1 ciclo base / 0 problemas nuevos.
+- 2026-11-20: **Fase 1 completada.** Inventario de producto: 357 archivos, 907 imports locales, 5 violaciones base y 0 ciclos base. Capas, reglas de dirección y presupuestos documentados en [`arquitectura-global.md`](arquitectura-global.md); excepciones y archivos grandes registrados en [`arch-baseline.json`](arch-baseline.json). Formato del checker acordado para la Fase 2.
+- 2026-11-20: **Fase 2 completada.** Añadido `scripts/architecture-check.mjs`, `npm run arch:check` y `--json`; consume el baseline, detecta imports prohibidos, ciclos y presupuestos, y falla cerrado ante una raíz externa. Prueba del checker en `scripts/architecture-check.test.mjs` con fixture de import prohibido, ciclo y CSS sobredimensionado. Resultado real: 357 archivos de producto / 907 imports / 5 violaciones base / 0 ciclos base / 0 problemas nuevos.
+- 2026-11-20: **Fase 3 completada.** Añadido `npm run check` y `arch:check` en CI; el checker también rechaza configuraciones MCP del proyecto con `--root` fuera del workspace. El ciclo `auth ↔ demo` se eliminó moviendo `ChatGPTUser` a `lib/server/auth-user.ts`. Documentado el flujo para añadir apps y retirar excepciones.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { DEMO_COOKIE, DEMO_USER } from "../domain/demo";
-import type { ChatGPTUser } from "./auth";
+import type { ChatGPTUser } from "./auth-user";
 
 /** Cuenta fija que representa la demo de solo lectura. */
 export const demoUser: ChatGPTUser = {

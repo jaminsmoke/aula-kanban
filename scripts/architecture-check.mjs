@@ -114,6 +114,55 @@ function cycleKey(cycle) {
 }
 
 /**
+ * Comprueba que las configuraciones MCP del proyecto no fijan raíces externas.
+ * @param root - Raíz absoluta del workspace.
+ * @returns Problemas encontrados.
+ */
+function checkProjectMcpConfig(root) {
+  const candidates = [
+    "opencode.json",
+    ".opencode/opencode.json",
+    ".mcp.json",
+    ".cursor/mcp.json",
+  ];
+  const problems = [];
+  const checkPath = (value, file, label) => {
+    if (typeof value !== "string" || !value.trim()) return;
+    const resolved = path.resolve(root, value);
+    const relative = path.relative(root, resolved);
+    if (relative.startsWith("..") || path.isAbsolute(relative)) {
+      problems.push({ file, label, value, message: "La configuración MCP apunta fuera del workspace." });
+    }
+  };
+  const visit = (value, file) => {
+    if (Array.isArray(value)) {
+      for (let index = 0; index < value.length; index += 1) {
+        if (value[index] === "--root" && typeof value[index + 1] === "string") {
+          checkPath(value[index + 1], file, "--root");
+        }
+        visit(value[index], file);
+      }
+      return;
+    }
+    if (!value || typeof value !== "object") return;
+    for (const [key, child] of Object.entries(value)) {
+      if ((key === "root" || key === "cwd") && typeof child === "string") checkPath(child, file, key);
+      visit(child, file);
+    }
+  };
+  for (const candidate of candidates) {
+    const file = path.join(root, candidate);
+    if (!existsSync(file)) continue;
+    try {
+      visit(JSON.parse(readFileSync(file, "utf8")), candidate);
+    } catch {
+      problems.push({ file: candidate, label: "json", value: candidate, message: "La configuración MCP no es JSON válido." });
+    }
+  }
+  return problems;
+}
+
+/**
  * Ejecuta la comprobación de arquitectura.
  * @param options - Raíz, baseline y workspace.
  * @returns Informe estructurado.
@@ -246,8 +295,10 @@ export function checkArchitecture({ root, baselinePath = DEFAULT_BASELINE, works
     }
   }
 
+  const mcpProblems = checkProjectMcpConfig(resolvedRoot);
+
   return {
-    ok: unexpectedViolations.length === 0 && unexpectedCycles.length === 0 && budgetProblems.length === 0,
+    ok: unexpectedViolations.length === 0 && unexpectedCycles.length === 0 && budgetProblems.length === 0 && mcpProblems.length === 0,
     root: resolvedRoot,
     totals: {
       files: scoped.length,
@@ -258,12 +309,14 @@ export function checkArchitecture({ root, baselinePath = DEFAULT_BASELINE, works
       cycles: cycles.length,
       unexpectedCycles: unexpectedCycles.length,
       budgetProblems: budgetProblems.length,
+      mcpProblems: mcpProblems.length,
     },
     violations: unexpectedViolations,
     baselineViolations: violations.filter((entry) => baselineViolations.has(`${entry.rule}:${entry.from}->${entry.to}`)),
     cycles: unexpectedCycles,
     baselineCycles: cycles.filter((cycle) => baselineCycles.has(cycleKey(cycle))),
     budgetProblems,
+    mcpProblems,
   };
 }
 
@@ -284,7 +337,7 @@ function main() {
       process.stdout.write(
         `Arquitectura: ${result.totals.productFiles} archivos de producto, ${result.totals.edges} imports, `
         + `${result.totals.unexpectedViolations} violaciones nuevas, ${result.totals.unexpectedCycles} ciclos nuevos, `
-        + `${result.totals.budgetProblems} problemas de presupuesto.\n`,
+        + `${result.totals.budgetProblems} problemas de presupuesto, ${result.totals.mcpProblems} problemas MCP.\n`,
       );
       for (const entry of result.violations) {
         process.stderr.write(`ERROR ${entry.rule}: ${entry.from} -> ${entry.to}\n`);
@@ -294,6 +347,9 @@ function main() {
       }
       for (const entry of result.budgetProblems) {
         process.stderr.write(`ERROR presupuesto ${entry.kind}: ${entry.path} (${entry.lines} > ${entry.limit})\n`);
+      }
+      for (const entry of result.mcpProblems) {
+        process.stderr.write(`ERROR MCP ${entry.file} ${entry.label}: ${entry.value} (${entry.message})\n`);
       }
       if (!result.ok) process.stderr.write("Arquitectura incorrecta.\n");
       else process.stdout.write("Arquitectura correcta.\n");

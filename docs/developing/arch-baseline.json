@@ -17,10 +17,10 @@
     "test": 600
   },
   "inventory": {
-    "productFiles": 356,
-    "localImportEdges": 906,
+    "productFiles": 357,
+    "localImportEdges": 907,
     "baselineViolations": 5,
-    "baselineCycles": 1
+    "baselineCycles": 0
   },
   "layers": {
     "shell": [
@@ -131,18 +131,7 @@
       "expires": "2027-03-31"
     }
   ],
-  "baselineCycles": [
-    {
-      "path": [
-        "lib/server/auth.ts",
-        "lib/server/demo.ts",
-        "lib/server/auth.ts"
-      ],
-      "owner": "ARC-06",
-      "reason": "Separar la comprobación de demo de auth antes de cerrar el mapa de servidor.",
-      "expires": "2027-03-31"
-    }
-  ],
+  "baselineCycles": [],
   "largeFiles": [
     {
       "path": "app/board/apps/timeline/timeline-app.tsx",

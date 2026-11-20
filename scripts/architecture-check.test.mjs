@@ -60,6 +60,23 @@ describe("architecture check", () => {
     expect(result.budgetProblems.some((entry) => entry.path === "app/board/large.css")).toBe(true);
   });
 
+  it("detecta una raíz MCP externa en la configuración del proyecto", () => {
+    const root = fixture();
+    mkdirSync(path.join(root, ".opencode"), { recursive: true });
+    writeFileSync(path.join(root, ".opencode", "opencode.json"), JSON.stringify({
+      mcp: {
+        codarch: {
+          type: "local",
+          command: ["node", "external-codarch.mjs", "--root", "../otro-repositorio"],
+        },
+      },
+    }, null, 2));
+
+    const result = checkArchitecture({ root, workspace: root, baselinePath: "docs/baseline.json" });
+    expect(result.ok).toBe(false);
+    expect(result.mcpProblems.some((entry) => entry.label === "--root")).toBe(true);
+  });
+
   it("falla cerrada si la raíz está fuera del workspace", () => {
     const root = fixture();
     const workspace = path.join(root, "workspace");
