@@ -2,23 +2,11 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 8 entradas pendientes — sin roadmap activo
+> **Roadmap:** ADOC-15 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 7 entradas pendientes · ADOC-15 en el roadmap
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 
 ---
-
-## 2026-11-19 — ADOC-15 · Tablas completas en el editor
-
-- Contexto: el modelo Tiptap ya incluye tablas y la importación/exportación las conserva, pero el editor no ofrece una entrada clara para crearlas ni controles para modificarlas. Es una capacidad parcialmente presente que no está bien integrada.
-- Alcance:
-  1. Añadir **Insertar tabla** con selector de filas y columnas.
-  2. Ofrecer acciones contextuales para añadir/eliminar filas y columnas, cabecera, combinar/dividir celdas y eliminar tabla.
-  3. Resolver navegación con teclado, selección, alineación y comportamiento en móvil.
-  4. Mantener fidelidad en HTML, DOCX/PPTX, Markdown, impresión/PDF y presentación.
-  5. Cubrir límites de tamaño y pruebas de importación/exportación.
-- Criterios: una tabla se puede crear, editar y borrar sin Markdown ni atajos ocultos, y sobrevive a guardado, recarga y exportación con una estructura predecible.
-- Notas: revisar si conviene una barra flotante de tabla o acciones dentro de la barra del documento; evitar duplicar botones en dos menús.
 
 ## 2026-11-19 — ADOC-16 · Importar como flujo propio y más formatos
 
