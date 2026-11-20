@@ -65,11 +65,11 @@ Estas son las definiciones que gobiernan ARC-06. La clasificación de cada archi
 
 ---
 
-## 3. Inventario de `lib/server` (105 archivos)
+## 3. Inventario de `lib/server` (106 archivos)
 
 Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servicio, `H` helper HTTP, `P` plataforma, `A` adaptador MCP, `MX` mixto. La columna **Prueba** cuenta las pruebas que importan el módulo directamente; `—` no significa necesariamente ausencia de cobertura indirecta.
 
-### 3.1 Identidad, acceso y personas (21)
+### 3.1 Identidad, acceso y personas (22)
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
@@ -77,7 +77,8 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `access/auth-user.ts` | 8 | `D` tipo de cuenta | `access/auth.ts`, `demo/demo.ts` | — |
 | `access/owner.ts` | 83 | `S` bootstrap y propiedad | `board/board-room.ts`, `projects/project-access.ts`, `space/space-room.ts` | 1 |
 | `access/owner-repository.ts` | 51 | `R` `instance_owner` | `access/owner.ts` | — |
-| `projects/project-access.ts` | 179 | `S` autorización + `R` proyectos | 31 archivos: rutas, MCP, servicios | 5 |
+| `projects/project-access.ts` | 187 | `S` autorización de proyectos | 31 archivos: rutas, MCP, servicios | 5 |
+| `projects/access-repository.ts` | 85 | `R` administradores, membresías y proyectos | `projects/project-access.ts` | — |
 | `projects/project-contract.ts` | 10 | `D` mensajes de fallo | `projects/project-http.ts`, `projects/projects.ts`, `mcp/contexto.ts` | — |
 | `projects/project-http.ts` | 21 | `H` fallo de proyecto | 14 rutas y servicios de personas | 2 |
 | `access/capabilities.ts` | 51 | `S` matriz de permisos | `mcp/dominios/apps.ts`, `project-books`, `space-apps` | 1 |
@@ -272,9 +273,9 @@ Queda como excepción justificada `api/space-apps`: conserva `getChatGPTUser` y 
 
 | Tabla | Escritura principal | Lectura principal |
 |---|---|---|
-| `projects` | `projects/projects-repository.ts` (alta/baja), `projects/project-rekey.ts` | `projects/project-access.ts`, `projects/project-overview.ts`, MCP |
-| `project_members` | `access/members-repository.ts`, `access/invitaciones-repository.ts`, `access/profile-update.ts`, `people/students-repository.ts`, `people/teachers-repository.ts` | `people/students-repository.ts`, `people/teachers-repository.ts`, `access/members.ts`, `projects/project-access.ts`, `tasks/queries.ts` |
-| `administrators_unified` | `access/administradores-repository.ts`; sincronización de correo en `projects/project-access.ts` | `access/administradores.ts`, `projects/project-access.ts` |
+| `projects` | `projects/projects-repository.ts` (alta/baja), `projects/project-rekey.ts` | `projects/access-repository.ts`, `projects/project-overview.ts`, MCP |
+| `project_members` | `access/members-repository.ts`, `access/invitaciones-repository.ts`, `access/profile-update.ts`, `people/students-repository.ts`, `people/teachers-repository.ts` | `people/students-repository.ts`, `people/teachers-repository.ts`, `access/members.ts`, `projects/access-repository.ts`, `tasks/queries.ts` |
+| `administrators_unified` | `access/administradores-repository.ts`; sincronización de correo en `projects/project-access.ts` | `access/administradores.ts`, `projects/access-repository.ts` |
 | `instance_owner` | `access/owner-repository.ts` | `access/owner-repository.ts`, `projects/project-access.ts` |
 | `instance_apps` | `apps/apps-repository.ts` | `apps/apps-repository.ts`, `apps/personal-apps.ts`, MCP |
 | `app_documents` | `apps/app-documents-repository.ts` | `aula-documentos/aula-documentos-migration.ts`, MCP de apps, `uploads/usage.ts` |
@@ -358,6 +359,7 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 | P1 | Pizarras leían `boards` y `task_assignees` desde el servicio | `board/boards-repository.ts` + contrato neutral en `board/board-types.ts` | 3 · **resuelto** |
 | P1 | Mutaciones de tareas mezclaban permisos, SQL y lotes | `tasks/mutations-repository.ts` concentra las sentencias; `mutations.ts` conserva las reglas | 3 · **resuelto** |
 | P1 | Tokens MCP mezclaban formato, cifrado y filas | `mcp/tokens-repository.ts` concentra `mcp_tokens`; `tokens.ts` conserva formato y hash | 3 · **resuelto** |
+| P1 | `project-access.ts` mezclaba autorización y filas D1 | `projects/access-repository.ts` concentra administradores, membresías y proyectos | 3 · **resuelto** |
 | P1 | `resolveProject` + `projectFailureResponse` repetidos en 7 rutas | eliminados; recursos usan `withResourceProject` | 2 · **resuelto** |
 | P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
 | P1 | Cuatro rutas importaban D1 directamente | extraídas a servicios; `app/api` no importa D1 | 2 y 3 · **resuelto** |
@@ -389,7 +391,7 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 
 ## 10. Criterios de aceptación de Fase 1
 
-- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (105/105).
+- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (106/106).
 - [x] Cada ruta de `app/api` tiene clase provisional y servicios identificados (26/26).
 - [x] Están identificadas las reglas duplicadas entre rutas, servicios, MCP y almacenamiento.
 - [x] Está mapeado el acceso a D1 y R2, con tablas, claves y responsables.

@@ -1,15 +1,28 @@
 import { env } from "cloudflare:workers";
-import { and, eq } from "drizzle-orm";
-import { getD1, getDb } from "../../../db";
-import { administrators, projectMembers, projects } from "../../../db/schema";
+import { getD1 } from "../../../db";
 import { DEMO_PROJECT_ID, isDemoUser } from "../../domain/demo";
 import { getChatGPTUser, type ChatGPTUser } from "../access/auth";
 import { ensureInstanceOwner, isBootstrapOwnerEmail, isInstanceOwner, readInstanceOwner } from "../access/owner";
+import {
+  findActiveMemberRow,
+  findAdministratorRowByUser,
+  findProjectAccessRow,
+  updateAdministratorEmailRow,
+  updateMemberEmailRow,
+} from "./access-repository";
 import { canonicalProjectId } from "./project-rekey";
+
+/**
+ * Autorización de proyectos: propiedad de la instancia, rol global, acceso
+ * por membresía y resolución tipada del proyecto de la URL.
+ *
+ * El acceso D1 vive en `access-repository.ts`; aquí se conservan las reglas
+ * y los tipos que consumen rutas, MCP y servicios.
+ */
 
 export const defaultProjectId = "default";
 export type Access = { user: ChatGPTUser; role: "owner" | "admin" | "teacher" | "student" | "guest"; studentSection: string | null; teacherId: string | null };
-export type ProjectRow = typeof projects.$inferSelect;
+export type ProjectRow = import("./access-repository").ProjectAccessRow;
 export type ProjectWithAccess = ProjectRow & { access: Access };
 export type ProjectFailure = "unauthenticated" | "invalid" | "not_found" | "forbidden";
 export type ProjectResolution =
@@ -63,14 +76,13 @@ export async function isOwnerContactEmail(email: string) {
  */
 export async function isAdministrator(user: ChatGPTUser) {
   if (isDemoUser(user)) return false;
-  const db = getDb();
   const email = user.email.trim().toLowerCase();
   try {
-    const [linked] = await db.select().from(administrators).where(eq(administrators.userId, user.userId));
+    const linked = await findAdministratorRowByUser(user.userId);
     if (linked) {
       if (linked.email !== email) {
         // The stable Site identity wins over a changed contact email. A conflict does not grant the email's other account access.
-        try { await db.update(administrators).set({ email }).where(and(eq(administrators.id, linked.id), eq(administrators.userId, user.userId))); } catch { /* keep the existing contact until the conflict is resolved */ }
+        try { await updateAdministratorEmailRow(linked.id, user.userId, email); } catch { /* keep the existing contact until the conflict is resolved */ }
       }
       return true;
     }
@@ -99,13 +111,11 @@ export async function globalRoleForUser(user: ChatGPTUser): Promise<"owner" | "a
  * @returns El acceso con rol de miembro y ficha vinculada, o `null` sin acceso.
  */
 export async function memberAccess(projectId: string, user: ChatGPTUser): Promise<Access | null> {
-  const [member] = await getDb().select().from(projectMembers).where(and(
-    eq(projectMembers.projectId, projectId), eq(projectMembers.userId, user.userId), eq(projectMembers.status, "active"),
-  ));
+  const member = await findActiveMemberRow(projectId, user.userId);
   if (!member || (member.role !== "teacher" && member.role !== "student" && member.role !== "guest")) return null;
   const currentEmail = user.email.trim().toLowerCase();
   if (member.email !== currentEmail) {
-    try { await getDb().update(projectMembers).set({ email: currentEmail }).where(and(eq(projectMembers.id, member.id), eq(projectMembers.userId, user.userId), eq(projectMembers.status, "active"))); } catch { /* retain the previous contact if another membership uses this email */ }
+    try { await updateMemberEmailRow(member.id, user.userId, currentEmail); } catch { /* retain the previous contact if another membership uses this email */ }
   }
   return { user, role: member.role, studentSection: member.studentSection, teacherId: member.teacherId };
 }
@@ -145,8 +155,7 @@ export async function projectAccess(projectId: string): Promise<Access | null> {
  */
 export async function findProject(projectId: string): Promise<ProjectRow | null> {
   const canonical = projectId === "default" ? (await canonicalProjectId(getD1(), projectId)) ?? projectId : projectId;
-  const [project] = await getDb().select().from(projects).where(eq(projects.id, canonical));
-  return project ?? null;
+  return findProjectAccessRow(canonical);
 }
 
 type ProjectResolverDependencies = {
