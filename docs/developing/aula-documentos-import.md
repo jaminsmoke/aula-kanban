@@ -12,11 +12,11 @@
 | **Abrir Office** | Abre DOCX/XLSX/PPTX en el visor, sin importarlos | `components/document-toolbar.tsx`, `shared/office/office-viewer.tsx`, `use-office-viewer.ts` | 30 MB; formatos antiguos y cifrados rechazados | `presentation.test.tsx`, `office-viewer.test.tsx`, `office-model.test.ts` |
 | **Migrar apps antiguas** | Compone un documento con datos de Notas y documentos, Diagramas y Presentaciones; no modifica el origen | `components/dialogs/document-overlay-dialogs.tsx`, `hooks/use-aula-migration.ts`, `lib/domain/aula-documentos/migration.ts` | Markdown legacy 200.000; Mermaid 20.000 por bloque | `aula-documentos-documents.test.tsx`, `importers.test.ts`, `migration.test.ts` |
 
-El diálogo de documento usa hoy dos selectores ocultos: uno para `.md`/`.markdown`/`text/plain` y otro para `.docx`/`.pptx`. No hay arrastre, pegado, TXT literal, JSON ni detección de duplicados. La importación siempre reemplaza el documento abierto; antes exige confirmación y una copia local de recuperación, y si la copia falla no cambia nada.
+El diálogo de documento usa una zona de arrastre con un selector único (`.md`, `.markdown`, `.txt`, `.docx`, `.pptx`) y un área de pegado Markdown. No hay TXT literal, JSON ni detección de duplicados. La importación siempre reemplaza el documento abierto; antes exige confirmación y una copia local de recuperación, y si la copia falla no cambia nada.
 
 ## 2. Contrato objetivo
 
-La Fase 2 implementará este contrato en el flujo de importación; en Fase 1 solo queda documentado.
+La Fase 2 implementa la entrada y la vista previa; las fases 3 y 4 completan TXT literal, JSON, duplicados y documentación final.
 
 ```ts
 type AulaImportOrigin = "picker" | "drop" | "paste";

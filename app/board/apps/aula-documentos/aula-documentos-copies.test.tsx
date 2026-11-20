@@ -337,7 +337,7 @@ describe("Copias, imágenes y tablas de Aula Documentos", () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
     importDocument();
-    fireEvent.change(screen.getByLabelText(/Archivo Markdown/), {
+    fireEvent.change(document.getElementById("aula-documentos-import-file") as HTMLInputElement, {
       target: { files: [file] },
     });
 

@@ -1,5 +1,5 @@
-import { lazy, Suspense, type ChangeEvent } from "react";
-import { Archive, Download, Eye, Loader2, NotebookPen, Trash2, Upload, X } from "lucide-react";
+import { lazy, Suspense, useState } from "react";
+import { Archive, Download, Eye, Loader2, Trash2, Upload, X } from "lucide-react";
 import { IMPORT_LABELS } from "../../hooks/use-aula-import";
 import { useAulaDocumentosView } from "../../aula-documentos-context";
 import { contentText } from "../../../../../../lib/domain/aula-documentos/text";
@@ -57,18 +57,21 @@ export function DocumentCopyImportDialogs() {
     setImportConfirm,
     importConfirm,
     applyImport,
+    importFile,
+    importPasted,
+    pasteText,
+    setPasteText,
     importOfficeSource,
     setOfficePreviewTitle,
     setOfficePreviewOpen,
     importLoading,
     importError,
-    importMarkdown,
-    importOffice,
     officeOpenSource,
     officePreviewTitle,
     officePreviewRef,
     closeOfficePreview,
   } = useAulaDocumentosView();
+  const [dragActive, setDragActive] = useState(false);
 
   return (
     <>
@@ -399,39 +402,56 @@ export function DocumentCopyImportDialogs() {
             ) : (
               <div className="aula-documentos-import-menu">
                 <p className="aula-documentos-import-intro">
-                  Elige un archivo Markdown o un DOCX/PPTX. La vista previa no cambia el origen. Para recuperar datos de las
-                  apps documentales anteriores, usa Importar &gt; Migrar apps antiguas.
+                  Arrastra un archivo, elígelo con el selector o pega texto. Se admiten Markdown (.md/.markdown), texto (.txt)
+                  y DOCX/PPTX; la vista previa no cambia el origen. Para recuperar datos de las apps documentales anteriores,
+                  usa Importar &gt; Migrar apps antiguas.
                 </p>
-                <label className="aula-documentos-import-option" htmlFor="aula-documentos-office-file">
+                <label
+                  className={`aula-documentos-import-option aula-documentos-import-dropzone${dragActive ? " is-active" : ""}`}
+                  htmlFor="aula-documentos-import-file"
+                  onDragOver={(event) => {
+                    event.preventDefault();
+                    setDragActive(true);
+                  }}
+                  onDragLeave={() => setDragActive(false)}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    setDragActive(false);
+                    void importFile(event.dataTransfer.files?.[0]);
+                  }}
+                >
                   <Upload size={18} aria-hidden />
-                  <span><strong>Documento de Office</strong><small>DOCX o PPTX con vista previa; XLSX se consulta en el visor</small></span>
+                  <span><strong>Arrastra un archivo aquí</strong><small>Markdown, TXT o DOCX/PPTX; también puedes elegirlo con el selector</small></span>
                 </label>
                 <input
-                  id="aula-documentos-office-file"
+                  id="aula-documentos-import-file"
                   className="aula-documentos-file-input"
                   type="file"
-                  accept=".docx,.pptx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation"
-                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                  accept=".md,.markdown,.txt,.docx,.pptx,text/markdown,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                  onChange={(event) => {
                     const file = event.currentTarget.files?.[0];
                     event.currentTarget.value = "";
-                    void importOffice(file);
+                    void importFile(file);
                   }}
                 />
-                <label className="aula-documentos-import-option" htmlFor="aula-documentos-markdown-file">
-                  <NotebookPen size={18} aria-hidden />
-                  <span><strong>Archivo Markdown</strong><small>Importa .md o .markdown con vista previa</small></span>
-                </label>
-                <input
-                  id="aula-documentos-markdown-file"
-                  className="aula-documentos-file-input"
-                  type="file"
-                  accept=".md,.markdown,text/markdown,text/plain"
-                  onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                    const file = event.currentTarget.files?.[0];
-                    event.currentTarget.value = "";
-                    void importMarkdown(file);
-                  }}
-                />
+                <div className="aula-documentos-import-paste">
+                  <label htmlFor="aula-documentos-paste-text">Pegar texto o Markdown</label>
+                  <textarea
+                    id="aula-documentos-paste-text"
+                    rows={4}
+                    value={pasteText}
+                    placeholder="Pega aquí el contenido que quieres previsualizar."
+                    onChange={(event) => setPasteText(event.currentTarget.value)}
+                  />
+                  <button
+                    type="button"
+                    className="aula-documentos-import-secondary"
+                    disabled={!pasteText.trim() || Boolean(importLoading)}
+                    onClick={() => importPasted(pasteText)}
+                  >
+                    Previsualizar texto
+                  </button>
+                </div>
                 {importLoading ? (
                   <p className="aula-documentos-import-status" role="status">
                     <Loader2 size={15} className="aula-documentos-spin" aria-hidden />

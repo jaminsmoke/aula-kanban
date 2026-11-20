@@ -187,6 +187,34 @@ describe("Documentos, importación y cierre de Aula Documentos", () => {
     expect(event.defaultPrevented).toBe(true);
   });
 
+  it("previsualiza el mismo flujo por arrastre y por pegado", async () => {
+    const dropped = {
+      name: "arrastrado.md",
+      size: 34,
+      type: "text/markdown",
+      text: async () => "# Documento arrastrado\n\nTexto arrastrado.",
+    } as unknown as File;
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    importDocument();
+    const dropzone = screen.getByText("Arrastra un archivo aquí").closest("label");
+    expect(dropzone).toBeTruthy();
+    fireEvent.drop(dropzone as HTMLElement, { dataTransfer: { files: [dropped] } });
+
+    expect(await screen.findByRole("heading", { name: "Documento arrastrado" })).toBeTruthy();
+    expect(screen.getByText(/Texto arrastrado/)).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Volver" }));
+    fireEvent.change(screen.getByLabelText("Pegar texto o Markdown"), {
+      target: { value: "# Documento pegado\n\nTexto pegado." },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Previsualizar texto" }));
+
+    expect(await screen.findByRole("heading", { name: "Documento pegado" })).toBeTruthy();
+    expect(screen.getByText(/Texto pegado/)).toBeTruthy();
+  });
+
   it("importa un DOCX/PPTX con vista previa", async () => {
     officeImportMock.importOfficeFile.mockResolvedValueOnce({
       ok: true,
@@ -201,7 +229,7 @@ describe("Documentos, importación y cierre de Aula Documentos", () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByRole("button", { name: "Archivo" })).toBeTruthy());
     importDocument();
-    const input = document.getElementById("aula-documentos-office-file") as HTMLInputElement;
+    const input = document.getElementById("aula-documentos-import-file") as HTMLInputElement;
     fireEvent.change(input, {
       target: { files: [new File(["docx"], "informe.docx", { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" })] },
     });

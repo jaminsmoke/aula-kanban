@@ -70,11 +70,12 @@
 
 ### Fase 2 — Un solo diálogo con archivo, arrastre y pegado
 
-- [ ] Sustituir los dos selectores ocultos por una zona de arrastre y un selector único.
-- [ ] Añadir un área de pegado que use el conversor de Markdown y muestre la misma vista previa.
-- [ ] Enrutar Markdown, DOCX y PPTX por el contrato común; conservar **Ver original** para Office.
-- [ ] Mantener confirmación, copia de recuperación previa y estados de carga/error; revisar foco y teclado.
+- [x] Sustituir los dos selectores ocultos por una zona de arrastre y un selector único.
+- [x] Añadir un área de pegado que use el conversor de Markdown y muestre la misma vista previa.
+- [x] Enrutar Markdown, DOCX y PPTX por el contrato común; conservar **Ver original** para Office.
+- [x] Mantener confirmación, copia de recuperación previa y estados de carga/error; revisar foco y teclado.
 - **Criterios:** archivo, arrastre y pegado llegan a la misma vista previa; cancelar no cambia nada; no se reemplaza sin confirmación y copia; pruebas de los tres caminos.
+- **Cierre (2026-11-20):** el diálogo usa una zona de arrastre y un selector único, más un área de pegado Markdown; los tres caminos comparten vista previa, confirmación y copia de recuperación. `use-aula-import` enruta por extensión/MIME y conserva «Ver original» para Office. Pruebas de archivo, arrastre y pegado en verde; sin cambios de URLs, permisos ni versión.
 
 ### Fase 3 — TXT, JSON canónico y decisión sobre HTML
 
