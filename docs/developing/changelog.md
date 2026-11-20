@@ -1,8 +1,37 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-03 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-20 — Roadmap ARC-03 — Estado de cliente y persistencia
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Retirado el sistema de borradores versionados sin consumidores: `useVersionedDraft`, recuperación, diálogos, CSS y pruebas; **1.694 líneas menos**.
+- Añadido `lib/client-storage.ts` con lectura, escritura y eliminación tipadas, envoltura versionada, validación, migración, fallback, cuotas y almacenamiento inyectable.
+- Calculadora migra su modo e historial; tema migra su preferencia y el script de arranque acepta valores legados y versionados.
+- Blockly migra su respaldo local sin sustituir `useAppDocument`; Tarjetas migra el progreso FSRS.
+- Aula Documentos migra las copias de recuperación al contrato y conserva límites, purga y cuota. La recuperación se carga de forma diferida para mantener el presupuesto del bundle inicial.
+- Se conservan las claves existentes y se añaden migraciones explícitas; los datos corruptos o futuros usan fallback seguro.
+- No se modificó la versión del Site, los datos, las URLs ni los permisos.
+
+### Verificación
+
+- `npm run check`: ESLint sin errores (64 warnings preexistentes), `tsc` y `arch:check` correctos.
+- `arch:check`: **397 archivos de producto / 988 imports / 0 violaciones nuevas / 0 ciclos / 0 problemas de presupuesto / 0 problemas MCP**.
+- Suite completa: **233 archivos / 1.595 pruebas**.
+- Build, `perf:budget` y `perf:office` correctos.
+- `aula-documentos`: **369.344 / 370.000 B gzip**; export **329.691 / 340.000**; Office **196.481 / 210.000**; hoja **310.209 / 315.000**.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-03 archivado en [`historial/roadmap-arc-03.md`](../historial/roadmap-arc-03.md). El backlog queda con **10 entradas**; siguiente candidato **ARC-04**.
 
 ---
 

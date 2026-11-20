@@ -1,6 +1,7 @@
 # Auditoría de estado local y persistencia
 
-> **Estado:** Fases 1–4 de ARC-03 · **Fecha:** 2026-11-20
+> **Estado:** ARC-03 completado · **Fecha:** 2026-11-20
+> **Roadmap:** [`roadmap-arc-03.md`](../historial/roadmap-arc-03.md)
 > **Alcance:** claves de `localStorage`, consumidores, datos y sistema de borradores versionados.
 > **Regla:** los documentos compartidos viven en `useAppDocument`; `localStorage` solo guarda estado local del cliente.
 
@@ -86,3 +87,12 @@ La migración de Calculadora, tema, Blockly, Tarjetas y recuperación de Aula em
 - `recovery-types.ts` separa tipos y etiquetas; la recuperación se importa de forma diferida para no cargar el contrato en el bundle inicial de Aula Documentos.
 - Pruebas de respaldo legado/corrupto, progreso legado, migración, cuota y recuperación tras recarga.
 - `aula-documentos` queda en **369.344 / 370.000 B gzip**.
+
+## 9. Cierre y excepciones
+
+- La única implementación que accede directamente a `window.localStorage` es `lib/client-storage.ts`.
+- `app/theme.ts` conserva la lectura en el script que se ejecuta antes de React para evitar el destello de tema; acepta el valor legado y la envoltura versionada.
+- `use-aula-recovery.ts` inyecta `window.localStorage` en las funciones del contrato; no lee ni escribe claves directamente.
+- Las pruebas y migraciones pueden usar `localStorage` directamente.
+- `useAppDocument` sigue siendo la persistencia de documentos compartidos; no se duplican autosave, cierre ni conflicto.
+- El roadmap se archivó en [`roadmap-arc-03.md`](../historial/roadmap-arc-03.md).
