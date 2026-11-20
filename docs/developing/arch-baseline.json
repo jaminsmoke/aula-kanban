@@ -17,8 +17,8 @@
     "test": 600
   },
   "inventory": {
-    "productFiles": 389,
-    "localImportEdges": 970,
+    "productFiles": 396,
+    "localImportEdges": 982,
     "baselineViolations": 5,
     "baselineCycles": 0
   },
@@ -132,22 +132,7 @@
     }
   ],
   "baselineCycles": [],
-  "largeFiles": [
-    {
-      "path": "lib/domain/aula-documentos/document.ts",
-      "lines": 655,
-      "limit": 600,
-      "owner": "ARC-02",
-      "reason": "Pendiente de separar normalización, tablas y tipos."
-    },
-    {
-      "path": "app/board/shared/aula-documentos/mermaid-block.tsx",
-      "lines": 607,
-      "limit": 600,
-      "owner": "ARC-02",
-      "reason": "Pendiente de separar render, editor y acciones."
-    }
-  ],
+  "largeFiles": [],
   "largeCss": [
     {
       "path": "app/portada.css",

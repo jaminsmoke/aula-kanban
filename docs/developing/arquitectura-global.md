@@ -153,7 +153,7 @@ Reglas:
 
 ## 5. Inventario y línea base
 
-El inventario de producto (sin pruebas) queda en:
+El inventario inicial de ARC-01 (sin pruebas) queda en:
 
 - **357 archivos de producto**, **907 imports locales**.
 - Capas: apps 76 archivos / 14.328 líneas; features 76 / 6.752; shared 39 / 4.962; dominio 40 / 6.198; servidor 88 / 9.902; API 26 / 1.357; infraestructura D1 2 / 337; shell 4 / 476.
@@ -218,8 +218,8 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 ## 8. Estado tras ARC-01 y DEV-02
 
 - `npm run arch:check` y `npm run check` están disponibles; CI ejecuta `arch:check`.
-- Resultado actual: **389 archivos de producto / 970 imports / 5 violaciones base / 0 ciclos / 0 problemas nuevos**.
-- Las excepciones de tamaño y las cinco dependencias `features → layout` siguen asignadas a ARC-02/ARC-04 y tienen caducidad.
+- Resultado actual: **396 archivos de producto / 982 imports / 5 violaciones base / 0 ciclos / 0 problemas nuevos**.
+- No quedan excepciones de tamaño; las cinco dependencias `features → layout` siguen asignadas a ARC-04 y tienen caducidad.
 - El ciclo `auth ↔ demo` se eliminó con `lib/server/auth-user.ts`.
 - La configuración global de CodArch se retiró. DEV-02 quedó cerrado con el guard de MCP por repositorio, el inventario en [`mcp-tooling-audit.md`](mcp-tooling-audit.md) y la plantilla local [`mcp-project.example.json`](mcp-project.example.json).
 - ARC-02 está activo en [`roadmap.md`](roadmap.md) para descomponer Timeline, Hoja de cálculo, Office, Tarjetas y el residual de Aula Documentos.

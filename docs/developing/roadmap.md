@@ -106,10 +106,10 @@ Medición del 2026-11-20, antes de empezar:
 
 ### Fase 5 — Residual de Aula Documentos
 
-- [ ] Separar `document.ts` en tipos, normalización y tablas, conservando un punto de entrada compatible para sus consumidores.
-- [ ] Separar `mermaid-block.tsx` en render, edición y acciones.
-- [ ] Retirar `document.ts` y `mermaid-block.tsx` de `largeFiles` en `arch-baseline.json`.
-- [ ] Añadir o ajustar pruebas de normalización, tablas, spans, límites, render y edición de Mermaid.
+- [x] Separar `document.ts` en tipos, normalización y tablas, conservando un punto de entrada compatible para sus consumidores.
+- [x] Separar `mermaid-block.tsx` en render, edición y acciones.
+- [x] Retirar `document.ts` y `mermaid-block.tsx` de `largeFiles` en `arch-baseline.json`.
+- [x] Añadir o ajustar pruebas de normalización, tablas, spans, límites, render y edición de Mermaid.
 - **Criterios:** ningún archivo de producto de ARC-02 supera 600 líneas; el documento serializado y las importaciones públicas siguen siendo compatibles; `arch:check` no conserva excepciones de tamaño de ARC-02; suite y presupuestos pasan.
 
 ### Fase 6 — Cierre
@@ -139,4 +139,5 @@ Medición del 2026-11-20, antes de empezar:
 - 2026-11-20: **Fase 2 completada.** Hoja de cálculo queda con un shell de 80 líneas, hooks de documento y rejilla, barra de herramientas, barra `fx`, panel lateral y exportación CSV separada. Se conservaron fórmulas, estilos, límites, autosave y lectura invitada. Suite: **229 archivos / 1.585 pruebas**; `arch:check` en **370 archivos / 933 imports / 0 problemas**; `hoja-calculo` en **310.192 / 315.000 B gzip**.
 - 2026-11-20: **Fase 3 completada.** El visor Office queda con un hook de archivo/visor y componentes de cabecera, controles, error y estado vacío. La exportación se separa en utilidades comunes, DOCX y PPTX, manteniendo el barrel público. Añadidas pruebas del estado vacío, formato inválido y modo embebido. Suite: **230 archivos / 1.589 pruebas**; `arch:check` en **379 archivos / 951 imports / 0 problemas**; `aula-documentos` 369.601, export 329.694 y Office 196.481 B gzip.
 - 2026-11-20: **Fase 4 completada.** Tarjetas pasa de un `tarjetas-app.tsx` de 442 líneas a un shell de 98 líneas, hooks de editor/repaso y componentes de mazos, formulario, lista y sesión. Se mantienen FSRS, localStorage, permisos y autosave. Mapas (362), Ajedrez (309) y Geometría (382) no se refactorizan: están por debajo de 600 líneas, no tienen excepción en el baseline y no hay una separación que justifique el churn. `tarjetas.css` sigue siendo ARC-04. Suite: **230 archivos / 1.590 pruebas**; `arch:check` en **389 archivos / 970 imports / 0 problemas**; `hoja-calculo` 310.201, `aula-documentos` 369.609, export 329.701 y Office 196.481 B gzip.
+- 2026-11-20: **Fase 5 completada.** `document.ts` queda como barrel de 2 líneas, con tipos, tablas y validación separados; `mermaid-block.tsx` queda como extensión de 44 líneas, con vista, cabecera, vista previa y almacén de borradores. Se retiraron las dos excepciones de `largeFiles` y el baseline queda sin archivos de código por encima de 600 líneas. Añadidas pruebas de acciones del bloque y del registro de borradores. Suite: **232 archivos / 1.593 pruebas**; `arch:check` en **396 archivos / 982 imports / 0 problemas**; `aula-documentos` 369.825 / 370.000 B gzip; export 329.699; Office 196.481.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.
