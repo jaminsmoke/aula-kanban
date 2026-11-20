@@ -1,6 +1,6 @@
 # Auditoría de estado local y persistencia
 
-> **Estado:** Fases 1–3 de ARC-03 · **Fecha:** 2026-11-20
+> **Estado:** Fases 1–4 de ARC-03 · **Fecha:** 2026-11-20
 > **Alcance:** claves de `localStorage`, consumidores, datos y sistema de borradores versionados.
 > **Regla:** los documentos compartidos viven en `useAppDocument`; `localStorage` solo guarda estado local del cliente.
 
@@ -17,9 +17,9 @@ No se conserva como infraestructura preventiva. Si una app necesita autosave loc
 | `aula-kanban-calculator-mode` | `"basica" \| "cientifica"` | `calculator-storage.ts` | Migrado en Fase 3 |
 | `aula.calc.history` | JSON `HistoryEntry[]` | `calculator-storage.ts` | Migrado en Fase 3 |
 | `aula-kanban-theme` | `"light" \| "dark" \| "system"` | `use-theme.ts` y script de arranque | Migrado en Fase 3; arranque temprano compatible |
-| `aula.blockly.${projectId}` | JSON de workspace Blockly | `use-blockly.ts` | Conservar como respaldo local; el documento compartido sigue en `useAppDocument` |
-| `aula-kanban-tarjetas:${projectId}` | JSON `TarjetasProgress` | `use-tarjetas-review.ts` | Conservar y migrar en Fase 4 |
-| `aula-kanban:aula-documentos:recuperacion:${projectId}` | JSON de copias de recuperación | `lib/domain/aula-documentos/recovery.ts` | Conservar y migrar en Fase 4 |
+| `aula.blockly.${projectId}` | JSON de workspace Blockly | `blockly-storage.ts` | Migrado en Fase 4; el documento compartido sigue en `useAppDocument` |
+| `aula-kanban-tarjetas:${projectId}` | JSON `TarjetasProgress` | `tarjetas-storage.ts` | Migrado en Fase 4 |
+| `aula-kanban:aula-documentos:recuperacion:${projectId}` | JSON de copias de recuperación | `recovery.ts` + `recovery-types.ts` | Migrado en Fase 4 |
 | `aula-kanban:borrador:${projectId}:${appId}` | Copia versionada de borrador | Sistema retirado | Eliminar; sin consumidor |
 
 ## 3. Código retirado
@@ -58,7 +58,7 @@ Total: **1.694 líneas** retiradas (877 de producto, 551 de pruebas y 266 de CSS
 
 ## 6. Contrato implementado en la Fase 2
 
-`app/board/shared/client-storage.ts` expone `createLocalState` y `clientStorageKey`:
+`lib/client-storage.ts` expone `createLocalState` y `clientStorageKey`:
 
 - `read`: devuelve el valor validado o el fallback.
 - `readResult`: añade `ok`, `missing`, `invalid`, `future` o `unavailable`, y si hubo migración.
@@ -77,3 +77,12 @@ La migración de Calculadora, tema, Blockly, Tarjetas y recuperación de Aula em
 - `use-theme.ts` lee y escribe `aula-kanban-theme` por el contrato.
 - `THEME_INIT_SCRIPT` acepta el valor legado sin envoltura y la envoltura versionada; ignora versiones futuras.
 - Pruebas: modo legacy/versionado, historial legado/corrupto, tema legado/versionado/futuro y recarga tras remontar.
+
+## 8. Migración de Blockly, Tarjetas y recuperación
+
+- `blockly-storage.ts` conserva `aula.blockly.${projectId}` como respaldo local; el documento compartido sigue en `useAppDocument`.
+- `tarjetas-storage.ts` conserva la clave y migra el progreso FSRS.
+- Las copias de Aula Documentos usan `recovery.ts` con el contrato y mantienen sus límites, purga y resultados de cuota.
+- `recovery-types.ts` separa tipos y etiquetas; la recuperación se importa de forma diferida para no cargar el contrato en el bundle inicial de Aula Documentos.
+- Pruebas de respaldo legado/corrupto, progreso legado, migración, cuota y recuperación tras recarga.
+- `aula-documentos` queda en **369.344 / 370.000 B gzip**.

@@ -1,42 +1,28 @@
+import { createLocalState, type ClientStorage } from "../../client-storage";
 import { AULA_DOCUMENT_JSON_MAX_LENGTH, type AulaDocument } from "./document";
+import {
+  AULA_RECOVERY_MAX_COPIES,
+  AULA_RECOVERY_MAX_TOTAL_BYTES,
+  AULA_RECOVERY_REASONS,
+  type AulaRecoveryCopy,
+  type AulaRecoveryReason,
+  type SaveAulaRecoveryResult,
+} from "./recovery-types";
 
-/** Copias locales que se conservan antes de purgar las más antiguas. */
-export const AULA_RECOVERY_MAX_COPIES = 3;
-
-/** Tamaño total máximo del conjunto de copias en `localStorage`. */
-export const AULA_RECOVERY_MAX_TOTAL_BYTES = 420_000;
-
-/** Motivo por el que se creó una copia local. */
-export const AULA_RECOVERY_REASONS = ["conflict", "replace"] as const;
-export type AulaRecoveryReason = (typeof AULA_RECOVERY_REASONS)[number];
-
-/** Etiquetas legibles de los motivos de recuperación. */
-export const AULA_RECOVERY_REASON_LABELS: Record<AulaRecoveryReason, string> = {
-  conflict: "Conflicto de versión",
-  replace: "Antes de reemplazar",
-};
-
-/** Copia recuperable de un documento guardada en el navegador. */
-export type AulaRecoveryCopy = {
-  id: string;
-  createdAt: number;
-  reason: AulaRecoveryReason;
-  title: string;
-  serverUpdatedAt: number | null;
-  document: AulaDocument;
-};
-
-/** Resultado de guardar una copia local. */
-export type SaveAulaRecoveryResult =
-  | { ok: true; copies: AulaRecoveryCopy[]; purged: number }
-  | { ok: false; reason: "too-large" | "quota" };
+export {
+  AULA_RECOVERY_MAX_COPIES,
+  AULA_RECOVERY_MAX_TOTAL_BYTES,
+  AULA_RECOVERY_REASON_LABELS,
+  AULA_RECOVERY_REASONS,
+} from "./recovery-types";
+export type { AulaRecoveryCopy, AulaRecoveryReason, SaveAulaRecoveryResult } from "./recovery-types";
 
 type StoredRecovery = {
   version: 1;
   copies: AulaRecoveryCopy[];
 };
 
-type RecoveryStorage = Pick<Storage, "getItem" | "setItem">;
+type RecoveryStorage = ClientStorage;
 
 const STORAGE_PREFIX = "aula-kanban:aula-documentos:recuperacion:";
 const STORAGE_VERSION = 1;
@@ -71,26 +57,49 @@ function isRecoveryCopy(value: unknown): value is AulaRecoveryCopy {
 }
 
 /**
+ * Normaliza una lista de copias, incluidas las del formato anterior.
+ * @param value - Array actual o envoltura `{ version, copies }` anterior.
+ * @returns Las copias válidas o `null` si la forma no es reconocible.
+ */
+function normalizeCopies(value: unknown): AulaRecoveryCopy[] | null {
+  const rawCopies = Array.isArray(value)
+    ? value
+    : value && typeof value === "object"
+      && (value as Partial<StoredRecovery>).version === STORAGE_VERSION
+      && Array.isArray((value as Partial<StoredRecovery>).copies)
+      ? (value as StoredRecovery).copies
+      : null;
+  if (!rawCopies) return null;
+  return rawCopies
+    .filter(isRecoveryCopy)
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(0, AULA_RECOVERY_MAX_COPIES);
+}
+
+/**
+ * Crea el estado local versionado de las copias de recuperación.
+ * @param storage - Almacenamiento inyectado.
+ * @param projectId - Proyecto activo.
+ * @returns El estado local de copias.
+ */
+function createRecoveryState(storage: RecoveryStorage, projectId: string) {
+  return createLocalState<AulaRecoveryCopy[]>({
+    key: aulaRecoveryStorageKey(projectId),
+    version: STORAGE_VERSION,
+    validate: normalizeCopies,
+    fallback: () => [],
+    storage,
+  });
+}
+
+/**
  * Lee las copias locales válidas de un proyecto, de la más reciente a la más antigua.
  * @param storage - Almacenamiento del navegador.
  * @param projectId - Proyecto activo.
  * @returns Las copias válidas, como máximo el límite configurado.
  */
 export function listAulaRecoveryCopies(storage: RecoveryStorage, projectId: string): AulaRecoveryCopy[] {
-  try {
-    const raw = storage.getItem(aulaRecoveryStorageKey(projectId));
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    if (!parsed || typeof parsed !== "object") return [];
-    const stored = parsed as Partial<StoredRecovery>;
-    if (stored.version !== STORAGE_VERSION || !Array.isArray(stored.copies)) return [];
-    return stored.copies
-      .filter(isRecoveryCopy)
-      .sort((a, b) => b.createdAt - a.createdAt)
-      .slice(0, AULA_RECOVERY_MAX_COPIES);
-  } catch {
-    return [];
-  }
+  return createRecoveryState(storage, projectId).read();
 }
 
 /**
@@ -103,6 +112,15 @@ function createRecoveryId(createdAt: number): string {
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2);
   return `${createdAt}-${random}`;
+}
+
+/**
+ * Calcula el tamaño serializado del conjunto de copias.
+ * @param copies - Copias candidatas.
+ * @returns Longitud en caracteres del JSON.
+ */
+function payloadLength(copies: AulaRecoveryCopy[]): number {
+  return JSON.stringify({ version: STORAGE_VERSION, copies } satisfies StoredRecovery).length;
 }
 
 /**
@@ -141,26 +159,23 @@ export function saveAulaRecoveryCopy(
   const existing = listAulaRecoveryCopies(storage, projectId);
   let copies = [copy, ...existing].slice(0, AULA_RECOVERY_MAX_COPIES);
   let purged = Math.max(0, existing.length + 1 - copies.length);
-  const storageKey = aulaRecoveryStorageKey(projectId);
-  const payload = () => JSON.stringify({ version: STORAGE_VERSION, copies } satisfies StoredRecovery);
+  const state = createRecoveryState(storage, projectId);
 
-  while (copies.length > 1 && payload().length > AULA_RECOVERY_MAX_TOTAL_BYTES) {
+  while (copies.length > 1 && payloadLength(copies) > AULA_RECOVERY_MAX_TOTAL_BYTES) {
     copies = copies.slice(0, -1);
     purged += 1;
   }
-  if (payload().length > AULA_RECOVERY_MAX_TOTAL_BYTES) {
+  if (payloadLength(copies) > AULA_RECOVERY_MAX_TOTAL_BYTES) {
     return { ok: false, reason: "too-large" };
   }
 
   while (copies.length > 0) {
-    try {
-      storage.setItem(storageKey, payload());
-      return { ok: true, copies, purged };
-    } catch {
-      if (copies.length <= 1) return { ok: false, reason: "quota" };
-      copies = copies.slice(0, -1);
-      purged += 1;
-    }
+    const result = state.write(copies);
+    if (result.ok) return { ok: true, copies, purged };
+    if (result.reason === "serialize") return { ok: false, reason: "too-large" };
+    if (copies.length <= 1) return { ok: false, reason: "quota" };
+    copies = copies.slice(0, -1);
+    purged += 1;
   }
   return { ok: false, reason: "quota" };
 }

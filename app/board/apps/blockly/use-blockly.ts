@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAppDocument } from "../use-app-document";
+import { createBlocklyState } from "./blockly-storage";
 import { runJavaScript } from "./blockly-run-worker";
 import { BLOCKLY_STARTER } from "./blockly-starter";
 import { BLOCKLY_TOOLBOX } from "./blockly-toolbox";
@@ -29,7 +30,7 @@ export function useBlockly({ projectId, readOnly }: { projectId: string; readOnl
   const [running, setRunning] = useState(false);
   const statusTimer = useRef<number | null>(null);
 
-  const storageKey = `aula.blockly.${projectId}`;
+  const localState = useMemo(() => createBlocklyState(projectId), [projectId]);
   const { load: loadDocument, save: saveDocument } = useAppDocument<Record<string, unknown>>(projectId, "blockly");
 
   const flash = useCallback((message: string) => {
@@ -123,11 +124,13 @@ export function useBlockly({ projectId, readOnly }: { projectId: string; readOnl
         }
       }
       if (!restored) {
-        try {
-          const saved = window.localStorage.getItem(storageKey);
-          if (saved) lib.serialization.workspaces.load(JSON.parse(saved), space);
-        } catch {
-          /* estado local no válido */
+        const saved = localState.readResult();
+        if (saved.status === "ok") {
+          try {
+            lib.serialization.workspaces.load(saved.value, space);
+          } catch {
+            /* estado local no válido */
+          }
         }
       }
 
@@ -143,7 +146,7 @@ export function useBlockly({ projectId, readOnly }: { projectId: string; readOnl
       workspace.current?.dispose();
       workspace.current = null;
     };
-  }, [loadDocument, storageKey, readOnly]);
+  }, [loadDocument, localState, readOnly]);
 
   // Mientras el panel de código está abierto, se regenera al cambiar el lienzo.
   useEffect(() => {
@@ -171,11 +174,7 @@ export function useBlockly({ projectId, readOnly }: { projectId: string; readOnl
   const save = async () => {
     const state = serialize();
     if (!state) return;
-    try {
-      window.localStorage.setItem(storageKey, JSON.stringify(state));
-    } catch {
-      /* sin respaldo local */
-    }
+    localState.write(state);
     const saved = await saveDocument(state);
     flash(saved ? "Programa guardado" : "Guardado solo en este navegador");
   };
@@ -189,9 +188,10 @@ export function useBlockly({ projectId, readOnly }: { projectId: string; readOnl
         flash("Programa cargado");
         return;
       }
-      const saved = window.localStorage.getItem(storageKey);
-      if (!saved) { flash("No hay ningún programa guardado"); return; }
-      blockly.current.serialization.workspaces.load(JSON.parse(saved), workspace.current);
+      const saved = localState.readResult();
+      if (saved.status === "missing") { flash("No hay ningún programa guardado"); return; }
+      if (saved.status !== "ok") { flash("No se pudo cargar el programa"); return; }
+      blockly.current.serialization.workspaces.load(saved.value, workspace.current);
       flash("Programa cargado del navegador");
     } catch {
       flash("No se pudo cargar el programa");

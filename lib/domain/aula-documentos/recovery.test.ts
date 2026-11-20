@@ -43,6 +43,7 @@ function memoryStorage(failWrites = false) {
         if (failWrites) throw new Error("QuotaExceededError");
         values.set(key, value);
       },
+      removeItem: (key: string) => { values.delete(key); },
     },
   };
 }
@@ -73,6 +74,23 @@ describe("copias locales de Aula Documentos", () => {
       reason: "conflict",
       serverUpdatedAt: 9,
     });
+  });
+
+  it("lee el formato anterior de copias sin envoltura versionada", () => {
+    const { storage, values } = memoryStorage();
+    const legacy = {
+      id: "legado",
+      createdAt: 1_000,
+      reason: "replace",
+      title: "Copia legada",
+      serverUpdatedAt: 2,
+      document: recoveryDocument("Copia legada"),
+    };
+    values.set(aulaRecoveryStorageKey("p1"), JSON.stringify({ version: 1, copies: [legacy] }));
+
+    const copies = listAulaRecoveryCopies(storage, "p1");
+    expect(copies).toHaveLength(1);
+    expect(copies[0]).toMatchObject({ id: "legado", title: "Copia legada" });
   });
 
   it("purga las copias más antiguas al superar el número máximo", () => {

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { applyTheme, resolveTheme, THEME_STORAGE_KEY, THEME_STORAGE_VERSION, type ResolvedTheme, type ThemePreference } from "../../theme";
-import { createLocalState } from "./client-storage";
+import { createLocalState } from "../../../lib/client-storage";
 
 /**
  * Valida la preferencia de tema guardada.

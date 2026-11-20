@@ -1,6 +1,6 @@
 import { Download, FileText, X } from "lucide-react";
 import { AULA_DOCUMENT_TEMPLATES } from "../../../../../../lib/domain/aula-documentos/templates";
-import { AULA_RECOVERY_REASON_LABELS } from "../../../../../../lib/domain/aula-documentos/recovery";
+import { AULA_RECOVERY_REASON_LABELS } from "../../../../../../lib/domain/aula-documentos/recovery-types";
 import { useAulaDocumentosView } from "../../aula-documentos-context";
 import { formatDateTime } from "../../../../shared/ui/date";
 

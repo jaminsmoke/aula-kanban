@@ -1,14 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DefaultScheduler, Rating, type Grade } from "ts-fsrs";
-import {
-  emptyProgress,
-  parseProgress,
-  type ReviewCard,
-  type ReviewDeck,
-  type TarjetasProgress,
-} from "./tarjetas-model";
+import type { ReviewCard, ReviewDeck, TarjetasProgress } from "./tarjetas-model";
+import { createTarjetasProgressState } from "./tarjetas-storage";
 import { dueCards, RATING_OPTIONS, serializeSchedule, toSchedulerCard, type Scheduler, type SchedulerCard } from "./tarjetas-review";
 
 /** Resumen de una sesión de repaso. */
@@ -34,15 +29,8 @@ type UseTarjetasReviewOptions = {
  * @returns Progreso, cola, tarjeta actual y acciones de repaso.
  */
 export function useTarjetasReview({ projectId, selectedDeck, onStatus }: UseTarjetasReviewOptions) {
-  const storageKey = `aula-kanban-tarjetas:${projectId}`;
-  const [progress, setProgress] = useState<TarjetasProgress>(() => {
-    if (typeof window === "undefined") return emptyProgress();
-    try {
-      return parseProgress(JSON.parse(window.localStorage.getItem(storageKey) ?? "null"));
-    } catch {
-      return emptyProgress();
-    }
-  });
+  const progressState = useMemo(() => createTarjetasProgressState(projectId), [projectId]);
+  const [progress, setProgress] = useState<TarjetasProgress>(() => progressState.read());
   const [scheduler, setScheduler] = useState<Scheduler | null>(null);
   const [reviewMode, setReviewMode] = useState(false);
   const [reviewQueue, setReviewQueue] = useState<ReviewCard[]>([]);
@@ -64,12 +52,9 @@ export function useTarjetasReview({ projectId, selectedDeck, onStatus }: UseTarj
 
   const saveProgress = useCallback((next: TarjetasProgress) => {
     setProgress(next);
-    try {
-      window.localStorage.setItem(storageKey, JSON.stringify(next));
-    } catch {
-      onStatus("El progreso no se pudo guardar en este navegador.");
-    }
-  }, [onStatus, storageKey]);
+    const result = progressState.write(next);
+    if (!result.ok) onStatus("El progreso no se pudo guardar en este navegador.");
+  }, [onStatus, progressState]);
 
   function startReview() {
     if (!selectedDeck || !scheduler) {

@@ -89,10 +89,10 @@ El baseline no tiene archivos de código por encima de 600 líneas. `useAppDocum
 
 ### Fase 4 — Migrar Blockly, Tarjetas y recuperación de Aula
 
-- [ ] Migrar el respaldo local de Blockly sin sustituir su documento de `useAppDocument`.
-- [ ] Migrar el progreso FSRS de Tarjetas conservando claves y compatibilidad con el progreso existente.
-- [ ] Migrar las copias de recuperación local de Aula Documentos y sus límites.
-- [ ] Añadir pruebas de cuota, corrupción, migración y recuperación tras recarga.
+- [x] Migrar el respaldo local de Blockly sin sustituir su documento de `useAppDocument`.
+- [x] Migrar el progreso FSRS de Tarjetas conservando claves y compatibilidad con el progreso existente.
+- [x] Migrar las copias de recuperación local de Aula Documentos y sus límites.
+- [x] Añadir pruebas de cuota, corrupción, migración y recuperación tras recarga.
 - **Criterios:** los tres flujos conservan sus datos y límites; ningún documento compartido se mueve a `localStorage`; suite y presupuestos pasan.
 
 ### Fase 5 — Consolidación y cierre
@@ -122,4 +122,5 @@ El baseline no tiene archivos de código por encima de 600 líneas. `useAppDocum
 - 2026-11-20: **Fase 1 completada.** Inventario de claves y decisión en [`client-storage-audit.md`](client-storage-audit.md). Retirados `useVersionedDraft`, su recuperación, los diálogos de cierre/conflicto, sus CSS y pruebas: **1.694 líneas**. Añadida una prueba de regresión contra su reintroducción. `arch:check`: **392 archivos / 975 imports / 0 problemas**; suite: **229 archivos / 1.573 pruebas**; presupuestos correctos.
 - 2026-11-20: **Fase 2 completada.** Añadido `app/board/shared/client-storage.ts` con envoltura versionada, validación, migración, fallback, almacenamiento inyectable y errores de cuota/unavailable. Diez pruebas cubren clave ausente, corrupción, versiones antigua/futura, cuota, SSR, eliminación y espacio de nombres. `arch:check`: **393 archivos / 975 imports / 0 problemas**; suite: **230 archivos / 1.583 pruebas**; presupuestos correctos.
 - 2026-11-20: **Fase 3 completada.** Calculadora migra modo e historial a `calculator-storage.ts`; tema migra preferencia y el script de arranque entiende tanto el valor legado como la envoltura versionada. Se conservan las claves, la precarga científica y la sincronización entre pestañas. Pruebas de modo, historial legado/corrupto, tema legado/versionado/futuro y recarga. `arch:check`: **394 archivos / 979 imports / 0 problemas**; suite: **231 archivos / 1.590 pruebas**; presupuestos correctos.
+- 2026-11-20: **Fase 4 completada.** Blockly y Tarjetas usan estados locales versionados; Aula Documentos mantiene sus límites y migra las copias de recuperación al contrato. La recuperación de Aula se carga de forma diferida para no incluir el contrato en el bundle inicial y mantener `aula-documentos` bajo presupuesto. Pruebas de respaldo legado, corrupción, migración y recuperación. `arch:check`: **397 archivos / 988 imports / 0 problemas**; suite: **233 archivos / 1.595 pruebas**; `aula-documentos` **369.344 / 370.000 B gzip**.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

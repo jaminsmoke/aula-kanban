@@ -1,4 +1,4 @@
-import { createLocalState } from "../../../shared/client-storage";
+import { createLocalState } from "../../../../../lib/client-storage";
 import { HISTORY_KEY, type HistoryEntry } from "./calculator-keys";
 
 /** Clave local del último modo de teclado. */

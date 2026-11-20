@@ -237,7 +237,7 @@ describe("Recuperación y plantillas de Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento actual"));
-    fireEvent.click(screen.getByRole("button", { name: "Copias locales (1)" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Copias locales (1)" }));
 
     expect(await screen.findByRole("dialog", { name: "Copias locales" })).toBeTruthy();
     expect(screen.getByText("Copia recuperada")).toBeTruthy();
