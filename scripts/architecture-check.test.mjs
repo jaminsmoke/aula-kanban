@@ -77,6 +77,35 @@ describe("architecture check", () => {
     expect(result.mcpProblems.some((entry) => entry.label === "--root")).toBe(true);
   });
 
+  it("acepta una configuración MCP relativa al workspace", () => {
+    const root = fixture();
+    mkdirSync(path.join(root, ".opencode"), { recursive: true });
+    writeFileSync(path.join(root, ".opencode", "opencode.json"), JSON.stringify({
+      mcp: { local: { type: "local", command: ["node", "./scripts/mcp.mjs", "--root", "."] } },
+    }, null, 2));
+
+    const result = checkArchitecture({ root, workspace: root, baselinePath: "docs/baseline.json" });
+    expect(result.mcpProblems).toEqual([]);
+  });
+
+  it("rechaza un comando MCP con ruta absoluta externa", () => {
+    const root = fixture();
+    writeFileSync(path.join(root, "opencode.json"), JSON.stringify({
+      mcp: { local: { type: "local", command: ["node", "C:/otro/repositorio/mcp.mjs"] } },
+    }, null, 2));
+
+    const result = checkArchitecture({ root, workspace: root, baselinePath: "docs/baseline.json" });
+    expect(result.mcpProblems.some((entry) => entry.label === "command")).toBe(true);
+  });
+
+  it("rechaza una configuración MCP con JSON inválido", () => {
+    const root = fixture();
+    writeFileSync(path.join(root, "opencode.json"), "{ no es json");
+
+    const result = checkArchitecture({ root, workspace: root, baselinePath: "docs/baseline.json" });
+    expect(result.mcpProblems.some((entry) => entry.label === "json")).toBe(true);
+  });
+
   it("falla cerrada si la raíz está fuera del workspace", () => {
     const root = fixture();
     const workspace = path.join(root, "workspace");

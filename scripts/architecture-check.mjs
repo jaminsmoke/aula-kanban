@@ -126,28 +126,51 @@ function checkProjectMcpConfig(root) {
     ".cursor/mcp.json",
   ];
   const problems = [];
+  const looksLikePath = (value) => (
+    /^[A-Za-z]:[\\/]/.test(value)
+    || /^\\\\/.test(value)
+    || value.startsWith("/")
+    || value.startsWith("file://")
+    || /^\.\.[\\/]/.test(value)
+    || value.split(/[\\/]/).includes("..")
+  );
   const checkPath = (value, file, label) => {
     if (typeof value !== "string" || !value.trim()) return;
-    const resolved = path.resolve(root, value);
+    let candidate = value;
+    if (candidate.startsWith("file://")) {
+      try {
+        candidate = decodeURIComponent(new URL(candidate).pathname);
+      } catch {
+        problems.push({ file, label, value, message: "La ruta MCP no es una URL de archivo válida." });
+        return;
+      }
+    }
+    const resolved = path.resolve(root, candidate);
     const relative = path.relative(root, resolved);
     if (relative.startsWith("..") || path.isAbsolute(relative)) {
       problems.push({ file, label, value, message: "La configuración MCP apunta fuera del workspace." });
     }
   };
-  const visit = (value, file) => {
+  const checkCommand = (value, file, label) => {
+    if (typeof value !== "string" || !looksLikePath(value)) return;
+    checkPath(value, file, label);
+  };
+  const visit = (value, file, parentKey = "") => {
     if (Array.isArray(value)) {
       for (let index = 0; index < value.length; index += 1) {
         if (value[index] === "--root" && typeof value[index + 1] === "string") {
           checkPath(value[index + 1], file, "--root");
         }
-        visit(value[index], file);
+        if (parentKey === "command" || parentKey === "args") checkCommand(value[index], file, parentKey);
+        visit(value[index], file, parentKey);
       }
       return;
     }
     if (!value || typeof value !== "object") return;
     for (const [key, child] of Object.entries(value)) {
       if ((key === "root" || key === "cwd") && typeof child === "string") checkPath(child, file, key);
-      visit(child, file);
+      if (key === "command" && typeof child === "string") checkCommand(child, file, key);
+      visit(child, file, key);
     }
   };
   for (const candidate of candidates) {

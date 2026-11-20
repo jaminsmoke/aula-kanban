@@ -51,10 +51,10 @@
 
 ### Fase 2 — Guard local y pruebas
 
-- [ ] Reforzar `architecture-check` para revisar configuraciones MCP locales y raíces de comandos.
-- [ ] Rechazar rutas absolutas externas, `..` fuera del workspace y configuraciones inválidas.
-- [ ] Añadir pruebas de configuración permitida, raíz externa y JSON inválido.
-- [ ] Ejecutar el guard desde `npm run check` y CI.
+- [x] Reforzar `architecture-check` para revisar configuraciones MCP locales y raíces de comandos.
+- [x] Rechazar rutas absolutas externas, `..` fuera del workspace y configuraciones inválidas.
+- [x] Añadir pruebas de configuración permitida, raíz externa y JSON inválido.
+- [x] Ejecutar el guard desde `npm run check` y CI.
 - **Criterios:** una configuración externa falla de forma determinista y una configuración local válida pasa.
 
 ### Fase 3 — Aislamiento por proyecto y documentación
@@ -87,4 +87,5 @@
 - 2026-11-20: DEV-02 sale del backlog y pasa a ser el roadmap activo. El bloque `codarch` de la configuración global de OpenCode apuntaba a `Visual Software Architecture`; se retiró y se guardó una copia previa en `opencode.json.before-codarch-removal`. El catálogo activo ya no expone CodArch.
 - La revisión inicial de ARC-01 añadió el guard de configuraciones MCP del proyecto en `architecture-check`; este roadmap amplía el aislamiento y lo documenta.
 - 2026-11-20: **Fase 1 completada.** Inventariados MCP activos, fuentes globales, copias inactivas y configuración de proyecto en [`mcp-tooling-audit.md`](mcp-tooling-audit.md). `unreal` y `blender-mcp` no declaran raíz de repositorio; CodArch quedó retirado y su copia previa marcada como inactiva. Definidos el modelo de amenaza y la política permitido/prohibido.
+- 2026-11-20: **Fase 2 completada.** El checker rechaza `--root`, `root`/`cwd`, rutas absolutas o con `..` en `command`/`args`, y JSON inválido. Pruebas nuevas de configuración relativa válida, comando absoluto externo, JSON inválido y raíz externa. `npm run check` y CI ejecutan el guard. Suite: 228 archivos / 1.583 pruebas; `aula-documentos` 369.614 / 370.000 B gzip.
 - El Site sigue en `1.1.37`; no se publica nada desde este roadmap.

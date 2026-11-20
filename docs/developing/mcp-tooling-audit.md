@@ -78,7 +78,7 @@ La entrada se retiró el 2026-11-20. El catálogo activo de OpenCode ya no expon
 ## 6. Controles existentes
 
 - `scripts/architecture-check.mjs` revisa `opencode.json`, `.opencode/opencode.json`, `.mcp.json` y `.cursor/mcp.json` del proyecto.
-- El checker detecta `--root`, claves `root`/`cwd` y falla si resuelven fuera del workspace o si el JSON no es válido.
+- El checker detecta `--root`, claves `root`/`cwd`, rutas absolutas o con `..` en `command`/`args`, y falla si resuelven fuera del workspace o si el JSON no es válido.
 - `npm run arch:check` se ejecuta en `npm run check` y CI.
 - La raíz del checker también falla cerrada si se le pasa un workspace externo.
 
