@@ -92,11 +92,11 @@ vi.mock("../tasks/queries", () => ({
   }),
 }));
 
-import { registerReadTools } from "./reads";
+import { MCP_TOOLS, READ_TOOL_NAMES, registerTools } from "./registro";
 
 async function withClient<T>(user: typeof owner, run: (client: Client) => Promise<T>): Promise<T> {
   const server = new McpServer({ name: "aula-kanban", version: "0.1.0" });
-  registerReadTools(server);
+  registerTools(server, MCP_TOOLS.filter((tool) => READ_TOOL_NAMES.has(tool.name)));
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   // InMemoryTransport permite inyectar la identidad que tendría la petición HTTP.
   const send = clientTransport.send.bind(clientTransport);

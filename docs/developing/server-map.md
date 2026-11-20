@@ -65,7 +65,7 @@ Estas son las definiciones que gobiernan ARC-06. La clasificación de cada archi
 
 ---
 
-## 3. Inventario de `lib/server` (106 archivos)
+## 3. Inventario de `lib/server` (104 archivos)
 
 Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servicio, `H` helper HTTP, `P` plataforma, `A` adaptador MCP, `MX` mixto. La columna **Prueba** cuenta las pruebas que importan el módulo directamente; `—` no significa necesariamente ausencia de cobertura indirecta.
 
@@ -153,7 +153,7 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 
 **Hallazgo P1 resuelto (2026-11-20):** `storage.ts` mezclaba repositorio R2, repositorio D1 de `uploads`, reglas de cuota, validación MIME y diagnóstico. Ahora el servicio tiene 155 líneas; el acceso a datos vive en `storage/repository.ts` (240) y las reglas puras en `storage/quota.ts` (132).
 
-### 3.5 MCP (37)
+### 3.5 MCP (35)
 
 | Archivo | L | Clase | Consumidor principal | Prueba |
 |---|---:|---|---|---|
@@ -164,13 +164,11 @@ Clases: `D` dominio/contrato, `R` repositorio D1, `B` repositorio R2, `S` servic
 | `mcp/tokens.ts` | 206 | `S` formato y verificación de tokens | `mcp/auth.ts`, `administracion.ts`, `token-service.ts` | 2 |
 | `mcp/tokens-repository.ts` | 117 | `R` `mcp_tokens` | `mcp/tokens.ts` | — |
 | `mcp/auditoria.ts` | 149 | `R` `mcp_audit_log` + retención | `administracion.ts`, `registro.ts` | 1 |
-| `mcp/contexto.ts` | 134 | `D`/`H` resultados de herramienta | 22 archivos MCP | 2 |
+| `mcp/contexto.ts` | 124 | `D`/`H` resultados de herramienta | 22 archivos MCP | 2 |
 | `mcp/enlaces.ts` | 64 | `H` enlaces profundos | 5 dominios | — |
 | `mcp/instrucciones.ts` | 20 | `D` texto de instrucciones | `registro.ts`, rutas MCP | 1 |
 | `mcp/prompts.ts` | 22 | `D` prompts | `api/mcp` | 1 |
 | `mcp/rate-limit.ts` | 41 | `H` ventana en memoria | `registro.ts`, `api/mcp` | 2 |
-| `mcp/reads.ts` | 22 | `D` fachada pública | **sin consumidor de producto** | 1 |
-| `mcp/writes.ts` | 19 | `D` fachada pública | **sin consumidor de producto** | 1 |
 | `mcp/ui-apertura.ts` | 147 | `H` recursos de UI | `contexto.ts`, `registro.ts`, `app/mcp` | — |
 | `mcp/apps/contrato.ts` | 68 | `D` contrato de app MCP | 4 apps | 1 |
 | `mcp/apps/registro.ts` | 90 | `A` registro de apps | `mcp/registro.ts` | 2 |
@@ -364,13 +362,13 @@ R2 nunca se lee ni se escribe desde una ruta: todas pasan por `storage.ts`, `sto
 | P1 | Respuesta de almacenamiento no disponible duplicada con tres textos | unificada en `storageUnavailable()` | 2 · **resuelto** |
 | P1 | Cuatro rutas importaban D1 directamente | extraídas a servicios; `app/api` no importa D1 | 2 y 3 · **resuelto** |
 | P2 | 5 MB definido dos veces | `storage/quota.ts` y `domain/aula-documentos/image.ts` | 4 |
-| P2 | `reads.ts` y `writes.ts` no tienen consumidor de producto | solo pruebas y baseline de ARC-05 | 3 |
+| P2 | `reads.ts` y `writes.ts` no tienen consumidor de producto | retirados; sus pruebas usan `registro.registerTools` | 3 · **resuelto** |
 | P2 | Purga huérfana sin disparador | `cleanupOrphanUploads`, `cleanupOrphanDocumentCopies` | 4 |
 | P2 | Nombres mezclan español e inglés en la misma capa | `publicarEscena` / `listStudents` | 5 o nunca |
 
 ### Código muerto y fachadas
 
-El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este mapa se confirman dos módulos completos sin consumidor de producto: `lib/server/mcp/reads.ts` y `lib/server/mcp/writes.ts`. Son fachadas de compatibilidad del catálogo MCP; **no se borran** hasta revisar conectores externos en Fase 3.
+El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En Fase 3 se revisaron las dos fachadas MCP sin consumidor de producto: ninguna ruta, conector, paquete ni documento externo importaba `lib/server/mcp/reads.ts` o `writes.ts`, y ambas puertas usan `registro.registerTools`. Se retiraron y sus pruebas registran el subconjunto con el registro central; el baseline queda sin `testOnlyModules`.
 
 ---
 
@@ -391,7 +389,7 @@ El baseline de ARC-05 mantiene **51 exports** sin consumidor estático. En este 
 
 ## 10. Criterios de aceptación de Fase 1
 
-- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (106/106).
+- [x] Cada archivo de `lib/server` tiene clase provisional y consumidor conocido (104/104).
 - [x] Cada ruta de `app/api` tiene clase provisional y servicios identificados (26/26).
 - [x] Están identificadas las reglas duplicadas entre rutas, servicios, MCP y almacenamiento.
 - [x] Está mapeado el acceso a D1 y R2, con tablas, claves y responsables.

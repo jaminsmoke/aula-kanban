@@ -32,7 +32,7 @@ Las entradas de Next (`page`, `layout`, `route`, `not-found`, `error`, `loading`
 `docs/developing/dead-code-baseline.json` contiene:
 
 - `publicModules`: `lib/connectors.ts`, API pública de conectores.
-- `testOnlyModules`: `lib/server/mcp/reads.ts` y `writes.ts`, fachadas de compatibilidad MCP.
+- `testOnlyModules`: vacío; las fachadas `reads.ts` y `writes.ts` se retiraron al no tener consumidor de producto y sus pruebas registran el subconjunto con `registro.registerTools`.
 - `unusedExports`: deuda conocida de exports de runtime. Cada entrada es `ruta:nombre`.
 - `dependencyExceptions`: `react-dom`, peer runtime de React/Next.
 - `undeclaredImportExceptions`: `@excalidraw/mermaid-to-excalidraw`, dependencia transitiva usada por una prueba.

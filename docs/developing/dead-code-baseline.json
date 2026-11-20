@@ -9,18 +9,7 @@
       "reason": "API pública de conectores; el binding se consume desde el worker y los scripts de preview, no desde una ruta estática."
     }
   ],
-  "testOnlyModules": [
-    {
-      "path": "lib/server/mcp/reads.ts",
-      "owner": "ARC-06",
-      "reason": "Fachada de compatibilidad del contrato MCP; se mantiene para consumidores externos aunque hoy solo la cubra su prueba."
-    },
-    {
-      "path": "lib/server/mcp/writes.ts",
-      "owner": "ARC-06",
-      "reason": "Fachada de compatibilidad del contrato MCP; se mantiene para consumidores externos aunque hoy solo la cubra su prueba."
-    }
-  ],
+  "testOnlyModules": [],
   "unusedExports": [
     "app/board/apps/blockly/blockly-storage.ts:parseBlocklyState",
     "app/board/apps/hoja-calculo/hoja-calculo-formula.ts:MAX_FORMULA_DEPTH",

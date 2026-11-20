@@ -97,15 +97,6 @@ export function errorHerramienta(codigo: CodigoError, mensaje: string, detalle?:
   };
 }
 
-/**
- * Compatibilidad con las llamadas anteriores: error sin código concreto.
- * @param message - Mensaje del contrato HTTP equivalente.
- * @returns El resultado de herramienta con `isError`.
- */
-export function toolError(message: string): ToolResult {
-  return errorHerramienta("error", message);
-}
-
 /** Proyecto resuelto con el acceso de la cuenta, o el fallo tipado. */
 export type Resolved = { ok: true; project: ProjectRow; access: Access } | { ok: false; codigo: CodigoError; mensaje: string };
 
