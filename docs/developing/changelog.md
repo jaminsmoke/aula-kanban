@@ -1,8 +1,38 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-02 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-20 — Roadmap ARC-02 — Descomponer las apps monolíticas restantes
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Timeline queda con shell, hooks de editor/lienzo y componentes de vista; `timeline-app.tsx` pasa de 720 a 100 líneas.
+- Hoja de cálculo separa documento, ciclo de vida de Jspreadsheet, barra de herramientas, barra `fx`, panel lateral y exportación CSV.
+- Office separa el visor en hook, cabecera, controles, error y estado vacío; la exportación se divide en utilidades comunes, DOCX y PPTX manteniendo el barrel público.
+- Tarjetas separa editor, repaso, mazos, formulario, lista y sesión; se conservan FSRS, progreso local, permisos y autosave.
+- El residual de Aula Documentos divide el dominio en tipos, tablas y validación, y Mermaid en extensión, vista, cabecera, vista previa y almacén de borradores.
+- Mapas, Ajedrez y Geometría se mantienen sin refactorizar por estar por debajo de 600 líneas y no tener una separación que justifique el cambio.
+- `arch-baseline.json` queda sin excepciones de archivos de código grandes; solo conserva las cinco dependencias base asignadas a ARC-04 y los CSS de ARC-04.
+- No se modificó la versión del Site, los datos, las URLs ni los permisos.
+
+### Verificación
+
+- `npm run check`: ESLint sin errores (64 warnings preexistentes), `tsc` y `arch:check` correctos.
+- `arch:check`: **396 archivos de producto / 982 imports / 0 violaciones nuevas / 0 ciclos / 0 problemas de presupuesto / 0 problemas MCP**.
+- Suite completa: **232 archivos / 1.593 pruebas**.
+- Build, `perf:budget` y `perf:office` correctos.
+- `aula-documentos`: **369.831 / 370.000 B gzip**; export **329.694 / 340.000**; Office **196.481 / 210.000**; hoja **310.193 / 315.000**.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-02 archivado en [`historial/roadmap-arc-02.md`](../historial/roadmap-arc-02.md). El backlog queda con **11 entradas**; siguiente candidato **ARC-03**.
 
 ---
 
