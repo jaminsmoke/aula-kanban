@@ -383,7 +383,7 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
           { id: "presentaciones", name: "Presentaciones" },
           { id: "visor-office", name: "Visor Office" },
         ],
-        note: "Las cuatro apps se integran en Aula Documentos. Usa Archivo > Migrar apps antiguas para reunir sus datos con copia reversible.",
+        note: "Las cuatro apps se integran en Aula Documentos. Usa Importar > Migrar apps antiguas para reunir sus datos con copia reversible.",
       },
     },
     window: { width: 1200, height: 720 },

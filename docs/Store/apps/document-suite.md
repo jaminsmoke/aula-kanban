@@ -129,7 +129,7 @@ Accesos que siguen funcionando durante la transición:
 
 - `NATIVE_APPS` marca las cuatro apps antiguas como `hidden`; `visibleTools` las excluye para todos los roles, incluidos administradores.
 - `resolveAppRouteId` y `LEGACY_DOCUMENT_APP_ALIASES` canonizan URLs y comandos del espacio. `buildBoardUrl` escribe ya `app=aula-documentos`.
-- La migración se ofrece desde **Archivo > Migrar apps antiguas**. Solo se habilita sin cambios pendientes y con fuentes válidas.
+- La migración se ofrece desde **Importar > Migrar apps antiguas**. Solo se habilita sin cambios pendientes y con fuentes válidas.
 - Los orígenes inválidos se omiten con aviso; no se modifican. Si Aula ya tiene documento, los datos se añaden al final para no borrar trabajo actual.
 - La verificación real local migró Diagramas, mantuvo el título, guardó las copias y revirtió con estados idénticos en Aula y en `mermaid`.
 - La app antigua sigue en `toolApps`, en `NATIVE_APP_IDS`, en `APP_MCP_DECLARACIONES` y en las rutas físicas hasta la Fase 5.

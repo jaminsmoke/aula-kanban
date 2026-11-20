@@ -94,7 +94,7 @@ describe("ficha técnica de Aula Store", () => {
               { id: "presentaciones", name: "Presentaciones" },
               { id: "visor-office", name: "Visor Office" },
             ],
-            note: "Las cuatro apps se integran aquí. Usa Archivo > Migrar apps antiguas.",
+            note: "Las cuatro apps se integran aquí. Usa Importar > Migrar apps antiguas.",
           },
         },
       }}

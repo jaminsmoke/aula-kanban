@@ -1654,6 +1654,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
 
   const archiveMenuActions: AulaMenuAction[] = [
     { label: newDocumentAction.label, icon: newDocumentAction.icon, onSelect: newDocumentAction.onClick, disabled: newDocumentAction.disabled },
+  ];
+  const importMenuActions: AulaMenuAction[] = [
     { label: importDocumentAction.label, icon: importDocumentAction.icon, onSelect: importDocumentAction.onClick, disabled: importDocumentAction.disabled },
     { label: openOfficeAction.label, icon: openOfficeAction.icon, onSelect: openOfficeAction.onClick, disabled: openOfficeAction.disabled },
     { label: migrationAction.label, icon: migrationAction.icon, onSelect: migrationAction.onClick, disabled: migrationAction.disabled },
@@ -1735,7 +1737,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       <div className="aula-documentos-commandbar" role="toolbar" aria-label="Menus del documento">
         <div className="aula-documentos-menubar">
           <AulaMenu label="Archivo" actions={archiveMenuActions} />
-          <AulaMenu label="Formato" actions={formatMenuActions} disabled={!editor || readOnly} />
+          <AulaMenu label="Importar" actions={importMenuActions} />
           <AulaMenu label="Exportar" actions={exportMenuActions} />
         </div>
         <div className="aula-documentos-meta" aria-label="Estado del documento">
@@ -1817,7 +1819,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
       />
 
       <div className="aula-documentos-toolbar" role="toolbar" aria-label="Herramientas del documento">
-        <div className="aula-documentos-insert-menu">
+        <div className="aula-documentos-edit-menus">
+          <AulaMenu label="Formato" actions={formatMenuActions} disabled={!editor || readOnly} />
           <AulaMenu label="Insertar" actions={insertMenuActions} disabled={!editor || readOnly} />
         </div>
         <div className="aula-documentos-direct-tools">
@@ -2407,7 +2410,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
               <div className="aula-documentos-import-menu">
                 <p className="aula-documentos-import-intro">
                   Elige un archivo Markdown o un DOCX/PPTX. La vista previa no cambia el origen. Para recuperar datos de las
-                  apps documentales anteriores, usa Archivo &gt; Migrar apps antiguas.
+                  apps documentales anteriores, usa Importar &gt; Migrar apps antiguas.
                 </p>
                 <label className="aula-documentos-import-option" htmlFor="aula-documentos-office-file">
                   <Upload size={18} aria-hidden />
@@ -2516,7 +2519,7 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             <h3>La suite documental</h3>
             <p>Aula Documentos reúne notas, diagramas, presentaciones y Office. Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa. La presentación se puede editar por diapositivas o desde <strong>Fuente Markdown</strong>.</p>
             <p>También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad, abrir el original o cualquier archivo de Office en el visor compartido y exportar copias DOCX/PPTX desde el menú Exportar. XLSX se consulta en Visor Office.</p>
-            <p>Las apps documentales anteriores siguen guardando sus datos. Usa <strong>Archivo &gt; Migrar apps antiguas</strong> para reunirlos aquí; la migración conserva copias y se puede deshacer.</p>
+            <p>Las apps documentales anteriores siguen guardando sus datos. Usa <strong>Importar &gt; Migrar apps antiguas</strong> para reunirlos aquí; la migración conserva copias y se puede deshacer.</p>
             <p className="aula-documentos-status" role="status" aria-live="polite">{statusText}</p>
             {saveFailed && !readOnly ? (
               <button

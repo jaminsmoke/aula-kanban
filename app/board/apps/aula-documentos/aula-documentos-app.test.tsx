@@ -72,7 +72,7 @@ const props = { projectId: "p1", role: "owner" as const };
  * Abre un menú de la barra de Aula Documentos.
  * @param name - Etiqueta del menú.
  */
-function openMenu(name: "Archivo" | "Formato" | "Insertar" | "Exportar") {
+function openMenu(name: "Archivo" | "Importar" | "Formato" | "Insertar" | "Exportar") {
   fireEvent.click(screen.getByRole("button", { name }));
 }
 
@@ -81,7 +81,7 @@ function openMenu(name: "Archivo" | "Formato" | "Insertar" | "Exportar") {
  * @param menu - Menú que se abre.
  * @param item - Acción que se pulsa.
  */
-function chooseMenu(menu: "Archivo" | "Formato" | "Insertar" | "Exportar", item: string) {
+function chooseMenu(menu: "Archivo" | "Importar" | "Formato" | "Insertar" | "Exportar", item: string) {
   openMenu(menu);
   fireEvent.click(screen.getByRole("menuitem", { name: item }));
 }
@@ -91,7 +91,7 @@ function newDocument() {
 }
 
 function importDocument() {
-  chooseMenu("Archivo", "Importar documento");
+  chooseMenu("Importar", "Importar documento");
 }
 
 function insertMermaid() {
@@ -208,9 +208,15 @@ describe("Aula Documentos", () => {
 
     openMenu("Archivo");
     expect(screen.getByRole("menuitem", { name: "Nuevo documento" })).toBeTruthy();
-    expect(screen.getByRole("menuitem", { name: "Importar documento" })).toBeTruthy();
+    expect(screen.queryByRole("menuitem", { name: "Importar documento" })).toBeNull();
     expect(screen.queryByRole("menuitem", { name: "Guardar documento" })).toBeNull();
     fireEvent.keyDown(screen.getByRole("menu", { name: "Archivo" }), { key: "Escape" });
+
+    openMenu("Importar");
+    for (const name of ["Importar documento", "Abrir Office", "Migrar apps antiguas"]) {
+      expect(screen.getByRole("menuitem", { name })).toBeTruthy();
+    }
+    fireEvent.keyDown(screen.getByRole("menu", { name: "Importar" }), { key: "Escape" });
 
     openMenu("Formato");
     expect(screen.getByRole("menuitemcheckbox", { name: /Título 1/ })).toBeTruthy();
@@ -1155,7 +1161,7 @@ describe("Aula Documentos", () => {
 
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
-    chooseMenu("Archivo", "Migrar apps antiguas");
+    chooseMenu("Importar", "Migrar apps antiguas");
 
     expect(await screen.findByRole("dialog", { name: "Migrar apps antiguas" })).toBeTruthy();
     expect(await screen.findByText("Diagramas")).toBeTruthy();
@@ -1216,8 +1222,10 @@ describe("Aula Documentos", () => {
     expect(screen.getByLabelText("Título del documento")).toHaveProperty("readOnly", true);
     openMenu("Archivo");
     expect(screen.getByRole("menuitem", { name: "Nuevo documento" })).toHaveProperty("disabled", true);
-    expect(screen.getByRole("menuitem", { name: "Importar documento" })).toHaveProperty("disabled", true);
     fireEvent.keyDown(screen.getByRole("menu", { name: "Archivo" }), { key: "Escape" });
+    openMenu("Importar");
+    expect(screen.getByRole("menuitem", { name: "Importar documento" })).toHaveProperty("disabled", true);
+    fireEvent.keyDown(screen.getByRole("menu", { name: "Importar" }), { key: "Escape" });
     expect(screen.getByRole("button", { name: "Guardar documento" })).toHaveProperty("disabled", true);
     expect(screen.getByRole("button", { name: "Formato" })).toHaveProperty("disabled", true);
     expect(screen.getByRole("button", { name: "Insertar" })).toHaveProperty("disabled", true);

@@ -233,10 +233,11 @@
   gap:5px;
 }
 
-.aula-documentos-insert-menu {
+.aula-documentos-edit-menus {
   display:flex;
   align-items:center;
   flex:none;
+  gap:2px;
   padding-right:6px;
   border-right:var(--border-width-hairline) solid var(--ui-border-subtle);
 }
