@@ -16,48 +16,16 @@
   container-name:auladocumentosapp;
 }
 
-.aula-documentos-top {
+.aula-documentos-commandbar {
   flex:none;
   display:flex;
   align-items:center;
   flex-wrap:wrap;
-  gap:10px 12px;
-  padding:10px 14px;
+  gap:6px 10px;
+  min-height:40px;
+  padding:6px 14px;
   border-bottom:var(--border-width-hairline) solid var(--ui-border-subtle);
   background:var(--ui-surface-faint);
-}
-
-.aula-documentos-heading {
-  display:flex;
-  align-items:center;
-  gap:9px;
-  min-width:0;
-}
-
-.aula-documentos-mark {
-  display:grid;
-  place-items:center;
-  flex:none;
-  width:34px;
-  height:34px;
-  border-radius:var(--radius-sm);
-  background:var(--ui-action-soft);
-  color:var(--ui-action-text);
-}
-
-.aula-documentos-heading strong {
-  display:block;
-  font-size:14px;
-  line-height:1.2;
-}
-
-.aula-documentos-heading small {
-  display:block;
-  margin-top:2px;
-  color:var(--ui-text-muted);
-  font-size:11px;
-  font-weight:600;
-  line-height:1.25;
 }
 
 .aula-documentos-meta {
@@ -263,7 +231,14 @@
   display:flex;
   align-items:center;
   gap:5px;
-  margin-left:auto;
+}
+
+.aula-documentos-insert-menu {
+  display:flex;
+  align-items:center;
+  flex:none;
+  padding-right:6px;
+  border-right:var(--border-width-hairline) solid var(--ui-border-subtle);
 }
 
 .aula-documentos-action-button {
@@ -1659,8 +1634,8 @@
 }
 
 @container auladocumentosapp (max-width:560px) {
-  .aula-documentos-top {
-    padding:9px 10px;
+  .aula-documentos-commandbar {
+    padding:7px 10px;
   }
 
   .aula-documentos-meta {
@@ -1672,7 +1647,7 @@
   }
 
   .aula-documentos-toolbar {
-    padding:7px 9px;
+    display:none;
   }
 
   .aula-documentos-tool {

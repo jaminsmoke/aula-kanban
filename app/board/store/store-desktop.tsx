@@ -157,10 +157,12 @@ export default function StoreDesktop({ role, projectId }: { role: StoreRole; pro
         <AnimatePresence>
         {shownWindows.map((item) => {
           const App = toolApps[item.tool.id];
+          const WindowIcon = item.tool.icon;
           return (
             <StoreWindow
               key={item.tool.id}
               title={item.tool.name}
+              icon={<WindowIcon size={14} strokeWidth={2} />}
               position={item.maximized ? { x: 0, y: 0 } : item.position}
               size={item.maximized && desktopSize.width && desktopSize.height ? desktopSize : item.size}
               bounds={desktopSize}

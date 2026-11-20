@@ -178,9 +178,11 @@ describe("Aula Documentos", () => {
   it("monta el título, el editor y las acciones principales", async () => {
     render(<AulaDocumentosApp {...props} />);
 
-    expect(screen.getByText("Aula Documentos")).toBeTruthy();
+    expect(screen.queryByText("Suite documental")).toBeNull();
+    expect(document.querySelector(".aula-documentos-heading")).toBeNull();
     expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento de ejemplo");
-    expect(screen.getByRole("toolbar", { name: "Acciones del documento" })).toBeTruthy();
+    expect(screen.getByRole("toolbar", { name: "Menus del documento" })).toBeTruthy();
+    expect(screen.getByRole("toolbar", { name: "Herramientas del documento" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Negrita" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Archivo" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Formato" })).toBeTruthy();

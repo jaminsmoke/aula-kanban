@@ -36,9 +36,10 @@ function WindowCloseButton({ title }: { title: string }) {
  * @returns La ventana con su contenido.
  */
 export default function StoreWindow({
-  title, position, size, bounds, zIndex, maximized, minimized, onMove, onResize, onFocus, onClose, onMinimize, onZoom, children,
+  title, icon, position, size, bounds, zIndex, maximized, minimized, onMove, onResize, onFocus, onClose, onMinimize, onZoom, children,
 }: {
   title: string;
+  icon?: ReactNode;
   position: { x: number; y: number };
   size: { width: number; height: number };
   bounds: { width: number; height: number };
@@ -132,7 +133,10 @@ export default function StoreWindow({
             <button type="button" className="store-traffic store-traffic-minimize" aria-label={`Minimizar ${title}`} onClick={onMinimize} />
             <button type="button" className="store-traffic store-traffic-zoom" aria-label={`${maximized ? "Reducir" : "Ampliar"} ${title}`} onClick={onZoom} />
           </div>
-          <span className="store-window-title">{title}</span>
+          <span className="store-window-title">
+            {icon ? <span className="store-window-title-icon" aria-hidden>{icon}</span> : null}
+            {title}
+          </span>
         </div>
         <div className="store-window-body">{children}</div>
         {!maximized && <div className="store-resize" onPointerDown={startResize} aria-hidden />}

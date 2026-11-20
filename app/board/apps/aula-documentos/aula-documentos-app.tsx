@@ -15,7 +15,6 @@ import {
   Eraser,
   Eye,
   FileDown,
-  FilePenLine,
   FilePlus2,
   FileText,
   GitBranch,
@@ -1733,15 +1732,11 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
 
   return (
     <div className="aula-documentos-app">
-      <header className="aula-documentos-top">
-        <div className="aula-documentos-heading">
-          <span className="aula-documentos-mark" aria-hidden>
-            <FilePenLine size={18} strokeWidth={2} />
-          </span>
-          <span>
-            <strong>Aula Documentos</strong>
-            <small>Suite documental</small>
-          </span>
+      <div className="aula-documentos-commandbar" role="toolbar" aria-label="Menus del documento">
+        <div className="aula-documentos-menubar">
+          <AulaMenu label="Archivo" actions={archiveMenuActions} />
+          <AulaMenu label="Formato" actions={formatMenuActions} disabled={!editor || readOnly} />
+          <AulaMenu label="Exportar" actions={exportMenuActions} />
         </div>
         <div className="aula-documentos-meta" aria-label="Estado del documento">
           <span className={(dirty || saveConflict) && !readOnly ? "aula-documentos-chip is-dirty" : "aula-documentos-chip"}>
@@ -1749,36 +1744,6 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
           </span>
           <span className="aula-documentos-count">{wordLabel}</span>
           <span className="aula-documentos-count">{diagramLabel}</span>
-        </div>
-      </header>
-
-      <input
-        ref={officeOpenInputRef}
-        className="aula-documentos-file-input"
-        type="file"
-        accept=".docx,.xlsx,.pptx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation"
-        aria-label="Elegir archivo de Office para el visor"
-        tabIndex={-1}
-        onChange={(event) => {
-          const file = event.currentTarget.files?.[0];
-          event.currentTarget.value = "";
-          openOfficeViewer(file);
-        }}
-      />
-
-      <div className="aula-documentos-toolbar" role="toolbar" aria-label="Acciones del documento">
-        <div className="aula-documentos-menubar">
-          <AulaMenu label="Archivo" actions={archiveMenuActions} />
-          <AulaMenu label="Formato" actions={formatMenuActions} disabled={!editor || readOnly} />
-          <AulaMenu label="Insertar" actions={insertMenuActions} disabled={!editor || readOnly} />
-          <AulaMenu label="Exportar" actions={exportMenuActions} />
-        </div>
-        <div className="aula-documentos-direct-tools">
-          {groups.map((group, index) => (
-            <div className="aula-documentos-tool-group" key={index}>
-              {group.map((action) => <ToolButton action={action} key={action.label} />)}
-            </div>
-          ))}
         </div>
         <div className="aula-documentos-desktop-actions">
           <button
@@ -1835,9 +1800,35 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
             ) : null}
           </div>
         </div>
-        {!editor ? <span className="aula-documentos-loading">Preparando editor…</span> : null}
       </div>
 
+      <input
+        ref={officeOpenInputRef}
+        className="aula-documentos-file-input"
+        type="file"
+        accept=".docx,.xlsx,.pptx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        aria-label="Elegir archivo de Office para el visor"
+        tabIndex={-1}
+        onChange={(event) => {
+          const file = event.currentTarget.files?.[0];
+          event.currentTarget.value = "";
+          openOfficeViewer(file);
+        }}
+      />
+
+      <div className="aula-documentos-toolbar" role="toolbar" aria-label="Herramientas del documento">
+        <div className="aula-documentos-insert-menu">
+          <AulaMenu label="Insertar" actions={insertMenuActions} disabled={!editor || readOnly} />
+        </div>
+        <div className="aula-documentos-direct-tools">
+          {groups.map((group, index) => (
+            <div className="aula-documentos-tool-group" key={index}>
+              {group.map((action) => <ToolButton action={action} key={action.label} />)}
+            </div>
+          ))}
+        </div>
+        {!editor ? <span className="aula-documentos-loading">Preparando editor...</span> : null}
+      </div>
       {readOnly ? (
         <p className="aula-documentos-readonly" role="note">
           Modo lectura: puedes consultar y exportar el documento, pero no editarlo ni guardarlo.

@@ -57,6 +57,29 @@ describe("ventana de la Tienda", () => {
     expect(document.activeElement).toBe(input);
   });
 
+  it("muestra el icono de la app en la barra de título", () => {
+    render(
+      <LazyMotion features={domAnimation}>
+        <StoreWindow
+          title="Aula Documentos"
+          icon={<span data-testid="app-icon" />}
+          position={{ x: 0, y: 0 }}
+          size={{ width: 900, height: 600 }}
+          bounds={{ width: 1200, height: 700 }}
+          zIndex={1}
+          maximized={false}
+          minimized={false}
+          {...callbacks}
+        >
+          <div />
+        </StoreWindow>
+      </LazyMotion>,
+    );
+
+    expect(screen.getByTestId("app-icon")).toBeTruthy();
+    expect(screen.getByText("Aula Documentos")).toBeTruthy();
+  });
+
   it("no permite que el arrastre deje la ventana fuera del escritorio", () => {
     const { container } = render(
       <WindowHarness position={{ x: 100, y: 100 }} size={{ width: 900, height: 600 }} />,
