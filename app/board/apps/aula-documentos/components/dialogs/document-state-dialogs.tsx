@@ -2,7 +2,7 @@ import { Download, FileText, X } from "lucide-react";
 import { AULA_DOCUMENT_TEMPLATES } from "../../../../../../lib/domain/aula-documentos/templates";
 import { AULA_RECOVERY_REASON_LABELS } from "../../../../../../lib/domain/aula-documentos/recovery";
 import { useAulaDocumentosView } from "../../aula-documentos-context";
-import { formatSourceDate } from "../../utils/document-view";
+import { formatDateTime } from "../../../../shared/ui/date";
 
 /**
  * Diálogos de documento nuevo, documento inválido, conflicto y copias locales.
@@ -233,7 +233,7 @@ export function DocumentStateDialogs() {
               <p className="aula-documentos-import-meta">
                 {saveConflict.updatedAt === null
                   ? "No se pudo obtener la hora de la versión del servidor."
-                  : `Versión del servidor: ${formatSourceDate(saveConflict.updatedAt) ?? "hora desconocida"}`}
+                  : `Versión del servidor: ${formatDateTime(saveConflict.updatedAt) ?? "hora desconocida"}`}
               </p>
               <p className="aula-documentos-import-warning">
                 El autosave y el guardado manual están detenidos hasta que resuelvas el conflicto.
@@ -346,8 +346,8 @@ export function DocumentStateDialogs() {
                 <div className="aula-documentos-recovery-list">
                   {recoveryCopies.map((copy) => {
                     const confirming = recoveryRestoreId === copy.id;
-                    const createdLabel = formatSourceDate(copy.createdAt);
-                    const versionLabel = formatSourceDate(copy.serverUpdatedAt);
+                    const createdLabel = formatDateTime(copy.createdAt);
+                    const versionLabel = formatDateTime(copy.serverUpdatedAt);
                     return (
                       <article className="aula-documentos-recovery-item" key={copy.id}>
                         <div className="aula-documentos-recovery-head">

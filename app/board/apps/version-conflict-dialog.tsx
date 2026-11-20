@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Download } from "lucide-react";
 import { useDialogFocus } from "../shared/use-dialog-focus";
+import { formatDateTime } from "../shared/ui/date";
 import "./version-conflict-dialog.css";
 
 /** Propiedades del diálogo compartido de conflicto de versión. */
@@ -53,7 +54,7 @@ function ConflictDialogContent({
     firstConfirmRef.current?.focus();
   }, [keepConfirm]);
 
-  const serverLabel = formatServerDate(serverUpdatedAt);
+  const serverLabel = formatDateTime(serverUpdatedAt);
 
   return (
     <div className="version-conflict-backdrop">
@@ -144,15 +145,4 @@ function ConflictDialogContent({
   );
 }
 
-/**
- * Formatea la fecha del servidor para el diálogo.
- * @param timestamp - Marca de tiempo en milisegundos.
- * @returns La fecha legible o `null`.
- */
-function formatServerDate(timestamp: number | null): string | null {
-  if (timestamp === null || !Number.isFinite(timestamp)) return null;
-  return new Intl.DateTimeFormat("es-ES", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(timestamp);
-}
+

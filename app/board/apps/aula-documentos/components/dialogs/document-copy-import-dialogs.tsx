@@ -2,7 +2,7 @@ import { lazy, Suspense, type ChangeEvent } from "react";
 import { Archive, Download, Eye, Loader2, NotebookPen, Trash2, Upload, X } from "lucide-react";
 import { IMPORT_LABELS } from "../../hooks/use-aula-import";
 import { useAulaDocumentosView } from "../../aula-documentos-context";
-import { contentText } from "../../utils/document-view";
+import { contentText } from "../../../../../../lib/domain/aula-documentos/text";
 
 const OfficeViewer = lazy(() => import("../../../../shared/office/office-viewer"));
 

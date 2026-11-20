@@ -1,6 +1,6 @@
 # Arquitectura de Aula Documentos
 
-> **Estado:** Fase 2 completada · **Fecha:** 2026-11-20
+> **Estado:** Fase 3 completada · **Fecha:** 2026-11-20
 > **Objetivo:** reducir la complejidad estructural sin cambiar el comportamiento antes de continuar con las tablas.
 > **Alcance:** `app/board/apps/aula-documentos`, `app/board/shared/aula-documentos`, `app/board/shared/office` y `lib/domain/aula-documentos`.
 
@@ -127,12 +127,14 @@ lib/server/aula-documentos/     # servicios de copias, migración y persistencia
 
 | Elemento | Consumidores actuales | Decisión |
 |---|---|---|
-| `downloadBlob` / `downloadTextFile` | Aula Documentos, Hoja de cálculo y bloque Mermaid | Extraer a `app/board/shared/ui/download.ts` en la Fase 3. |
-| Formato de fechas de estado | Aula Documentos | Mantener en la app hasta que aparezca un segundo consumidor. |
-| Patrón de modal/backdrop | Aula Documentos, varios diálogos | Extraer un `DialogShell` local o shared solo si simplifica de verdad; no crear una capa genérica antes de tiempo. |
-| `AulaMenu` | Aula Documentos | Mantener local; no es una abstracción genérica hasta que otra app lo use. |
-| Selectores de archivo ocultos | Aula Documentos | Agrupar en un componente/hook local. |
-| Descarga de SVG Mermaid | Bloque Mermaid | Comparte únicamente la utilidad de descarga, no el renderizado. |
+| `downloadBlob` / `downloadTextFile` | Aula Documentos, Hoja de cálculo, bloque Mermaid y borradores versionados | Extraídos a `app/board/shared/ui/download.ts`; cuatro consumidores reales. |
+| Formato de fechas | Aula Documentos y diálogo de conflicto de versión | Extraído a `app/board/shared/ui/date.ts`. Los formatos de ajustes y timeline son distintos y se mantienen locales. |
+| Patrón de modal/backdrop | Aula Documentos | Se mantiene local: no hay un segundo consumidor real que justifique `DialogShell` compartido. |
+| `AulaMenu` | Aula Documentos | Se mantiene local; no es una abstracción genérica hasta que otra app lo use. |
+| Selectores de archivo ocultos | Aula Documentos | Se mantiene en la app: los consumidores son dos acciones del mismo flujo y no hay reutilización fuera. |
+| Descarga de SVG Mermaid | Bloque Mermaid | Comparte únicamente `downloadBlob`, no el renderizado. |
+| Texto visible y recuento de palabras | Aula Documentos | Movidos a `lib/domain/aula-documentos/text.ts` como funciones puras. |
+| Remapeo de imágenes de copias | Aula Documentos | Movido a `lib/domain/aula-documentos/copy.ts`. |
 
 ## 6. Límites de mantenimiento
 
@@ -164,3 +166,13 @@ lib/server/aula-documentos/     # servicios de copias, migración y persistencia
 - Los diálogos se cargan con `lazy` solo cuando su estado está abierto; la barra principal y el editor siguen en el chunk de apertura.
 - Las pruebas se dividieron en cinco flujos y una prueba de arquitectura que verifica los límites de líneas y evita imports de componentes hacia el shell.
 - Verificación final: **222 archivos / 1.559 pruebas**, `tsc`, ESLint, build y presupuesto `aula-documentos` **368.419 / 370.000 B gzip** correctos.
+
+## 10. Estado tras la Fase 3
+
+- `app/board/shared/ui/download.ts`: utilidad común para Aula Documentos, Hoja de cálculo, Mermaid y borradores versionados.
+- `app/board/shared/ui/date.ts`: formato común de fecha y hora para Aula Documentos y el diálogo de conflicto.
+- `lib/domain/aula-documentos/text.ts`: `countWords` y `contentText`, sin dependencias de React.
+- `lib/domain/aula-documentos/copy.ts`: incluye el remapeo puro de URLs de imágenes de copias.
+- La lógica de servidor sigue en `lib/server` (`document-copies`, `aula-documentos-migration`, `app-documents`); las rutas solo orquestan.
+- Se mantienen locales los selectores de archivo, el menú y los patrones de diálogo porque no alcanzan dos consumidores reales fuera de Aula Documentos.
+- La prueba de arquitectura comprueba tamaños y que `shared`/`lib` no importen apps ni React desde dominio.

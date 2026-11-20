@@ -55,4 +55,21 @@ describe("arquitectura de Aula Documentos", () => {
       expect(source, file).not.toMatch(/from\s+"[^"]*aula-documentos-app"/);
     }
   });
+
+  it("mantiene shared y lib sin dependencias de apps", () => {
+    const roots = [
+      join(process.cwd(), "app", "board", "shared"),
+      join(process.cwd(), "lib", "domain"),
+      join(process.cwd(), "lib", "server"),
+    ];
+    for (const root of roots) {
+      for (const file of readdirSync(root, { recursive: true }).map(String).filter((name) => /\.(ts|tsx)$/.test(name))) {
+        const source = readFileSync(join(root, file), "utf8");
+        expect(source, `${root}/${file}`).not.toMatch(/from\s+"[^"]*(?:app\/(?:board|api)|\.\.\/apps\/)/);
+        if (root.endsWith("domain") && !file.endsWith(".test.ts")) {
+          expect(source, `${root}/${file}`).not.toMatch(/from\s+"react"/);
+        }
+      }
+    }
+  });
 });

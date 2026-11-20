@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import { X } from "lucide-react";
 import { AULA_MIGRATION_SOURCE_LABELS } from "../../../../../../lib/domain/aula-documentos/migration";
 import { useAulaDocumentosView } from "../../aula-documentos-context";
-import { formatSourceDate } from "../../utils/document-view";
+import { formatDateTime } from "../../../../shared/ui/date";
 
 const PresentationView = lazy(() => import("../../../../shared/aula-documentos/presentation-view").then((module) => ({
   default: module.PresentationView,
@@ -91,7 +91,7 @@ export function DocumentOverlayDialogs() {
                           {!candidate.exists
                             ? "Sin datos"
                             : candidate.valid
-                              ? `Guardado ${formatSourceDate(candidate.updatedAt) ?? "en una fecha desconocida"}`
+                              ? `Guardado ${formatDateTime(candidate.updatedAt) ?? "en una fecha desconocida"}`
                               : "No se puede leer"}
                         </span>
                       </div>
@@ -102,7 +102,7 @@ export function DocumentOverlayDialogs() {
               ) : null}
               {migrationStatus?.migration.active ? (
                 <p className="aula-documentos-import-warning">
-                  Migración aplicada{migrationStatus.migration.createdAt ? ` el ${formatSourceDate(migrationStatus.migration.createdAt)}` : ""}.
+                  Migración aplicada{migrationStatus.migration.createdAt ? ` el ${formatDateTime(migrationStatus.migration.createdAt)}` : ""}.
                   Los datos de origen siguen guardados. Puedes deshacer la migración si el documento de Aula sigue en la versión que se creó al migrar.
                 </p>
               ) : (

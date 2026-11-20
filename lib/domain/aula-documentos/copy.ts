@@ -635,4 +635,3 @@ export async function inspectAulaDocumentCopy(bytes: Uint8Array): Promise<AulaCo
 
   return { ok: true, document: parsed.document, manifest };
 }
-

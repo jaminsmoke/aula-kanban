@@ -7,7 +7,7 @@ import { getMermaidRenderer } from "../../../shared/aula-documentos/mermaid-rend
 import { printHtmlDocument } from "../../../shared/aula-documentos/print-html";
 import { exportAulaDocx, exportAulaPptx } from "../../../shared/office/office-export";
 import { loadExportImages } from "../utils/document-assets";
-import { downloadBlob, downloadTextFile } from "../utils/document-view";
+import { downloadBlob, downloadTextFile } from "../../../shared/ui/download";
 
 type ExportsDeps = {
   currentDocument: () => AulaDocument | null;

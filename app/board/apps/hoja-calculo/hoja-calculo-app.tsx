@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import type { StoreRole } from "../types";
 import { useAppDocument } from "../use-app-document";
+import { downloadBlob } from "../../shared/ui/download";
 import {
   buildFormulaSheet,
   calculateSheet,
@@ -404,13 +405,7 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
       normalizeSheet(worksheet.getData() as SpreadsheetCell[][]),
       formulasRef.current,
     );
-    const blob = new Blob([toCsv(data)], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = "hoja-calculo.csv";
-    anchor.click();
-    URL.revokeObjectURL(url);
+    downloadBlob(new Blob([toCsv(data)], { type: "text/csv;charset=utf-8;" }), "hoja-calculo.csv");
     setStatus("CSV descargado.");
   }
 

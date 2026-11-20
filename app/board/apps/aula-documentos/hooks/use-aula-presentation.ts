@@ -10,7 +10,7 @@ import { buildPresentationSlides } from "../../../../../lib/domain/aula-document
 import { collectMermaidCodes, renderAulaContentHtml, renderMermaidSvgs, buildAulaPresentationHtml } from "../../../shared/aula-documentos/export-html";
 import { getMermaidRenderer } from "../../../shared/aula-documentos/mermaid-renderer";
 import { loadExportImages } from "../utils/document-assets";
-import { downloadTextFile } from "../utils/document-view";
+import { downloadTextFile } from "../../../shared/ui/download";
 import { aulaFileName } from "../../../../../lib/domain/aula-documentos/filename";
 
 type PresentationDeps = {

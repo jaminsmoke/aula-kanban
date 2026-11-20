@@ -6,7 +6,7 @@ import {
   type AulaRecoveryReason,
 } from "../../../../../lib/domain/aula-documentos/recovery";
 import { parseAulaDocument, type AulaDocument } from "../../../../../lib/domain/aula-documentos/document";
-import { downloadTextFile } from "../utils/document-view";
+import { downloadTextFile } from "../../../shared/ui/download";
 import { aulaRecoveryFileName } from "../../../../../lib/domain/aula-documentos/filename";
 
 type RecoveryDeps = {

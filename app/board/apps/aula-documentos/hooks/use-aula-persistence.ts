@@ -11,7 +11,7 @@ import { useWindowClose, useWindowCloseGuard } from "../../../shared/window-clos
 import { useDialogFocus } from "../../../shared/use-dialog-focus";
 import { useAppDocument, type VersionedSaveResult } from "../../use-app-document";
 import { AUTOSAVE_DELAY_MS, type SaveConflict } from "../aula-documentos-types";
-import { downloadTextFile } from "../utils/document-view";
+import { downloadTextFile } from "../../../shared/ui/download";
 
 type PersistenceDeps = {
   projectId: string;

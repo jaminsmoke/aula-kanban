@@ -9,6 +9,7 @@ import { useCallback, useEffect, useId, useRef, useState, type PointerEvent as R
 import { parseGanttDocument, serializeGanttDocument, type GanttDocument } from "../../../../lib/domain/mermaid/gantt";
 import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
 import GanttEditor from "../mermaid/gantt-editor";
+import { downloadBlob } from "../ui/download";
 import { useMermaidPreview } from "./use-mermaid-preview";
 import { useMermaidVisibility } from "./use-mermaid-visibility";
 
@@ -246,15 +247,7 @@ function MermaidBlockView({ node, deleteNode, editor, selected, getPos }: NodeVi
    */
   function downloadSvg() {
     if (!svg) return;
-    const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const anchor = window.document.createElement("a");
-    anchor.href = url;
-    anchor.download = "diagrama-mermaid.svg";
-    window.document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+    downloadBlob(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }), "diagrama-mermaid.svg");
   }
 
   /**

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useWindowCloseGuard } from "../shared/window-close-guard";
+import { downloadTextFile } from "../shared/ui/download";
 import { useAppDocument, type VersionedSaveResult } from "./use-app-document";
 import {
   saveVersionedDraftRecovery,
@@ -523,20 +524,4 @@ export function useVersionedDraft<T>(options: VersionedDraftOptions<T>) {
   };
 }
 
-/**
- * Descarga un texto sin depender de la app que lo usa.
- * @param contents - Contenido del archivo.
- * @param type - Tipo MIME.
- * @param fileName - Nombre de la descarga.
- */
-function downloadTextFile(contents: string, type: string, fileName: string): void {
-  const blob = new Blob([contents], { type });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = fileName;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
-}
+

@@ -5,7 +5,8 @@ import type { AulaCopyAsset, AulaCopyManifest } from "../../../../../lib/domain/
 import type { AulaCopySummary } from "../../../shared/aula-documentos/copy-client";
 import { uploadAulaImage } from "../../../shared/aula-documentos/image-upload";
 import { buildPortableCopy } from "../utils/document-assets";
-import { downloadBlob, remapCopyImageUrls } from "../utils/document-view";
+import { downloadBlob } from "../../../shared/ui/download";
+import { remapCopyImageUrls } from "../../../../../lib/domain/aula-documentos/copy-image-urls";
 import { parseAulaDocument } from "../../../../../lib/domain/aula-documentos/document";
 import { aulaFileName } from "../../../../../lib/domain/aula-documentos/filename";
 

@@ -43,7 +43,9 @@ import { buildPresentationSlides } from "../../../../../lib/domain/aula-document
 import { countMermaidBlocks } from "../../../shared/aula-documentos/export-html";
 import type { AulaMenuAction } from "../aula-documentos-menu";
 import type { ToolbarAction } from "../aula-documentos-types";
-import { countWords, contentText, formatSavedTime, formatSourceDate } from "../utils/document-view";
+import { countWords, contentText } from "../../../../../lib/domain/aula-documentos/text";
+import { formatSavedTime } from "../utils/document-view";
+import { formatDateTime } from "../../../shared/ui/date";
 
 type ToolbarModelDeps = {
   loading: boolean;
@@ -159,7 +161,7 @@ export function useAulaToolbarModel(deps: ToolbarModelDeps) {
   const importExcerpt = importPreview
     ? contentText(importPreview.document.content).replace(/\s+/g, " ").trim().slice(0, 260)
     : "";
-  const importSourceUpdatedLabel = importPreview ? formatSourceDate(importPreview.sourceUpdatedAt) : null;
+  const importSourceUpdatedLabel = importPreview ? formatDateTime(importPreview.sourceUpdatedAt) : null;
   const importSourceDate = importPreview
     ? importPreview.source === "markdown" || importPreview.source === "office"
       ? "Archivo local"

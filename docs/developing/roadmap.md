@@ -82,12 +82,12 @@
 
 ### Fase 3 — Extracción a shared/lib y deduplicación
 
-- [ ] Extraer utilidades genéricas repetidas (`descarga`, fechas, selectores de archivo, primitivas de diálogo) a `app/board/shared`.
-- [ ] Mover lógica pura específica a `lib/domain/aula-documentos` y servicios de servidor a `lib/server/aula-documentos`.
-- [ ] Auditar otras apps (`hoja-calculo`, Mermaid, Office) para reutilizar lo extraído sin acoplar Aula Documentos.
-- [ ] Eliminar helpers, estilos y pruebas duplicadas; revisar imports muertos y dependencias circulares.
-- [ ] Mantener las cargas diferidas necesarias y medir el presupuesto de `aula-documentos` y `aula-documentos-export`.
-- [ ] Actualizar la documentación de arquitectura y los límites de mantenimiento.
+- [x] Extraer utilidades genéricas repetidas (`descarga`, fechas, selectores de archivo, primitivas de diálogo) a `app/board/shared`.
+- [x] Mover lógica pura específica a `lib/domain/aula-documentos` y servicios de servidor a `lib/server/aula-documentos`.
+- [x] Auditar otras apps (`hoja-calculo`, Mermaid, Office) para reutilizar lo extraído sin acoplar Aula Documentos.
+- [x] Eliminar helpers, estilos y pruebas duplicadas; revisar imports muertos y dependencias circulares.
+- [x] Mantener las cargas diferidas necesarias y medir el presupuesto de `aula-documentos` y `aula-documentos-export`.
+- [x] Actualizar la documentación de arquitectura y los límites de mantenimiento.
 - **Criterios de aceptación:**
   - Las utilidades compartidas tienen al menos dos consumidores reales o una justificación escrita.
   - No hay imports de `app` desde `shared`/`lib` ni lógica de dominio duplicada.
@@ -163,3 +163,4 @@
 - 2026-11-20: Fase 2 en curso. CSS dividido en `styles/layout.css` (467 líneas), `editor.css` (257), `blocks.css` (484), `dialogs.css` (328) y `sidebar.css` (487), todos por debajo de 500; `aula-documentos.css` queda como agregador. Extraídos a `utils/document-view.ts` los helpers de palabras, fechas, descarga, texto y remapeo de imágenes, con el mismo comportamiento. La app principal sigue pendiente de descomposición; no se marca la fase como completada.
 - 2026-11-20: Fase 2, bloque 2. Extraídos a `hooks/` los flujos de copias, recuperación, migración, presentación, exportación, importación, documento nuevo, imágenes y enlaces. `aula-documentos-app.tsx` baja de 3.253 a 2.382 líneas; cada hook queda por debajo de 600 líneas. Las pruebas de CSS leen ahora los estilos divididos. Suite completa: 217 archivos / 1.554 pruebas; `tsc`, ESLint y build correctos. Autosave/conflicto, JSX y pruebas siguen pendientes de extracción.
 - 2026-11-20: Fase 2 completada. `aula-documentos-app.tsx` queda en 20 líneas como shell de orquestación; el modelo compartido vive en `hooks/use-aula-documentos-model.ts` (533 líneas) y la UI en `components/`. Cada hook/componente queda por debajo de 600 líneas, cada CSS por debajo de 500 y cada prueba por debajo de 600. Los diálogos se cargan bajo demanda para no romper el presupuesto. Pruebas divididas en cinco flujos más una comprobación de arquitectura y tamaños. Suite completa: 222 archivos / 1.559 pruebas; `tsc`, ESLint, build y `perf:budget` correctos (aula-documentos: 368.419 / 370.000 B gzip).
+- 2026-11-20: Fase 3 completada. Descargas y formato de fecha compartidos en `app/board/shared/ui` con consumidores reales en Aula Documentos, Hoja de cálculo, Mermaid, borradores versionados y el diálogo de conflicto. `countWords`, `contentText` y el remapeo de imágenes pasan a `lib/domain/aula-documentos`; los servicios de copias y migración ya estaban en `lib/server`. Se mantienen locales los selectores de archivo y el patrón de diálogo por falta de un segundo consumidor. Añadidas pruebas de utilidades y una comprobación de dependencias shared/lib. Suite completa: 226 archivos / 1.566 pruebas; `tsc`, ESLint, build, `perf:budget` (aula-documentos 368.382 / 370.000 B gzip) y `perf:office` (196.481 / 210.000 B gzip) correctos.
