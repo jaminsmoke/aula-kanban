@@ -1182,7 +1182,13 @@ describe("Aula Documentos", () => {
   it("inserta una imagen local desde el selector del documento", async () => {
     vi.stubGlobal("fetch", vi.fn(async (input: string) => {
       if (String(input).includes("/api/uploads")) {
-        return new Response(JSON.stringify({ url: "/api/files/foto" }), { status: 201 });
+        return new Response(JSON.stringify({ url: "/api/files/00000000-0000-4000-8000-000000000001" }), { status: 201 });
+      }
+      if (String(input).includes("/api/files/00000000-0000-4000-8000-000000000001")) {
+        return new Response(new Uint8Array([1, 2, 3]), {
+          headers: { "content-type": "image/png" },
+          status: 200,
+        });
       }
       return new Response("{}", { status: 200 });
     }));
@@ -1195,11 +1201,19 @@ describe("Aula Documentos", () => {
     });
 
     await waitFor(() => {
-      expect(document.querySelector(".aula-image-block img")?.getAttribute("src")).toBe("/api/files/foto");
+      expect(document.querySelector(".aula-image-block img")?.getAttribute("src")).toBe("/api/files/00000000-0000-4000-8000-000000000001");
     });
     const img = document.querySelector(".aula-image-block img");
     expect(img?.getAttribute("alt")).toBe("foto");
     expect(screen.getByRole("status").textContent).toContain("Imagen insertada");
+
+    const createObjectURL = stubDownload();
+    openMenu("Exportar");
+    fireEvent.click(screen.getByRole("menuitem", { name: "Exportar HTML" }));
+    await waitFor(() => expect(createObjectURL).toHaveBeenCalledTimes(1));
+    const exported = ((createObjectURL.mock.calls as unknown) as [[Blob]])[0][0];
+    await expect(exported.text()).resolves.toContain("data:image/png;base64,");
+    await expect(exported.text()).resolves.not.toContain("/api/files/00000000-0000-4000-8000-000000000001");
   });
 
   it("inserta un salto de diapositiva y lo guarda", async () => {

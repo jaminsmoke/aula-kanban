@@ -1,8 +1,31 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-14 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-20 — Roadmap ADOC-14 — Imágenes y recursos dentro del documento
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Aula Documentos permite insertar imágenes locales desde **Insertar > Insertar imagen**, arrastrarlas o pegarlas. Se guardan en R2 con acceso privado por proyecto, límite de 5 MB por imagen y cuota de 50 MB por proyecto.
+- El nodo `aulaImage` conserva texto alternativo, pie, ancho y alineación; el NodeView permite reemplazar y eliminar sin romper el autosave ni el modo lectura de invitados.
+- Las imágenes se exportan a HTML, presentación, impresión/PDF, DOCX y PPTX con sus datos embebidos. WebP se convierte a PNG para Office; una imagen ausente deja un aviso visible y no rompe la salida.
+- Actualizados la ayuda, la ficha, la documentación de Office y la matriz de la suite. El Site sigue en `1.1.37` y no se publica desde este roadmap.
+
+### Verificación
+
+- Suite completa: **214 archivos / 1.518 pruebas**; `tsc`, ESLint, build, `perf:budget` y `perf:office` correctos.
+- `aula-documentos`: **366.776 / 370.000 B gzip**; `aula-documentos-export`: **329.620 / 340.000 B gzip**; `perf:office`: **196.481 / 210.000 B gzip**.
+- Imagen insertada, editada, exportada y eliminada en la app real; HTML exportado con datos embebidos y sin URLs internas. Revisión en 393, 560, 860, 1024 y 1374 px en claro y oscuro sin desbordamiento.
+
+### Seguimiento
+
+- El backlog queda con **ADOC-15 a ADOC-21**, **UI-11** y **DEV-01**. El plan completo queda en [`historial/roadmap-adoc-14.md`](../historial/roadmap-adoc-14.md).
 
 ---
 

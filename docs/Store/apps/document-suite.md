@@ -5,6 +5,7 @@
 > **Actualización Fase 3:** Aula Documentos añade Fuente Markdown, plantillas de presentación y Abrir Office para DOCX/XLSX/PPTX sin importar.
 > **Actualización Fase 4:** las apps antiguas se ocultan de la Tienda y del escritorio, sus enlaces abren Aula Documentos y la migración guarda copias reversibles de origen y destino. MCP de Diagramas lee y escribe el primer bloque Mermaid de Aula cuando existe.
 > **Actualización Fase 5:** las cuatro apps salen de `NATIVE_APP_IDS`, del catálogo, de la Tienda, del registro y de `app/board/apps/`; Aula Documentos queda como única entrada documental. Los enlaces y comandos antiguos siguen resolviendo a Aula Documentos y los datos históricos se pueden migrar con copia reversible.
+> **Actualización ADOC-14:** Aula Documentos incorpora imágenes locales privadas con texto alternativo, pie, ancho y alineación; se insertan desde el menú o por arrastre/pegado y se conservan en HTML, presentación, impresión/PDF, DOCX y PPTX. Las copias portables completas siguen en ADOC-21.
 > **Actualización STORE-18:** la tarjeta y la ficha presentan Aula Documentos como suite, con módulos, capacidades agrupadas, formatos, captura y aviso de migración. Aula Store sube a `1.15.0`; Aula Documentos sigue en `1.2.0`.
 > **Apps comparadas:** Notas y documentos, Diagramas, Presentaciones y Visor Office frente a Aula Documentos.
 > **Decisión de producto:** Aula Documentos será la app canónica; las cuatro apps se retiran solo después de demostrar paridad y conservar datos, enlaces, permisos y MCP.
@@ -38,6 +39,7 @@ Accesos que siguen funcionando durante la transición:
 | Título y texto enriquecido | Sí | Sí | Absorbida |
 | Encabezados, listas, citas y código | Sí | Sí | Absorbida |
 | Enlaces, tachado, alineación y listas de tareas | Parcial | Sí | Aula Documentos es superior |
+| Imágenes locales | No | Sí, privadas por proyecto | Aula Documentos es superior |
 | Exportar HTML | Sí | Sí | Absorbida |
 | Autosave, conflicto y recuperación | Sí | Sí | Conservar el modelo de Aula Documentos |
 | Modo lectura para invitados | Sí | Sí | Absorbida |

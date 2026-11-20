@@ -1,7 +1,7 @@
 "use client";
 
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
-import type { Editor } from "@tiptap/core";
+import type { Editor, JSONContent } from "@tiptap/core";
 import {
   AlignCenter,
   AlignJustify,
@@ -304,6 +304,16 @@ function downloadBlob(blob: Blob, name: string) {
  */
 function downloadTextFile(contents: string, type: string, name: string) {
   downloadBlob(new Blob([contents], { type }), name);
+}
+
+/**
+ * Carga las imágenes internas solo cuando se inicia una exportación.
+ * @param content - Contenido del documento.
+ * @returns Imágenes resueltas y fallos.
+ */
+async function loadExportImages(content: JSONContent) {
+  const { loadAulaImageAssets } = await import("../../shared/aula-documentos/export-images");
+  return loadAulaImageAssets(content);
 }
 
 /**
@@ -1132,13 +1142,18 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
    */
   async function buildPresentationHtml(document: AulaDocument): Promise<string[]> {
     const slides = buildPresentationSlides(document.content);
+    const content = { type: "doc", content: slides.flatMap((slide) => slide.content) };
     const svgByCode = await renderMermaidSvgs(
-      collectMermaidCodes({ type: "doc", content: slides.flatMap((slide) => slide.content) }),
+      collectMermaidCodes(content),
       (code) => getMermaidRenderer().render(code),
     );
+    const images = await loadExportImages(content);
+    const failedImages = new Set(images.failed);
     return slides.map((slide) => renderAulaContentHtml(
       { type: "doc", content: slide.content },
       svgByCode,
+      images.sources,
+      failedImages,
     ));
   }
 
@@ -1256,15 +1271,23 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     const document = currentDocument();
     if (!document) return;
     setExporting(true);
-    setStatus("Preparando HTML y diagramas…");
+    setStatus("Preparando HTML, diagramas e imágenes…");
     try {
       const svgByCode = await renderMermaidSvgs(
         collectMermaidCodes(document.content),
         (code) => getMermaidRenderer().render(code),
       );
-      const html = buildAulaDocumentHtml(document, svgByCode);
+      const images = await loadExportImages(document.content);
+      const html = buildAulaDocumentHtml(
+        document,
+        svgByCode,
+        images.sources,
+        new Set(images.failed),
+      );
       downloadTextFile(html, "text/html;charset=utf-8", aulaFileName(document.title, "html"));
-      setStatus("HTML descargado.");
+      setStatus(images.failed.length
+        ? `HTML descargado con ${images.failed.length} ${images.failed.length === 1 ? "imagen no disponible" : "imágenes no disponibles"}.`
+        : "HTML descargado.");
     } catch {
       setStatus("No se pudo preparar el HTML del documento.");
     } finally {
@@ -1279,14 +1302,22 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     const document = currentDocument();
     if (!document) return;
     setPrinting(true);
-    setStatus("Preparando impresión y diagramas…");
+    setStatus("Preparando impresión, diagramas e imágenes…");
     try {
       const svgByCode = await renderMermaidSvgs(
         collectMermaidCodes(document.content),
         (code) => getMermaidRenderer().render(code),
       );
-      printHtmlDocument(buildAulaDocumentHtml(document, svgByCode));
-      setStatus("Vista de impresión abierta.");
+      const images = await loadExportImages(document.content);
+      printHtmlDocument(buildAulaDocumentHtml(
+        document,
+        svgByCode,
+        images.sources,
+        new Set(images.failed),
+      ));
+      setStatus(images.failed.length
+        ? `Vista de impresión abierta con ${images.failed.length} ${images.failed.length === 1 ? "imagen no disponible" : "imágenes no disponibles"}.`
+        : "Vista de impresión abierta.");
     } catch {
       setStatus("No se pudo preparar la impresión del documento.");
     } finally {
@@ -1346,9 +1377,10 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
     setExportingOffice(true);
     setStatus(`Preparando ${format.toUpperCase()}…`);
     try {
+      const images = await loadExportImages(document.content);
       const result = format === "docx"
-        ? await exportAulaDocx(document)
-        : await exportAulaPptx(document, presentationNotes);
+        ? await exportAulaDocx(document, images.assets)
+        : await exportAulaPptx(document, presentationNotes, images.assets);
       downloadBlob(result.blob, aulaFileName(document.title, format));
       setStatus(result.warnings.length
         ? `${format.toUpperCase()} descargado. ${result.warnings.join(" ")}`
@@ -2599,8 +2631,8 @@ export default function AulaDocumentosApp({ projectId, role }: { projectId: stri
         <aside className="aula-documentos-side">
           <section className="aula-documentos-info">
             <h3>La suite documental</h3>
-            <p>Aula Documentos reúne notas, diagramas, presentaciones y Office. Escribe el documento y usa <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa. La presentación se puede editar por diapositivas o desde <strong>Fuente Markdown</strong>.</p>
-            <p>También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad, abrir el original o cualquier archivo de Office en el visor compartido y exportar copias DOCX/PPTX desde el menú Exportar. XLSX se consulta en Visor Office.</p>
+            <p>Aula Documentos reúne notas, imágenes, diagramas, presentaciones y Office. Escribe el documento, usa <strong>Insertar &gt; Insertar imagen</strong> para añadir una imagen local y <strong>Diagrama</strong> para insertar un bloque Mermaid. El bloque se mueve con el contenido y se exporta como SVG. El documento se guarda automáticamente tras una pausa. La presentación se puede editar por diapositivas o desde <strong>Fuente Markdown</strong>.</p>
+            <p>Las imágenes se incrustan en HTML, presentación, impresión/PDF, DOCX y PPTX con su texto alternativo y pie; si un recurso no está disponible, la exportación deja un aviso visible en lugar de romperse. También puedes importar DOCX/PPTX con vista previa y avisos de fidelidad, abrir el original o cualquier archivo de Office en el visor compartido y exportar copias DOCX/PPTX desde el menú Exportar. XLSX se consulta en Visor Office.</p>
             <p>Las apps documentales anteriores siguen guardando sus datos. Usa <strong>Importar &gt; Migrar apps antiguas</strong> para reunirlos aquí; la migración conserva copias y se puede deshacer.</p>
             <p className="aula-documentos-status" role="status" aria-live="polite">{statusText}</p>
             {saveFailed && !readOnly ? (

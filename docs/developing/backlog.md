@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** ADOC-14 activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 9 entradas pendientes · ADOC-14 en el roadmap
+> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 9 entradas pendientes — sin roadmap activo
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 
 ---

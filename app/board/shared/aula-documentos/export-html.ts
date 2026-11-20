@@ -118,17 +118,61 @@ function replaceMermaidPlaceholders(html: string, svgByCode: ReadonlyMap<string,
 }
 
 /**
+ * Sustituye las URLs internas de las imágenes por recursos embebidos.
+ * @param html - HTML generado por Tiptap.
+ * @param imageSources - URLs de datos indexadas por URL interna.
+ * @param failedImageSources - URLs que no se pudieron recuperar.
+ * @returns HTML con las imágenes resueltas o un aviso visible.
+ */
+function replaceImageSources(
+  html: string,
+  imageSources: ReadonlyMap<string, string>,
+  failedImageSources: ReadonlySet<string>,
+): string {
+  if (!imageSources.size && !failedImageSources.size) return html;
+  const template = document.createElement("template");
+  template.innerHTML = html;
+
+  for (const figure of template.content.querySelectorAll<HTMLElement>("figure[data-aula-image]")) {
+    const image = figure.querySelector<HTMLImageElement>("img");
+    if (!image) continue;
+    const source = image.getAttribute("src") ?? "";
+    const resolved = imageSources.get(source);
+    if (resolved) {
+      image.setAttribute("src", resolved);
+      continue;
+    }
+    if (!failedImageSources.has(source)) continue;
+    const placeholder = document.createElement("span");
+    placeholder.className = "aula-image-missing";
+    const alt = image.getAttribute("alt")?.trim();
+    placeholder.textContent = alt ? `Imagen no disponible: ${alt}` : "Imagen no disponible";
+    image.replaceWith(placeholder);
+    figure.classList.add("is-missing");
+  }
+
+  return template.innerHTML;
+}
+
+/**
  * Genera el HTML de un contenido Tiptap e inserta los SVG disponibles.
  * @param content - Contenido raíz o nodo del documento.
  * @param svgByCode - SVG indexados por código Mermaid.
- * @returns HTML con los diagramas insertados.
+ * @param imageSources - URLs de datos para las imágenes internas.
+ * @param failedImageSources - Imágenes que no se pudieron recuperar.
+ * @returns HTML con los diagramas e imágenes resueltos.
  */
 export function renderAulaContentHtml(
   content: JSONContent,
   svgByCode: ReadonlyMap<string, string> = new Map(),
+  imageSources: ReadonlyMap<string, string> = new Map(),
+  failedImageSources: ReadonlySet<string> = new Set(),
 ): string {
   const html = generateHTML(content, createAulaDocumentExtensions());
-  return replaceMermaidPlaceholders(html, svgByCode);
+  return replaceMermaidPlaceholders(
+    replaceImageSources(html, imageSources, failedImageSources),
+    svgByCode,
+  );
 }
 
 /**
@@ -181,6 +225,12 @@ export function buildAulaPresentationHtml(
   h1, h2, h3 { color: ${palette.heading}; line-height: 1.2; }
   h1 { font-size: 2.4rem; } h2 { font-size: 1.9rem; } h3 { font-size: 1.4rem; }
   p, li { font-size: 1.05rem; }
+  .aula-image-block { display: flex; flex-direction: column; align-items: center; gap: .35em; margin: 1em 0; break-inside: avoid; }
+  .aula-image-block.is-left { align-items: flex-start; }
+  .aula-image-block.is-right { align-items: flex-end; }
+  .aula-image-block img { display: block; max-width: 100%; max-height: 58vh; height: auto; border: 1px solid ${palette.border}; border-radius: 10px; background: ${palette.slide}; }
+  .aula-image-block figcaption { max-width: 100%; color: ${palette.muted}; font-size: .85rem; line-height: 1.45; text-align: center; }
+  .aula-image-missing { display: block; width: 100%; padding: 1em; border: 1px dashed ${palette.border}; border-radius: 10px; background: ${palette.code}; color: ${palette.muted}; font-size: .85rem; text-align: center; }
   ul, ol { padding-left: 1.4em; }
   ul[data-type="taskList"] { padding-left: 0; list-style: none; }
   li[data-type="taskItem"] { display: flex; align-items: flex-start; gap: .5em; }
@@ -218,15 +268,19 @@ ${body}
  * Genera un HTML autónomo con texto y diagramas ya renderizados.
  * @param aulaDocument - Documento validado.
  * @param svgByCode - SVG de cada código Mermaid.
+ * @param imageSources - URLs de datos para las imágenes internas.
+ * @param failedImageSources - Imágenes que no se pudieron recuperar.
  * @returns Un archivo HTML sin recursos externos.
  */
 export function buildAulaDocumentHtml(
   aulaDocument: AulaDocument,
   svgByCode: ReadonlyMap<string, string> = new Map(),
+  imageSources: ReadonlyMap<string, string> = new Map(),
+  failedImageSources: ReadonlySet<string> = new Set(),
 ): string {
   const title = aulaDocument.title.trim() || "Documento sin título";
   const safeTitle = escapeHtml(title);
-  const withDiagrams = renderAulaContentHtml(aulaDocument.content, svgByCode);
+  const withDiagrams = renderAulaContentHtml(aulaDocument.content, svgByCode, imageSources, failedImageSources);
 
   return `<!doctype html>
 <html lang="es">
@@ -266,11 +320,17 @@ export function buildAulaDocumentHtml(
   pre code { padding: 0; background: transparent; }
   a { color: #5839be; font-weight: 600; }
   hr { border: 0; border-top: 1px solid #e7e4ef; }
+  .aula-image-block { display: flex; flex-direction: column; align-items: center; gap: .35em; margin: 1.4em 0; break-inside: avoid; }
+  .aula-image-block.is-left { align-items: flex-start; }
+  .aula-image-block.is-right { align-items: flex-end; }
+  .aula-image-block img { display: block; max-width: 100%; height: auto; border: 1px solid #e7e4ef; border-radius: 10px; background: #fbfaff; }
+  .aula-image-block figcaption { max-width: 100%; color: #625c74; font-size: .85rem; line-height: 1.45; text-align: center; }
+  .aula-image-missing { display: block; width: 100%; padding: 1.2em; border: 1px dashed #b9aed3; border-radius: 10px; background: #fbfaff; color: #625c74; font-size: .85rem; text-align: center; }
   .aula-mermaid-export { margin: 1.4em 0; padding: 1em; overflow: auto; border: 1px solid #e7e4ef; border-radius: 12px; background: #fbfaff; text-align: center; }
   .aula-mermaid-export svg { display: inline-block; max-width: 100%; height: auto; }
   .aula-mermaid-export-error { margin: 0 0 .7em; color: #8a2f2f; font-size: .85rem; font-weight: 700; text-align: left; }
   .aula-mermaid-export-error + pre { margin: 0; text-align: left; }
-  @media print { body { background: #fff; } main { width: auto; max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; } .aula-mermaid-export, pre, blockquote { break-inside: avoid; } h1, h2, h3 { break-after: avoid; } }
+  @media print { body { background: #fff; } main { width: auto; max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; } .aula-image-block, .aula-mermaid-export, pre, blockquote { break-inside: avoid; } h1, h2, h3 { break-after: avoid; } }
 </style>
 </head>
 <body>

@@ -3,7 +3,37 @@
 import { materializeDocxDocument, materializePptxPresentation } from "@silurus/ooxml/node";
 import { describe, expect, it } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
+import type { AulaImageAsset } from "../aula-documentos/export-images";
+import { imageBase64ToBytes } from "../aula-documentos/export-images";
 import { exportAulaDocx, exportAulaPptx } from "./office-export";
+
+const TINY_PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nTQAAAAASUVORK5CYII=";
+const TINY_PNG = imageBase64ToBytes(TINY_PNG_BASE64);
+
+/**
+ * Crea una imagen resuelta para las pruebas.
+ * @param source - URL interna.
+ * @returns La imagen con datos Office.
+ */
+function imageAsset(source: string): AulaImageAsset {
+  return {
+    source,
+    mime: "image/png",
+    bytes: TINY_PNG,
+    base64: TINY_PNG_BASE64,
+    dataUrl: `data:image/png;base64,${TINY_PNG_BASE64}`,
+    width: 1,
+    height: 1,
+    office: {
+      mime: "image/png",
+      bytes: TINY_PNG,
+      base64: TINY_PNG_BASE64,
+      dataUrl: `data:image/png;base64,${TINY_PNG_BASE64}`,
+      width: 1,
+      height: 1,
+    },
+  };
+}
 
 const document: AulaDocument = {
   schemaVersion: 3,
@@ -105,6 +135,80 @@ describe("exportación Office", () => {
 
     expect(firstDocx.blob.size).toBeGreaterThan(500);
     expect(secondDocx.blob.size).toBeGreaterThan(500);
+    expect(pptx.blob.size).toBeGreaterThan(500);
+  });
+
+  it("incrusta imágenes con texto alternativo y pie en DOCX", async () => {
+    const source = "/api/files/foto";
+    const withImage: AulaDocument = {
+      schemaVersion: 3,
+      title: "Informe con imagen",
+      content: {
+        type: "doc",
+        content: [
+          {
+            type: "aulaImage",
+            attrs: { src: source, alt: "Foto de clase", caption: "Grupo de 3.º", width: 60, alignment: "center" },
+          },
+        ],
+      },
+    };
+
+    const result = await exportAulaDocx(withImage, new Map([[source, imageAsset(source)]]));
+    expect(result.blob.size).toBeGreaterThan(1_000);
+    expect(result.warnings.join(" ")).not.toContain("no se pudo incrustar");
+
+    const parsed = await materializeDocxDocument(new Uint8Array(await result.blob.arrayBuffer()));
+    const text = JSON.stringify(parsed.body);
+    expect(text).toContain('"type":"image"');
+    expect(text).toContain("Grupo de 3.º");
+  });
+
+  it("incrusta imágenes con texto alternativo y pie en PPTX", async () => {
+    const source = "/api/files/foto";
+    const withImage: AulaDocument = {
+      schemaVersion: 3,
+      title: "Presentación con imagen",
+      content: {
+        type: "doc",
+        content: [
+          { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Diapositiva" }] },
+          {
+            type: "aulaImage",
+            attrs: { src: source, alt: "Foto de clase", caption: "Grupo de 3.º", width: 60, alignment: "center" },
+          },
+        ],
+      },
+    };
+
+    const result = await exportAulaPptx(withImage, {}, new Map([[source, imageAsset(source)]]));
+    expect(result.blob.size).toBeGreaterThan(1_000);
+    expect(result.warnings.join(" ")).not.toContain("no se pudo incrustar");
+
+    const presentation = await materializePptxPresentation(new Uint8Array(await result.blob.arrayBuffer()));
+    const text = JSON.stringify(presentation.slides);
+    expect(text).toContain('"type":"picture"');
+    expect(text).toContain("Grupo de 3.º");
+  });
+
+  it("avisa si falta una imagen sin romper la exportación", async () => {
+    const withImage: AulaDocument = {
+      schemaVersion: 3,
+      title: "Imagen perdida",
+      content: {
+        type: "doc",
+        content: [{
+          type: "aulaImage",
+          attrs: { src: "/api/files/perdida", alt: "Cartel", caption: "Pie", width: 100, alignment: "center" },
+        }],
+      },
+    };
+
+    const docx = await exportAulaDocx(withImage);
+    const pptx = await exportAulaPptx(withImage);
+    expect(docx.warnings.join(" ")).toContain("no se pudo incrustar");
+    expect(pptx.warnings.join(" ")).toContain("no se pudo incrustar");
+    expect(docx.blob.size).toBeGreaterThan(500);
     expect(pptx.blob.size).toBeGreaterThan(500);
   });
 });

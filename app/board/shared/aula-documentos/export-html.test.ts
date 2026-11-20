@@ -143,6 +143,50 @@ describe("exportación HTML de Aula Documentos", () => {
     ]);
   });
 
+  it("exporta imágenes con texto alternativo, pie y ancho embebido", () => {
+    const source = "/api/files/foto";
+    const dataUrl = "data:image/png;base64,iVBORw0KGgo=";
+    const document: AulaDocument = {
+      schemaVersion: 3,
+      title: "Con imagen",
+      content: {
+        type: "doc",
+        content: [{
+          type: "aulaImage",
+          attrs: { src: source, alt: "Foto de clase", caption: "Grupo de 3.º", width: 80, alignment: "left" },
+        }],
+      },
+    };
+
+    const html = buildAulaDocumentHtml(document, new Map(), new Map([[source, dataUrl]]));
+    expect(html).toContain('class="aula-image-block is-left"');
+    expect(html).toContain(`src="${dataUrl}"`);
+    expect(html).toContain('alt="Foto de clase"');
+    expect(html).toContain('style="width: 80%;"');
+    expect(html).toContain("<figcaption>Grupo de 3.º</figcaption>");
+    expect(html).not.toContain(source);
+  });
+
+  it("deja un aviso visible si una imagen ya no se puede leer", () => {
+    const source = "/api/files/perdida";
+    const document: AulaDocument = {
+      schemaVersion: 3,
+      title: "Imagen perdida",
+      content: {
+        type: "doc",
+        content: [{
+          type: "aulaImage",
+          attrs: { src: source, alt: "Cartel", caption: "Pie", width: 100, alignment: "center" },
+        }],
+      },
+    };
+
+    const html = buildAulaDocumentHtml(document, new Map(), new Map(), new Set([source]));
+    expect(html).toContain("Imagen no disponible: Cartel");
+    expect(html).toContain("aula-image-missing");
+    expect(html).not.toContain(`src="${source}"`);
+  });
+
   it("exporta diapositivas estáticas con tema y notas sin recursos externos", () => {
     const html = buildAulaPresentationHtml(
       {

@@ -1,6 +1,7 @@
 # Office en Aula Documentos: matriz de fidelidad
 
-> **Estado:** Spike de ADOC-12 · **Última medición:** 2026-11-19
+> **Estado:** Spike de ADOC-12 — **Última medición:** 2026-11-20
+> **Actualización ADOC-14:** las imágenes locales de Aula Documentos se incrustan en DOCX/PPTX con texto alternativo y pie. WebP se convierte a PNG para Office; una imagen ausente se sustituye por un aviso y no rompe el archivo.
 > **Fuente:** `@silurus/ooxml` 0.90.1 (solo lectura) y fixtures propios generados con `docx` 9.16.0 y `pptxgenjs` 4.0.1.
 
 ## 1. Decisión
@@ -36,7 +37,7 @@ Coste de exportación medido con esbuild, minificado y comprimido con gzip:
 | `pptxgenjs` | 373.792 B | 126.424 B |
 | **Total de los dos chunks** | **608.031 B** | **196.481 B** |
 
-Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de exportación. La medición es reproducible con `npm run perf:office`; el flujo real de exportación, con el coste de los chunks compartidos, está en `perf:budget` como `aula-documentos-export`: **329.583 / 340.000 B gzip**. XLSX no forma parte de la exportación de Aula Documentos.
+Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de exportación. La medición es reproducible con `npm run perf:office`; el flujo real de exportación, con el coste de los chunks compartidos, está en `perf:budget` como `aula-documentos-export`: **329.620 / 340.000 B gzip**. XLSX no forma parte de la exportación de Aula Documentos.
 
 ## 3. Matriz de fidelidad
 
@@ -50,7 +51,7 @@ Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de 
 | Listas | Sí, viñetas y numeración | Sí, básico | Niveles anidados limitados. |
 | Tablas | Sí, celdas y filas | Sí, tablas simples | Sin fórmulas ni estilos complejos. |
 | Enlaces | Sí | Sí | Se eliminan o aíslan enlaces externos peligrosos. |
-| Imágenes simples | Se omiten con aviso | Sí, si están en el modelo | La primera versión no guarda imágenes importadas. |
+| Imágenes simples | Se omiten con aviso | Sí, incrustadas con texto alternativo y pie | La importación aún no extrae imágenes; las imágenes creadas en Aula sí se exportan. |
 | Cabeceras, pies, notas y comentarios | No garantizado | No | Se avisa si el documento los contiene. |
 | Columnas, cuadros de texto, formas y SmartArt | No | No | Se pierde la maquetación visual. |
 | Ecuaciones complejas y contenido activo | No | No | Nunca se ejecutan macros. |
@@ -62,7 +63,7 @@ Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de 
 | Número y orden de diapositivas | Sí | Sí | Una diapositiva Aula por diapositiva de salida. |
 | Títulos y texto | Sí | Sí | Se conserva el texto y los párrafos. |
 | Viñetas y niveles | Sí, si el modelo las expone | Sí, básico | Puede simplificarse. |
-| Imágenes simples | Se omiten con aviso | Sí, si están en el modelo | La primera versión no guarda imágenes importadas. |
+| Imágenes simples | Se omiten con aviso | Sí, incrustadas con texto alternativo y pie | La importación aún no extrae imágenes; las imágenes creadas en Aula sí se exportan. |
 | Tablas y gráficos | Limitado / a validar | Tablas simples | Los gráficos no se reconstruyen como objetos editables. |
 | Posiciones, temas y patrones | No | No | Se genera un diseño Aula estándar. |
 | Animaciones, transiciones y multimedia | No | No | Fuera de alcance. |
@@ -78,6 +79,8 @@ Objetivo provisional: **≤ 210.000 B gzip** para los dos imports dinámicos de 
 - La exportación no incluye macros ni enlaces externos no revisados.
 
 ## 5. Decisiones pendientes para Fase 2/3
+
+- ADOC-14 completó la exportación de imágenes locales con texto alternativo y pie en DOCX/PPTX; WebP se convierte a PNG y una imagen ausente deja un aviso.
 
 - Validar la importación con más DOCX/PPTX reales y con archivos de varias versiones.
 - Validar la exportación con Office real y con archivos de varias versiones.

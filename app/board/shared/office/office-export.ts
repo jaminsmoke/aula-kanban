@@ -2,6 +2,7 @@ import type { JSONContent } from "@tiptap/core";
 import type { ExternalHyperlink as DocxHyperlink, Paragraph as DocxParagraph, Table as DocxTable, TextRun as DocxTextRun } from "docx";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
 import { buildPresentationSlides } from "../../../../lib/domain/aula-documentos/presentation";
+import type { AulaImageAssetMap } from "../aula-documentos/export-images";
 
 /** Resultado de una exportación Office. */
 export type OfficeExportResult = {
@@ -132,12 +133,14 @@ function listParagraphs(node: JSONContent, ordered: boolean, level: number, docx
  * Convierte una tabla de Aula en una tabla de `docx`.
  * @param node - Tabla.
  * @param docx - Módulo cargado.
+ * @param warnings - Avisos de exportación.
+ * @param images - Imágenes disponibles.
  * @returns La tabla.
  */
-function tableToDocx(node: JSONContent, docx: DocxModule): DocxTable {
+function tableToDocx(node: JSONContent, docx: DocxModule, warnings: string[], images: AulaImageAssetMap): DocxTable {
   const rows = (node.content ?? []).map((row) => new docx.TableRow({
     children: (row.content ?? []).map((cell) => new docx.TableCell({
-      children: (cell.content ?? []).flatMap((child) => blockToDocx(child, docx, [])),
+      children: (cell.content ?? []).flatMap((child) => blockToDocx(child, docx, warnings, images)),
     })),
   }));
   return new docx.Table({
@@ -163,13 +166,101 @@ function taskParagraphs(node: JSONContent, docx: DocxModule): DocxParagraph[] {
 }
 
 /**
+ * Convierte la alineación de una imagen en una alineación de `docx`.
+ * @param node - Nodo de imagen.
+ * @param docx - Módulo cargado.
+ * @returns La alineación.
+ */
+function imageAlignment(node: JSONContent, docx: DocxModule) {
+  const value = node.attrs?.alignment;
+  if (value === "left") return docx.AlignmentType.LEFT;
+  if (value === "right") return docx.AlignmentType.RIGHT;
+  return docx.AlignmentType.CENTER;
+}
+
+/**
+ * Convierte una imagen Aula en párrafos de `docx`.
+ * @param node - Nodo de imagen.
+ * @param docx - Módulo cargado.
+ * @param warnings - Avisos de exportación.
+ * @param images - Imágenes disponibles.
+ * @returns El párrafo de imagen y su pie.
+ */
+function imageToDocx(
+  node: JSONContent,
+  docx: DocxModule,
+  warnings: string[],
+  images: AulaImageAssetMap,
+): DocxChild[] {
+  const source = typeof node.attrs?.src === "string" ? node.attrs.src : "";
+  const alt = typeof node.attrs?.alt === "string" ? node.attrs.alt.trim() : "";
+  const caption = typeof node.attrs?.caption === "string" ? node.attrs.caption.trim() : "";
+  const asset = images.get(source);
+  if (!alt) addWarning(warnings, "Una imagen no tiene texto alternativo.");
+
+  if (!asset?.office) {
+    addWarning(warnings, "Una imagen no se pudo incrustar en el DOCX.");
+    return [new docx.Paragraph({
+      children: [new docx.TextRun({
+        text: alt ? `Imagen no disponible: ${alt}` : "Imagen no disponible",
+        italics: true,
+        color: "8A2F2F",
+      })],
+      spacing: { before: 120, after: 120 },
+    })];
+  }
+
+  const office = asset.office;
+  const type = office.mime === "image/jpeg" ? "jpg" : office.mime === "image/gif" ? "gif" : "png";
+  const requestedWidth = Math.max(10, Math.min(100, Number(node.attrs?.width) || 100));
+  let width = Math.round(560 * requestedWidth / 100);
+  let height = Math.max(1, Math.round(width * office.height / Math.max(1, office.width)));
+  const maxHeight = 720;
+  if (height > maxHeight) {
+    width = Math.max(1, Math.round(width * maxHeight / height));
+    height = maxHeight;
+  }
+
+  const blocks: DocxChild[] = [new docx.Paragraph({
+    children: [new docx.ImageRun({
+      data: office.bytes,
+      type,
+      transformation: { width, height },
+      altText: {
+        name: alt || "Imagen del documento",
+        description: alt || caption || "Imagen del documento",
+        title: caption || alt || "Imagen",
+      },
+    })],
+    alignment: imageAlignment(node, docx),
+    spacing: { before: 120, after: caption ? 40 : 120 },
+  })];
+
+  if (caption) {
+    blocks.push(new docx.Paragraph({
+      children: [new docx.TextRun({ text: caption, italics: true, size: 18, color: "625C74" })],
+      alignment: imageAlignment(node, docx),
+      spacing: { after: 120 },
+    }));
+  }
+
+  return blocks;
+}
+
+/**
  * Convierte un bloque Tiptap en elementos de `docx`.
  * @param node - Bloque del documento.
  * @param docx - Módulo cargado.
  * @param warnings - Avisos de exportación.
+ * @param images - Imágenes disponibles.
  * @returns Los elementos del bloque.
  */
-function blockToDocx(node: JSONContent, docx: DocxModule, warnings: string[]): DocxChild[] {
+function blockToDocx(
+  node: JSONContent,
+  docx: DocxModule,
+  warnings: string[],
+  images: AulaImageAssetMap,
+): DocxChild[] {
   if (node.type === "paragraph") {
     return [new docx.Paragraph({ children: inlineRuns(node, docx), alignment: alignment(node, docx) })];
   }
@@ -185,7 +276,7 @@ function blockToDocx(node: JSONContent, docx: DocxModule, warnings: string[]): D
   if (node.type === "taskList") return taskParagraphs(node, docx);
   if (node.type === "blockquote") {
     return (node.content ?? []).flatMap((child) => (
-      blockToDocx(child, docx, warnings).map((item) => item)
+      blockToDocx(child, docx, warnings, images).map((item) => item)
     ));
   }
   if (node.type === "codeBlock" || node.type === "mermaidBlock") {
@@ -196,18 +287,23 @@ function blockToDocx(node: JSONContent, docx: DocxModule, warnings: string[]): D
       spacing: { before: 80, after: 80 },
     })];
   }
-  if (node.type === "table") return [tableToDocx(node, docx)];
+  if (node.type === "aulaImage") return imageToDocx(node, docx, warnings, images);
+  if (node.type === "table") return [tableToDocx(node, docx, warnings, images)];
   if (node.type === "slideBreak") return [new docx.Paragraph({ children: [new docx.PageBreak()] })];
   if (node.type === "horizontalRule") return [new docx.Paragraph({ text: "" })];
-  return (node.content ?? []).flatMap((child) => blockToDocx(child, docx, warnings));
+  return (node.content ?? []).flatMap((child) => blockToDocx(child, docx, warnings, images));
 }
 
 /**
  * Exporta un documento Aula a DOCX.
  * @param document - Documento validado.
+ * @param images - Imágenes resueltas para incrustar.
  * @returns El archivo y los avisos de fidelidad.
  */
-export async function exportAulaDocx(document: AulaDocument): Promise<OfficeExportResult> {
+export async function exportAulaDocx(
+  document: AulaDocument,
+  images: AulaImageAssetMap = new Map(),
+): Promise<OfficeExportResult> {
   const docx = await import("docx");
   const warnings: string[] = [];
   let blocks = document.content.content ?? [];
@@ -233,59 +329,77 @@ export async function exportAulaDocx(document: AulaDocument): Promise<OfficeExpo
     sections: [{
       children: [
         new docx.Paragraph({ text: title, heading: docx.HeadingLevel.HEADING_1 }),
-        ...blocks.flatMap((block) => blockToDocx(block, docx, warnings)),
+        ...blocks.flatMap((block) => blockToDocx(block, docx, warnings, images)),
       ],
     }],
   });
   return { blob: await docx.Packer.toBlob(doc), warnings };
 }
 
+/** Elemento de una diapositiva en el orden del documento. */
+type PptxSlideItem =
+  | { kind: "text"; text: string; bullet: boolean; heading: boolean }
+  | { kind: "table"; rows: string[][] }
+  | { kind: "image"; source: string; alt: string; caption: string; width: number; alignment: string };
+
 /**
- * Convierte los bloques de una diapositiva en texto para PPTX.
+ * Convierte los bloques de una diapositiva en elementos ordenados para PPTX.
  * @param blocks - Bloques de la diapositiva.
  * @param title - Título de la diapositiva.
- * @returns Las líneas y tablas.
+ * @returns Texto, tablas e imágenes en orden.
  */
-function slideContent(blocks: JSONContent[], title: string): {
-  lines: Array<{ text: string; bullet: boolean; heading: boolean }>;
-  tables: string[][][];
-} {
-  const lines: Array<{ text: string; bullet: boolean; heading: boolean }> = [];
-  const tables: string[][][] = [];
+function slideContent(blocks: JSONContent[], title: string): { items: PptxSlideItem[] } {
+  const items: PptxSlideItem[] = [];
   const visit = (nodes: JSONContent[], bullet = false) => {
     for (const node of nodes) {
       if (node.type === "heading" && nodeText(node).trim() === title) continue;
       if (node.type === "heading" || node.type === "paragraph") {
         const text = nodeText(node).trim();
-        if (text) lines.push({ text, bullet, heading: node.type === "heading" });
+        if (text) items.push({ kind: "text", text, bullet, heading: node.type === "heading" });
       } else if (node.type === "bulletList" || node.type === "orderedList") {
         for (const item of node.content ?? []) visit(item.content ?? [], true);
       } else if (node.type === "taskList") {
         for (const item of node.content ?? []) {
           const text = (item.content ?? []).map(nodeText).join(" ").trim();
-          if (text) lines.push({ text, bullet: true, heading: false });
+          if (text) items.push({ kind: "text", text, bullet: true, heading: false });
         }
       } else if (node.type === "table") {
-        tables.push((node.content ?? []).map((row) => (row.content ?? []).map((cell) => nodeText(cell))));
+        items.push({
+          kind: "table",
+          rows: (node.content ?? []).map((row) => (row.content ?? []).map((cell) => nodeText(cell))),
+        });
       } else if (node.type === "codeBlock" || node.type === "mermaidBlock") {
         const text = node.type === "mermaidBlock" ? String(node.attrs?.code ?? "") : nodeText(node);
-        if (text) lines.push({ text, bullet: false, heading: false });
+        if (text) items.push({ kind: "text", text, bullet: false, heading: false });
+      } else if (node.type === "aulaImage") {
+        items.push({
+          kind: "image",
+          source: typeof node.attrs?.src === "string" ? node.attrs.src : "",
+          alt: typeof node.attrs?.alt === "string" ? node.attrs.alt.trim() : "",
+          caption: typeof node.attrs?.caption === "string" ? node.attrs.caption.trim() : "",
+          width: Math.max(10, Math.min(100, Number(node.attrs?.width) || 100)),
+          alignment: typeof node.attrs?.alignment === "string" ? node.attrs.alignment : "center",
+        });
+      } else if (node.type === "blockquote") {
+        visit(node.content ?? [], bullet);
       }
     }
   };
   visit(blocks);
-  return { lines, tables };
+  return { items };
 }
 
 /**
  * Exporta un documento Aula a PPTX.
  * @param document - Documento validado.
  * @param notes - Notas del orador por índice de diapositiva.
+ * @param images - Imágenes resueltas para incrustar.
  * @returns El archivo y los avisos de fidelidad.
  */
 export async function exportAulaPptx(
   document: AulaDocument,
   notes: Record<string, string> = {},
+  images: AulaImageAssetMap = new Map(),
 ): Promise<OfficeExportResult> {
   const { default: PptxGenJS } = await import("pptxgenjs");
   const warnings: string[] = [];
@@ -308,33 +422,93 @@ export async function exportAulaPptx(
     });
     const content = slideContent(source.content, source.title);
     let y = 1.4;
-    for (const line of content.lines) {
-      if (line.heading) addWarning(warnings, "Los títulos internos se exportan como texto.");
-      slide.addText(line.text, {
-        x: line.bullet ? 1.0 : 0.75,
+    for (const item of content.items) {
+      if (item.kind === "text") {
+        if (item.heading) addWarning(warnings, "Los títulos internos se exportan como texto.");
+        slide.addText(item.text, {
+          x: item.bullet ? 1.0 : 0.75,
+          y,
+          w: 11.4,
+          h: 0.4,
+          fontSize: item.heading ? 20 : 16,
+          bold: item.heading,
+          bullet: item.bullet ? true : undefined,
+          color: "211B36",
+        });
+        y += item.heading ? 0.55 : 0.42;
+        continue;
+      }
+
+      if (item.kind === "table") {
+        slide.addTable(item.rows.map((row) => row.map((cell) => ({ text: cell }))), {
+          x: 0.75,
+          y,
+          w: 11.4,
+          fontSize: 11,
+          border: { pt: 1, color: "D9D9D9" },
+        });
+        y += Math.min(3, item.rows.length * 0.35 + 0.2);
+        addWarning(warnings, "Las tablas se exportan como tablas simples.");
+        continue;
+      }
+
+      const asset = images.get(item.source);
+      if (!asset?.office) {
+        addWarning(warnings, "Una imagen no se pudo incrustar en el PPTX.");
+        slide.addText(item.alt ? `Imagen no disponible: ${item.alt}` : "Imagen no disponible", {
+          x: 0.75,
+          y,
+          w: 11.4,
+          h: 0.4,
+          fontSize: 12,
+          italic: true,
+          color: "8A2F2F",
+        });
+        y += 0.42;
+        continue;
+      }
+      if (!item.alt) addWarning(warnings, "Una imagen no tiene texto alternativo.");
+
+      const ratio = asset.office.height / Math.max(1, asset.office.width);
+      let imageWidth = 11.4 * item.width / 100;
+      let imageHeight = imageWidth * ratio;
+      const availableHeight = Math.max(1.2, 7.1 - y - (item.caption ? 0.35 : 0.1));
+      if (imageHeight > availableHeight) {
+        imageHeight = availableHeight;
+        imageWidth = imageHeight / Math.max(0.01, ratio);
+        addWarning(warnings, "Una imagen se ajustó para caber en la diapositiva.");
+      }
+      const x = item.alignment === "left"
+        ? 0.75
+        : item.alignment === "right"
+          ? 13.333 - 0.75 - imageWidth
+          : (13.333 - imageWidth) / 2;
+      slide.addImage({
+        data: asset.office.dataUrl,
+        x,
         y,
-        w: 11.4,
-        h: 0.4,
-        fontSize: line.heading ? 20 : 16,
-        bold: line.heading,
-        bullet: line.bullet ? true : undefined,
-        color: "211B36",
+        w: imageWidth,
+        h: imageHeight,
+        altText: item.alt || item.caption || "Imagen del documento",
+        ...(item.caption ? { objectName: item.caption } : {}),
       });
-      y += line.heading ? 0.55 : 0.42;
-    }
-    for (const rows of content.tables) {
-      slide.addTable(rows.map((row) => row.map((cell) => ({ text: cell }))), {
-        x: 0.75,
-        y,
-        w: 11.4,
-        fontSize: 11,
-        border: { pt: 1, color: "D9D9D9" },
-      });
-      y += Math.min(3, rows.length * 0.35 + 0.2);
+      y += imageHeight + 0.12;
+      if (item.caption) {
+        slide.addText(item.caption, {
+          x: 0.75,
+          y,
+          w: 11.4,
+          h: 0.3,
+          fontSize: 11,
+          italic: true,
+          align: "center",
+          color: "625C74",
+        });
+        y += 0.3;
+      }
     }
     const note = notes[String(index)]?.trim();
     if (note) slide.addNotes(note);
-    if (content.tables.length) addWarning(warnings, "Las tablas se exportan como tablas simples.");
   });
 
   const output = await pptx.write({ outputType: "blob" });

@@ -208,10 +208,31 @@ export const AulaImage = Node.create<AulaImageOptions>({
     return [{ tag: "figure[data-aula-image]" }];
   },
   renderHTML({ HTMLAttributes }) {
-    const src = typeof HTMLAttributes.src === "string" ? HTMLAttributes.src : "";
-    const alt = typeof HTMLAttributes.alt === "string" ? HTMLAttributes.alt : "";
-    const caption = typeof HTMLAttributes.caption === "string" ? HTMLAttributes.caption : "";
-    return ["figure", mergeAttributes(HTMLAttributes, { "data-aula-image": "" }), ["img", { src, alt }], ...(caption ? [["figcaption", {}, caption]] : [])];
+    const {
+      src: rawSrc,
+      alt: rawAlt,
+      caption: rawCaption,
+      width: rawWidth,
+      alignment: rawAlignment,
+      ...rest
+    } = HTMLAttributes;
+    const src = typeof rawSrc === "string" ? rawSrc : "";
+    const alt = typeof rawAlt === "string" ? rawAlt : "";
+    const caption = typeof rawCaption === "string" ? rawCaption : "";
+    const width = typeof rawWidth === "number" ? rawWidth : AULA_IMAGE_MAX_WIDTH;
+    const alignment = typeof rawAlignment === "string"
+      && (AULA_IMAGE_ALIGNMENTS as readonly string[]).includes(rawAlignment)
+      ? rawAlignment
+      : "center";
+    return [
+      "figure",
+      mergeAttributes(rest, {
+        "data-aula-image": "",
+        class: `aula-image-block is-${alignment}`,
+      }),
+      ["img", { src, alt, style: `width:${width}%` }],
+      ...(caption ? [["figcaption", {}, caption]] : []),
+    ];
   },
   addNodeView() {
     return ReactNodeViewRenderer(AulaImageView);
