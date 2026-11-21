@@ -1,6 +1,6 @@
 # Búsqueda, esquema y navegación de Aula Documentos
 
-> **Estado:** Fases 1–3 cerradas · **Fecha:** 2026-11-21
+> **Estado:** Fases 1–4 cerradas · **Fecha:** 2026-11-21
 > **Alcance:** contrato de búsqueda, reemplazo, esquema, diapositivas, enfoque y barra de estado.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
 > **Regla:** esta fase no mueve código de producto; fija el contrato y los límites.
@@ -192,3 +192,15 @@ Implementado el 2026-11-21:
 - Saltar a una diapositiva mueve la selección a su bloque; la vista previa se abre en la diapositiva activa.
 - Las listas son navegables con botones y teclado, tienen estado vacío y se adaptan al ancho móvil.
 - Pruebas de jerarquía, títulos repetidos y saltados, documentos sin títulos, saltos explícitos, muchas diapositivas y flujo de interfaz.
+
+## 13. Cierre de la Fase 4
+
+Implementado el 2026-11-21:
+
+- `useAulaView` mantiene el modo enfoque y la visibilidad del esquema como estado de sesión, sin tocar `AulaDocument`.
+- El modo enfoque añade `is-focus-mode`, oculta laterales y barras no esenciales, conserva la barra de estado y restaura el foco al control de origen.
+- `Escape` respeta la prioridad de la búsqueda y los diálogos antes de salir del enfoque.
+- `DocumentStatusBar` reutiliza el chip de guardado y muestra sección actual, palabras, diagramas y el control de enfoque.
+- `Ctrl/Cmd+Shift+O` muestra u oculta el esquema; `Alt+Shift+F` alterna el enfoque. Los atajos solo actúan dentro de Aula Documentos.
+- El control de enfoque y el botón de esquema tienen etiquetas accesibles, `aria-pressed`/`aria-expanded` y foco visible.
+- Pruebas de botón, atajo, `Escape`, restauración de foco, ocultación del esquema y convivencia con la búsqueda.

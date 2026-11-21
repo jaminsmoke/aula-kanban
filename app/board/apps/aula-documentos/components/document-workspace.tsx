@@ -5,6 +5,7 @@ import { AULA_DOCUMENT_TITLE_MAX_LENGTH, AULA_PRESENTATION_THEMES, type AulaPres
 import { useAulaDocumentosView } from "../aula-documentos-context";
 import { DocumentSearchBar } from "./document-search-bar";
 import { DocumentNavigator } from "./document-navigator";
+import { DocumentStatusBar } from "./document-status-bar";
 import { DocumentSuitePanel } from "./document-suite-panel";
 import { DocumentToolbar } from "./document-toolbar";
 
@@ -44,6 +45,7 @@ export function DocumentWorkspace() {
     openRecoveryCopies,
     recoveryCount,
     openSearch,
+    focusMode,
     presentationTheme,
     changePresentationTheme,
     slideLabel,
@@ -65,7 +67,7 @@ export function DocumentWorkspace() {
   } = useAulaDocumentosView();
 
   return (
-    <div className="aula-documentos-app">
+    <div className={`aula-documentos-app${focusMode ? " is-focus-mode" : ""}`}>
       <DocumentToolbar />
       <DocumentSearchBar />
       {newDocumentOpen || invalidDocument || saveConflict || recoveryOpen ? (
@@ -177,6 +179,7 @@ export function DocumentWorkspace() {
           </section>
         </aside>
       </div>
+      <DocumentStatusBar />
 
       {migrationOpen || markdownSourceOpen || slidePreview || presentation ? (
         <Suspense fallback={null}>

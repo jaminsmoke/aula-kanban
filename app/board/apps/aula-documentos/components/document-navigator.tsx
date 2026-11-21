@@ -15,6 +15,8 @@ export function DocumentNavigator() {
     jumpToSlide,
     openSlidePreview,
     preparingPresentation,
+    outlineOpen,
+    toggleOutline,
   } = useAulaDocumentosView();
 
   if (!editor) {
@@ -33,12 +35,25 @@ export function DocumentNavigator() {
       <div className="aula-documentos-navigator-block">
         <div className="aula-documentos-navigator-head">
           <h4>Esquema</h4>
-          <span>{outline.length} {outline.length === 1 ? "sección" : "secciones"}</span>
+          <div className="aula-documentos-navigator-head-actions">
+            <span>{outline.length} {outline.length === 1 ? "sección" : "secciones"}</span>
+            <button
+              type="button"
+              className="aula-documentos-navigator-toggle"
+              onClick={toggleOutline}
+              aria-expanded={outlineOpen}
+              aria-controls="aula-documentos-outline-list"
+              aria-label={outlineOpen ? "Ocultar esquema" : "Mostrar esquema"}
+            >
+              {outlineOpen ? "Ocultar" : "Mostrar"}
+            </button>
+          </div>
         </div>
-        {outline.length === 0 ? (
+        {outlineOpen && outline.length === 0 ? (
           <p className="aula-documentos-navigator-empty">Sin títulos H1–H3. Añade un título para crear el esquema.</p>
-        ) : (
-          <nav aria-label="Esquema del documento">
+        ) : null}
+        {outlineOpen && outline.length > 0 ? (
+          <nav id="aula-documentos-outline-list" aria-label="Esquema del documento">
             <ul className="aula-documentos-outline-list">
               {outline.map((row, index) => (
                 <li key={`${row.from}-${row.text}`}>
@@ -54,7 +69,7 @@ export function DocumentNavigator() {
               ))}
             </ul>
           </nav>
-        )}
+        ) : null}
       </div>
 
       <div className="aula-documentos-navigator-block">

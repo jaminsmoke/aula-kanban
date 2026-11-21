@@ -27,6 +27,9 @@ export function AulaDocumentosShortcuts() {
         <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>I</kbd> cursiva</li>
         <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> enlace</li>
         <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>S</kbd> guardar</li>
+        <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>F</kbd> buscar; <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>H</kbd> reemplazar.</li>
+        <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>O</kbd> mostrar u ocultar el esquema.</li>
+        <li><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd> modo enfoque; <kbd>Escape</kbd> sale.</li>
         <li><kbd>Tab</kbd>/<kbd>Shift</kbd> + <kbd>Tab</kbd> avanzar o retroceder en una tabla.</li>
         <li>En un diagrama, <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Intro</kbd> aplica el código.</li>
       </ul>

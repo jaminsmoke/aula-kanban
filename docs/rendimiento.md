@@ -44,7 +44,7 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 | Calculadora · abrir Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
 | Calculadora · primer `=` en Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
 | Calculadora · Científica/Ecuaciones | 6.606,2 KiB | 1.915,4 KiB (1.961.393 B) | 2.069.960 B | 19 |
-| Aula Documentos · abrir | 1.208,6 KiB | 366,8 KiB (375.633 B) | 377.000 B | 48 |
+| Aula Documentos · abrir | 1.213,2 KiB | 367,7 KiB (376.495 B) | 377.000 B | 48 |
 | Tienda · abrir | 544,7 KiB | 169,1 KiB (173.195 B) | 174.779 B | 20 |
 | Pizarra · abrir | 3.441,7 KiB | 1.214,2 KiB (1.243.296 B) | 1.348.890 B | 23 |
 | Pizarra · conversión Mermaid | 4.206,4 KiB | 1.412,2 KiB (1.446.106 B) | 1.560.999 B | 51 |
@@ -62,14 +62,14 @@ Los totales incluyen el framework y la entrada compartida. La comparación útil
 | App | Flujos | Gzip de app | Tests actuales / límite | CSS actual / límite |
 |---|---|---:|---|---|
 | Tablero | 1 | 175.656 B | 29 / 2.226 → 32 / 2.450 | 12 / 1.529 → 13 / 1.650 |
-| Aula Documentos | 2 | 377.000 B | 42 / 4.166 → 44 / 4.250 | 11 / 2.380 → 12 / 2.450 |
+| Aula Documentos | 2 | 377.000 B | 42 / 4.216 → 44 / 4.250 | 12 / 2.466 → 12 / 2.550 |
 | Hoja de cálculo | 1 | 315.000 B | 5 / 448 → 6 / 500 | 1 / 345 → 2 / 380 |
 | Calculadora | 3 | 2.069.960 B | 6 / 295 → 7 / 330 | 1 / 124 → 2 / 140 |
 | Espacio / Tienda | 1 | 174.779 B | 9 / 723 → 10 / 800 | 2 / 245 → 3 / 270 |
 | Pizarra | 2 | 1.560.999 B | 7 / 439 → 8 / 490 | 1 / 9 → 2 / 12 |
 | Blockly | 2 | 383.275 B | 4 / 113 → 5 / 130 | 1 / 39 → 2 / 50 |
 
-Los límites de test y CSS tienen un margen deliberado para evitar que una prueba pequeña rompa CI; el límite de gzip de la app nunca puede ser menor que el de su flujo más pesado. Los flujos `aula-documentos-export`, `basica`, `basica-evalua`, `pizarra-mermaid` y `blockly-codigo` siguen teniendo su propio presupuesto aunque compartan app. El presupuesto de `aula-documentos` se ajustó a **377.000 B** con el esquema y el navegador de diapositivas de ADOC-18; el build de referencia queda en **375.633 B**.
+Los límites de test y CSS tienen un margen deliberado para evitar que una prueba pequeña rompa CI; el límite de gzip de la app nunca puede ser menor que el de su flujo más pesado. Los flujos `aula-documentos-export`, `basica`, `basica-evalua`, `pizarra-mermaid` y `blockly-codigo` siguen teniendo su propio presupuesto aunque compartan app. El presupuesto de `aula-documentos` se ajustó a **377.000 B** con el esquema, el navegador de diapositivas y la barra de estado de ADOC-18; el build de referencia queda en **376.495 B**.
 
 ### Latencia e imágenes
 

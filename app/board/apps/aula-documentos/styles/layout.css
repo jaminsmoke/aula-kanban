@@ -28,14 +28,6 @@
   background:var(--ui-surface-faint);
 }
 
-.aula-documentos-meta {
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-left:auto;
-  font-size:11px;
-}
-
 .aula-documentos-chip {
   padding:4px 8px;
   border-radius:var(--radius-pill);

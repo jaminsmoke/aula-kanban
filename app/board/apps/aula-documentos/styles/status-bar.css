@@ -1,0 +1,87 @@
+.aula-documentos-statusbar {
+  flex:none;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px 10px;
+  padding:6px 14px;
+  border-top:var(--border-width-hairline) solid var(--ui-border-subtle);
+  background:var(--ui-surface-faint);
+  font-size:11px;
+}
+
+.aula-documentos-status-section {
+  min-width:0;
+  max-width:min(42vw, 360px);
+  overflow:hidden;
+  color:var(--ui-text-muted);
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.aula-documentos-status-section strong {
+  color:var(--ui-text-primary);
+  font-weight:700;
+}
+
+.aula-documentos-statusbar .aula-documentos-chip {
+  margin-left:auto;
+}
+
+.aula-documentos-focus-toggle {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  min-height:27px;
+  padding:0 7px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+  font:inherit;
+  font-size:10.5px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.aula-documentos-focus-toggle:hover {
+  background:var(--ui-surface-hover);
+  color:var(--ui-text-primary);
+}
+
+.aula-documentos-focus-toggle:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:1px;
+}
+
+.aula-documentos-app.is-focus-mode .aula-documentos-commandbar,
+.aula-documentos-app.is-focus-mode .aula-documentos-toolbar,
+.aula-documentos-app.is-focus-mode .aula-documentos-side,
+.aula-documentos-app.is-focus-mode .aula-documentos-readonly {
+  display:none;
+}
+
+.aula-documentos-app.is-focus-mode .aula-documentos-layout {
+  grid-template-columns:minmax(0,1fr);
+  padding:18px 14px;
+}
+
+.aula-documentos-app.is-focus-mode .aula-documentos-paper {
+  width:min(100%, 1040px);
+}
+
+@media (max-width: 700px) {
+  .aula-documentos-statusbar {
+    gap:5px 8px;
+    padding:6px 10px;
+  }
+
+  .aula-documentos-status-section {
+    max-width:100%;
+    flex-basis:100%;
+  }
+
+  .aula-documentos-focus-toggle {
+    min-height:44px;
+  }
+}

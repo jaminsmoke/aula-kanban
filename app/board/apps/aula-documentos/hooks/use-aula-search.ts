@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Editor } from "@tiptap/core";
 import {
   clearAulaSearchHighlights,
@@ -15,6 +15,7 @@ type SearchDeps = {
   editor: Editor | null;
   readOnly: boolean;
   setStatus: (message: string) => void;
+  documentId: string | null;
 };
 
 /**
@@ -22,7 +23,7 @@ type SearchDeps = {
  * @param deps - Editor, permisos y estado compartido.
  * @returns Estado y acciones de búsqueda.
  */
-export function useAulaSearch({ editor, readOnly, setStatus }: SearchDeps) {
+export function useAulaSearch({ editor, readOnly, setStatus, documentId }: SearchDeps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [replaceOpen, setReplaceOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -31,6 +32,21 @@ export function useAulaSearch({ editor, readOnly, setStatus }: SearchDeps) {
   const [diacriticsSensitive, setDiacriticsSensitive] = useState(false);
   const [matches, setMatches] = useState<AulaSearchMatch[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const previousDocumentId = useRef(documentId);
+
+  useEffect(() => {
+    if (previousDocumentId.current === documentId) return;
+    previousDocumentId.current = documentId;
+    queueMicrotask(() => {
+      setSearchOpen(false);
+      setReplaceOpen(false);
+      setQuery("");
+      setReplacement("");
+      setMatches([]);
+      setActiveIndex(0);
+      clearAulaSearchHighlights(editor);
+    });
+  }, [documentId, editor]);
 
   const recompute = useCallback(() => {
     const found = searchAulaDocument(editor, { query, caseSensitive, diacriticsSensitive });

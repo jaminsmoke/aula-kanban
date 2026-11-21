@@ -362,14 +362,6 @@
     padding:7px 10px;
   }
 
-  .aula-documentos-meta {
-    gap:5px;
-  }
-
-  .aula-documentos-count:first-of-type {
-    display:none;
-  }
-
   .aula-documentos-toolbar {
     display:none;
   }

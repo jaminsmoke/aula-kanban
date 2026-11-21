@@ -69,11 +69,6 @@ export function DocumentToolbar() {
     archiveMenuActions,
     importMenuActions,
     exportMenuActions,
-    chipText,
-    dirty,
-    saveConflict,
-    wordLabel,
-    diagramLabel,
     presentAction,
     saveDocumentAction,
     actionsRef,
@@ -109,13 +104,6 @@ export function DocumentToolbar() {
           <AulaMenu label="Archivo" actions={archiveMenuActions} />
           <AulaMenu label="Importar" actions={importMenuActions} />
           <AulaMenu label="Exportar" actions={exportMenuActions} />
-        </div>
-        <div className="aula-documentos-meta" aria-label="Estado del documento">
-          <span className={(dirty || saveConflict) && !readOnly ? "aula-documentos-chip is-dirty" : "aula-documentos-chip"}>
-            {chipText}
-          </span>
-          <span className="aula-documentos-count">{wordLabel}</span>
-          <span className="aula-documentos-count">{diagramLabel}</span>
         </div>
         <div className="aula-documentos-desktop-actions">
           <button

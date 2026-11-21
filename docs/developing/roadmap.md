@@ -94,12 +94,13 @@
 
 ### Fase 4 — Enfoque, barra de estado, teclado y accesibilidad
 
-- [ ] Añadir modo enfoque con salida clara y estado recordado por sesión.
-- [ ] Mostrar sección actual, palabras, diagramas y guardado en la barra de estado.
-- [ ] Definir atajos de búsqueda, navegación y enfoque sin pisar los del editor.
-- [ ] Revisar foco, lector de pantalla, contraste y comportamiento móvil.
-- [ ] Probar teclado, Escape, resultados vacíos y cambio de documento.
+- [x] Añadir modo enfoque con salida clara y estado recordado por sesión.
+- [x] Mostrar sección actual, palabras, diagramas y guardado en la barra de estado.
+- [x] Definir atajos de búsqueda, navegación y enfoque sin pisar los del editor.
+- [x] Revisar foco, lector de pantalla, contraste y comportamiento móvil.
+- [x] Probar teclado, Escape, resultados vacíos y cambio de documento.
 - **Criterios:** toda la navegación funciona con teclado y móvil, y el foco vuelve al lugar correcto.
+- **Cierre (2026-11-21):** barra inferior con sección actual, palabras, diagramas, guardado y control de enfoque; el modo enfoque oculta el cromo no esencial, se recuerda en la sesión y restaura el foco. Atajos `Ctrl/Cmd+Shift+O` y `Alt+Shift+F`, `Escape` con prioridad para búsqueda y diálogos, y pruebas de foco y teclado. Suite: **256 archivos / 1.701 pruebas**; build **376.495 B**; presupuesto **377.000 B**.
 
 ### Fase 5 — Cierre
 
