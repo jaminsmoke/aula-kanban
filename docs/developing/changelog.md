@@ -1,8 +1,32 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-16 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** ADOC-17 activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-21 — Roadmap ADOC-16 — Importar como flujo propio y más formatos
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Unificado el diálogo **Importar documento** para archivo, arrastre y pegado, con una vista previa común, confirmación y copia de recuperación previa.
+- Añadidos TXT literal y JSON canónico de Aula (incluido el JSON de copia de recuperación), validados con `parseAulaDocument`; HTML, ODT, RTF y PDF se rechazan con un motivo explícito.
+- Añadida detección de contenido idéntico al documento abierto mediante huella canónica; el origen (archivo o texto pegado) queda visible en la vista previa y en el mensaje posterior.
+- Actualizados la ayuda y `docs/developing/aula-documentos-import.md` con la matriz de formatos, límites y pérdidas.
+- No se cambió el esquema de `AulaDocument`, las URLs, los permisos, el MCP ni la versión del Site.
+
+### Verificación
+
+- Suite completa: **244 archivos / 1.655 pruebas**.
+- `app:budget` y `perf:budget`: correctos.
+- Sin cambios de versión; el Site sigue en `1.1.37`.
+
+### Seguimiento
+
+- ADOC-16 archivado en [`historial/roadmap-adoc-16.md`](../historial/roadmap-adoc-16.md). El backlog queda con **5 entradas**; siguiente candidato **ADOC-18**.
 
 ---
 

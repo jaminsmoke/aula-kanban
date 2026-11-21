@@ -1,6 +1,6 @@
 # Mapa del servidor: `lib/server` y `app/api`
 
-> **Estado:** Fase 1 cerrada; Fase 2 en curso · **Fecha:** 2026-11-20
+> **Estado:** Cerrado con ARC-06 · **Fecha:** 2026-11-20
 > **Fase 2 (2026-11-20):** el adaptador HTTP de alumnado y profesorado ya vive en `app/api/students` y `app/api/teachers`; `lib/server/people/*` solo expone repositorio, reglas y operaciones tipadas. Las siete rutas que resolvían el proyecto a mano usan ahora `withProjectRoute`; archivos y copias usan `withResourceProject` porque el ámbito es el del objeto guardado. `tasks/service.ts` absorbe revisión, permisos y decoración; `api/tasks` queda como adaptador de 46 líneas. El 503 de almacenamiento sale de un único `storageUnavailable()` con mensaje y estado compartidos. `api/members` y `api/space-apps` ya tienen prueba de contrato propia. Ninguna ruta de `app/api` importa D1. `storage.ts` queda como servicio: el repositorio R2/D1 vive en `storage/repository.ts` y las reglas de cuota en `storage/quota.ts`.
 > **Alcance:** inventario y clasificación provisional. La Fase 1 no movió ni renombró código.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Arquitectura:** [`arquitectura-global.md`](arquitectura-global.md)

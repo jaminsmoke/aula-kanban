@@ -2,24 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** ADOC-16 activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 6 entradas pendientes · siguiente candidato ADOC-17
+> **Roadmap:** ADOC-17 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 5 entradas pendientes · siguiente candidato ADOC-18
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
-
-## 2026-11-19 — ADOC-17 · Varios documentos y gestión de la suite
-
-- Contexto: Aula Documentos guarda un único documento por proyecto. Una suite documental necesita organizar varios documentos, recuperar el último abierto y evitar que crear uno sustituya al anterior.
-- Alcance:
-  1. Definir el modelo de varios documentos por proyecto y su migración desde el documento único actual.
-  2. Añadir lista, crear, duplicar, renombrar, archivar/eliminar y restaurar con copia.
-  3. Mantener URLs profundas, permisos, invitados y MCP sin ambigüedad sobre qué documento se abre.
-  4. Mostrar fecha, extracto y estado de cada documento.
-  5. Añadir pruebas de concurrencia, cuotas y recuperación.
-- Criterios: se pueden tener varios documentos sin perder el actual, abrir uno concreto desde un enlace y revertir una eliminación; la migración conserva el documento existente.
-- Notas: decidir si se comparte la hoja de cálculo o si cada app mantiene su propio modelo; no anidar datos sin una migración reversible.
 
 ## 2026-11-19 — ADOC-18 · Buscar, esquema y navegación del documento
 
