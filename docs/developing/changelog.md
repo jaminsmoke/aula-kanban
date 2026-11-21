@@ -1,8 +1,40 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-08 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-21 — Roadmap ARC-08 — Ordenar `shared` por capacidad y consumidor
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Inventario de consumidores, destinos, imports dinámicos y línea base en `shared-consumidores.md` y `shared-baseline.json`.
+- Atajos, edición, imágenes, búsqueda, navegación, comentarios, diagramas, Gantt, presentación, exportación y copias se movieron a `apps/aula-documentos` por capacidad.
+- Office completo, incluido visor, importación, exportación, pruebas y fixtures, vive en `apps/aula-documentos/formatos/office`; el modelo puro queda en `lib/domain`.
+- Los tipos y helpers base64 de imágenes se separaron en `lib/domain/aula-documentos/image-assets.ts`.
+- `shared/aula-documentos`, `shared/office` y `shared/mermaid` desaparecen. `shared/whiteboard` se conserva por sus dos consumidores.
+- La demo instala `aula-documentos` y siembra un documento con Mermaid en lugar de la app retirada `mermaid`; la descripción de la suite ya no anuncia `app_documents`.
+- Los alias, importadores y migración de las apps absorbidas se conservan.
+- Presupuestos de Aula ajustados por las pruebas y el CSS incorporados: **53 / 5.297 → 54 / 5.400** tests y **16 / 3.734 → 16 / 3.800** CSS.
+
+### Verificación
+
+- `npm run check`: correcto.
+- `arch:check`: **459 archivos / 1.149 imports / 0 problemas**.
+- Suite completa: **265 archivos / 1.747 pruebas**.
+- Build de Aula Documentos: **386.272 / 387.000 B**; exportación Office **330.083 B / 14 archivos**.
+- `app:budget`: Aula **53 / 5.297** tests y **16 / 3.734** CSS; Blockly sin cambios.
+- `perf:budget` y `perf:office`: correctos; Office **196.481 / 210.000 B**.
+- Aula pasa de **386.266 B** a **386.272 B** (+6 B) y conserva 50 archivos; exportación Office baja 1 B. Sin regresión práctica.
+- El Site sigue en `1.1.38`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-08 archivado en [`historial/roadmap-arc-08.md`](../historial/roadmap-arc-08.md). El backlog queda con **3 entradas**; siguiente candidato **ARC-09**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 

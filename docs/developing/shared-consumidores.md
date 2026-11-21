@@ -1,6 +1,6 @@
 # Inventario de `shared` para ARC-08
 
-> **Estado:** ARC-08, Fases 1–4 · **Fecha:** 2026-11-21
+> **Estado:** ARC-08 completado · **Fecha:** 2026-11-21
 > **Alcance:** `shared/aula-documentos`, `shared/office`, `shared/mermaid` y la frontera que conserva `shared/whiteboard`.
 > **Instantánea:** [`shared-baseline.json`](shared-baseline.json)
 
