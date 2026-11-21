@@ -1,6 +1,6 @@
 # Búsqueda, esquema y navegación de Aula Documentos
 
-> **Estado:** Fases 1–4 cerradas · **Fecha:** 2026-11-21
+> **Estado:** Completado (ADOC-18) · **Fecha:** 2026-11-21
 > **Alcance:** contrato de búsqueda, reemplazo, esquema, diapositivas, enfoque y barra de estado.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
 > **Regla:** esta fase no mueve código de producto; fija el contrato y los límites.
@@ -204,3 +204,14 @@ Implementado el 2026-11-21:
 - `Ctrl/Cmd+Shift+O` muestra u oculta el esquema; `Alt+Shift+F` alterna el enfoque. Los atajos solo actúan dentro de Aula Documentos.
 - El control de enfoque y el botón de esquema tienen etiquetas accesibles, `aria-pressed`/`aria-expanded` y foco visible.
 - Pruebas de botón, atajo, `Escape`, restauración de foco, ocultación del esquema y convivencia con la búsqueda.
+
+## 14. Cierre de ADOC-18
+
+Cerrado el 2026-11-21:
+
+- Roadmap archivado en [`historial/roadmap-adoc-18.md`](../historial/roadmap-adoc-18.md).
+- Búsqueda, reemplazo, esquema, diapositivas, enfoque y barra de estado comparten el documento Tiptap activo.
+- Sin cambios en `AulaDocument`, URLs, permisos, MCP ni versión del Site.
+- `npm run check`, **256 archivos / 1.701 pruebas**, build, `perf:budget`, `app:budget` y `perf:office` correctos.
+- Aula Documentos: **376.482 / 377.000 B gzip**.
+- El backlog queda con **4 entradas**; siguiente candidato **ADOC-19**.

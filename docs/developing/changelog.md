@@ -1,8 +1,39 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-18 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-21 — Roadmap ADOC-18 — Buscar, esquema y navegación del documento
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Búsqueda y reemplazo sobre el texto visible del documento Tiptap, con posiciones reales, navegación anterior/siguiente, toggles de mayúsculas y acentos y resultado activo.
+- Reemplazo actual y total en una única transacción Tiptap que conserva marcas, tablas, imágenes y deshacer.
+- Esquema jerárquico H1–H3 derivado de los títulos reales, con sección activa según la selección, estado vacío y títulos repetidos o saltados.
+- Navegador de diapositivas basado en la misma agrupación de `buildPresentationSlides`, con número, título y salto al bloque correspondiente; la vista previa se abre en la diapositiva activa.
+- Modo enfoque de sesión con salida por botón, `Escape` y atajo; restaura el foco al control de origen y oculta paneles y barras no esenciales.
+- Barra de estado con sección actual, palabras, diagramas, chip de guardado reutilizado y control de enfoque.
+- Atajos `Ctrl/Cmd+F`, `Ctrl/Cmd+H`, `Ctrl/Cmd+Shift+O` y `Alt+Shift+F`, con prioridad de `Escape` para búsqueda y diálogos.
+- La búsqueda se cierra al cambiar de documento; esquema, diapositivas y sección activa se reconstruyen desde el documento nuevo.
+- Ayuda y contrato en `docs/developing/aula-documentos-navegacion.md`. Sin cambios en `AulaDocument`, URLs, permisos, MCP ni versión del Site.
+
+### Verificación
+
+- `npm run check`: correcto.
+- `arch:check`: **438 archivos / 1.074 imports / 0 problemas**.
+- Suite completa: **256 archivos / 1.701 pruebas**.
+- Build, `app:budget`, `perf:budget` y `perf:office`: correctos.
+- Aula Documentos: **376.482 / 377.000 B gzip**.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ADOC-18 archivado en [`historial/roadmap-adoc-18.md`](../historial/roadmap-adoc-18.md). El backlog queda con **4 entradas**; siguiente candidato **ADOC-19**.
 
 ---
 
