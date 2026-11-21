@@ -1,7 +1,7 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** ADOC-18 activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
