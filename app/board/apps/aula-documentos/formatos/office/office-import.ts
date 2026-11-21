@@ -1,5 +1,5 @@
-import { officeMarkdownToPreview, type OfficeDocumentImportResult } from "../../../../lib/domain/aula-documentos/office-import";
-import { officeErrorMessage, validateOfficeFile } from "./office-model";
+import { officeMarkdownToPreview, type OfficeDocumentImportResult } from "../../../../../../lib/domain/aula-documentos/office-import";
+import { officeErrorMessage, validateOfficeFile } from "../../../../../../lib/domain/aula-documentos/office-model";
 
 /**
  * Detecta un proyecto VBA dentro de un paquete OOXML.

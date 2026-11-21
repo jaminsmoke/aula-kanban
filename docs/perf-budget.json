@@ -41,12 +41,12 @@
       ],
       "gzip": 387000,
       "tests": {
-        "maxFiles": 48,
-        "maxLines": 4900
+        "maxFiles": 54,
+        "maxLines": 5400
       },
       "css": {
-        "maxFiles": 15,
-        "maxLines": 3350
+        "maxFiles": 16,
+        "maxLines": 3800
       }
     },
     "hoja-calculo": {

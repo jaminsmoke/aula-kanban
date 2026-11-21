@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useRef } from "react";
-import { OFFICE_FILE_ACCEPT } from "./office-model";
+import { OFFICE_FILE_ACCEPT } from "../../../../../../../lib/domain/aula-documentos/office-model";
 import { OfficeViewerEmpty } from "./office-viewer-empty";
 import { OfficeViewerError } from "./office-viewer-error";
 import { OfficeViewerHeader } from "./office-viewer-header";

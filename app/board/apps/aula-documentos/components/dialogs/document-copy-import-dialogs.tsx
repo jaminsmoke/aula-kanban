@@ -4,7 +4,7 @@ import { IMPORT_LABELS } from "../../hooks/use-aula-import";
 import { useAulaDocumentosView } from "../../aula-documentos-context";
 import { contentText } from "../../../../../../lib/domain/aula-documentos/text";
 
-const OfficeViewer = lazy(() => import("../../../../shared/office/office-viewer"));
+const OfficeViewer = lazy(() => import("../../formatos/office/viewer/office-viewer"));
 
 /**
  * Diálogos de cierre, copias portables, importación y visor Office.

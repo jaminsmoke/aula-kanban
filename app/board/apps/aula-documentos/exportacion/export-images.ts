@@ -4,7 +4,6 @@ import {
   imageBase64ToBytes,
   imageBytesToBase64,
   type AulaImageAsset,
-  type AulaImageAssetMap,
   type AulaImageDimensions,
   type AulaImageLoadResult,
   type AulaOfficeImage,

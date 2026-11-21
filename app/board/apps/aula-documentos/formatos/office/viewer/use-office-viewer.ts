@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type RefO
 import {
   officeErrorMessage,
   validateOfficeFile,
-} from "./office-model";
+} from "../../../../../../../lib/domain/aula-documentos/office-model";
 import type { LoadedOfficeFile, ViewerControls, ViewerPosition } from "./office-viewer-types";
 
 type UseOfficeViewerOptions = {

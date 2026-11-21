@@ -174,7 +174,7 @@ type AulaOutlineEntry = {
 
 Implementado el 2026-11-21:
 
-- `app/board/shared/aula-documentos/search.ts` recorre el texto visible, mapea posiciones Tiptap y normaliza mayúsculas/acentos.
+- `app/board/apps/aula-documentos/busqueda/search.ts` recorre el texto visible, mapea posiciones Tiptap y normaliza mayúsculas/acentos.
 - Extensión `AulaSearchHighlight` con decoraciones no destructivas y resultado activo.
 - Barra de búsqueda con anterior/siguiente, recuento, toggles, reemplazo actual y reemplazo total.
 - Reemplazo mediante una única transacción que conserva las marcas del texto.

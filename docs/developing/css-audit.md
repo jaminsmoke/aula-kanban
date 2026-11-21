@@ -59,9 +59,9 @@ Reglas:
 
 | Archivo | Líneas |
 |---|---:|
-| `app/board/shared/office/office-viewer.css` | 444 |
-| `app/board/shared/aula-documentos/presentation.css` | 265 |
-| `app/board/shared/mermaid/gantt-editor.css` | 131 |
+| `app/board/apps/aula-documentos/formatos/office/viewer/office-viewer.css` | 444 |
+| `app/board/apps/aula-documentos/presentacion/presentation.css` | 265 |
+| `app/board/apps/aula-documentos/editor/diagramas/gantt-editor.css` | 131 |
 | `app/board/shared/whiteboard/whiteboard.css` | 9 |
 
 ### Apps y páginas

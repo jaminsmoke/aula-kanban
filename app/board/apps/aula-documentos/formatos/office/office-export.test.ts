@@ -2,9 +2,9 @@
 
 import { materializeDocxDocument, materializePptxPresentation } from "@silurus/ooxml/node";
 import { describe, expect, it } from "vitest";
-import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
-import type { AulaImageAsset } from "../../../../lib/domain/aula-documentos/image-assets";
-import { imageBase64ToBytes } from "../../../../lib/domain/aula-documentos/image-assets";
+import type { AulaDocument } from "../../../../../../lib/domain/aula-documentos/document";
+import type { AulaImageAsset } from "../../../../../../lib/domain/aula-documentos/image-assets";
+import { imageBase64ToBytes } from "../../../../../../lib/domain/aula-documentos/image-assets";
 import { exportAulaDocx, exportAulaPptx } from "./office-export";
 
 const TINY_PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nTQAAAAASUVORK5CYII=";

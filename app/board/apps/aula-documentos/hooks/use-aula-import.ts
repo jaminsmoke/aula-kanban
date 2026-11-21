@@ -9,8 +9,8 @@ import {
   type AulaDocument,
 } from "../../../../../lib/domain/aula-documentos/document";
 import type { AulaDocumentImportPreview } from "../../../../../lib/domain/aula-documentos/importers";
-import { importOfficeFile } from "../../../shared/office/office-import";
-import { detectOfficeFormat } from "../../../shared/office/office-model";
+import { importOfficeFile } from "../formatos/office/office-import";
+import { detectOfficeFormat } from "../../../../../lib/domain/aula-documentos/office-model";
 
 export type ImportPreviewState = AulaDocumentImportPreview & {
   sourceUpdatedAt: number | null;

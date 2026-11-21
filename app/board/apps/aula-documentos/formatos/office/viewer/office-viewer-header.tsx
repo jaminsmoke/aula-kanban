@@ -5,7 +5,7 @@ import {
   formatFileSize,
   officeFormatLabel,
   type OfficeFormat,
-} from "./office-model";
+} from "../../../../../../../lib/domain/aula-documentos/office-model";
 import type { LoadedOfficeFile } from "./office-viewer-types";
 
 /**

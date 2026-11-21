@@ -1,4 +1,4 @@
-import type { OfficeFileInfo } from "./office-model";
+import type { OfficeFileInfo } from "../../../../../../../lib/domain/aula-documentos/office-model";
 
 /** Archivo validado y sus bytes en memoria. */
 export type LoadedOfficeFile = {

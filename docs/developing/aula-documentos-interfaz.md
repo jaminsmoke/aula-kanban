@@ -201,7 +201,7 @@ Implementado el 2026-11-21:
 
 Implementado el 2026-11-21:
 
-- `app/board/shared/aula-documentos/shortcuts.ts` concentra `AULA_SHORTCUTS` con id, teclas, combinación normalizada, ámbito y descripción.
+- `app/board/apps/aula-documentos/atajos/shortcuts.ts` concentra `AULA_SHORTCUTS` con id, teclas, combinación normalizada, ámbito y descripción.
 - `matchesAulaShortcut` exige coincidencia exacta de `Ctrl/Cmd`, `Alt` y `Shift`; evita que un atajo más amplio capture una combinación diferente.
 - Persistencia, búsqueda, vista y comentarios usan el matcher; se conservan `Ctrl/Cmd+S`, `Ctrl/Cmd+F`, `Ctrl/Cmd+H`, `Ctrl/Cmd+Shift+O`, `Alt+Shift+F` y `Ctrl/Cmd+Alt+M`.
 - La ayuda de `AulaDocumentosShortcuts` se genera desde el mismo mapa, agrupada en Aplicación, Editor y Contexto.

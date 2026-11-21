@@ -8,7 +8,7 @@ const officeImportMock = vi.hoisted(() => ({
   importOfficeFile: vi.fn(),
 }));
 
-vi.mock("../app/board/shared/office/office-import", () => officeImportMock);
+vi.mock("../app/board/apps/aula-documentos/formatos/office/office-import", () => officeImportMock);
 
 const documentMock = vi.hoisted(() => ({
   loading: false as boolean,

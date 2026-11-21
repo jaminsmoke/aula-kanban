@@ -88,11 +88,12 @@
 
 ### Fase 4 — Office
 
-- [ ] Mover el visor y sus componentes a formatos/Office de Aula Documentos.
-- [ ] Mover importación y exportación DOCX/PPTX; decidir qué modelo puro queda en `lib/domain`.
-- [ ] Conservar la carga diferida del visor y de los generadores Office.
-- [ ] Actualizar pruebas, fixtures y presupuesto del flujo Office.
+- [x] Mover el visor y sus componentes a formatos/Office de Aula Documentos.
+- [x] Mover importación y exportación DOCX/PPTX; decidir qué modelo puro queda en `lib/domain`.
+- [x] Conservar la carga diferida del visor y de los generadores Office.
+- [x] Actualizar pruebas, fixtures y presupuesto del flujo Office.
 - **Criterios:** el visor y las exportaciones funcionan igual; el bundle inicial no empeora.
+- **Cierre (2026-11-21):** visor, importación y exportación Office viven en `apps/aula-documentos/formatos/office`; `office-model` puro en `lib/domain/aula-documentos`. Pruebas, fixtures y el mock compartido se movieron con ellos. Límites de Aula ajustados a **54 / 5.400** tests y **16 / 3.800** CSS. Arquitectura **459 archivos / 1.148 imports**; suite **265 archivos / 1.746 pruebas**; build **386.254 B**; `perf:office` correcto.
 
 ### Fase 5 — Restos de apps absorbidas y compatibilidad
 
@@ -126,5 +127,6 @@
 - 2026-11-21: **Fase 1 completada.** Inventario de consumidores y destinos en [`shared-consumidores.md`](shared-consumidores.md); instantánea de arquitectura y flujos en [`shared-baseline.json`](shared-baseline.json). Sin mover código. Arquitectura **458 archivos / 1.147 imports**; suite **265 archivos / 1.746 pruebas**; Aula **386.266 B / 50 archivos**.
 - 2026-11-21: **Fase 2 completada.** Movidos atajos, edición, imágenes, búsqueda, navegación, comentarios, diagramas y Gantt a `apps/aula-documentos`; `shared/mermaid` eliminado. Presupuesto CSS **15 / 3.350**. Arquitectura **458 archivos / 1.147 imports**; suite **265 archivos / 1.746 pruebas**; build **386.263 B**.
 - 2026-11-21: **Fase 3 completada.** Presentación, exportación de imágenes, impresión y cliente de copias movidos a Aula Documentos; tipos base64 compartidos en `lib/domain/aula-documentos/image-assets.ts`. Arquitectura **459 archivos / 1.148 imports**; suite **265 archivos / 1.746 pruebas**; build **386.249 B**.
+- 2026-11-21: **Fase 4 completada.** Visor, importación y exportación Office movidos a `apps/aula-documentos/formatos/office`; modelo puro en `lib/domain`. Pruebas/fixtures movidos; límites **54 / 5.400** y **16 / 3.800**. Arquitectura **459 archivos / 1.148 imports**; suite **265 archivos / 1.746 pruebas**; build **386.254 B**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.
