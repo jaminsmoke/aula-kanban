@@ -2,12 +2,33 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 1 entrada pendiente · siguiente candidato DEV-01
+> **Roadmap:** ARC-07 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 4 entradas pendientes · siguiente candidato recomendado ARC-08
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
+
+## 2026-11-21 — ARC-08 · Ordenar `shared` por capacidad y consumidor
+
+- El criterio es compartir una capacidad con consumidores independientes o una frontera técnica justificada. Una app conserva su entrada, interacción y permisos. Las reglas puras viven en `lib/domain`, la persistencia en `lib/server` y el código de interfaz reutilizado en `app/board/shared`.
+- `shared/aula-documentos` y `shared/office` solo tienen Aula Documentos como consumidor de producto fuera de `shared`. Llevar atajos, extensiones del editor, anclas, exportaciones propias y paneles del visor a módulos de Aula Documentos. Separar por responsabilidad, por ejemplo `editor/diagramas`, `presentacion` y `formatos/office`. Extraer el acceso a formatos a una carpeta por capacidad de `shared` cuando haya otro consumidor que necesite el mismo contrato.
+- `shared/mermaid` contiene el editor Gantt, usado por el bloque del editor documental. Agruparlo con ese bloque y su vista previa, conservando una carga diferida para el renderizador. El modelo y las plantillas que también usa el plugin siguen fuera de React. El nombre Mermaid sigue siendo útil para identificar el adaptador y el formato, dentro del módulo de diagramas.
+- `shared/whiteboard` sí tiene consumidores distintos. Mantenerlo compartido entre Excalidraw y las pizarras de tareas, con sus permisos y sincronización. Mantener local cada app que conserva una experiencia propia, como Mapas conceptuales y Líneas de tiempo.
+- Las cuatro apps documentales absorbidas ya salieron del catálogo. Conservar sus alias, rutas compatibles y documentos guardados. Revisar los restos que todavía actúan como producto, como el ID retirado `mermaid` en el catálogo que consume el sembrado de demo y la descripción de Aula Documentos que aún menciona `app_documents`. Distinguir esas referencias de las que sirven para migrar datos antiguos.
+- Salida: actualizar el mapa de imports, los patrones de arquitectura y los presupuestos afectados. Comparar las dependencias iniciales y diferidas de Aula Documentos, el visor y la pizarra con la compilación anterior. Mover archivos por sí solo no cuenta como ahorro de descarga.
+
+## 2026-11-21 — ARC-09 · Reutilizar el guardado con versión entre editores
+
+- Hoja de cálculo, Mapas conceptuales, Líneas de tiempo, Tarjetas y Blockly siguen usando `save` de `useAppDocument`. Aula Documentos tiene su propia API por documento y usa guardado con versión. Comparar ambos clientes y reutilizar únicamente la lectura de versiones, el resultado del guardado y el tratamiento de conflictos que tengan la misma semántica.
+- Pilotar con Hoja de cálculo mediante `saveVersioned` del cliente existente. Mantener el esquema de cada app, sus permisos, sus tiempos de guardado y su estrategia de recuperación. Usar el piloto para decidir qué merece pasar a `shared` antes de migrar otros editores.
+- Salida: dos sesiones sobre la misma hoja no se pisan, un fallo al cargar no se interpreta como documento nuevo y se preserva el borrador al detectar conflicto. Revisar las herramientas de escritura del plugin y los clientes anteriores antes de endurecer la API común.
+
+## 2026-11-21 — ARC-10 · Revisar la integración entre Aula Documentos y Hoja de cálculo
+
+- Mantener Hoja de cálculo como aplicación. Las tablas de texto de Tiptap, la consulta local de XLSX y la hoja editable de Jspreadsheet atienden usos distintos. La hoja tiene su propio modelo, referencias de celdas, evaluación de fórmulas, formato y exportación CSV.
+- Evaluar primero un flujo concreto, como trasladar una selección desde la hoja a una tabla de Aula Documentos. Comparar valores, formato y referencias para decidir qué se conserva. Compartir un adaptador de celdas o de formatos solo si lo usan ambas apps. Mantener los adaptadores de lectura y edición separados mientras tengan contratos distintos.
+- Reconsiderar retirar una app únicamente cuando Aula cubra su flujo de principio a fin, con datos existentes, permisos, enlaces, exportación y rendimiento verificados. Un Gantt dentro de un documento tampoco sustituye por sí solo a una línea de tiempo interactiva.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 
