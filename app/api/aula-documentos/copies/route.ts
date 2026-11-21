@@ -26,14 +26,16 @@ function copyJson(row: DocumentCopyRow, currentUserId: string) {
       ? row.ownerUserId === currentUserId ? "Tú" : "Otro miembro"
       : "Sin autor",
     createdAt: row.createdAt,
+    ...(row.documentId ? { documentId: row.documentId } : {}),
     downloadUrl: `/api/aula-documentos/copies/${row.id}`,
   };
 }
 
 /** Lista las copias portables del proyecto activo. */
-export const GET = withProjectRoute(async (_request, project) => {
+export const GET = withProjectRoute(async (request, project) => {
   try {
-    const rows = await listDocumentCopies(project.id);
+    const documentId = new URL(request.url).searchParams.get("doc") || null;
+    const rows = await listDocumentCopies(project.id, documentId);
     return json({ copies: rows.map((row) => copyJson(row, project.access.user.userId)) });
   } catch {
     return json({ message: "No se pudieron leer las copias del proyecto." }, 502);
@@ -52,6 +54,7 @@ const saveCopy = withProjectRoute(async (request, project) => {
     return json({ message: "La copia supera el tamaño máximo permitido." }, 413);
   }
 
+  const documentId = new URL(request.url).searchParams.get("doc") || null;
   const form = await request.formData().catch(() => null);
   const file = form?.get("file");
   if (!(file instanceof File)) return json({ message: "Falta el archivo de la copia." }, 400);
@@ -79,6 +82,7 @@ const saveCopy = withProjectRoute(async (request, project) => {
       const copy = await createDocumentCopy({
         id: stored.id,
         projectId: project.id,
+        documentId,
         title: inspected.manifest.title,
         formatVersion: inspected.manifest.formatVersion,
         schemaVersion: inspected.manifest.schemaVersion,

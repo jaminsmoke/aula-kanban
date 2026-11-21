@@ -9,7 +9,13 @@
       "reason": "API pública de conectores; el binding se consume desde el worker y los scripts de preview, no desde una ruta estática."
     }
   ],
-  "testOnlyModules": [],
+  "testOnlyModules": [
+    {
+      "path": "lib/domain/aula-documentos/recovery-document.ts",
+      "owner": "ADOC-17",
+      "reason": "Contrato de recuperación por documento listo para conectarse a la UI en la Fase 3."
+    }
+  ],
   "unusedExports": [
     "app/board/apps/blockly/blockly-storage.ts:parseBlocklyState",
     "app/board/apps/hoja-calculo/hoja-calculo-formula.ts:MAX_FORMULA_DEPTH",

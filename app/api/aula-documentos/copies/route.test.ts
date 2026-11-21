@@ -62,7 +62,7 @@ const endpoint = "https://site.test/api/aula-documentos/copies?project=project1"
  * Construye una petición multipart con una copia válida.
  * @returns La petición preparada.
  */
-async function copyRequest(): Promise<Request> {
+async function copyRequest(url = endpoint): Promise<Request> {
   const built = await buildAulaDocumentCopy(
     { schemaVersion: 3, title: "Copia de prueba", content: { type: "doc", content: [] } },
     [],
@@ -71,7 +71,7 @@ async function copyRequest(): Promise<Request> {
   if (!built.ok) throw new Error(built.message);
   const form = new FormData();
   form.append("file", new File([built.bytes.slice().buffer as ArrayBuffer], "copia.aula.zip", { type: "application/zip" }));
-  const request = new Request(endpoint, {
+  const request = new Request(url, {
     method: "POST",
     headers: { origin: "https://site.test" },
   });
@@ -117,6 +117,29 @@ describe("API de copias portables", () => {
         downloadUrl: "/api/aula-documentos/copies/copy1",
       }],
     });
+  });
+
+  it("filtra las copias por documento y asocia las nuevas al documento", async () => {
+    mocks.list.mockResolvedValue([]);
+    await GET(new Request(`${endpoint}&doc=doc1`));
+    expect(mocks.list).toHaveBeenCalledWith("project1", "doc1");
+
+    mocks.store.mockResolvedValue({ id: "copy2", url: "/api/files/copy2" });
+    mocks.create.mockResolvedValue({
+      id: "copy2",
+      projectId: "project1",
+      documentId: "doc1",
+      title: "Copia de prueba",
+      format: "aula-document-copy",
+      formatVersion: 1,
+      schemaVersion: 3,
+      sizeBytes: 1234,
+      ownerUserId: "user1",
+      createdAt: 100,
+    });
+    const response = await POST(await copyRequest(`${endpoint}&doc=doc1`));
+    expect(response.status).toBe(201);
+    expect(mocks.create).toHaveBeenCalledWith(expect.objectContaining({ documentId: "doc1" }));
   });
 
   it("rechaza una copia sin origen válido", async () => {

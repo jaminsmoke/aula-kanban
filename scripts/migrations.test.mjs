@@ -9,7 +9,7 @@ const files = readdirSync(path.join(root, "drizzle")).filter((file) => file.ends
 
 describe("migraciones locales", () => {
   it("mantiene el journal y los archivos alineados y en orden", () => {
-    expect(journal.entries).toHaveLength(42);
+    expect(journal.entries).toHaveLength(43);
     expect(files).toHaveLength(journal.entries.length);
     for (const [index, entry] of journal.entries.entries()) {
       expect(entry.tag.startsWith(`${String(index).padStart(4, "0")}_`)).toBe(true);
@@ -29,7 +29,7 @@ describe("migraciones locales", () => {
     const tables = db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'")
       .all()
       .map((row) => row.name);
-    expect(tables).toEqual(expect.arrayContaining(["projects", "uploads", "document_copies"]));
+    expect(tables).toEqual(expect.arrayContaining(["projects", "uploads", "document_copies", "aula_documents"]));
     db.close();
   });
 });

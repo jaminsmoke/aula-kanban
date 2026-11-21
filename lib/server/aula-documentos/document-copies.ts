@@ -1,4 +1,4 @@
-import { desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { getDb } from "../../../db";
 import { documentCopies, uploads } from "../../../db/schema";
 import { AULA_COPY_FORMAT } from "../../domain/aula-documentos/copy";
@@ -10,11 +10,15 @@ export type DocumentCopyRow = typeof documentCopies.$inferSelect;
 /**
  * Lista las copias portables de un proyecto, de la más reciente a la más antigua.
  * @param projectId - Proyecto activo.
+ * @param documentId - Documento opcional para filtrar la lista.
  * @returns Las filas de metadatos.
  */
-export async function listDocumentCopies(projectId: string): Promise<DocumentCopyRow[]> {
+export async function listDocumentCopies(projectId: string, documentId: string | null = null): Promise<DocumentCopyRow[]> {
+  const condition = documentId
+    ? and(eq(documentCopies.projectId, projectId), eq(documentCopies.documentId, documentId))
+    : eq(documentCopies.projectId, projectId);
   return getDb().select().from(documentCopies)
-    .where(eq(documentCopies.projectId, projectId))
+    .where(condition)
     .orderBy(desc(documentCopies.createdAt));
 }
 
@@ -36,6 +40,7 @@ export async function findDocumentCopy(id: string): Promise<DocumentCopyRow | nu
 export async function createDocumentCopy(input: {
   id: string;
   projectId: string;
+  documentId?: string | null;
   title: string;
   formatVersion: number;
   schemaVersion: number;
@@ -46,6 +51,7 @@ export async function createDocumentCopy(input: {
   const [row] = await getDb().insert(documentCopies).values({
     id: input.id,
     projectId: input.projectId,
+    documentId: input.documentId ?? null,
     title: input.title,
     format: AULA_COPY_FORMAT,
     formatVersion: input.formatVersion,

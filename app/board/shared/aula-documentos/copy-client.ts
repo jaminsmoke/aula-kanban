@@ -8,6 +8,7 @@ export type AulaCopySummary = {
   sizeBytes: number;
   author: string;
   createdAt: number;
+  documentId?: string | null;
   downloadUrl: string;
 };
 

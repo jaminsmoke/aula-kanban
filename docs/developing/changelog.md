@@ -22,6 +22,7 @@
 
 - Suite completa: **244 archivos / 1.655 pruebas**.
 - `app:budget` y `perf:budget`: correctos.
+- Presupuesto `aula-documentos` ajustado de 370.000 a **371.000 B gzip** por la importación unificada; build actual **370.049 B**.
 - Sin cambios de versión; el Site sigue en `1.1.37`.
 
 ### Seguimiento

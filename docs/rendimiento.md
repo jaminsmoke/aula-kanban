@@ -44,7 +44,7 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 | Calculadora · abrir Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
 | Calculadora · primer `=` en Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
 | Calculadora · Científica/Ecuaciones | 6.606,2 KiB | 1.915,4 KiB (1.961.393 B) | 2.069.960 B | 19 |
-| Aula Documentos · abrir | 1.179,6 KiB | 360,7 KiB (369.351 B) | 370.000 B | 48 |
+| Aula Documentos · abrir | 1.183,0 KiB | 361,4 KiB (370.049 B) | 371.000 B | 48 |
 | Tienda · abrir | 544,7 KiB | 169,1 KiB (173.195 B) | 174.779 B | 20 |
 | Pizarra · abrir | 3.441,7 KiB | 1.214,2 KiB (1.243.296 B) | 1.348.890 B | 23 |
 | Pizarra · conversión Mermaid | 4.206,4 KiB | 1.412,2 KiB (1.446.106 B) | 1.560.999 B | 51 |
@@ -62,7 +62,7 @@ Los totales incluyen el framework y la entrada compartida. La comparación útil
 | App | Flujos | Gzip de app | Tests actuales / límite | CSS actual / límite |
 |---|---|---:|---|---|
 | Tablero | 1 | 175.656 B | 29 / 2.226 → 32 / 2.450 | 12 / 1.529 → 13 / 1.650 |
-| Aula Documentos | 2 | 370.000 B | 34 / 3.567 → 38 / 3.900 | 8 / 2.049 → 9 / 2.250 |
+| Aula Documentos | 2 | 371.000 B | 36 / 3.803 → 38 / 3.900 | 8 / 2.049 → 9 / 2.250 |
 | Hoja de cálculo | 1 | 315.000 B | 5 / 448 → 6 / 500 | 1 / 345 → 2 / 380 |
 | Calculadora | 3 | 2.069.960 B | 6 / 295 → 7 / 330 | 1 / 124 → 2 / 140 |
 | Espacio / Tienda | 1 | 174.779 B | 9 / 723 → 10 / 800 | 2 / 245 → 3 / 270 |

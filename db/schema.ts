@@ -139,6 +139,7 @@ export const uploads = sqliteTable("uploads", {
 export const documentCopies = sqliteTable("document_copies", {
   id: text("id").primaryKey().notNull(),
   projectId: text("project_id").notNull(),
+  documentId: text("document_id"),
   title: text("title").notNull(),
   format: text("format").notNull(),
   formatVersion: integer("format_version").notNull(),
@@ -146,7 +147,10 @@ export const documentCopies = sqliteTable("document_copies", {
   sizeBytes: integer("size_bytes").notNull(),
   ownerUserId: text("owner_user_id"),
   createdAt: integer("created_at").notNull(),
-}, (table) => [index("document_copies_project").on(table.projectId, table.createdAt)]);
+}, (table) => [
+  index("document_copies_project").on(table.projectId, table.createdAt),
+  index("document_copies_document").on(table.projectId, table.documentId),
+]);
 
 // Estado de las aplicaciones nativas (librerías npm del propio Site) instaladas
 // en «Tienda». Es por instancia: el dueño o un administrador decide qué
@@ -206,6 +210,25 @@ export const appDocuments = sqliteTable("app_documents", {
 }, (table) => [
   primaryKey({ columns: [table.projectId, table.appId] }),
   index("app_documents_app").on(table.appId, table.updatedAt),
+]);
+
+// Documentos de la suite de Aula Documentos. La fila `legacy` se crea desde
+// `app_documents` y las demás usan un UUID; el estado canónico se guarda aquí.
+export const aulaDocuments = sqliteTable("aula_documents", {
+  projectId: text("project_id").notNull(),
+  id: text("id").notNull(),
+  title: text("title").notNull(),
+  excerpt: text("excerpt").notNull(),
+  state: text("state").notNull(),
+  status: text("status").notNull().default("active"),
+  createdAt: integer("created_at").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+  archivedAt: integer("archived_at"),
+  createdBy: text("created_by"),
+  updatedBy: text("updated_by"),
+}, (table) => [
+  primaryKey({ columns: [table.projectId, table.id] }),
+  index("aula_documents_project_status").on(table.projectId, table.status, table.updatedAt),
 ]);
 
 // Tokens personales del servidor MCP: cada fila pertenece a una cuenta y se

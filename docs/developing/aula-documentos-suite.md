@@ -1,7 +1,7 @@
 # Suite documental de Aula Documentos
 
-> **Estado:** Fase 1 de ADOC-17 · **Fecha:** 2026-11-21
-> **Alcance:** contrato, modelo de datos, migración y mapa de consumidores. **No se mueve código en esta fase.**
+> **Estado:** Fases 1 y 2 de ADOC-17 · **Fecha:** 2026-11-21
+> **Alcance:** contrato, modelo de datos, migración y persistencia backend.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Arquitectura:** [`arquitectura-global.md`](arquitectura-global.md)
 
 ---
@@ -83,9 +83,9 @@ Suite: **244 archivos / 1.655 pruebas**. Presupuesto `aula-documentos`: **370.00
 - El título no identifica un documento; la URL y MCP usan `id`.
 - `AulaDocument` no cambia de esquema en ADOC-17.
 
-## 4. Modelo de datos propuesto
+## 4. Modelo de datos implementado
 
-Se crea una tabla específica para la suite; no se cambia la clave de `app_documents` para todas las apps.
+Se creó una tabla específica para la suite; no se cambió la clave de `app_documents` para todas las apps.
 
 ```text
 aula_documents
@@ -111,7 +111,7 @@ aula_documents
   `aula-kanban:aula-documentos:last-opened:<projectId>` (y se amplía con la cuenta cuando esté disponible).
 - La cuota de estado sigue siendo **200.000 caracteres por documento**; la cuota de copias sigue siendo por proyecto.
 
-## 5. Migración
+## 5. Migración implementada
 
 ### 5.1 Origen y destino
 
@@ -194,3 +194,17 @@ La suite se diseña como contrato de Aula Documentos, no como un cambio global d
 - Hoja de cálculo explícitamente fuera de alcance.
 - Mapa de consumidores actualizado: `app_documents`, copias, recuperación, URLs, exportaciones y MCP.
 - Sin cambios de código, URLs, permisos, datos ni versión del Site.
+
+## 11. Cierre de la Fase 2
+
+Implementado el 2026-11-21:
+
+- Migración `drizzle/0042_tranquil_mercury.sql`: tabla `aula_documents`, índice por proyecto/estado y `document_id` nullable en `document_copies`.
+- `lib/server/aula-documentos/documents-repository.ts` y `documents.ts`: lista, lectura, migración `legacy`, guardado con versión y límite de 200.000 caracteres.
+- API `GET /api/aula-documentos`, `GET /api/aula-documentos/:id` y `POST /api/aula-documentos/:id` con 401/403/404/409/413 coherentes.
+- `document_copies` acepta `doc` en la API y conserva la compatibilidad cuando no se indica.
+- Recuperación local con clave por documento y migración desde la clave antigua; la clave antigua no se borra.
+- `app_documents` sigue intacta: el cliente anterior y las demás apps pueden seguir leyendo el estado único.
+- Pruebas de migración SQL, migración repetida, conflicto optimista, límites, API, copias y recuperación local.
+
+El rollback local consiste en dejar de leer `aula_documents` y conservar `app_documents`; después del primer guardado nuevo, los documentos adicionales deben exportarse antes de revertir. No hay migraciones remotas ni cambios de UI en esta fase.

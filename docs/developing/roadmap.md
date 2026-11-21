@@ -74,12 +74,13 @@
 
 ### Fase 2 — Persistencia y migración
 
-- [ ] Añadir la identidad de documento y la consulta de lista sin romper el documento único existente.
-- [ ] Migrar el estado actual al primer documento con una operación idempotente y verificable.
-- [ ] Asociar recuperación, copias y cuotas al documento correcto.
-- [ ] Mantener compatibilidad de lectura para clientes y datos anteriores durante la transición.
-- [ ] Probar migración, ejecución repetida, conflicto de versión y rollback local.
+- [x] Añadir la identidad de documento y la consulta de lista sin romper el documento único existente.
+- [x] Migrar el estado actual al primer documento con una operación idempotente y verificable.
+- [x] Asociar recuperación, copias y cuotas al documento correcto.
+- [x] Mantener compatibilidad de lectura para clientes y datos anteriores durante la transición.
+- [x] Probar migración, ejecución repetida, conflicto de versión y rollback local.
 - **Criterios:** el documento existente aparece como primer documento, no se duplica al reintentar y ningún dato queda huérfano.
+- **Cierre (2026-11-21):** tabla `aula_documents`, `document_id` en `document_copies`, migración `legacy` idempotente y conservación de `app_documents`; API de lista/lectura/guardado con conflicto optimista; recuperaciones separadas por documento. Pruebas de migración, repetición, conflicto, límites y claves locales en verde. Sin cambios de UI ni publicación.
 
 ### Fase 3 — Lista y ciclo de vida
 
@@ -124,5 +125,6 @@
 - 2026-11-21: ADOC-17 sale del backlog y pasa a ser el roadmap activo. El backlog queda con **5 entradas**; siguiente candidato **ADOC-18**.
 - ADOC-16 queda cerrado y archivado en `docs/historial/roadmap-adoc-16.md`.
 - 2026-11-21: **Fase 1 completada.** Contrato y mapa en [`aula-documentos-suite.md`](aula-documentos-suite.md): identidad estable, metadatos, estados, migración `legacy`, copias/recuperación por documento, URL profunda y MCP con id explícito. Hoja de cálculo queda fuera. Sin cambios de código.
+- 2026-11-21: **Fase 2 completada.** Persistencia de la suite, migración `legacy`, lista y lectura, guardado con conflicto, copias etiquetadas por documento y recuperaciones locales separadas. `app_documents` se conserva intacto. Suite: **249 archivos / 1.678 pruebas**. Sin cambios de UI ni versión.
 - No se ha cambiado código de producto al abrir este roadmap; no hay publicación ni migraciones remotas.
 - El Site sigue en `1.1.37`.
