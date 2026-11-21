@@ -231,6 +231,28 @@ export const aulaDocuments = sqliteTable("aula_documents", {
   index("aula_documents_project_status").on(table.projectId, table.status, table.updatedAt),
 ]);
 
+// Comentarios de revisión de Aula Documentos. Viven fuera del estado canónico
+// para que revisar no cambie el contenido ni las exportaciones del documento.
+export const aulaDocumentComments = sqliteTable("aula_document_comments", {
+  id: text("id").primaryKey().notNull(),
+  projectId: text("project_id").notNull(),
+  documentId: text("document_id").notNull(),
+  parentId: text("parent_id"),
+  authorUserId: text("author_user_id"),
+  authorName: text("author_name").notNull(),
+  body: text("body").notNull(),
+  anchor: text("anchor").notNull(),
+  status: text("status").notNull().default("open"),
+  createdAt: integer("created_at").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+  resolvedAt: integer("resolved_at"),
+  resolvedBy: text("resolved_by"),
+}, (table) => [
+  index("aula_document_comments_document_status").on(table.projectId, table.documentId, table.status, table.createdAt),
+  index("aula_document_comments_thread").on(table.projectId, table.documentId, table.parentId),
+  index("aula_document_comments_version").on(table.projectId, table.documentId, table.updatedAt),
+]);
+
 // Tokens personales del servidor MCP: cada fila pertenece a una cuenta y se
 // guarda solo el hash del secreto, con sal por token. El token completo se
 // muestra un único vez al crearlo; revocar marca `revoked_at`.

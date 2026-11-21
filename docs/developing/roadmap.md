@@ -78,12 +78,13 @@
 
 ### Fase 2 — Comentarios e hilos
 
-- [ ] Añadir selección de texto/bloque y creación de comentarios con cita de contexto.
-- [ ] Implementar hilos, respuestas, resolver, reabrir y borrar con permisos.
-- [ ] Resolver anclas al abrir y mostrar comentarios huérfanos sin romper el editor.
-- [ ] Añadir la vista lateral de comentarios con estados vacíos y filtros básicos.
-- [ ] Probar anclas, texto repetido, bloques eliminados, hilos y límites.
+- [x] Añadir selección de texto/bloque y creación de comentarios con cita de contexto.
+- [x] Implementar hilos, respuestas, resolver, reabrir y borrar con permisos.
+- [x] Resolver anclas al abrir y mostrar comentarios huérfanos sin romper el editor.
+- [x] Añadir la vista lateral de comentarios con estados vacíos y filtros básicos.
+- [x] Probar anclas, texto repetido, bloques eliminados, hilos y límites.
 - **Criterios:** se revisa el documento sin modificar el texto y cada comentario conserva su contexto o se marca como huérfano.
+- **Cierre (2026-11-21):** migración de comentarios, API y panel lateral con hilos, respuestas, resolución, borrado lógico, permisos y capacidades. Anclas con cita/contexto, huérfanas visibles y salto al texto. Suite: **261 archivos / 1.725 pruebas**; build **382.116 B**; presupuesto **384.000 B**.
 
 ### Fase 3 — Historial de versiones
 
@@ -126,6 +127,7 @@
 
 - 2026-11-21: **Roadmap abierto.** ADOC-20 sale del backlog; quedan **2 entradas** y el siguiente candidato es **UI-11**. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Contrato de comentarios, anclas, versiones, permisos, exportación y retención en [`aula-documentos-revision.md`](aula-documentos-revision.md). Sin cambios de código.
+- 2026-11-21: **Fase 2 completada.** Migración, API, anclas, hilos y panel lateral con permisos; pruebas de creación, respuesta, resolución, huérfanos y modo lectura. Suite: **261 archivos / 1.725 pruebas**; build **382.116 B**.
 - La suite, el guardado optimista y las copias de ADOC-17 son la base; no se crea un editor paralelo.
 - Comentarios, versiones y retención se documentarán por separado del JSON canónico.
 - No hay publicación ni migraciones remotas en este roadmap.

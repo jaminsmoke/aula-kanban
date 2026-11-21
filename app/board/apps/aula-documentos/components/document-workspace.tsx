@@ -6,6 +6,7 @@ import { useAulaDocumentosView } from "../aula-documentos-context";
 import { DocumentSearchBar } from "./document-search-bar";
 import { DocumentNavigator } from "./document-navigator";
 import { DocumentStatusBar } from "./document-status-bar";
+import { DocumentCommentsPanel } from "./document-comments-panel";
 import { DocumentSuitePanel } from "./document-suite-panel";
 import { DocumentToolbar } from "./document-toolbar";
 
@@ -244,6 +245,7 @@ export function DocumentWorkspace() {
         </aside>
       </div>
       <DocumentStatusBar />
+      <DocumentCommentsPanel />
 
       {migrationOpen || markdownSourceOpen || slidePreview || presentation ? (
         <Suspense fallback={null}>

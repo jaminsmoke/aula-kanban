@@ -1,6 +1,6 @@
 # Comentarios, revisión e historial de Aula Documentos
 
-> **Estado:** Fase 1 de ADOC-20 completada · **Fecha:** 2026-11-21
+> **Estado:** Fases 1–2 cerradas · **Fecha:** 2026-11-21
 > **Alcance:** comentarios anclados, hilos, historial de versiones, permisos, exportación y límites.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
 > **Regla:** esta fase no mueve código de producto; fija el contrato y los límites.
@@ -155,6 +155,7 @@ Reglas:
 - Todas las rutas usan `withProjectRoute`, origen y JSON acotado.
 - Las mutaciones de comentarios usan `expectedUpdatedAt` de la fila del comentario.
 - La restauración usa `expectedUpdatedAt` del documento.
+- La API devuelve `capabilities` por comentario (`canEdit`, `canDelete`, `canResolve`) para que la UI refleje los permisos del usuario actual.
 - Crear o resolver comentarios no cambia el `updatedAt` del documento ni bloquea el autosave.
 - Los errores devuelven códigos estables: no autorizado, no encontrado, conflicto, límite y validación.
 
@@ -224,3 +225,16 @@ La retención y las cuotas se aplican en servidor y se documentan en la ayuda. L
 - Tablas, rutas y límites documentados; sin migraciones remotas.
 - Matriz de pruebas y exclusiones explícitas.
 - Sin cambios de código, datos, URLs, permisos ni versión del Site.
+
+## 12. Cierre de la Fase 2
+
+Implementado el 2026-11-21:
+
+- Migración `0043_lying_human_robot.sql` con `aula_document_comments` e índices por documento, estado e hilo.
+- Repositorio y servicio de comentarios con creación, respuestas de un nivel, edición, borrado lógico, resolución y conflicto optimista.
+- Permisos en servidor: guest solo lectura; estudiante crea y gestiona lo propio; profesorado/administración resuelve y borra.
+- Anclas con cita, contexto, posición original y bloque; resolución por cita/contexto y fallback huérfano.
+- Hook de cliente y panel lateral con crear, responder, editar, resolver, reabrir, borrar, filtrar y saltar al texto.
+- El panel se abre desde la barra de estado o con `Ctrl/Cmd+Alt+M`; los invitados lo ven en lectura.
+- Pruebas de anclas, permisos, hilos, creación, conflicto y flujo de interfaz.
+- Suite: **261 archivos / 1.725 pruebas**; build **382.116 B**; presupuesto **384.000 B**.

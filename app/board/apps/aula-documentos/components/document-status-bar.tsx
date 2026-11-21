@@ -1,4 +1,4 @@
-import { Maximize2, Minimize2 } from "lucide-react";
+import { MessageSquare, Maximize2, Minimize2 } from "lucide-react";
 import { useAulaDocumentosView } from "../aula-documentos-context";
 
 /**
@@ -17,6 +17,10 @@ export function DocumentStatusBar() {
     readOnly,
     focusMode,
     toggleFocus,
+    commentsOpen,
+    commentCount,
+    openComments,
+    closeComments,
   } = useAulaDocumentosView();
   const section = activeOutlineIndex >= 0 ? outline[activeOutlineIndex]?.text : null;
   const sectionLabel = section ?? "Sin sección";
@@ -31,6 +35,16 @@ export function DocumentStatusBar() {
       <span className={(dirty || saveConflict) && !readOnly ? "aula-documentos-chip is-dirty" : "aula-documentos-chip"}>
         {chipText}
       </span>
+      <button
+        type="button"
+        className="aula-documentos-comments-toggle"
+        onClick={commentsOpen ? closeComments : openComments}
+        aria-pressed={commentsOpen}
+        aria-label="Comentarios del documento"
+      >
+        <MessageSquare size={13} aria-hidden />
+        <span>Comentarios{commentCount > 0 ? ` (${commentCount})` : ""}</span>
+      </button>
       <button
         type="button"
         className="aula-documentos-focus-toggle"
