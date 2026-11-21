@@ -12,7 +12,7 @@ import {
   AULA_IMAGE_MAX_ALT_LENGTH,
   AULA_IMAGE_MAX_CAPTION_LENGTH,
   type AulaImageAlignment,
-} from "../../../../lib/domain/aula-documentos/image";
+} from "../../../../../lib/domain/aula-documentos/image";
 import { uploadAulaImage } from "./image-upload";
 
 type AulaImageOptions = {

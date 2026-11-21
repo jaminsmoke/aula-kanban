@@ -3,8 +3,8 @@ import type { AulaDocument, AulaPrintPage } from "../../../../../lib/domain/aula
 import type { AulaDocumentCommentThread } from "../../../../../lib/domain/aula-documentos/revision";
 import { documentToMarkdownExport } from "../../../../../lib/domain/aula-documentos/markdown";
 import { aulaFileName } from "../../../../../lib/domain/aula-documentos/filename";
-import { buildAulaDocumentHtml, collectMermaidCodes, renderMermaidSvgs } from "../../../shared/aula-documentos/export-html";
-import { getMermaidRenderer } from "../../../shared/aula-documentos/mermaid-renderer";
+import { buildAulaDocumentHtml, collectMermaidCodes, renderMermaidSvgs } from "../exportacion/export-html";
+import { getMermaidRenderer } from "../editor/diagramas/mermaid-renderer";
 import { printHtmlDocument } from "../../../shared/aula-documentos/print-html";
 import { exportAulaDocx, exportAulaPptx } from "../../../shared/office/office-export";
 import { loadExportImages } from "../utils/document-assets";

@@ -1,14 +1,14 @@
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { afterEach, describe, expect, it } from "vitest";
-import { buildPresentationSlides } from "../../../../lib/domain/aula-documentos/presentation";
+import { buildPresentationSlides } from "../../../../../lib/domain/aula-documentos/presentation";
 import {
   activeAulaOutlineIndex,
   buildAulaOutline,
   buildAulaSlideIndex,
   flattenAulaOutline,
 } from "./outline";
-import { SlideBreak } from "./slide-break";
+import { SlideBreak } from "../editor/slide-break";
 
 const editors: Editor[] = [];
 

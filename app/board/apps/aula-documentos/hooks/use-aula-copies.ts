@@ -3,7 +3,7 @@ import type { AulaDocument } from "../../../../../lib/domain/aula-documentos/doc
 import type { AulaDocumentStats } from "../../../../../lib/domain/aula-documentos/document";
 import type { AulaCopyAsset, AulaCopyManifest } from "../../../../../lib/domain/aula-documentos/copy";
 import type { AulaCopySummary } from "../../../shared/aula-documentos/copy-client";
-import { uploadAulaImage } from "../../../shared/aula-documentos/image-upload";
+import { uploadAulaImage } from "../editor/image-upload";
 import { buildPortableCopy } from "../utils/document-assets";
 import { downloadBlob } from "../../../shared/ui/download";
 import { remapCopyImageUrls } from "../../../../../lib/domain/aula-documentos/copy-image-urls";

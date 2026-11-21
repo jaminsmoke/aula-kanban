@@ -1,7 +1,7 @@
 import type { JSONContent } from "@tiptap/core";
 import type { Editor } from "@tiptap/core";
 import { TextSelection } from "@tiptap/pm/state";
-import { buildPresentationSlides } from "../../../../lib/domain/aula-documentos/presentation";
+import { buildPresentationSlides } from "../../../../../lib/domain/aula-documentos/presentation";
 
 /** Diapositiva editable con su contenido y su nota. */
 export type AulaSlideDraft = {

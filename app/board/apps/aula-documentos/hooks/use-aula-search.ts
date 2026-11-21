@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Editor } from "@tiptap/core";
-import { matchesAulaShortcut } from "../../../shared/aula-documentos/shortcuts";
+import { matchesAulaShortcut } from "../atajos/shortcuts";
 import {
   clearAulaSearchHighlights,
   focusAulaSearchMatch,
@@ -10,7 +10,7 @@ import {
   searchAulaDocument,
   setAulaSearchHighlights,
   type AulaSearchMatch,
-} from "../../../shared/aula-documentos/search";
+} from "../busqueda/search";
 
 type SearchDeps = {
   editor: Editor | null;

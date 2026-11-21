@@ -9,7 +9,7 @@ import { aulaRecoveryFileName } from "../../../../../lib/domain/aula-documentos/
 import type { AulaRecoveryReason } from "../../../../../lib/domain/aula-documentos/recovery";
 import { useWindowClose, useWindowCloseGuard } from "../../../shared/window-close-guard";
 import { useDialogFocus } from "../../../shared/use-dialog-focus";
-import { matchesAulaShortcut } from "../../../shared/aula-documentos/shortcuts";
+import { matchesAulaShortcut } from "../atajos/shortcuts";
 import { useAulaDocumentApi, type VersionedSaveResult } from "./use-aula-document-api";
 import { AUTOSAVE_DELAY_MS, type SaveConflict } from "../aula-documentos-types";
 import { downloadTextFile } from "../../../shared/ui/download";

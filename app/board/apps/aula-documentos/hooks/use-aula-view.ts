@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Editor } from "@tiptap/core";
-import { matchesAulaShortcut } from "../../../shared/aula-documentos/shortcuts";
+import { matchesAulaShortcut } from "../atajos/shortcuts";
 
 type ViewDeps = {
   editor: Editor | null;

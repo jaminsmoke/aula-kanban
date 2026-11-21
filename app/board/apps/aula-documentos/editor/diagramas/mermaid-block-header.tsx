@@ -13,7 +13,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
+import { MERMAID_TEMPLATES } from "../../../../../../lib/domain/mermaid/templates";
 
 type MermaidBlockHeaderProps = {
   readOnly: boolean;

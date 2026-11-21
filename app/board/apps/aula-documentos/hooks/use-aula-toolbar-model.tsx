@@ -40,7 +40,7 @@ import {
   Upload,
 } from "lucide-react";
 import { buildPresentationSlides } from "../../../../../lib/domain/aula-documentos/presentation";
-import { countMermaidBlocks } from "../../../shared/aula-documentos/export-html";
+import { countMermaidBlocks } from "../exportacion/export-html";
 import type { AulaMenuAction } from "../aula-documentos-menu";
 import type { ToolbarAction } from "../aula-documentos-types";
 import { countWords, contentText } from "../../../../../lib/domain/aula-documentos/text";

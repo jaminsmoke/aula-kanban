@@ -78,7 +78,7 @@ vi.mock("../app/board/apps/use-app-document", () => ({
   }),
 }));
 
-vi.mock("../app/board/shared/aula-documentos/mermaid-renderer", () => ({
+vi.mock("../app/board/apps/aula-documentos/editor/diagramas/mermaid-renderer", () => ({
   getMermaidRenderer: () => mermaidMock,
   createMermaidRenderer: () => mermaidMock,
   normalizeMermaidSvg: (svg: string) => svg,

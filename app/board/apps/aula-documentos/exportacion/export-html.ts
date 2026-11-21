@@ -5,9 +5,9 @@ import {
   type AulaDocument,
   type AulaPresentationTheme,
   type AulaPrintPage,
-} from "../../../../lib/domain/aula-documentos/document";
-import type { AulaDocumentCommentThread } from "../../../../lib/domain/aula-documentos/revision";
-import { createAulaDocumentExtensions } from "./document-extensions";
+} from "../../../../../lib/domain/aula-documentos/document";
+import type { AulaDocumentCommentThread } from "../../../../../lib/domain/aula-documentos/revision";
+import { createAulaDocumentExtensions } from "../editor/document-extensions";
 
 /**
  * Convierte los ajustes de página en CSS de impresión.

@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/core";
-import { buildPresentationSlides } from "../../../../lib/domain/aula-documentos/presentation";
+import { buildPresentationSlides } from "../../../../../lib/domain/aula-documentos/presentation";
 
 /** Entrada del esquema de títulos. */
 export type AulaOutlineEntry = {

@@ -8,7 +8,7 @@ import {
   flattenAulaOutline,
   type AulaOutlineRow,
   type AulaSlideEntry,
-} from "../../../shared/aula-documentos/outline";
+} from "../navegacion/outline";
 
 type NavigationDeps = {
   editor: Editor | null;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
-import type { AulaDocumentCommentThread } from "../../../../lib/domain/aula-documentos/revision";
+import type { AulaDocument } from "../../../../../lib/domain/aula-documentos/document";
+import type { AulaDocumentCommentThread } from "../../../../../lib/domain/aula-documentos/revision";
 import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "./export-html";
 
 /**

@@ -12,10 +12,10 @@ import {
   type AulaPrintPage,
 } from "../../../../../lib/domain/aula-documentos/document";
 import { createStarterAulaDocument } from "../../../../../lib/domain/aula-documentos/starter";
-import { createAulaDocumentExtensions } from "../../../shared/aula-documentos/document-extensions";
-import { countMermaidBlocks } from "../../../shared/aula-documentos/export-html";
-import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../../../shared/aula-documentos/mermaid-block";
-import { imageFilesFromDataTransfer } from "../../../shared/aula-documentos/image-upload";
+import { createAulaDocumentExtensions } from "../editor/document-extensions";
+import { countMermaidBlocks } from "../exportacion/export-html";
+import { flushMermaidDrafts, setMermaidDraftChangeHandler } from "../editor/diagramas/mermaid-block";
+import { imageFilesFromDataTransfer } from "../editor/image-upload";
 import { countWords } from "../../../../../lib/domain/aula-documentos/text";
 import { EMPTY_TOOLBAR_STATE } from "../aula-documentos-types";
 

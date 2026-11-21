@@ -1,6 +1,6 @@
 import { useState, type MutableRefObject } from "react";
 import type { Editor } from "@tiptap/core";
-import { uploadAulaImage } from "../../../shared/aula-documentos/image-upload";
+import { uploadAulaImage } from "../editor/image-upload";
 import { MERMAID_TEMPLATES } from "../../../../../lib/domain/mermaid/templates";
 
 type ImagesDeps = {

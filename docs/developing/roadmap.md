@@ -70,11 +70,12 @@
 
 ### Fase 2 — Edición, navegación y diagramas
 
-- [ ] Mover atajos, extensiones del editor, anclas de comentarios, búsqueda, esquema y estructura de diapositivas.
-- [ ] Mover imágenes y bloques Mermaid a módulos de edición/diagramas de Aula Documentos.
-- [ ] Llevar el editor Gantt y su CSS junto al bloque documental, conservando la carga diferida del renderizador.
-- [ ] Mantener las APIs públicas y actualizar imports y pruebas.
+- [x] Mover atajos, extensiones del editor, anclas de comentarios, búsqueda, esquema y estructura de diapositivas.
+- [x] Mover imágenes y bloques Mermaid a módulos de edición/diagramas de Aula Documentos.
+- [x] Llevar el editor Gantt y su CSS junto al bloque documental, conservando la carga diferida del renderizador.
+- [x] Mantener las APIs públicas y actualizar imports y pruebas.
 - **Criterios:** edición, búsqueda, esquema, comentarios y diagramas funcionan igual; Gantt sigue cargándose bajo demanda.
+- **Cierre (2026-11-21):** atajos, edición, imágenes, búsqueda, navegación, comentarios, diagramas y Gantt se movieron a `apps/aula-documentos` por capacidad. `export-html` se movió junto a su dependencia de extensiones; `shared/mermaid` desapareció. Se actualizaron imports, mocks y pruebas. Presupuesto CSS de Aula ajustado a **15 / 3.350** por incorporar `gantt-editor.css`. Arquitectura **458 archivos / 1.147 imports**; suite **265 archivos / 1.746 pruebas**; build **386.263 B**.
 
 ### Fase 3 — Presentación, exportación y revisión
 
@@ -122,5 +123,6 @@
 
 - 2026-11-21: **Roadmap abierto.** ARC-08 sale del backlog; quedan **3 entradas** y el siguiente candidato es **ARC-09**. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Inventario de consumidores y destinos en [`shared-consumidores.md`](shared-consumidores.md); instantánea de arquitectura y flujos en [`shared-baseline.json`](shared-baseline.json). Sin mover código. Arquitectura **458 archivos / 1.147 imports**; suite **265 archivos / 1.746 pruebas**; Aula **386.266 B / 50 archivos**.
+- 2026-11-21: **Fase 2 completada.** Movidos atajos, edición, imágenes, búsqueda, navegación, comentarios, diagramas y Gantt a `apps/aula-documentos`; `shared/mermaid` eliminado. Presupuesto CSS **15 / 3.350**. Arquitectura **458 archivos / 1.147 imports**; suite **265 archivos / 1.746 pruebas**; build **386.263 B**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

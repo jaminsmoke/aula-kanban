@@ -7,8 +7,8 @@ import type {
   AulaDocumentComment,
   AulaDocumentCommentThread,
 } from "../../../../../lib/domain/aula-documentos/revision";
-import { createAulaCommentAnchor } from "../../../shared/aula-documentos/comment-anchor";
-import { matchesAulaShortcut } from "../../../shared/aula-documentos/shortcuts";
+import { createAulaCommentAnchor } from "../revision/comment-anchor";
+import { matchesAulaShortcut } from "../atajos/shortcuts";
 
 type CommentsDeps = {
   projectId: string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { AULA_SHORTCUTS, type AulaShortcut } from "../../shared/aula-documentos/shortcuts";
+import { AULA_SHORTCUTS, type AulaShortcut } from "./atajos/shortcuts";
 
 const SHORTCUT_SCOPES = [
   { id: "app", label: "Aplicación" },

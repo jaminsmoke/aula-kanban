@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { createGanttTask, type GanttDocument, type GanttSection, type GanttTask } from "../../../../lib/domain/mermaid/gantt";
+import { createGanttTask, type GanttDocument, type GanttSection, type GanttTask } from "../../../../../../lib/domain/mermaid/gantt";
 import "./gantt-editor.css";
 
 /** Propiedades del formulario de contenido de Gantt. */

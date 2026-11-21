@@ -1,7 +1,7 @@
 import {
   AULA_IMAGE_MAX_BYTES,
   AULA_IMAGE_MIME_TYPES,
-} from "../../../../lib/domain/aula-documentos/image";
+} from "../../../../../lib/domain/aula-documentos/image";
 
 /** Resultado de subir una imagen de documento. */
 export type AulaImageUploadResult =

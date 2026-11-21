@@ -5,7 +5,7 @@ import { MessageSquare, Send, X } from "lucide-react";
 import type { AulaDocumentComment } from "../../../../../lib/domain/aula-documentos/revision";
 import { AULA_COMMENT_PAGE_SIZE } from "../../../../../lib/domain/aula-documentos/revision";
 import { formatDateTime } from "../../../shared/ui/date";
-import { resolveAulaCommentAnchor } from "../../../shared/aula-documentos/comment-anchor";
+import { resolveAulaCommentAnchor } from "../revision/comment-anchor";
 import { useAulaDocumentosView } from "../aula-documentos-context";
 
 /**

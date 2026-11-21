@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/core";
-import type { AulaCommentAnchor } from "../../../../lib/domain/aula-documentos/revision";
+import type { AulaCommentAnchor } from "../../../../../lib/domain/aula-documentos/revision";
 
 /** Longitud del contexto que acompaña una cita. */
 const CONTEXT_LENGTH = 80;

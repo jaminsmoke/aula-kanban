@@ -6,7 +6,7 @@ import {
   readAulaSlideDrafts,
   replaceAulaSlideDrafts,
   type AulaSlideDraft,
-} from "../../../shared/aula-documentos/slide-structure";
+} from "../navegacion/slide-structure";
 
 type SlideStructureDeps = {
   editor: Editor | null;

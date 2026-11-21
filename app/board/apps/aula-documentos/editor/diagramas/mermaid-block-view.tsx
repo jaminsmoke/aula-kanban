@@ -3,10 +3,10 @@
 import { closeHistory } from "@tiptap/pm/history";
 import { NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { parseGanttDocument, serializeGanttDocument, type GanttDocument } from "../../../../lib/domain/mermaid/gantt";
-import { MERMAID_TEMPLATES } from "../../../../lib/domain/mermaid/templates";
-import GanttEditor from "../mermaid/gantt-editor";
-import { downloadBlob } from "../ui/download";
+import { parseGanttDocument, serializeGanttDocument, type GanttDocument } from "../../../../../../lib/domain/mermaid/gantt";
+import { MERMAID_TEMPLATES } from "../../../../../../lib/domain/mermaid/templates";
+import GanttEditor from "./gantt-editor";
+import { downloadBlob } from "../../../../shared/ui/download";
 import { MermaidBlockHeader } from "./mermaid-block-header";
 import { MermaidBlockPreview } from "./mermaid-block-preview";
 import {

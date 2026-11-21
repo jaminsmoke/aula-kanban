@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { props, resetAulaDocumentMocks } from "../../../../test-utils/aula-documentos";
-import { AULA_SHORTCUTS, matchesAulaShortcut } from "../../shared/aula-documentos/shortcuts";
+import { AULA_SHORTCUTS, matchesAulaShortcut } from "./atajos/shortcuts";
 import AulaDocumentosApp from "./aula-documentos-app";
 import { AulaDocumentosShortcuts } from "./aula-documentos-help";
 

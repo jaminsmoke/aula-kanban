@@ -5,9 +5,9 @@ import TaskList from "@tiptap/extension-task-list";
 import TextAlign from "@tiptap/extension-text-align";
 import StarterKit from "@tiptap/starter-kit";
 import { AulaImage } from "./image-block";
-import { MermaidBlock } from "./mermaid-block";
+import { MermaidBlock } from "./diagramas/mermaid-block";
 import { SlideBreak } from "./slide-break";
-import { AulaSearchHighlight } from "./search-highlight";
+import { AulaSearchHighlight } from "../busqueda/search-highlight";
 
 /**
  * Extensiones del editor de Aula Documentos.
