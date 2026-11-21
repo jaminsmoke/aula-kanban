@@ -114,6 +114,19 @@ describe("comentarios de Aula Documentos", () => {
     expect(screen.queryByRole("complementary", { name: "Comentarios del documento" })).toBeNull();
   });
 
+  it("devuelve el foco al botón al cerrar el panel", async () => {
+    stubComments();
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    const trigger = screen.getByRole("button", { name: "Comentarios del documento" });
+    fireEvent.click(trigger);
+    expect(await screen.findByRole("complementary", { name: "Comentarios del documento" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Cerrar comentarios" }));
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
+  });
+
   it("deja el panel en lectura para invitados", async () => {
     stubComments();
     render(<AulaDocumentosApp projectId={props.projectId} role="guest" />);

@@ -38,6 +38,7 @@ export function useAulaComments({ projectId, documentId, editor, role, setStatus
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const previousDocumentId = useRef(documentId);
+  const focusOriginRef = useRef<HTMLElement | null>(null);
   const commentsPath = documentId
     ? `/api/aula-documentos/${encodeURIComponent(documentId)}/comments`
     : null;
@@ -80,14 +81,20 @@ export function useAulaComments({ projectId, documentId, editor, role, setStatus
     });
   }, [endpoint]);
 
-  const openComments = useCallback(() => {
+  const openComments = useCallback((origin?: HTMLElement) => {
+    focusOriginRef.current = origin ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     setCommentsOpen(true);
     void refresh();
   }, [refresh]);
 
   const closeComments = useCallback(() => {
     setCommentsOpen(false);
-    editor?.commands.focus();
+    const origin = focusOriginRef.current;
+    focusOriginRef.current = null;
+    queueMicrotask(() => {
+      if (origin?.isConnected) origin.focus();
+      else editor?.commands.focus();
+    });
   }, [editor]);
 
   const createComment = useCallback(async (body: string, parentId: string | null = null) => {

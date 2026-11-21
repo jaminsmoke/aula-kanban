@@ -27,6 +27,39 @@ describe("modelo de acciones de Aula Documentos", () => {
     expect(ids).toContain("present-document");
     expect(ids).toContain("insert-mermaid");
   });
+
+  it("mantiene el foco y la navegación del menú móvil", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    const trigger = screen.getByRole("button", { name: "Acciones del documento" });
+    fireEvent.click(trigger);
+    const menu = screen.getByRole("menu", { name: "Acciones del documento" });
+    const items = within(menu).getAllByRole("menuitem");
+    await waitFor(() => expect(document.activeElement).toBe(items[0]));
+
+    fireEvent.keyDown(menu, { key: "ArrowDown" });
+    expect(document.activeElement).toBe(items[1]);
+
+    fireEvent.keyDown(menu, { key: "Escape" });
+    expect(screen.queryByRole("menu", { name: "Acciones del documento" })).toBeNull();
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it("agrupa los datos y las acciones de la barra de estado", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    const status = screen.getByLabelText("Estado del documento");
+    const data = within(status).getByRole("group", { name: "Datos del documento" });
+    expect(within(data).getByLabelText("0 palabras")).toBeTruthy();
+    expect(within(data).getByLabelText("0 diagramas")).toBeTruthy();
+    expect(within(data).getByLabelText(/^Estado de guardado:/)).toBeTruthy();
+
+    const actions = within(status).getByRole("group", { name: "Acciones de revisión" });
+    expect(within(actions).getByRole("button", { name: "Comentarios del documento" }).getAttribute("aria-keyshortcuts")).toBe("Control+Alt+M Meta+Alt+M");
+    expect(within(actions).getByRole("button", { name: "Entrar en modo enfoque" }).getAttribute("aria-keyshortcuts")).toBe("Alt+Shift+F");
+  });
 });
 
 describe("mapa central de atajos", () => {

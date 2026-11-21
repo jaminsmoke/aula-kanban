@@ -43,6 +43,14 @@ describe("arquitectura de Aula Documentos", () => {
     }
   });
 
+  it("mantiene la barra de estado adaptable y táctil", () => {
+    const css = readFileSync(join(APP_DIR, "styles", "status-bar.css"), "utf8");
+    expect(css).toContain("@container auladocumentosapp (max-width: 700px)");
+    expect(css).toContain("@container auladocumentosapp (max-width: 430px)");
+    expect(css).toContain("min-width:44px");
+    expect(css).toContain("min-height:44px");
+  });
+
   it("mantiene las pruebas de la app por debajo de 600 líneas", () => {
     for (const file of readdirSync(APP_DIR).filter((name) => name.endsWith(".test.tsx"))) {
       expect(lineCount(file), file).toBeLessThanOrEqual(600);

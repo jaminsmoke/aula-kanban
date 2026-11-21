@@ -57,6 +57,7 @@ export function useAulaVersions({
   const [preview, setPreview] = useState<AulaVersionPreview | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const previousDocumentId = useRef(documentId);
+  const focusOriginRef = useRef<HTMLElement | null>(null);
   const canManageHistory = role === "owner" || role === "admin" || role === "teacher";
   const basePath = documentId
     ? `/api/aula-documentos/${encodeURIComponent(documentId)}/versions`
@@ -97,8 +98,9 @@ export function useAulaVersions({
     }
   }, [canManageHistory, endpoint]);
 
-  const openHistory = useCallback(() => {
+  const openHistory = useCallback((origin?: HTMLElement) => {
     if (!canManageHistory) return;
+    focusOriginRef.current = origin ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     setHistoryOpen(true);
     void refresh();
   }, [canManageHistory, refresh]);
@@ -106,6 +108,11 @@ export function useAulaVersions({
   const closeHistory = useCallback(() => {
     setHistoryOpen(false);
     setPreview(null);
+    const origin = focusOriginRef.current;
+    focusOriginRef.current = null;
+    queueMicrotask(() => {
+      if (origin?.isConnected) origin.focus();
+    });
   }, []);
 
   const createVersion = useCallback(async (name: string) => {

@@ -23,7 +23,7 @@ describe("Autosave y conflictos de Aula Documentos", () => {
     expect(screen.queryByText("Suite documental")).toBeNull();
     expect(document.querySelector(".aula-documentos-heading")).toBeNull();
     expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento de ejemplo");
-    expect(screen.getByRole("toolbar", { name: "Menus del documento" })).toBeTruthy();
+    expect(screen.getByRole("toolbar", { name: "Menús del documento" })).toBeTruthy();
     expect(screen.getByRole("toolbar", { name: "Herramientas del documento" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Negrita" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Archivo" })).toBeTruthy();

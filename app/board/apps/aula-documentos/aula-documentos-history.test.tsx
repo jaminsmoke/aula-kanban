@@ -61,6 +61,19 @@ describe("historial de Aula Documentos", () => {
     expect(screen.getByText("Versión restaurada.")).toBeTruthy();
   });
 
+  it("devuelve el foco al botón al cerrar el historial", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ versions: [], total: 0 })));
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    const trigger = screen.getByRole("button", { name: "Historial de versiones" });
+    fireEvent.click(trigger);
+    expect(await screen.findByRole("complementary", { name: "Historial de versiones" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Cerrar historial" }));
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
+  });
+
   it("oculta el historial a estudiantes", async () => {
     render(<AulaDocumentosApp projectId={props.projectId} role="student" />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());

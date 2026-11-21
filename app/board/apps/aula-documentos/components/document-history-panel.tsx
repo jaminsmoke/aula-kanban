@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RotateCcw, Save, X } from "lucide-react";
 import type { AulaDocumentVersion } from "../../../../../lib/domain/aula-documentos/revision";
 import { AULA_VERSION_NAME_MAX_LENGTH, AULA_VERSION_PAGE_SIZE } from "../../../../../lib/domain/aula-documentos/revision";
@@ -38,12 +38,17 @@ export function DocumentHistoryPanel() {
   } = useAulaDocumentosView();
   const [name, setName] = useState("");
   const [page, setPage] = useState(0);
+  const closeRef = useRef<HTMLButtonElement>(null);
   const pageCount = Math.max(1, Math.ceil(versions.length / AULA_VERSION_PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
   const visibleVersions = versions.slice(
     currentPage * AULA_VERSION_PAGE_SIZE,
     (currentPage + 1) * AULA_VERSION_PAGE_SIZE,
   );
+
+  useEffect(() => {
+    if (historyOpen) closeRef.current?.focus();
+  }, [historyOpen]);
 
   if (!historyOpen) return null;
 
@@ -66,7 +71,7 @@ export function DocumentHistoryPanel() {
           <h2>Historial</h2>
           <span>{versionCount} {versionCount === 1 ? "versión" : "versiones"}</span>
         </div>
-        <button type="button" className="aula-documentos-history-close" onClick={closeHistory} aria-label="Cerrar historial">
+        <button type="button" className="aula-documentos-history-close" onClick={closeHistory} aria-label="Cerrar historial" ref={closeRef}>
           <X size={15} aria-hidden />
         </button>
       </header>
