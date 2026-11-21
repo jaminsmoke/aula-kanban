@@ -1,8 +1,39 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** UI-11 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-21 — Roadmap UI-11 — Menús, atajos y barra de estado de Aula Documentos
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Acciones con `id` estable y un modelo compartido entre menús de escritorio, botones directos y menú móvil.
+- Menú móvil agrupado por Archivo, Importar, Exportar, Insertar y Documento, con foco inicial, flechas, Escape/Tab y retorno al disparador.
+- Mapa central de atajos en `app/board/shared/aula-documentos/shortcuts.ts`, con modificadores exactos y ayuda generada desde la misma fuente.
+- Se conservan Guardar, Buscar, Reemplazar, Esquema, Enfoque y Comentarios; los atajos solo actúan con foco dentro de Aula.
+- Barra de estado agrupada en datos y acciones, con etiquetas accesibles, `aria-keyshortcuts` y objetivos táctiles de 44 px.
+- Comentarios e historial devuelven el foco a su botón; el historial enfoca su cierre al abrirse.
+- Container queries de 700 y 430 px para la barra de estado; sin desbordamiento horizontal en los anchos revisados.
+- Contrato y ayuda actualizados en `docs/developing/aula-documentos-interfaz.md`; presupuesto de Aula Documentos ajustado a **387.000 B**.
+- Sin cambios de datos, URLs, permisos, MCP ni versión del Site.
+
+### Verificación
+
+- `npm run check`: correcto.
+- `arch:check`: **456 archivos / 1.136 imports / 0 problemas**.
+- Suite completa: **264 archivos / 1.742 pruebas**.
+- Build: **386.230 B**; `app:budget`: **48 / 4.874** tests y **14 / 3.159** CSS.
+- `perf:budget` y `perf:office`: correctos; Office **196.481 / 210.000 B gzip**.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- UI-11 archivado en [`historial/roadmap-ui-11.md`](../historial/roadmap-ui-11.md). El backlog queda con **1 entrada**; siguiente candidato **DEV-01**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 

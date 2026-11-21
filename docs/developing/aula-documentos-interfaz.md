@@ -1,9 +1,9 @@
 # Menús, atajos y barra de estado de Aula Documentos
 
-> **Estado:** Fases 1–3 cerradas · **Fecha:** 2026-11-21
+> **Estado:** UI-11 completado (2026-11-21) · **Fecha:** 2026-11-21
 > **Alcance:** inventario de acciones, hogar único, atajos, barra de estado, responsive y accesibilidad.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
-> **Regla:** la Fase 1 fijó el contrato; la Fase 2 unificó menús y acciones; la Fase 3 centralizó los atajos y la ayuda.
+> **Regla:** la Fase 1 fijó el contrato; la Fase 2 unificó menús y acciones; la Fase 3 centralizó los atajos y la ayuda; la Fase 4 consolidó la barra de estado, el responsive y la accesibilidad.
 
 ---
 
@@ -209,3 +209,16 @@ Implementado el 2026-11-21:
 - Todos los atajos globales comprueban que el foco esté dentro de `.aula-documentos-app`.
 - Pruebas de ids y combinaciones únicas, modificadores exactos, ayuda desde el mapa y apertura/cierre de comentarios solo dentro de Aula.
 - Suite: **264 archivos / 1.737 pruebas**; build **385.905 B**; presupuesto **386.000 B**.
+
+## 12. Cierre de la Fase 4
+
+Implementado el 2026-11-21:
+
+- La barra de estado separa `Datos del documento` (sección, palabras, diagramas y guardado) de `Acciones de revisión` (comentarios, historial y enfoque), sin duplicar información.
+- Los recuentos y el chip de guardado exponen `aria-label`; comentarios y enfoque declaran `aria-keyshortcuts`.
+- El menú móvil enfoca la primera acción, recorre con flechas, cierra con Escape/Tab y devuelve el foco al disparador.
+- Comentarios e historial restauran el foco al botón que los abrió; el historial enfoca su control de cierre al abrirse.
+- La barra usa container queries de 700 y 430 px, envuelve datos y acciones y mantiene objetivos táctiles de 44 px.
+- Pruebas de agrupación accesible, foco de paneles, teclado móvil y contenedores de la barra.
+- Presupuesto de Aula Documentos ajustado a **387.000 B** por la barra accesible; build **386.230 B**.
+- Suite: **264 archivos / 1.742 pruebas**; arquitectura **456 archivos / 1.136 imports**; `perf:office` correcto. Site `1.1.37`, sin publicación.
