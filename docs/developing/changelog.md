@@ -1,8 +1,39 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-07 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-21 — Roadmap ARC-07 — Eliminar duplicación comprobada en Aula Documentos
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- `recovery-store.ts` centraliza validación, normalización, orden, identificadores, serialización y recorte por cuota de las copias locales.
+- Las APIs de recuperación por proyecto y por documento conservan sus firmas, claves y la migración de la clave antigua sin borrar el origen.
+- `contentInlineText` unifica la extracción de texto en Markdown, presentación, título, importación de Office y exportación DOCX/PPTX.
+- `contentText` mantiene su separación deliberada entre nodos; el nuevo helper conserva unidas las marcas que dividen una palabra.
+- La descarga de Blockly reutiliza `downloadTextFile` y conserva `programa-<projectId>.json` con formato JSON.
+- El worker de Blockly revoca su URL al terminar, fallar, agotar el tiempo o cancelarse, y también si no puede crearse.
+- Presupuesto de pruebas de Blockly ampliado de **130** a **180** líneas para cubrir descarga y ciclo de vida.
+- Sin cambios de datos, URLs, permisos, MCP ni versión del Site.
+
+### Verificación
+
+- `npm run check`: correcto.
+- `arch:check`: **458 archivos / 1.147 imports / 0 problemas**.
+- Suite completa: **265 archivos / 1.746 pruebas**.
+- Build de Aula Documentos: **386.266 / 387.000 B**.
+- `app:budget`: Aula **48 / 4.888** tests y **14 / 3.159** CSS; Blockly **5 / 169 / 180**.
+- `perf:budget` y `perf:office`: correctos; Office **196.481 / 210.000 B gzip**.
+- El Site sigue en `1.1.38`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-07 archivado en [`historial/roadmap-arc-07.md`](../historial/roadmap-arc-07.md). El backlog queda con **4 entradas**; siguiente candidato **ARC-08**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 
