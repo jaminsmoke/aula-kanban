@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01, DEV-02, ARC-02, ARC-03, ARC-04, ARC-05 y ARC-06 completados; ADOC-18, ADOC-19 y ADOC-20 completados; sin roadmap activo · **Fecha:** 2026-11-21
+> **Estado:** ARC-01, DEV-02, ARC-02, ARC-03, ARC-04, ARC-05 y ARC-06 completados; ADOC-18, ADOC-19 y ADOC-20 completados; UI-11 activo · **Fecha:** 2026-11-21
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -232,4 +232,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - ADOC-18 quedó cerrado y archivado en [`historial/roadmap-adoc-18.md`](../historial/roadmap-adoc-18.md): búsqueda y reemplazo, esquema de títulos, navegación de diapositivas, enfoque y accesibilidad.
 - ADOC-19 quedó cerrado y archivado en [`historial/roadmap-adoc-19.md`](../historial/roadmap-adoc-19.md): estructura editable de diapositivas, presentador, ajustes de página y PDF de calidad.
 - ADOC-20 quedó cerrado y archivado en [`historial/roadmap-adoc-20.md`](../historial/roadmap-adoc-20.md): comentarios anclados, hilos, historial de versiones, permisos, exportación opcional y retención.
-- No hay roadmap activo en [`roadmap.md`](roadmap.md); el siguiente candidato es **UI-11**.
+- UI-11 está activo en [`roadmap.md`](roadmap.md): menús, atajos, barra de estado, responsive y accesibilidad de Aula Documentos.

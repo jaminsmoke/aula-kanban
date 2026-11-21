@@ -2,24 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 2 entradas pendientes · siguiente candidato UI-11
+> **Roadmap:** UI-11 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 1 entrada pendiente · siguiente candidato DEV-01
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
-
-## 2026-11-19 — UI-11 · Menús, atajos y barra de estado de Aula Documentos
-
-- Contexto: la cabecera se reorganizó en una barra superior con Archivo, Importar y Exportar y una barra del documento con Formato, Insertar y herramientas directas. Queda revisar el mapa completo de acciones y evitar que cada función nueva añada otro botón sin jerarquía.
-- Alcance:
-  1. Inventariar cada acción y asignarle un único hogar: barra superior, barra del documento, menú contextual o atajo.
-  2. Definir atajos consistentes y una ayuda visible.
-  3. Revisar desbordamiento, menús móviles, estados vacíos y barra de estado.
-  4. Evitar duplicar importar/exportar/guardar en varios sitios.
-  5. Probar teclado, lector de pantalla y cinco anchos.
-- Criterios: ninguna acción importante queda escondida o duplicada; el patrón se mantiene al añadir imágenes, tablas, búsqueda y documentos.
-- Notas: el rediseño de barras ya iniciado es la base; esta entrada cubre el sistema, no solo una pantalla.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 
