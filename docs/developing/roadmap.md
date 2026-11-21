@@ -58,11 +58,12 @@
 
 ### Fase 1 — Inventario y contrato de guardado
 
-- [ ] Inventariar carga, guardado, versión, conflicto, autosave y recuperación de cada editor.
-- [ ] Comparar `useAppDocument` y `useAulaDocumentApi` campo por campo.
-- [ ] Decidir qué tipos, resultados y helpers pueden compartirse sin cambiar la semántica.
-- [ ] Documentar qué editores no deben migrarse y por qué.
+- [x] Inventariar carga, guardado, versión, conflicto, autosave y recuperación de cada editor.
+- [x] Comparar `useAppDocument` y `useAulaDocumentApi` campo por campo.
+- [x] Decidir qué tipos, resultados y helpers pueden compartirse sin cambiar la semántica.
+- [x] Documentar qué editores no deben migrarse y por qué.
 - **Criterios:** contrato de conflicto y carga claro para todos los editores; sin cambios de código.
+- **Cierre (2026-11-21):** contrato e inventario en [`guardado-versionado.md`](guardado-versionado.md). El servidor ya soporta `expectedUpdatedAt`; Hoja de cálculo será el piloto; Aula y Blockly conservan sus contratos específicos. Arquitectura **459 archivos / 1.149 imports**; suite **265 archivos / 1.747 pruebas**; sin cambios de producto.
 
 ### Fase 2 — Piloto de Hoja de cálculo
 
@@ -110,5 +111,6 @@
 ## 7. Notas de sesión
 
 - 2026-11-21: **Roadmap abierto.** ARC-09 sale del backlog; quedan **2 entradas** y el siguiente candidato es **ARC-10**. Sin cambios de código de producto.
+- 2026-11-21: **Fase 1 completada.** Inventario y contrato de guardado en [`guardado-versionado.md`](guardado-versionado.md). Hoja de cálculo será el piloto; Aula y Blockly conservan sus contratos. Arquitectura **459 archivos / 1.149 imports**; suite **265 archivos / 1.747 pruebas**. Sin mover código.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.
