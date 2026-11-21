@@ -1,15 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { LoadedDocument, VersionedSaveResult } from "../shared/versioned-document";
 
-/** Resultado de leer el documento de una app. */
-export type LoadedDocument<T> = { state: T | null; updatedAt: number | null; ok?: boolean };
-
-/** Resultado de un guardado con comprobación de versión. */
-export type VersionedSaveResult =
-  | { status: "saved"; updatedAt: number }
-  | { status: "conflict"; updatedAt: number | null }
-  | { status: "failed" };
+export type { LoadedDocument, VersionedSaveResult } from "../shared/versioned-document";
 
 /**
  * Persistencia común de las apps nativas: lee y guarda un estado JSON por

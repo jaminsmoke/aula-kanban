@@ -39,12 +39,12 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 | Flujo | Bruto | Gzip | Presupuesto vigente | Archivos |
 |---|---:|---:|---:|---:|
 | Tablero | 572,6 KiB | 170,0 KiB (174.044 B) | 175.656 B | 32 |
-| Hoja de cálculo · abrir | 1.057,9 KiB | 303,8 KiB (311.071 B) | 315.000 B | 26 |
+| Hoja de cálculo · abrir | 1.057,9 KiB | 303,8 KiB (311.065 B) | 315.000 B | 26 |
 | Aula Documentos · exportar Office | 1.045,3 KiB | 322,0 KiB (329.701 B) | 340.000 B | 14 |
 | Calculadora · abrir Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
 | Calculadora · primer `=` en Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
 | Calculadora · Científica/Ecuaciones | 6.606,2 KiB | 1.915,4 KiB (1.961.393 B) | 2.069.960 B | 19 |
-| Aula Documentos · abrir | 1.262,8 KiB | 377,2 KiB (386.274 B) | 387.000 B | 50 |
+| Aula Documentos · abrir | 1.262,8 KiB | 377,2 KiB (386.267 B) | 387.000 B | 50 |
 | Tienda · abrir | 544,7 KiB | 169,1 KiB (173.195 B) | 174.779 B | 20 |
 | Pizarra · abrir | 3.441,7 KiB | 1.214,2 KiB (1.243.296 B) | 1.348.890 B | 23 |
 | Pizarra · conversión Mermaid | 4.206,4 KiB | 1.412,2 KiB (1.446.106 B) | 1.560.999 B | 51 |
@@ -69,7 +69,7 @@ Los totales incluyen el framework y la entrada compartida. La comparación útil
 | Pizarra | 2 | 1.560.999 B | 7 / 439 → 8 / 490 | 1 / 9 → 2 / 12 |
 | Blockly | 2 | 383.275 B | 5 / 169 → 5 / 180 | 1 / 39 → 2 / 50 |
 
-Los límites de test y CSS tienen un margen deliberado para evitar que una prueba pequeña rompa CI; el límite de gzip de la app nunca puede ser menor que el de su flujo más pesado. Los flujos `aula-documentos-export`, `basica`, `basica-evalua`, `pizarra-mermaid` y `blockly-codigo` siguen teniendo su propio presupuesto aunque compartan app. El presupuesto de `aula-documentos` se ajustó a **387.000 B** con la barra de estado accesible de UI-11; el build de referencia queda en **386.274 B**. Los límites de pruebas y CSS se ajustan a **53 / 5.297 → 54 / 5.400** y **16 / 3.734 → 16 / 3.800** al incorporar a la app las pruebas y el CSS del visor Office en ARC-08 Fase 4. Hoja de cálculo conserva **315.000 B** y sube a **311.071 B** por el guardado con versión de ARC-09.
+Los límites de test y CSS tienen un margen deliberado para evitar que una prueba pequeña rompa CI; el límite de gzip de la app nunca puede ser menor que el de su flujo más pesado. Los flujos `aula-documentos-export`, `basica`, `basica-evalua`, `pizarra-mermaid` y `blockly-codigo` siguen teniendo su propio presupuesto aunque compartan app. El presupuesto de `aula-documentos` se ajustó a **387.000 B** con la barra de estado accesible de UI-11; el build de referencia queda en **386.267 B**. Los límites de pruebas y CSS se ajustan a **53 / 5.297 → 54 / 5.400** y **16 / 3.734 → 16 / 3.800** al incorporar a la app las pruebas y el CSS del visor Office en ARC-08 Fase 4. Hoja de cálculo conserva **315.000 B** y queda en **311.065 B** con el guardado con versión de ARC-09.
 
 ### Latencia e imágenes
 

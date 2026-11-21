@@ -1,6 +1,6 @@
 # Guardado con versión entre editores
 
-> **Estado:** ARC-09, Fases 1–2 · **Fecha:** 2026-11-21
+> **Estado:** ARC-09, Fases 1–3 · **Fecha:** 2026-11-21
 > **Alcance:** `useAppDocument`, `useAulaDocumentApi`, persistencia de las apps y recuperación local.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -98,3 +98,11 @@
 - Si falla la carga inicial o el estado guardado no es válido, no permite guardar hasta recuperar el documento.
 - La recarga con cambios locales pide confirmación antes de descartarlos.
 - Se mantienen el modo invitado, la validación del modelo y el estado de la hoja.
+
+## 11. Aplicado en la Fase 3
+
+- `app/board/shared/versioned-document.ts` concentra `LoadedDocument` y `VersionedSaveResult`.
+- `useAppDocument` los reexporta para conservar su API pública.
+- `useAulaDocumentApi` los reutiliza y mantiene sus alias `LoadedAulaDocument` y `AulaDocumentSaveResult`.
+- `save` y `saveVersioned` siguen disponibles; no se ha movido la recuperación local de ninguna app.
+- El módulo compartido tiene prueba propia del contrato y consumidores reales.

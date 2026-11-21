@@ -1,22 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { LoadedDocument, VersionedSaveResult } from "../../../shared/versioned-document";
+
+export type { VersionedSaveResult } from "../../../shared/versioned-document";
 
 /** Resultado de leer un documento de la suite. */
-export type LoadedAulaDocument = {
-  state: unknown | null;
-  updatedAt: number | null;
-  ok?: boolean;
-};
+export type LoadedAulaDocument = LoadedDocument<unknown>;
 
 /** Resultado de un guardado con comprobación de versión. */
-export type AulaDocumentSaveResult =
-  | { status: "saved"; updatedAt: number }
-  | { status: "conflict"; updatedAt: number | null }
-  | { status: "failed" };
-
-/** Alias compartido con los flujos de persistencia existentes. */
-export type VersionedSaveResult = AulaDocumentSaveResult;
+export type AulaDocumentSaveResult = VersionedSaveResult;
 
 /**
  * Persistencia de un documento concreto de la suite de Aula.

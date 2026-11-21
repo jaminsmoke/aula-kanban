@@ -77,11 +77,12 @@
 
 ### Fase 3 — Extraer el contrato validado
 
-- [ ] Extraer a `shared` solo los tipos y helpers que use el piloto.
-- [ ] Mantener `save` y `saveVersioned` disponibles mientras existan consumidores.
-- [ ] Evitar mover la recuperación local específica de cada app.
-- [ ] Cubrir los helpers compartidos con pruebas de conflicto y resultado.
+- [x] Extraer a `shared` solo los tipos y helpers que use el piloto.
+- [x] Mantener `save` y `saveVersioned` disponibles mientras existan consumidores.
+- [x] Evitar mover la recuperación local específica de cada app.
+- [x] Cubrir los helpers compartidos con pruebas de conflicto y resultado.
 - **Criterios:** el contrato compartido tiene consumidores reales y no duplica lógica de servidor.
+- **Cierre (2026-11-21):** `app/board/shared/versioned-document.ts` concentra `LoadedDocument` y `VersionedSaveResult`; `useAppDocument` y `useAulaDocumentApi` los reutilizan. `save` y `saveVersioned` siguen disponibles. Prueba del contrato compartido y suite **266 archivos / 1.750 pruebas**; arquitectura **460 archivos / 1.151 imports**; build **386.267 B**.
 
 ### Fase 4 — Migración selectiva de editores
 
@@ -114,5 +115,6 @@
 - 2026-11-21: **Roadmap abierto.** ARC-09 sale del backlog; quedan **2 entradas** y el siguiente candidato es **ARC-10**. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Inventario y contrato de guardado en [`guardado-versionado.md`](guardado-versionado.md). Hoja de cálculo será el piloto; Aula y Blockly conservan sus contratos. Arquitectura **459 archivos / 1.149 imports**; suite **265 archivos / 1.747 pruebas**. Sin mover código.
 - 2026-11-21: **Fase 2 completada.** Hoja de cálculo usa `saveVersioned`, bloquea el guardado tras un fallo de carga y conserva el borrador ante conflicto. Pruebas de conflicto y carga fallida añadidas. Arquitectura **459 archivos / 1.149 imports**; suite **265 archivos / 1.749 pruebas**; build **386.274 B**; Hoja **311.071 B**.
+- 2026-11-21: **Fase 3 completada.** `versioned-document.ts` comparte `LoadedDocument` y `VersionedSaveResult` entre `useAppDocument` y Aula Documentos; se mantienen `save` y `saveVersioned`. Arquitectura **460 archivos / 1.151 imports**; suite **266 archivos / 1.750 pruebas**; build **386.267 B**; Hoja **311.065 B**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.
