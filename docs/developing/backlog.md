@@ -2,18 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 3 entradas pendientes · siguiente candidato recomendado ARC-09
+> **Roadmap:** ARC-09 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas pendientes · siguiente candidato recomendado ARC-10
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
-
-## 2026-11-21 — ARC-09 · Reutilizar el guardado con versión entre editores
-
-- Hoja de cálculo, Mapas conceptuales, Líneas de tiempo, Tarjetas y Blockly siguen usando `save` de `useAppDocument`. Aula Documentos tiene su propia API por documento y usa guardado con versión. Comparar ambos clientes y reutilizar únicamente la lectura de versiones, el resultado del guardado y el tratamiento de conflictos que tengan la misma semántica.
-- Pilotar con Hoja de cálculo mediante `saveVersioned` del cliente existente. Mantener el esquema de cada app, sus permisos, sus tiempos de guardado y su estrategia de recuperación. Usar el piloto para decidir qué merece pasar a `shared` antes de migrar otros editores.
-- Salida: dos sesiones sobre la misma hoja no se pisan, un fallo al cargar no se interpreta como documento nuevo y se preserva el borrador al detectar conflicto. Revisar las herramientas de escritura del plugin y los clientes anteriores antes de endurecer la API común.
 
 ## 2026-11-21 — ARC-10 · Revisar la integración entre Aula Documentos y Hoja de cálculo
 
