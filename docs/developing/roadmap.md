@@ -64,12 +64,13 @@
 
 ### Fase 1 — Inventario, contrato y mapa de acciones
 
-- [ ] Inventariar cada acción visible u oculta y su ubicación actual.
-- [ ] Clasificar acciones por frecuencia, riesgo, contexto y ancho.
-- [ ] Definir el hogar único y la jerarquía de menús.
-- [ ] Fijar el mapa de atajos y la relación con búsqueda, enfoque y revisión.
-- [ ] Documentar el contrato en `docs/developing/aula-documentos-interfaz.md`.
+- [x] Inventariar cada acción visible u oculta y su ubicación actual.
+- [x] Clasificar acciones por frecuencia, riesgo, contexto y ancho.
+- [x] Definir el hogar único y la jerarquía de menús.
+- [x] Fijar el mapa de atajos y la relación con búsqueda, enfoque y revisión.
+- [x] Documentar el contrato en `docs/developing/aula-documentos-interfaz.md`.
 - **Criterios:** todas las acciones tienen hogar, atajo o justificación de ausencia; no se mueve código todavía.
+- **Cierre (2026-11-21):** contrato en [`aula-documentos-interfaz.md`](aula-documentos-interfaz.md): modelo de acción, inventario por barras y paneles, auditoría de duplicados, mapa de atajos, precedencia de `Escape`, barra de estado, responsive y matriz de pruebas. Sin cambios de código.
 
 ### Fase 2 — Menús y acciones sin duplicados
 
@@ -117,5 +118,6 @@
 ## 7. Notas de sesión
 
 - 2026-11-21: **Roadmap abierto.** UI-11 sale del backlog; queda **1 entrada** y el siguiente candidato es **DEV-01**. Sin cambios de código de producto.
+- 2026-11-21: **Fase 1 completada.** Inventario de acciones, hogar único, duplicados, atajos, barra de estado y responsive en [`aula-documentos-interfaz.md`](aula-documentos-interfaz.md). Sin cambios de código.
 - La base es la interfaz actual de Aula Documentos, no un rediseño de la app ni del editor.
 - No hay publicación ni migraciones remotas en este roadmap.
