@@ -57,11 +57,12 @@
 
 ### Fase 1 — Núcleo común de recuperación
 
-- [ ] Extraer validación, normalización, orden, identificadores, serialización y recorte por cuota a un módulo interno del dominio.
-- [ ] Mantener `listAulaRecoveryCopies`, `saveAulaRecoveryCopy`, `listDocumentRecoveryCopies`, `saveDocumentRecoveryCopy` y `migrateDocumentRecoveryCopies` con las mismas firmas y claves.
-- [ ] Conservar la lectura de la clave antigua del proyecto y la migración al documento sin borrar el origen.
-- [ ] Cubrir recuperación por proyecto y documento, entradas inválidas, orden, cuota, fallo de serialización y migración.
+- [x] Extraer validación, normalización, orden, identificadores, serialización y recorte por cuota a un módulo interno del dominio.
+- [x] Mantener `listAulaRecoveryCopies`, `saveAulaRecoveryCopy`, `listDocumentRecoveryCopies`, `saveDocumentRecoveryCopy` y `migrateDocumentRecoveryCopies` con las mismas firmas y claves.
+- [x] Conservar la lectura de la clave antigua del proyecto y la migración al documento sin borrar el origen.
+- [x] Cubrir recuperación por proyecto y documento, entradas inválidas, orden, cuota, fallo de serialización y migración.
 - **Criterios:** mismas copias y mismos resultados de error; ninguna clave ni dato existente cambia.
+- **Cierre (2026-11-21):** `recovery-store.ts` concentra validación, normalización, identificadores, serialización y recorte; los wrappers de proyecto y documento conservan sus claves y APIs, y la migración sigue leyendo la clave antigua sin borrarla. Pruebas de copias, entradas inválidas, cuota y migración correctas. Arquitectura **457 archivos / 1.139 imports**; suite **264 archivos / 1.742 pruebas**; build **386.244 B**.
 
 ### Fase 2 — Extracción de texto de formatos
 
@@ -99,5 +100,6 @@
 ## 7. Notas de sesión
 
 - 2026-11-21: **Roadmap abierto.** ARC-07 sale del backlog; quedan **4 entradas** y el siguiente candidato es **ARC-08**. Sin cambios de código de producto.
+- 2026-11-21: **Fase 1 completada.** Núcleo común de recuperación en `recovery-store.ts`; wrappers, claves y migración conservados. Arquitectura **457 archivos / 1.139 imports**; suite **264 archivos / 1.742 pruebas**; build **386.244 B**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios de UI-11 mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

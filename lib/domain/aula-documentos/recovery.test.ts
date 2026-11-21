@@ -158,7 +158,9 @@ describe("copias locales de Aula Documentos", () => {
   it("ignora un almacenamiento corrupto y usa una clave por proyecto", () => {
     const { storage, values } = memoryStorage();
     values.set(aulaRecoveryStorageKey("p1"), "{no-json");
+    expect(listAulaRecoveryCopies(storage, "p1")).toEqual([]);
 
+    values.set(aulaRecoveryStorageKey("p1"), JSON.stringify({ version: 1, copies: [{ id: "sin-documento" }] }));
     expect(listAulaRecoveryCopies(storage, "p1")).toEqual([]);
     expect(aulaRecoveryStorageKey("p1")).not.toBe(aulaRecoveryStorageKey("p2"));
   });
