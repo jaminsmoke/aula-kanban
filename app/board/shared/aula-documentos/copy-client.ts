@@ -31,13 +31,16 @@ async function errorMessage(response: Response, fallback: string): Promise<strin
 /**
  * Lista las copias portables del proyecto.
  * @param projectId - Proyecto activo.
+ * @param documentId - Documento opcional de la suite.
  * @returns La lista o un error legible.
  */
 export async function listAulaCopies(
   projectId: string,
+  documentId?: string | null,
 ): Promise<AulaCopyClientResult<{ copies: AulaCopySummary[] }>> {
   try {
-    const response = await fetch(`/api/aula-documentos/copies?project=${encodeURIComponent(projectId)}`, {
+    const documentQuery = documentId ? `&doc=${encodeURIComponent(documentId)}` : "";
+    const response = await fetch(`/api/aula-documentos/copies?project=${encodeURIComponent(projectId)}${documentQuery}`, {
       cache: "no-store",
     });
     if (!response.ok) return { ok: false, message: await errorMessage(response, "No se pudieron leer las copias.") };
@@ -54,17 +57,20 @@ export async function listAulaCopies(
  * @param projectId - Proyecto activo.
  * @param bytes - ZIP de la copia.
  * @param fileName - Nombre del archivo.
+ * @param documentId - Documento opcional de la suite.
  * @returns La copia creada o un error legible.
  */
 export async function saveAulaCopy(
   projectId: string,
   bytes: Uint8Array,
   fileName: string,
+  documentId?: string | null,
 ): Promise<AulaCopyClientResult<{ copy: AulaCopySummary }>> {
   const form = new FormData();
   form.append("file", new File([bytes.slice().buffer as ArrayBuffer], fileName, { type: "application/zip" }));
   try {
-    const response = await fetch(`/api/aula-documentos/copies?project=${encodeURIComponent(projectId)}`, {
+    const documentQuery = documentId ? `&doc=${encodeURIComponent(documentId)}` : "";
+    const response = await fetch(`/api/aula-documentos/copies?project=${encodeURIComponent(projectId)}${documentQuery}`, {
       method: "POST",
       body: form,
     });

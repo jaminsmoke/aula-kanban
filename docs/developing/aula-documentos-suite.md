@@ -1,7 +1,7 @@
 # Suite documental de Aula Documentos
 
-> **Estado:** Fases 1 a 3 de ADOC-17 · **Fecha:** 2026-11-21
-> **Alcance:** contrato, modelo de datos, migración, persistencia backend y gestión visual.
+> **Estado:** Fases 1 a 4 de ADOC-17 · **Fecha:** 2026-11-21
+> **Alcance:** contrato, modelo de datos, migración, persistencia backend, gestión visual, URL y MCP.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Arquitectura:** [`arquitectura-global.md`](arquitectura-global.md)
 
 ---
@@ -223,3 +223,16 @@ Implementado el 2026-11-21:
 - Pruebas de endpoints de creación/acciones, hook de suite, panel visual, renombrado, cancelación y restauración.
 
 Limitación de esta fase: MCP y las URLs profundas con `doc` se conectan en la Fase 4; hasta entonces el panel usa el último abierto local y MCP sigue leyendo la fila `legacy`.
+
+## 13. Cierre de la Fase 4
+
+Implementado el 2026-11-21:
+
+- La URL acepta `doc=<id>`; el enlace tiene prioridad sobre el último abierto local. Un id ausente, ajeno o no disponible muestra un aviso y cae al primer documento activo sin revelar contenido.
+- Cambiar de documento actualiza `doc` en la URL y el último abierto en `localStorage`.
+- MCP `leer_diagrama` y `guardar_diagrama` aceptan `documentoId` opcional. Sin id resuelven `legacy` o el primer documento activo; con id ajeno devuelven 404 y con una versión desfasada, 409.
+- Las copias portables se listan y guardan con `doc`, y la recuperación local usa una clave por documento con migración desde la clave antigua.
+- El guardado y el autosave conservan la versión por documento; los invitados siguen en solo lectura.
+- Pruebas de enlace inválido, documento ajeno, invitado, conflicto, copia y recuperación.
+
+La exportación HTML/Office, la impresión y el Markdown siguen operando sobre el documento activo; no incrustan metadatos de la suite en `AulaDocument`.

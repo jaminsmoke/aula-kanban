@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
-import { listAulaRecoveryCopies } from "../../../../lib/domain/aula-documentos/recovery";
+import { listDocumentRecoveryCopies } from "../../../../lib/domain/aula-documentos/recovery-document";
 import {
   countMermaid,
   documentMock,
@@ -225,7 +225,7 @@ describe("Autosave y conflictos de Aula Documentos", () => {
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Conflicto de versión" })).toBeNull());
     expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Versión del servidor");
     expect(documentMock.load).toHaveBeenCalledTimes(2);
-    expect(listAulaRecoveryCopies(window.localStorage, "p1")[0]).toMatchObject({
+    expect(listDocumentRecoveryCopies(window.localStorage, "p1", "legacy")[0]).toMatchObject({
       title: "Cambio local",
       reason: "conflict",
       serverUpdatedAt: 30,
@@ -270,7 +270,7 @@ describe("Autosave y conflictos de Aula Documentos", () => {
       expect.objectContaining({ title: "Cambio local" }),
       12,
     );
-    expect(listAulaRecoveryCopies(window.localStorage, "p1")[0]).toMatchObject({
+    expect(listDocumentRecoveryCopies(window.localStorage, "p1", "legacy")[0]).toMatchObject({
       title: "Cambio local",
       reason: "conflict",
       serverUpdatedAt: 12,

@@ -94,12 +94,13 @@
 
 ### Fase 4 — URL, permisos, MCP y concurrencia
 
-- [ ] Añadir una URL profunda estable por documento y resolverla con permisos de proyecto e invitados.
-- [ ] Adaptar las herramientas MCP para recibir o resolver el documento sin ambigüedad.
-- [ ] Conservar la concurrencia optimista por documento y los límites de cuota.
-- [ ] Revisar exportación, copia portable y recuperación con varios documentos.
-- [ ] Añadir pruebas de enlace inválido, documento ajeno, invitado, conflicto y cuota.
+- [x] Añadir una URL profunda estable por documento y resolverla con permisos de proyecto e invitados.
+- [x] Adaptar las herramientas MCP para recibir o resolver el documento sin ambigüedad.
+- [x] Conservar la concurrencia optimista por documento y los límites de cuota.
+- [x] Revisar exportación, copia portable y recuperación con varios documentos.
+- [x] Añadir pruebas de enlace inválido, documento ajeno, invitado, conflicto y cuota.
 - **Criterios:** cada enlace y herramienta identifica un único documento; un documento ajeno no se revela ni se modifica.
+- **Cierre (2026-11-21):** URL `doc=<id>` con prioridad sobre el último abierto y aviso si no pertenece al proyecto; MCP acepta `documentoId`, resuelve `legacy`/primer activo sin id y devuelve 409 al conflicto; copias portables etiquetadas por documento y recuperaciones locales por documento con migración de la clave antigua. Pruebas de enlace inválido, documento ajeno, invitado, conflicto y cuota.
 
 ### Fase 5 — Cierre
 
@@ -128,5 +129,6 @@
 - 2026-11-21: **Fase 1 completada.** Contrato y mapa en [`aula-documentos-suite.md`](aula-documentos-suite.md): identidad estable, metadatos, estados, migración `legacy`, copias/recuperación por documento, URL profunda y MCP con id explícito. Hoja de cálculo queda fuera. Sin cambios de código.
 - 2026-11-21: **Fase 2 completada.** Persistencia de la suite, migración `legacy`, lista y lectura, guardado con conflicto, copias etiquetadas por documento y recuperaciones locales separadas. `app_documents` se conserva intacto. Suite: **249 archivos / 1.678 pruebas**. Sin cambios de UI ni versión.
 - 2026-11-21: **Fase 3 completada.** Panel de suite, ciclo de vida completo y último documento abierto; endpoints de creación/acciones y pruebas de API, hook y panel. Suite: **252 archivos / 1.686 pruebas**. Presupuesto `aula-documentos` ajustado a **373.000 B** por la UI de la suite; build actual **371.807 B**.
+- 2026-11-21: **Fase 4 completada.** URL `doc`, MCP con `documentoId`, copias y recuperaciones por documento, conflicto optimista y permisos de invitado. Pruebas de enlace inválido, documento ajeno, conflicto y cuota. Suite: **252 archivos / 1.689 pruebas**. Build actual: **372.027 B** para Aula. Sin cambios de versión.
 - No se ha cambiado código de producto al abrir este roadmap; no hay publicación ni migraciones remotas.
 - El Site sigue en `1.1.37`.

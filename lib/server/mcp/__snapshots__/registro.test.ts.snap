@@ -3156,6 +3156,11 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
       "$schema": "http://json-schema.org/draft-07/schema#",
       "additionalProperties": false,
       "properties": {
+        "documentoId": {
+          "description": "Documento de Aula Documentos; sin id se resuelve legacy o el primero activo",
+          "minLength": 1,
+          "type": "string",
+        },
         "proyectoId": {
           "description": "Id del proyecto de Aula Kanban",
           "format": "uuid",
@@ -3189,10 +3194,14 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
             "null",
           ],
         },
+        "documentoId": {
+          "type": "string",
+        },
       },
       "required": [
         "codigo",
         "actualizado",
+        "documentoId",
       ],
       "type": "object",
     },
@@ -3215,6 +3224,11 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
           "description": "Documento de Diagramas con code: string",
           "type": "object",
         },
+        "documentoId": {
+          "description": "Documento de Aula Documentos; sin id se resuelve legacy o el primero activo",
+          "minLength": 1,
+          "type": "string",
+        },
         "proyectoId": {
           "description": "Id del proyecto de Aula Kanban",
           "format": "uuid",
@@ -3236,9 +3250,13 @@ exports[`contrato del catálogo MCP > fija el snapshot del catálogo (nombres, e
           "minimum": 0,
           "type": "integer",
         },
+        "documentoId": {
+          "type": "string",
+        },
       },
       "required": [
         "actualizado",
+        "documentoId",
       ],
       "type": "object",
     },

@@ -25,6 +25,7 @@ const response = (body: unknown, status = 200) => new Response(JSON.stringify(bo
 describe("suite de Aula Documentos", () => {
   beforeEach(() => {
     window.localStorage.clear();
+    window.history.replaceState(null, "", "/");
     vi.restoreAllMocks();
   });
 
@@ -46,6 +47,26 @@ describe("suite de Aula Documentos", () => {
     await waitFor(() => expect(result.current.documentId).toBe("doc3"));
     expect(result.current.suite.active.map((item) => item.id)).toEqual(["doc1", "doc2", "doc3"]);
     expect(window.localStorage.getItem("aula-kanban:aula-documentos:last-opened:p1")).toBe("doc3");
+  });
+
+  it("prioriza el documento del enlace y avisa si no está disponible", async () => {
+    window.localStorage.setItem("aula-kanban:aula-documentos:last-opened:p1", "doc2");
+    window.history.replaceState(null, "", "/?project=p1&doc=doc1");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+      response({ active: [doc("doc1", "Uno"), doc("doc2", "Dos")], archived: [], deleted: [] }),
+    ));
+
+    const first = renderHook(() => useAulaDocumentSuite("p1"));
+    await waitFor(() => expect(first.result.current.documentId).toBe("doc1"));
+    first.unmount();
+
+    window.history.replaceState(null, "", "/?project=p1&doc=ajeno");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+      response({ active: [doc("doc1", "Uno")], archived: [], deleted: [] }),
+    ));
+    const second = renderHook(() => useAulaDocumentSuite("p1"));
+    await waitFor(() => expect(second.result.current.documentId).toBe("doc1"));
+    expect(second.result.current.error).toContain("enlace no está disponible");
   });
 
   it("crea un documento inicial si el proyecto está vacío", async () => {

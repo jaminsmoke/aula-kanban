@@ -5,6 +5,9 @@ const mocks = vi.hoisted(() => ({
   resolverAppInstalada: vi.fn(),
   readAppDocument: vi.fn(),
   saveAppDocument: vi.fn(),
+  listAulaSuite: vi.fn(),
+  readAulaDocument: vi.fn(),
+  saveAulaDocument: vi.fn(),
 }));
 
 vi.mock("./contrato", () => ({
@@ -15,6 +18,12 @@ vi.mock("../../apps/app-documents", () => ({
   MAX_APP_DOCUMENT_CHARS: 200_000,
   readAppDocument: mocks.readAppDocument,
   saveAppDocument: mocks.saveAppDocument,
+}));
+vi.mock("../../aula-documentos/documents", () => ({
+  LEGACY_AULA_DOCUMENT_ID: "legacy",
+  listAulaDocumentSuite: mocks.listAulaSuite,
+  readAulaDocument: mocks.readAulaDocument,
+  saveAulaDocumentIfCurrent: mocks.saveAulaDocument,
 }));
 
 import { MERMAID_TEMPLATES } from "../../../domain/mermaid/templates";
@@ -33,12 +42,14 @@ const access = {
 type Body = {
   codigo?: string | null;
   actualizado?: number | null;
+  documentoId?: string;
   plantillas?: Array<{ id: string; nombre: string; codigo: string }>;
   error?: { codigo: string; estado: number; mensaje: string };
 };
 
 type Documento = { state: unknown; updatedAt: number };
 let documentos: Map<string, Documento>;
+let aulaDocumentos: Map<string, { id: string; state: unknown; updatedAt: number }>;
 
 /**
  * Ejecuta una herramienta y devuelve su contenido estructurado.
@@ -54,6 +65,7 @@ async function call(name: string, args: Record<string, unknown>) {
 beforeEach(() => {
   vi.clearAllMocks();
   documentos = new Map();
+  aulaDocumentos = new Map();
   mocks.resolverAppEnProyecto.mockResolvedValue({
     ok: true,
     app: { id: "mermaid", name: "Diagramas" },
@@ -67,6 +79,24 @@ beforeEach(() => {
     documentos.set(`${input.projectId}:${input.appId}`, { state: JSON.parse(input.state), updatedAt });
     return updatedAt;
   });
+  mocks.listAulaSuite.mockImplementation(async (id: string) => ({
+    active: [...aulaDocumentos.entries()]
+      .filter(([key]) => key.startsWith(`${id}:`))
+      .map(([, value]) => ({ id: value.id, projectId: id, title: "Documento", excerpt: "", status: "active", createdAt: 1, updatedAt: value.updatedAt, archivedAt: null, createdBy: null, updatedBy: null })),
+    archived: [],
+    deleted: [],
+  }));
+  mocks.readAulaDocument.mockImplementation(async (id: string, documentId: string) => {
+    const value = aulaDocumentos.get(`${id}:${documentId}`);
+    return value ? { ...value, projectId: id, title: "Documento", excerpt: "", status: "active", createdAt: 1, archivedAt: null, createdBy: null, updatedBy: null } : null;
+  });
+  mocks.saveAulaDocument.mockImplementation(async (input: { projectId: string; id: string; state: unknown; expectedUpdatedAt: number | null }) => {
+    const current = aulaDocumentos.get(`${input.projectId}:${input.id}`);
+    if (input.expectedUpdatedAt !== current?.updatedAt) return { status: "conflict", updatedAt: current?.updatedAt ?? null };
+    const updatedAt = (current?.updatedAt ?? 0) + 1;
+    aulaDocumentos.set(`${input.projectId}:${input.id}`, { id: input.id, state: input.state, updatedAt });
+    return { status: "saved", updatedAt };
+  });
 });
 
 describe("herramientas de Diagramas", () => {
@@ -74,7 +104,7 @@ describe("herramientas de Diagramas", () => {
     documentos.set(`${projectId}:mermaid`, { state: { code: "flowchart TD\n  A --> B", tema: "oscuro" }, updatedAt: 10 });
 
     const body = await call("leer_diagrama", { proyectoId: projectId });
-    expect(body).toEqual({ codigo: "flowchart TD\n  A --> B", actualizado: 10 });
+    expect(body).toEqual({ codigo: "flowchart TD\n  A --> B", actualizado: 10, documentoId: "mermaid" });
     expect(mocks.resolverAppEnProyecto).toHaveBeenCalledWith(caller, { proyectoId: projectId, appId: "aula-documentos" });
     expect(mocks.readAppDocument).toHaveBeenCalledWith(projectId, "mermaid");
 
@@ -90,7 +120,8 @@ describe("herramientas de Diagramas", () => {
 
   it("usa el diagrama de Aula Documentos cuando existe y deja intacta la fila antigua", async () => {
     documentos.set(`${projectId}:mermaid`, { state: { code: "flowchart TD\n  Antiguo --> B" }, updatedAt: 10 });
-    documentos.set(`${projectId}:aula-documentos`, {
+    aulaDocumentos.set(`${projectId}:legacy`, {
+      id: "legacy",
       state: {
         schemaVersion: 3,
         title: "Documento unificado",
@@ -103,7 +134,7 @@ describe("herramientas de Diagramas", () => {
     });
 
     const body = await call("leer_diagrama", { proyectoId: projectId });
-    expect(body).toEqual({ codigo: "flowchart LR\n  Aula --> B", actualizado: 20 });
+    expect(body).toEqual({ codigo: "flowchart LR\n  Aula --> B", actualizado: 20, documentoId: "legacy" });
     expect(mocks.resolverAppEnProyecto).toHaveBeenCalledWith(
       caller,
       { proyectoId: projectId, appId: "aula-documentos" },
@@ -111,23 +142,63 @@ describe("herramientas de Diagramas", () => {
 
     const guardado = await call("guardar_diagrama", {
       proyectoId: projectId,
+      documentoId: "legacy",
       documento: { code: "sequenceDiagram\n  Aula->>B: Nuevo" },
     });
     expect(guardado.actualizado).toEqual(expect.any(Number));
+    expect(guardado.documentoId).toBe("legacy");
     expect(documentos.get(`${projectId}:mermaid`)?.state).toEqual({ code: "flowchart TD\n  Antiguo --> B" });
-    const aula = documentos.get(`${projectId}:aula-documentos`);
-    expect(JSON.stringify(aula?.state)).toContain("Aula->>B: Nuevo");
+    expect(JSON.stringify(aulaDocumentos.get(`${projectId}:legacy`)?.state)).toContain("Aula->>B: Nuevo");
+  });
+
+  it("acepta un documento explícito y rechaza uno ajeno", async () => {
+    aulaDocumentos.set(`${projectId}:doc1`, {
+      id: "doc1",
+      state: {
+        schemaVersion: 3,
+        title: "Documento 1",
+        content: { type: "doc", content: [{ type: "mermaidBlock", attrs: { code: "flowchart TD\n  Uno --> Dos" } }] },
+      },
+      updatedAt: 30,
+    });
+
+    expect(await call("leer_diagrama", { proyectoId: projectId, documentoId: "doc1" })).toEqual({
+      codigo: "flowchart TD\n  Uno --> Dos",
+      actualizado: 30,
+      documentoId: "doc1",
+    });
+    expect((await call("leer_diagrama", { proyectoId: projectId, documentoId: "doc2" })).error)
+      .toMatchObject({ codigo: "not_found", estado: 404 });
+  });
+
+  it("devuelve conflicto si el documento cambió durante el guardado", async () => {
+    aulaDocumentos.set(`${projectId}:doc1`, {
+      id: "doc1",
+      state: {
+        schemaVersion: 3,
+        title: "Documento 1",
+        content: { type: "doc", content: [{ type: "mermaidBlock", attrs: { code: "flowchart TD\n  Uno --> Dos" } }] },
+      },
+      updatedAt: 30,
+    });
+    mocks.saveAulaDocument.mockResolvedValueOnce({ status: "conflict", updatedAt: 31 });
+
+    expect((await call("guardar_diagrama", {
+      proyectoId: projectId,
+      documentoId: "doc1",
+      documento: { code: "flowchart LR\n  Otro --> Diagrama" },
+    })).error).toMatchObject({ codigo: "conflict", estado: 409 });
   });
 
   it("devuelve null si el proyecto aún no tiene diagrama", async () => {
     const body = await call("leer_diagrama", { proyectoId: projectId });
-    expect(body).toEqual({ codigo: null, actualizado: null });
+    expect(body).toEqual({ codigo: null, actualizado: null, documentoId: "mermaid" });
   });
 
   it("no devuelve un código cuando la fila guardada no tiene code textual", async () => {
     documentos.set(`${projectId}:mermaid`, { state: { blocks: { blocks: [] } }, updatedAt: 7 });
     const body = await call("leer_diagrama", { proyectoId: projectId });
-    expect(body).toEqual({ codigo: null, actualizado: 7 });
+    expect(body).toEqual({ codigo: null, actualizado: 7, documentoId: "mermaid" });
   });
 
   it("rechaza documentos sin code textual antes de resolver el proyecto", async () => {

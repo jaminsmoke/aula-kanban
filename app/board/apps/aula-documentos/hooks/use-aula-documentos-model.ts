@@ -146,6 +146,8 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     setStatus,
   });
 
+  const suite = useAulaDocumentSuite(projectId);
+
   const {
     recoveryOpen,
     recoveryCopies,
@@ -162,6 +164,7 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     restoreRecoveryCopy,
   } = useAulaRecovery({
     projectId,
+    documentId: suite.documentId,
     currentDocument,
     applyDocument,
     markChanged,
@@ -169,8 +172,6 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     documentVersionRef,
   });
   useDialogFocus(recoveryOpen, closeRecoveryCopies, recoveryRef);
-
-  const suite = useAulaDocumentSuite(projectId);
 
   const {
     loading,
@@ -274,6 +275,7 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     applyCopyImport,
   } = useAulaCopies({
     projectId,
+    documentId: suite.documentId,
     readOnly,
     currentDocument,
     storeRecoveryCopy,

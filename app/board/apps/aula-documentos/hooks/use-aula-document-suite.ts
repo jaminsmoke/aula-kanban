@@ -53,6 +53,36 @@ function writeLastOpened(projectId: string, documentId: string) {
 }
 
 /**
+ * Lee el documento que llega en la URL del tablero.
+ * @returns El id o `null`.
+ */
+function readUrlDocumentId(): string | null {
+  try {
+    return new URLSearchParams(window.location.search).get("doc");
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Refleja el documento activo en la URL sin recargar.
+ * @param documentId - Documento activo o `null`.
+ * @param push - Si se añade una entrada al historial.
+ */
+function writeUrlDocumentId(documentId: string | null, push = false) {
+  try {
+    const url = new URL(window.location.href);
+    if (documentId) url.searchParams.set("doc", documentId);
+    else url.searchParams.delete("doc");
+    const next = `${url.pathname}${url.search}${url.hash}`;
+    if (push) window.history.pushState(null, "", next);
+    else window.history.replaceState(null, "", next);
+  } catch {
+    // La URL es una mejora progresiva; no debe romper la edición.
+  }
+}
+
+/**
  * Gestiona la lista, el documento activo y el ciclo de vida de la suite.
  * @param projectId - Proyecto activo.
  * @returns Estado y acciones de la suite.
@@ -115,6 +145,7 @@ export function useAulaDocumentSuite(projectId: string) {
           ? wanted
           : next.active[0]?.id ?? null;
         if (candidate) writeLastOpened(projectId, candidate);
+        writeUrlDocumentId(candidate);
         return candidate;
       });
       return next;
@@ -129,8 +160,12 @@ export function useAulaDocumentSuite(projectId: string) {
   useEffect(() => {
     let active = true;
     void (async () => {
-      const loaded = await refresh(readLastOpened(projectId));
+      const urlId = readUrlDocumentId();
+      const loaded = await refresh(urlId ?? readLastOpened(projectId));
       if (!active || !mounted.current || loaded === null) return;
+      if (urlId && !loaded.active.some((document) => document.id === urlId)) {
+        setError("El documento del enlace no está disponible en este proyecto.");
+      }
       if (loaded.active.length === 0 && loaded.archived.length === 0 && loaded.deleted.length === 0 && !autoCreated.current) {
         autoCreated.current = true;
         const created = await createInitialDocument();
@@ -138,6 +173,7 @@ export function useAulaDocumentSuite(projectId: string) {
           setSuite({ active: [created], archived: [], deleted: [] });
           setDocumentId(created.id);
           writeLastOpened(projectId, created.id);
+          writeUrlDocumentId(created.id);
         }
       }
     })();
@@ -147,6 +183,7 @@ export function useAulaDocumentSuite(projectId: string) {
   const selectDocument = useCallback((id: string) => {
     setDocumentId(id);
     writeLastOpened(projectId, id);
+    writeUrlDocumentId(id, true);
   }, [projectId]);
 
   const createDocument = useCallback(async (state?: unknown, title?: string): Promise<AulaDocumentSummary | null> => {

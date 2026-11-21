@@ -40,11 +40,11 @@ describe("Copias, imágenes y tablas de Aula Documentos", () => {
 
     openCopies();
     expect(await screen.findByRole("dialog", { name: "Copias portables" })).toBeTruthy();
-    await waitFor(() => expect(copyMock.list).toHaveBeenCalledWith("p1"));
+    await waitFor(() => expect(copyMock.list).toHaveBeenCalledWith("p1", "legacy"));
 
     fireEvent.click(screen.getByRole("button", { name: "Guardar en el proyecto" }));
     await waitFor(() => expect(copyMock.save).toHaveBeenCalledTimes(1));
-    expect(copyMock.save).toHaveBeenCalledWith("p1", expect.any(Uint8Array), "documento-de-ejemplo.aula.zip");
+    expect(copyMock.save).toHaveBeenCalledWith("p1", expect.any(Uint8Array), "documento-de-ejemplo.aula.zip", "legacy");
     expect(await screen.findByText("Copia guardada en el proyecto.")).toBeTruthy();
   });
 

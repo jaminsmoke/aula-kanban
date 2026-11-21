@@ -7,10 +7,11 @@ import { parseAulaDocument, type AulaDocument } from "../../../../../lib/domain/
 import { downloadTextFile } from "../../../shared/ui/download";
 import { aulaRecoveryFileName } from "../../../../../lib/domain/aula-documentos/filename";
 
-type RecoveryModule = typeof import("../../../../../lib/domain/aula-documentos/recovery");
+type DocumentRecoveryModule = typeof import("../../../../../lib/domain/aula-documentos/recovery-document");
 
 type RecoveryDeps = {
   projectId: string;
+  documentId: string | null;
   currentDocument: () => AulaDocument | null;
   applyDocument: (document: AulaDocument) => void;
   markChanged: (message?: string) => void;
@@ -25,6 +26,7 @@ type RecoveryDeps = {
  */
 export function useAulaRecovery({
   projectId,
+  documentId,
   currentDocument,
   applyDocument,
   markChanged,
@@ -37,15 +39,22 @@ export function useAulaRecovery({
   const [recoveryRestoreId, setRecoveryRestoreId] = useState<string | null>(null);
   const [recoveryNotice, setRecoveryNotice] = useState<string | null>(null);
   const recoveryRef = useRef<HTMLElement>(null);
-  const recoveryModule = useRef<RecoveryModule | null>(null);
+  const documentRecoveryModule = useRef<DocumentRecoveryModule | null>(null);
 
   useEffect(() => {
     let active = true;
-    void import("../../../../../lib/domain/aula-documentos/recovery").then((recoveryApi) => {
+    if (!documentId) {
+      void Promise.resolve().then(() => {
+        if (active) setRecoveryCount(0);
+      });
+      return () => { active = false; };
+    }
+    void import("../../../../../lib/domain/aula-documentos/recovery-document").then((documentApi) => {
       if (!active) return;
-      recoveryModule.current = recoveryApi;
+      documentRecoveryModule.current = documentApi;
       try {
-        setRecoveryCount(recoveryApi.listAulaRecoveryCopies(window.localStorage, projectId).length);
+        documentApi.migrateDocumentRecoveryCopies(window.localStorage, projectId, documentId);
+        setRecoveryCount(documentApi.listDocumentRecoveryCopies(window.localStorage, projectId, documentId).length);
       } catch {
         setRecoveryCount(0);
       }
@@ -53,7 +62,7 @@ export function useAulaRecovery({
       if (active) setStatus("No se pudo preparar la recuperación local.");
     });
     return () => { active = false; };
-  }, [projectId, setStatus]);
+  }, [documentId, projectId, setStatus]);
 
   /**
    * Guarda una copia local del documento antes de una operación destructiva.
@@ -66,14 +75,14 @@ export function useAulaRecovery({
     serverUpdatedAt: number | null = documentVersionRef.current,
   ): boolean {
     const document = currentDocument();
-    if (!document) return false;
-    const recoveryApi = recoveryModule.current;
-    if (!recoveryApi) {
+    if (!document || !documentId) return false;
+    const documentApi = documentRecoveryModule.current;
+    if (!documentApi) {
       setStatus("La recuperación local aún se está preparando. Inténtalo de nuevo.");
       return false;
     }
     try {
-      const result = recoveryApi.saveAulaRecoveryCopy(window.localStorage, projectId, {
+      const result = documentApi.saveDocumentRecoveryCopy(window.localStorage, projectId, documentId, {
         document,
         reason,
         serverUpdatedAt,
@@ -96,13 +105,13 @@ export function useAulaRecovery({
    * Abre la lista de copias locales guardadas en el navegador.
    */
   function openRecoveryCopies() {
-    const recoveryApi = recoveryModule.current;
-    if (!recoveryApi) {
+    const documentApi = documentRecoveryModule.current;
+    if (!documentApi || !documentId) {
       setStatus("La recuperación local aún se está preparando. Inténtalo de nuevo.");
       return;
     }
     try {
-      const copies = recoveryApi.listAulaRecoveryCopies(window.localStorage, projectId);
+      const copies = documentApi.listDocumentRecoveryCopies(window.localStorage, projectId, documentId);
       setRecoveryCopies(copies);
       setRecoveryCount(copies.length);
     } catch {

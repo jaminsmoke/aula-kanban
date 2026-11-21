@@ -27,6 +27,7 @@ export type AulaCopyView = AulaCopySummary & {
 
 type CopiesDeps = {
   projectId: string;
+  documentId: string | null;
   readOnly: boolean;
   currentDocument: () => AulaDocument | null;
   storeRecoveryCopy: (reason: "replace") => boolean;
@@ -42,6 +43,7 @@ type CopiesDeps = {
  */
 export function useAulaCopies({
   projectId,
+  documentId,
   readOnly,
   currentDocument,
   storeRecoveryCopy,
@@ -91,7 +93,7 @@ export function useAulaCopies({
     setCopiesLoading(true);
     setCopiesError(null);
     const { aulaCopyDateLabel, aulaCopySizeLabel, listAulaCopies } = await import("../../../shared/aula-documentos/copy-client");
-    const result = await listAulaCopies(projectId);
+    const result = await listAulaCopies(projectId, documentId);
     setCopiesLoading(false);
     if (!result || !result.ok) {
       setCopies([]);
@@ -120,7 +122,7 @@ export function useAulaCopies({
         return;
       }
       const { saveAulaCopy } = await import("../../../shared/aula-documentos/copy-client");
-      const result = await saveAulaCopy(projectId, built.bytes, aulaFileName(document.title, "aula.zip"));
+      const result = await saveAulaCopy(projectId, built.bytes, aulaFileName(document.title, "aula.zip"), documentId);
       if (!result.ok) {
         setCopyNotice(result.message);
         return;

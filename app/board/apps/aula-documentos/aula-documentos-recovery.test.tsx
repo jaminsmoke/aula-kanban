@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
-import { listAulaRecoveryCopies, saveAulaRecoveryCopy } from "../../../../lib/domain/aula-documentos/recovery";
+import { saveAulaRecoveryCopy } from "../../../../lib/domain/aula-documentos/recovery";
+import { listDocumentRecoveryCopies } from "../../../../lib/domain/aula-documentos/recovery-document";
 import {
   documentMock,
   insertMermaid,
@@ -71,7 +72,7 @@ describe("Recuperación y plantillas de Aula Documentos", () => {
     fireEvent.click(screen.getByRole("button", { name: "Crear documento" }));
 
     await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento sin título"));
-    expect(listAulaRecoveryCopies(window.localStorage, "p1")[0]).toMatchObject({
+    expect(listDocumentRecoveryCopies(window.localStorage, "p1", "legacy")[0]).toMatchObject({
       title: "Documento actual",
       reason: "replace",
       serverUpdatedAt: 5,

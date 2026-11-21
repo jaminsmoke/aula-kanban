@@ -12,8 +12,6 @@ import {
 export {
   AULA_RECOVERY_MAX_COPIES,
   AULA_RECOVERY_MAX_TOTAL_BYTES,
-  AULA_RECOVERY_REASON_LABELS,
-  AULA_RECOVERY_REASONS,
 } from "./recovery-types";
 export type { AulaRecoveryCopy, AulaRecoveryReason, SaveAulaRecoveryResult } from "./recovery-types";
 
