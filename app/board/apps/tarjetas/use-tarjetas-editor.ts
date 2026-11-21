@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import type { StoreRole } from "../types";
 import { useAppDocument } from "../use-app-document";
 import {
@@ -31,14 +31,23 @@ export function useTarjetasEditor(projectId: string, role: StoreRole) {
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
-  const { load, save, loading, error } = useAppDocument<TarjetasDocument>(projectId, "tarjetas");
+  const [loadFailed, setLoadFailed] = useState(false);
+  const versionRef = useRef<number | null>(null);
+  const { load, saveVersioned, loading, error } = useAppDocument<TarjetasDocument>(projectId, "tarjetas");
   const readOnly = role === "guest";
   const selectedDeck = doc.decks.find((deck) => deck.id === selectedId) ?? null;
 
   useEffect(() => {
     let active = true;
-    void load().then(({ state }) => {
+    void load().then(({ state, updatedAt, ok }) => {
       if (!active) return;
+      if (ok === false) {
+        setLoadFailed(true);
+        setStatus("No se pudo cargar el documento. Se conserva el estado actual.");
+        return;
+      }
+      versionRef.current = updatedAt;
+      setLoadFailed(false);
       const next = parseDocument(state);
       setDoc(next);
       setSelectedId(next.decks[0]?.id ?? null);
@@ -126,11 +135,24 @@ export function useTarjetasEditor(projectId: string, role: StoreRole) {
 
   async function saveDocument() {
     if (readOnly || saving) return;
+    if (loadFailed) {
+      setStatus("No se puede guardar hasta recuperar el documento guardado.");
+      return;
+    }
     setSaving(true);
-    const ok = await save(doc);
+    const result = await saveVersioned(doc, versionRef.current);
     setSaving(false);
-    setDirty(!ok);
-    setStatus(ok ? "Guardado en el proyecto." : "No se pudo guardar. Inténtalo de nuevo.");
+    if (result.status === "saved") {
+      versionRef.current = result.updatedAt;
+      setDirty(false);
+      setStatus("Guardado en el proyecto.");
+    } else if (result.status === "conflict") {
+      setDirty(true);
+      setStatus("El documento ha cambiado en otra sesión. Tus cambios siguen aquí.");
+    } else {
+      setDirty(true);
+      setStatus("No se pudo guardar. Inténtalo de nuevo.");
+    }
   }
 
   const cancelCardEdit = useCallback(() => {

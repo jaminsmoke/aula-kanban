@@ -86,11 +86,12 @@
 
 ### Fase 4 — Migración selectiva de editores
 
-- [ ] Evaluar Mapas, Líneas de tiempo, Tarjetas y Blockly frente al contrato validado.
-- [ ] Migrar solo los editores con la misma semántica y permisos.
-- [ ] Documentar las excepciones que conservan `save` o su recuperación local.
-- [ ] Probar carga fallida, conflicto, borrador y guardado normal en cada editor migrado.
+- [x] Evaluar Mapas, Líneas de tiempo, Tarjetas y Blockly frente al contrato validado.
+- [x] Migrar solo los editores con la misma semántica y permisos.
+- [x] Documentar las excepciones que conservan `save` o su recuperación local.
+- [x] Probar carga fallida, conflicto, borrador y guardado normal en cada editor migrado.
 - **Criterios:** no se fuerza una abstracción a un editor con contrato distinto; cada app conserva su experiencia.
+- **Cierre (2026-11-21):** Mapas, Líneas de tiempo y Tarjetas usan `saveVersioned` con la versión cargada, bloquean el guardado tras un fallo de lectura y conservan el borrador ante conflicto. Blockly mantiene `save` y `createBlocklyState` como excepción documentada. Pruebas de guardado, conflicto y carga fallida en los tres editores migrados. Arquitectura **460 archivos / 1.151 imports**; suite **266 archivos / 1.756 pruebas**; build **386.265 B**; Hoja **311.067 B**.
 
 ### Fase 5 — Cierre
 
@@ -116,5 +117,6 @@
 - 2026-11-21: **Fase 1 completada.** Inventario y contrato de guardado en [`guardado-versionado.md`](guardado-versionado.md). Hoja de cálculo será el piloto; Aula y Blockly conservan sus contratos. Arquitectura **459 archivos / 1.149 imports**; suite **265 archivos / 1.747 pruebas**. Sin mover código.
 - 2026-11-21: **Fase 2 completada.** Hoja de cálculo usa `saveVersioned`, bloquea el guardado tras un fallo de carga y conserva el borrador ante conflicto. Pruebas de conflicto y carga fallida añadidas. Arquitectura **459 archivos / 1.149 imports**; suite **265 archivos / 1.749 pruebas**; build **386.274 B**; Hoja **311.071 B**.
 - 2026-11-21: **Fase 3 completada.** `versioned-document.ts` comparte `LoadedDocument` y `VersionedSaveResult` entre `useAppDocument` y Aula Documentos; se mantienen `save` y `saveVersioned`. Arquitectura **460 archivos / 1.151 imports**; suite **266 archivos / 1.750 pruebas**; build **386.267 B**; Hoja **311.065 B**.
+- 2026-11-21: **Fase 4 completada.** Mapas, Líneas de tiempo y Tarjetas migran a `saveVersioned`; Blockly conserva su respaldo local y su guardado sin versión como excepción documentada. Arquitectura **460 archivos / 1.151 imports**; suite **266 archivos / 1.756 pruebas**; build **386.265 B**; Hoja **311.067 B**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

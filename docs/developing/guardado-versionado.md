@@ -1,6 +1,6 @@
 # Guardado con versión entre editores
 
-> **Estado:** ARC-09, Fases 1–3 · **Fecha:** 2026-11-21
+> **Estado:** ARC-09, Fases 1–4 · **Fecha:** 2026-11-21
 > **Alcance:** `useAppDocument`, `useAulaDocumentApi`, persistencia de las apps y recuperación local.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -26,14 +26,14 @@
 
 | Editor | Persistencia | Versión | Autosave | Recuperación local | Conflicto visible | Invitado |
 |---|---|---|---|---|---|---|
-| Hoja de cálculo | `useHojaCalculoDocument` | No usa `saveVersioned` | No | No | Solo estado de error | Solo lectura |
-| Mapas conceptuales | `mapas-app.tsx` | No | No | No | Solo estado de error | Solo lectura |
-| Líneas de tiempo | `useTimelineEditor` | No | No | No | Solo estado de error | Solo lectura |
-| Tarjetas | `useTarjetasEditor` | No | No | No | Solo estado de error | Solo lectura |
-| Blockly | `useBlockly` | No | No | `createBlocklyState` | Estado local y aviso de guardado | Solo lectura |
+| Hoja de cálculo | `useHojaCalculoDocument` | Sí (`saveVersioned`) | No | No | Conserva borrador y pide recarga | Solo lectura |
+| Mapas conceptuales | `mapas-app.tsx` | Sí (`saveVersioned`) | No | No | Conserva borrador y permite recargar | Solo lectura |
+| Líneas de tiempo | `useTimelineEditor` | Sí (`saveVersioned`) | No | No | Conserva borrador y permite recargar | Solo lectura |
+| Tarjetas | `useTarjetasEditor` | Sí (`saveVersioned`) | No | No | Conserva borrador | Solo lectura |
+| Blockly | `useBlockly` | No, excepción documentada | No | `createBlocklyState` | Estado local y aviso de guardado | Solo lectura |
 | Aula Documentos | `useAulaDocumentApi` + `useAulaPersistence` | Sí | Sí | Copias locales por documento | Diálogo de conflicto | Solo lectura |
 
-## 3. Hallazgos
+## 3. Hallazgos de la Fase 1
 
 - El servidor ya soporta `expectedUpdatedAt` para `/api/app-documents` y responde 409 sin pisar el estado.
 - `saveVersioned` ya está probado en el cliente; falta integrarlo en los editores.
@@ -43,7 +43,7 @@
 - Aula Documentos no debe perder su autosave, su recuperación por documento ni su diálogo de conflicto.
 - No hay un componente común de conflicto para las apps; el piloto debe decidir si basta con estado y una acción de recarga.
 
-## 4. Decisiones para el piloto
+## 4. Decisiones del piloto (Fase 1)
 
 - Hoja de cálculo será el primer editor.
 - La versión esperada solo se registra después de una carga válida.
@@ -63,18 +63,17 @@
 ## 6. Qué no debe migrarse
 
 - Aula Documentos conserva su API por documento, autosave, copias locales y diálogo de conflicto.
-- Blockly conserva su respaldo local y su estado de workspace.
-- Mapas, Líneas y Tarjetas conservan sus modelos, permisos y recuperación particular hasta que el piloto demuestre equivalencia.
+- Blockly conserva `save` y `createBlocklyState`: su respaldo local y su estado de workspace no tienen la misma semántica que el guardado remoto versionado.
+- Mapas, Líneas y Tarjetas ya usan `saveVersioned` y mantienen sus modelos, permisos y acciones propias.
 - Ningún editor debe usar `expectedUpdatedAt: null` para actualizar un documento existente.
 
-## 7. Pruebas que faltan
+## 7. Cobertura de la Fase 4
 
-- Carga correcta seguida de guardado con la versión recibida.
-- Segunda sesión que adelanta el guardado y provoca 409.
-- Fallo de carga que no se interpreta como hoja nueva.
-- Fallo de red al guardar con el borrador intacto.
-- Reintento tras conflicto y recarga explícita.
-- Invitado sin capacidad de guardado.
+- Guardado normal con la versión cargada en Mapas, Líneas y Tarjetas.
+- Conflicto 409 que conserva el borrador y avisa sin sobrescribir.
+- Fallo de carga que bloquea el guardado en los tres editores.
+- Recarga explícita con confirmación en Mapas y Líneas.
+- Blockly queda cubierto por su respaldo local existente y su aviso de guardado.
 
 ## 8. Baseline
 
@@ -106,3 +105,14 @@
 - `useAulaDocumentApi` los reutiliza y mantiene sus alias `LoadedAulaDocument` y `AulaDocumentSaveResult`.
 - `save` y `saveVersioned` siguen disponibles; no se ha movido la recuperación local de ninguna app.
 - El módulo compartido tiene prueba propia del contrato y consumidores reales.
+
+## 12. Aplicado en la Fase 4
+
+- Mapas registra la versión tras una carga válida, usa `saveVersioned` y bloquea el guardado si la lectura falla.
+- Líneas de tiempo aplica el mismo contrato y conserva la confirmación antes de recargar con cambios locales.
+- Tarjetas usa `saveVersioned`, conserva sus mazos y tarjetas ante conflicto y bloquea el guardado tras un fallo de carga.
+- Los tres editores mantienen sus permisos de invitado, sus modelos y sus mensajes de estado.
+- Blockly conserva `save` y `createBlocklyState` como excepción documentada por su respaldo local y su estado de workspace.
+- Pruebas añadidas para guardado normal, conflicto y carga fallida en cada editor migrado.
+- Arquitectura: **460 archivos / 1.151 imports**. Suite: **266 archivos / 1.756 pruebas**.
+- Build: Aula Documentos **386.265 / 387.000 B**; Hoja de cálculo **311.067 / 315.000 B**.

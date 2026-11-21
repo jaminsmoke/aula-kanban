@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import type { StoreRole } from "../types";
 import { useAppDocument } from "../use-app-document";
 import {
@@ -78,7 +78,9 @@ export function useTimelineEditor(projectId: string, role: StoreRole) {
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [pendingRange, setPendingRange] = useState<TimelineRange | null>(null);
-  const { load, save, loading, error } = useAppDocument<TimelineDocument>(projectId, "timeline");
+  const [loadFailed, setLoadFailed] = useState(false);
+  const versionRef = useRef<number | null>(null);
+  const { load, saveVersioned, loading, error } = useAppDocument<TimelineDocument>(projectId, "timeline");
   const readOnly = role === "guest";
   const timelineDocument = useMemo<TimelineDocument>(() => ({ events, epochs }), [events, epochs]);
   const currentTemplate = TIMELINE_TEMPLATES.find((template) => template.id === templateId) ?? TIMELINE_TEMPLATES[0];
@@ -99,13 +101,23 @@ export function useTimelineEditor(projectId: string, role: StoreRole) {
 
   useEffect(() => {
     let active = true;
-    void load().then(({ state }) => {
+    void load().then(({ state, updatedAt, ok }) => {
       if (!active) return;
+      if (ok === false) {
+        setLoadFailed(true);
+        setStatus("No se pudo cargar la línea temporal. Se conserva la actual.");
+        return;
+      }
+      versionRef.current = updatedAt;
+      setLoadFailed(false);
       const parsed = parseTimelineDocument(state);
       if (parsed) {
         applyDocument(parsed, "Línea temporal guardada cargada.");
-      } else {
+      } else if (state === null) {
         setStatus("Línea temporal de ejemplo lista. Guarda para conservarla.");
+      } else {
+        setLoadFailed(true);
+        setStatus("La línea temporal guardada no es válida. Se conserva la actual.");
       }
     });
     return () => { active = false; };
@@ -261,13 +273,21 @@ export function useTimelineEditor(projectId: string, role: StoreRole) {
    */
   async function saveTimeline() {
     if (readOnly) return;
+    if (loadFailed) {
+      setStatus("No se puede guardar hasta recuperar la línea temporal guardada.");
+      return;
+    }
     setSaving(true);
     const range = viewRange ?? timelineRange({ events, epochs });
-    const ok = await save({ events, epochs, range });
+    const result = await saveVersioned({ events, epochs, range }, versionRef.current);
     setSaving(false);
-    if (ok) {
+    if (result.status === "saved") {
+      versionRef.current = result.updatedAt;
       setDirty(false);
       setStatus("Línea temporal guardada en el proyecto.");
+    } else if (result.status === "conflict") {
+      setDirty(true);
+      setStatus("La línea temporal ha cambiado en otra sesión. Tus cambios siguen aquí.");
     } else {
       setStatus("No se pudo guardar la línea temporal. Revisa la conexión.");
     }
@@ -277,12 +297,29 @@ export function useTimelineEditor(projectId: string, role: StoreRole) {
    * Vuelve a cargar el documento guardado.
    */
   async function reloadTimeline() {
-    const { state } = await load();
+    if (dirty && typeof window !== "undefined" && !window.confirm(
+      "Hay cambios sin guardar. ¿Cargar la versión guardada y descartar los cambios locales?",
+    )) {
+      return;
+    }
+    const { state, updatedAt, ok } = await load();
+    if (ok === false) {
+      setLoadFailed(true);
+      setStatus("No se pudo cargar la línea temporal. Se conserva la actual.");
+      return;
+    }
     const parsed = parseTimelineDocument(state);
     if (parsed) {
+      versionRef.current = updatedAt;
+      setLoadFailed(false);
       applyDocument(parsed, "Línea temporal guardada cargada.");
+    } else if (state === null) {
+      versionRef.current = null;
+      setLoadFailed(false);
+      setStatus("No hay una línea temporal guardada; se mantiene la actual.");
     } else {
-      setStatus("No hay una línea temporal guardada válida; se mantiene la actual.");
+      setLoadFailed(true);
+      setStatus("La línea temporal guardada no es válida; se mantiene la actual.");
     }
   }
 

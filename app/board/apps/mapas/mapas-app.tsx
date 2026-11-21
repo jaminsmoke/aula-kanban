@@ -67,7 +67,9 @@ function MapasEditor({ projectId, role }: { projectId: string; role: StoreRole }
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("Cargando mapa…");
-  const { load, save, loading, error } = useAppDocument<MapDocument>(projectId, "mapas");
+  const [loadFailed, setLoadFailed] = useState(false);
+  const versionRef = useRef<number | null>(null);
+  const { load, saveVersioned, loading, error } = useAppDocument<MapDocument>(projectId, "mapas");
   const readOnly = role === "guest";
   const selectedNode = nodes.find((node) => node.id === selectedNodeId) ?? null;
   const selectedEdge = edges.find((edge) => edge.id === selectedEdgeId) ?? null;
@@ -75,16 +77,26 @@ function MapasEditor({ projectId, role }: { projectId: string; role: StoreRole }
 
   useEffect(() => {
     let active = true;
-    void load().then(({ state }) => {
+    void load().then(({ state, updatedAt, ok }) => {
       if (!active) return;
+      if (ok === false) {
+        setLoadFailed(true);
+        setStatus("No se pudo cargar el mapa. Se conserva el mapa actual.");
+        return;
+      }
+      versionRef.current = updatedAt;
+      setLoadFailed(false);
       const parsed = parseMapDocument(state);
       if (parsed) {
         setNodes(parsed.nodes);
         setEdges(parsed.edges);
         setDirty(false);
         setStatus("Mapa guardado cargado.");
-      } else {
+      } else if (state === null) {
         setStatus("Mapa de ejemplo listo. Guarda para conservarlo.");
+      } else {
+        setLoadFailed(true);
+        setStatus("El mapa guardado no es válido. Se conserva el mapa actual.");
       }
     });
     return () => { active = false; };
@@ -186,12 +198,20 @@ function MapasEditor({ projectId, role }: { projectId: string; role: StoreRole }
 
   async function saveMap() {
     if (readOnly) return;
+    if (loadFailed) {
+      setStatus("No se puede guardar hasta recuperar el mapa guardado.");
+      return;
+    }
     setSaving(true);
-    const ok = await save(serializeMap(nodes, edges));
+    const result = await saveVersioned(serializeMap(nodes, edges), versionRef.current);
     setSaving(false);
-    if (ok) {
+    if (result.status === "saved") {
+      versionRef.current = result.updatedAt;
       setDirty(false);
       setStatus("Mapa guardado en el proyecto.");
+    } else if (result.status === "conflict") {
+      setDirty(true);
+      setStatus("El mapa ha cambiado en otra sesión. Tus cambios siguen aquí.");
     } else {
       setStatus("No se pudo guardar el mapa. Revisa la conexión.");
     }
@@ -199,18 +219,35 @@ function MapasEditor({ projectId, role }: { projectId: string; role: StoreRole }
 
   async function loadMap() {
     if (loading) return;
+    if (dirty && typeof window !== "undefined" && !window.confirm(
+      "Hay cambios sin guardar. ¿Cargar el mapa guardado y descartar los cambios locales?",
+    )) {
+      return;
+    }
     setStatus("Cargando mapa…");
-    const { state } = await load();
+    const { state, updatedAt, ok } = await load();
+    if (ok === false) {
+      setLoadFailed(true);
+      setStatus("No se pudo cargar el mapa. Se conserva el mapa actual.");
+      return;
+    }
     const parsed = parseMapDocument(state);
     if (parsed) {
+      versionRef.current = updatedAt;
+      setLoadFailed(false);
       setNodes(parsed.nodes);
       setEdges(parsed.edges);
       setSelectedNodeId(null);
       setSelectedEdgeId(null);
       setDirty(false);
       setStatus("Mapa cargado.");
+    } else if (state === null) {
+      versionRef.current = null;
+      setLoadFailed(false);
+      setStatus("No hay un mapa guardado; se mantiene el actual.");
     } else {
-      setStatus("No hay un mapa guardado válido; se mantiene el actual.");
+      setLoadFailed(true);
+      setStatus("El mapa guardado no es válido; se mantiene el actual.");
     }
   }
 

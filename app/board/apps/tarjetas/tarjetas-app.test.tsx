@@ -32,7 +32,42 @@ describe("Tarjetas de repaso", () => {
       "/api/app-documents?project=p1&app=tarjetas",
       expect.objectContaining({ method: "POST" }),
     ));
+    const body = JSON.parse((fetchMock.mock.calls[1][1] as RequestInit).body as string) as {
+      expectedUpdatedAt: number | null;
+    };
+    expect(body.expectedUpdatedAt).toBeNull();
     expect(await screen.findByText("Guardado en el proyecto.")).toBeTruthy();
+  });
+
+  it("conserva el documento y avisa si otra sesión guardó antes", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse({ state: null, updatedAt: null }))
+      .mockResolvedValueOnce(jsonResponse({ updatedAt: 8 }, false, 409));
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<TarjetasApp projectId="p1" role="owner" />);
+    expect(await screen.findByText("Crea tu primer mazo")).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Nombre del mazo"), { target: { value: "Vocabulario" } });
+    fireEvent.click(screen.getByRole("button", { name: "Crear mazo" }));
+    fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect((await screen.findAllByText(/ha cambiado en otra sesión/)).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Vocabulario").length).toBeGreaterThan(0);
+    expect(screen.getByText("Sin guardar")).toBeTruthy();
+  });
+
+  it("bloquea el guardado si la carga falla", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({}, false, 500));
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<TarjetasApp projectId="p1" role="owner" />);
+    expect((await screen.findAllByText(/No se pudo cargar el documento/)).length).toBeGreaterThan(0);
+    fireEvent.change(screen.getByLabelText("Nombre del mazo"), { target: { value: "Vocabulario" } });
+    fireEvent.click(screen.getByRole("button", { name: "Crear mazo" }));
+    fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
+
+    expect(screen.getByRole("status").textContent).toContain("No se puede guardar");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it("repasa una tarjeta y guarda el progreso en el navegador", async () => {
