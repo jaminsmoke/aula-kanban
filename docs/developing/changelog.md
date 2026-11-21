@@ -1,8 +1,38 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-09 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-21 — Roadmap ARC-09 — Reutilizar el guardado con versión entre editores
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Hoja de cálculo, Mapas, Líneas de tiempo y Tarjetas guardan con `saveVersioned` y la versión cargada; un fallo de lectura no se interpreta como documento nuevo y bloquea el guardado hasta recuperar el estado.
+- Ante un conflicto 409 se conserva el borrador local y se avisa sin sobrescribir. Mapas y Líneas de tiempo piden confirmación antes de recargar y descartar cambios.
+- `app/board/shared/versioned-document.ts` concentra `LoadedDocument` y `VersionedSaveResult`; `useAppDocument` y Aula Documentos los reutilizan sin duplicar la lógica de servidor.
+- Blockly mantiene `save` y `createBlocklyState` como excepción documentada por su respaldo local y su estado de workspace.
+- Los clientes anteriores sin `expectedUpdatedAt` y las herramientas MCP de Blockly y de la fila histórica de Diagramas conservan el guardado incondicional; la web versionada detecta el conflicto después. El contrato de `/api/app-documents` sigue aceptando el campo como opcional.
+- Sin cambios de esquema, datos, URLs, permisos, MCP ni versión del Site. Documentación en [`guardado-versionado.md`](guardado-versionado.md).
+
+### Verificación
+
+- `npm run check`: correcto.
+- Arquitectura: **460 archivos / 1.151 imports / 0 problemas**.
+- Suite completa: **266 archivos / 1.756 pruebas**.
+- Pruebas focalizadas de contrato, ruta, cliente y MCP: **6 archivos / 40 pruebas**.
+- Build de Aula Documentos: **386.260 / 387.000 B**; Hoja de cálculo **311.063 / 315.000 B**.
+- `app:budget`: Aula **53 / 5.297** tests y **16 / 3.734** CSS; Hoja **5 / 471** tests; Blockly **5 / 169** tests.
+- `perf:budget` y `perf:office`: correctos; Office **196.481 / 210.000 B**.
+- El Site sigue en `1.1.38`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-09 archivado en [`historial/roadmap-arc-09.md`](../historial/roadmap-arc-09.md). El backlog queda con **2 entradas**; siguiente candidato **ARC-10**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 

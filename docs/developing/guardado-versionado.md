@@ -1,6 +1,6 @@
 # Guardado con versión entre editores
 
-> **Estado:** ARC-09, Fases 1–4 · **Fecha:** 2026-11-21
+> **Estado:** ARC-09 cerrado · **Fecha:** 2026-11-21
 > **Alcance:** `useAppDocument`, `useAulaDocumentApi`, persistencia de las apps y recuperación local.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -115,4 +115,12 @@
 - Blockly conserva `save` y `createBlocklyState` como excepción documentada por su respaldo local y su estado de workspace.
 - Pruebas añadidas para guardado normal, conflicto y carga fallida en cada editor migrado.
 - Arquitectura: **460 archivos / 1.151 imports**. Suite: **266 archivos / 1.756 pruebas**.
-- Build: Aula Documentos **386.265 / 387.000 B**; Hoja de cálculo **311.067 / 315.000 B**.
+- Build: Aula Documentos **386.260 / 387.000 B**; Hoja de cálculo **311.063 / 315.000 B**.
+
+## 13. Cierre
+
+- Los clientes anteriores que no envían `expectedUpdatedAt` usan el guardado incondicional y conservan su contrato.
+- Las herramientas MCP de Blockly y de la fila histórica de Diagramas mantienen la última escritura; la web versionada detecta el conflicto en el siguiente guardado.
+- La ruta `/api/app-documents` sigue aceptando el campo como opcional y responde 409 sin escribir cuando la versión no coincide.
+- `npm run check`, la suite, el build y los presupuestos quedan verificados; el Site permanece en `1.1.38` sin publicación.
+- Roadmap archivado en [`historial/roadmap-arc-09.md`](../historial/roadmap-arc-09.md).
