@@ -9,13 +9,15 @@ import {
   type AulaDocument,
 } from "../../../../../lib/domain/aula-documentos/document";
 import type { AulaDocumentImportPreview } from "../../../../../lib/domain/aula-documentos/importers";
-import { importJsonDocument, importPlainTextDocument } from "../../../../../lib/domain/aula-documentos/import-formats";
 import { importOfficeFile } from "../../../shared/office/office-import";
 import { detectOfficeFormat } from "../../../shared/office/office-model";
 
 export type ImportPreviewState = AulaDocumentImportPreview & {
   sourceUpdatedAt: number | null;
+  sourceName: string | null;
 };
+
+const DUPLICATE_WARNING = "Ya abierto.";
 
 export const IMPORT_LABELS: Record<AulaDocumentImportPreview["source"], string> = {
   documentos: "Notas y documentos",
@@ -23,8 +25,8 @@ export const IMPORT_LABELS: Record<AulaDocumentImportPreview["source"], string> 
   presentaciones: "Presentaciones",
   markdown: "Markdown",
   office: "Documento de Office",
-  text: "Texto plano",
-  json: "JSON de Aula",
+  text: "Texto",
+  json: "JSON",
 };
 
 type MarkdownPreviewResult =
@@ -35,9 +37,14 @@ type MarkdownPreviewResult =
  * Convierte Markdown en la vista previa común.
  * @param source - Texto Markdown o pegado.
  * @param titleFallback - Título cuando no hay un encabezado utilizable.
+ * @param sourceName - Nombre del archivo o etiqueta de origen.
  * @returns La vista previa validada o un error legible.
  */
-function previewMarkdown(source: string, titleFallback: string): MarkdownPreviewResult {
+function previewMarkdown(
+  source: string,
+  titleFallback: string,
+  sourceName: string | null,
+): MarkdownPreviewResult {
   if (source.length > AULA_DOCUMENT_MARKDOWN_MAX_LENGTH) {
     return { ok: false, message: "El Markdown supera el tamaño permitido." };
   }
@@ -59,11 +66,13 @@ function previewMarkdown(source: string, titleFallback: string): MarkdownPreview
       stats: parsed.stats,
       warnings: converted.warnings,
       sourceUpdatedAt: null,
+      sourceName,
     },
   };
 }
 
 type ImportDeps = {
+  currentDocument: () => AulaDocument | null;
   storeRecoveryCopy: (reason: "replace") => boolean;
   applyDocument: (document: AulaDocument) => void;
   markChanged: (message?: string) => void;
@@ -74,7 +83,7 @@ type ImportDeps = {
  * @param deps - Documento actual y estado compartido.
  * @returns Estado y acciones de importación.
  */
-export function useAulaImport({ storeRecoveryCopy, applyDocument, markChanged }: ImportDeps) {
+export function useAulaImport({ currentDocument, storeRecoveryCopy, applyDocument, markChanged }: ImportDeps) {
   const [importOpen, setImportOpen] = useState(false);
   const [importPreview, setImportPreview] = useState<ImportPreviewState | null>(null);
   const [importOfficeSource, setImportOfficeSource] = useState<File | null>(null);
@@ -121,6 +130,17 @@ export function useAulaImport({ storeRecoveryCopy, applyDocument, markChanged }:
   }
 
   /**
+   * Muestra una vista previa y decide si repite el contenido abierto.
+   * @param preview - Vista previa validada que se va a mostrar.
+   */
+  function showPreview(preview: ImportPreviewState) {
+    const current = currentDocument();
+    setImportPreview(current !== null && JSON.stringify(preview.document) === JSON.stringify(current)
+      ? { ...preview, warnings: [...preview.warnings, DUPLICATE_WARNING] }
+      : preview);
+  }
+
+  /**
    * Cierra la vista del archivo de Office.
    */
   function closeOfficePreview() {
@@ -141,23 +161,32 @@ export function useAulaImport({ storeRecoveryCopy, applyDocument, markChanged }:
   }
 
   /**
+   * Prepara el estado común de una importación de archivo.
+   * @param loading - Etiqueta del lector que se está usando.
+   */
+  function beginFileImport(loading: string) {
+    setImportLoading(loading);
+    setImportError(null);
+    setImportPreview(null);
+    setImportConfirm(false);
+    setImportOfficeSource(null);
+  }
+
+  /**
    * Lee un archivo Markdown y prepara su vista previa.
    * @param file - Archivo elegido.
    */
   async function importMarkdown(file: File | undefined) {
     if (!file) return;
-    setImportLoading("markdown");
-    setImportError(null);
-    setImportPreview(null);
-    setImportConfirm(false);
-    setImportOfficeSource(null);
+    beginFileImport("markdown");
     try {
       const result = previewMarkdown(
         await file.text(),
         file.name.replace(/\.[^.]+$/, "") || "Documento importado",
+        file.name,
       );
       if (!result.ok) setImportError(result.message);
-      else setImportPreview(result.preview);
+      else showPreview(result.preview);
     } catch {
       setImportError("No se pudo leer el archivo Markdown.");
     } finally {
@@ -171,18 +200,19 @@ export function useAulaImport({ storeRecoveryCopy, applyDocument, markChanged }:
    */
   async function importText(file: File | undefined) {
     if (!file) return;
-    setImportLoading("text");
-    setImportError(null);
-    setImportPreview(null);
-    setImportConfirm(false);
-    setImportOfficeSource(null);
+    beginFileImport("text");
     try {
+      const { importPlainTextDocument } = await import("../../../../../lib/domain/aula-documentos/import-formats");
       const result = importPlainTextDocument(
         await file.text(),
         file.name.replace(/\.[^.]+$/, "") || "Texto importado",
       );
       if (!result.ok) setImportError(result.message);
-      else setImportPreview({ ...result.preview, sourceUpdatedAt: null });
+      else showPreview({
+        ...result.preview,
+        sourceUpdatedAt: null,
+        sourceName: file.name,
+      });
     } catch {
       setImportError("No se pudo leer el archivo de texto.");
     } finally {
@@ -196,15 +226,16 @@ export function useAulaImport({ storeRecoveryCopy, applyDocument, markChanged }:
    */
   async function importJson(file: File | undefined) {
     if (!file) return;
-    setImportLoading("json");
-    setImportError(null);
-    setImportPreview(null);
-    setImportConfirm(false);
-    setImportOfficeSource(null);
+    beginFileImport("json");
     try {
+      const { importJsonDocument } = await import("../../../../../lib/domain/aula-documentos/import-formats");
       const result = importJsonDocument(await file.text());
       if (!result.ok) setImportError(result.message);
-      else setImportPreview({ ...result.preview, sourceUpdatedAt: null });
+      else showPreview({
+        ...result.preview,
+        sourceUpdatedAt: null,
+        sourceName: file.name,
+      });
     } catch {
       setImportError("No se pudo leer el archivo JSON.");
     } finally {
@@ -239,10 +270,10 @@ export function useAulaImport({ storeRecoveryCopy, applyDocument, markChanged }:
     setImportConfirm(false);
     setImportOfficeSource(null);
     if (/\.(html?|odt|rtf|pdf)$/i.test(name)) {
-      setImportError("HTML, ODT, RTF y PDF no se admiten. Usa Markdown, TXT, JSON o DOCX/PPTX.");
+      setImportError("HTML, ODT, RTF y PDF no se admiten.");
       return;
     }
-    setImportError("Solo se admiten Markdown (.md/.markdown), texto (.txt), JSON (.json) y Office (.docx/.pptx).");
+    setImportError("Formato no admitido.");
   }
 
   /**
@@ -259,9 +290,9 @@ export function useAulaImport({ storeRecoveryCopy, applyDocument, markChanged }:
     setImportPreview(null);
     setImportConfirm(false);
     setImportOfficeSource(null);
-    const result = previewMarkdown(source, "Texto pegado");
+    const result = previewMarkdown(source, "Texto pegado", null);
     if (!result.ok) setImportError(result.message);
-    else setImportPreview(result.preview);
+    else showPreview(result.preview);
   }
 
   /**
@@ -281,9 +312,10 @@ export function useAulaImport({ storeRecoveryCopy, applyDocument, markChanged }:
         setImportError(result.message);
         return;
       }
-      setImportPreview({
+      showPreview({
         ...result.preview,
         sourceUpdatedAt: null,
+        sourceName: file.name,
       });
     } catch {
       setImportError("No se pudo leer el archivo de Office.");
@@ -297,12 +329,14 @@ export function useAulaImport({ storeRecoveryCopy, applyDocument, markChanged }:
    */
   function applyImport() {
     if (!importPreview || !importConfirm) return;
+    if (JSON.stringify(importPreview.document) === JSON.stringify(currentDocument())) return;
     if (!storeRecoveryCopy("replace")) {
       setImportError("No se pudo guardar una copia local antes de reemplazar. El documento actual no ha cambiado.");
       return;
     }
     applyDocument(importPreview.document);
-    markChanged(`Documento importado desde ${IMPORT_LABELS[importPreview.source]}. Guárdalo para conservarlo.`);
+    const sourceName = importPreview.sourceName ? ` (${importPreview.sourceName})` : "";
+    markChanged(`Documento importado desde ${IMPORT_LABELS[importPreview.source]}${sourceName}. Guárdalo para conservarlo.`);
     closeImport();
   }
 

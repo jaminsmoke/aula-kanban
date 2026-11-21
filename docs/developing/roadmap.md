@@ -88,11 +88,12 @@
 
 ### Fase 4 — Duplicados, origen y documentación
 
-- [ ] Comparar la huella del documento canónico con el documento abierto y bloquear el reemplazo idéntico con un aviso claro.
-- [ ] Mostrar nombre de archivo o app de origen en la vista previa y en el mensaje posterior a la importación.
-- [ ] Actualizar la ayuda y `aula-documentos-import.md` con el flujo real, los límites y las pérdidas.
-- [ ] Cubrir duplicado, origen, cancelación y formatos rechazados; medir `app:budget` y `perf:budget`.
+- [x] Comparar la huella del documento canónico con el documento abierto y bloquear el reemplazo idéntico con un aviso claro.
+- [x] Mostrar nombre de archivo o app de origen en la vista previa y en el mensaje posterior a la importación.
+- [x] Actualizar la ayuda y `aula-documentos-import.md` con el flujo real, los límites y las pérdidas.
+- [x] Cubrir duplicado, origen, cancelación y formatos rechazados; medir `app:budget` y `perf:budget`.
 - **Criterios:** reimportar el mismo contenido no destruye ni duplica; el origen es visible; la documentación coincide con la UI; presupuestos y suite en verde.
+- **Cierre (2026-11-20):** la huella del documento validado bloquea reimportar el contenido abierto o el último importado; la vista previa y el mensaje muestran el nombre de archivo o «Texto pegado»; la ayuda y la matriz documentan el flujo. Pruebas de duplicado, origen y cancelación, `app:budget` y `perf:budget` en verde.
 
 ## 6. Riesgos y bloqueos
 

@@ -212,7 +212,7 @@ describe("Documentos, importación y cierre de Aula Documentos", () => {
     fireEvent.click(screen.getByRole("button", { name: "Previsualizar texto" }));
 
     expect(await screen.findByRole("heading", { name: "Documento pegado" })).toBeTruthy();
-    expect(screen.getByText(/Texto pegado/)).toBeTruthy();
+    expect(screen.getByText(/Texto pegado\./, { selector: ".aula-documentos-import-excerpt" })).toBeTruthy();
   });
 
   it("importa TXT literal y JSON canónico y rechaza HTML", async () => {
@@ -269,6 +269,62 @@ describe("Documentos, importación y cierre de Aula Documentos", () => {
     expect(await screen.findByText(/HTML, ODT, RTF y PDF no se admiten/)).toBeTruthy();
   });
 
+  it("muestra el origen y bloquea reimportar el mismo contenido", async () => {
+    const file = {
+      name: "clase.md",
+      size: 20,
+      type: "text/markdown",
+      text: async () => "# Clase\n\nTexto de clase.",
+    } as unknown as File;
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    importDocument();
+    fireEvent.change(document.getElementById("aula-documentos-import-file") as HTMLInputElement, {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByRole("heading", { name: "Clase" })).toBeTruthy();
+    expect(screen.getByText(/clase\.md/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("checkbox", { name: /Entiendo que se reemplaza/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Importar y reemplazar" }));
+
+    await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Clase"));
+    expect(screen.getAllByRole("status").some((node) => node.textContent?.includes("clase.md"))).toBe(true);
+
+    importDocument();
+    fireEvent.change(document.getElementById("aula-documentos-import-file") as HTMLInputElement, {
+      target: { files: [file] },
+    });
+    expect(await screen.findByText("Ya abierto.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("checkbox", { name: /Entiendo que se reemplaza/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Importar y reemplazar" }));
+    expect(screen.getByRole("dialog", { name: "Importar documento" })).toBeTruthy();
+    expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Clase");
+  });
+
+  it("cancelar la importación no cambia el documento", async () => {
+    const file = {
+      name: "cancelar.md",
+      size: 20,
+      type: "text/markdown",
+      text: async () => "# No aplicar\n\nTexto.",
+    } as unknown as File;
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    importDocument();
+    fireEvent.change(document.getElementById("aula-documentos-import-file") as HTMLInputElement, {
+      target: { files: [file] },
+    });
+    expect(await screen.findByRole("heading", { name: "No aplicar" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Volver" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+
+    expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Documento de ejemplo");
+    expect(screen.queryByRole("dialog", { name: "Importar documento" })).toBeNull();
+  });
+
   it("importa un DOCX/PPTX con vista previa", async () => {
     officeImportMock.importOfficeFile.mockResolvedValueOnce({
       ok: true,
@@ -290,7 +346,7 @@ describe("Documentos, importación y cierre de Aula Documentos", () => {
 
     await waitFor(() => expect(officeImportMock.importOfficeFile).toHaveBeenCalledTimes(1));
     expect(await screen.findByRole("heading", { name: "Informe Office" })).toBeTruthy();
-    expect(screen.getByText("Documento de Office")).toBeTruthy();
+    expect(screen.getByText(/Documento de Office/)).toBeTruthy();
     expect(screen.getByText("La maquetación visual puede cambiar.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Ver original" })).toBeTruthy();
   });

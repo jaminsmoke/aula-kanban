@@ -328,6 +328,7 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     importOffice,
     applyImport,
   } = useAulaImport({
+    currentDocument,
     storeRecoveryCopy,
     applyDocument,
     markChanged,

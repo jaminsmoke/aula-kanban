@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense } from "react";
 import { Archive, Download, Eye, Loader2, Trash2, Upload, X } from "lucide-react";
 import { IMPORT_LABELS } from "../../hooks/use-aula-import";
 import { useAulaDocumentosView } from "../../aula-documentos-context";
@@ -71,7 +71,6 @@ export function DocumentCopyImportDialogs() {
     officePreviewRef,
     closeOfficePreview,
   } = useAulaDocumentosView();
-  const [dragActive, setDragActive] = useState(false);
 
   return (
     <>
@@ -336,7 +335,10 @@ export function DocumentCopyImportDialogs() {
 
             {importPreview ? (
               <div className="aula-documentos-import-preview">
-                <p className="aula-documentos-import-kicker">{IMPORT_LABELS[importPreview.source]}</p>
+                <p className="aula-documentos-import-kicker">
+                  {IMPORT_LABELS[importPreview.source]}
+                  {importPreview.sourceName ? ` · ${importPreview.sourceName}` : ""}
+                </p>
                 <h3>{importPreview.document.title || "Documento sin título"}</h3>
                 <p className="aula-documentos-import-meta">
                   {importPreview.stats.textLength} caracteres de texto · {importPreview.stats.mermaidBlocks === 1 ? "1 diagrama" : `${importPreview.stats.mermaidBlocks} diagramas`}
@@ -402,21 +404,15 @@ export function DocumentCopyImportDialogs() {
             ) : (
               <div className="aula-documentos-import-menu">
                 <p className="aula-documentos-import-intro">
-                  Arrastra un archivo, elígelo con el selector o pega texto. Se admiten Markdown (.md/.markdown), texto
-                  (.txt), JSON (.json) y DOCX/PPTX; la vista previa no cambia el origen. Para recuperar datos de las apps
-                  documentales anteriores, usa Importar &gt; Migrar apps antiguas.
+                  Arrastra un archivo, elígelo o pega texto. Se admiten Markdown, TXT, JSON y DOCX/PPTX; la vista previa
+                  no cambia el origen. Para recuperar datos de las apps anteriores, usa Importar &gt; Migrar apps antiguas.
                 </p>
                 <label
-                  className={`aula-documentos-import-option aula-documentos-import-dropzone${dragActive ? " is-active" : ""}`}
+                  className="aula-documentos-import-option aula-documentos-import-dropzone"
                   htmlFor="aula-documentos-import-file"
-                  onDragOver={(event) => {
-                    event.preventDefault();
-                    setDragActive(true);
-                  }}
-                  onDragLeave={() => setDragActive(false)}
+                  onDragOver={(event) => event.preventDefault()}
                   onDrop={(event) => {
                     event.preventDefault();
-                    setDragActive(false);
                     void importFile(event.dataTransfer.files?.[0]);
                   }}
                 >
@@ -437,6 +433,7 @@ export function DocumentCopyImportDialogs() {
                 <div className="aula-documentos-import-paste">
                   <label htmlFor="aula-documentos-paste-text">Pegar texto o Markdown</label>
                   <textarea
+                    className="aula-documentos-import-excerpt"
                     id="aula-documentos-paste-text"
                     rows={4}
                     value={pasteText}

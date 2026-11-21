@@ -243,38 +243,7 @@
   white-space:nowrap;
 }
 
-.aula-documentos-import-dropzone.is-active {
-  border-color:var(--ui-border-accent);
-  background:var(--ui-surface-hover);
-}
 
-.aula-documentos-import-paste {
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.aula-documentos-import-paste label {
-  color:var(--ui-text-muted);
-  font-size:11.5px;
-}
-
-.aula-documentos-import-paste textarea {
-  min-height:72px;
-  resize:vertical;
-  padding:8px 9px;
-  border:var(--border-width-hairline) solid var(--ui-border-subtle);
-  border-radius:var(--radius-xs);
-  background:var(--ui-surface-faint);
-  color:var(--ui-text-primary);
-  font:inherit;
-  font-size:11.5px;
-  line-height:1.5;
-}
-
-.aula-documentos-import-paste button {
-  align-self:flex-start;
-}
 
 .aula-documentos-import-status {
   display:flex;

@@ -1,6 +1,6 @@
 # Importación en Aula Documentos
 
-> **Estado:** ADOC-16, Fase 3 · **Fecha:** 2026-11-20
+> **Estado:** ADOC-16, Fase 4 · **Fecha:** 2026-11-20
 > **Alcance:** entrada de documentos externos en Aula Documentos. Las copias portables, el visor Office y la migración de apps antiguas se inventarían aquí, pero conservan su flujo propio.
 
 ## 1. Acciones actuales
@@ -12,11 +12,11 @@
 | **Abrir Office** | Abre DOCX/XLSX/PPTX en el visor, sin importarlos | `components/document-toolbar.tsx`, `shared/office/office-viewer.tsx`, `use-office-viewer.ts` | 30 MB; formatos antiguos y cifrados rechazados | `presentation.test.tsx`, `office-viewer.test.tsx`, `office-model.test.ts` |
 | **Migrar apps antiguas** | Compone un documento con datos de Notas y documentos, Diagramas y Presentaciones; no modifica el origen | `components/dialogs/document-overlay-dialogs.tsx`, `hooks/use-aula-migration.ts`, `lib/domain/aula-documentos/migration.ts` | Markdown legacy 200.000; Mermaid 20.000 por bloque | `aula-documentos-documents.test.tsx`, `importers.test.ts`, `migration.test.ts` |
 
-El diálogo de documento usa una zona de arrastre con un selector único (`.md`, `.markdown`, `.txt`, `.json`, `.docx`, `.pptx`) y un área de pegado Markdown. Admite TXT literal y JSON canónico; no hay detección de duplicados. La importación siempre reemplaza el documento abierto; antes exige confirmación y una copia local de recuperación, y si la copia falla no cambia nada.
+El diálogo de documento usa una zona de arrastre con un selector único (`.md`, `.markdown`, `.txt`, `.json`, `.docx`, `.pptx`) y un área de pegado Markdown. Admite TXT literal y JSON canónico, muestra el origen y bloquea el reemplazo idéntico. La importación siempre reemplaza el documento abierto; antes exige confirmación y una copia local de recuperación, y si la copia falla no cambia nada.
 
 ## 2. Contrato objetivo
 
-La Fase 2 implementa la entrada y la vista previa; la Fase 3 añade TXT literal y JSON; la Fase 4 completa duplicados y documentación final.
+Las fases 2 y 3 implementan la entrada, los formatos y la vista previa; la Fase 4 añade origen, duplicados y documentación final.
 
 ```ts
 type AulaImportOrigin = "picker" | "drop" | "paste";
@@ -93,7 +93,7 @@ Los límites se comprueban antes de construir la vista previa cuando el formato 
 - **TXT:** no hay formato; solo párrafos y saltos. Es la opción predecible para pegar texto sin interpretación.
 - **JSON:** se acepta solo un documento canónico válido. Un JSON de otra app, un volcado arbitrario o un esquema desconocido se rechazan con mensaje.
 - **Office cifrado o dañado:** se rechaza con el mensaje del visor; no se intenta descifrar ni reparar.
-- **Duplicados:** si la huella coincide con el documento abierto, la Fase 4 bloquea el reemplazo y explica que el contenido ya está importado.
+- **Duplicados:** si la huella coincide con el documento abierto o con la última importación, se bloquea el reemplazo y se explica que el contenido ya está importado.
 
 ## 6. Pruebas existentes
 
@@ -101,7 +101,7 @@ Los límites se comprueban antes de construir la vista previa cuando el formato 
 - Office compartido: `office-import.test.ts` y `office-model.test.ts`.
 - Flujos de la app: `aula-documentos-documents.test.tsx` (264 líneas), `aula-documentos-autosave.test.tsx`, `aula-documentos-copies.test.tsx`, `aula-documentos-recovery.test.tsx` y `aula-documentos-presentation.test.tsx`.
 
-Las pruebas de archivo, arrastre, pegado, TXT y JSON cubren los tres orígenes y los formatos nuevos; HTML y los formatos sin conversor se prueban por su mensaje de rechazo.
+Las pruebas de archivo, arrastre, pegado, TXT y JSON cubren los tres orígenes y los formatos nuevos; también se prueban el origen visible, el duplicado, la cancelación y el rechazo de formatos sin conversor.
 
 ## 7. Límites de mantenimiento
 
