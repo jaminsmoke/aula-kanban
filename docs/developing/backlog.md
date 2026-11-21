@@ -2,24 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 3 entradas pendientes · siguiente candidato ADOC-20
+> **Roadmap:** ADOC-20 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas pendientes · siguiente candidato UI-11
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
-
-## 2026-11-19 — ADOC-20 · Comentarios, revisión e historial
-
-- Contexto: el aula necesita revisar documentos y dejar observaciones, pero hoy solo existen autosave, conflictos y copias locales. No hay comentarios ni versiones legibles.
-- Alcance:
-  1. Comentarios anclados a texto o bloques, con responder, resolver y borrar.
-  2. Historial de versiones con nombre, fecha, autor y restauración.
-  3. Permisos por rol: invitados en lectura, alumnado según proyecto, profesorado/administración con revisión.
-  4. Exportar o imprimir comentarios cuando se solicite.
-  5. Resolver concurrencia y límites de tamaño.
-- Criterios: una persona puede revisar sin modificar el texto, restaurar una versión anterior y ver quién cambió qué sin perder el documento actual.
-- Notas: separar comentarios de control de cambios; el control de cambios puede ser otro bloque si se necesita.
 
 ## 2026-11-19 — UI-11 · Menús, atajos y barra de estado de Aula Documentos
 
