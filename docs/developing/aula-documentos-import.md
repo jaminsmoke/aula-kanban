@@ -93,7 +93,7 @@ Los límites se comprueban antes de construir la vista previa cuando el formato 
 - **TXT:** no hay formato; solo párrafos y saltos. Es la opción predecible para pegar texto sin interpretación.
 - **JSON:** se acepta solo un documento canónico válido. Un JSON de otra app, un volcado arbitrario o un esquema desconocido se rechazan con mensaje.
 - **Office cifrado o dañado:** se rechaza con el mensaje del visor; no se intenta descifrar ni reparar.
-- **Duplicados:** si la huella coincide con el documento abierto o con la última importación, se bloquea el reemplazo y se explica que el contenido ya está importado.
+- **Duplicados:** si la huella coincide con el documento abierto, se bloquea el reemplazo y se explica que el contenido ya está importado.
 
 ## 6. Pruebas existentes
 

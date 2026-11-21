@@ -93,7 +93,7 @@
 - [x] Actualizar la ayuda y `aula-documentos-import.md` con el flujo real, los límites y las pérdidas.
 - [x] Cubrir duplicado, origen, cancelación y formatos rechazados; medir `app:budget` y `perf:budget`.
 - **Criterios:** reimportar el mismo contenido no destruye ni duplica; el origen es visible; la documentación coincide con la UI; presupuestos y suite en verde.
-- **Cierre (2026-11-20):** la huella del documento validado bloquea reimportar el contenido abierto o el último importado; la vista previa y el mensaje muestran el nombre de archivo o «Texto pegado»; la ayuda y la matriz documentan el flujo. Pruebas de duplicado, origen y cancelación, `app:budget` y `perf:budget` en verde.
+- **Cierre (2026-11-20):** la huella del documento validado bloquea reimportar contenido idéntico al documento abierto; la vista previa y el mensaje muestran el nombre de archivo o «Texto pegado»; la ayuda y la matriz documentan el flujo. Pruebas de duplicado, origen y cancelación, `app:budget` y `perf:budget` en verde.
 
 ## 6. Riesgos y bloqueos
 
