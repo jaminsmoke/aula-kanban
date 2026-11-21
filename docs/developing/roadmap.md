@@ -68,12 +68,13 @@
 
 ### Fase 1 — Inventario, contrato y modelo de revisión
 
-- [ ] Inventariar guardado, versiones, copias, roles y exportaciones existentes.
-- [ ] Definir el modelo de comentario, hilo, ancla y estado huérfano.
-- [ ] Definir el modelo de versión, snapshot, autoría, retención y restauración.
-- [ ] Fijar la matriz de permisos por rol y las cuotas de comentarios/versiones.
-- [ ] Documentar el contrato en `docs/developing/aula-documentos-revision.md`.
+- [x] Inventariar guardado, versiones, copias, roles y exportaciones existentes.
+- [x] Definir el modelo de comentario, hilo, ancla y estado huérfano.
+- [x] Definir el modelo de versión, snapshot, autoría, retención y restauración.
+- [x] Fijar la matriz de permisos por rol y las cuotas de comentarios/versiones.
+- [x] Documentar el contrato en `docs/developing/aula-documentos-revision.md`.
 - **Criterios:** comentarios, historial, permisos, exportación y concurrencia tienen un contrato común; no se mueve código todavía.
+- **Cierre (2026-11-21):** contrato en [`aula-documentos-revision.md`](aula-documentos-revision.md): comentarios y versiones fuera del JSON, anclas con cita/contexto y huérfanos, snapshots explícitos, matriz de permisos, concurrencia optimista, exportación opcional y cuotas. Sin cambios de código.
 
 ### Fase 2 — Comentarios e hilos
 
@@ -124,6 +125,7 @@
 ## 7. Notas de sesión
 
 - 2026-11-21: **Roadmap abierto.** ADOC-20 sale del backlog; quedan **2 entradas** y el siguiente candidato es **UI-11**. Sin cambios de código de producto.
+- 2026-11-21: **Fase 1 completada.** Contrato de comentarios, anclas, versiones, permisos, exportación y retención en [`aula-documentos-revision.md`](aula-documentos-revision.md). Sin cambios de código.
 - La suite, el guardado optimista y las copias de ADOC-17 son la base; no se crea un editor paralelo.
 - Comentarios, versiones y retención se documentarán por separado del JSON canónico.
 - No hay publicación ni migraciones remotas en este roadmap.
