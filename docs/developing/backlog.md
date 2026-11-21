@@ -2,18 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 2 entradas pendientes · siguiente candidato recomendado ARC-10
+> **Roadmap:** ARC-10 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 1 entrada pendiente · siguiente candidato recomendado DEV-01
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
-
-## 2026-11-21 — ARC-10 · Revisar la integración entre Aula Documentos y Hoja de cálculo
-
-- Mantener Hoja de cálculo como aplicación. Las tablas de texto de Tiptap, la consulta local de XLSX y la hoja editable de Jspreadsheet atienden usos distintos. La hoja tiene su propio modelo, referencias de celdas, evaluación de fórmulas, formato y exportación CSV.
-- Evaluar primero un flujo concreto, como trasladar una selección desde la hoja a una tabla de Aula Documentos. Comparar valores, formato y referencias para decidir qué se conserva. Compartir un adaptador de celdas o de formatos solo si lo usan ambas apps. Mantener los adaptadores de lectura y edición separados mientras tengan contratos distintos.
-- Reconsiderar retirar una app únicamente cuando Aula cubra su flujo de principio a fin, con datos existentes, permisos, enlaces, exportación y rendimiento verificados. Un Gantt dentro de un documento tampoco sustituye por sí solo a una línea de tiempo interactiva.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 

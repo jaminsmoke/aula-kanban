@@ -19,7 +19,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Sin roadmap activo; ARC-09 cerrado y archivado | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | ARC-10 activo: integrar Hoja de cálculo con Aula Documentos | Secuencia de ejecución |
 | [`aula-documentos-arquitectura.md`](developing/aula-documentos-arquitectura.md) | Mapa de responsabilidades, árbol objetivo y límites de Aula Documentos | Referencia de refactor |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
