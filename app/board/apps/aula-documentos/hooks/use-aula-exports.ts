@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { AulaDocument, AulaPrintPage } from "../../../../../lib/domain/aula-documentos/document";
+import type { AulaDocumentCommentThread } from "../../../../../lib/domain/aula-documentos/revision";
 import { documentToMarkdownExport } from "../../../../../lib/domain/aula-documentos/markdown";
 import { aulaFileName } from "../../../../../lib/domain/aula-documentos/filename";
 import { buildAulaDocumentHtml, collectMermaidCodes, renderMermaidSvgs } from "../../../shared/aula-documentos/export-html";
@@ -13,6 +14,7 @@ type ExportsDeps = {
   currentDocument: () => AulaDocument | null;
   presentationNotes: Record<string, string>;
   presentationPage: AulaPrintPage;
+  comments: AulaDocumentCommentThread[];
   setStatus: (message: string) => void;
 };
 
@@ -21,10 +23,11 @@ type ExportsDeps = {
  * @param deps - Documento actual y notas de presentación.
  * @returns Estado y acciones de exportación.
  */
-export function useAulaExports({ currentDocument, presentationNotes, presentationPage, setStatus }: ExportsDeps) {
+export function useAulaExports({ currentDocument, presentationNotes, presentationPage, comments, setStatus }: ExportsDeps) {
   const [exporting, setExporting] = useState(false);
   const [printing, setPrinting] = useState(false);
   const [exportingOffice, setExportingOffice] = useState(false);
+  const [includeCommentsInExport, setIncludeCommentsInExport] = useState(false);
 
   /**
    * Prepara y descarga el HTML autónomo del documento.
@@ -45,6 +48,8 @@ export function useAulaExports({ currentDocument, presentationNotes, presentatio
         svgByCode,
         images.sources,
         new Set(images.failed),
+        presentationPage,
+        includeCommentsInExport ? comments : [],
       );
       downloadTextFile(html, "text/html;charset=utf-8", aulaFileName(document.title, "html"));
       setStatus(images.failed.length
@@ -77,6 +82,7 @@ export function useAulaExports({ currentDocument, presentationNotes, presentatio
         images.sources,
         new Set(images.failed),
         presentationPage,
+        includeCommentsInExport ? comments : [],
       ));
       setStatus(images.failed.length
         ? `Vista de impresión abierta con ${images.failed.length} ${images.failed.length === 1 ? "imagen no disponible" : "imágenes no disponibles"}.`
@@ -134,6 +140,8 @@ export function useAulaExports({ currentDocument, presentationNotes, presentatio
     exporting,
     printing,
     exportingOffice,
+    includeCommentsInExport,
+    setIncludeCommentsInExport,
     exportHtml,
     printDocument,
     exportMarkdown,

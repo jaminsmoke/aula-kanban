@@ -98,12 +98,13 @@
 
 ### Fase 4 — Permisos, exportación y límites
 
-- [ ] Aplicar la matriz de permisos en API y UI para comentarios e historial.
-- [ ] Exportar e imprimir comentarios bajo demanda, con cita, autor y estado.
-- [ ] Añadir retención, cuotas, paginación y mensajes de error claros.
-- [ ] Revisar concurrencia entre comentarios, versiones y guardado del documento.
-- [ ] Probar roles, exportación, límites y recuperación ante fallos.
+- [x] Aplicar la matriz de permisos en API y UI para comentarios e historial.
+- [x] Exportar e imprimir comentarios bajo demanda, con cita, autor y estado.
+- [x] Añadir retención, cuotas, paginación y mensajes de error claros.
+- [x] Revisar concurrencia entre comentarios, versiones y guardado del documento.
+- [x] Probar roles, exportación, límites y recuperación ante fallos.
 - **Criterios:** cada rol ve y hace solo lo permitido; la salida normal no incluye comentarios y los límites no bloquean la edición.
+- **Cierre (2026-11-21):** permisos de servidor y capacidades en UI, exportación opcional de comentarios en HTML/PDF, retención de 180 días, purga de elementos antiguos, cuotas y paginación de 20. Pruebas de roles, exportación y límites. Suite: **263 archivos / 1.732 pruebas**; build **384.594 B**; presupuesto **386.000 B**.
 
 ### Fase 5 — Cierre
 
@@ -130,6 +131,7 @@
 - 2026-11-21: **Fase 1 completada.** Contrato de comentarios, anclas, versiones, permisos, exportación y retención en [`aula-documentos-revision.md`](aula-documentos-revision.md). Sin cambios de código.
 - 2026-11-21: **Fase 2 completada.** Migración, API, anclas, hilos y panel lateral con permisos; pruebas de creación, respuesta, resolución, huérfanos y modo lectura. Suite: **261 archivos / 1.725 pruebas**; build **382.116 B**.
 - 2026-11-21: **Fase 3 completada.** Historial con versiones manuales, previsualización, snapshot previo y restauración con conflicto optimista. Suite: **263 archivos / 1.730 pruebas**; build **384.042 B**.
+- 2026-11-21: **Fase 4 completada.** Exportación opcional de comentarios, retención y purga, cuotas, paginación y permisos auditados. Suite: **263 archivos / 1.732 pruebas**; build **384.594 B**.
 - La suite, el guardado optimista y las copias de ADOC-17 son la base; no se crea un editor paralelo.
 - Comentarios, versiones y retención se documentarán por separado del JSON canónico.
 - No hay publicación ni migraciones remotas en este roadmap.

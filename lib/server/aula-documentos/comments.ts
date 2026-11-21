@@ -1,5 +1,6 @@
 import {
   AULA_COMMENT_MAX_PER_DOCUMENT,
+  AULA_REVISION_RETENTION_DAYS,
   normalizeAulaCommentAnchor,
   normalizeAulaCommentBody,
   type AulaCommentCapabilities,
@@ -9,6 +10,7 @@ import {
 import { selectAulaDocumentUpdatedAt } from "./documents-repository";
 import {
   countAulaCommentRows,
+  deleteAulaDeletedCommentsBefore,
   insertAulaCommentRow,
   selectAulaCommentRow,
   selectAulaCommentRows,
@@ -91,6 +93,8 @@ export async function listAulaComments(input: {
   actor: Actor;
 }): Promise<AulaCommentResult<{ threads: AulaDocumentCommentThread[]; total: number }>> {
   if (!(await documentExists(input.projectId, input.documentId))) return { status: "not-found" };
+  const cutoff = Date.now() - AULA_REVISION_RETENTION_DAYS * 24 * 60 * 60 * 1_000;
+  await deleteAulaDeletedCommentsBefore(input.projectId, input.documentId, cutoff);
   const rows = (await selectAulaCommentRows(input.projectId, input.documentId))
     .filter((row) => row.status !== "deleted");
   const roots = rows.filter((row) => !row.parentId);

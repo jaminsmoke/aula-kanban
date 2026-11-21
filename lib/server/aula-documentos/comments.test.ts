@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   countRows: vi.fn(),
   insert: vi.fn(),
   update: vi.fn(),
+  purge: vi.fn(),
 }));
 
 vi.mock("./documents-repository", () => ({
@@ -15,6 +16,7 @@ vi.mock("./documents-repository", () => ({
 
 vi.mock("./comments-repository", () => ({
   countAulaCommentRows: mocks.countRows,
+  deleteAulaDeletedCommentsBefore: mocks.purge,
   insertAulaCommentRow: mocks.insert,
   selectAulaCommentRow: mocks.selectRow,
   selectAulaCommentRows: mocks.selectRows,
@@ -72,6 +74,7 @@ describe("servicio de comentarios", () => {
     mocks.selectRow.mockResolvedValue(row());
     mocks.insert.mockImplementation(async (input: Record<string, unknown>) => row(input));
     mocks.update.mockImplementation(async (input: Record<string, unknown>) => row(input));
+    mocks.purge.mockResolvedValue(undefined);
   });
 
   it("crea un comentario para un estudiante miembro", async () => {

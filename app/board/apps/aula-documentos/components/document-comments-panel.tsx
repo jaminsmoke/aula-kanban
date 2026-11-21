@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageSquare, Send, X } from "lucide-react";
 import type { AulaDocumentComment } from "../../../../../lib/domain/aula-documentos/revision";
+import { AULA_COMMENT_PAGE_SIZE } from "../../../../../lib/domain/aula-documentos/revision";
 import { formatDateTime } from "../../../shared/ui/date";
 import { resolveAulaCommentAnchor } from "../../../shared/aula-documentos/comment-anchor";
 import { useAulaDocumentosView } from "../aula-documentos-context";
@@ -23,8 +24,11 @@ export function DocumentCommentsPanel() {
     createComment,
     updateComment,
     canComment,
+    includeCommentsInExport,
+    setIncludeCommentsInExport,
   } = useAulaDocumentosView();
   const [filter, setFilter] = useState<"open" | "all">("open");
+  const [page, setPage] = useState(0);
   const [draft, setDraft] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [replyDraft, setReplyDraft] = useState("");
@@ -39,6 +43,12 @@ export function DocumentCommentsPanel() {
   if (!commentsOpen) return null;
 
   const visible = filter === "open" ? comments.filter((thread) => thread.status === "open") : comments;
+  const pageCount = Math.max(1, Math.ceil(visible.length / AULA_COMMENT_PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount - 1);
+  const visiblePage = visible.slice(
+    currentPage * AULA_COMMENT_PAGE_SIZE,
+    (currentPage + 1) * AULA_COMMENT_PAGE_SIZE,
+  );
 
   async function submitComment() {
     if (await createComment(draft)) setDraft("");
@@ -172,9 +182,17 @@ export function DocumentCommentsPanel() {
       )}
 
       <div className="aula-documentos-comments-filters" role="group" aria-label="Filtrar comentarios">
-        <button type="button" aria-pressed={filter === "open"} onClick={() => setFilter("open")}>Abiertos</button>
-        <button type="button" aria-pressed={filter === "all"} onClick={() => setFilter("all")}>Todos</button>
+        <button type="button" aria-pressed={filter === "open"} onClick={() => { setFilter("open"); setPage(0); }}>Abiertos</button>
+        <button type="button" aria-pressed={filter === "all"} onClick={() => { setFilter("all"); setPage(0); }}>Todos</button>
       </div>
+      <label className="aula-documentos-comments-export">
+        <input
+          type="checkbox"
+          checked={includeCommentsInExport}
+          onChange={(event) => setIncludeCommentsInExport(event.target.checked)}
+        />
+        Incluir comentarios en HTML/PDF
+      </label>
 
       {commentsLoading ? <p className="aula-documentos-comments-message">Cargando comentarios…</p> : null}
       {commentsError ? <p className="aula-documentos-comments-error" role="alert">{commentsError}</p> : null}
@@ -185,7 +203,7 @@ export function DocumentCommentsPanel() {
       ) : null}
 
       <div className="aula-documentos-comments-list">
-        {visible.map((thread) => {
+        {visiblePage.map((thread) => {
           const resolved = resolveAulaCommentAnchor(editor, thread.anchor);
           return (
             <section className="aula-documentos-comment-thread" key={thread.id}>
@@ -211,6 +229,17 @@ export function DocumentCommentsPanel() {
           );
         })}
       </div>
+      {pageCount > 1 ? (
+        <div className="aula-documentos-version-pagination">
+          <button type="button" onClick={() => setPage(currentPage - 1)} disabled={currentPage <= 0}>
+            Anterior
+          </button>
+          <span>{currentPage + 1} / {pageCount}</span>
+          <button type="button" onClick={() => setPage(currentPage + 1)} disabled={currentPage >= pageCount - 1}>
+            Siguiente
+          </button>
+        </div>
+      ) : null}
     </aside>
   );
 }

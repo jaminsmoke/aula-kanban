@@ -7,6 +7,9 @@ const AULA_COMMENT_QUOTE_MAX_LENGTH = 500;
 /** Límite de comentarios por documento. */
 export const AULA_COMMENT_MAX_PER_DOCUMENT = 500;
 
+/** Tamaño de página de comentarios. */
+export const AULA_COMMENT_PAGE_SIZE = 20;
+
 /** Límite de versiones por documento. */
 export const AULA_VERSION_MAX_PER_DOCUMENT = 50;
 
@@ -18,6 +21,9 @@ export const AULA_VERSION_STATE_MAX_LENGTH = 190_000;
 
 /** Tamaño de página del historial. */
 export const AULA_VERSION_PAGE_SIZE = 20;
+
+/** Días de retención para versiones y comentarios borrados. */
+export const AULA_REVISION_RETENTION_DAYS = 180;
 
 /** Motivo de una versión. */
 export type AulaDocumentVersionKind = "manual" | "pre-restore";

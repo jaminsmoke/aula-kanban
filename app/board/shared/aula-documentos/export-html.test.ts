@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
+import type { AulaDocumentCommentThread } from "../../../../lib/domain/aula-documentos/revision";
 import { buildAulaDocumentHtml, buildAulaPresentationHtml, collectMermaidCodes, countMermaidBlocks, renderAulaContentHtml, renderMermaidSvgs } from "./export-html";
 
 /**
@@ -269,6 +270,38 @@ describe("exportación HTML de Aula Documentos", () => {
       { size: "a4", orientation: "landscape", margin: "none", slideNumbers: false },
     );
     expect(html).toContain("@page { size: a4 landscape; margin: 0; }");
+  });
+
+  it("incluye comentarios solo cuando se solicitan", () => {
+    const comment: AulaDocumentCommentThread = {
+      id: "c1",
+      projectId: "p1",
+      documentId: "d1",
+      parentId: null,
+      authorUserId: "u1",
+      authorName: "Docente",
+      body: "Revisar esta parte.",
+      anchor: { from: 0, to: 0, quote: "Introducción", prefix: "", suffix: "", blockIndex: 0 },
+      status: "open",
+      createdAt: 1,
+      updatedAt: 1,
+      resolvedAt: null,
+      resolvedBy: null,
+      capabilities: { canEdit: true, canDelete: true, canResolve: true },
+      replies: [],
+    };
+    const document: AulaDocument = {
+      schemaVersion: 3,
+      title: "Comentado",
+      content: { type: "doc", content: [] },
+    };
+    const without = buildAulaDocumentHtml(document);
+    const withComments = buildAulaDocumentHtml(document, new Map(), new Map(), new Set(), undefined, [comment]);
+    expect(without).not.toContain('<section class="comments">');
+    expect(withComments).toContain('<section class="comments">');
+    expect(withComments).toContain("Revisar esta parte.");
+    expect(withComments).toContain("Introducción");
+    expect(withComments).toContain("Docente");
   });
 
   it("continúa la exportación si un diagrama no se puede renderizar", async () => {

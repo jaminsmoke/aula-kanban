@@ -1,6 +1,6 @@
 # Comentarios, revisión e historial de Aula Documentos
 
-> **Estado:** Fases 1–3 cerradas · **Fecha:** 2026-11-21
+> **Estado:** Fases 1–4 cerradas · **Fecha:** 2026-11-21
 > **Alcance:** comentarios anclados, hilos, historial de versiones, permisos, exportación y límites.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
 > **Regla:** esta fase no mueve código de producto; fija el contrato y los límites.
@@ -248,3 +248,16 @@ Implementado el 2026-11-21:
 - El historial se refresca tras restaurar y actualiza el documento, la versión de servidor y el estado de guardado.
 - Pruebas de permisos, creación, snapshot previo, conflicto, versión ajena y flujo de interfaz.
 - Suite: **263 archivos / 1.730 pruebas**; build **384.042 B**; presupuesto **386.000 B**.
+
+## 14. Cierre de la Fase 4
+
+Implementado el 2026-11-21:
+
+- Exportación opcional de comentarios en HTML/PDF con cita, autor, fecha, estado y respuestas; desactivada por defecto.
+- La opción se controla desde el panel de comentarios y solo afecta a la exportación o impresión solicitada.
+- Permisos de comentarios e historial comprobados en servidor y reflejados con capacidades en la UI.
+- Retención de versiones y comentarios borrados: 180 días; purga en las listas de revisión.
+- Límites de 500 comentarios y 50 versiones por documento, con paginación de 20 elementos en ambos paneles.
+- Mensajes de error estables para permisos, límites, conflictos y validación.
+- Pruebas de exportación con y sin comentarios, permisos, paginación y flujo de PDF.
+- Suite: **263 archivos / 1.732 pruebas**; build **384.594 B**; presupuesto **386.000 B**.

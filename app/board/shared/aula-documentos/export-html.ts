@@ -6,6 +6,7 @@ import {
   type AulaPresentationTheme,
   type AulaPrintPage,
 } from "../../../../lib/domain/aula-documentos/document";
+import type { AulaDocumentCommentThread } from "../../../../lib/domain/aula-documentos/revision";
 import { createAulaDocumentExtensions } from "./document-extensions";
 
 /**
@@ -290,12 +291,31 @@ ${body}
 }
 
 /**
+ * Genera la sección opcional de comentarios para HTML y PDF.
+ * @param comments - Hilos del documento.
+ * @returns HTML escapado o una cadena vacía.
+ */
+function renderCommentsExport(comments: AulaDocumentCommentThread[]): string {
+  const visible = comments.filter((comment) => comment.status !== "deleted");
+  if (!visible.length) return "";
+  const date = (value: number) => new Intl.DateTimeFormat("es-ES", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
+  const items = visible.flatMap((thread) => [
+    `<article class="comment"><blockquote>${escapeHtml(thread.anchor.quote || "Comentario de bloque")}</blockquote><p>${escapeHtml(thread.body)}</p><small>${escapeHtml(thread.authorName)} · ${escapeHtml(date(thread.createdAt))} · ${thread.status === "resolved" ? "Resuelto" : "Abierto"}</small>${thread.replies.map((reply) => `<div class="comment-reply"><p>${escapeHtml(reply.body)}</p><small>${escapeHtml(reply.authorName)} · ${escapeHtml(date(reply.createdAt))}</small></div>`).join("")}</article>`,
+  ]);
+  return `<section class="comments"><h2>Comentarios</h2>${items.join("")}</section>`;
+}
+
+/**
  * Genera un HTML autónomo con texto y diagramas ya renderizados.
  * @param aulaDocument - Documento validado.
  * @param svgByCode - SVG de cada código Mermaid.
  * @param imageSources - URLs de datos para las imágenes internas.
  * @param failedImageSources - Imágenes que no se pudieron recuperar.
  * @param page - Ajustes de página para impresión y PDF.
+ * @param comments - Comentarios que se incluyen solo si se solicitan.
  * @returns Un archivo HTML sin recursos externos.
  */
 export function buildAulaDocumentHtml(
@@ -304,10 +324,12 @@ export function buildAulaDocumentHtml(
   imageSources: ReadonlyMap<string, string> = new Map(),
   failedImageSources: ReadonlySet<string> = new Set(),
   page: AulaPrintPage = DEFAULT_AULA_PRINT_PAGE,
+  comments: AulaDocumentCommentThread[] = [],
 ): string {
   const title = aulaDocument.title.trim() || "Documento sin título";
   const safeTitle = escapeHtml(title);
   const withDiagrams = renderAulaContentHtml(aulaDocument.content, svgByCode, imageSources, failedImageSources);
+  const commentsHtml = renderCommentsExport(comments);
 
   return `<!doctype html>
 <html lang="es">
@@ -357,6 +379,13 @@ export function buildAulaDocumentHtml(
   .aula-mermaid-export svg { display: inline-block; max-width: 100%; height: auto; }
   .aula-mermaid-export-error { margin: 0 0 .7em; color: #8a2f2f; font-size: .85rem; font-weight: 700; text-align: left; }
   .aula-mermaid-export-error + pre { margin: 0; text-align: left; }
+  .comments { margin-top: 2.5em; padding-top: 1.5em; border-top: 2px solid #e7e4ef; }
+  .comments h2 { margin: 0 0 .8em; font-size: 1.2rem; }
+  .comment { margin: 1em 0; padding: .8em 1em; border-left: 3px solid #d8b44a; background: #fbfaff; break-inside: avoid; }
+  .comment blockquote { margin: 0 0 .5em; padding: 0; border: 0; color: #625c74; font-size: .85rem; font-style: italic; }
+  .comment p { margin: 0 0 .4em; }
+  .comment small { color: #6b647e; font-size: .75rem; }
+  .comment-reply { margin-top: .7em; padding-top: .5em; border-top: 1px solid #e7e4ef; }
   ${printPageCss(page)}
   @media print { body { background: #fff; } main { width: auto; max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; } .aula-image-block, .aula-mermaid-export, pre, blockquote { break-inside: avoid; } h1, h2, h3 { break-after: avoid; } }
 </style>
@@ -366,6 +395,7 @@ export function buildAulaDocumentHtml(
 <h1 class="title">${safeTitle}</h1>
 <p class="subtitle">Exportado desde Aula Documentos — Aula Kanban</p>
 <article>${withDiagrams}</article>
+${commentsHtml}
 </main>
 </body>
 </html>

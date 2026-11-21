@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   countRows: vi.fn(),
   insert: vi.fn(),
   updateState: vi.fn(),
+  purge: vi.fn(),
 }));
 
 vi.mock("./documents", () => ({
@@ -19,6 +20,7 @@ vi.mock("./documents-repository", () => ({
 
 vi.mock("./versions-repository", () => ({
   countAulaVersionRows: mocks.countRows,
+  deleteAulaVersionsBefore: mocks.purge,
   insertAulaVersionRow: mocks.insert,
   selectAulaVersionRow: mocks.selectRow,
   selectAulaVersionSummaries: mocks.selectSummaries,
@@ -80,6 +82,7 @@ describe("servicio de versiones", () => {
     mocks.countRows.mockResolvedValue(0);
     mocks.insert.mockImplementation(async (input: Record<string, unknown>) => row(input));
     mocks.updateState.mockResolvedValue(9);
+    mocks.purge.mockResolvedValue(undefined);
   });
 
   it("lista y crea versiones solo para profesorado", async () => {

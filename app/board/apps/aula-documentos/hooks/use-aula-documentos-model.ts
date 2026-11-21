@@ -145,17 +145,9 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
   useDialogFocus(Boolean(slidePreview), () => setSlidePreview(null), slidePreviewRef);
   useDialogFocus(markdownSourceOpen, () => setMarkdownSourceOpen(false), markdownSourceRef);
 
-  const {
-    exporting,
-    printing,
-    exportingOffice,
-    exportHtml,
-    printDocument,
-    exportMarkdown,
-    exportOffice,
-  } = useAulaExports({ currentDocument, presentationNotes, presentationPage, setStatus });
   const suite = useAulaDocumentSuite(projectId);
   const comments = useAulaComments({ projectId, documentId: suite.documentId, editor, role, setStatus });
+  const { exporting, printing, exportingOffice, includeCommentsInExport, setIncludeCommentsInExport, exportHtml, printDocument, exportMarkdown, exportOffice } = useAulaExports({ currentDocument, presentationNotes, presentationPage, comments: comments.comments, setStatus });
   const versions = useAulaVersions({ projectId, documentId: suite.documentId, role, documentVersionRef, setLastSavedAt, applyDocument, setStatus });
   const search = useAulaSearch({ editor, readOnly, setStatus, documentId: suite.documentId });
   const view = useAulaView({ editor, searchOpen: search.searchOpen });
@@ -481,6 +473,8 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     exporting,
     printing,
     exportingOffice,
+    includeCommentsInExport,
+    setIncludeCommentsInExport,
     exportHtml,
     printDocument,
     exportMarkdown,

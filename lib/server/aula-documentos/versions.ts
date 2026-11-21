@@ -1,4 +1,5 @@
 import {
+  AULA_REVISION_RETENTION_DAYS,
   AULA_VERSION_MAX_PER_DOCUMENT,
   AULA_VERSION_STATE_MAX_LENGTH,
   normalizeAulaVersionName,
@@ -11,6 +12,7 @@ import { readAulaDocument } from "./documents";
 import { updateAulaDocumentStateIfCurrent } from "./documents-repository";
 import {
   countAulaVersionRows,
+  deleteAulaVersionsBefore,
   insertAulaVersionRow,
   selectAulaVersionRow,
   selectAulaVersionSummaries,
@@ -93,6 +95,8 @@ export async function listAulaVersions(input: {
   if (!canManage(input.actor.role)) return { status: "forbidden" };
   const document = await readAulaDocument(input.projectId, input.documentId);
   if (!document) return { status: "not-found" };
+  const cutoff = Date.now() - AULA_REVISION_RETENTION_DAYS * 24 * 60 * 60 * 1_000;
+  await deleteAulaVersionsBefore(input.projectId, input.documentId, cutoff);
   const rows = await selectAulaVersionSummaries(input.projectId, input.documentId);
   return { status: "ok", value: { versions: rows.map(versionView), total: rows.length } };
 }

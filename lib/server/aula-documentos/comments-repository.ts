@@ -1,4 +1,4 @@
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, lt } from "drizzle-orm";
 import { getDb } from "../../../db";
 import { aulaDocumentComments } from "../../../db/schema";
 
@@ -77,6 +77,23 @@ export async function countAulaCommentRows(projectId: string, documentId: string
 export async function insertAulaCommentRow(input: AulaDocumentCommentWrite): Promise<AulaDocumentCommentRow> {
   const [row] = await getDb().insert(aulaDocumentComments).values(input).returning();
   return row;
+}
+
+/**
+ * Purga comentarios borrados fuera de retención.
+ * @param projectId - Proyecto.
+ * @param documentId - Documento.
+ * @param cutoff - Fecha mínima de conservación.
+ */
+export async function deleteAulaDeletedCommentsBefore(projectId: string, documentId: string, cutoff: number): Promise<void> {
+  await getDb()
+    .delete(aulaDocumentComments)
+    .where(and(
+      eq(aulaDocumentComments.projectId, projectId),
+      eq(aulaDocumentComments.documentId, documentId),
+      eq(aulaDocumentComments.status, "deleted"),
+      lt(aulaDocumentComments.updatedAt, cutoff),
+    ));
 }
 
 /**

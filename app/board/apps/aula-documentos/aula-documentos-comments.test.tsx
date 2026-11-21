@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AulaDocumentComment } from "../../../../lib/domain/aula-documentos/revision";
-import { props, resetAulaDocumentMocks } from "../../../../test-utils/aula-documentos";
+import { props, resetAulaDocumentMocks, printMock, chooseMenu } from "../../../../test-utils/aula-documentos";
 import AulaDocumentosApp from "./aula-documentos-app";
 
 const rootComment: AulaDocumentComment = {
@@ -108,5 +108,21 @@ describe("comentarios de Aula Documentos", () => {
     expect(await screen.findByRole("complementary", { name: "Comentarios del documento" })).toBeTruthy();
     expect(screen.getByText("Puedes leer los comentarios, pero no escribir en ellos.")).toBeTruthy();
     expect(screen.queryByLabelText("Nuevo comentario")).toBeNull();
+  });
+
+  it("incluye comentarios en el PDF solo con la opción explícita", async () => {
+    stubComments();
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    fireEvent.click(screen.getByRole("button", { name: "Comentarios del documento" }));
+    expect(await screen.findByText("Revisar esta parte.")).toBeTruthy();
+    fireEvent.click(screen.getByLabelText("Incluir comentarios en HTML/PDF"));
+    chooseMenu("Exportar", "Imprimir o guardar PDF");
+
+    await waitFor(() => expect(printMock).toHaveBeenCalled());
+    const html = printMock.mock.calls.at(-1)?.[0] as string;
+    expect(html).toContain('<section class="comments">');
+    expect(html).toContain("Revisar esta parte.");
   });
 });

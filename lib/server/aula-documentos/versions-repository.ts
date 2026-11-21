@@ -1,4 +1,4 @@
-import { and, count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, lt } from "drizzle-orm";
 import { getDb } from "../../../db";
 import { aulaDocumentVersions } from "../../../db/schema";
 
@@ -98,4 +98,20 @@ export async function countAulaVersionRows(projectId: string, documentId: string
 export async function insertAulaVersionRow(input: AulaDocumentVersionWrite): Promise<AulaDocumentVersionRow> {
   const [row] = await getDb().insert(aulaDocumentVersions).values(input).returning();
   return row;
+}
+
+/**
+ * Purga versiones fuera de retención.
+ * @param projectId - Proyecto.
+ * @param documentId - Documento.
+ * @param cutoff - Fecha mínima de conservación.
+ */
+export async function deleteAulaVersionsBefore(projectId: string, documentId: string, cutoff: number): Promise<void> {
+  await getDb()
+    .delete(aulaDocumentVersions)
+    .where(and(
+      eq(aulaDocumentVersions.projectId, projectId),
+      eq(aulaDocumentVersions.documentId, documentId),
+      lt(aulaDocumentVersions.createdAt, cutoff),
+    ));
 }
