@@ -45,7 +45,9 @@
 | Las diapositivas siguen derivándose del documento | Guardar una lista independiente de diapositivas | Una segunda fuente se desincroniza del texto y de los saltos. |
 | Reordenar, duplicar y eliminar son transacciones Tiptap | Manipular JSON o DOM a mano | Conserva marcas, tablas, imágenes, deshacer y autosave. |
 | Las operaciones usan rangos de bloques, no títulos | Identificar diapositivas por título | Los títulos pueden repetirse, cambiarse o estar vacíos. |
+| Materializar saltos explícitos al primer cambio estructural | Reordenar títulos H1/H2 implícitos | Sin saltos, mover un H2 puede cambiar la agrupación y producir diapositivas distintas. |
 | Las notas se remapean en la misma operación | Dejar las notas indexadas sin tocarlas | Reordenar o eliminar debe mover las notas con su diapositiva. |
+| Historial de estructura de sesión | Confiar solo en `Ctrl+Z` de Tiptap | Las notas viven fuera del editor; un snapshot restaura contenido, notas y selección juntos. |
 | La presentación reutiliza el HTML de las diapositivas | Renderizar una segunda vez para el presentador | Evita diferencias entre presentación, vista previa y PDF. |
 | El PDF sale del HTML imprimible y `@page` | Generar PDF con un servicio externo | No añade dependencias ni coste de red y respeta los recursos locales. |
 | Los ajustes nuevos son opcionales y con defaults | Migración obligatoria | Los documentos existentes deben abrirse sin cambios. |
@@ -67,18 +69,20 @@
 
 ### Fase 1 — Inventario, contrato y modelo de presentación
 
-- [ ] Inventariar cómo se construyen diapositivas, notas, HTML, impresión, PDF y PPTX.
-- [ ] Definir el contrato de estructura: posición, rango, título, notas y operaciones permitidas.
-- [ ] Decidir el remapeo de notas al reordenar, duplicar y eliminar.
-- [ ] Definir los ajustes opcionales de página/diapositiva y sus valores por defecto.
-- [ ] Documentar el contrato en `docs/developing/aula-documentos-presentacion.md`.
+- [x] Inventariar cómo se construyen diapositivas, notas, HTML, impresión, PDF y PPTX.
+- [x] Definir el contrato de estructura: posición, rango, título, notas y operaciones permitidas.
+- [x] Decidir el remapeo de notas al reordenar, duplicar y eliminar.
+- [x] Definir los ajustes opcionales de página/diapositiva y sus valores por defecto.
+- [x] Documentar el contrato en `docs/developing/aula-documentos-presentacion.md`.
 - **Criterios:** estructura, presentador, PDF y PPTX tienen un contrato común; no se mueve código todavía.
+- **Cierre (2026-11-21):** contrato en [`aula-documentos-presentacion.md`](aula-documentos-presentacion.md): una sola fuente de diapositivas, materialización de saltos al primer cambio estructural, notas remapeadas e historial de estructura de sesión, presentador reutilizando HTML y ajustes de página opcionales con defaults. Sin cambios de código.
 
 ### Fase 2 — Estructura editable de diapositivas
 
 - [ ] Añadir una vista de estructura con reordenar, duplicar y eliminar.
-- [ ] Aplicar las operaciones como transacciones Tiptap sobre bloques y saltos reales.
+- [ ] Materializar saltos explícitos al primer cambio estructural y aplicar las operaciones como transacciones Tiptap.
 - [ ] Remapear las notas del orador y conservar el documento, la selección y el deshacer.
+- [ ] Añadir un deshacer de estructura de sesión que restaure contenido y notas juntos.
 - [ ] Confirmar las operaciones destructivas y respetar el modo lectura.
 - [ ] Probar diapositivas vacías, repetidas, muchas diapositivas y notas asociadas.
 - **Criterios:** la estructura cambia el documento real y las notas viajan con su diapositiva; no se pierde contenido por accidente.
@@ -122,5 +126,6 @@
 ## 7. Notas de sesión
 
 - 2026-11-21: **Roadmap abierto.** ADOC-19 sale del backlog; quedan **3 entradas** y el siguiente candidato es **ADOC-20**. Sin cambios de código de producto.
+- 2026-11-21: **Fase 1 completada.** Contrato de estructura, notas, presentador, ajustes de página y PDF en [`aula-documentos-presentacion.md`](aula-documentos-presentacion.md). Sin cambios de código.
 - La presentación actual, la vista previa, el navegador de ADOC-18 y la exportación PPTX son la base; no se crea un almacén paralelo de diapositivas.
 - No hay publicación ni migraciones remotas en este roadmap.
