@@ -6,6 +6,16 @@
 
 ---
 
+## 2026-11-21 — Publicación 1.1.38
+
+**Estado:** Publicada en Sites.
+
+- Aula Documentos permite gestionar varios documentos por proyecto, crear copias recuperables, comentar pasajes e hilos y consultar el historial de versiones. Incluye mejoras de importación, tablas, imágenes, búsqueda, presentación, PDF y accesibilidad.
+- Aplicadas las migraciones 0041 a 0044. Antes de publicar se probó la actualización desde el esquema anterior con un documento existente. En producción se verificaron las cuatro tablas nuevas y el acceso al proyecto desde el plugin.
+- Pasaron 1.742 pruebas, `npm run check`, la compilación y los presupuestos de rendimiento general y Office. La portada, la documentación y el catálogo responden en producción.
+
+---
+
 ## 2026-11-21 — Roadmap UI-11 — Menús, atajos y barra de estado de Aula Documentos
 
 **Estado:** Completada - Sin publicación en Sites
