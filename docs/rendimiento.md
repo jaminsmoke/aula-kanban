@@ -44,7 +44,7 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 | Calculadora · abrir Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
 | Calculadora · primer `=` en Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
 | Calculadora · Científica/Ecuaciones | 6.606,2 KiB | 1.915,4 KiB (1.961.393 B) | 2.069.960 B | 19 |
-| Aula Documentos · abrir | 1.193,7 KiB | 363,3 KiB (372.027 B) | 373.000 B | 47 |
+| Aula Documentos · abrir | 1.193,7 KiB | 363,3 KiB (372.018 B) | 373.000 B | 47 |
 | Tienda · abrir | 544,7 KiB | 169,1 KiB (173.195 B) | 174.779 B | 20 |
 | Pizarra · abrir | 3.441,7 KiB | 1.214,2 KiB (1.243.296 B) | 1.348.890 B | 23 |
 | Pizarra · conversión Mermaid | 4.206,4 KiB | 1.412,2 KiB (1.446.106 B) | 1.560.999 B | 51 |

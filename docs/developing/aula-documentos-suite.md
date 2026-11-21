@@ -1,6 +1,6 @@
 # Suite documental de Aula Documentos
 
-> **Estado:** Fases 1 a 4 de ADOC-17 · **Fecha:** 2026-11-21
+> **Estado:** Cerrado con ADOC-17 (fases 1 a 5) · **Fecha:** 2026-11-21
 > **Alcance:** contrato, modelo de datos, migración, persistencia backend, gestión visual, URL y MCP.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Arquitectura:** [`arquitectura-global.md`](arquitectura-global.md)
 
@@ -236,3 +236,10 @@ Implementado el 2026-11-21:
 - Pruebas de enlace inválido, documento ajeno, invitado, conflicto, copia y recuperación.
 
 La exportación HTML/Office, la impresión y el Markdown siguen operando sobre el documento activo; no incrustan metadatos de la suite en `AulaDocument`.
+
+## 14. Cierre de ADOC-17
+
+- La migración `legacy` es idempotente y conserva `app_documents` como respaldo; no hay borrado destructivo.
+- Las copias antiguas con `document_id` nulo siguen visibles como copias del proyecto; las nuevas quedan etiquetadas.
+- La suite completa, el build, `app:budget`, `perf:budget` y `perf:office` pasan.
+- El Site sigue en `1.1.37`; no se ha publicado ni aplicado ninguna migración remota.

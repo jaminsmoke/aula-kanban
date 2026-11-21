@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01, DEV-02, ARC-02, ARC-03, ARC-04, ARC-05 y ARC-06 completados; ADOC-17 activo · **Fecha:** 2026-11-21
+> **Estado:** ARC-01, DEV-02, ARC-02, ARC-03, ARC-04, ARC-05 y ARC-06 completados; ADOC-17 completado; sin roadmap activo · **Fecha:** 2026-11-21
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -228,4 +228,5 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - ARC-05 quedó cerrado y archivado en [`historial/roadmap-arc-05.md`](../historial/roadmap-arc-05.md): harness explícito, checker de código muerto y presupuestos por app/flujo.
 - ARC-06 quedó cerrado y archivado en [`historial/roadmap-arc-06.md`](../historial/roadmap-arc-06.md): mapa del servidor, adaptadores API finos y auditoría de cuotas, purgas y almacenamiento.
 - ADOC-16 quedó cerrado y archivado en [`historial/roadmap-adoc-16.md`](../historial/roadmap-adoc-16.md): importación unificada y matriz de formatos.
-- ADOC-17 está activo en [`roadmap.md`](roadmap.md): varios documentos por proyecto, migración y gestión de la suite documental.
+- ADOC-17 quedó cerrado y archivado en [`historial/roadmap-adoc-17.md`](../historial/roadmap-adoc-17.md): suite de varios documentos, migración `legacy`, URL por documento y MCP con `documentoId`.
+- No hay roadmap activo en [`roadmap.md`](roadmap.md); el siguiente candidato es **ADOC-18**.

@@ -1,8 +1,37 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-17 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-21 — Roadmap ADOC-17 — Varios documentos y gestión de la suite
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Añadida la suite `aula_documents` con identidad `projectId + documentId`, metadatos y migración `legacy` idempotente desde `app_documents`.
+- El editor usa la persistencia por documento; la lista lateral permite crear, abrir, duplicar, renombrar, archivar, eliminar lógicamente y restaurar.
+- El último documento abierto se conserva en `localStorage`; la URL acepta `doc=<id>` y cae al primer activo con aviso si el enlace no pertenece al proyecto.
+- Copias portables y recuperaciones locales quedan asociadas al documento; las copias antiguas sin `document_id` y `app_documents` se conservan.
+- MCP `leer_diagrama` y `guardar_diagrama` aceptan `documentoId`; sin id resuelven `legacy` o el primer activo y devuelven conflicto si cambió la versión.
+- Invitados mantienen solo lectura; concurrencia optimista y límites de cuota por documento.
+- Documentación en `docs/developing/aula-documentos-suite.md`.
+
+### Verificación
+
+- `npm run check`: correcto.
+- `arch:check`: **428 archivos / 1.058 imports / 0 problemas**.
+- Suite completa: **252 archivos / 1.689 pruebas**.
+- Build, `app:budget`, `perf:budget` y `perf:office`: correctos.
+- Aula Documentos: **372.018 / 373.000 B gzip**.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ADOC-17 archivado en [`historial/roadmap-adoc-17.md`](../historial/roadmap-adoc-17.md). El backlog queda con **5 entradas**; siguiente candidato **ADOC-18**.
 
 ---
 
