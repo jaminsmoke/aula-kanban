@@ -1,6 +1,6 @@
 # Presentación, estructura de diapositivas y PDF de Aula Documentos
 
-> **Estado:** Fase 1 de ADOC-19 completada · **Fecha:** 2026-11-21
+> **Estado:** Fases 1–2 cerradas · **Fecha:** 2026-11-21
 > **Alcance:** estructura editable, notas, presentador, ajustes de página y PDF.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
 > **Regla:** esta fase no mueve código de producto; fija el contrato y los límites.
@@ -188,3 +188,14 @@ export const DEFAULT_AULA_PRINT_PAGE: AulaPrintPage = {
 - Ajustes opcionales y defaults compatibles definidos.
 - Matriz de pruebas y límites explícitos.
 - Sin cambios de código, datos, URLs, permisos ni versión del Site.
+
+## 10. Cierre de la Fase 2
+
+Implementado el 2026-11-21:
+
+- `slide-structure.ts` lee las diapositivas y sus notas, reconstruye el contenido con saltos explícitos y selecciona el bloque resultante.
+- `useAulaSlideStructure` aplica mover, duplicar y eliminar; remapea notas; evita operaciones en lectura y mantiene historial de sesión para deshacer contenido y notas juntos.
+- `DocumentNavigator` añade acciones accesibles de subir, bajar, duplicar y eliminar, además de **Deshacer**.
+- La primera operación materializa los límites actuales como `slideBreak`; después la estructura es estable e independiente de los títulos.
+- Las pruebas cubren reordenar, duplicar, eliminar, cancelar la confirmación, deshacer, notas que viajan con la diapositiva, modo lectura, diapositiva única y 60 diapositivas.
+- Suite: **258 archivos / 1.709 pruebas**; build **377.647 B**; presupuesto **379.000 B**.

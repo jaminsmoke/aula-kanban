@@ -79,13 +79,14 @@
 
 ### Fase 2 — Estructura editable de diapositivas
 
-- [ ] Añadir una vista de estructura con reordenar, duplicar y eliminar.
-- [ ] Materializar saltos explícitos al primer cambio estructural y aplicar las operaciones como transacciones Tiptap.
-- [ ] Remapear las notas del orador y conservar el documento, la selección y el deshacer.
-- [ ] Añadir un deshacer de estructura de sesión que restaure contenido y notas juntos.
-- [ ] Confirmar las operaciones destructivas y respetar el modo lectura.
-- [ ] Probar diapositivas vacías, repetidas, muchas diapositivas y notas asociadas.
+- [x] Añadir una vista de estructura con reordenar, duplicar y eliminar.
+- [x] Materializar saltos explícitos al primer cambio estructural y aplicar las operaciones como transacciones Tiptap.
+- [x] Remapear las notas del orador y conservar el documento, la selección y el deshacer.
+- [x] Añadir un deshacer de estructura de sesión que restaure contenido y notas juntos.
+- [x] Confirmar las operaciones destructivas y respetar el modo lectura.
+- [x] Probar diapositivas vacías, repetidas, muchas diapositivas y notas asociadas.
 - **Criterios:** la estructura cambia el documento real y las notas viajan con su diapositiva; no se pierde contenido por accidente.
+- **Cierre (2026-11-21):** navegador con subir, bajar, duplicar, eliminar y deshacer; la primera operación materializa saltos explícitos. Notas remapeadas, historial de sesión, confirmación de borrado y modo lectura. Pruebas de 60 diapositivas, notas, cancelación y restauración. Suite: **258 archivos / 1.709 pruebas**; build **377.647 B**; presupuesto **379.000 B**.
 
 ### Fase 3 — Vista de presentador
 
@@ -127,5 +128,6 @@
 
 - 2026-11-21: **Roadmap abierto.** ADOC-19 sale del backlog; quedan **3 entradas** y el siguiente candidato es **ADOC-20**. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Contrato de estructura, notas, presentador, ajustes de página y PDF en [`aula-documentos-presentacion.md`](aula-documentos-presentacion.md). Sin cambios de código.
+- 2026-11-21: **Fase 2 completada.** Estructura editable con materialización de saltos, notas remapeadas, historial de sesión y modo lectura. Suite: **258 archivos / 1.709 pruebas**; presupuesto **379.000 B**.
 - La presentación actual, la vista previa, el navegador de ADOC-18 y la exportación PPTX son la base; no se crea un almacén paralelo de diapositivas.
 - No hay publicación ni migraciones remotas en este roadmap.

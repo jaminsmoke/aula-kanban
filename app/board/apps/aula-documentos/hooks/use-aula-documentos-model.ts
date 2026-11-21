@@ -7,6 +7,7 @@ import { useAulaDocumentSuite } from "./use-aula-document-suite";
 import { useAulaSearch } from "./use-aula-search";
 import { useAulaNavigation } from "./use-aula-navigation";
 import { useAulaView } from "./use-aula-view";
+import { useAulaSlideStructure } from "./use-aula-slide-structure";
 import { useAulaSuiteController } from "./use-aula-suite-controller";
 import { useAulaPersistence } from "./use-aula-persistence";
 import { useAulaImages } from "./use-aula-images";
@@ -154,6 +155,15 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
   const suite = useAulaDocumentSuite(projectId);
   const search = useAulaSearch({ editor, readOnly, setStatus, documentId: suite.documentId });
   const view = useAulaView({ editor, searchOpen: search.searchOpen });
+  const slideStructure = useAulaSlideStructure({
+    editor,
+    documentId: suite.documentId,
+    readOnly,
+    presentationNotes,
+    setPresentationNotes,
+    markChanged,
+    setStatus,
+  });
 
   const {
     recoveryOpen,
@@ -581,6 +591,7 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     ...search,
     ...view,
     ...navigation,
+    ...slideStructure,
     ...toolbarModel,
   };
 }

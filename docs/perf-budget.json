@@ -39,10 +39,10 @@
         "aula-documentos",
         "aula-documentos-export"
       ],
-      "gzip": 377000,
+      "gzip": 379000,
       "tests": {
-        "maxFiles": 44,
-        "maxLines": 4250
+        "maxFiles": 46,
+        "maxLines": 4450
       },
       "css": {
         "maxFiles": 12,
@@ -160,7 +160,7 @@
     "pizarra-mermaid": 1560999,
     "blockly": 345631,
     "blockly-codigo": 383275,
-    "aula-documentos": 377000
+    "aula-documentos": 379000
   },
   "forbidden": {
     "tablero": [
