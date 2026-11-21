@@ -64,12 +64,13 @@
 
 ### Fase 1 — Inventario, contrato y modelo de búsqueda
 
-- [ ] Inventariar los nodos, marcas, tablas, imágenes y diapositivas que debe respetar la búsqueda.
-- [ ] Definir el contrato de resultados: posición, texto, contexto, índice y estado activo.
-- [ ] Decidir búsqueda por texto visible, mayúsculas y acentos; documentar límites.
-- [ ] Definir el esquema de títulos y el modelo de diapositivas.
-- [ ] Documentar el contrato en `docs/developing/aula-documentos-navegacion.md`.
+- [x] Inventariar los nodos, marcas, tablas, imágenes y diapositivas que debe respetar la búsqueda.
+- [x] Definir el contrato de resultados: posición, texto, contexto, índice y estado activo.
+- [x] Decidir búsqueda por texto visible, mayúsculas y acentos; documentar límites.
+- [x] Definir el esquema de títulos y el modelo de diapositivas.
+- [x] Documentar el contrato en `docs/developing/aula-documentos-navegacion.md`.
 - **Criterios:** búsqueda, reemplazo, esquema y diapositivas tienen un contrato común; no se mueve código todavía.
+- **Cierre (2026-11-21):** [`aula-documentos-navegacion.md`](aula-documentos-navegacion.md) fija búsqueda sobre texto visible, resultados por posiciones Tiptap, reemplazo transaccional, esquema H1–H3, diapositivas compartidas con la presentación, enfoque de sesión, barra de estado y atajos. Sin cambios de código.
 
 ### Fase 2 — Buscar y reemplazar
 
@@ -121,5 +122,6 @@
 
 - 2026-11-21: ADOC-18 sale del backlog y pasa a ser el roadmap activo. El backlog queda con **4 entradas**; siguiente candidato **ADOC-19**.
 - ADOC-17 queda cerrado y archivado en `docs/historial/roadmap-adoc-17.md`.
+- 2026-11-21: **Fase 1 completada.** Contrato de búsqueda, reemplazo, esquema, diapositivas, enfoque y barra de estado en [`aula-documentos-navegacion.md`](aula-documentos-navegacion.md). Sin cambios de código.
 - No se ha cambiado código de producto al abrir este roadmap; no hay publicación ni migraciones remotas.
 - El Site sigue en `1.1.37`.
