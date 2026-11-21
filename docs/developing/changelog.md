@@ -1,8 +1,38 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-19 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-21 — Roadmap ADOC-19 — Presentación y PDF de calidad
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- La estructura de diapositivas se puede reordenar, duplicar y eliminar desde el navegador, con materialización automática de `slideBreak` en la primera edición.
+- Las notas del orador viajan con su diapositiva y se remapean al mover, duplicar o eliminar; un historial de estructura de sesión restaura contenido y notas juntos.
+- Confirmación antes de eliminar, bloqueo en modo lectura y acciones accesibles con número, título, estado desactivado y foco visible.
+- **Presentador** muestra notas actuales, posición y siguiente diapositiva dentro de la presentación; se adapta a pantallas estrechas y conserva `Escape` y el foco.
+- Ajustes opcionales `presentation.page`: tamaño A4/Carta, orientación, márgenes y numeración, con defaults compatibles y sin cambiar `schemaVersion`.
+- **PDF de diapositivas** e impresión del documento aplican `@page`, saltos, numeración y recursos incrustados; las notas privadas no se imprimen.
+- Ayuda y contrato actualizados en `docs/developing/aula-documentos-presentacion.md`.
+- Sin cambios en URLs, permisos, MCP ni versión del Site.
+
+### Verificación
+
+- `npm run check`: correcto.
+- `arch:check`: **440 archivos / 1.078 imports / 0 problemas**.
+- Suite completa: **258 archivos / 1.714 pruebas**.
+- Build, `app:budget`, `perf:budget` y `perf:office`: correctos.
+- Aula Documentos: **378.750 / 379.000 B gzip**.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ADOC-19 archivado en [`historial/roadmap-adoc-19.md`](../historial/roadmap-adoc-19.md). El backlog queda con **3 entradas**; siguiente candidato **ADOC-20**.
 
 ---
 

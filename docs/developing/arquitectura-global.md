@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01, DEV-02, ARC-02, ARC-03, ARC-04, ARC-05 y ARC-06 completados; ADOC-18 completado; ADOC-19 activo · **Fecha:** 2026-11-21
+> **Estado:** ARC-01, DEV-02, ARC-02, ARC-03, ARC-04, ARC-05 y ARC-06 completados; ADOC-18 y ADOC-19 completados; sin roadmap activo · **Fecha:** 2026-11-21
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -230,4 +230,5 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - ADOC-16 quedó cerrado y archivado en [`historial/roadmap-adoc-16.md`](../historial/roadmap-adoc-16.md): importación unificada y matriz de formatos.
 - ADOC-17 quedó cerrado y archivado en [`historial/roadmap-adoc-17.md`](../historial/roadmap-adoc-17.md): suite de varios documentos, migración `legacy`, URL por documento y MCP con `documentoId`.
 - ADOC-18 quedó cerrado y archivado en [`historial/roadmap-adoc-18.md`](../historial/roadmap-adoc-18.md): búsqueda y reemplazo, esquema de títulos, navegación de diapositivas, enfoque y accesibilidad.
-- ADOC-19 está activo en [`roadmap.md`](roadmap.md): estructura editable de diapositivas, vista de presentador, ajustes de página y PDF de calidad.
+- ADOC-19 quedó cerrado y archivado en [`historial/roadmap-adoc-19.md`](../historial/roadmap-adoc-19.md): estructura editable de diapositivas, presentador, ajustes de página y PDF de calidad.
+- No hay roadmap activo en [`roadmap.md`](roadmap.md); el siguiente candidato es **ADOC-20**.

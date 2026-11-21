@@ -44,7 +44,7 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 | Calculadora · abrir Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
 | Calculadora · primer `=` en Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
 | Calculadora · Científica/Ecuaciones | 6.606,2 KiB | 1.915,4 KiB (1.961.393 B) | 2.069.960 B | 19 |
-| Aula Documentos · abrir | 1.222,6 KiB | 369,9 KiB (378.741 B) | 379.000 B | 48 |
+| Aula Documentos · abrir | 1.222,6 KiB | 369,9 KiB (378.750 B) | 379.000 B | 48 |
 | Tienda · abrir | 544,7 KiB | 169,1 KiB (173.195 B) | 174.779 B | 20 |
 | Pizarra · abrir | 3.441,7 KiB | 1.214,2 KiB (1.243.296 B) | 1.348.890 B | 23 |
 | Pizarra · conversión Mermaid | 4.206,4 KiB | 1.412,2 KiB (1.446.106 B) | 1.560.999 B | 51 |
@@ -69,7 +69,7 @@ Los totales incluyen el framework y la entrada compartida. La comparación útil
 | Pizarra | 2 | 1.560.999 B | 7 / 439 → 8 / 490 | 1 / 9 → 2 / 12 |
 | Blockly | 2 | 383.275 B | 4 / 113 → 5 / 130 | 1 / 39 → 2 / 50 |
 
-Los límites de test y CSS tienen un margen deliberado para evitar que una prueba pequeña rompa CI; el límite de gzip de la app nunca puede ser menor que el de su flujo más pesado. Los flujos `aula-documentos-export`, `basica`, `basica-evalua`, `pizarra-mermaid` y `blockly-codigo` siguen teniendo su propio presupuesto aunque compartan app. El presupuesto de `aula-documentos` se ajustó a **379.000 B** con la estructura editable de diapositivas de ADOC-19; el build de referencia queda en **378.741 B**.
+Los límites de test y CSS tienen un margen deliberado para evitar que una prueba pequeña rompa CI; el límite de gzip de la app nunca puede ser menor que el de su flujo más pesado. Los flujos `aula-documentos-export`, `basica`, `basica-evalua`, `pizarra-mermaid` y `blockly-codigo` siguen teniendo su propio presupuesto aunque compartan app. El presupuesto de `aula-documentos` se ajustó a **379.000 B** con la estructura editable de diapositivas de ADOC-19; el build de referencia queda en **378.750 B**.
 
 ### Latencia e imágenes
 

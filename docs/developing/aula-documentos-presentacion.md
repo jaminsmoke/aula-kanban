@@ -1,6 +1,6 @@
 # Presentación, estructura de diapositivas y PDF de Aula Documentos
 
-> **Estado:** Fases 1–4 cerradas · **Fecha:** 2026-11-21
+> **Estado:** Completado (ADOC-19) · **Fecha:** 2026-11-21
 > **Alcance:** estructura editable, notas, presentador, ajustes de página y PDF.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
 > **Regla:** esta fase no mueve código de producto; fija el contrato y los límites.
@@ -222,3 +222,15 @@ Implementado el 2026-11-21:
 - `buildAulaDocumentHtml` y `buildAulaPresentationHtml` generan `@page` y saltos; el PDF de diapositivas omite notas privadas y conserva imágenes, tablas y diagramas incrustados.
 - Se añadieron pruebas de validación, CSS de página, numeración, guardado de ajustes y PDF sin notas.
 - Suite: **258 archivos / 1.714 pruebas**; build **378.741 B**; presupuesto **379.000 B**.
+
+## 13. Cierre de ADOC-19
+
+Cerrado el 2026-11-21:
+
+- Roadmap archivado en [`historial/roadmap-adoc-19.md`](../historial/roadmap-adoc-19.md).
+- Estructura, presentador, PDF y PPTX comparten `buildPresentationSlides` y el documento Tiptap activo.
+- `presentation.page` es opcional, compatible y validado; documentos antiguos conservan los defaults.
+- Ayuda, contrato, changelog, backlog y presupuesto actualizados.
+- `npm run check`, **258 archivos / 1.714 pruebas**, build, `perf:budget`, `app:budget` y `perf:office` correctos.
+- Aula Documentos: **378.750 / 379.000 B gzip**; Site sin cambios en `1.1.37`.
+- El backlog queda con **3 entradas**; siguiente candidato **ADOC-20**.
