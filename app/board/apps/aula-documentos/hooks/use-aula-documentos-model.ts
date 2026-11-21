@@ -3,6 +3,8 @@ import type { Editor } from "@tiptap/core";
 import type { StoreRole } from "../../types";
 import { useDialogFocus } from "../../../shared/use-dialog-focus";
 import { useAulaSession } from "./use-aula-session";
+import { useAulaDocumentSuite } from "./use-aula-document-suite";
+import { useAulaSuiteController } from "./use-aula-suite-controller";
 import { useAulaPersistence } from "./use-aula-persistence";
 import { useAulaImages } from "./use-aula-images";
 import { useAulaLink } from "./use-aula-link";
@@ -168,6 +170,8 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
   });
   useDialogFocus(recoveryOpen, closeRecoveryCopies, recoveryRef);
 
+  const suite = useAulaDocumentSuite(projectId);
+
   const {
     loading,
     error,
@@ -195,6 +199,7 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     keepMineVersion,
   } = useAulaPersistence({
     projectId,
+    documentId: suite.documentId,
     readOnly,
     title,
     setTitle,
@@ -335,6 +340,14 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
   });
   useDialogFocus(importOpen, closeImport, importRef, actionsToggleRef);
   useDialogFocus(officePreviewOpen, closeOfficePreview, officePreviewRef);
+
+  const suiteActions = useAulaSuiteController({
+    suite,
+    dirty,
+    saveCurrent,
+    setTitle,
+    storeRecoveryCopy,
+  });
 
   const toolbarModel = useAulaToolbarModel({
     loading,
@@ -551,6 +564,11 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     importMarkdown,
     importOffice,
     applyImport,
+    suite: suite.suite,
+    suiteDocumentId: suite.documentId,
+    suiteLoading: suite.loading,
+    suiteError: suite.error,
+    ...suiteActions,
     ...toolbarModel,
   };
 }

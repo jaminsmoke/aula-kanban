@@ -114,3 +114,60 @@ export async function selectAulaDocumentUpdatedAt(projectId: string, id: string)
     .where(and(eq(aulaDocuments.projectId, projectId), eq(aulaDocuments.id, id)));
   return row?.updatedAt ?? null;
 }
+
+/**
+ * Renombra un documento y actualiza su versión.
+ * @param projectId - Proyecto activo.
+ * @param id - Documento.
+ * @param title - Título nuevo.
+ * @param updatedBy - Cuenta que realiza el cambio.
+ * @returns La fila actualizada o `null`.
+ */
+export async function updateAulaDocumentTitle(
+  projectId: string,
+  id: string,
+  title: string,
+  updatedBy: string | null,
+): Promise<AulaDocumentRow | null> {
+  const now = Date.now();
+  const [row] = await getDb()
+    .update(aulaDocuments)
+    .set({
+      title,
+      updatedAt: sql<number>`max(${now}, ${aulaDocuments.updatedAt} + 1)`,
+      updatedBy,
+    })
+    .where(and(eq(aulaDocuments.projectId, projectId), eq(aulaDocuments.id, id)))
+    .returning();
+  return row ?? null;
+}
+
+/**
+ * Cambia el estado de archivo de un documento.
+ * @param projectId - Proyecto activo.
+ * @param id - Documento.
+ * @param status - Estado nuevo.
+ * @param archivedAt - Fecha de archivo o `null`.
+ * @param updatedBy - Cuenta que realiza el cambio.
+ * @returns La fila actualizada o `null`.
+ */
+export async function updateAulaDocumentStatus(
+  projectId: string,
+  id: string,
+  status: "active" | "archived" | "deleted",
+  archivedAt: number | null,
+  updatedBy: string | null,
+): Promise<AulaDocumentRow | null> {
+  const now = Date.now();
+  const [row] = await getDb()
+    .update(aulaDocuments)
+    .set({
+      status,
+      archivedAt,
+      updatedAt: sql<number>`max(${now}, ${aulaDocuments.updatedAt} + 1)`,
+      updatedBy,
+    })
+    .where(and(eq(aulaDocuments.projectId, projectId), eq(aulaDocuments.id, id)))
+    .returning();
+  return row ?? null;
+}

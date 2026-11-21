@@ -84,7 +84,35 @@ vi.mock("../app/board/shared/aula-documentos/mermaid-renderer", () => ({
   normalizeMermaidSvg: (svg: string) => svg,
 }));
 
-export { officeImportMock, documentMock, mermaidMock, printMock, copyMock };
+const suiteMock = {
+  suite: { active: [], archived: [], deleted: [] },
+  documentId: "legacy",
+  loading: false,
+  error: null,
+  refresh: vi.fn(),
+  selectDocument: vi.fn(),
+  createDocument: vi.fn(),
+  duplicateDocument: vi.fn(),
+  renameDocument: vi.fn(),
+  archiveDocument: vi.fn(),
+  deleteDocument: vi.fn(),
+  restoreDocument: vi.fn(),
+};
+
+vi.mock("../app/board/apps/aula-documentos/hooks/use-aula-document-suite", () => ({
+  useAulaDocumentSuite: () => suiteMock,
+}));
+
+vi.mock("../app/board/apps/aula-documentos/hooks/use-aula-document-api", () => ({
+  useAulaDocumentApi: () => ({
+    load: documentMock.load,
+    saveVersioned: documentMock.saveVersioned,
+    loading: documentMock.loading,
+    error: null,
+  }),
+}));
+
+export { officeImportMock, documentMock, mermaidMock, printMock, copyMock, suiteMock };
 export { WindowCloseProvider } from "../app/board/shared/window-close-guard";
 
 /**

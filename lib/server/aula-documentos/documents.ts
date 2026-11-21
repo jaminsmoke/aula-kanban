@@ -1,4 +1,5 @@
 import { MAX_APP_DOCUMENT_CHARS, readAppDocument } from "../apps/app-documents";
+import { AULA_DOCUMENT_TITLE_MAX_LENGTH, createEmptyAulaDocument } from "../../domain/aula-documentos/document";
 import { contentText } from "../../domain/aula-documentos/text";
 import { parseAulaDocument } from "../../domain/aula-documentos/document-validation";
 import {
@@ -7,6 +8,8 @@ import {
   selectAulaDocumentSummaries,
   selectAulaDocumentUpdatedAt,
   updateAulaDocumentRowIfCurrent,
+  updateAulaDocumentStatus,
+  updateAulaDocumentTitle,
   type AulaDocumentRow,
   type AulaDocumentWrite,
 } from "./documents-repository";
@@ -200,4 +203,115 @@ export async function saveAulaDocumentIfCurrent(input: {
   const saved = await updateAulaDocumentRowIfCurrent({ ...write, expectedUpdatedAt: input.expectedUpdatedAt });
   if (saved !== null) return { status: "saved", updatedAt: saved };
   return { status: "conflict", updatedAt: await selectAulaDocumentUpdatedAt(input.projectId, input.id) };
+}
+
+/** Resultado de crear o duplicar un documento. */
+export type CreateAulaDocumentResult =
+  | { status: "created"; document: AulaDocumentSummary }
+  | { status: "too-large" }
+  | { status: "invalid" };
+
+/**
+ * Crea un documento vacío o con un estado inicial.
+ * @param input - Proyecto, título, estado opcional y autor.
+ * @returns El documento creado.
+ */
+export async function createAulaDocument(input: {
+  projectId: string;
+  title?: string;
+  state?: unknown;
+  createdBy: string | null;
+}): Promise<CreateAulaDocumentResult> {
+  const state = input.state ?? createEmptyAulaDocument(input.title);
+  const parsed = parseAulaDocument(state);
+  const title = (input.title?.trim() || (parsed.ok ? parsed.document.title : "") || "Documento sin título")
+    .slice(0, AULA_DOCUMENT_TITLE_MAX_LENGTH);
+  let serialized: string;
+  try {
+    serialized = JSON.stringify(state);
+  } catch {
+    return { status: "invalid" };
+  }
+  if (serialized.length > MAX_APP_DOCUMENT_CHARS) return { status: "too-large" };
+
+  const metadata = metadataFromState(state);
+  const now = Date.now();
+  const inserted = await insertAulaDocumentRow({
+    projectId: input.projectId,
+    id: globalThis.crypto.randomUUID(),
+    title,
+    excerpt: metadata.excerpt,
+    state: serialized,
+    status: "active",
+    createdAt: now,
+    updatedAt: now,
+    archivedAt: null,
+    createdBy: input.createdBy,
+    updatedBy: input.createdBy,
+  });
+  return inserted ? { status: "created", document: summaryFromRow(inserted) } : { status: "invalid" };
+}
+
+/**
+ * Duplica un documento existente en uno nuevo.
+ * @param projectId - Proyecto activo.
+ * @param sourceId - Documento de origen.
+ * @param createdBy - Cuenta que duplica.
+ * @returns El documento creado o `null` si el origen no existe.
+ */
+export async function duplicateAulaDocument(
+  projectId: string,
+  sourceId: string,
+  createdBy: string | null,
+): Promise<CreateAulaDocumentResult | null> {
+  const source = await selectAulaDocumentRow(projectId, sourceId);
+  if (!source) return null;
+  const title = `${source.title} (copia)`.slice(0, AULA_DOCUMENT_TITLE_MAX_LENGTH);
+  const parsed = parseAulaDocument(JSON.parse(source.state) as unknown);
+  const state = parsed.ok ? { ...parsed.document, title } : JSON.parse(source.state) as unknown;
+  return createAulaDocument({ projectId, title, state, createdBy });
+}
+
+/**
+ * Renombra un documento.
+ * @param projectId - Proyecto activo.
+ * @param id - Documento.
+ * @param title - Título nuevo.
+ * @param updatedBy - Cuenta que cambia el título.
+ * @returns El resumen actualizado o `null`.
+ */
+export async function renameAulaDocument(
+  projectId: string,
+  id: string,
+  title: string,
+  updatedBy: string | null,
+): Promise<AulaDocumentSummary | null> {
+  const normalized = (title.trim() || "Documento sin título").slice(0, AULA_DOCUMENT_TITLE_MAX_LENGTH);
+  const row = await updateAulaDocumentTitle(projectId, id, normalized, updatedBy);
+  return row ? summaryFromRow(row) : null;
+}
+
+/**
+ * Archiva, elimina lógicamente o restaura un documento.
+ * @param projectId - Proyecto activo.
+ * @param id - Documento.
+ * @param status - Estado nuevo.
+ * @param updatedBy - Cuenta que cambia el estado.
+ * @returns El resumen actualizado o `null`.
+ */
+export async function changeAulaDocumentStatus(
+  projectId: string,
+  id: string,
+  status: "active" | "archived" | "deleted",
+  updatedBy: string | null,
+): Promise<AulaDocumentSummary | null> {
+  await migrateLegacyAulaDocument(projectId);
+  const row = await updateAulaDocumentStatus(
+    projectId,
+    id,
+    status,
+    status === "active" ? null : Date.now(),
+    updatedBy,
+  );
+  return row ? summaryFromRow(row) : null;
 }

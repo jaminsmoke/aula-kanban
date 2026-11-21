@@ -84,12 +84,13 @@
 
 ### Fase 3 — Lista y ciclo de vida
 
-- [ ] Crear la lista de documentos con fecha, extracto y estado.
-- [ ] Implementar crear, duplicar, renombrar, archivar, eliminar con copia y restaurar.
-- [ ] Recordar el último documento abierto por cuenta y proyecto.
-- [ ] Añadir estados vacíos, errores, foco, teclado y comportamiento móvil.
-- [ ] Probar creación, duplicado, renombrado, restauración y cancelación.
+- [x] Crear la lista de documentos con fecha, extracto y estado.
+- [x] Implementar crear, duplicar, renombrar, archivar, eliminar con copia y restaurar.
+- [x] Recordar el último documento abierto por cuenta y proyecto.
+- [x] Añadir estados vacíos, errores, foco, teclado y comportamiento móvil.
+- [x] Probar creación, duplicado, renombrado, restauración y cancelación.
 - **Criterios:** se puede gestionar una suite sin perder el documento actual y sin depender de una acción oculta.
+- **Cierre (2026-11-21):** panel de documentos en el lateral con lista, extracto, fecha, activo, archivo y papelera; crear/duplicar/renombrar/archivar/eliminar lógico/restaurar; guardado previo al cambio y último abierto en `localStorage`. Endpoints de creación y acciones, pruebas de API, hook, panel y cancelación. Sin cambios de versión.
 
 ### Fase 4 — URL, permisos, MCP y concurrencia
 
@@ -126,5 +127,6 @@
 - ADOC-16 queda cerrado y archivado en `docs/historial/roadmap-adoc-16.md`.
 - 2026-11-21: **Fase 1 completada.** Contrato y mapa en [`aula-documentos-suite.md`](aula-documentos-suite.md): identidad estable, metadatos, estados, migración `legacy`, copias/recuperación por documento, URL profunda y MCP con id explícito. Hoja de cálculo queda fuera. Sin cambios de código.
 - 2026-11-21: **Fase 2 completada.** Persistencia de la suite, migración `legacy`, lista y lectura, guardado con conflicto, copias etiquetadas por documento y recuperaciones locales separadas. `app_documents` se conserva intacto. Suite: **249 archivos / 1.678 pruebas**. Sin cambios de UI ni versión.
+- 2026-11-21: **Fase 3 completada.** Panel de suite, ciclo de vida completo y último documento abierto; endpoints de creación/acciones y pruebas de API, hook y panel. Suite: **252 archivos / 1.686 pruebas**. Presupuesto `aula-documentos` ajustado a **373.000 B** por la UI de la suite; build actual **371.807 B**.
 - No se ha cambiado código de producto al abrir este roadmap; no hay publicación ni migraciones remotas.
 - El Site sigue en `1.1.37`.

@@ -1,7 +1,7 @@
 # Suite documental de Aula Documentos
 
-> **Estado:** Fases 1 y 2 de ADOC-17 · **Fecha:** 2026-11-21
-> **Alcance:** contrato, modelo de datos, migración y persistencia backend.
+> **Estado:** Fases 1 a 3 de ADOC-17 · **Fecha:** 2026-11-21
+> **Alcance:** contrato, modelo de datos, migración, persistencia backend y gestión visual.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Arquitectura:** [`arquitectura-global.md`](arquitectura-global.md)
 
 ---
@@ -208,3 +208,18 @@ Implementado el 2026-11-21:
 - Pruebas de migración SQL, migración repetida, conflicto optimista, límites, API, copias y recuperación local.
 
 El rollback local consiste en dejar de leer `aula_documents` y conservar `app_documents`; después del primer guardado nuevo, los documentos adicionales deben exportarse antes de revertir. No hay migraciones remotas ni cambios de UI en esta fase.
+
+## 12. Cierre de la Fase 3
+
+Implementado el 2026-11-21:
+
+- El panel lateral **Documentos** muestra título, extracto, fecha, documento activo, archivados y papelera.
+- Acciones: nuevo, abrir, duplicar, renombrar, archivar, eliminar lógico y restaurar.
+- El último documento abierto se guarda en `localStorage` por proyecto; un documento activo inválido cae al primero disponible.
+- `useAulaPersistence` usa la API de la suite y conserva conflicto optimista, autosave, recuperación y cierre seguro.
+- Crear y duplicar generan un id nuevo; archivar/eliminar no borran el contenido y se pueden restaurar.
+- Al cambiar de documento se intenta guardar el actual; si no se puede, no se pierde el documento abierto.
+- La eliminación lógica conserva el contenido en la papelera; el usuario recibe confirmación y puede restaurarlo.
+- Pruebas de endpoints de creación/acciones, hook de suite, panel visual, renombrado, cancelación y restauración.
+
+Limitación de esta fase: MCP y las URLs profundas con `doc` se conectan en la Fase 4; hasta entonces el panel usa el último abierto local y MCP sigue leyendo la fila `legacy`.

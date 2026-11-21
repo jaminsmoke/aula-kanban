@@ -9,12 +9,13 @@ import { aulaRecoveryFileName } from "../../../../../lib/domain/aula-documentos/
 import type { AulaRecoveryReason } from "../../../../../lib/domain/aula-documentos/recovery";
 import { useWindowClose, useWindowCloseGuard } from "../../../shared/window-close-guard";
 import { useDialogFocus } from "../../../shared/use-dialog-focus";
-import { useAppDocument, type VersionedSaveResult } from "../../use-app-document";
+import { useAulaDocumentApi, type VersionedSaveResult } from "./use-aula-document-api";
 import { AUTOSAVE_DELAY_MS, type SaveConflict } from "../aula-documentos-types";
 import { downloadTextFile } from "../../../shared/ui/download";
 
 type PersistenceDeps = {
   projectId: string;
+  documentId: string | null;
   readOnly: boolean;
   title: string;
   setTitle: (title: string) => void;
@@ -45,6 +46,7 @@ type PersistenceDeps = {
  */
 export function useAulaPersistence({
   projectId,
+  documentId,
   readOnly,
   title,
   setTitle,
@@ -75,7 +77,7 @@ export function useAulaPersistence({
   const invalidDocumentRef = useRef<HTMLElement>(null);
   const closePromptRef = useRef<HTMLElement>(null);
   const conflictRef = useRef<HTMLElement>(null);
-  const { load, saveVersioned, loading, error } = useAppDocument<AulaDocument>(projectId, "aula-documentos");
+  const { load, saveVersioned, loading, error } = useAulaDocumentApi(projectId, documentId);
   const requestWindowClose = useWindowClose();
 
   useDialogFocus(Boolean(invalidDocument), () => {}, invalidDocumentRef);
