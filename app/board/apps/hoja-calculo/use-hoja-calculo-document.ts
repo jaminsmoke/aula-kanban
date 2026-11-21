@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { StoreRole } from "../types";
 import { useAppDocument } from "../use-app-document";
 import {
@@ -22,7 +22,9 @@ export function useHojaCalculoDocument(projectId: string, role: StoreRole) {
   const [status, setStatus] = useState("Hoja de ejemplo lista.");
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
-  const { load, save, loading, error } = useAppDocument<SpreadsheetDocument>(projectId, "hoja-calculo");
+  const [loadFailed, setLoadFailed] = useState(false);
+  const versionRef = useRef<number | null>(null);
+  const { load, saveVersioned, loading, error } = useAppDocument<SpreadsheetDocument>(projectId, "hoja-calculo");
   const readOnly = role === "guest";
 
   const applyDocument = useCallback((nextDocument: SpreadsheetDocument, message: string) => {
@@ -34,13 +36,25 @@ export function useHojaCalculoDocument(projectId: string, role: StoreRole) {
 
   useEffect(() => {
     let active = true;
-    void load().then(({ state }) => {
+    void load().then(({ state, updatedAt, ok }) => {
       if (!active) return;
+      if (ok === false) {
+        setLoadFailed(true);
+        setStatus("No se pudo cargar la hoja guardada. Se conserva la hoja actual.");
+        return;
+      }
       const parsed = parseSpreadsheetDocument(state);
       if (parsed) {
+        versionRef.current = updatedAt;
+        setLoadFailed(false);
         applyDocument(parsed, "Hoja guardada cargada.");
-      } else {
+      } else if (state === null) {
+        versionRef.current = null;
+        setLoadFailed(false);
         setStatus("Hoja de ejemplo lista. Guarda para conservarla.");
+      } else {
+        setLoadFailed(true);
+        setStatus("La hoja guardada no es válida. Se conserva la hoja actual.");
       }
     });
     return () => { active = false; };
@@ -51,27 +65,56 @@ export function useHojaCalculoDocument(projectId: string, role: StoreRole) {
 
   const saveDocument = useCallback(async (nextDocument: SpreadsheetDocument) => {
     if (readOnly) return false;
+    if (loadFailed) {
+      setStatus("No se puede guardar hasta recuperar la hoja guardada.");
+      return false;
+    }
     setSaving(true);
-    const ok = await save(nextDocument);
+    const result = await saveVersioned(nextDocument, versionRef.current);
     setSaving(false);
-    if (ok) {
+    if (result.status === "saved") {
+      versionRef.current = result.updatedAt;
       setDirty(false);
       setStatus("Hoja guardada en el proyecto.");
-    } else {
-      setStatus("No se pudo guardar la hoja. Revisa la conexión.");
+      return true;
     }
-    return ok;
-  }, [readOnly, save]);
+    if (result.status === "conflict") {
+      setDirty(true);
+      setStatus("La hoja ha cambiado en otra sesión. Tus cambios siguen aquí; usa Cargar para revisar la versión guardada.");
+      return false;
+    }
+    setStatus("No se pudo guardar la hoja. Revisa la conexión.");
+    return false;
+  }, [loadFailed, readOnly, saveVersioned]);
 
   const reloadDocument = useCallback(async () => {
-    const { state } = await load();
+    if (dirty && typeof window !== "undefined" && !window.confirm(
+      "Hay cambios sin guardar. ¿Cargar la versión guardada y descartar los cambios locales?",
+    )) {
+      return;
+    }
+    const { state, updatedAt, ok } = await load();
+    if (ok === false) {
+      setLoadFailed(true);
+      setStatus("No se pudo cargar la hoja guardada. Se conserva la hoja actual.");
+      return;
+    }
     const parsed = parseSpreadsheetDocument(state);
     if (parsed) {
+      versionRef.current = updatedAt;
+      setLoadFailed(false);
       applyDocument(parsed, "Hoja guardada cargada.");
-    } else {
-      setStatus("No hay una hoja guardada válida; se mantiene la actual.");
+      return;
     }
-  }, [applyDocument, load]);
+    if (state === null) {
+      versionRef.current = null;
+      setLoadFailed(false);
+      setStatus("No hay una hoja guardada; se mantiene la hoja actual.");
+      return;
+    }
+    setLoadFailed(true);
+    setStatus("La hoja guardada no es válida; se mantiene la hoja actual.");
+  }, [applyDocument, dirty, load]);
 
   return {
     documentValue,

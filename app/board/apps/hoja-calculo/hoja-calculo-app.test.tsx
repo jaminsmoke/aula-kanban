@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { VersionedSaveResult } from "../use-app-document";
 import { computeSheetDisplay } from "./hoja-calculo-calc";
 import { STARTER_SHEET } from "./hoja-calculo-model";
 
@@ -27,8 +28,8 @@ const spreadsheetMock = vi.hoisted(() => {
 });
 
 const documentMock = vi.hoisted(() => ({
-  load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null }> => ({ state: null, updatedAt: null })),
-  save: vi.fn(async (_state: unknown) => true),
+  load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null; ok?: boolean }> => ({ state: null, updatedAt: null, ok: true })),
+  saveVersioned: vi.fn(async (_state: unknown, _updatedAt: number | null): Promise<VersionedSaveResult> => ({ status: "saved", updatedAt: 100 })),
 }));
 
 vi.mock("jspreadsheet-ce", () => ({
@@ -38,7 +39,7 @@ vi.mock("jspreadsheet-ce", () => ({
 vi.mock("../use-app-document", () => ({
   useAppDocument: () => ({
     load: documentMock.load,
-    save: documentMock.save,
+    saveVersioned: documentMock.saveVersioned,
     loading: false,
     error: null,
   }),
@@ -52,8 +53,8 @@ describe("Hoja de cálculo", () => {
   afterEach(() => {
     vi.clearAllMocks();
     spreadsheetMock.worksheet.getStyle.mockReturnValue({});
-    documentMock.load.mockResolvedValue({ state: null, updatedAt: null });
-    documentMock.save.mockResolvedValue(true);
+    documentMock.load.mockResolvedValue({ state: null, updatedAt: null, ok: true });
+    documentMock.saveVersioned.mockResolvedValue({ status: "saved", updatedAt: 100 });
   });
 
   it("monta la rejilla con la hoja de ejemplo", async () => {
@@ -135,8 +136,8 @@ describe("Hoja de cálculo", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Guardar hoja" }));
 
-    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
-    const saved = documentMock.save.mock.calls[0][0] as { data: unknown[][]; styles: Record<string, string> };
+    await waitFor(() => expect(documentMock.saveVersioned).toHaveBeenCalledTimes(1));
+    const saved = documentMock.saveVersioned.mock.calls[0][0] as { data: unknown[][]; styles: Record<string, string> };
     expect(saved.data).toHaveLength(20);
     expect(saved.styles).toEqual({});
     expect(screen.getByRole("status").textContent).toContain("guardada en el proyecto");
@@ -149,10 +150,38 @@ describe("Hoja de cálculo", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Guardar hoja" }));
 
-    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
-    const saved = documentMock.save.mock.calls[0][0] as { data: string[][] };
+    await waitFor(() => expect(documentMock.saveVersioned).toHaveBeenCalledTimes(1));
+    const saved = documentMock.saveVersioned.mock.calls[0][0] as { data: string[][] };
     expect(saved.data[2][3]).toBe("=B3*C3");
     expect(saved.data[5][3]).toBe("=SUM(D3:D5)");
+  });
+
+  it("conserva el borrador y avisa si la hoja cambió en otra sesión", async () => {
+    documentMock.load.mockResolvedValueOnce({
+      state: { data: [["Guardada", "=1+1"]] },
+      updatedAt: 7,
+      ok: true,
+    });
+    documentMock.saveVersioned.mockResolvedValueOnce({ status: "conflict", updatedAt: 9 });
+    render(<HojaCalculoApp {...props} />);
+    await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Guardar hoja" }));
+
+    await waitFor(() => expect(documentMock.saveVersioned).toHaveBeenCalledWith(expect.anything(), 7));
+    expect(screen.getByRole("status").textContent).toContain("otra sesión");
+    expect(screen.getByRole("status").textContent).toContain("Cambios sin guardar");
+  });
+
+  it("no guarda una hoja nueva si falla la carga inicial", async () => {
+    documentMock.load.mockResolvedValueOnce({ state: null, updatedAt: null, ok: false });
+    render(<HojaCalculoApp {...props} />);
+    await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
+
+    fireEvent.click(screen.getByRole("button", { name: "Guardar hoja" }));
+
+    expect(documentMock.saveVersioned).not.toHaveBeenCalled();
+    expect(screen.getByRole("status").textContent).toContain("No se puede guardar");
   });
 
   it("recalcula los totales al editar una cantidad", async () => {

@@ -67,12 +67,13 @@
 
 ### Fase 2 — Piloto de Hoja de cálculo
 
-- [ ] Sustituir el guardado sin versión por `saveVersioned` en Hoja de cálculo.
-- [ ] Guardar la versión conocida tras una carga correcta y no tras un fallo de lectura.
-- [ ] Conservar el documento local y mostrar un estado de conflicto sin sobrescribir.
-- [ ] Mantener permisos de invitado, autosave y recuperación actuales.
-- [ ] Probar dos sesiones, conflicto, fallo de carga, reintento y cierre.
+- [x] Sustituir el guardado sin versión por `saveVersioned` en Hoja de cálculo.
+- [x] Guardar la versión conocida tras una carga correcta y no tras un fallo de lectura.
+- [x] Conservar el documento local y mostrar un estado de conflicto sin sobrescribir.
+- [x] Mantener permisos de invitado, autosave y recuperación actuales.
+- [x] Probar dos sesiones, conflicto, fallo de carga, reintento y cierre.
 - **Criterios:** dos sesiones no se pisan; el borrador local se conserva; un fallo de carga no habilita una escritura destructiva.
+- **Cierre (2026-11-21):** Hoja de cálculo usa `saveVersioned` con la versión cargada. Un fallo de lectura bloquea el guardado; un conflicto conserva el borrador y pide una recarga explícita. Pruebas de conflicto y fallo de carga añadidas. Arquitectura **459 archivos / 1.149 imports**; suite **265 archivos / 1.749 pruebas**; build **386.274 B**; Hoja **311.071 / 315.000 B**.
 
 ### Fase 3 — Extraer el contrato validado
 
@@ -112,5 +113,6 @@
 
 - 2026-11-21: **Roadmap abierto.** ARC-09 sale del backlog; quedan **2 entradas** y el siguiente candidato es **ARC-10**. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Inventario y contrato de guardado en [`guardado-versionado.md`](guardado-versionado.md). Hoja de cálculo será el piloto; Aula y Blockly conservan sus contratos. Arquitectura **459 archivos / 1.149 imports**; suite **265 archivos / 1.747 pruebas**. Sin mover código.
+- 2026-11-21: **Fase 2 completada.** Hoja de cálculo usa `saveVersioned`, bloquea el guardado tras un fallo de carga y conserva el borrador ante conflicto. Pruebas de conflicto y carga fallida añadidas. Arquitectura **459 archivos / 1.149 imports**; suite **265 archivos / 1.749 pruebas**; build **386.274 B**; Hoja **311.071 B**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

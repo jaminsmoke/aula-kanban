@@ -1,6 +1,6 @@
 # Guardado con versión entre editores
 
-> **Estado:** ARC-09, Fase 1 · **Fecha:** 2026-11-21
+> **Estado:** ARC-09, Fases 1–2 · **Fecha:** 2026-11-21
 > **Alcance:** `useAppDocument`, `useAulaDocumentApi`, persistencia de las apps y recuperación local.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -89,3 +89,12 @@
 - El piloto de Hoja de cálculo tiene criterios de conflicto y fallo de carga definidos.
 - Está claro qué se comparte y qué se conserva local.
 - No se ha cambiado código de producto en esta fase.
+
+## 10. Aplicado en la Fase 2
+
+- Hoja de cálculo registra la versión solo después de una carga válida.
+- `saveDocument` usa `saveVersioned` y conserva el `updatedAt` tras un guardado correcto.
+- Ante un 409 mantiene el documento local, marca los cambios como pendientes y pide una recarga explícita.
+- Si falla la carga inicial o el estado guardado no es válido, no permite guardar hasta recuperar el documento.
+- La recarga con cambios locales pide confirmación antes de descartarlos.
+- Se mantienen el modo invitado, la validación del modelo y el estado de la hoja.

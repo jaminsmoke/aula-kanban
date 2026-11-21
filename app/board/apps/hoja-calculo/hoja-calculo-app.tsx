@@ -31,8 +31,8 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
 
   const displayStatus = documentState.loading
     ? "Cargando hoja…"
-    : documentState.error ?? documentState.status;
-  const statusText = documentState.dirty && !documentState.loading && !documentState.error
+    : documentState.status || documentState.error || "";
+  const statusText = documentState.dirty && !documentState.loading
     ? `${displayStatus} Cambios sin guardar.`
     : displayStatus;
 
