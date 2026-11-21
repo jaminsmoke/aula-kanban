@@ -7,6 +7,7 @@ import { DocumentSearchBar } from "./document-search-bar";
 import { DocumentNavigator } from "./document-navigator";
 import { DocumentStatusBar } from "./document-status-bar";
 import { DocumentCommentsPanel } from "./document-comments-panel";
+import { DocumentHistoryPanel } from "./document-history-panel";
 import { DocumentSuitePanel } from "./document-suite-panel";
 import { DocumentToolbar } from "./document-toolbar";
 
@@ -246,6 +247,7 @@ export function DocumentWorkspace() {
       </div>
       <DocumentStatusBar />
       <DocumentCommentsPanel />
+      <DocumentHistoryPanel />
 
       {migrationOpen || markdownSourceOpen || slidePreview || presentation ? (
         <Suspense fallback={null}>

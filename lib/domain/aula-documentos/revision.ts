@@ -7,6 +7,21 @@ const AULA_COMMENT_QUOTE_MAX_LENGTH = 500;
 /** Límite de comentarios por documento. */
 export const AULA_COMMENT_MAX_PER_DOCUMENT = 500;
 
+/** Límite de versiones por documento. */
+export const AULA_VERSION_MAX_PER_DOCUMENT = 50;
+
+/** Longitud máxima del nombre de una versión. */
+export const AULA_VERSION_NAME_MAX_LENGTH = 120;
+
+/** Tamaño máximo serializado de una versión. */
+export const AULA_VERSION_STATE_MAX_LENGTH = 190_000;
+
+/** Tamaño de página del historial. */
+export const AULA_VERSION_PAGE_SIZE = 20;
+
+/** Motivo de una versión. */
+export type AulaDocumentVersionKind = "manual" | "pre-restore";
+
 /** Ancla textual de un comentario en el documento. */
 export type AulaCommentAnchor = {
   from: number;
@@ -49,6 +64,36 @@ export type AulaDocumentComment = {
 export type AulaDocumentCommentThread = AulaDocumentComment & {
   replies: AulaDocumentComment[];
 };
+
+/** Metadatos de una versión del documento. */
+export type AulaDocumentVersion = {
+  id: string;
+  projectId: string;
+  documentId: string;
+  name: string;
+  schemaVersion: number;
+  sizeBytes: number;
+  createdBy: string | null;
+  createdByName: string;
+  createdAt: number;
+  kind: AulaDocumentVersionKind;
+  baseUpdatedAt: number;
+};
+
+/** Versión con su estado completo para previsualizar o restaurar. */
+export type AulaDocumentVersionDetail = AulaDocumentVersion & {
+  state: unknown;
+};
+
+/**
+ * Normaliza el nombre de una versión.
+ * @param value - Nombre candidato.
+ * @returns Nombre recortado o el fallback.
+ */
+export function normalizeAulaVersionName(value: unknown): string {
+  if (typeof value !== "string") return "";
+  return value.trim().slice(0, AULA_VERSION_NAME_MAX_LENGTH);
+}
 
 /**
  * Normaliza el cuerpo de un comentario.

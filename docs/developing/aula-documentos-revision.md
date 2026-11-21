@@ -1,6 +1,6 @@
 # Comentarios, revisión e historial de Aula Documentos
 
-> **Estado:** Fases 1–2 cerradas · **Fecha:** 2026-11-21
+> **Estado:** Fases 1–3 cerradas · **Fecha:** 2026-11-21
 > **Alcance:** comentarios anclados, hilos, historial de versiones, permisos, exportación y límites.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
 > **Regla:** esta fase no mueve código de producto; fija el contrato y los límites.
@@ -237,4 +237,14 @@ Implementado el 2026-11-21:
 - Hook de cliente y panel lateral con crear, responder, editar, resolver, reabrir, borrar, filtrar y saltar al texto.
 - El panel se abre desde la barra de estado o con `Ctrl/Cmd+Alt+M`; los invitados lo ven en lectura.
 - Pruebas de anclas, permisos, hilos, creación, conflicto y flujo de interfaz.
-- Suite: **261 archivos / 1.725 pruebas**; build **382.116 B**; presupuesto **384.000 B**.
+## 13. Cierre de la Fase 3
+
+Implementado el 2026-11-21:
+
+- Migración `0044_milky_master_mold.sql` con `aula_document_versions`.
+- Servicio y API para listar, crear, previsualizar y restaurar versiones; snapshots manuales y `pre-restore`.
+- Restauración con `expectedUpdatedAt`, snapshot previo y actualización del estado canónico sin alterar identidad ni estado de la suite.
+- Panel lateral de historial visible para profesorado, administración y owner; formulario de nombre, lista, vista previa y restauración.
+- El historial se refresca tras restaurar y actualiza el documento, la versión de servidor y el estado de guardado.
+- Pruebas de permisos, creación, snapshot previo, conflicto, versión ajena y flujo de interfaz.
+- Suite: **263 archivos / 1.730 pruebas**; build **384.042 B**; presupuesto **386.000 B**.

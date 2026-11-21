@@ -102,6 +102,40 @@ export async function updateAulaDocumentRowIfCurrent(
 }
 
 /**
+ * Actualiza el contenido de un documento restaurando un snapshot.
+ * Conserva estado, archivo y autoría original; solo cambia contenido y versión.
+ * @param input - Datos restaurados y versión esperada.
+ * @returns La nueva versión o `null` si cambió.
+ */
+export async function updateAulaDocumentStateIfCurrent(input: {
+  projectId: string;
+  id: string;
+  title: string;
+  excerpt: string;
+  state: string;
+  expectedUpdatedAt: number;
+  updatedBy: string | null;
+}): Promise<number | null> {
+  const now = Date.now();
+  const [row] = await getDb()
+    .update(aulaDocuments)
+    .set({
+      title: input.title,
+      excerpt: input.excerpt,
+      state: input.state,
+      updatedAt: sql<number>`max(${now}, ${aulaDocuments.updatedAt} + 1)`,
+      updatedBy: input.updatedBy,
+    })
+    .where(and(
+      eq(aulaDocuments.projectId, input.projectId),
+      eq(aulaDocuments.id, input.id),
+      eq(aulaDocuments.updatedAt, input.expectedUpdatedAt),
+    ))
+    .returning({ updatedAt: aulaDocuments.updatedAt });
+  return row?.updatedAt ?? null;
+}
+
+/**
  * Lee la versión vigente de un documento.
  * @param projectId - Proyecto activo.
  * @param id - Identificador del documento.

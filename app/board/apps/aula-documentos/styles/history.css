@@ -1,0 +1,279 @@
+.aula-documentos-history-toggle {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  min-height:27px;
+  padding:0 7px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-secondary);
+  font:inherit;
+  font-size:10.5px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.aula-documentos-history-toggle[aria-pressed="true"] {
+  border-color:var(--ui-border-accent);
+  background:var(--ui-action-soft);
+  color:var(--ui-action-text);
+}
+
+.aula-documentos-history-toggle:hover {
+  background:var(--ui-surface-hover);
+  color:var(--ui-text-primary);
+}
+
+.aula-documentos-history-toggle:focus-visible,
+.aula-documentos-history-close:focus-visible,
+.aula-documentos-version-form button:focus-visible,
+.aula-documentos-version-actions button:focus-visible,
+.aula-documentos-version-pagination button:focus-visible,
+.aula-documentos-version-preview button:focus-visible {
+  outline:var(--border-width-strong) solid var(--ui-focus-ring);
+  outline-offset:1px;
+}
+
+.aula-documentos-history {
+  position:fixed;
+  top:52px;
+  right:12px;
+  bottom:52px;
+  z-index:80;
+  display:flex;
+  width:min(400px, calc(100vw - 24px));
+  flex-direction:column;
+  gap:9px;
+  padding:12px;
+  overflow:auto;
+  border:var(--border-width-hairline) solid var(--ui-border-strong);
+  border-radius:var(--radius-sm);
+  background:var(--ui-surface-raised);
+  color:var(--ui-text-primary);
+  box-shadow:var(--ui-shadow-card-hover);
+}
+
+.aula-documentos-history-head {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.aula-documentos-history-head h2 {
+  margin:0;
+  font-size:13px;
+}
+
+.aula-documentos-history-head span {
+  display:block;
+  margin-top:2px;
+  color:var(--ui-text-muted);
+  font-size:10px;
+}
+
+.aula-documentos-history-close {
+  display:grid;
+  width:28px;
+  height:28px;
+  place-items:center;
+  padding:0;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-secondary);
+  cursor:pointer;
+}
+
+.aula-documentos-version-form {
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  color:var(--ui-text-muted);
+  font-size:10.5px;
+}
+
+.aula-documentos-version-form input {
+  width:100%;
+  padding:6px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-primary);
+  font:inherit;
+  font-size:11.5px;
+}
+
+.aula-documentos-version-form button {
+  display:inline-flex;
+  align-items:center;
+  align-self:flex-start;
+  gap:4px;
+  padding:5px 7px;
+  border:var(--border-width-hairline) solid var(--ui-action-primary);
+  border-radius:var(--radius-xs);
+  background:var(--ui-action-primary);
+  color:var(--ui-text-inverse);
+  font:inherit;
+  font-size:10.5px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.aula-documentos-history-message,
+.aula-documentos-history-error {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:10.5px;
+  line-height:1.45;
+}
+
+.aula-documentos-history-error {
+  color:var(--ui-danger-ink);
+}
+
+.aula-documentos-version-list {
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.aula-documentos-version {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  padding:8px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-faint);
+}
+
+.aula-documentos-version-title {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:6px;
+}
+
+.aula-documentos-version-title strong {
+  overflow:hidden;
+  color:var(--ui-text-primary);
+  font-size:11.5px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.aula-documentos-version-title span {
+  flex:none;
+  color:var(--ui-text-muted);
+  font-size:9px;
+}
+
+.aula-documentos-version p {
+  margin:0;
+  color:var(--ui-text-muted);
+  font-size:9.5px;
+  line-height:1.4;
+}
+
+.aula-documentos-version-actions {
+  display:flex;
+  gap:4px;
+}
+
+.aula-documentos-version-actions button {
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  padding:3px 6px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-muted);
+  font:inherit;
+  font-size:9.5px;
+  cursor:pointer;
+}
+
+.aula-documentos-version-preview {
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  padding:8px;
+  border:var(--border-width-hairline) solid var(--ui-border-accent);
+  border-radius:var(--radius-xs);
+  background:var(--ui-action-soft);
+}
+
+.aula-documentos-version-preview header {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:6px;
+  font-size:10.5px;
+}
+
+.aula-documentos-version-preview header button {
+  display:grid;
+  width:22px;
+  height:22px;
+  place-items:center;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--ui-text-secondary);
+  cursor:pointer;
+}
+
+.aula-documentos-version-preview p {
+  margin:0;
+  color:var(--ui-text-primary);
+  font-size:11px;
+  font-weight:700;
+}
+
+.aula-documentos-version-preview small {
+  color:var(--ui-text-secondary);
+  font-size:10px;
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+
+.aula-documentos-version-pagination {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  color:var(--ui-text-muted);
+  font-size:10px;
+}
+
+.aula-documentos-version-pagination button {
+  padding:3px 6px;
+  border:var(--border-width-hairline) solid var(--ui-border-default);
+  border-radius:var(--radius-xs);
+  background:var(--ui-surface-pale);
+  color:var(--ui-text-muted);
+  font:inherit;
+  font-size:9.5px;
+  cursor:pointer;
+}
+
+.aula-documentos-version-pagination button:disabled {
+  cursor:not-allowed;
+  opacity:.4;
+}
+
+@media (max-width: 700px) {
+  .aula-documentos-history {
+    top:8px;
+    right:8px;
+    bottom:8px;
+    width:calc(100vw - 16px);
+  }
+
+  .aula-documentos-history-toggle {
+    min-height:36px;
+  }
+}

@@ -1,4 +1,4 @@
-import { MessageSquare, Maximize2, Minimize2 } from "lucide-react";
+import { History, MessageSquare, Maximize2, Minimize2 } from "lucide-react";
 import { useAulaDocumentosView } from "../aula-documentos-context";
 
 /**
@@ -21,6 +21,11 @@ export function DocumentStatusBar() {
     commentCount,
     openComments,
     closeComments,
+    canManageHistory,
+    historyOpen,
+    versionCount,
+    openHistory,
+    closeHistory,
   } = useAulaDocumentosView();
   const section = activeOutlineIndex >= 0 ? outline[activeOutlineIndex]?.text : null;
   const sectionLabel = section ?? "Sin sección";
@@ -38,13 +43,33 @@ export function DocumentStatusBar() {
       <button
         type="button"
         className="aula-documentos-comments-toggle"
-        onClick={commentsOpen ? closeComments : openComments}
+        onClick={() => {
+          closeHistory();
+          if (commentsOpen) closeComments();
+          else openComments();
+        }}
         aria-pressed={commentsOpen}
         aria-label="Comentarios del documento"
       >
         <MessageSquare size={13} aria-hidden />
         <span>Comentarios{commentCount > 0 ? ` (${commentCount})` : ""}</span>
       </button>
+      {canManageHistory ? (
+        <button
+          type="button"
+          className="aula-documentos-history-toggle"
+          onClick={() => {
+            closeComments();
+            if (historyOpen) closeHistory();
+            else openHistory();
+          }}
+          aria-pressed={historyOpen}
+          aria-label="Historial de versiones"
+        >
+          <History size={13} aria-hidden />
+          <span>Historial{versionCount > 0 ? ` (${versionCount})` : ""}</span>
+        </button>
+      ) : null}
       <button
         type="button"
         className="aula-documentos-focus-toggle"

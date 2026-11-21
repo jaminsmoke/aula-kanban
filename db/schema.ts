@@ -253,6 +253,27 @@ export const aulaDocumentComments = sqliteTable("aula_document_comments", {
   index("aula_document_comments_version").on(table.projectId, table.documentId, table.updatedAt),
 ]);
 
+// Snapshots explícitos del documento para revisión y restauración. El estado
+// completo se guarda aparte de la fila viva para no alterar el autosave.
+export const aulaDocumentVersions = sqliteTable("aula_document_versions", {
+  id: text("id").primaryKey().notNull(),
+  projectId: text("project_id").notNull(),
+  documentId: text("document_id").notNull(),
+  name: text("name").notNull(),
+  state: text("state").notNull(),
+  schemaVersion: integer("schema_version").notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  createdBy: text("created_by"),
+  createdByName: text("created_by_name").notNull(),
+  createdAt: integer("created_at").notNull(),
+  kind: text("kind").notNull(),
+  baseUpdatedAt: integer("base_updated_at").notNull(),
+}, (table) => [
+  index("aula_document_versions_document").on(table.projectId, table.documentId, table.createdAt),
+  index("aula_document_versions_kind").on(table.projectId, table.documentId, table.kind),
+  index("aula_document_versions_base").on(table.projectId, table.documentId, table.baseUpdatedAt),
+]);
+
 // Tokens personales del servidor MCP: cada fila pertenece a una cuenta y se
 // guarda solo el hash del secreto, con sal por token. El token completo se
 // muestra un único vez al crearlo; revocar marca `revoked_at`.

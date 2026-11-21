@@ -9,6 +9,7 @@ import { useAulaNavigation } from "./use-aula-navigation";
 import { useAulaView } from "./use-aula-view";
 import { useAulaSlideStructure } from "./use-aula-slide-structure";
 import { useAulaComments } from "./use-aula-comments";
+import { useAulaVersions } from "./use-aula-versions";
 import { useAulaSuiteController } from "./use-aula-suite-controller";
 import { useAulaPersistence } from "./use-aula-persistence";
 import { useAulaImages } from "./use-aula-images";
@@ -75,7 +76,6 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     editorRef,
     insertImageRef,
   });
-
   const navigation = useAulaNavigation({ editor });
   const {
     imageUploading,
@@ -154,9 +154,9 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     exportMarkdown,
     exportOffice,
   } = useAulaExports({ currentDocument, presentationNotes, presentationPage, setStatus });
-
   const suite = useAulaDocumentSuite(projectId);
   const comments = useAulaComments({ projectId, documentId: suite.documentId, editor, role, setStatus });
+  const versions = useAulaVersions({ projectId, documentId: suite.documentId, role, documentVersionRef, setLastSavedAt, applyDocument, setStatus });
   const search = useAulaSearch({ editor, readOnly, setStatus, documentId: suite.documentId });
   const view = useAulaView({ editor, searchOpen: search.searchOpen });
   const slideStructure = useAulaSlideStructure({ editor, documentId: suite.documentId, readOnly, presentationNotes, setPresentationNotes, markChanged, setStatus });
@@ -236,7 +236,6 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     savingRef,
     mountedRef,
   });
-
   const {
     migrationOpen,
     setMigrationOpen,
@@ -594,6 +593,7 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     ...navigation,
     ...slideStructure,
     ...comments,
+    ...versions,
     ...toolbarModel,
   };
 }

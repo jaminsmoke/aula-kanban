@@ -88,12 +88,13 @@
 
 ### Fase 3 — Historial de versiones
 
-- [ ] Añadir creación de versiones con nombre y snapshot validado.
-- [ ] Listar versiones con autor, fecha, tamaño y paginación.
-- [ ] Permitir previsualizar y restaurar una versión con concurrencia optimista.
-- [ ] Guardar un snapshot previo antes de restaurar y avisar del resultado.
-- [ ] Probar restauración, conflictos, versiones antiguas y documentos grandes.
+- [x] Añadir creación de versiones con nombre y snapshot validado.
+- [x] Listar versiones con autor, fecha, tamaño y paginación.
+- [x] Permitir previsualizar y restaurar una versión con concurrencia optimista.
+- [x] Guardar un snapshot previo antes de restaurar y avisar del resultado.
+- [x] Probar restauración, conflictos, versiones antiguas y documentos grandes.
 - **Criterios:** se puede recuperar una versión anterior sin perder el estado actual por una escritura concurrente.
+- **Cierre (2026-11-21):** tabla y servicio de versiones, snapshots manuales y previos a restauración, permisos, previsualización y restauración con conflicto optimista. Panel visible para docentes y administración. Pruebas de permisos, conflicto y flujo de interfaz. Suite: **263 archivos / 1.730 pruebas**; build **384.042 B**; presupuesto **386.000 B**.
 
 ### Fase 4 — Permisos, exportación y límites
 
@@ -128,6 +129,7 @@
 - 2026-11-21: **Roadmap abierto.** ADOC-20 sale del backlog; quedan **2 entradas** y el siguiente candidato es **UI-11**. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Contrato de comentarios, anclas, versiones, permisos, exportación y retención en [`aula-documentos-revision.md`](aula-documentos-revision.md). Sin cambios de código.
 - 2026-11-21: **Fase 2 completada.** Migración, API, anclas, hilos y panel lateral con permisos; pruebas de creación, respuesta, resolución, huérfanos y modo lectura. Suite: **261 archivos / 1.725 pruebas**; build **382.116 B**.
+- 2026-11-21: **Fase 3 completada.** Historial con versiones manuales, previsualización, snapshot previo y restauración con conflicto optimista. Suite: **263 archivos / 1.730 pruebas**; build **384.042 B**.
 - La suite, el guardado optimista y las copias de ADOC-17 son la base; no se crea un editor paralelo.
 - Comentarios, versiones y retención se documentarán por separado del JSON canónico.
 - No hay publicación ni migraciones remotas en este roadmap.
