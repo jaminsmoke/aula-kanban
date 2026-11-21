@@ -59,12 +59,13 @@
 
 ### Fase 1 — Inventario y contrato del flujo
 
-- [ ] Inventariar la selección real de Jspreadsheet, los valores mostrados, las fórmulas y los estilos disponibles.
-- [ ] Comparar la tabla de Aula con los datos de la hoja y fijar qué se conserva en la primera entrega.
-- [ ] Probar el pegado nativo de una tabla HTML/TSV en Aula Documentos y registrar sus límites.
-- [ ] Decidir si el flujo usa el portapapeles, una descarga temporal o una acción explícita de Aula.
-- [ ] Documentar el contrato y los descartes en [`integracion-hoja-aula.md`](integracion-hoja-aula.md).
+- [x] Inventariar la selección real de Jspreadsheet, los valores mostrados, las fórmulas y los estilos disponibles.
+- [x] Comparar la tabla de Aula con los datos de la hoja y fijar qué se conserva en la primera entrega.
+- [x] Probar el pegado nativo de una tabla HTML/TSV en Aula Documentos y registrar sus límites.
+- [x] Decidir si el flujo usa el portapapeles, una descarga temporal o una acción explícita de Aula.
+- [x] Documentar el contrato y los descartes en [`integracion-hoja-aula.md`](integracion-hoja-aula.md).
 - **Criterios:** flujo concreto, formato de intercambio, límites, permisos y casos de error definidos; sin cambios de producto.
+- **Cierre (2026-11-21):** contrato en [`integracion-hoja-aula.md`](integracion-hoja-aula.md). Se usará HTML como formato principal y TSV como respaldo; se copiarán valores visibles, no fórmulas ni estilos. El pegado nativo de una tabla HTML crea una tabla Tiptap válida y una tabla de 51 filas es rechazada por `parseAulaDocument` con `table-too-large`. Sin cambios de producto; baseline **460 archivos / 1.151 imports**, **266 archivos / 1.756 pruebas**, Aula **386.260 B**, Hoja **311.063 B**.
 
 ### Fase 2 — Adaptador de selección
 
@@ -111,5 +112,6 @@
 ## 7. Notas de sesión
 
 - 2026-11-21: **Roadmap abierto.** ARC-10 sale del backlog tras cerrar ARC-09; queda **1 entrada** (DEV-01). Se mantiene Hoja de cálculo como app y se empieza por un flujo de copia unidireccional. Sin cambios de código de producto.
+- 2026-11-21: **Fase 1 completada.** Contrato en [`integracion-hoja-aula.md`](integracion-hoja-aula.md): copia HTML con TSV de respaldo, valores visibles, sin fórmulas ni estilos, límites de Aula y permisos definidos. El pegado nativo de tablas HTML y el rechazo de 51 filas quedan comprobados con Tiptap y `parseAulaDocument`.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.
