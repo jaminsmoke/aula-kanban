@@ -370,7 +370,7 @@ describe("Copias, imágenes y tablas de Aula Documentos", () => {
     fireEvent.keyDown(screen.getByRole("menu", { name: "Exportar" }), { key: "Escape" });
     expect(screen.queryByRole("button", { name: "Negrita" })).toBeNull();
     expect(screen.getByLabelText("Contenido del documento").getAttribute("contenteditable")).toBe("false");
-    fireEvent.keyDown(window, { key: "s", ctrlKey: true });
+    fireEvent.keyDown(screen.getByLabelText("Contenido del documento"), { key: "s", ctrlKey: true });
     expect(documentMock.save).not.toHaveBeenCalled();
 
     fireEvent.click(screen.getByRole("button", { name: "Vista previa" }));

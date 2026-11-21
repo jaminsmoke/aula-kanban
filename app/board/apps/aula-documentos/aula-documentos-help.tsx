@@ -1,5 +1,13 @@
 "use client";
 
+import { AULA_SHORTCUTS, type AulaShortcut } from "../../shared/aula-documentos/shortcuts";
+
+const SHORTCUT_SCOPES = [
+  { id: "app", label: "Aplicación" },
+  { id: "editor", label: "Editor" },
+  { id: "context", label: "Contexto" },
+] as const;
+
 /**
  * Texto de ayuda de la suite documental.
  * @returns Los párrafos informativos del panel lateral.
@@ -15,24 +23,46 @@ export function AulaDocumentosHelp() {
 }
 
 /**
+ * Pinta las teclas de un atajo.
+ * @param shortcut - Definición central del atajo.
+ * @returns Las teclas separadas por `+`.
+ */
+function ShortcutKeys({ shortcut }: { shortcut: AulaShortcut }) {
+  return (
+    <>
+      {shortcut.keys.map((key, index) => (
+        <span key={`${shortcut.id}-${key}`}>
+          {index > 0 ? " + " : null}
+          <kbd>{key}</kbd>
+        </span>
+      ))}
+    </>
+  );
+}
+
+/**
  * Lista de atajos de teclado del editor.
- * @returns El contenido de la sección de atajos.
+ * @returns El contenido de la sección de atajos, generado desde el mapa central.
  */
 export function AulaDocumentosShortcuts() {
   return (
     <>
       <h3>Atajos</h3>
-      <ul>
-        <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>B</kbd> negrita</li>
-        <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>I</kbd> cursiva</li>
-        <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>K</kbd> enlace</li>
-        <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>S</kbd> guardar</li>
-        <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>F</kbd> buscar; <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>H</kbd> reemplazar.</li>
-        <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>O</kbd> mostrar u ocultar el esquema.</li>
-        <li><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd> modo enfoque; <kbd>Escape</kbd> sale.</li>
-        <li><kbd>Tab</kbd>/<kbd>Shift</kbd> + <kbd>Tab</kbd> avanzar o retroceder en una tabla.</li>
-        <li>En un diagrama, <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Intro</kbd> aplica el código.</li>
-      </ul>
+      {SHORTCUT_SCOPES.map((scope) => {
+        const shortcuts = AULA_SHORTCUTS.filter((shortcut) => shortcut.scope === scope.id);
+        return (
+          <section className="aula-documentos-shortcut-group" aria-labelledby={`aula-atajos-${scope.id}`} key={scope.id}>
+            <h4 id={`aula-atajos-${scope.id}`}>{scope.label}</h4>
+            <ul>
+              {shortcuts.map((shortcut) => (
+                <li key={shortcut.id}>
+                  <ShortcutKeys shortcut={shortcut} /> {shortcut.description}.
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
     </>
   );
 }

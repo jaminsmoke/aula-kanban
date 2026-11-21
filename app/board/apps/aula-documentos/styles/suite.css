@@ -1,3 +1,16 @@
+.aula-documentos-help h4 {
+  margin:8px 0 3px;
+  color:var(--ui-text-secondary);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+.aula-documentos-shortcut-group + .aula-documentos-shortcut-group {
+  margin-top:7px;
+}
+
 .aula-documentos-suite-head {
   display:flex;
   align-items:center;

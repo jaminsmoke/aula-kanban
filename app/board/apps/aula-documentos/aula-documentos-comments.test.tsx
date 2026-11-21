@@ -99,6 +99,21 @@ describe("comentarios de Aula Documentos", () => {
     expect(await screen.findByText("Resuelto")).toBeTruthy();
   });
 
+  it("abre y cierra comentarios con Ctrl+Alt+M dentro de Aula", async () => {
+    stubComments();
+    render(<AulaDocumentosApp {...props} />);
+    const editor = await screen.findByLabelText("Contenido del documento");
+
+    fireEvent.keyDown(editor, { key: "m", ctrlKey: true, altKey: true });
+    expect(await screen.findByRole("complementary", { name: "Comentarios del documento" })).toBeTruthy();
+
+    fireEvent.keyDown(editor, { key: "m", ctrlKey: true, altKey: true });
+    await waitFor(() => expect(screen.queryByRole("complementary", { name: "Comentarios del documento" })).toBeNull());
+
+    fireEvent.keyDown(document.body, { key: "m", ctrlKey: true, altKey: true });
+    expect(screen.queryByRole("complementary", { name: "Comentarios del documento" })).toBeNull();
+  });
+
   it("deja el panel en lectura para invitados", async () => {
     stubComments();
     render(<AulaDocumentosApp projectId={props.projectId} role="guest" />);

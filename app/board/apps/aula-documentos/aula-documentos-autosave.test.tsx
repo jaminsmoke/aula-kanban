@@ -141,7 +141,7 @@ describe("Autosave y conflictos de Aula Documentos", () => {
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
 
     insertMermaid();
-    fireEvent.keyDown(window, { key: "s", ctrlKey: true });
+    fireEvent.keyDown(screen.getByLabelText("Contenido del documento"), { key: "s", ctrlKey: true });
 
     await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
     expect(screen.getByRole("status").textContent).toContain("guardado en el proyecto");
@@ -195,7 +195,7 @@ describe("Autosave y conflictos de Aula Documentos", () => {
       await vi.advanceTimersByTimeAsync(AUTOSAVE_DELAY_MS + 100);
     });
     vi.useRealTimers();
-    fireEvent.keyDown(window, { key: "s", ctrlKey: true });
+    fireEvent.keyDown(screen.getByLabelText("Contenido del documento"), { key: "s", ctrlKey: true });
 
     expect(documentMock.saveVersioned).toHaveBeenCalledTimes(calls);
   });

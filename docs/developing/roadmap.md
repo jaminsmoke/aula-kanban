@@ -84,11 +84,12 @@
 
 ### Fase 3 — Atajos y ayuda
 
-- [ ] Crear un mapa central de atajos y comprobar conflictos.
-- [ ] Mantener Ctrl/Cmd+F, Ctrl/Cmd+H, Ctrl/Cmd+Shift+O, Alt+Shift+F y Ctrl/Cmd+Alt+M.
-- [ ] Mostrar la ayuda desde la misma fuente que el mapa.
-- [ ] Probar atajos con foco en editor, paneles y diálogos.
+- [x] Crear un mapa central de atajos y comprobar conflictos.
+- [x] Mantener Ctrl/Cmd+F, Ctrl/Cmd+H, Ctrl/Cmd+Shift+O, Alt+Shift+F y Ctrl/Cmd+Alt+M.
+- [x] Mostrar la ayuda desde la misma fuente que el mapa.
+- [x] Probar atajos con foco en editor, paneles y diálogos.
 - **Criterios:** los atajos son descubribles, no se pisan y solo actúan dentro de Aula Documentos.
+- **Cierre (2026-11-21):** mapa central en `app/board/shared/aula-documentos/shortcuts.ts`, matcher con modificadores exactos, persistencia/búsqueda/vista/comentarios usándolo y ayuda generada desde el mismo mapa. Pruebas de IDs, combinaciones, modificadores y `Ctrl+Alt+M` dentro de Aula. Suite: **264 archivos / 1.737 pruebas**; build **385.905 B**; presupuesto **386.000 B**.
 
 ### Fase 4 — Barra de estado, responsive y accesibilidad
 
@@ -121,5 +122,6 @@
 - 2026-11-21: **Roadmap abierto.** UI-11 sale del backlog; queda **1 entrada** y el siguiente candidato es **DEV-01**. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Inventario de acciones, hogar único, duplicados, atajos, barra de estado y responsive en [`aula-documentos-interfaz.md`](aula-documentos-interfaz.md). Sin cambios de código.
 - 2026-11-21: **Fase 2 completada.** IDs estables, menús y grupos móviles desde el mismo modelo, formato compartido y menú móvil agrupado. Suite: **264 archivos / 1.733 pruebas**; build **385.018 B**.
+- 2026-11-21: **Fase 3 completada.** Mapa central de atajos, modificadores exactos, manejadores de persistencia/búsqueda/vista/comentarios conectados y ayuda generada desde el mapa. Suite: **264 archivos / 1.737 pruebas**; build **385.905 B**.
 - La base es la interfaz actual de Aula Documentos, no un rediseño de la app ni del editor.
 - No hay publicación ni migraciones remotas en este roadmap.

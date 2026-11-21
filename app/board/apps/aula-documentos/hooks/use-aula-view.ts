@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Editor } from "@tiptap/core";
+import { matchesAulaShortcut } from "../../../shared/aula-documentos/shortcuts";
 
 type ViewDeps = {
   editor: Editor | null;
@@ -46,13 +47,12 @@ export function useAulaView({ editor, searchOpen }: ViewDeps) {
     const onKeyDown = (event: KeyboardEvent) => {
       const app = document.querySelector(".aula-documentos-app");
       if (!app || !(event.target instanceof Node) || !app.contains(event.target)) return;
-      const key = event.key.toLowerCase();
-      if (event.altKey && event.shiftKey && key === "f") {
+      if (matchesAulaShortcut(event, "focus")) {
         event.preventDefault();
         toggleFocus();
         return;
       }
-      if ((event.ctrlKey || event.metaKey) && event.shiftKey && key === "o") {
+      if (matchesAulaShortcut(event, "outline")) {
         event.preventDefault();
         toggleOutline();
         return;

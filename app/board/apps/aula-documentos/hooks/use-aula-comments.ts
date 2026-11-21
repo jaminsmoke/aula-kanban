@@ -8,6 +8,7 @@ import type {
   AulaDocumentCommentThread,
 } from "../../../../../lib/domain/aula-documentos/revision";
 import { createAulaCommentAnchor } from "../../../shared/aula-documentos/comment-anchor";
+import { matchesAulaShortcut } from "../../../shared/aula-documentos/shortcuts";
 
 type CommentsDeps = {
   projectId: string;
@@ -155,7 +156,7 @@ export function useAulaComments({ projectId, documentId, editor, role, setStatus
     const onKeyDown = (event: KeyboardEvent) => {
       const app = document.querySelector(".aula-documentos-app");
       if (!app || !(event.target instanceof Node) || !app.contains(event.target)) return;
-      if ((event.ctrlKey || event.metaKey) && event.altKey && event.key.toLowerCase() === "m") {
+      if (matchesAulaShortcut(event, "comments")) {
         event.preventDefault();
         setCommentsOpen((current) => !current);
       }

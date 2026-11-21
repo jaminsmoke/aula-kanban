@@ -1,9 +1,9 @@
 # Menús, atajos y barra de estado de Aula Documentos
 
-> **Estado:** Fases 1–2 cerradas · **Fecha:** 2026-11-21
+> **Estado:** Fases 1–3 cerradas · **Fecha:** 2026-11-21
 > **Alcance:** inventario de acciones, hogar único, atajos, barra de estado, responsive y accesibilidad.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
-> **Regla:** la Fase 1 fijó el contrato; la Fase 2 unificó menús y acciones.
+> **Regla:** la Fase 1 fijó el contrato; la Fase 2 unificó menús y acciones; la Fase 3 centralizó los atajos y la ayuda.
 
 ---
 
@@ -196,3 +196,16 @@ Implementado el 2026-11-21:
 - Se retiró la lista plana `documentFileActions`; los grupos móviles apuntan a los mismos objetos de acción que los menús de escritorio.
 - Pruebas de identificadores únicos, grupos móviles y acción de escritorio compartida.
 - Suite: **264 archivos / 1.733 pruebas**; build **385.018 B**; presupuesto **386.000 B**.
+
+## 11. Cierre de la Fase 3
+
+Implementado el 2026-11-21:
+
+- `app/board/shared/aula-documentos/shortcuts.ts` concentra `AULA_SHORTCUTS` con id, teclas, combinación normalizada, ámbito y descripción.
+- `matchesAulaShortcut` exige coincidencia exacta de `Ctrl/Cmd`, `Alt` y `Shift`; evita que un atajo más amplio capture una combinación diferente.
+- Persistencia, búsqueda, vista y comentarios usan el matcher; se conservan `Ctrl/Cmd+S`, `Ctrl/Cmd+F`, `Ctrl/Cmd+H`, `Ctrl/Cmd+Shift+O`, `Alt+Shift+F` y `Ctrl/Cmd+Alt+M`.
+- La ayuda de `AulaDocumentosShortcuts` se genera desde el mismo mapa, agrupada en Aplicación, Editor y Contexto.
+- Los atajos del editor y del contexto se documentan con `intercept: false` y no se capturan globalmente: `B/I/K`, `Ctrl+Alt+1/2/3`, `Enter`/`Shift+Enter`, `Escape`, `Tab`/`Shift+Tab` y `Ctrl/Cmd+Enter`.
+- Todos los atajos globales comprueban que el foco esté dentro de `.aula-documentos-app`.
+- Pruebas de ids y combinaciones únicas, modificadores exactos, ayuda desde el mapa y apertura/cierre de comentarios solo dentro de Aula.
+- Suite: **264 archivos / 1.737 pruebas**; build **385.905 B**; presupuesto **386.000 B**.

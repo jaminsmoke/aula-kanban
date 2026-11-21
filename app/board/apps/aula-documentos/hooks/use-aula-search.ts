@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Editor } from "@tiptap/core";
+import { matchesAulaShortcut } from "../../../shared/aula-documentos/shortcuts";
 import {
   clearAulaSearchHighlights,
   focusAulaSearchMatch,
@@ -122,13 +123,12 @@ export function useAulaSearch({ editor, readOnly, setStatus, documentId }: Searc
     const onKeyDown = (event: KeyboardEvent) => {
       const app = document.querySelector(".aula-documentos-app");
       if (!app || !(event.target instanceof Node) || !app.contains(event.target)) return;
-      const command = event.ctrlKey || event.metaKey;
-      if (command && event.key.toLowerCase() === "f") {
+      if (matchesAulaShortcut(event, "search")) {
         event.preventDefault();
         openSearch(false);
         return;
       }
-      if (command && event.key.toLowerCase() === "h") {
+      if (matchesAulaShortcut(event, "replace")) {
         event.preventDefault();
         openSearch(true);
         return;
