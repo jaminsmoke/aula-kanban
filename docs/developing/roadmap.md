@@ -74,12 +74,13 @@
 
 ### Fase 2 — Buscar y reemplazar
 
-- [ ] Añadir una barra de búsqueda con resultados y navegación anterior/siguiente.
-- [ ] Resaltar coincidencias sin modificar el contenido.
-- [ ] Reemplazar una coincidencia o todas mediante transacciones Tiptap.
-- [ ] Respetar mayúsculas/acentos y no romper marcas, tablas, imágenes ni deshacer.
-- [ ] Añadir pruebas de búsqueda, reemplazo, cancelación y formato.
+- [x] Añadir una barra de búsqueda con resultados y navegación anterior/siguiente.
+- [x] Resaltar coincidencias sin modificar el contenido.
+- [x] Reemplazar una coincidencia o todas mediante transacciones Tiptap.
+- [x] Respetar mayúsculas/acentos y no romper marcas, tablas, imágenes ni deshacer.
+- [x] Añadir pruebas de búsqueda, reemplazo, cancelación y formato.
 - **Criterios:** se encuentra y reemplaza texto sin perder estructura; el documento solo cambia al confirmar.
+- **Cierre (2026-11-21):** barra de búsqueda con navegación, toggles de mayúsculas/acentos, resaltado por decoraciones y reemplazo actual/todo en una transacción Tiptap. Pruebas de coincidencia, marcas y flujo de UI en verde; sin cambios de esquema ni autosave antes de confirmar.
 
 ### Fase 3 — Esquema y navegador de diapositivas
 
@@ -123,5 +124,6 @@
 - 2026-11-21: ADOC-18 sale del backlog y pasa a ser el roadmap activo. El backlog queda con **4 entradas**; siguiente candidato **ADOC-19**.
 - ADOC-17 queda cerrado y archivado en `docs/historial/roadmap-adoc-17.md`.
 - 2026-11-21: **Fase 1 completada.** Contrato de búsqueda, reemplazo, esquema, diapositivas, enfoque y barra de estado en [`aula-documentos-navegacion.md`](aula-documentos-navegacion.md). Sin cambios de código.
+- 2026-11-21: **Fase 2 completada.** Búsqueda y reemplazo con posiciones Tiptap, decoraciones, toggles de mayúsculas/acentos y transacciones que conservan marcas. Suite: **254 archivos / 1.692 pruebas**. Presupuesto `aula-documentos`: **375.000 B**.
 - No se ha cambiado código de producto al abrir este roadmap; no hay publicación ni migraciones remotas.
 - El Site sigue en `1.1.37`.

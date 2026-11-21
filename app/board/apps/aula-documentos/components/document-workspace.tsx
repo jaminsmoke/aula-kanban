@@ -1,8 +1,9 @@
 import { lazy, Suspense } from "react";
 import { EditorContent } from "@tiptap/react";
-import { Code2, History } from "lucide-react";
+import { Code2, History, Search } from "lucide-react";
 import { AULA_DOCUMENT_TITLE_MAX_LENGTH, AULA_PRESENTATION_THEMES, type AulaPresentationTheme } from "../../../../../lib/domain/aula-documentos/document";
 import { useAulaDocumentosView } from "../aula-documentos-context";
+import { DocumentSearchBar } from "./document-search-bar";
 import { DocumentSuitePanel } from "./document-suite-panel";
 import { DocumentToolbar } from "./document-toolbar";
 
@@ -41,6 +42,7 @@ export function DocumentWorkspace() {
     saveCurrent,
     openRecoveryCopies,
     recoveryCount,
+    openSearch,
     presentationTheme,
     changePresentationTheme,
     slideLabel,
@@ -64,6 +66,7 @@ export function DocumentWorkspace() {
   return (
     <div className="aula-documentos-app">
       <DocumentToolbar />
+      <DocumentSearchBar />
       {newDocumentOpen || invalidDocument || saveConflict || recoveryOpen ? (
         <Suspense fallback={null}>
           <DocumentStateDialogs />
@@ -111,6 +114,14 @@ export function DocumentWorkspace() {
                 Reintentar guardado
               </button>
             ) : null}
+            <button
+              type="button"
+              className="aula-documentos-preview-button aula-documentos-recovery-button"
+              onClick={() => openSearch(false)}
+            >
+              <Search size={14} aria-hidden />
+              Buscar en el documento
+            </button>
             <button
               type="button"
               className="aula-documentos-preview-button aula-documentos-recovery-button"

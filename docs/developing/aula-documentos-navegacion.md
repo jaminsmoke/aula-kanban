@@ -169,3 +169,14 @@ type AulaOutlineEntry = {
 - Atajos, enfoque, barra de estado y accesibilidad definidos.
 - Límites de la suite y de ADOC-19 explícitos.
 - Sin cambios de código, datos, URLs, permisos ni versión del Site.
+
+## 11. Cierre de la Fase 2
+
+Implementado el 2026-11-21:
+
+- `app/board/shared/aula-documentos/search.ts` recorre el texto visible, mapea posiciones Tiptap y normaliza mayúsculas/acentos.
+- Extensión `AulaSearchHighlight` con decoraciones no destructivas y resultado activo.
+- Barra de búsqueda con anterior/siguiente, recuento, toggles, reemplazo actual y reemplazo total.
+- Reemplazo mediante una única transacción que conserva las marcas del texto.
+- Atajos `Ctrl/Cmd+F` y `Ctrl/Cmd+H`; `Enter`/`Shift+Enter` navegan y `Escape` cierra.
+- Pruebas de búsqueda pura, marcas y flujo de interfaz.

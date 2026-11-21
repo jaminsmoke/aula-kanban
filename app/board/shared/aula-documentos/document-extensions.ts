@@ -7,6 +7,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { AulaImage } from "./image-block";
 import { MermaidBlock } from "./mermaid-block";
 import { SlideBreak } from "./slide-break";
+import { AulaSearchHighlight } from "./search-highlight";
 
 /**
  * Extensiones del editor de Aula Documentos.
@@ -39,5 +40,6 @@ export function createAulaDocumentExtensions(projectId = "") {
     AulaImage.configure({ projectId }),
     MermaidBlock,
     SlideBreak,
+    AulaSearchHighlight,
   ];
 }

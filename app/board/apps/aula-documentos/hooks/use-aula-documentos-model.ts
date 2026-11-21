@@ -4,6 +4,7 @@ import type { StoreRole } from "../../types";
 import { useDialogFocus } from "../../../shared/use-dialog-focus";
 import { useAulaSession } from "./use-aula-session";
 import { useAulaDocumentSuite } from "./use-aula-document-suite";
+import { useAulaSearch } from "./use-aula-search";
 import { useAulaSuiteController } from "./use-aula-suite-controller";
 import { useAulaPersistence } from "./use-aula-persistence";
 import { useAulaImages } from "./use-aula-images";
@@ -68,6 +69,8 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     editorRef,
     insertImageRef,
   });
+
+  const search = useAulaSearch({ editor, readOnly, setStatus });
 
   const {
     imageUploading,
@@ -571,6 +574,7 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     suiteLoading: suite.loading,
     suiteError: suite.error,
     ...suiteActions,
+    ...search,
     ...toolbarModel,
   };
 }

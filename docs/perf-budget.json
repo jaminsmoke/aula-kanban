@@ -39,14 +39,14 @@
         "aula-documentos",
         "aula-documentos-export"
       ],
-      "gzip": 373000,
+      "gzip": 375000,
       "tests": {
-        "maxFiles": 40,
-        "maxLines": 4000
+        "maxFiles": 42,
+        "maxLines": 4100
       },
       "css": {
-        "maxFiles": 9,
-        "maxLines": 2250
+        "maxFiles": 11,
+        "maxLines": 2300
       }
     },
     "hoja-calculo": {
@@ -160,7 +160,7 @@
     "pizarra-mermaid": 1560999,
     "blockly": 345631,
     "blockly-codigo": 383275,
-    "aula-documentos": 373000
+    "aula-documentos": 375000
   },
   "forbidden": {
     "tablero": [
