@@ -21,15 +21,19 @@ export function runJavaScript(source: string, onResult: (result: RunResult) => v
     };
   `;
 
+  let url: string | null = null;
   try {
     const blob = new Blob([executor], { type: "text/javascript" });
-    const url = URL.createObjectURL(blob);
+    url = URL.createObjectURL(blob);
     const worker = new Worker(url);
     let settled = false;
     const stop = () => {
       window.clearTimeout(timer);
       worker.terminate();
-      URL.revokeObjectURL(url);
+      if (url) {
+        URL.revokeObjectURL(url);
+        url = null;
+      }
     };
     const finish = (result: RunResult) => {
       if (settled) return;
@@ -50,6 +54,7 @@ export function runJavaScript(source: string, onResult: (result: RunResult) => v
     worker.postMessage(source);
     return () => finish({ kind: "error", logs: [], message: "Ejecución cancelada." });
   } catch {
+    if (url) URL.revokeObjectURL(url);
     onResult({ kind: "error", logs: [], message: "No se pudo iniciar el entorno de ejecución. Comprueba que tu navegador permite workers." });
     return () => {};
   }

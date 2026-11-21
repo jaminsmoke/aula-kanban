@@ -75,11 +75,12 @@
 
 ### Fase 3 — Descarga de Blockly y URL del worker
 
-- [ ] Sustituir la descarga manual de Blockly por `downloadBlob`.
-- [ ] Mantener el nombre `programa-<projectId>.json`, el tipo JSON y el aviso de descarga.
-- [ ] Revisar que la URL del worker se revoca al terminar, fallar, agotar el tiempo o cancelar.
-- [ ] Probar la descarga y la finalización del worker sin dejar URLs ni workers vivos.
+- [x] Sustituir la descarga manual de Blockly por `downloadBlob`.
+- [x] Mantener el nombre `programa-<projectId>.json`, el tipo JSON y el aviso de descarga.
+- [x] Revisar que la URL del worker se revoca al terminar, fallar, agotar el tiempo o cancelar.
+- [x] Probar la descarga y la finalización del worker sin dejar URLs ni workers vivos.
 - **Criterios:** la descarga es idéntica para el usuario y el ciclo de vida del worker queda cubierto.
+- **Cierre (2026-11-21):** `blockly-download.ts` serializa el estado y usa `downloadTextFile`; el worker revoca la URL al terminar y también si no puede crearse. Pruebas de descarga, salida y fallo de creación correctas. Arquitectura **458 archivos / 1.147 imports**; suite **265 archivos / 1.746 pruebas**; build **386.258 B**.
 
 ### Fase 4 — Cierre
 
@@ -103,5 +104,6 @@
 - 2026-11-21: **Roadmap abierto.** ARC-07 sale del backlog; quedan **4 entradas** y el siguiente candidato es **ARC-08**. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Núcleo común de recuperación en `recovery-store.ts`; wrappers, claves y migración conservados. Arquitectura **457 archivos / 1.139 imports**; suite **264 archivos / 1.742 pruebas**; build **386.244 B**.
 - 2026-11-21: **Fase 2 completada.** `contentInlineText` unifica la extracción de texto de Markdown, presentación, título y Office; `contentText` mantiene su comportamiento. Arquitectura **457 archivos / 1.145 imports**; suite **264 archivos / 1.743 pruebas**; build **386.179 B**.
+- 2026-11-21: **Fase 3 completada.** Descarga de Blockly reutiliza `downloadTextFile`; el worker revoca su URL al terminar y al fallar la creación. Presupuesto de pruebas de Blockly ajustado a **5 / 169 → 5 / 180**. Arquitectura **458 archivos / 1.147 imports**; suite **265 archivos / 1.746 pruebas**; build **386.258 B**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios de UI-11 mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

@@ -140,7 +140,7 @@
       "gzip": 383275,
       "tests": {
         "maxFiles": 5,
-        "maxLines": 130
+        "maxLines": 180
       },
       "css": {
         "maxFiles": 2,

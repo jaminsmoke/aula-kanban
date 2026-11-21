@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAppDocument } from "../use-app-document";
+import { downloadBlocklyState } from "./blockly-download";
 import { createBlocklyState } from "./blockly-storage";
 import { runJavaScript } from "./blockly-run-worker";
 import { BLOCKLY_STARTER } from "./blockly-starter";
@@ -212,13 +213,7 @@ export function useBlockly({ projectId, readOnly }: { projectId: string; readOnl
   const download = () => {
     const state = serialize();
     if (!state) return;
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `programa-${projectId}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadBlocklyState(state, projectId);
     flash("Programa descargado");
   };
 
