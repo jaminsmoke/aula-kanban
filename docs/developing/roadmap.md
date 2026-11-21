@@ -64,12 +64,13 @@
 
 ### Fase 1 — Contrato, modelo y mapa de migración
 
-- [ ] Inventariar el documento único, copias, recuperación, exportaciones, URLs y herramientas MCP que lo consumen.
-- [ ] Definir el contrato de la suite: id, título, extracto, fechas, estado, autor y último abierto.
-- [ ] Diseñar la migración idempotente y reversible desde `app_documents` al documento inicial.
-- [ ] Decidir el alcance de Hoja de cálculo y dejar escrito que no se migra en este roadmap.
-- [ ] Documentar el modelo y los límites en `docs/developing/aula-documentos-suite.md`.
+- [x] Inventariar el documento único, copias, recuperación, exportaciones, URLs y herramientas MCP que lo consumen.
+- [x] Definir el contrato de la suite: id, título, extracto, fechas, estado, autor y último abierto.
+- [x] Diseñar la migración idempotente y reversible desde `app_documents` al documento inicial.
+- [x] Decidir el alcance de Hoja de cálculo y dejar escrito que no se migra en este roadmap.
+- [x] Documentar el modelo y los límites en `docs/developing/aula-documentos-suite.md`.
 - **Criterios:** el contrato cubre crear, listar, abrir, guardar, archivar, eliminar, restaurar y migrar; no se mueve código todavía.
+- **Cierre (2026-11-21):** [`aula-documentos-suite.md`](aula-documentos-suite.md) fija identidad `projectId + documentId`, estados `active/archived/deleted`, metadatos de lista, migración `legacy` idempotente, asociación de copias/recuperación, URL con `doc`, MCP con `documentoId` y la exclusión explícita de Hoja de cálculo. Sin cambios de código.
 
 ### Fase 2 — Persistencia y migración
 
@@ -122,5 +123,6 @@
 
 - 2026-11-21: ADOC-17 sale del backlog y pasa a ser el roadmap activo. El backlog queda con **5 entradas**; siguiente candidato **ADOC-18**.
 - ADOC-16 queda cerrado y archivado en `docs/historial/roadmap-adoc-16.md`.
+- 2026-11-21: **Fase 1 completada.** Contrato y mapa en [`aula-documentos-suite.md`](aula-documentos-suite.md): identidad estable, metadatos, estados, migración `legacy`, copias/recuperación por documento, URL profunda y MCP con id explícito. Hoja de cálculo queda fuera. Sin cambios de código.
 - No se ha cambiado código de producto al abrir este roadmap; no hay publicación ni migraciones remotas.
 - El Site sigue en `1.1.37`.
