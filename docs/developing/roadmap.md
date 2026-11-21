@@ -79,11 +79,12 @@
 
 ### Fase 3 — TXT, JSON canónico y decisión sobre HTML
 
-- [ ] Convertir `.txt` en párrafos literales, conservando saltos y avisando de que no se interpreta formato.
-- [ ] Aceptar JSON de documento canónico y JSON descargado de una copia de recuperación, validado con `parseAulaDocument`.
-- [ ] Rechazar HTML, ODT, RTF y otros formatos con un mensaje que explique el motivo.
-- [ ] Aplicar los límites existentes de Markdown/JSON y añadir pruebas de borde: vacío, demasiado grande, esquema inválido y saltos CRLF.
+- [x] Convertir `.txt` en párrafos literales, conservando saltos y avisando de que no se interpreta formato.
+- [x] Aceptar JSON de documento canónico y JSON descargado de una copia de recuperación, validado con `parseAulaDocument`.
+- [x] Rechazar HTML, ODT, RTF y otros formatos con un mensaje que explique el motivo.
+- [x] Aplicar los límites existentes de Markdown/JSON y añadir pruebas de borde: vacío, demasiado grande, esquema inválido y saltos CRLF.
 - **Criterios:** TXT y JSON se previsualizan y validan; HTML queda documentado como no admitido; ningún formato nuevo evita la validación canónica.
+- **Cierre (2026-11-20):** `import-formats.ts` convierte TXT en párrafos literales y valida JSON canónico con `parseAulaDocument`. El selector y el arrastre enrutan `.txt` y `.json`; HTML, ODT, RTF y PDF se rechazan con mensaje. Pruebas de dominio y de flujo TXT/JSON/HTML en verde; sin cambios de esquema, URLs, permisos ni versión.
 
 ### Fase 4 — Duplicados, origen y documentación
 

@@ -215,6 +215,60 @@ describe("Documentos, importación y cierre de Aula Documentos", () => {
     expect(screen.getByText(/Texto pegado/)).toBeTruthy();
   });
 
+  it("importa TXT literal y JSON canónico y rechaza HTML", async () => {
+    const txt = {
+      name: "notas.txt",
+      size: 34,
+      type: "text/plain",
+      text: async () => "# No es título\n\n*Tampoco* es énfasis.",
+    } as unknown as File;
+
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+    importDocument();
+    fireEvent.change(document.getElementById("aula-documentos-import-file") as HTMLInputElement, {
+      target: { files: [txt] },
+    });
+
+    expect(await screen.findByRole("heading", { name: "notas" })).toBeTruthy();
+    expect(screen.getByText(/No es título/)).toBeTruthy();
+    expect(screen.getByText(/Tampoco/)).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Volver" }));
+    const json = {
+      name: "copia.json",
+      size: 80,
+      type: "application/json",
+      text: async () => JSON.stringify({
+        schemaVersion: 3,
+        title: "Documento JSON",
+        content: {
+          type: "doc",
+          content: [{ type: "paragraph", content: [{ type: "text", text: "Contenido JSON." }] }],
+        },
+      }),
+    } as unknown as File;
+    fireEvent.change(document.getElementById("aula-documentos-import-file") as HTMLInputElement, {
+      target: { files: [json] },
+    });
+
+    expect(await screen.findByRole("heading", { name: "Documento JSON" })).toBeTruthy();
+    expect(screen.getByText("Contenido JSON.")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Volver" }));
+    const html = {
+      name: "pagina.html",
+      size: 20,
+      type: "text/html",
+      text: async () => "<h1>Hola</h1>",
+    } as unknown as File;
+    fireEvent.drop(screen.getByText("Arrastra un archivo aquí").closest("label") as HTMLElement, {
+      dataTransfer: { files: [html] },
+    });
+
+    expect(await screen.findByText(/HTML, ODT, RTF y PDF no se admiten/)).toBeTruthy();
+  });
+
   it("importa un DOCX/PPTX con vista previa", async () => {
     officeImportMock.importOfficeFile.mockResolvedValueOnce({
       ok: true,

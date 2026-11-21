@@ -13,7 +13,7 @@ export type AulaDocumentImportSource = "documentos" | "mermaid" | "presentacione
 
 /** Vista previa de una importación, sin escribir nada en el origen. */
 export type AulaDocumentImportPreview = {
-  source: AulaDocumentImportSource | "markdown" | "office";
+  source: AulaDocumentImportSource | "markdown" | "office" | "text" | "json";
   document: AulaDocument;
   stats: AulaDocumentStats;
   warnings: string[];

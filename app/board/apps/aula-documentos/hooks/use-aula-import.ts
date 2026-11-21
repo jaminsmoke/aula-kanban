@@ -9,6 +9,7 @@ import {
   type AulaDocument,
 } from "../../../../../lib/domain/aula-documentos/document";
 import type { AulaDocumentImportPreview } from "../../../../../lib/domain/aula-documentos/importers";
+import { importJsonDocument, importPlainTextDocument } from "../../../../../lib/domain/aula-documentos/import-formats";
 import { importOfficeFile } from "../../../shared/office/office-import";
 import { detectOfficeFormat } from "../../../shared/office/office-model";
 
@@ -22,6 +23,8 @@ export const IMPORT_LABELS: Record<AulaDocumentImportPreview["source"], string> 
   presentaciones: "Presentaciones",
   markdown: "Markdown",
   office: "Documento de Office",
+  text: "Texto plano",
+  json: "JSON de Aula",
 };
 
 type MarkdownPreviewResult =
@@ -67,7 +70,7 @@ type ImportDeps = {
 };
 
 /**
- * Lee documentos Markdown/Office y gestiona el visor de Office.
+ * Lee documentos Markdown, texto, JSON y Office, y gestiona el visor de Office.
  * @param deps - Documento actual y estado compartido.
  * @returns Estado y acciones de importación.
  */
@@ -163,23 +166,83 @@ export function useAulaImport({ storeRecoveryCopy, applyDocument, markChanged }:
   }
 
   /**
+   * Lee un archivo de texto plano y prepara su vista previa literal.
+   * @param file - Archivo elegido.
+   */
+  async function importText(file: File | undefined) {
+    if (!file) return;
+    setImportLoading("text");
+    setImportError(null);
+    setImportPreview(null);
+    setImportConfirm(false);
+    setImportOfficeSource(null);
+    try {
+      const result = importPlainTextDocument(
+        await file.text(),
+        file.name.replace(/\.[^.]+$/, "") || "Texto importado",
+      );
+      if (!result.ok) setImportError(result.message);
+      else setImportPreview({ ...result.preview, sourceUpdatedAt: null });
+    } catch {
+      setImportError("No se pudo leer el archivo de texto.");
+    } finally {
+      setImportLoading(null);
+    }
+  }
+
+  /**
+   * Lee un JSON canónico y prepara su vista previa.
+   * @param file - Archivo elegido.
+   */
+  async function importJson(file: File | undefined) {
+    if (!file) return;
+    setImportLoading("json");
+    setImportError(null);
+    setImportPreview(null);
+    setImportConfirm(false);
+    setImportOfficeSource(null);
+    try {
+      const result = importJsonDocument(await file.text());
+      if (!result.ok) setImportError(result.message);
+      else setImportPreview({ ...result.preview, sourceUpdatedAt: null });
+    } catch {
+      setImportError("No se pudo leer el archivo JSON.");
+    } finally {
+      setImportLoading(null);
+    }
+  }
+
+  /**
    * Enruta un archivo elegido o soltado al lector que corresponde.
    * @param file - Archivo del selector o del arrastre.
    */
   async function importFile(file: File | undefined) {
     if (!file) return;
+    const name = file.name.toLowerCase();
     if (detectOfficeFormat(file.name)) {
       await importOffice(file);
       return;
     }
-    if (/\.(md|markdown|txt)$/i.test(file.name) || file.type === "text/markdown" || file.type === "text/plain") {
+    if (/\.(md|markdown)$/i.test(name) || file.type === "text/markdown") {
       await importMarkdown(file);
+      return;
+    }
+    if (/\.txt$/i.test(name) || file.type === "text/plain") {
+      await importText(file);
+      return;
+    }
+    if (/\.json$/i.test(name) || file.type === "application/json") {
+      await importJson(file);
       return;
     }
     setImportPreview(null);
     setImportConfirm(false);
     setImportOfficeSource(null);
-    setImportError("Solo se admiten Markdown (.md/.markdown), texto (.txt) y Office (.docx/.pptx).");
+    if (/\.(html?|odt|rtf|pdf)$/i.test(name)) {
+      setImportError("HTML, ODT, RTF y PDF no se admiten. Usa Markdown, TXT, JSON o DOCX/PPTX.");
+      return;
+    }
+    setImportError("Solo se admiten Markdown (.md/.markdown), texto (.txt), JSON (.json) y Office (.docx/.pptx).");
   }
 
   /**

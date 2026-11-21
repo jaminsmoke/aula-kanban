@@ -1,22 +1,22 @@
 # Importación en Aula Documentos
 
-> **Estado:** contrato de ADOC-16, Fase 1 · **Fecha:** 2026-11-20
+> **Estado:** ADOC-16, Fase 3 · **Fecha:** 2026-11-20
 > **Alcance:** entrada de documentos externos en Aula Documentos. Las copias portables, el visor Office y la migración de apps antiguas se inventarían aquí, pero conservan su flujo propio.
 
 ## 1. Acciones actuales
 
 | Acción | Qué hace | Archivos principales | Límites | Pruebas |
 |---|---|---|---|---|
-| **Importar documento** | Lee Markdown o DOCX/PPTX, muestra vista previa y sustituye el documento tras confirmar y guardar una copia local | `components/dialogs/document-copy-import-dialogs.tsx` (491 líneas), `hooks/use-aula-import.ts` (212), `lib/domain/aula-documentos/{markdown,importers,office-import}.ts` | Markdown 200.000 caracteres; Office 30 MB y 200.000 caracteres extraídos | `aula-documentos-documents.test.tsx`, `importers.test.ts`, `office-import.test.ts` |
+| **Importar documento** | Lee Markdown o DOCX/PPTX, muestra vista previa y sustituye el documento tras confirmar y guardar una copia local | `components/dialogs/document-copy-import-dialogs.tsx` (491 líneas), `hooks/use-aula-import.ts` (212), `lib/domain/aula-documentos/{markdown,importers,import-formats,office-import}.ts` | Markdown 200.000 caracteres; Office 30 MB y 200.000 caracteres extraídos | `aula-documentos-documents.test.tsx`, `importers.test.ts`, `office-import.test.ts` |
 | **Importar copia** | Restaura una copia portable `.aula.zip` con manifiesto | `document-copy-import-dialogs.tsx`, `shared/aula-documentos/copy-client.ts`, `lib/domain/aula-documentos/copy.ts` | ZIP 60 MB; cuota 200 MB y 20 copias por proyecto | `aula-documentos-copies.test.tsx`, `copy.test.ts` |
 | **Abrir Office** | Abre DOCX/XLSX/PPTX en el visor, sin importarlos | `components/document-toolbar.tsx`, `shared/office/office-viewer.tsx`, `use-office-viewer.ts` | 30 MB; formatos antiguos y cifrados rechazados | `presentation.test.tsx`, `office-viewer.test.tsx`, `office-model.test.ts` |
 | **Migrar apps antiguas** | Compone un documento con datos de Notas y documentos, Diagramas y Presentaciones; no modifica el origen | `components/dialogs/document-overlay-dialogs.tsx`, `hooks/use-aula-migration.ts`, `lib/domain/aula-documentos/migration.ts` | Markdown legacy 200.000; Mermaid 20.000 por bloque | `aula-documentos-documents.test.tsx`, `importers.test.ts`, `migration.test.ts` |
 
-El diálogo de documento usa una zona de arrastre con un selector único (`.md`, `.markdown`, `.txt`, `.docx`, `.pptx`) y un área de pegado Markdown. No hay TXT literal, JSON ni detección de duplicados. La importación siempre reemplaza el documento abierto; antes exige confirmación y una copia local de recuperación, y si la copia falla no cambia nada.
+El diálogo de documento usa una zona de arrastre con un selector único (`.md`, `.markdown`, `.txt`, `.json`, `.docx`, `.pptx`) y un área de pegado Markdown. Admite TXT literal y JSON canónico; no hay detección de duplicados. La importación siempre reemplaza el documento abierto; antes exige confirmación y una copia local de recuperación, y si la copia falla no cambia nada.
 
 ## 2. Contrato objetivo
 
-La Fase 2 implementa la entrada y la vista previa; las fases 3 y 4 completan TXT literal, JSON, duplicados y documentación final.
+La Fase 2 implementa la entrada y la vista previa; la Fase 3 añade TXT literal y JSON; la Fase 4 completa duplicados y documentación final.
 
 ```ts
 type AulaImportOrigin = "picker" | "drop" | "paste";
@@ -52,12 +52,12 @@ Reglas del contrato:
 | Formato | Extensiones / MIME | Hoy | ADOC-16 | Conversión y avisos |
 |---|---|---|---|---|
 | Markdown | `.md`, `.markdown`, `text/markdown` | Aceptado | Aceptado | `markdownToDocument`; solo el subconjunto admitido; lo no reconocido queda como texto o genera aviso |
-| Texto plano | `.txt`, `text/plain` | Se lee como Markdown | Aceptado como texto literal | Un párrafo por bloque de líneas; no interpreta `#`, `*`, enlaces ni tablas |
+| Texto plano | `.txt`, `text/plain` | Aceptado como texto literal | Aceptado como texto literal | Un párrafo por bloque de líneas; no interpreta `#`, `*`, enlaces ni tablas |
 | DOCX | `.docx` | Aceptado | Aceptado | `@silurus/ooxml` → Markdown → documento; se pierden maquetación, columnas, comentarios y elementos avanzados; las imágenes se omiten con aviso |
 | PPTX | `.pptx` | Aceptado | Aceptado | Como DOCX, con saltos de diapositiva; las notas del orador y las imágenes se omiten con aviso |
 | XLSX | `.xlsx` | Solo visor | Rechazado en importación | El mensaje remite al visor Office; las hojas no se convierten en documento |
-| JSON de Aula | `.json`, `application/json` | No admitido | Aceptado | Documento canónico o JSON descargado de una copia de recuperación, validado con `parseAulaDocument` |
-| HTML | `.html`, `text/html` | No admitido | Rechazado | Sin parser/saneado fiable en el repo; añadir una dependencia queda fuera de ADOC-16 |
+| JSON de Aula | `.json`, `application/json` | Aceptado | Aceptado | Documento canónico o JSON descargado de una copia de recuperación, validado con `parseAulaDocument` |
+| HTML | `.html`, `text/html` | Rechazado | Rechazado | Sin parser/saneado fiable en el repo; añadir una dependencia queda fuera de ADOC-16 |
 | ODT / RTF | `.odt`, `.rtf` | No admitido | Rechazado | Sin conversor ni librería aprobada |
 | PDF | `.pdf` | No admitido | Rechazado | Sin conversor; no se promete fidelidad |
 | Office antiguo | `.doc`, `.xls`, `.ppt` | Rechazado | Rechazado | Formato binario legado; se pide guardar como OOXML |
@@ -82,7 +82,7 @@ Reglas del contrato:
 | Archivo Office | 30 MB | `MAX_OFFICE_FILE_BYTES` | DOCX/PPTX/XLSX antes de leer |
 | Texto extraído de Office | 200.000 caracteres | `AULA_DOCUMENT_MARKDOWN_MAX_LENGTH` | DOCX/PPTX |
 | ZIP de copia portable | 60 MB; 200 MB y 20 copias por proyecto | `AULA_COPY_*` | Acción Importar copia |
-| TXT y pegado | 200.000 caracteres (propuesto) | Reutiliza el límite de Markdown | Fase 3 |
+| TXT y pegado | 200.000 caracteres | Reutiliza el límite de Markdown | TXT y pegado |
 
 Los límites se comprueban antes de construir la vista previa cuando el formato lo permite. Un documento que supera un límite estructural se rechaza con el mensaje de `parseAulaDocument`; no se recorta silenciosamente.
 
@@ -97,11 +97,11 @@ Los límites se comprueban antes de construir la vista previa cuando el formato 
 
 ## 6. Pruebas existentes
 
-- Dominio: `importers.test.ts`, `office-import.test.ts`, `markdown.test.ts`, `document.test.ts`, `migration.test.ts`, `copy.test.ts`.
+- Dominio: `importers.test.ts`, `import-formats.test.ts`, `office-import.test.ts`, `markdown.test.ts`, `document.test.ts`, `migration.test.ts`, `copy.test.ts`.
 - Office compartido: `office-import.test.ts` y `office-model.test.ts`.
 - Flujos de la app: `aula-documentos-documents.test.tsx` (264 líneas), `aula-documentos-autosave.test.tsx`, `aula-documentos-copies.test.tsx`, `aula-documentos-recovery.test.tsx` y `aula-documentos-presentation.test.tsx`.
 
-No existe hoy una prueba de arrastre o pegado porque esos caminos tampoco existen. La Fase 2 añadirá pruebas de los tres orígenes y la Fase 3 las de TXT y JSON.
+Las pruebas de archivo, arrastre, pegado, TXT y JSON cubren los tres orígenes y los formatos nuevos; HTML y los formatos sin conversor se prueban por su mensaje de rechazo.
 
 ## 7. Límites de mantenimiento
 

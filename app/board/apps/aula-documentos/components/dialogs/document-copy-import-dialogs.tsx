@@ -402,9 +402,9 @@ export function DocumentCopyImportDialogs() {
             ) : (
               <div className="aula-documentos-import-menu">
                 <p className="aula-documentos-import-intro">
-                  Arrastra un archivo, elígelo con el selector o pega texto. Se admiten Markdown (.md/.markdown), texto (.txt)
-                  y DOCX/PPTX; la vista previa no cambia el origen. Para recuperar datos de las apps documentales anteriores,
-                  usa Importar &gt; Migrar apps antiguas.
+                  Arrastra un archivo, elígelo con el selector o pega texto. Se admiten Markdown (.md/.markdown), texto
+                  (.txt), JSON (.json) y DOCX/PPTX; la vista previa no cambia el origen. Para recuperar datos de las apps
+                  documentales anteriores, usa Importar &gt; Migrar apps antiguas.
                 </p>
                 <label
                   className={`aula-documentos-import-option aula-documentos-import-dropzone${dragActive ? " is-active" : ""}`}
@@ -421,13 +421,13 @@ export function DocumentCopyImportDialogs() {
                   }}
                 >
                   <Upload size={18} aria-hidden />
-                  <span><strong>Arrastra un archivo aquí</strong><small>Markdown, TXT o DOCX/PPTX; también puedes elegirlo con el selector</small></span>
+                  <span><strong>Arrastra un archivo aquí</strong><small>Markdown, TXT, JSON o DOCX/PPTX; también puedes elegirlo con el selector</small></span>
                 </label>
                 <input
                   id="aula-documentos-import-file"
                   className="aula-documentos-file-input"
                   type="file"
-                  accept=".md,.markdown,.txt,.docx,.pptx,text/markdown,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                  accept=".md,.markdown,.txt,.json,.docx,.pptx,text/markdown,text/plain,application/json,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation"
                   onChange={(event) => {
                     const file = event.currentTarget.files?.[0];
                     event.currentTarget.value = "";
