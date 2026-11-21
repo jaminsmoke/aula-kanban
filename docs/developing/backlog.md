@@ -2,24 +2,12 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 4 entradas pendientes · siguiente candidato ADOC-19
+> **Roadmap:** ADOC-19 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 3 entradas pendientes · siguiente candidato ADOC-20
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
-
-## 2026-11-19 — ADOC-19 · Presentación y PDF de calidad
-
-- Contexto: el modo presentación existe, pero faltan controles de edición de diapositivas y una salida PDF más predecible para clase y entrega.
-- Alcance:
-  1. Reordenar, duplicar y eliminar diapositivas desde una vista de estructura.
-  2. Vista de presentador con notas y siguiente diapositiva.
-  3. Ajustes de página/diapositiva y exportación PDF con saltos y recursos controlados.
-  4. Conservar notas, imágenes, tablas y diagramas en la salida.
-  5. Revisar impresión, teclado y rendimiento.
-- Criterios: una presentación se puede preparar y presentar sin editar saltos a mano, y el PDF reproduce el resultado visible sin recursos externos.
-- Notas: la exportación PDF no debe depender de un servicio externo; reutilizar el HTML imprimible cuando sea posible.
 
 ## 2026-11-19 — ADOC-20 · Comentarios, revisión e historial
 
