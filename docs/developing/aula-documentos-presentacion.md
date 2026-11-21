@@ -1,6 +1,6 @@
 # Presentación, estructura de diapositivas y PDF de Aula Documentos
 
-> **Estado:** Fases 1–2 cerradas · **Fecha:** 2026-11-21
+> **Estado:** Fases 1–3 cerradas · **Fecha:** 2026-11-21
 > **Alcance:** estructura editable, notas, presentador, ajustes de página y PDF.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
 > **Regla:** esta fase no mueve código de producto; fija el contrato y los límites.
@@ -199,3 +199,15 @@ Implementado el 2026-11-21:
 - La primera operación materializa los límites actuales como `slideBreak`; después la estructura es estable e independiente de los títulos.
 - Las pruebas cubren reordenar, duplicar, eliminar, cancelar la confirmación, deshacer, notas que viajan con la diapositiva, modo lectura, diapositiva única y 60 diapositivas.
 - Suite: **258 archivos / 1.709 pruebas**; build **377.647 B**; presupuesto **379.000 B**.
+
+## 11. Cierre de la Fase 3
+
+Implementado el 2026-11-21:
+
+- `PresentationView` incorpora **Presentador**: panel lateral con notas actuales, número de diapositiva, siguiente diapositiva renderizada con el mismo HTML y aviso de última diapositiva.
+- El panel no hace un segundo render: reutiliza `slides[activeSlide + 1]` construido para la presentación.
+- En escritorio comparte espacio con reveal.js; en pantallas estrechas se apila debajo y el deck se recoloca con `layout()`.
+- El foco y `Escape` siguen delegados en `useDialogFocus`; el botón tiene `aria-pressed` y el panel `aria-label`.
+- Notas vacías y última diapositiva tienen estados explícitos.
+- Pruebas de notas, siguiente diapositiva, última diapositiva, ausencia de notas y salida con `Escape`.
+- Suite: **258 archivos / 1.711 pruebas**; build **377.634 B**; presupuesto **379.000 B**.

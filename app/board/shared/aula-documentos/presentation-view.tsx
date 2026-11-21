@@ -25,8 +25,9 @@ export type PresentationViewProps = {
 export function PresentationView({ title, slides, theme = "aula", notes = {}, onExit }: PresentationViewProps) {
   const revealRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const deckRef = useRef<InstanceType<typeof Reveal> | null>(null);
   const [activeSlide, setActiveSlide] = useState(0);
-  const [showNotes, setShowNotes] = useState(false);
+  const [showPresenter, setShowPresenter] = useState(false);
   useDialogFocus(true, onExit, dialogRef);
 
   useEffect(() => {
@@ -47,6 +48,7 @@ export function PresentationView({ title, slides, theme = "aula", notes = {}, on
       margin: 0.06,
       respondToHashChanges: false,
     });
+    deckRef.current = deck;
     void deck.initialize();
     const onSlideChanged = (event: Event) => {
       const index = (event as Event & { indexh?: number }).indexh;
@@ -61,29 +63,37 @@ export function PresentationView({ title, slides, theme = "aula", notes = {}, on
       deck.off("slidechanged", onSlideChanged);
       document.body.style.overflow = previousOverflow;
       deck.destroy();
+      deckRef.current = null;
     };
   }, [onExit, slides]);
 
+  useEffect(() => {
+    deckRef.current?.layout();
+  }, [showPresenter]);
+
+  const nextSlide = slides[activeSlide + 1];
+
   return (
-    <div ref={dialogRef} className={`aula-presentation aula-presentation-theme-${theme}`} role="dialog" aria-modal="true" aria-label={`Presentación: ${title}`}>
+    <div
+      ref={dialogRef}
+      className={`aula-presentation${showPresenter ? " has-presenter" : ""} aula-presentation-theme-${theme}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Presentación: ${title}`}
+    >
       <button type="button" className="aula-presentation-exit" onClick={onExit} aria-label="Salir de la presentación">
         <X size={16} aria-hidden />
         Salir
       </button>
       <button
         type="button"
-        className="aula-presentation-notes-toggle"
-        onClick={() => setShowNotes((current) => !current)}
-        aria-pressed={showNotes}
+        className="aula-presentation-presenter-toggle"
+        onClick={() => setShowPresenter((current) => !current)}
+        aria-pressed={showPresenter}
+        aria-controls="aula-presentation-presenter"
       >
-        Notas
+        Presentador
       </button>
-      {showNotes ? (
-        <aside className="aula-presentation-notes" aria-label="Notas del orador">
-          <h2>Notas · diapositiva {activeSlide + 1}</h2>
-          <p>{notes[String(activeSlide)] || "Sin notas para esta diapositiva."}</p>
-        </aside>
-      ) : null}
       <div ref={revealRef} className="reveal aula-presentation-reveal" tabIndex={-1}>
         <div className="slides">
           {slides.map((html, index) => (
@@ -95,6 +105,31 @@ export function PresentationView({ title, slides, theme = "aula", notes = {}, on
           ))}
         </div>
       </div>
+      {showPresenter ? (
+        <aside id="aula-presentation-presenter" className="aula-presentation-presenter" aria-label="Vista de presentador">
+          <header className="aula-presentation-presenter-head">
+            <h2>Vista de presentador</h2>
+            <span aria-live="polite">{activeSlide + 1} / {slides.length}</span>
+          </header>
+          <section className="aula-presentation-presenter-section" aria-label="Notas del orador" aria-live="polite">
+            <h3>Notas · diapositiva {activeSlide + 1}</h3>
+            <p>{notes[String(activeSlide)] || "Sin notas para esta diapositiva."}</p>
+          </section>
+          <section className="aula-presentation-presenter-section" aria-label="Siguiente diapositiva">
+            <h3>Siguiente diapositiva</h3>
+            {nextSlide ? (
+              <div className="aula-presentation-next-frame" aria-hidden>
+                <div
+                  className="aula-presentation-slide aula-presentation-next-slide"
+                  dangerouslySetInnerHTML={{ __html: nextSlide }}
+                />
+              </div>
+            ) : (
+              <p>Última diapositiva.</p>
+            )}
+          </section>
+        </aside>
+      ) : null}
     </div>
   );
 }

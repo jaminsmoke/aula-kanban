@@ -1,6 +1,7 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
+import { PresentationView } from "../../shared/aula-documentos/presentation-view";
 import {
   documentMock,
   insertMermaid,
@@ -318,4 +319,39 @@ describe("Presentación y editor de Aula Documentos", () => {
     await waitFor(() => expect(document.activeElement).toBe(trigger));
   });
 
+  it("muestra notas y siguiente diapositiva en la vista de presentador", () => {
+    const onExit = vi.fn();
+    render(
+      <PresentationView
+        title="Clase"
+        slides={["<h1>Uno</h1>", "<h2>Dos</h2>"]}
+        notes={{ "0": "Nota uno" }}
+        onExit={onExit}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Presentador" }));
+    const panel = screen.getByRole("complementary", { name: "Vista de presentador" });
+    expect(within(panel).getByText("Nota uno")).toBeTruthy();
+    expect(within(panel).getByRole("heading", { name: "Siguiente diapositiva" })).toBeTruthy();
+    expect(within(panel).getByText("Dos")).toBeTruthy();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(onExit).toHaveBeenCalled();
+  });
+
+  it("avisa de la última diapositiva y de la ausencia de notas", () => {
+    render(
+      <PresentationView
+        title="Cierre"
+        slides={["<h1>Única</h1>"]}
+        onExit={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Presentador" }));
+    const panel = screen.getByRole("complementary", { name: "Vista de presentador" });
+    expect(within(panel).getByText("Sin notas para esta diapositiva.")).toBeTruthy();
+    expect(within(panel).getByText("Última diapositiva.")).toBeTruthy();
+  });
 });

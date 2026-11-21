@@ -46,7 +46,7 @@
       },
       "css": {
         "maxFiles": 12,
-        "maxLines": 2550
+        "maxLines": 2650
       }
     },
     "hoja-calculo": {

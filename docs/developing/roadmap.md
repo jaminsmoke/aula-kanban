@@ -90,11 +90,12 @@
 
 ### Fase 3 — Vista de presentador
 
-- [ ] Mostrar notas actuales y una vista de la siguiente diapositiva.
-- [ ] Mantener los controles de teclado, salida y foco del modo presentación.
-- [ ] Adaptar el presentador a pantallas estrechas y a la ausencia de notas.
-- [ ] Probar navegación, diapositiva final, notas vacías y salida con `Escape`.
+- [x] Mostrar notas actuales y una vista de la siguiente diapositiva.
+- [x] Mantener los controles de teclado, salida y foco del modo presentación.
+- [x] Adaptar el presentador a pantallas estrechas y a la ausencia de notas.
+- [x] Probar navegación, diapositiva final, notas vacías y salida con `Escape`.
 - **Criterios:** quien presenta ve lo necesario sin ocultar la presentación ni depender de otra ventana.
+- **Cierre (2026-11-21):** panel **Presentador** dentro de la presentación con notas, posición actual, siguiente diapositiva renderizada y último aviso; `layout()` al abrir, columna en pantallas estrechas y `Escape` con foco restaurado. Pruebas de siguiente/última diapositiva, notas vacías y salida. Suite: **258 archivos / 1.711 pruebas**; build **377.634 B**; presupuesto **379.000 B**.
 
 ### Fase 4 — Ajustes de página y PDF
 
@@ -129,5 +130,6 @@
 - 2026-11-21: **Roadmap abierto.** ADOC-19 sale del backlog; quedan **3 entradas** y el siguiente candidato es **ADOC-20**. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Contrato de estructura, notas, presentador, ajustes de página y PDF en [`aula-documentos-presentacion.md`](aula-documentos-presentacion.md). Sin cambios de código.
 - 2026-11-21: **Fase 2 completada.** Estructura editable con materialización de saltos, notas remapeadas, historial de sesión y modo lectura. Suite: **258 archivos / 1.709 pruebas**; presupuesto **379.000 B**.
+- 2026-11-21: **Fase 3 completada.** Vista de presentador con notas, siguiente diapositiva, último aviso, diseño adaptable y salida con `Escape`. Suite: **258 archivos / 1.711 pruebas**; build **377.634 B**.
 - La presentación actual, la vista previa, el navegador de ADOC-18 y la exportación PPTX son la base; no se crea un almacén paralelo de diapositivas.
 - No hay publicación ni migraciones remotas en este roadmap.
