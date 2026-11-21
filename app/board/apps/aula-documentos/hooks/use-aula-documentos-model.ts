@@ -5,6 +5,7 @@ import { useDialogFocus } from "../../../shared/use-dialog-focus";
 import { useAulaSession } from "./use-aula-session";
 import { useAulaDocumentSuite } from "./use-aula-document-suite";
 import { useAulaSearch } from "./use-aula-search";
+import { useAulaNavigation } from "./use-aula-navigation";
 import { useAulaSuiteController } from "./use-aula-suite-controller";
 import { useAulaPersistence } from "./use-aula-persistence";
 import { useAulaImages } from "./use-aula-images";
@@ -71,6 +72,7 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
   });
 
   const search = useAulaSearch({ editor, readOnly, setStatus });
+  const navigation = useAulaNavigation({ editor });
 
   const {
     imageUploading,
@@ -575,6 +577,7 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     suiteError: suite.error,
     ...suiteActions,
     ...search,
+    ...navigation,
     ...toolbarModel,
   };
 }

@@ -4,6 +4,7 @@ import { Code2, History, Search } from "lucide-react";
 import { AULA_DOCUMENT_TITLE_MAX_LENGTH, AULA_PRESENTATION_THEMES, type AulaPresentationTheme } from "../../../../../lib/domain/aula-documentos/document";
 import { useAulaDocumentosView } from "../aula-documentos-context";
 import { DocumentSearchBar } from "./document-search-bar";
+import { DocumentNavigator } from "./document-navigator";
 import { DocumentSuitePanel } from "./document-suite-panel";
 import { DocumentToolbar } from "./document-toolbar";
 
@@ -98,6 +99,7 @@ export function DocumentWorkspace() {
         </section>
 
         <aside className="aula-documentos-side">
+          <DocumentNavigator />
           <DocumentSuitePanel />
           <section className="aula-documentos-info">
             <h3>La suite documental</h3>

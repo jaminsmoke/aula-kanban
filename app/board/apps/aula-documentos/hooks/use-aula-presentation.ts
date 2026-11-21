@@ -97,8 +97,9 @@ export function useAulaPresentation({
 
   /**
    * Abre una vista previa con navegación entre diapositivas.
+   * @param initialIndex - Diapositiva inicial, cero si se omite.
    */
-  async function openSlidePreview() {
+  async function openSlidePreview(initialIndex = 0) {
     const document = currentDocument();
     if (!document) return;
     setPreparingPresentation(true);
@@ -108,7 +109,7 @@ export function useAulaPresentation({
       setSlidePreview({
         title: document.title.trim() || "Aula Documentos",
         slides: html,
-        index: 0,
+        index: Math.min(Math.max(initialIndex, 0), Math.max(html.length - 1, 0)),
       });
       setStatus(`Vista previa abierta: ${html.length} ${html.length === 1 ? "diapositiva" : "diapositivas"}.`);
     } catch {

@@ -84,12 +84,13 @@
 
 ### Fase 3 — Esquema y navegador de diapositivas
 
-- [ ] Construir el esquema H1–H3 desde el documento con jerarquía y posición.
-- [ ] Permitir saltar a una sección y marcar la sección activa.
-- [ ] Añadir un navegador de diapositivas con número, título y salto directo.
-- [ ] Sincronizar el índice de la vista previa con el navegador.
-- [ ] Probar documentos sin títulos, con títulos repetidos y con muchas diapositivas.
+- [x] Construir el esquema H1–H3 desde el documento con jerarquía y posición.
+- [x] Permitir saltar a una sección y marcar la sección activa.
+- [x] Añadir un navegador de diapositivas con número, título y salto directo.
+- [x] Sincronizar el índice de la vista previa con el navegador.
+- [x] Probar documentos sin títulos, con títulos repetidos y con muchas diapositivas.
 - **Criterios:** el esquema refleja los títulos reales y cualquier diapositiva se abre desde el navegador.
+- **Cierre (2026-11-21):** esquema jerárquico H1–H3 derivado de posiciones Tiptap, sección activa según la selección y navegador que reutiliza la agrupación de `buildPresentationSlides`. Cada diapositiva salta a su bloque y la vista previa se abre en la diapositiva activa. Suite: **256 archivos / 1.698 pruebas**; build **375.633 B**; presupuesto **377.000 B**.
 
 ### Fase 4 — Enfoque, barra de estado, teclado y accesibilidad
 

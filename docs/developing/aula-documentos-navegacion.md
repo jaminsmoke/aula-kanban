@@ -1,6 +1,6 @@
 # Búsqueda, esquema y navegación de Aula Documentos
 
-> **Estado:** Fase 1 de ADOC-18 · **Fecha:** 2026-11-21
+> **Estado:** Fases 1–3 cerradas · **Fecha:** 2026-11-21
 > **Alcance:** contrato de búsqueda, reemplazo, esquema, diapositivas, enfoque y barra de estado.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
 > **Regla:** esta fase no mueve código de producto; fija el contrato y los límites.
@@ -180,3 +180,15 @@ Implementado el 2026-11-21:
 - Reemplazo mediante una única transacción que conserva las marcas del texto.
 - Atajos `Ctrl/Cmd+F` y `Ctrl/Cmd+H`; `Enter`/`Shift+Enter` navegan y `Escape` cierra.
 - Pruebas de búsqueda pura, marcas y flujo de interfaz.
+
+## 12. Cierre de la Fase 3
+
+Implementado el 2026-11-21:
+
+- `outline.ts` construye el árbol H1–H3 desde el documento Tiptap, omite títulos vacíos y conserva títulos repetidos.
+- `useAulaNavigation` recalcula el esquema y las diapositivas cuando cambia el documento y actualiza la sección activa con la selección.
+- `DocumentNavigator` muestra el esquema con profundidad, estado activo y salto a cada sección.
+- El navegador de diapositivas reutiliza `buildPresentationSlides` para número y título, y calcula rangos con los nodos de nivel superior.
+- Saltar a una diapositiva mueve la selección a su bloque; la vista previa se abre en la diapositiva activa.
+- Las listas son navegables con botones y teclado, tienen estado vacío y se adaptan al ancho móvil.
+- Pruebas de jerarquía, títulos repetidos y saltados, documentos sin títulos, saltos explícitos, muchas diapositivas y flujo de interfaz.
