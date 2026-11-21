@@ -42,7 +42,7 @@ const mermaidMock = vi.hoisted(() => ({
 
 const printMock = vi.hoisted(() => vi.fn());
 
-vi.mock("../app/board/shared/aula-documentos/print-html", () => ({
+vi.mock("../app/board/apps/aula-documentos/exportacion/print-html", () => ({
   printHtmlDocument: printMock,
 }));
 
@@ -53,7 +53,7 @@ const copyMock = vi.hoisted(() => ({
   remove: vi.fn(),
 }));
 
-vi.mock("../app/board/shared/aula-documentos/copy-client", () => ({
+vi.mock("../app/board/apps/aula-documentos/formatos/copias/copy-client", () => ({
   listAulaCopies: copyMock.list,
   saveAulaCopy: copyMock.save,
   downloadAulaCopy: copyMock.download,

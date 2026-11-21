@@ -1,6 +1,6 @@
 # Inventario de `shared` para ARC-08
 
-> **Estado:** ARC-08, Fases 1–2 · **Fecha:** 2026-11-21
+> **Estado:** ARC-08, Fases 1–3 · **Fecha:** 2026-11-21
 > **Alcance:** `shared/aula-documentos`, `shared/office`, `shared/mermaid` y la frontera que conserva `shared/whiteboard`.
 > **Instantánea:** [`shared-baseline.json`](shared-baseline.json)
 
@@ -109,10 +109,11 @@ La instantánea completa está en [`shared-baseline.json`](shared-baseline.json)
 - La instantánea permite comparar el bundle inicial y los flujos diferidos en las fases siguientes.
 - No se ha movido código de producto en esta fase.
 
-## 8. Aplicado en la Fase 2
+## 8. Aplicado en las Fases 2 y 3
 
 - Atajos, edición, imágenes, búsqueda, navegación, comentarios, diagramas y Gantt viven ya en `apps/aula-documentos`.
-- `shared` se mantiene como frontera solo donde hay consumidores reales; `shared/mermaid` se eliminó.
-- `export-html` se movió con las extensiones que consume, antes de la fase de presentación.
-- En `shared/aula-documentos` quedan `copy-client.ts`, `export-images.ts`, `presentation-view.tsx`, `presentation.css`, `print-html.ts` y sus pruebas para la Fase 3.
+- Presentación, exportación de imágenes, impresión y cliente de copias se movieron a Aula Documentos.
+- Los tipos y helpers base64 de imágenes viven en `lib/domain/aula-documentos/image-assets.ts`.
+- `shared` se mantiene como frontera solo donde hay consumidores reales; `shared/aula-documentos` y `shared/mermaid` desaparecieron.
+- Queda `shared/office` para la Fase 4, además de `shared/whiteboard`, que se conserva.
 - El presupuesto CSS de Aula pasa a **15 / 3.350** al contabilizar `gantt-editor.css` dentro de la app.

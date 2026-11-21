@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
-import { PresentationView } from "../../shared/aula-documentos/presentation-view";
+import { PresentationView } from "./presentacion/presentation-view";
 import {
   documentMock,
   insertMermaid,

@@ -3,11 +3,10 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   collectAulaImageSources,
-  imageBase64ToBytes,
-  imageBytesToBase64,
   loadAulaImageAssets,
   readAulaImageDimensions,
 } from "./export-images";
+import { imageBase64ToBytes, imageBytesToBase64 } from "../../../../../lib/domain/aula-documentos/image-assets";
 
 const TINY_PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nTQAAAAASUVORK5CYII=";
 const TINY_PNG = imageBase64ToBytes(TINY_PNG_BASE64);

@@ -13,7 +13,7 @@ import { collectMermaidCodes, renderAulaContentHtml, renderMermaidSvgs, buildAul
 import { getMermaidRenderer } from "../editor/diagramas/mermaid-renderer";
 import { loadExportImages } from "../utils/document-assets";
 import { downloadTextFile } from "../../../shared/ui/download";
-import { printHtmlDocument } from "../../../shared/aula-documentos/print-html";
+import { printHtmlDocument } from "../exportacion/print-html";
 import { aulaFileName } from "../../../../../lib/domain/aula-documentos/filename";
 
 type PresentationDeps = {

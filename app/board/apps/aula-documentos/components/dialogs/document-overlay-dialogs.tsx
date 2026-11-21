@@ -4,7 +4,7 @@ import { AULA_MIGRATION_SOURCE_LABELS } from "../../../../../../lib/domain/aula-
 import { useAulaDocumentosView } from "../../aula-documentos-context";
 import { formatDateTime } from "../../../../shared/ui/date";
 
-const PresentationView = lazy(() => import("../../../../shared/aula-documentos/presentation-view").then((module) => ({
+const PresentationView = lazy(() => import("../../presentacion/presentation-view").then((module) => ({
   default: module.PresentationView,
 })));
 

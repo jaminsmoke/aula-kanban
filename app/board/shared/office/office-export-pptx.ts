@@ -1,7 +1,7 @@
 import type { JSONContent } from "@tiptap/core";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
 import { buildPresentationSlides } from "../../../../lib/domain/aula-documentos/presentation";
-import type { AulaImageAssetMap } from "../aula-documentos/export-images";
+import type { AulaImageAssetMap } from "../../../../lib/domain/aula-documentos/image-assets";
 import { contentInlineText } from "../../../../lib/domain/aula-documentos/text";
 import { addWarning, type OfficeExportResult } from "./office-export-common";
 

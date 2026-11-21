@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import type { AulaDocument } from "../../../../../lib/domain/aula-documentos/document";
 import type { AulaDocumentStats } from "../../../../../lib/domain/aula-documentos/document";
 import type { AulaCopyAsset, AulaCopyManifest } from "../../../../../lib/domain/aula-documentos/copy";
-import type { AulaCopySummary } from "../../../shared/aula-documentos/copy-client";
+import type { AulaCopySummary } from "../formatos/copias/copy-client";
 import { uploadAulaImage } from "../editor/image-upload";
 import { buildPortableCopy } from "../utils/document-assets";
 import { downloadBlob } from "../../../shared/ui/download";
@@ -92,7 +92,7 @@ export function useAulaCopies({
   async function refreshCopies() {
     setCopiesLoading(true);
     setCopiesError(null);
-    const { aulaCopyDateLabel, aulaCopySizeLabel, listAulaCopies } = await import("../../../shared/aula-documentos/copy-client");
+    const { aulaCopyDateLabel, aulaCopySizeLabel, listAulaCopies } = await import("../formatos/copias/copy-client");
     const result = await listAulaCopies(projectId, documentId);
     setCopiesLoading(false);
     if (!result || !result.ok) {
@@ -121,7 +121,7 @@ export function useAulaCopies({
         setCopyNotice(built.message);
         return;
       }
-      const { saveAulaCopy } = await import("../../../shared/aula-documentos/copy-client");
+      const { saveAulaCopy } = await import("../formatos/copias/copy-client");
       const result = await saveAulaCopy(projectId, built.bytes, aulaFileName(document.title, "aula.zip"), documentId);
       if (!result.ok) {
         setCopyNotice(result.message);
@@ -166,7 +166,7 @@ export function useAulaCopies({
    */
   async function downloadStoredCopy(copy: AulaCopySummary) {
     setCopyNotice("Descargando copia…");
-    const { downloadAulaCopy } = await import("../../../shared/aula-documentos/copy-client");
+    const { downloadAulaCopy } = await import("../formatos/copias/copy-client");
     const result = await downloadAulaCopy(copy);
     if (!result.ok) {
       setCopyNotice(result.message);
@@ -182,7 +182,7 @@ export function useAulaCopies({
    */
   async function removeStoredCopy(copy: AulaCopySummary) {
     setCopyNotice("Borrando copia…");
-    const { deleteAulaCopy } = await import("../../../shared/aula-documentos/copy-client");
+    const { deleteAulaCopy } = await import("../formatos/copias/copy-client");
     const result = await deleteAulaCopy(copy);
     if (!result.ok) {
       setCopyNotice(result.message);
@@ -214,7 +214,7 @@ export function useAulaCopies({
     try {
       const bytes = new Uint8Array(await file.arrayBuffer());
       const { readAulaDocumentCopy } = await import("../../../../../lib/domain/aula-documentos/copy");
-      const { aulaCopyDateLabel } = await import("../../../shared/aula-documentos/copy-client");
+      const { aulaCopyDateLabel } = await import("../formatos/copias/copy-client");
       const result = await readAulaDocumentCopy(bytes);
       if (!result.ok) {
         setStatus(result.message);

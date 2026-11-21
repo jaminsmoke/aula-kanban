@@ -5,7 +5,7 @@ import { documentToMarkdownExport } from "../../../../../lib/domain/aula-documen
 import { aulaFileName } from "../../../../../lib/domain/aula-documentos/filename";
 import { buildAulaDocumentHtml, collectMermaidCodes, renderMermaidSvgs } from "../exportacion/export-html";
 import { getMermaidRenderer } from "../editor/diagramas/mermaid-renderer";
-import { printHtmlDocument } from "../../../shared/aula-documentos/print-html";
+import { printHtmlDocument } from "../exportacion/print-html";
 import { exportAulaDocx, exportAulaPptx } from "../../../shared/office/office-export";
 import { loadExportImages } from "../utils/document-assets";
 import { downloadBlob, downloadTextFile } from "../../../shared/ui/download";

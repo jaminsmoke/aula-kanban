@@ -79,11 +79,12 @@
 
 ### Fase 3 — Presentación, exportación y revisión
 
-- [ ] Mover la vista de presentación y sus estilos al módulo de presentación de Aula Documentos.
-- [ ] Mover exportación HTML, imágenes, impresión y helpers de copias propias.
-- [ ] Mantener las cargas diferidas de exportadores y renderizadores.
-- [ ] Actualizar pruebas de presentación, PDF, copias e imágenes.
+- [x] Mover la vista de presentación y sus estilos al módulo de presentación de Aula Documentos.
+- [x] Mover exportación HTML, imágenes, impresión y helpers de copias propias.
+- [x] Mantener las cargas diferidas de exportadores y renderizadores.
+- [x] Actualizar pruebas de presentación, PDF, copias e imágenes.
 - **Criterios:** mismas exportaciones y mismas dependencias diferidas; ninguna ruta de revisión depende de un módulo genérico sin consumidor.
+- **Cierre (2026-11-21):** presentación y CSS, exportación de imágenes, impresión y cliente de copias se movieron a `apps/aula-documentos`; los tipos y helpers base64 de imágenes quedaron en `lib/domain`. Se actualizaron pruebas, mocks y cargas diferidas. Arquitectura **459 archivos / 1.148 imports**; suite **265 archivos / 1.746 pruebas**; build **386.249 B**.
 
 ### Fase 4 — Office
 
@@ -124,5 +125,6 @@
 - 2026-11-21: **Roadmap abierto.** ARC-08 sale del backlog; quedan **3 entradas** y el siguiente candidato es **ARC-09**. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Inventario de consumidores y destinos en [`shared-consumidores.md`](shared-consumidores.md); instantánea de arquitectura y flujos en [`shared-baseline.json`](shared-baseline.json). Sin mover código. Arquitectura **458 archivos / 1.147 imports**; suite **265 archivos / 1.746 pruebas**; Aula **386.266 B / 50 archivos**.
 - 2026-11-21: **Fase 2 completada.** Movidos atajos, edición, imágenes, búsqueda, navegación, comentarios, diagramas y Gantt a `apps/aula-documentos`; `shared/mermaid` eliminado. Presupuesto CSS **15 / 3.350**. Arquitectura **458 archivos / 1.147 imports**; suite **265 archivos / 1.746 pruebas**; build **386.263 B**.
+- 2026-11-21: **Fase 3 completada.** Presentación, exportación de imágenes, impresión y cliente de copias movidos a Aula Documentos; tipos base64 compartidos en `lib/domain/aula-documentos/image-assets.ts`. Arquitectura **459 archivos / 1.148 imports**; suite **265 archivos / 1.746 pruebas**; build **386.249 B**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

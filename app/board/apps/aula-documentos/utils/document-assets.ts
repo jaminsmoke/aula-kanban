@@ -11,7 +11,7 @@ import type { AulaDocument } from "../../../../../lib/domain/aula-documentos/doc
  * @returns Imágenes resueltas y fallos.
  */
 export async function loadExportImages(content: JSONContent) {
-  const { loadAulaImageAssets } = await import("../../../shared/aula-documentos/export-images");
+  const { loadAulaImageAssets } = await import("../exportacion/export-images");
   return loadAulaImageAssets(content);
 }
 

@@ -3,8 +3,8 @@
 import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Reveal from "reveal.js";
-import type { AulaPresentationTheme } from "../../../../lib/domain/aula-documentos/document";
-import { useDialogFocus } from "../use-dialog-focus";
+import type { AulaPresentationTheme } from "../../../../../lib/domain/aula-documentos/document";
+import { useDialogFocus } from "../../../shared/use-dialog-focus";
 import "reveal.js/reveal.css";
 import "./presentation.css";
 
