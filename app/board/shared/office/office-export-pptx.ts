@@ -2,7 +2,8 @@ import type { JSONContent } from "@tiptap/core";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
 import { buildPresentationSlides } from "../../../../lib/domain/aula-documentos/presentation";
 import type { AulaImageAssetMap } from "../aula-documentos/export-images";
-import { addWarning, nodeText, type OfficeExportResult } from "./office-export-common";
+import { contentInlineText } from "../../../../lib/domain/aula-documentos/text";
+import { addWarning, type OfficeExportResult } from "./office-export-common";
 
 /** Celda de una tabla PPTX con su estructura visual. */
 type PptxTableCell = {
@@ -28,29 +29,29 @@ function slideContent(blocks: JSONContent[], title: string): { items: PptxSlideI
   const items: PptxSlideItem[] = [];
   const visit = (nodes: JSONContent[], bullet = false) => {
     for (const node of nodes) {
-      if (node.type === "heading" && nodeText(node).trim() === title) continue;
+      if (node.type === "heading" && contentInlineText(node).trim() === title) continue;
       if (node.type === "heading" || node.type === "paragraph") {
-        const text = nodeText(node).trim();
+        const text = contentInlineText(node).trim();
         if (text) items.push({ kind: "text", text, bullet, heading: node.type === "heading" });
       } else if (node.type === "bulletList" || node.type === "orderedList") {
         for (const item of node.content ?? []) visit(item.content ?? [], true);
       } else if (node.type === "taskList") {
         for (const item of node.content ?? []) {
-          const text = (item.content ?? []).map(nodeText).join(" ").trim();
+          const text = (item.content ?? []).map(contentInlineText).join(" ").trim();
           if (text) items.push({ kind: "text", text, bullet: true, heading: false });
         }
       } else if (node.type === "table") {
         items.push({
           kind: "table",
           rows: (node.content ?? []).map((row) => (row.content ?? []).map((cell) => ({
-            text: nodeText(cell),
+            text: contentInlineText(cell),
             colspan: Math.max(1, Number(cell.attrs?.colspan) || 1),
             rowspan: Math.max(1, Number(cell.attrs?.rowspan) || 1),
             header: cell.type === "tableHeader",
           }))),
         });
       } else if (node.type === "codeBlock" || node.type === "mermaidBlock") {
-        const text = node.type === "mermaidBlock" ? String(node.attrs?.code ?? "") : nodeText(node);
+        const text = node.type === "mermaidBlock" ? String(node.attrs?.code ?? "") : contentInlineText(node);
         if (text) items.push({ kind: "text", text, bullet: false, heading: false });
       } else if (node.type === "aulaImage") {
         items.push({

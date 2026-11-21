@@ -2,7 +2,8 @@ import type { JSONContent } from "@tiptap/core";
 import type { ExternalHyperlink as DocxHyperlink, Paragraph as DocxParagraph, Table as DocxTable, TextRun as DocxTextRun } from "docx";
 import type { AulaDocument } from "../../../../lib/domain/aula-documentos/document";
 import type { AulaImageAssetMap } from "../aula-documentos/export-images";
-import { addWarning, nodeText, type OfficeExportResult } from "./office-export-common";
+import { contentInlineText } from "../../../../lib/domain/aula-documentos/text";
+import { addWarning, type OfficeExportResult } from "./office-export-common";
 
 type DocxModule = typeof import("docx");
 type DocxChild = DocxParagraph | DocxTable;
@@ -145,7 +146,7 @@ function tableToDocx(node: JSONContent, docx: DocxModule, warnings: string[], im
  */
 function taskParagraphs(node: JSONContent, docx: DocxModule): DocxParagraph[] {
   return (node.content ?? []).map((item) => {
-    const text = (item.content ?? []).map(nodeText).join(" ").trim();
+    const text = (item.content ?? []).map(contentInlineText).join(" ").trim();
     return new docx.Paragraph({
       children: [new docx.TextRun({ text: `${item.attrs?.checked === true ? "☑" : "☐"} ${text}` })],
       indent: { left: 360 },
@@ -269,7 +270,7 @@ function blockToDocx(
   }
   if (node.type === "codeBlock" || node.type === "mermaidBlock") {
     if (node.type === "mermaidBlock") addWarning(warnings, "Los diagramas Mermaid se exportan como código.");
-    const text = node.type === "mermaidBlock" ? String(node.attrs?.code ?? "") : nodeText(node);
+    const text = node.type === "mermaidBlock" ? String(node.attrs?.code ?? "") : contentInlineText(node);
     return [new docx.Paragraph({
       children: [new docx.TextRun({ text, font: "Consolas", size: 18 })],
       spacing: { before: 80, after: 80 },
@@ -297,7 +298,7 @@ export async function exportAulaDocx(
   let blocks = document.content.content ?? [];
   const title = document.title.trim() || "Documento sin título";
   const first = blocks[0];
-  if (first?.type === "heading" && nodeText(first).trim() === title) blocks = blocks.slice(1);
+  if (first?.type === "heading" && contentInlineText(first).trim() === title) blocks = blocks.slice(1);
 
   const numbering = {
     config: [{

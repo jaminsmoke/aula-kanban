@@ -66,11 +66,12 @@
 
 ### Fase 2 — Extracción de texto de formatos
 
-- [ ] Añadir a `text.ts` un helper de texto inline que concatene nodos sin introducir espacios entre marcas.
-- [ ] Reutilizarlo en Markdown, presentación, título, importación de Office y exportación DOCX/PPTX.
-- [ ] Mantener `contentText` intacto para los consumidores que necesitan separación entre nodos.
-- [ ] Probar marcas que dividen una palabra, bloques consecutivos, tablas, listas y texto vacío.
+- [x] Añadir a `text.ts` un helper de texto inline que concatene nodos sin introducir espacios entre marcas.
+- [x] Reutilizarlo en Markdown, presentación, título, importación de Office y exportación DOCX/PPTX.
+- [x] Mantener `contentText` intacto para los consumidores que necesitan separación entre nodos.
+- [x] Probar marcas que dividen una palabra, bloques consecutivos, tablas, listas y texto vacío.
 - **Criterios:** los títulos, celdas y exportaciones producen exactamente el mismo texto visible que antes.
+- **Cierre (2026-11-21):** `contentInlineText` centraliza la concatenación sin separadores y sustituye los cinco `nodeText`; `contentText` conserva sus espacios. Pruebas de marcas partidas y de los formatos afectados correctas. Arquitectura **457 archivos / 1.145 imports**; suite **264 archivos / 1.743 pruebas**; build **386.179 B**.
 
 ### Fase 3 — Descarga de Blockly y URL del worker
 
@@ -101,5 +102,6 @@
 
 - 2026-11-21: **Roadmap abierto.** ARC-07 sale del backlog; quedan **4 entradas** y el siguiente candidato es **ARC-08**. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Núcleo común de recuperación en `recovery-store.ts`; wrappers, claves y migración conservados. Arquitectura **457 archivos / 1.139 imports**; suite **264 archivos / 1.742 pruebas**; build **386.244 B**.
+- 2026-11-21: **Fase 2 completada.** `contentInlineText` unifica la extracción de texto de Markdown, presentación, título y Office; `contentText` mantiene su comportamiento. Arquitectura **457 archivos / 1.145 imports**; suite **264 archivos / 1.743 pruebas**; build **386.179 B**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios de UI-11 mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

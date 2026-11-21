@@ -7,6 +7,7 @@ import {
   AULA_DOCUMENT_MARKDOWN_MAX_LENGTH,
   markdownToDocument,
 } from "./markdown";
+import { contentInlineText } from "./text";
 
 /** Formatos Office que se convierten en documento Aula. */
 export type OfficeImportFormat = "docx" | "pptx";
@@ -29,16 +30,6 @@ const SPEAKER_NOTES_PATTERN = /\n#{1,3}\s+(?:Speaker notes|Notas del orador)\s*\
 type ContentNode = { type?: string; text?: string; content?: ContentNode[] };
 
 /**
- * Extrae el texto de un nodo Tiptap.
- * @param node - Nodo del documento.
- * @returns Texto plano concatenado.
- */
-function nodeText(node: ContentNode): string {
-  if (node.type === "text") return node.text ?? "";
-  return (node.content ?? []).map(nodeText).join("");
-}
-
-/**
  * Indica si el título es el marcador genérico de una diapositiva.
  * @param title - Título del documento.
  * @returns `true` si parece «Slide 1» o similar.
@@ -55,7 +46,7 @@ function isSlidePlaceholder(title: string): boolean {
 function firstParagraphText(nodes: ContentNode[]): string {
   for (const node of nodes) {
     if (node.type === "paragraph") {
-      const text = nodeText(node).trim();
+      const text = contentInlineText(node).trim();
       if (text) return text;
     }
   }
@@ -113,13 +104,13 @@ export function officeMarkdownToPreview(input: OfficeMarkdownInput): OfficeDocum
 
   const blocks = (parsed.document.content.content ?? []) as ContentNode[];
   const usefulBlocks = input.format === "pptx"
-    ? blocks.filter((node) => !(node.type === "heading" && isSlidePlaceholder(nodeText(node))))
+    ? blocks.filter((node) => !(node.type === "heading" && isSlidePlaceholder(contentInlineText(node))))
     : blocks;
   const title = input.format === "pptx" && isSlidePlaceholder(parsed.document.title)
     ? firstParagraphText(usefulBlocks) || titleFallback
     : parsed.document.title;
   const first = usefulBlocks[0];
-  let content = first?.type === "paragraph" && nodeText(first).trim() === title.trim()
+  let content = first?.type === "paragraph" && contentInlineText(first).trim() === title.trim()
     ? usefulBlocks.slice(1)
     : usefulBlocks;
   if (!content.length) content = [{ type: "paragraph" }];

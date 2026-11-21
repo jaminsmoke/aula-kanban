@@ -1,20 +1,8 @@
-import type { JSONContent } from "@tiptap/core";
-
 /** Resultado de una exportación Office. */
 export type OfficeExportResult = {
   blob: Blob;
   warnings: string[];
 };
-
-/**
- * Extrae el texto de un nodo Tiptap.
- * @param node - Nodo del documento.
- * @returns Texto plano concatenado.
- */
-export function nodeText(node: JSONContent): string {
-  if (node.type === "text") return node.text ?? "";
-  return (node.content ?? []).map(nodeText).join("");
-}
 
 /**
  * Añade un aviso sin duplicarlo.

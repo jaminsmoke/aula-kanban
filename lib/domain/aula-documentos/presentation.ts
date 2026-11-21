@@ -1,20 +1,11 @@
 import type { JSONContent } from "@tiptap/core";
+import { contentInlineText } from "./text";
 
 /** Diapositiva derivada de un documento de Aula Documentos. */
 export type AulaPresentationSlide = {
   title: string;
   content: JSONContent[];
 };
-
-/**
- * Extrae el texto de un nodo Tiptap.
- * @param node - Nodo del documento.
- * @returns Texto plano concatenado.
- */
-function nodeText(node: JSONContent): string {
-  if (node.type === "text") return node.text ?? "";
-  return (node.content ?? []).map(nodeText).join("");
-}
 
 /**
  * Deduce el título de una diapositiva.
@@ -25,12 +16,12 @@ function nodeText(node: JSONContent): string {
 function slideTitle(content: JSONContent[], index: number): string {
   const heading = content.find((node) => node.type === "heading");
   if (heading) {
-    const text = nodeText(heading).trim();
+    const text = contentInlineText(heading).trim();
     if (text) return text.slice(0, 120);
   }
   const paragraph = content.find((node) => node.type === "paragraph");
   if (paragraph) {
-    const text = nodeText(paragraph).trim();
+    const text = contentInlineText(paragraph).trim();
     if (text) return text.slice(0, 80);
   }
   return `Diapositiva ${index + 1}`;

@@ -1,17 +1,8 @@
 import type { JSONContent } from "@tiptap/core";
+import { contentInlineText } from "./text";
 
 /** Texto del aviso cuando se retira un H1 duplicado. */
 export const DUPLICATE_TITLE_WARNING = "Se quitó el H1 inicial porque repetía el título.";
-
-/**
- * Extrae el texto visible de un nodo.
- * @param node - Nodo Tiptap.
- * @returns Texto concatenado.
- */
-function nodeText(node: JSONContent): string {
-  if (node.type === "text") return node.text ?? "";
-  return (node.content ?? []).map(nodeText).join("");
-}
 
 /**
  * Normaliza un título para compararlo sin depender de mayúsculas, acentos o espacios.
@@ -43,7 +34,7 @@ export function stripDuplicateTitleHeading(content: JSONContent, title: string):
   if (first?.type !== "heading" || first.attrs?.level !== 1) {
     return { content, removed: false, warning: null };
   }
-  if (normalizeAulaTitle(nodeText(first)) !== normalizeAulaTitle(title)) {
+  if (normalizeAulaTitle(contentInlineText(first)) !== normalizeAulaTitle(title)) {
     return { content, removed: false, warning: null };
   }
 

@@ -1,5 +1,6 @@
 import type { JSONContent } from "@tiptap/core";
 import { normalizeAulaLink, type AulaDocument } from "./document";
+import { contentInlineText } from "./text";
 import { stripDuplicateTitleHeading } from "./title-heading";
 
 /** Resultado de convertir Markdown al modelo del documento. */
@@ -89,16 +90,6 @@ export function markdownInlineToNodes(text: string): JSONContent[] {
 }
 
 /**
- * Extrae el texto de un nodo Tiptap.
- * @param node - Nodo del documento.
- * @returns Texto plano concatenado.
- */
-function nodeText(node: JSONContent): string {
-  if (node.type === "text") return node.text ?? "";
-  return (node.content ?? []).map(nodeText).join("");
-}
-
-/**
  * Divide una fila de tabla Markdown en celdas.
  * @param line - Línea con pipes.
  * @returns Las celdas recortadas.
@@ -152,7 +143,7 @@ function tableNode(header: string[], rows: string[][]): JSONContent {
 function tableToMarkdown(node: JSONContent): string {
   const rows = node.content ?? [];
   const cells = (row: JSONContent): string[] => (row.content ?? []).map((cell) => (
-    nodeText(cell).replace(/\|/g, "\\|").replace(/\s+/g, " ").trim()
+    contentInlineText(cell).replace(/\|/g, "\\|").replace(/\s+/g, " ").trim()
   ));
   const header = rows[0] ? cells(rows[0]) : [];
   const width = Math.max(header.length, ...rows.slice(1).map((row) => cells(row).length), 1);
@@ -381,9 +372,9 @@ export function markdownToDocument(
   const firstHeading = blocks.find((block) => block.type === "heading");
   const firstParagraph = blocks.find((block) => block.type === "paragraph");
   const title = firstHeading
-    ? nodeText(firstHeading).trim().slice(0, 120)
+    ? contentInlineText(firstHeading).trim().slice(0, 120)
     : firstParagraph
-      ? nodeText(firstParagraph).trim().slice(0, 120)
+      ? contentInlineText(firstParagraph).trim().slice(0, 120)
       : options.titleFallback ?? "Documento importado";
   let contentBlocks = blocks;
   if (options.stripTitleHeading) {
@@ -494,7 +485,7 @@ function blockToMarkdown(node: JSONContent): string {
   }
   if (node.type === "codeBlock") {
     const language = typeof node.attrs?.language === "string" ? node.attrs.language : "";
-    return `\`\`\`${language}\n${nodeText(node)}\n\`\`\``;
+    return `\`\`\`${language}\n${contentInlineText(node)}\n\`\`\``;
   }
   if (node.type === "mermaidBlock") {
     const code = typeof node.attrs?.code === "string" ? node.attrs.code : "";
@@ -514,7 +505,7 @@ export function documentToMarkdownExport(aulaDocument: AulaDocument): MarkdownEx
   const title = aulaDocument.title.trim() || "Documento sin título";
   const blocks = [...(aulaDocument.content.content ?? [])];
   const first = blocks[0];
-  if (first?.type === "heading" && nodeText(first).trim() === title) blocks.shift();
+  if (first?.type === "heading" && contentInlineText(first).trim() === title) blocks.shift();
   const body = blocks.map((block) => blockToMarkdown(block)).filter(Boolean).join("\n\n");
   return {
     markdown: `# ${escapeMarkdownText(title)}${body ? `\n\n${body}` : ""}\n`,
