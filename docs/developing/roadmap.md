@@ -60,12 +60,13 @@
 
 ### Fase 1 — Inventario, consumidores y mapa de destino
 
-- [ ] Inventariar cada archivo de `shared/aula-documentos`, `shared/office` y `shared/mermaid`.
-- [ ] Registrar consumidores estáticos, dinámicos y tests, incluyendo cargas diferidas.
-- [ ] Decidir el destino por capacidad: edición, navegación, diagramas, presentación, formatos, Office y revisión.
-- [ ] Identificar referencias residuales a apps absorbidas y separar compatibilidad de migración.
-- [ ] Guardar una instantánea de dependencias iniciales y diferidas antes de mover código.
+- [x] Inventariar cada archivo de `shared/aula-documentos`, `shared/office` y `shared/mermaid`.
+- [x] Registrar consumidores estáticos, dinámicos y tests, incluyendo cargas diferidas.
+- [x] Decidir el destino por capacidad: edición, navegación, diagramas, presentación, formatos, Office y revisión.
+- [x] Identificar referencias residuales a apps absorbidas y separar compatibilidad de migración.
+- [x] Guardar una instantánea de dependencias iniciales y diferidas antes de mover código.
 - **Criterios:** cada archivo tiene destino, consumidor y justificación; no se mueve código todavía.
+- **Cierre (2026-11-21):** inventario en [`shared-consumidores.md`](shared-consumidores.md) y línea base en [`shared-baseline.json`](shared-baseline.json). **39** archivos en `shared/aula-documentos`, **21** en `shared/office` y **2** en `shared/mermaid`; `shared/whiteboard` se conserva. Arquitectura **458 archivos / 1.147 imports**; flujo Aula **386.266 B / 50 archivos**; suite **265 archivos / 1.746 pruebas**. Sin mover código.
 
 ### Fase 2 — Edición, navegación y diagramas
 
@@ -120,5 +121,6 @@
 ## 7. Notas de sesión
 
 - 2026-11-21: **Roadmap abierto.** ARC-08 sale del backlog; quedan **3 entradas** y el siguiente candidato es **ARC-09**. Sin cambios de código de producto.
+- 2026-11-21: **Fase 1 completada.** Inventario de consumidores y destinos en [`shared-consumidores.md`](shared-consumidores.md); instantánea de arquitectura y flujos en [`shared-baseline.json`](shared-baseline.json). Sin mover código. Arquitectura **458 archivos / 1.147 imports**; suite **265 archivos / 1.746 pruebas**; Aula **386.266 B / 50 archivos**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

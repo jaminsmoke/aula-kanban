@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "capturedAt": "2026-11-21",
+  "source": "ARC-08 Fase 1",
+  "architecture": {
+    "productFiles": 458,
+    "localImportEdges": 1147,
+    "baselineViolations": 0,
+    "baselineCycles": 0
+  },
+  "shared": {
+    "aula-documentos": {
+      "files": 39,
+      "sourceFiles": 26,
+      "testFiles": 13,
+      "externalProductConsumers": [
+        "app/board/apps/aula-documentos"
+      ],
+      "dynamicImportsFromApp": [
+        "copy-client",
+        "export-images",
+        "presentation-view"
+      ],
+      "destination": "app/board/apps/aula-documentos"
+    },
+    "office": {
+      "files": 21,
+      "sourceFiles": 14,
+      "testFiles": 5,
+      "externalProductConsumers": [
+        "app/board/apps/aula-documentos"
+      ],
+      "dynamicImports": [
+        "office-viewer",
+        "office-import (@silurus/ooxml)",
+        "office-export-docx (docx)",
+        "office-export-pptx (pptxgenjs)",
+        "use-office-viewer (@silurus/ooxml)"
+      ],
+      "destination": "app/board/apps/aula-documentos/formatos/office"
+    },
+    "mermaid": {
+      "files": 2,
+      "sourceFiles": 2,
+      "testFiles": 0,
+      "externalProductConsumers": [
+        "app/board/shared/aula-documentos/mermaid-block-view"
+      ],
+      "dynamicImports": [],
+      "destination": "app/board/apps/aula-documentos/editor/diagramas"
+    },
+    "whiteboard": {
+      "files": 14,
+      "sourceFiles": 8,
+      "testFiles": 6,
+      "externalProductConsumers": [
+        "app/board/apps/excalidraw",
+        "app/board/tasks/dialog/task-whiteboard"
+      ],
+      "dynamicImports": [],
+      "destination": "app/board/shared/whiteboard (sin cambios)"
+    }
+  },
+  "flows": {
+    "aula-documentos": {
+      "raw": 1293077,
+      "gzip": 386266,
+      "fileCount": 50
+    },
+    "aula-documentos-export": {
+      "raw": 1076410,
+      "gzip": 330084,
+      "fileCount": 14
+    },
+    "pizarra": {
+      "raw": 3530311,
+      "gzip": 1243678,
+      "fileCount": 23
+    },
+    "pizarra-mermaid": {
+      "raw": 4313345,
+      "gzip": 1446506,
+      "fileCount": 51
+    }
+  },
+  "notes": [
+    "Las cifras de arquitectura y flujos son la línea base antes de mover archivos.",
+    "Los consumidores externos se calcularon con imports relativos estáticos y dinámicos.",
+    "Los tests junto a un módulo se mueven con él salvo que la prueba sea de integración de la app."
+  ]
+}

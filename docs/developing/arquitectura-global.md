@@ -67,6 +67,7 @@ Ya funciona: `useAppDocument`, `useWindowCloseGuard`, `useBoardUrl`, `Modal`, `d
 
 Deuda detectada:
 
+- ARC-08 Fase 1 inventarió los consumidores y destinos de `shared/aula-documentos`, `shared/office` y `shared/mermaid`: [`shared-consumidores.md`](shared-consumidores.md).
 - El sistema de borradores versionados se retiró en ARC-03 Fase 1: no tenía consumidores de producto y solo se mantenía por sus pruebas.
 - Los diálogos de cambios sin guardar y conflicto de versión se retiraron con el sistema; Aula Documentos conserva sus propios diálogos de cierre y conflicto.
 - Calculadora, tema, Blockly, Tarjetas y recuperación de Aula usan el contrato local de ARC-03; solo el script de arranque temprano del tema conserva una lectura directa justificada.
