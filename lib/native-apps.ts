@@ -312,7 +312,7 @@ export const NATIVE_APPS: readonly NativeAppMeta[] = [
     id: "aula-documentos",
     name: "Aula Documentos",
     tagline: "La suite documental del aula: texto, imágenes, diagramas, presentaciones y Office.",
-    description: "Suite documental con Tiptap, Mermaid y reveal.js (MIT): texto enriquecido, tablas, imágenes locales, diagramas editables, presentaciones, notas del orador y visor de Office; migra los datos de Notas, Diagramas y Presentaciones, importa DOCX/PPTX, exporta HTML, Markdown, DOCX y PPTX y guarda copias portables en R2 o en el equipo. Guardado por proyecto en app_documents y lectura para invitados.",
+    description: "Suite documental con Tiptap, Mermaid y reveal.js (MIT): texto enriquecido, tablas, imágenes locales, diagramas editables, presentaciones, notas del orador y visor de Office; migra los datos de Notas, Diagramas y Presentaciones, importa DOCX/PPTX, exporta HTML, Markdown, DOCX y PPTX y guarda copias portables en R2 o en el equipo. Guardado por documento en la suite y lectura para invitados.",
     categories: ["Oficina", "Productividad"],
     subcategory: "Herramientas",
     cover: "/store/aula-documentos.svg",

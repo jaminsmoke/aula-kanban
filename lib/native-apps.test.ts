@@ -61,6 +61,8 @@ describe("catálogo de apps nativas", () => {
   it("declara la suite de Aula Documentos con módulos, formatos y migración", () => {
     const app = NATIVE_APPS.find((item) => item.id === "aula-documentos");
     expect(app?.suite).toBeDefined();
+    expect(app?.description).toContain("Guardado por documento");
+    expect(app?.description).not.toContain("app_documents");
     const suite = app!.suite!;
 
     expect(suite.promise).toContain("suite documental");

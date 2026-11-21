@@ -1,4 +1,5 @@
 import { DEMO_PROJECT_ID, DEMO_PROJECT_NAME } from "./demo.ts";
+import { AULA_DOCUMENT_SCHEMA_VERSION, type AulaDocument } from "./aula-documentos/document";
 
 /** Alumno ficticio del proyecto de demostración. */
 export type DemoStudent = {
@@ -206,14 +207,36 @@ export const DEMO_TASKS: DemoTask[] = [
   },
 ];
 
-export const DEMO_APPS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "mermaid"] as const;
+export const DEMO_APPS = ["excalidraw", "calculadora", "tabla-periodica", "blockly", "aula-documentos"] as const;
 
-export const DEMO_MERMAID = {
-  code: `flowchart LR
+const DEMO_MERMAID_CODE = `flowchart LR
   A[Leemos] --> B[Investigamos]
   B --> C[Compartimos]
   C --> D[Revisamos]
-  D --> E[Entregamos]`,
+  D --> E[Entregamos]`;
+
+/** Documento inicial de Aula Documentos con el diagrama de la demo. */
+export const DEMO_AULA_DOCUMENT: AulaDocument = {
+  schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
+  title: "Proyecto de demostración",
+  content: {
+    type: "doc",
+    content: [
+      {
+        type: "heading",
+        attrs: { level: 2 },
+        content: [{ type: "text", text: "Plan de trabajo" }],
+      },
+      {
+        type: "paragraph",
+        content: [{ type: "text", text: "Documento de ejemplo con un diagrama Mermaid editable." }],
+      },
+      {
+        type: "mermaidBlock",
+        attrs: { code: DEMO_MERMAID_CODE },
+      },
+    ],
+  },
 };
 
 export const DEMO_BLOCKLY = {

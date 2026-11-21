@@ -1,13 +1,13 @@
 /* eslint-disable no-console -- CLI de siembra: su salida es el informe para la persona. */
 import { pathToFileURL } from "node:url";
 import {
-  DEMO_STUDENTS,
-  DEMO_TEACHERS,
-  DEMO_TASKS,
+  DEMO_AULA_DOCUMENT,
   DEMO_APPS,
-  DEMO_MERMAID,
   DEMO_BLOCKLY,
   DEMO_BOARD,
+  DEMO_STUDENTS,
+  DEMO_TASKS,
+  DEMO_TEACHERS,
   currentMonthDate,
 } from "../lib/domain/demo-data.ts";
 
@@ -264,7 +264,7 @@ export async function run(options) {
   const board = projectExists
     ? await client.get(`/api/boards${projectQuery}&ownerType=space&ownerId=${encodeURIComponent(DEMO_PROJECT_ID)}`)
     : { snapshot: "", revision: 0 };
-  const mermaid = projectExists ? await client.get(`/api/app-documents${projectQuery}&app=mermaid`) : { state: null };
+  const aulaDocument = projectExists ? await client.get(`/api/app-documents${projectQuery}&app=aula-documentos`) : { state: null };
   const blockly = projectExists ? await client.get(`/api/app-documents${projectQuery}&app=blockly`) : { state: null };
 
   const studentsBySection = new Map(students.map((student) => [student.section, student]));
@@ -294,7 +294,7 @@ export async function run(options) {
   }
   const boardSnapshot = JSON.stringify(DEMO_BOARD);
   if ((board.snapshot ?? "") !== boardSnapshot) actions.push("escribir la pizarra del espacio");
-  if (JSON.stringify(mermaid.state) !== JSON.stringify(DEMO_MERMAID)) actions.push("escribir el diagrama");
+  if (JSON.stringify(aulaDocument.state) !== JSON.stringify(DEMO_AULA_DOCUMENT)) actions.push("escribir el documento de Aula");
   if (JSON.stringify(blockly.state) !== JSON.stringify(DEMO_BLOCKLY)) actions.push("escribir el programa de bloques");
 
   if (options.dryRun) {
@@ -370,9 +370,9 @@ export async function run(options) {
     });
   }
 
-  const currentMermaid = await client.get(`/api/app-documents${projectQuery}&app=mermaid`);
-  if (JSON.stringify(currentMermaid.state) !== JSON.stringify(DEMO_MERMAID)) {
-    await client.post(`/api/app-documents${projectQuery}&app=mermaid`, { state: DEMO_MERMAID });
+  const currentAulaDocument = await client.get(`/api/app-documents${projectQuery}&app=aula-documentos`);
+  if (JSON.stringify(currentAulaDocument.state) !== JSON.stringify(DEMO_AULA_DOCUMENT)) {
+    await client.post(`/api/app-documents${projectQuery}&app=aula-documentos`, { state: DEMO_AULA_DOCUMENT });
   }
   const currentBlockly = await client.get(`/api/app-documents${projectQuery}&app=blockly`);
   if (JSON.stringify(currentBlockly.state) !== JSON.stringify(DEMO_BLOCKLY)) {
@@ -384,7 +384,7 @@ export async function run(options) {
   const finalTasks = await client.get(`/api/tasks${projectQuery}`);
   const finalApps = (await client.get(`/api/space-apps${projectQuery}`)).apps;
   const finalBoard = await client.get(`/api/boards${projectQuery}&ownerType=space&ownerId=${encodeURIComponent(DEMO_PROJECT_ID)}`);
-  const finalMermaid = await client.get(`/api/app-documents${projectQuery}&app=mermaid`);
+  const finalAulaDocument = await client.get(`/api/app-documents${projectQuery}&app=aula-documentos`);
   const finalBlockly = await client.get(`/api/app-documents${projectQuery}&app=blockly`);
 
   const studentSections = new Set(finalStudents.map((student) => student.section));
@@ -400,7 +400,7 @@ export async function run(options) {
     if (!app || app.status !== "installed") missing.push(`app ${appId}`);
   }
   if ((finalBoard.snapshot ?? "") !== boardSnapshot) missing.push("pizarra");
-  if (JSON.stringify(finalMermaid.state) !== JSON.stringify(DEMO_MERMAID)) missing.push("diagrama");
+  if (JSON.stringify(finalAulaDocument.state) !== JSON.stringify(DEMO_AULA_DOCUMENT)) missing.push("documento de Aula");
   if (JSON.stringify(finalBlockly.state) !== JSON.stringify(DEMO_BLOCKLY)) missing.push("programa de bloques");
 
   if (missing.length) throw new Error(`La verificación final encontró datos ausentes: ${missing.join(", ")}.`);

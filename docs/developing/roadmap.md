@@ -97,11 +97,12 @@
 
 ### Fase 5 — Restos de apps absorbidas y compatibilidad
 
-- [ ] Revisar alias, rutas y documentos guardados de las cuatro apps documentales absorbidas.
-- [ ] Corregir referencias de producto residuales sin borrar las que sirven para migrar datos.
-- [ ] Revisar el ID retirado `mermaid` en el catálogo, el sembrado de demo y la descripción que menciona `app_documents`.
-- [ ] Actualizar documentación, arquitectura y pruebas de compatibilidad.
+- [x] Revisar alias, rutas y documentos guardados de las cuatro apps documentales absorbidas.
+- [x] Corregir referencias de producto residuales sin borrar las que sirven para migrar datos.
+- [x] Revisar el ID retirado `mermaid` en el catálogo, el sembrado de demo y la descripción que menciona `app_documents`.
+- [x] Actualizar documentación, arquitectura y pruebas de compatibilidad.
 - **Criterios:** no quedan restos de producto engañosos y la compatibilidad con datos antiguos sigue cubierta.
+- **Cierre (2026-11-21):** la descripción de Aula ya no anuncia `app_documents`; la demo instala `aula-documentos` y siembra un documento válido con Mermaid en lugar de la app retirada `mermaid`. Los alias heredados, importadores y migración se conservan. Pruebas de catálogo, alias y documento de demo correctas. Arquitectura **459 archivos / 1.149 imports**; suite **265 archivos / 1.747 pruebas**; build **386.272 B**.
 
 ### Fase 6 — Cierre
 
@@ -128,5 +129,6 @@
 - 2026-11-21: **Fase 2 completada.** Movidos atajos, edición, imágenes, búsqueda, navegación, comentarios, diagramas y Gantt a `apps/aula-documentos`; `shared/mermaid` eliminado. Presupuesto CSS **15 / 3.350**. Arquitectura **458 archivos / 1.147 imports**; suite **265 archivos / 1.746 pruebas**; build **386.263 B**.
 - 2026-11-21: **Fase 3 completada.** Presentación, exportación de imágenes, impresión y cliente de copias movidos a Aula Documentos; tipos base64 compartidos en `lib/domain/aula-documentos/image-assets.ts`. Arquitectura **459 archivos / 1.148 imports**; suite **265 archivos / 1.746 pruebas**; build **386.249 B**.
 - 2026-11-21: **Fase 4 completada.** Visor, importación y exportación Office movidos a `apps/aula-documentos/formatos/office`; modelo puro en `lib/domain`. Pruebas/fixtures movidos; límites **54 / 5.400** y **16 / 3.800**. Arquitectura **459 archivos / 1.148 imports**; suite **265 archivos / 1.746 pruebas**; build **386.254 B**.
+- 2026-11-21: **Fase 5 completada.** Demo y catálogo sin el id retirado `mermaid`; Aula Documentos se siembra como documento válido con Mermaid. Descripción de guardado corregida; alias e importadores de compatibilidad conservados. Arquitectura **459 archivos / 1.149 imports**; suite **265 archivos / 1.747 pruebas**; build **386.272 B**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

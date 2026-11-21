@@ -39,6 +39,8 @@ describe("SQL de la demo", () => {
     expect(sql.match(/INSERT OR IGNORE INTO task_assignees/g)).toHaveLength(15);
     expect(sql.match(/INSERT INTO boards/g)).toHaveLength(1);
     expect(sql.match(/INSERT INTO app_documents/g)).toHaveLength(2);
+    expect(sql).toContain("'aula-documentos'");
+    expect(sql).not.toContain("'mermaid'");
     for (const task of DEMO_TASKS) expect(sql).toContain(task.id);
   });
 

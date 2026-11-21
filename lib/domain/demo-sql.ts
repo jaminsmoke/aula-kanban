@@ -1,8 +1,8 @@
 import {
   DEMO_APPS,
+  DEMO_AULA_DOCUMENT,
   DEMO_BLOCKLY,
   DEMO_BOARD,
-  DEMO_MERMAID,
   DEMO_PROJECT_ID,
   DEMO_PROJECT_NAME,
   DEMO_STUDENTS,
@@ -122,7 +122,7 @@ export function buildDemoSql(): string {
   );
 
   const documents = [
-    { appId: "mermaid", state: DEMO_MERMAID },
+    { appId: "aula-documentos", state: DEMO_AULA_DOCUMENT },
     { appId: "blockly", state: DEMO_BLOCKLY },
   ];
   for (const document of documents) {
