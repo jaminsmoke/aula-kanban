@@ -1,6 +1,6 @@
 # Presentación, estructura de diapositivas y PDF de Aula Documentos
 
-> **Estado:** Fases 1–3 cerradas · **Fecha:** 2026-11-21
+> **Estado:** Fases 1–4 cerradas · **Fecha:** 2026-11-21
 > **Alcance:** estructura editable, notas, presentador, ajustes de página y PDF.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
 > **Regla:** esta fase no mueve código de producto; fija el contrato y los límites.
@@ -211,3 +211,14 @@ Implementado el 2026-11-21:
 - Notas vacías y última diapositiva tienen estados explícitos.
 - Pruebas de notas, siguiente diapositiva, última diapositiva, ausencia de notas y salida con `Escape`.
 - Suite: **258 archivos / 1.711 pruebas**; build **377.634 B**; presupuesto **379.000 B**.
+
+## 12. Cierre de la Fase 4
+
+Implementado el 2026-11-21:
+
+- `presentation.page` añade tamaño, orientación, márgenes y numeración opcionales; `DEFAULT_AULA_PRINT_PAGE` mantiene compatibilidad y no cambia `schemaVersion`.
+- La validación normaliza valores desconocidos y descarta campos inválidos; los ajustes se guardan solo cuando difieren de los defaults.
+- La barra de presentación ofrece controles de página, orientación, márgenes y números, además de **PDF de diapositivas**.
+- `buildAulaDocumentHtml` y `buildAulaPresentationHtml` generan `@page` y saltos; el PDF de diapositivas omite notas privadas y conserva imágenes, tablas y diagramas incrustados.
+- Se añadieron pruebas de validación, CSS de página, numeración, guardado de ajustes y PDF sin notas.
+- Suite: **258 archivos / 1.714 pruebas**; build **378.741 B**; presupuesto **379.000 B**.

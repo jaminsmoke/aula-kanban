@@ -260,6 +260,33 @@ describe("Presentación y editor de Aula Documentos", () => {
     expect(saved.presentation?.notes?.["0"]).toBe("Recordar explicar el ejemplo.");
   });
 
+  it("guarda los ajustes de página y prepara el PDF de diapositivas", async () => {
+    render(<AulaDocumentosApp {...props} />);
+    await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());
+
+    fireEvent.change(screen.getByLabelText("Tamaño de página"), { target: { value: "letter" } });
+    fireEvent.change(screen.getByLabelText("Orientación de página"), { target: { value: "landscape" } });
+    fireEvent.change(screen.getByLabelText("Márgenes de página"), { target: { value: "narrow" } });
+    fireEvent.click(screen.getByLabelText("Números de diapositiva"));
+    fireEvent.click(screen.getByRole("button", { name: "Guardar documento" }));
+
+    await waitFor(() => expect(documentMock.save).toHaveBeenCalledTimes(1));
+    const saved = documentMock.save.mock.calls[0][0] as AulaDocument;
+    expect(saved.presentation?.page).toEqual({
+      size: "letter",
+      orientation: "landscape",
+      margin: "narrow",
+      slideNumbers: true,
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "PDF de diapositivas" }));
+    await waitFor(() => expect(printMock).toHaveBeenCalledTimes(1));
+    const html = printMock.mock.calls[0][0] as string;
+    expect(html).toContain("@page { size: letter landscape; margin: 8mm; }");
+    expect(html).toContain('class="slide-number"');
+    expect(html).not.toContain("Notas del orador");
+  });
+
   it("ofrece acciones etiquetadas en el menú móvil", async () => {
     render(<AulaDocumentosApp {...props} />);
     await waitFor(() => expect(screen.getByLabelText("Contenido del documento")).toBeTruthy());

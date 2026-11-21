@@ -4,9 +4,12 @@ import type { Editor } from "@tiptap/core";
 import {
   AULA_DOCUMENT_SCHEMA_VERSION,
   DEFAULT_AULA_PRESENTATION,
+  DEFAULT_AULA_PRINT_PAGE,
+  isAulaPrintPageDefault,
   parseAulaDocument,
   type AulaDocument,
   type AulaPresentationTheme,
+  type AulaPrintPage,
 } from "../../../../../lib/domain/aula-documentos/document";
 import { createStarterAulaDocument } from "../../../../../lib/domain/aula-documentos/starter";
 import { createAulaDocumentExtensions } from "../../../shared/aula-documentos/document-extensions";
@@ -42,6 +45,7 @@ export function useAulaSession({ projectId, readOnly, editorRef, insertImageRef 
   const [actionsOpen, setActionsOpen] = useState(false);
   const [presentationTheme, setPresentationTheme] = useState<AulaPresentationTheme>(DEFAULT_AULA_PRESENTATION.theme);
   const [presentationNotes, setPresentationNotes] = useState<Record<string, string>>({});
+  const [presentationPage, setPresentationPage] = useState<AulaPrintPage>(DEFAULT_AULA_PRINT_PAGE);
   const titleRef = useRef<HTMLInputElement>(null);
   const pendingDocumentRef = useRef<AulaDocument | null>(null);
   const applyingDocumentRef = useRef(false);
@@ -181,6 +185,7 @@ export function useAulaSession({ projectId, readOnly, editorRef, insertImageRef 
     setTitle(document.title);
     setPresentationTheme(document.presentation?.theme ?? DEFAULT_AULA_PRESENTATION.theme);
     setPresentationNotes(document.presentation?.notes ?? {});
+    setPresentationPage(document.presentation?.page ?? DEFAULT_AULA_PRINT_PAGE);
     const current = editorRef.current;
     if (current) {
       applyingDocumentRef.current = true;
@@ -218,6 +223,7 @@ export function useAulaSession({ projectId, readOnly, editorRef, insertImageRef 
       presentation: {
         theme: presentationTheme,
         ...(Object.keys(presentationNotes).length ? { notes: presentationNotes } : {}),
+        ...(isAulaPrintPageDefault(presentationPage) ? {} : { page: presentationPage }),
       },
     });
     if (!parsed.ok) {
@@ -225,7 +231,7 @@ export function useAulaSession({ projectId, readOnly, editorRef, insertImageRef 
       return null;
     }
     return parsed.document;
-  }, [editor, presentationNotes, presentationTheme, title]);
+  }, [editor, presentationNotes, presentationPage, presentationTheme, title]);
 
   /**
    * Actualiza el título y marca cambios.
@@ -260,6 +266,8 @@ export function useAulaSession({ projectId, readOnly, editorRef, insertImageRef 
     setPresentationTheme,
     presentationNotes,
     setPresentationNotes,
+    presentationPage,
+    setPresentationPage,
     titleRef,
     editVersionRef,
     savingRef,

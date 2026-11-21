@@ -144,7 +144,7 @@ describe("Copias, imágenes y tablas de Aula Documentos", () => {
     expect(await screen.findByRole("dialog", { name: "Importar copia portable" })).toBeTruthy();
     expect(screen.getByText("Copia importada")).toBeTruthy();
     expect(screen.getByText("Contenido restaurado.")).toBeTruthy();
-    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("checkbox", { name: /Entiendo que se reemplaza/ }));
     fireEvent.click(screen.getByRole("button", { name: "Importar y reemplazar" }));
 
     await waitFor(() => expect(screen.getByLabelText("Título del documento")).toHaveProperty("value", "Copia importada"));
@@ -187,7 +187,7 @@ describe("Copias, imágenes y tablas de Aula Documentos", () => {
 
     expect(await screen.findByRole("dialog", { name: "Importar copia portable" })).toBeTruthy();
     expect(screen.getAllByText(/1 imagen/).length).toBeGreaterThan(0);
-    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("checkbox", { name: /Entiendo que se reemplaza/ }));
     fireEvent.click(screen.getByRole("button", { name: "Importar y reemplazar" }));
 
     await waitFor(() => {
@@ -228,7 +228,7 @@ describe("Copias, imágenes y tablas de Aula Documentos", () => {
       target: { files: [new File([built.bytes.slice().buffer as ArrayBuffer], "copia-con-imagen.aula.zip", { type: "application/zip" })] },
     });
     await screen.findByRole("dialog", { name: "Importar copia portable" });
-    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("checkbox", { name: /Entiendo que se reemplaza/ }));
     fireEvent.click(screen.getByRole("button", { name: "Importar y reemplazar" }));
 
     expect(await screen.findByText("La cuota de imágenes del proyecto está llena.")).toBeTruthy();

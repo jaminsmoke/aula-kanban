@@ -1,7 +1,22 @@
 import { generateHTML } from "@tiptap/core";
 import type { JSONContent } from "@tiptap/core";
-import type { AulaDocument, AulaPresentationTheme } from "../../../../lib/domain/aula-documentos/document";
+import {
+  DEFAULT_AULA_PRINT_PAGE,
+  type AulaDocument,
+  type AulaPresentationTheme,
+  type AulaPrintPage,
+} from "../../../../lib/domain/aula-documentos/document";
 import { createAulaDocumentExtensions } from "./document-extensions";
+
+/**
+ * Convierte los ajustes de página en CSS de impresión.
+ * @param page - Tamaño, orientación y márgenes.
+ * @returns Regla `@page` y ajustes de margen.
+ */
+function printPageCss(page: AulaPrintPage): string {
+  const margin = page.margin === "normal" ? "16mm" : page.margin === "narrow" ? "8mm" : "0";
+  return `@page { size: ${page.size} ${page.orientation}; margin: ${margin}; }`;
+}
 
 /**
  * Recorre el documento y devuelve los códigos Mermaid únicos.
@@ -189,11 +204,13 @@ export function buildAulaPresentationHtml(
     theme?: AulaPresentationTheme;
     notes?: Record<string, string>;
     includeNotes?: boolean;
+    page?: AulaPrintPage;
   } = {},
 ): string {
   const title = escapeHtml(aulaDocument.title.trim() || "Presentación");
   const theme = options.theme ?? "aula";
   const includeNotes = options.includeNotes ?? true;
+  const page = options.page ?? DEFAULT_AULA_PRINT_PAGE;
   const palette = theme === "claro"
     ? { bg: "#f4f3f8", slide: "#ffffff", ink: "#211b36", heading: "#2c214f", border: "#ded9e9", code: "#f1eff8", muted: "#625c74" }
     : theme === "oscuro"
@@ -205,7 +222,8 @@ export function buildAulaPresentationHtml(
     const notes = note
       ? `<details class="notes"><summary>Notas del orador</summary><p>${escapeHtml(note)}</p></details>`
       : "";
-    return `<section class="slide">${slide}${notes}</section>`;
+    const number = page.slideNumbers ? `<span class="slide-number">${index + 1}</span>` : "";
+    return `<section class="slide">${slide}${notes}${number}</section>`;
   }).join("\n");
 
   return `<!doctype html>
@@ -220,8 +238,9 @@ export function buildAulaPresentationHtml(
   * { box-sizing: border-box; }
   body { margin: 0; background: ${palette.bg}; color: ${palette.ink}; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.65; }
   .deck { width: min(100%, 1080px); margin: 0 auto; }
-  .slide { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 8%; border-bottom: 1px solid ${palette.border}; background: ${palette.slide}; page-break-after: always; break-after: page; }
+  .slide { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 8%; border-bottom: 1px solid ${palette.border}; background: ${palette.slide}; page-break-after: always; break-after: page; }
   .slide:last-child { border-bottom: 0; page-break-after: auto; break-after: auto; }
+  .slide-number { position: absolute; right: 4%; bottom: 3%; color: ${palette.muted}; font-size: .75rem; font-variant-numeric: tabular-nums; }
   h1, h2, h3 { color: ${palette.heading}; line-height: 1.2; }
   h1 { font-size: 2.4rem; } h2 { font-size: 1.9rem; } h3 { font-size: 1.4rem; }
   p, li { font-size: 1.05rem; }
@@ -252,7 +271,13 @@ export function buildAulaPresentationHtml(
   .notes { margin-top: 2em; padding-top: 1em; border-top: 1px solid ${palette.border}; color: ${palette.muted}; font-size: .9rem; }
   .notes summary { cursor: pointer; font-weight: 700; }
   .notes p { white-space: pre-wrap; }
-  @media print { body { background: #fff; } .slide { min-height: auto; } }
+  ${printPageCss(page)}
+  @media print {
+    body { background: #fff; }
+    .deck { width: auto; max-width: none; margin: 0; }
+    .slide { min-height: auto; padding: 0; border: 0; }
+    .slide-number { right: 0; bottom: 0; }
+  }
 </style>
 </head>
 <body>
@@ -270,6 +295,7 @@ ${body}
  * @param svgByCode - SVG de cada código Mermaid.
  * @param imageSources - URLs de datos para las imágenes internas.
  * @param failedImageSources - Imágenes que no se pudieron recuperar.
+ * @param page - Ajustes de página para impresión y PDF.
  * @returns Un archivo HTML sin recursos externos.
  */
 export function buildAulaDocumentHtml(
@@ -277,6 +303,7 @@ export function buildAulaDocumentHtml(
   svgByCode: ReadonlyMap<string, string> = new Map(),
   imageSources: ReadonlyMap<string, string> = new Map(),
   failedImageSources: ReadonlySet<string> = new Set(),
+  page: AulaPrintPage = DEFAULT_AULA_PRINT_PAGE,
 ): string {
   const title = aulaDocument.title.trim() || "Documento sin título";
   const safeTitle = escapeHtml(title);
@@ -330,6 +357,7 @@ export function buildAulaDocumentHtml(
   .aula-mermaid-export svg { display: inline-block; max-width: 100%; height: auto; }
   .aula-mermaid-export-error { margin: 0 0 .7em; color: #8a2f2f; font-size: .85rem; font-weight: 700; text-align: left; }
   .aula-mermaid-export-error + pre { margin: 0; text-align: left; }
+  ${printPageCss(page)}
   @media print { body { background: #fff; } main { width: auto; max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; } .aula-image-block, .aula-mermaid-export, pre, blockquote { break-inside: avoid; } h1, h2, h3 { break-after: avoid; } }
 </style>
 </head>

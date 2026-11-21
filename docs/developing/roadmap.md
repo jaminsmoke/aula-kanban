@@ -99,12 +99,13 @@
 
 ### Fase 4 — Ajustes de página y PDF
 
-- [ ] Añadir ajustes opcionales de tamaño, orientación, márgenes y numeración.
-- [ ] Aplicar los ajustes a impresión y PDF con saltos de diapositiva y recursos locales.
-- [ ] Conservar imágenes, tablas, diagramas y notas según el formato de salida.
-- [ ] Informar de recursos no disponibles sin romper el documento.
-- [ ] Probar impresión/PDF, tamaños, orientaciones y presupuestos.
+- [x] Añadir ajustes opcionales de tamaño, orientación, márgenes y numeración.
+- [x] Aplicar los ajustes a impresión y PDF con saltos de diapositiva y recursos locales.
+- [x] Conservar imágenes, tablas, diagramas y notas según el formato de salida.
+- [x] Informar de recursos no disponibles sin romper el documento.
+- [x] Probar impresión/PDF, tamaños, orientaciones y presupuestos.
 - **Criterios:** el PDF reproduce la presentación visible sin servicios externos y los documentos antiguos conservan los defaults.
+- **Cierre (2026-11-21):** `presentation.page` opcional con defaults, validación tolerante y controles en la barra de presentación. Impresión del documento y **PDF de diapositivas** aplican `@page`, saltos, numeración y recursos incrustados; las notas privadas no se imprimen. Pruebas de validación, opciones, numeración, guardado y PDF. Suite: **258 archivos / 1.714 pruebas**; build **378.741 B**; presupuesto **379.000 B**.
 
 ### Fase 5 — Cierre
 
@@ -131,5 +132,6 @@
 - 2026-11-21: **Fase 1 completada.** Contrato de estructura, notas, presentador, ajustes de página y PDF en [`aula-documentos-presentacion.md`](aula-documentos-presentacion.md). Sin cambios de código.
 - 2026-11-21: **Fase 2 completada.** Estructura editable con materialización de saltos, notas remapeadas, historial de sesión y modo lectura. Suite: **258 archivos / 1.709 pruebas**; presupuesto **379.000 B**.
 - 2026-11-21: **Fase 3 completada.** Vista de presentador con notas, siguiente diapositiva, último aviso, diseño adaptable y salida con `Escape`. Suite: **258 archivos / 1.711 pruebas**; build **377.634 B**.
+- 2026-11-21: **Fase 4 completada.** Ajustes de página opcionales, impresión y PDF de diapositivas con recursos locales, numeración y validación. Suite: **258 archivos / 1.714 pruebas**; build **378.741 B**.
 - La presentación actual, la vista previa, el navegador de ADOC-18 y la exportación PPTX son la base; no se crea un almacén paralelo de diapositivas.
 - No hay publicación ni migraciones remotas en este roadmap.

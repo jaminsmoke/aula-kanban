@@ -20,12 +20,17 @@ import {
   AULA_PRESENTATION_NOTE_MAX_LENGTH,
   AULA_PRESENTATION_NOTES_MAX_TOTAL,
   AULA_PRESENTATION_THEMES,
+  AULA_PRINT_PAGE_MARGINS,
+  AULA_PRINT_PAGE_ORIENTATIONS,
+  AULA_PRINT_PAGE_SIZES,
   DEFAULT_AULA_PRESENTATION,
+  DEFAULT_AULA_PRINT_PAGE,
   DocumentValidationError,
   type AulaDocument,
   type AulaDocumentParseResult,
   type AulaDocumentPresentation,
   type AulaPresentationTheme,
+  type AulaPrintPage,
   type ValidationContext,
 } from "./document-types";
 import { normalizeTableSpan, validateTableGrid } from "./document-tables";
@@ -429,6 +434,32 @@ export function createEmptyAulaDocument(title = "Documento sin título"): AulaDo
 }
 
 /**
+ * Normaliza los ajustes de página sin romper documentos antiguos.
+ * @param value - Valor candidato.
+ * @returns Ajustes válidos o los de por defecto.
+ */
+function normalizePrintPage(value: unknown): AulaPrintPage {
+  const candidate = typeof value === "object" && value !== null && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {};
+  const size = candidate.size;
+  const orientation = candidate.orientation;
+  const margin = candidate.margin;
+  return {
+    size: typeof size === "string" && (AULA_PRINT_PAGE_SIZES as readonly string[]).includes(size)
+      ? size as AulaPrintPage["size"]
+      : DEFAULT_AULA_PRINT_PAGE.size,
+    orientation: typeof orientation === "string" && (AULA_PRINT_PAGE_ORIENTATIONS as readonly string[]).includes(orientation)
+      ? orientation as AulaPrintPage["orientation"]
+      : DEFAULT_AULA_PRINT_PAGE.orientation,
+    margin: typeof margin === "string" && (AULA_PRINT_PAGE_MARGINS as readonly string[]).includes(margin)
+      ? margin as AulaPrintPage["margin"]
+      : DEFAULT_AULA_PRINT_PAGE.margin,
+    slideNumbers: candidate.slideNumbers === true,
+  };
+}
+
+/**
  * Normaliza las preferencias de presentación de un documento guardado.
  * @param value - Valor candidato.
  * @returns Preferencias válidas o las de por defecto.
@@ -456,6 +487,7 @@ function normalizePresentation(value: unknown): AulaDocumentPresentation {
       ? theme as AulaPresentationTheme
       : DEFAULT_AULA_PRESENTATION.theme,
     ...(Object.keys(notes).length ? { notes } : {}),
+    ...(candidate.page === undefined ? {} : { page: normalizePrintPage(candidate.page) }),
   };
 }
 

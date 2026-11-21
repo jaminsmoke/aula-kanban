@@ -246,6 +246,31 @@ describe("exportación HTML de Aula Documentos", () => {
     expect(html).not.toContain("No debe salir");
   });
 
+  it("aplica página, orientación, márgenes y numeración a las diapositivas", () => {
+    const html = buildAulaPresentationHtml(
+      { schemaVersion: 3, title: "PDF", content: { type: "doc", content: [] } },
+      ["<h2>Una</h2>", "<h2>Dos</h2>"],
+      {
+        includeNotes: false,
+        page: { size: "letter", orientation: "landscape", margin: "narrow", slideNumbers: true },
+      },
+    );
+    expect(html).toContain("@page { size: letter landscape; margin: 8mm; }");
+    expect(html.match(/class="slide-number"/g)).toHaveLength(2);
+    expect(html).not.toContain("Notas del orador");
+  });
+
+  it("aplica la misma página al documento imprimible", () => {
+    const html = buildAulaDocumentHtml(
+      { schemaVersion: 3, title: "Documento", content: { type: "doc", content: [] } },
+      new Map(),
+      new Map(),
+      new Set(),
+      { size: "a4", orientation: "landscape", margin: "none", slideNumbers: false },
+    );
+    expect(html).toContain("@page { size: a4 landscape; margin: 0; }");
+  });
+
   it("continúa la exportación si un diagrama no se puede renderizar", async () => {
     const rendered = await renderMermaidSvgs(
       ["flowchart TD\nA --> B", "flowchart LR\nA -->"],

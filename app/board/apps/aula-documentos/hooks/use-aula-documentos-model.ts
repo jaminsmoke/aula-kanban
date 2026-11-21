@@ -53,6 +53,8 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     setPresentationTheme,
     presentationNotes,
     setPresentationNotes,
+    presentationPage,
+    setPresentationPage,
     titleRef,
     editVersionRef,
     savingRef,
@@ -121,16 +123,21 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     openMarkdownSource,
     applyMarkdownSource,
     changePresentationTheme,
+    changePresentationPage,
     changeSlideNote,
     exportPresentation,
+    printingPresentation,
+    printPresentation,
     closePresentation,
   } = useAulaPresentation({
     currentDocument,
     title,
     presentationTheme,
     presentationNotes,
+    presentationPage,
     setPresentationTheme,
     setPresentationNotes,
+    setPresentationPage,
     applyDocument,
     markChanged,
     setStatus,
@@ -146,24 +153,12 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     printDocument,
     exportMarkdown,
     exportOffice,
-  } = useAulaExports({
-    currentDocument,
-    presentationNotes,
-    setStatus,
-  });
+  } = useAulaExports({ currentDocument, presentationNotes, presentationPage, setStatus });
 
   const suite = useAulaDocumentSuite(projectId);
   const search = useAulaSearch({ editor, readOnly, setStatus, documentId: suite.documentId });
   const view = useAulaView({ editor, searchOpen: search.searchOpen });
-  const slideStructure = useAulaSlideStructure({
-    editor,
-    documentId: suite.documentId,
-    readOnly,
-    presentationNotes,
-    setPresentationNotes,
-    markChanged,
-    setStatus,
-  });
+  const slideStructure = useAulaSlideStructure({ editor, documentId: suite.documentId, readOnly, presentationNotes, setPresentationNotes, markChanged, setStatus });
 
   const {
     recoveryOpen,
@@ -431,6 +426,8 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     setPresentationTheme,
     presentationNotes,
     setPresentationNotes,
+    presentationPage,
+    setPresentationPage,
     titleRef,
     actionsRef,
     actionsToggleRef,
@@ -475,8 +472,11 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     openMarkdownSource,
     applyMarkdownSource,
     changePresentationTheme,
+    changePresentationPage,
     changeSlideNote,
     exportPresentation,
+    printingPresentation,
+    printPresentation,
     closePresentation,
     exporting,
     printing,

@@ -38,6 +38,46 @@ export const AULA_PRESENTATION_THEMES = ["aula", "claro", "oscuro"] as const;
 /** Tema de presentación del documento. */
 export type AulaPresentationTheme = (typeof AULA_PRESENTATION_THEMES)[number];
 
+/** Tamaños de página para impresión y PDF. */
+export const AULA_PRINT_PAGE_SIZES = ["a4", "letter"] as const;
+export type AulaPrintPageSize = (typeof AULA_PRINT_PAGE_SIZES)[number];
+
+/** Orientaciones de página para impresión y PDF. */
+export const AULA_PRINT_PAGE_ORIENTATIONS = ["portrait", "landscape"] as const;
+export type AulaPrintPageOrientation = (typeof AULA_PRINT_PAGE_ORIENTATIONS)[number];
+
+/** Márgenes de página para impresión y PDF. */
+export const AULA_PRINT_PAGE_MARGINS = ["normal", "narrow", "none"] as const;
+export type AulaPrintPageMargin = (typeof AULA_PRINT_PAGE_MARGINS)[number];
+
+/** Ajustes opcionales de página compartidos por impresión y PDF. */
+export type AulaPrintPage = {
+  size: AulaPrintPageSize;
+  orientation: AulaPrintPageOrientation;
+  margin: AulaPrintPageMargin;
+  slideNumbers: boolean;
+};
+
+/** Ajustes de página por defecto; compatibles con documentos existentes. */
+export const DEFAULT_AULA_PRINT_PAGE: AulaPrintPage = {
+  size: "a4",
+  orientation: "portrait",
+  margin: "normal",
+  slideNumbers: false,
+};
+
+/**
+ * Indica si los ajustes coinciden con los defaults.
+ * @param page - Ajustes de página.
+ * @returns `true` si no hace falta persistirlos.
+ */
+export function isAulaPrintPageDefault(page: AulaPrintPage): boolean {
+  return page.size === DEFAULT_AULA_PRINT_PAGE.size
+    && page.orientation === DEFAULT_AULA_PRINT_PAGE.orientation
+    && page.margin === DEFAULT_AULA_PRINT_PAGE.margin
+    && page.slideNumbers === DEFAULT_AULA_PRINT_PAGE.slideNumbers;
+}
+
 /** Límite de una nota de diapositiva. */
 export const AULA_PRESENTATION_NOTE_MAX_LENGTH = 5_000;
 
@@ -48,6 +88,7 @@ export const AULA_PRESENTATION_NOTES_MAX_TOTAL = 20_000;
 export type AulaDocumentPresentation = {
   theme: AulaPresentationTheme;
   notes?: Record<string, string>;
+  page?: AulaPrintPage;
 };
 
 /** Presentación por defecto para documentos nuevos o migrados. */

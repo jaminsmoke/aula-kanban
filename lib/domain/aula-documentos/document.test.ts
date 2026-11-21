@@ -155,6 +155,36 @@ describe("modelo de Aula Documentos", () => {
       theme: "oscuro",
       notes: { "0": "Primera nota", "200": "Límite" },
     });
+
+    const page = parseAulaDocument({
+      ...candidate([{ type: "paragraph" }]),
+      presentation: {
+        theme: "claro",
+        page: { size: "letter", orientation: "landscape", margin: "narrow", slideNumbers: true },
+      },
+    });
+    expect(page.ok).toBe(true);
+    if (!page.ok) return;
+    expect(page.document.presentation).toEqual({
+      theme: "claro",
+      page: { size: "letter", orientation: "landscape", margin: "narrow", slideNumbers: true },
+    });
+
+    const invalidPage = parseAulaDocument({
+      ...candidate([{ type: "paragraph" }]),
+      presentation: {
+        theme: "aula",
+        page: { size: "folio", orientation: "diagonal", margin: "enorme", slideNumbers: true },
+      },
+    });
+    expect(invalidPage.ok).toBe(true);
+    if (!invalidPage.ok) return;
+    expect(invalidPage.document.presentation?.page).toEqual({
+      size: "a4",
+      orientation: "portrait",
+      margin: "normal",
+      slideNumbers: true,
+    });
   });
 
   it("rechaza nodos y marcas no compatibles", () => {

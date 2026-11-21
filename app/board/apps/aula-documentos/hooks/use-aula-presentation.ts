@@ -1,9 +1,11 @@
 import { useCallback, useRef, useState } from "react";
 import {
   AULA_DOCUMENT_SCHEMA_VERSION,
+  isAulaPrintPageDefault,
   parseAulaDocument,
   type AulaDocument,
   type AulaPresentationTheme,
+  type AulaPrintPage,
 } from "../../../../../lib/domain/aula-documentos/document";
 import { documentToMarkdown, markdownToDocument } from "../../../../../lib/domain/aula-documentos/markdown";
 import { buildPresentationSlides } from "../../../../../lib/domain/aula-documentos/presentation";
@@ -11,6 +13,7 @@ import { collectMermaidCodes, renderAulaContentHtml, renderMermaidSvgs, buildAul
 import { getMermaidRenderer } from "../../../shared/aula-documentos/mermaid-renderer";
 import { loadExportImages } from "../utils/document-assets";
 import { downloadTextFile } from "../../../shared/ui/download";
+import { printHtmlDocument } from "../../../shared/aula-documentos/print-html";
 import { aulaFileName } from "../../../../../lib/domain/aula-documentos/filename";
 
 type PresentationDeps = {
@@ -18,8 +21,10 @@ type PresentationDeps = {
   title: string;
   presentationTheme: AulaPresentationTheme;
   presentationNotes: Record<string, string>;
+  presentationPage: AulaPrintPage;
   setPresentationTheme: (theme: AulaPresentationTheme) => void;
   setPresentationNotes: (notes: Record<string, string> | ((current: Record<string, string>) => Record<string, string>)) => void;
+  setPresentationPage: (page: AulaPrintPage) => void;
   applyDocument: (document: AulaDocument) => void;
   markChanged: (message?: string) => void;
   setStatus: (message: string) => void;
@@ -35,8 +40,10 @@ export function useAulaPresentation({
   title,
   presentationTheme,
   presentationNotes,
+  presentationPage,
   setPresentationTheme,
   setPresentationNotes,
+  setPresentationPage,
   applyDocument,
   markChanged,
   setStatus,
@@ -44,6 +51,7 @@ export function useAulaPresentation({
   const [preparingPresentation, setPreparingPresentation] = useState(false);
   const [presentation, setPresentation] = useState<{ title: string; slides: string[] } | null>(null);
   const [exportingPresentation, setExportingPresentation] = useState(false);
+  const [printingPresentation, setPrintingPresentation] = useState(false);
   const [slidePreview, setSlidePreview] = useState<{ title: string; slides: string[]; index: number } | null>(null);
   const [markdownSourceOpen, setMarkdownSourceOpen] = useState(false);
   const [markdownSourceDraft, setMarkdownSourceDraft] = useState("");
@@ -131,7 +139,7 @@ export function useAulaPresentation({
   }
 
   /**
-   * Aplica la fuente Markdown al documento actual conservando tema y notas.
+   * Aplica la fuente Markdown al documento actual conservando tema, notas y página.
    */
   function applyMarkdownSource() {
     const converted = markdownToDocument(markdownSourceDraft, {
@@ -146,6 +154,7 @@ export function useAulaPresentation({
       presentation: {
         theme: presentationTheme,
         ...(Object.keys(presentationNotes).length ? { notes: presentationNotes } : {}),
+        ...(isAulaPrintPageDefault(presentationPage) ? {} : { page: presentationPage }),
       },
     });
     if (!parsed.ok) {
@@ -164,6 +173,39 @@ export function useAulaPresentation({
   function changePresentationTheme(theme: AulaPresentationTheme) {
     setPresentationTheme(theme);
     markChanged("Tema de presentación actualizado.");
+  }
+
+  /**
+   * Cambia los ajustes de página y los guarda con el documento.
+   * @param page - Nuevos ajustes.
+   */
+  function changePresentationPage(page: AulaPrintPage) {
+    setPresentationPage(page);
+    markChanged("Ajustes de página actualizados.");
+  }
+
+  /**
+   * Abre la impresión o el PDF de las diapositivas con los ajustes actuales.
+   */
+  async function printPresentation() {
+    const document = currentDocument();
+    if (!document) return;
+    setPrintingPresentation(true);
+    setStatus("Preparando PDF de diapositivas…");
+    try {
+      const slides = await buildPresentationHtml(document);
+      const html = buildAulaPresentationHtml(document, slides, {
+        theme: presentationTheme,
+        includeNotes: false,
+        page: presentationPage,
+      });
+      printHtmlDocument(html);
+      setStatus("Vista de impresión de diapositivas abierta.");
+    } catch {
+      setStatus("No se pudo preparar el PDF de diapositivas.");
+    } finally {
+      setPrintingPresentation(false);
+    }
   }
 
   /**
@@ -195,6 +237,7 @@ export function useAulaPresentation({
         theme: presentationTheme,
         notes: presentationNotes,
         includeNotes: true,
+        page: presentationPage,
       });
       downloadTextFile(
         html,
@@ -218,6 +261,7 @@ export function useAulaPresentation({
     preparingPresentation,
     presentation,
     exportingPresentation,
+    printingPresentation,
     slidePreview,
     setSlidePreview,
     markdownSourceOpen,
@@ -232,8 +276,10 @@ export function useAulaPresentation({
     openMarkdownSource,
     applyMarkdownSource,
     changePresentationTheme,
+    changePresentationPage,
     changeSlideNote,
     exportPresentation,
+    printPresentation,
     closePresentation,
   };
 }

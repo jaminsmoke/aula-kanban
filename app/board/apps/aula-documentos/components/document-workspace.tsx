@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
 import { EditorContent } from "@tiptap/react";
 import { Code2, History, Search } from "lucide-react";
-import { AULA_DOCUMENT_TITLE_MAX_LENGTH, AULA_PRESENTATION_THEMES, type AulaPresentationTheme } from "../../../../../lib/domain/aula-documentos/document";
+import { AULA_DOCUMENT_TITLE_MAX_LENGTH, AULA_PRESENTATION_THEMES, type AulaPresentationTheme, type AulaPrintPage } from "../../../../../lib/domain/aula-documentos/document";
 import { useAulaDocumentosView } from "../aula-documentos-context";
 import { DocumentSearchBar } from "./document-search-bar";
 import { DocumentNavigator } from "./document-navigator";
@@ -48,6 +48,10 @@ export function DocumentWorkspace() {
     focusMode,
     presentationTheme,
     changePresentationTheme,
+    presentationPage,
+    changePresentationPage,
+    printingPresentation,
+    printPresentation,
     slideLabel,
     openSlidePreview,
     preparingPresentation,
@@ -154,6 +158,66 @@ export function DocumentWorkspace() {
               </select>
             </label>
             <p className="aula-documentos-slide-count">{slideLabel}</p>
+            <div className="aula-documentos-page-settings" aria-label="Ajustes de página">
+              <label className="aula-documentos-theme" htmlFor="aula-documentos-page-size">
+                <span>Tamaño</span>
+                <select
+                  id="aula-documentos-page-size"
+                  aria-label="Tamaño de página"
+                  value={presentationPage.size}
+                  onChange={(event) => changePresentationPage({ ...presentationPage, size: event.target.value as AulaPrintPage["size"] })}
+                  disabled={readOnly}
+                >
+                  <option value="a4">A4</option>
+                  <option value="letter">Carta</option>
+                </select>
+              </label>
+              <label className="aula-documentos-theme" htmlFor="aula-documentos-page-orientation">
+                <span>Orientación</span>
+                <select
+                  id="aula-documentos-page-orientation"
+                  aria-label="Orientación de página"
+                  value={presentationPage.orientation}
+                  onChange={(event) => changePresentationPage({ ...presentationPage, orientation: event.target.value as AulaPrintPage["orientation"] })}
+                  disabled={readOnly}
+                >
+                  <option value="portrait">Vertical</option>
+                  <option value="landscape">Horizontal</option>
+                </select>
+              </label>
+              <label className="aula-documentos-theme" htmlFor="aula-documentos-page-margin">
+                <span>Márgenes</span>
+                <select
+                  id="aula-documentos-page-margin"
+                  aria-label="Márgenes de página"
+                  value={presentationPage.margin}
+                  onChange={(event) => changePresentationPage({ ...presentationPage, margin: event.target.value as AulaPrintPage["margin"] })}
+                  disabled={readOnly}
+                >
+                  <option value="normal">Normal</option>
+                  <option value="narrow">Estrechos</option>
+                  <option value="none">Sin márgenes</option>
+                </select>
+              </label>
+              <label className="aula-documentos-page-check" htmlFor="aula-documentos-page-numbers">
+                <input
+                  id="aula-documentos-page-numbers"
+                  type="checkbox"
+                  checked={presentationPage.slideNumbers}
+                  onChange={(event) => changePresentationPage({ ...presentationPage, slideNumbers: event.target.checked })}
+                  disabled={readOnly}
+                />
+                Números de diapositiva
+              </label>
+            </div>
+            <button
+              type="button"
+              className="aula-documentos-preview-button"
+              onClick={() => { void printPresentation(); }}
+              disabled={!editor || printingPresentation}
+            >
+              {printingPresentation ? "Preparando…" : "PDF de diapositivas"}
+            </button>
             <button
               type="button"
               className="aula-documentos-preview-button"
