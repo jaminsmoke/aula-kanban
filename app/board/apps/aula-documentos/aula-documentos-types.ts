@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 export const AUTOSAVE_DELAY_MS = 1_600;
 
 export type ToolbarAction = {
+  id: string;
   label: string;
   icon: ReactNode;
   onClick: () => void;

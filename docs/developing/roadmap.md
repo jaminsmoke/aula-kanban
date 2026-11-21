@@ -74,12 +74,13 @@
 
 ### Fase 2 — Menús y acciones sin duplicados
 
-- [ ] Reorganizar Archivo, Importar, Exportar, Formato e Insertar.
-- [ ] Retirar duplicados entre barras, paneles y menús móviles.
-- [ ] Compartir un modelo de acciones entre escritorio y móvil.
-- [ ] Resolver desbordamiento, estados vacíos y grupos de acciones.
-- [ ] Probar cada acción desde su nuevo hogar y el menú móvil.
+- [x] Reorganizar Archivo, Importar, Exportar, Formato e Insertar.
+- [x] Retirar duplicados entre barras, paneles y menús móviles.
+- [x] Compartir un modelo de acciones entre escritorio y móvil.
+- [x] Resolver desbordamiento, estados vacíos y grupos de acciones.
+- [x] Probar cada acción desde su nuevo hogar y el menú móvil.
 - **Criterios:** no hay acciones importantes escondidas ni repetidas; el patrón funciona en escritorio y móvil.
+- **Cierre (2026-11-21):** acciones con `id` estable, menús y grupos móviles construidos desde las mismas definiciones, formato móvil compartido y menú agrupado por Archivo/Importar/Exportar/Insertar/Documento. Pruebas de IDs y grupos. Suite: **264 archivos / 1.733 pruebas**; build **385.018 B**; presupuesto **386.000 B**.
 
 ### Fase 3 — Atajos y ayuda
 
@@ -119,5 +120,6 @@
 
 - 2026-11-21: **Roadmap abierto.** UI-11 sale del backlog; queda **1 entrada** y el siguiente candidato es **DEV-01**. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Inventario de acciones, hogar único, duplicados, atajos, barra de estado y responsive en [`aula-documentos-interfaz.md`](aula-documentos-interfaz.md). Sin cambios de código.
+- 2026-11-21: **Fase 2 completada.** IDs estables, menús y grupos móviles desde el mismo modelo, formato compartido y menú móvil agrupado. Suite: **264 archivos / 1.733 pruebas**; build **385.018 B**.
 - La base es la interfaz actual de Aula Documentos, no un rediseño de la app ni del editor.
 - No hay publicación ni migraciones remotas en este roadmap.

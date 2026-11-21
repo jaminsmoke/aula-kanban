@@ -10,6 +10,7 @@ import { AulaMenu, type AulaMenuAction } from "./aula-documentos-menu";
  */
 function action(label: string, overrides: Partial<AulaMenuAction> = {}): AulaMenuAction {
   return {
+    id: label,
     label,
     icon: <span aria-hidden>·</span>,
     onSelect: vi.fn(),

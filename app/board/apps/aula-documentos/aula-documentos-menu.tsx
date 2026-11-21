@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode 
 import { ChevronDown } from "lucide-react";
 
 export type AulaMenuAction = {
+  id: string;
   label: string;
   icon: ReactNode;
   shortcut?: string;
@@ -114,8 +115,9 @@ export function AulaMenu({ label, ariaLabel, actions, disabled = false }: AulaMe
         >
           {actions.map((action) => (
             <button
-              key={action.label}
+              key={action.id}
               type="button"
+              data-action-id={action.id}
               className={`aula-documentos-menu-item${action.active ? " is-active" : ""}`}
               role={action.active === undefined ? "menuitem" : "menuitemcheckbox"}
               aria-checked={action.active === undefined ? undefined : action.active}

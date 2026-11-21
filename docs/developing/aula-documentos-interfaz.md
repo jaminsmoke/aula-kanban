@@ -1,9 +1,9 @@
 # Menús, atajos y barra de estado de Aula Documentos
 
-> **Estado:** Fase 1 de UI-11 completada · **Fecha:** 2026-11-21
+> **Estado:** Fases 1–2 cerradas · **Fecha:** 2026-11-21
 > **Alcance:** inventario de acciones, hogar único, atajos, barra de estado, responsive y accesibilidad.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
-> **Regla:** esta fase no mueve código de producto; fija el inventario y el contrato.
+> **Regla:** la Fase 1 fijó el contrato; la Fase 2 unificó menús y acciones.
 
 ---
 
@@ -184,3 +184,15 @@ Los manejadores actuales están distribuidos entre `use-aula-persistence`, `use-
 - Contrato de barra de estado y responsive fijado.
 - Matriz de pruebas y límites explícitos.
 - Sin cambios de código, datos, URLs, permisos ni versión del Site.
+
+## 10. Cierre de la Fase 2
+
+Implementado el 2026-11-21:
+
+- `ToolbarAction` y `AulaMenuAction` incorporan `id` estable y `data-action-id` para pruebas e inspección.
+- Las acciones de Archivo, Importar, Exportar, Insertar, Formato y Documento comparten definiciones entre menús, botones directos y menú móvil.
+- El menú móvil se agrupa por secciones en lugar de una lista plana; los grupos vacíos no se muestran.
+- El menú de formato móvil reutiliza las mismas acciones de formato y herramientas directas.
+- Se retiró la lista plana `documentFileActions`; los grupos móviles apuntan a los mismos objetos de acción que los menús de escritorio.
+- Pruebas de identificadores únicos, grupos móviles y acción de escritorio compartida.
+- Suite: **264 archivos / 1.733 pruebas**; build **385.018 B**; presupuesto **386.000 B**.

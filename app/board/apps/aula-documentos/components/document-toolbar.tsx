@@ -1,7 +1,7 @@
 import { lazy, Suspense, type ChangeEvent } from "react";
 import { Ellipsis, MonitorPlay, Save, X } from "lucide-react";
 import { AULA_IMAGE_ACCEPT } from "../../../../../lib/domain/aula-documentos/image";
-import { AulaMenu } from "../aula-documentos-menu";
+import { AulaMenu, type AulaMenuAction } from "../aula-documentos-menu";
 import type { ToolbarAction } from "../aula-documentos-types";
 import { useAulaDocumentosView } from "../aula-documentos-context";
 
@@ -19,6 +19,7 @@ function ToolButton({ action }: { action: ToolbarAction }) {
     <button
       type="button"
       className={`aula-documentos-tool${action.active ? " is-active" : ""}`}
+      data-action-id={action.id}
       onClick={action.onClick}
       aria-label={action.label}
       title={action.label}
@@ -36,25 +37,32 @@ function ToolButton({ action }: { action: ToolbarAction }) {
  * @returns Los elementos del menú.
  */
 function MobileActions({
-  actions,
+  groups,
   onSelect,
 }: {
-  actions: ToolbarAction[];
-  onSelect: (action: ToolbarAction) => void;
+  groups: Array<{ id: string; label: string; actions: AulaMenuAction[] }>;
+  onSelect: (action: AulaMenuAction) => void;
 }) {
   return (
     <>
-      {actions.map((action) => (
-        <button
-          type="button"
-          role="menuitem"
-          key={action.label}
-          disabled={action.disabled}
-          onClick={() => onSelect(action)}
-        >
-          {action.icon}
-          <span>{action.label}</span>
-        </button>
+      {groups.filter((group) => group.actions.length > 0).map((group) => (
+        <div className="aula-documentos-mobile-action-group" role="group" aria-label={group.label} key={group.id}>
+          <p className="aula-documentos-mobile-action-title">{group.label}</p>
+          {group.actions.map((action) => (
+            <button
+              type="button"
+              role={action.active === undefined ? "menuitem" : "menuitemcheckbox"}
+              aria-checked={action.active === undefined ? undefined : action.active}
+              data-action-id={action.id}
+              key={action.id}
+              disabled={action.disabled}
+              onClick={() => onSelect(action)}
+            >
+              {action.icon}
+              <span>{action.label}</span>
+            </button>
+          ))}
+        </div>
       ))}
     </>
   );
@@ -78,7 +86,7 @@ export function DocumentToolbar() {
     mobileFormatMenuActions,
     editor,
     readOnly,
-    mobileActions,
+    mobileActionGroups,
     officeOpenInputRef,
     openOfficeViewer,
     prepareCopyImport,
@@ -109,6 +117,7 @@ export function DocumentToolbar() {
           <button
             type="button"
             className="aula-documentos-action-button"
+            data-action-id={presentAction.id}
             onClick={presentAction.onClick}
             disabled={presentAction.disabled}
             aria-label="Presentar documento"
@@ -119,6 +128,7 @@ export function DocumentToolbar() {
           <button
             type="button"
             className="aula-documentos-action-button primary"
+            data-action-id={saveDocumentAction.id}
             onClick={saveDocumentAction.onClick}
             disabled={saveDocumentAction.disabled}
             aria-label="Guardar documento"
@@ -150,10 +160,10 @@ export function DocumentToolbar() {
             {actionsOpen ? (
               <div className="aula-documentos-mobile-menu" role="menu" aria-label="Acciones del documento">
                 <MobileActions
-                  actions={mobileActions}
+                  groups={mobileActionGroups}
                   onSelect={(action) => {
                     setActionsOpen(false);
-                    action.onClick();
+                    action.onSelect();
                   }}
                 />
               </div>
