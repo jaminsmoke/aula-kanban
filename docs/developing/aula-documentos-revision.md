@@ -1,6 +1,6 @@
 # Comentarios, revisión e historial de Aula Documentos
 
-> **Estado:** Fases 1–4 cerradas · **Fecha:** 2026-11-21
+> **Estado:** Completado (ADOC-20) · **Fecha:** 2026-11-21
 > **Alcance:** comentarios anclados, hilos, historial de versiones, permisos, exportación y límites.
 > **Roadmap:** [`roadmap.md`](roadmap.md) · **Suite:** [`aula-documentos-suite.md`](aula-documentos-suite.md)
 > **Regla:** esta fase no mueve código de producto; fija el contrato y los límites.
@@ -261,3 +261,15 @@ Implementado el 2026-11-21:
 - Mensajes de error estables para permisos, límites, conflictos y validación.
 - Pruebas de exportación con y sin comentarios, permisos, paginación y flujo de PDF.
 - Suite: **263 archivos / 1.732 pruebas**; build **384.594 B**; presupuesto **386.000 B**.
+
+## 15. Cierre de ADOC-20
+
+Cerrado el 2026-11-21:
+
+- Roadmap archivado en [`historial/roadmap-adoc-20.md`](../historial/roadmap-adoc-20.md).
+- Comentarios, versiones y exportaciones comparten `projectId + documentId` y respetan los permisos de la suite.
+- El documento canónico no guarda comentarios ni versiones; no se modificó `schemaVersion`.
+- Ayuda, contrato, changelog, backlog y presupuesto actualizados.
+- `npm run check`, **263 archivos / 1.732 pruebas**, build, `perf:budget`, `app:budget` y `perf:office` correctos.
+- Aula Documentos: **384.585 / 386.000 B gzip**; Site sin cambios en `1.1.37`.
+- El backlog queda con **2 entradas**; siguiente candidato **UI-11**.

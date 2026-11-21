@@ -1,8 +1,40 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-20 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-21 — Roadmap ADOC-20 — Comentarios, revisión e historial
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Comentarios anclados a texto o bloque con cita, contexto, posiciones y fallback a huérfano.
+- Hilos de un nivel con respuestas, edición, resolución, reapertura y borrado lógico.
+- Permisos de servidor y capacidades por comentario: guest lectura, estudiante sobre lo propio y profesorado/administración con revisión.
+- Panel lateral de comentarios con creación, respuesta, filtros, salto al texto y paginación.
+- Historial de versiones con snapshots manuales, autor, fecha, tamaño, vista previa y restauración.
+- Snapshot previo a restaurar, conflicto optimista y conservación de identidad y estado de la suite.
+- Exportación e impresión opcional de comentarios en HTML/PDF, desactivada por defecto.
+- Retención de 180 días, purga de elementos antiguos, cuotas de 500 comentarios y 50 versiones.
+- Migraciones locales `0043_lying_human_robot.sql` y `0044_milky_master_mold.sql`; sin cambios en `schemaVersion`.
+- Ayuda y contrato actualizados en `docs/developing/aula-documentos-revision.md`.
+
+### Verificación
+
+- `npm run check`: correcto.
+- `arch:check`: **455 archivos / 1.129 imports / 0 problemas**.
+- Suite completa: **263 archivos / 1.732 pruebas**.
+- Build, `app:budget`, `perf:budget` y `perf:office`: correctos.
+- Aula Documentos: **384.585 / 386.000 B gzip**.
+- El Site sigue en `1.1.37`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ADOC-20 archivado en [`historial/roadmap-adoc-20.md`](../historial/roadmap-adoc-20.md). El backlog queda con **2 entradas**; siguiente candidato **UI-11**.
 
 ---
 
