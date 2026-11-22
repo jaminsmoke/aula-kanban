@@ -1,8 +1,34 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-14 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-22 — Roadmap ARC-14 — Reutilizar los límites de importación y revisión documental
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- `markdown.ts` centraliza la entrada Markdown en `AULA_DOCUMENT_MARKDOWN_MAX_LENGTH` y `isAulaMarkdownTooLong()`. Importación antigua, TXT, Office y el diálogo de Markdown reutilizan el validador; se retiró `LEGACY_MARKDOWN_MAX_LENGTH` (**200.000**).
+- `document-types.ts` centraliza el documento serializado en `AULA_DOCUMENT_JSON_MAX_LENGTH` y `isAulaDocumentJsonTooLong()`. Validación, importación JSON, copias locales e historial reutilizan el validador; se retiró `AULA_VERSION_STATE_MAX_LENGTH` (**190.000**).
+- `MAX_APP_DOCUMENT_CHARS` (**200.000**) se conserva separado para los bytes de la petición y el almacenamiento de apps.
+- Sin cambios de valores, mensajes, estados públicos, datos, URLs, permisos, MCP ni versión del Site.
+- Contrato e inventario en [`limites-documentales.md`](limites-documentales.md).
+
+### Verificación
+
+- `npm run check`: correcto; arquitectura **461 archivos / 1.155 imports**.
+- Suite completa: **268 archivos / 1.778 pruebas**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos; Aula **54 / 5.390 → 54 / 5.400** líneas de prueba y **16 / 3.734 → 16 / 3.800** CSS.
+- Build de Aula Documentos: **386.662 / 387.000 B**; Hoja de cálculo **313.045 / 315.000 B**.
+- El Site sigue en `1.1.39`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-14 archivado en [`historial/roadmap-arc-14.md`](../historial/roadmap-arc-14.md). El backlog queda con **1 entrada** (DEV-01); siguiente candidato **DEV-01**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 

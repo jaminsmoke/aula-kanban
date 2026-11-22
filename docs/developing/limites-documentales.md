@@ -1,6 +1,6 @@
 # Límites de importación y revisión documental
 
-> **Estado:** ARC-14 Fases 1, 2 y 3 · **Fecha:** 2026-11-22
+> **Estado:** ARC-14 cerrado (Fases 1-3) · **Fecha:** 2026-11-22
 > **Alcance:** límites de Markdown, documento serializado, historial de versiones y peticiones de Aula Documentos.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -122,8 +122,8 @@ No se creará un módulo genérico de límites: las constantes existentes ya tie
 
 - Arquitectura: **461 archivos / 1.155 imports / 0 problemas**.
 - Suite: **268 archivos / 1.778 pruebas**.
-- Aula Documentos: **386.673 / 387.000 B**.
-- Hoja de cálculo: **313.034 / 315.000 B**.
+- Aula Documentos: **386.662 / 387.000 B**.
+- Hoja de cálculo: **313.045 / 315.000 B**.
 - Site: `1.1.39`.
 - Commit de apertura del roadmap: `fdc7b55`.
 
@@ -140,4 +140,4 @@ No se creará un módulo genérico de límites: las constantes existentes ya tie
 - La validación del documento, la importación JSON, las copias locales y el historial usan el mismo validador. Se retiró `AULA_VERSION_STATE_MAX_LENGTH`.
 - `MAX_APP_DOCUMENT_CHARS` sigue separada para los bytes de la petición y el almacenamiento de apps; no se modificó el guardado.
 - Se añadieron pruebas del límite exacto y del siguiente carácter, de creación de versión y de restauración con un estado fuera de límite.
-- Los estados `too-large` e `invalid`, los mensajes y los límites efectivos no cambian. Arquitectura **461 / 1.155**; suite **268 / 1.778**; `npm run check` y `app:budget` correctos.
+- Los estados `too-large` e `invalid`, los mensajes y los límites efectivos no cambian. Arquitectura **461 / 1.155**; suite **268 / 1.778**; build Aula **386.662 B** y Hoja **313.045 B**; `npm run check`, `app:budget`, `perf:budget` y `perf:office` correctos.

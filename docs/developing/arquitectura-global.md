@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-13 completados; ADOC-18, ADOC-19 y ADOC-20 completados; ARC-14 activo · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19 y ADOC-20 completados; sin roadmap activo · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -238,4 +238,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - ARC-11 quedó cerrado y archivado en [`historial/roadmap-arc-11.md`](../historial/roadmap-arc-11.md): la petición versionada y las transiciones de versión y carga fallida viven en `useAppDocument`, sin cambiar los contratos de las apps.
 - ARC-12 quedó cerrado y archivado en [`historial/roadmap-arc-12.md`](../historial/roadmap-arc-12.md): el contexto de Aula Documentos solo reenvía campos con consumidores y el modelo conserva las acciones internas.
 - ARC-13 quedó cerrado y archivado en [`historial/roadmap-arc-13.md`](../historial/roadmap-arc-13.md): las ventanas comparten la base `.app-window` sin perder `container-name`, variables locales, foco ni scroll; Calculadora ya no duplica `.edu-app` y el CSS neto baja **117 líneas**.
-- ARC-14 está activo en [`roadmap.md`](roadmap.md): reutilizar los límites de importación y revisión documental sin cambiar sus valores, mensajes ni estados.
+- ARC-14 quedó cerrado y archivado en [`historial/roadmap-arc-14.md`](../historial/roadmap-arc-14.md): Markdown y documento serializado tienen una sola definición y un validador compartido; los valores, mensajes y estados no cambiaron.
