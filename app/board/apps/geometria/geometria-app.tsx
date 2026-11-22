@@ -14,6 +14,7 @@ import {
   type FunctionId,
   type PresetId,
 } from "./geometria-model";
+import "../app-window.css";
 import "./geometria.css";
 
 type Tool = "select" | "point";
@@ -309,7 +310,7 @@ export default function GeometriaApp() {
   }
 
   return (
-    <div className="geometria-app">
+    <div className="app-window geometria-app">
       <header className="geometria-toolbar">
         <div className="geometria-heading">
           <span className="geometria-mark" aria-hidden><Compass size={18} strokeWidth={2} /></span>

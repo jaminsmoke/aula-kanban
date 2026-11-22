@@ -1,6 +1,7 @@
 "use client";
 
 import { lazy, Suspense } from "react";
+import "../app-window.css";
 import "../edu-base.css";
 import "./tabla-periodica.css";
 
@@ -12,7 +13,7 @@ const PeriodicTableEs = lazy(() => import("./periodic-table/periodic-table-es"))
  */
 export default function TablaPeriodicaApp() {
   return (
-    <div className="edu-app">
+    <div className="app-window edu-app">
       <div className="edu-app-body">
         <div className="edu-view edu-view--fill">
           <section className="edu-card edu-card--periodic">

@@ -65,11 +65,12 @@
 
 ### Fase 2 — Base compartida y Calculadora
 
-- [ ] Retirar la declaración duplicada de `.edu-app` de `calculadora.css`.
-- [ ] Conservar en Calculadora solo variables y reglas propias de su contenido.
-- [ ] Aplicar la base decidida a las ventanas que puedan reutilizarla sin cambiar su disposición.
-- [ ] Mantener las diferencias de cada app y sus container queries.
+- [x] Retirar la declaración duplicada de `.edu-app` de `calculadora.css`.
+- [x] Conservar en Calculadora solo variables y reglas propias de su contenido.
+- [x] Aplicar la base decidida a las ventanas que puedan reutilizarla sin cambiar su disposición.
+- [x] Mantener las diferencias de cada app y sus container queries.
 - **Criterios:** mismo aspecto y comportamiento, con menos reglas duplicadas.
+- **Cierre (2026-11-22):** `.app-window` centraliza la disposición; las diez entradas la importan y las nueve clases raíz la aplican. Se retiró el `.edu-app` duplicado y las 14 variables sin consumidor. **CSS -117 líneas netas** (133 retiradas, 16 añadidas); TSX +10 por imports y clases. Calculadora **124 → 95** CSS; Hoja **345 → 335**. Suite enfocada **26 / 174**; `npm run check` correcto.
 
 ### Fase 3 — Verificación visual y de carga
 
@@ -99,5 +100,6 @@
 
 - 2026-11-22: **Roadmap abierto.** ARC-13 es la siguiente candidata recomendada del backlog; quedan ARC-14 y DEV-01. Se empieza por el inventario y el contrato de ventana. Sin cambios de producto en esta apertura.
 - 2026-11-22: **Fase 1 completada.** Inventario en [`css-ventanas-apps.md`](css-ventanas-apps.md): `.edu-app` duplicada, 14 variables sin consumidor, ocho clases raíz con la misma disposición y decisión de usar `.app-window`. Sin cambios de producto.
+- 2026-11-22: **Fase 2 completada.** `.app-window` y sus imports aplicados a las diez entradas; duplicado y variables retirados. **CSS -117 líneas netas**; Calculadora **95** y Hoja **335** líneas CSS. Revisión visual y bundle en la Fase 3.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

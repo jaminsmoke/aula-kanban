@@ -7,6 +7,7 @@ import { HojaCalculoSidePanel } from "./hoja-calculo-side-panel";
 import { HojaCalculoToolbar } from "./hoja-calculo-toolbar";
 import { useHojaCalculoDocument } from "./use-hoja-calculo-document";
 import { useHojaCalculoGrid } from "./use-hoja-calculo-grid";
+import "../app-window.css";
 import "./hoja-calculo.css";
 
 /**
@@ -37,7 +38,7 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
     : displayStatus;
 
   return (
-    <div className="hoja-calculo-app">
+    <div className="app-window hoja-calculo-app">
       <HojaCalculoToolbar
         ready={grid.ready}
         readOnly={documentState.readOnly}

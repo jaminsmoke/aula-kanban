@@ -16,6 +16,7 @@ import {
   type NodeChange,
 } from "@xyflow/react";
 import { FolderOpen, Maximize2, Network, Plus, RotateCcw, Save, Trash2 } from "lucide-react";
+import "../app-window.css";
 import "@xyflow/react/dist/style.css";
 import type { StoreRole } from "../types";
 import { useAppDocument } from "../use-app-document";
@@ -259,7 +260,7 @@ function MapasEditor({ projectId, role }: { projectId: string; role: StoreRole }
   }
 
   return (
-    <div className="mapas-app">
+    <div className="app-window mapas-app">
       <header className="mapas-toolbar">
         <div className="mapas-heading">
           <span className="mapas-mark" aria-hidden><Network size={18} strokeWidth={2} /></span>

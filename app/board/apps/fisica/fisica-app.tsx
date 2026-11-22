@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Composite, Engine, Mouse, MouseConstraint, Render, Runner } from "matter-js";
 import { Atom, Pause, Play, Plus, RotateCcw } from "lucide-react";
 import { createBall, createScene, PRESETS, SCENE_HEIGHT, SCENE_WIDTH, type PresetId } from "./fisica-model";
+import "../app-window.css";
 import "./fisica.css";
 
 /**
@@ -102,7 +103,7 @@ export default function FisicaApp() {
   }
 
   return (
-    <div className="fisica-app">
+    <div className="app-window fisica-app">
       <header className="fisica-toolbar">
         <div className="fisica-heading">
           <span className="fisica-mark" aria-hidden><Atom size={18} strokeWidth={2} /></span>

@@ -116,3 +116,13 @@ La base no incluirá `container-name`: es la única propiedad que debe variar po
 - Aula Documentos: **386.658 / 387.000 B**.
 - Hoja de cálculo: **312.862 / 315.000 B**.
 - Site: `1.1.39`.
+
+## 9. Aplicado en la Fase 2
+
+- Creada `app/board/apps/app-window.css` con `.app-window`; las diez entradas de app la importan y las nueve clases raíz la aplican.
+- Cada clase raíz conserva solo su `container-name`; Ajedrez conserva además sus seis variables de tablero.
+- Eliminado el bloque `.edu-app` duplicado de `calculadora.css`.
+- Retiradas las 14 variables sin consumidor de `edu-base.css`; Calculadora ya no las redeclara.
+- CSS: **133 líneas retiradas**, **16 añadidas**: **117 líneas netas menos**. TSX: **10 líneas más** por el import y la clase.
+- Presupuesto CSS: Calculadora **124 → 95**, Hoja **345 → 335**.
+- Suite enfocada: **26 archivos / 174 pruebas**; `npm run check` correcto. La revisión visual y el bundle quedan para la Fase 3.

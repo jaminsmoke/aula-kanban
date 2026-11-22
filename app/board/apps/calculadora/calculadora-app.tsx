@@ -1,6 +1,7 @@
 "use client";
 
 import CalculatorPanel from "./calculator/calculator-panel";
+import "../app-window.css";
 import "../edu-base.css";
 import "./calculadora.css";
 
@@ -11,7 +12,7 @@ import "./calculadora.css";
  */
 export default function CalculadoraApp() {
   return (
-    <div className="edu-app">
+    <div className="app-window edu-app">
       <div className="edu-app-body">
         <div className="edu-view edu-view--fill">
           <CalculatorPanel />

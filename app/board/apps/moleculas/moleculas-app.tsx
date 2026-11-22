@@ -5,6 +5,7 @@ import type { GLModel, GLViewer } from "3dmol";
 import { Atom, RotateCcw, Tags, ZoomIn, ZoomOut } from "lucide-react";
 import { MOLECULES, getMolecule } from "./moleculas-data";
 import { countSdfAtoms, isRenderableMolecule } from "./moleculas-model";
+import "../app-window.css";
 import "./moleculas.css";
 
 const DEFAULT_MOLECULE_ID = "agua";
@@ -245,7 +246,7 @@ export default function MoleculasApp() {
   }
 
   return (
-    <div className="moleculas-app">
+    <div className="app-window moleculas-app">
       <header className="moleculas-toolbar">
         <div className="moleculas-heading">
           <span className="moleculas-mark" aria-hidden>

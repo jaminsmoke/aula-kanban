@@ -6,6 +6,7 @@ import { TimelineSidePanel } from "./timeline-side-panel";
 import { TimelineToolbar } from "./timeline-toolbar";
 import { useTimelineCanvas } from "./use-timeline-canvas";
 import { useTimelineEditor } from "./use-timeline-editor";
+import "../app-window.css";
 import "./timeline.css";
 
 /**
@@ -38,7 +39,7 @@ export default function TimelineApp({ projectId, role }: { projectId: string; ro
     : displayStatus;
 
   return (
-    <div className="timeline-app">
+    <div className="app-window timeline-app">
       <TimelineToolbar
         initError={canvas.initError}
         loading={editor.loading}

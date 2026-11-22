@@ -4,32 +4,9 @@
    ========================================================================== */
 
 .edu-app {
-  flex:1 1 auto;
-  width:100%;
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  height:100%;
-  background:var(--ui-surface-hover);
-  color:var(--ui-text-primary);
   font-family:"Instrument Sans",system-ui,sans-serif;
   /* Las vistas responden al ancho de la ventana, no al del navegador. */
-  container-type:inline-size;
   container-name:eduapp;
-  --background:var(--ui-surface-pale);
-  --foreground:var(--ui-text-primary);
-  --card:var(--ui-surface-raised);
-  --surface:var(--ui-surface-hover);
-  --border:var(--ui-border-default);
-  --rule:var(--ui-border-strong);
-  --muted-foreground:var(--ui-text-muted);
-  --accent:var(--ui-action-text);
-  --accent-foreground:var(--ui-text-inverse);
-  --calc-key:var(--ui-action-soft);
-  --calc-operator:var(--ui-action-primary);
-  --calc-operator-foreground:var(--ui-text-inverse);
-  --calc-func:var(--ui-action-soft);
-  --calc-func-foreground:var(--ui-text-strong);
 }
 
 .edu-app-body { flex:1 1 auto; min-height:0; display:flex; }

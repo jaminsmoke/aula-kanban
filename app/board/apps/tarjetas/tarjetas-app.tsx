@@ -8,6 +8,7 @@ import { TarjetasReviewPanel } from "./tarjetas-review-panel";
 import { TarjetasToolbar } from "./tarjetas-toolbar";
 import { useTarjetasEditor } from "./use-tarjetas-editor";
 import { useTarjetasReview } from "./use-tarjetas-review";
+import "../app-window.css";
 import "./tarjetas.css";
 import "./tarjetas-review.css";
 
@@ -34,7 +35,7 @@ export default function TarjetasApp({ projectId, role }: { projectId: string; ro
   }
 
   return (
-    <div className="tarjetas-app">
+    <div className="app-window tarjetas-app">
       <TarjetasToolbar
         readOnly={editor.readOnly}
         dirty={editor.dirty}

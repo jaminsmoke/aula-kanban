@@ -5,6 +5,7 @@ import { Chess, SQUARES, type Square } from "chess.js";
 import { Chessboard, type PieceDropHandlerArgs, type SquareHandlerArgs } from "react-chessboard";
 import { RotateCcw, Swords } from "lucide-react";
 import { gameStatus, kingSquare, START_FEN, type MoveRecord, type PromotionPiece } from "./ajedrez-model";
+import "../app-window.css";
 import "./ajedrez.css";
 
 type Mode = "local" | "random";
@@ -200,7 +201,7 @@ export default function AjedrezApp() {
   };
 
   return (
-    <div className="ajedrez-app">
+    <div className="app-window ajedrez-app">
       <header className="ajedrez-toolbar ui-toolbar">
         <div className="ajedrez-heading">
           <span className="ajedrez-mark" aria-hidden><Swords size={18} strokeWidth={2} /></span>
