@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01, TASK-02, TASK-03, TASK-04, PERM-04, UI-15 y UI-16 completados; sin roadmap activo · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01, TASK-02, TASK-03, TASK-04, PERM-04, UI-15 y UI-16 completados; TASK-05 activo · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -248,3 +248,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - PERM-04 quedó cerrado y archivado en [`historial/roadmap-perm-04.md`](../historial/roadmap-perm-04.md): Almacenamiento, Administradores y Permisos sobreviven a la recarga con acceso y la redirección a Cuenta espera a la comprobación cuando falta permiso.
 - UI-15 quedó cerrado y archivado en [`historial/roadmap-ui-15.md`](../historial/roadmap-ui-15.md): tablero y Aula Store buscan sin tildes, mayúsculas ni espacios exteriores, y el tablero ofrece **Limpiar filtros** cuando no hay coincidencias.
 - UI-16 quedó cerrado y archivado en [`historial/roadmap-ui-16.md`](../historial/roadmap-ui-16.md): la ficha de alumno compacta la cabecera, oculta datos vacíos y ordena tareas vencidas, próximas, sin fecha y completadas.
+- TASK-05 está activo en [`roadmap.md`](roadmap.md): añadir **Mis tareas** con la ficha vinculada y marcar las tareas pendientes vencidas.

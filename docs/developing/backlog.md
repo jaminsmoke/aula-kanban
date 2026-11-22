@@ -2,16 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 6 entradas pendientes
+> **Roadmap:** TASK-05 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 5 entradas pendientes
 
 ---
-
-## 2026-11-22 — TASK-05 · Acceso directo a Mis tareas y aviso de vencimiento
-
-- La alumna llegó a sus tareas seleccionando su nombre en «Todos los alumnos». Las tarjetas pendientes con fecha pasada mostraban la fecha como las demás.
-- Añadir **Mis tareas** como acceso directo cuando la cuenta tenga una ficha vinculada. Identificar las tareas pendientes vencidas con texto o icono y contraste suficiente.
-- Verificar que el acceso usa la ficha vinculada, funciona con tareas compartidas y permite volver a todas las tareas. Las completadas y las que carecen de fecha quedan fuera del aviso de vencimiento.
 
 ## 2026-11-22 — PER-09 · Organizar y distinguir las herramientas de Mi mochila y Maletín
 

@@ -19,7 +19,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Sin roadmap activo; UI-16 cerrado y siguiente paso | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | TASK-05 activo: Mis tareas y aviso de vencimiento | Secuencia de ejecución |
 | [`integracion-hoja-aula.md`](developing/integracion-hoja-aula.md) | Contrato del flujo de copia Hoja de cálculo → Aula Documentos | Referencia |
 | [`aula-documentos-modelo.md`](developing/aula-documentos-modelo.md) | Mapa de campos, hooks y consumidores del modelo de Aula Documentos | Referencia |
 | [`css-ventanas-apps.md`](developing/css-ventanas-apps.md) | Inventario y contrato CSS de las ventanas de apps | Referencia |
@@ -28,7 +28,7 @@
 | [`calendario-teclado.md`](developing/calendario-teclado.md) | Contrato de teclado, foco y nombres accesibles del calendario | Referencia |
 | [`tareas-documento.md`](developing/tareas-documento.md) | Contrato del documento de entrega vinculado a una tarea | Referencia |
 | [`aula-documentos-arquitectura.md`](developing/aula-documentos-arquitectura.md) | Mapa de responsabilidades, árbol objetivo y límites de Aula Documentos | Referencia de refactor |
-| [`backlog.md`](developing/backlog.md) | Backlog pendientes: 6 entradas; siguiente TASK-05 | Lo nuevo arriba |
+| [`backlog.md`](developing/backlog.md) | Backlog pendientes: 5 entradas; siguiente PER-09 | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
 | [`roadmap-template.md`](developing/templates/roadmap-template.md) | Plantilla para reiniciar el roadmap | — |
 | [`backlog-template.md`](developing/templates/backlog-template.md) | Plantilla para reiniciar el backlog | — |
