@@ -1,13 +1,13 @@
 # Límites de importación y revisión documental
 
-> **Estado:** ARC-14 Fase 1 · **Fecha:** 2026-11-22
+> **Estado:** ARC-14 Fase 1 y Fase 2 · **Fecha:** 2026-11-22
 > **Alcance:** límites de Markdown, documento serializado, historial de versiones y peticiones de Aula Documentos.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
 ## 1. Resultado del inventario
 
 - Hay **cinco constantes** relacionadas, pero describen **tres fronteras distintas**: petición/almacenamiento, Markdown y documento serializado.
-- `LEGACY_MARKDOWN_MAX_LENGTH` repite el valor de `AULA_DOCUMENT_MARKDOWN_MAX_LENGTH`: **200.000**.
+- `LEGACY_MARKDOWN_MAX_LENGTH` repetía el valor de `AULA_DOCUMENT_MARKDOWN_MAX_LENGTH`: **200.000**.
 - `AULA_VERSION_STATE_MAX_LENGTH` repite el valor de `AULA_DOCUMENT_JSON_MAX_LENGTH`: **190.000**.
 - `MAX_APP_DOCUMENT_CHARS` también vale **200.000**, pero no es el mismo concepto: limita el cuerpo HTTP y el estado serializado de cualquier app nativa.
 - La validación del documento ya aplica el límite de 190.000 antes de crear una versión; el chequeo del historial es una segunda comprobación del mismo estado.
@@ -49,7 +49,7 @@ Esta frontera protege el transporte y la tabla común de cualquier app nativa. N
 - Markdown pegado o importado desde el diálogo.
 - TXT convertido a párrafos.
 - Markdown extraído de un archivo Office.
-- Markdown de Presentaciones antiguas, hoy con la copia `LEGACY_MARKDOWN_MAX_LENGTH`.
+- Markdown de Presentaciones antiguas, que usaba la copia `LEGACY_MARKDOWN_MAX_LENGTH` hasta la Fase 2.
 
 Es un límite de **entrada**. Después de convertir el Markdown, el documento resultante debe pasar el límite de 190.000. Por eso, una entrada de exactamente 200.000 caracteres puede superar la comprobación de Markdown y fallar después en la validación del documento; son dos errores distintos y deben conservarse.
 
@@ -112,12 +112,11 @@ No se creará un módulo genérico de límites: las constantes existentes ya tie
 | Petición de apps | Rechaza 200.001 bytes de estado | Falta el límite exacto y la separación de bytes/caracteres |
 | Rutas de Aula Documentos | No hay prueba específica del tamaño del cuerpo | Falta comprobar el 413 sin cambiar el contrato |
 
-## 8. Contrato para las fases siguientes
+## 8. Contrato para la Fase 3
 
-- **Fase 2:** una sola constante para Markdown; los cuatro flujos conservan sus mensajes y su comportamiento. Las pruebas deben distinguir el rechazo de la entrada Markdown del rechazo posterior del documento.
 - **Fase 3:** una sola constante para el documento serializado; el historial conserva el estado `invalid` y la restauración sigue aceptando versiones válidas. `MAX_APP_DOCUMENT_CHARS` sigue separada y sin cambios.
 - **Invariantes:** valores efectivos 200.000/190.000, comparaciones con `>`, mensajes y estados públicos, y ninguna migración ni cambio de datos.
-- **Sin cambios de producto en la Fase 1:** este documento es el contrato de las fases 2 y 3.
+- **Fase 1 y Fase 2:** el inventario y la unificación de Markdown quedaron aplicados sin cambiar el producto visible.
 
 ## 9. Baseline
 
@@ -127,3 +126,10 @@ No se creará un módulo genérico de límites: las constantes existentes ya tie
 - Hoja de cálculo: **313.034 / 315.000 B**.
 - Site: `1.1.39`.
 - Commit de apertura del roadmap: `fdc7b55`.
+
+## 10. Aplicado en la Fase 2
+
+- `markdown.ts` exporta `isAulaMarkdownTooLong()` y conserva `AULA_DOCUMENT_MARKDOWN_MAX_LENGTH` como única definición.
+- `importers.ts`, `import-formats.ts`, `office-import.ts` y `use-aula-import.ts` usan el mismo validador; se retiró `LEGACY_MARKDOWN_MAX_LENGTH`.
+- Se añadieron pruebas de límite exacto y siguiente carácter en el validador, en Presentaciones antiguas, en TXT y en Office. La comprobación de Markdown del diálogo queda cubierta por el validador compartido y el tipado de sus consumidores.
+- Los mensajes de error y los límites efectivos no cambian. Suite completa: **268 archivos / 1.776 pruebas**; `npm run check` y `app:budget` correctos.

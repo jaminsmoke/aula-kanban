@@ -3,10 +3,7 @@ import {
   parseAulaDocument,
 } from "./document";
 import type { AulaDocumentImportPreview } from "./importers";
-import {
-  AULA_DOCUMENT_MARKDOWN_MAX_LENGTH,
-  markdownToDocument,
-} from "./markdown";
+import { isAulaMarkdownTooLong, markdownToDocument } from "./markdown";
 import { contentInlineText } from "./text";
 
 /** Formatos Office que se convierten en documento Aula. */
@@ -62,7 +59,7 @@ export function officeMarkdownToPreview(input: OfficeMarkdownInput): OfficeDocum
   if (!input.markdown.trim()) {
     return { ok: false, message: "El archivo de Office no contiene texto importable." };
   }
-  if (input.markdown.length > AULA_DOCUMENT_MARKDOWN_MAX_LENGTH) {
+  if (isAulaMarkdownTooLong(input.markdown)) {
     return { ok: false, message: "El texto del archivo de Office supera el tamaño permitido." };
   }
 

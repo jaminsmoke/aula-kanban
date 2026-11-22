@@ -5,7 +5,7 @@ import {
   type AulaDocument,
   type AulaDocumentStats,
 } from "./document";
-import { markdownToDocument } from "./markdown";
+import { isAulaMarkdownTooLong, markdownToDocument } from "./markdown";
 import { stripDuplicateTitleHeading } from "./title-heading";
 
 /** Apps antiguas con datos que se pueden previsualizar en Aula Documentos. */
@@ -23,8 +23,6 @@ export type AulaDocumentImportPreview = {
 export type AulaDocumentImportResult =
   | { ok: true; preview: AulaDocumentImportPreview }
   | { ok: false; message: string };
-
-const LEGACY_MARKDOWN_MAX_LENGTH = 200_000;
 
 /**
  * Comprueba que un valor sea un objeto simple.
@@ -129,7 +127,7 @@ export function importPresentationDocument(value: unknown): AulaDocumentImportRe
   if (!candidate || typeof candidate.markdown !== "string") {
     return { ok: false, message: "Presentaciones no contiene una presentación válida." };
   }
-  if (candidate.markdown.length > LEGACY_MARKDOWN_MAX_LENGTH) {
+  if (isAulaMarkdownTooLong(candidate.markdown)) {
     return { ok: false, message: "La presentación supera el tamaño permitido." };
   }
 

@@ -5,6 +5,7 @@ import {
   importNotesDocument,
   importPresentationDocument,
 } from "./importers";
+import { AULA_DOCUMENT_MARKDOWN_MAX_LENGTH } from "./markdown";
 
 describe("importadores de Aula Documentos", () => {
   it("convierte Notas y documentos sin modificar el original", () => {
@@ -138,7 +139,19 @@ const x = 1;
     })).toMatchObject({ ok: false });
     expect(importMermaidDocument({ code: "x".repeat(20_001) })).toMatchObject({ ok: false });
     expect(importMermaidDocument({ code: "   " })).toMatchObject({ ok: false });
-    expect(importPresentationDocument({ markdown: "x".repeat(200_001) })).toMatchObject({ ok: false });
+    expect(importPresentationDocument({
+      markdown: "x".repeat(AULA_DOCUMENT_MARKDOWN_MAX_LENGTH + 1),
+    })).toEqual({
+      ok: false,
+      message: "La presentación supera el tamaño permitido.",
+    });
+  });
+
+  it("acepta el límite exacto de Markdown antiguo", () => {
+    const result = importPresentationDocument({
+      markdown: "x".padEnd(AULA_DOCUMENT_MARKDOWN_MAX_LENGTH, " "),
+    });
+    expect(result.ok).toBe(true);
   });
 
   it("dispatchea el importador por app de origen", () => {

@@ -64,11 +64,12 @@
 
 ### Fase 2 — Una sola longitud de Markdown
 
-- [ ] Hacer que la importación antigua use `AULA_DOCUMENT_MARKDOWN_MAX_LENGTH`.
-- [ ] Retirar `LEGACY_MARKDOWN_MAX_LENGTH` y comprobar los demás consumidores.
-- [ ] Cubrir Markdown actual, Presentaciones antigua, TXT y Office en el límite y por encima.
-- [ ] Conservar los mensajes y la aceptación actuales.
+- [x] Hacer que la importación antigua use `AULA_DOCUMENT_MARKDOWN_MAX_LENGTH`.
+- [x] Retirar `LEGACY_MARKDOWN_MAX_LENGTH` y comprobar los demás consumidores.
+- [x] Cubrir Markdown actual, Presentaciones antigua, TXT y Office en el límite y por encima.
+- [x] Conservar los mensajes y la aceptación actuales.
 - **Criterios:** una sola definición para la entrada Markdown y pruebas de borde correctas.
+- **Cierre (2026-11-22):** `isAulaMarkdownTooLong()` centraliza la comprobación; la importación antigua, TXT, Office y el diálogo de Markdown la reutilizan. Retirada `LEGACY_MARKDOWN_MAX_LENGTH`. Pruebas de límite exacto y siguiente carácter; mensajes sin cambios. Suite **268 archivos / 1.776 pruebas**.
 
 ### Fase 3 — Un solo tamaño de documento serializado
 
@@ -97,5 +98,6 @@
 
 - 2026-11-22: **Roadmap abierto.** ARC-14 es la siguiente candidata recomendada del backlog; queda DEV-01. Se empieza por el inventario de límites y consumidores. Sin cambios de producto en esta apertura.
 - 2026-11-22: **Fase 1 completada.** Inventario en [`limites-documentales.md`](limites-documentales.md): cinco constantes y tres fronteras; dos duplicados (`LEGACY_MARKDOWN_MAX_LENGTH` y `AULA_VERSION_STATE_MAX_LENGTH`). Se conserva separado `MAX_APP_DOCUMENT_CHARS`. Sin cambios de producto.
+- 2026-11-22: **Fase 2 completada.** `isAulaMarkdownTooLong()` centraliza la comprobación; retirada `LEGACY_MARKDOWN_MAX_LENGTH`. Pruebas de borde en Markdown, Presentaciones, TXT y Office; mensajes sin cambios. Suite **268 / 1.776**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

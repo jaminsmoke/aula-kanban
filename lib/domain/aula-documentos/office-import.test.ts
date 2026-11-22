@@ -95,11 +95,21 @@ describe("importación de Markdown desde Office", () => {
     const empty = officeMarkdownToPreview({ format: "docx", fileName: "vacio.docx", markdown: "  " });
     expect(empty).toEqual({ ok: false, message: "El archivo de Office no contiene texto importable." });
 
+    const atLimit = officeMarkdownToPreview({
+      format: "docx",
+      fileName: "limite.docx",
+      markdown: `${" ".repeat(AULA_DOCUMENT_MARKDOWN_MAX_LENGTH - 1)}x`,
+    });
+    expect(atLimit.ok).toBe(true);
+
     const large = officeMarkdownToPreview({
       format: "docx",
       fileName: "grande.docx",
       markdown: "x".repeat(AULA_DOCUMENT_MARKDOWN_MAX_LENGTH + 1),
     });
-    expect(large.ok).toBe(false);
+    expect(large).toEqual({
+      ok: false,
+      message: "El texto del archivo de Office supera el tamaño permitido.",
+    });
   });
 });

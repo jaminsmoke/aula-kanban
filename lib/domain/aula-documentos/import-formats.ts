@@ -5,7 +5,7 @@ import {
   type AulaDocument,
 } from "./document";
 import type { AulaDocumentImportResult } from "./importers";
-import { AULA_DOCUMENT_MARKDOWN_MAX_LENGTH } from "./markdown";
+import { isAulaMarkdownTooLong } from "./markdown";
 
 const TEXT_WARNING = "El texto se importa como párrafos; no se interpreta formato.";
 
@@ -16,7 +16,7 @@ const TEXT_WARNING = "El texto se importa como párrafos; no se interpreta forma
  * @returns La vista previa validada o un error legible.
  */
 export function importPlainTextDocument(source: string, titleFallback = "Texto importado"): AulaDocumentImportResult {
-  if (source.length > AULA_DOCUMENT_MARKDOWN_MAX_LENGTH) {
+  if (isAulaMarkdownTooLong(source)) {
     return { ok: false, message: "El texto supera el tamaño permitido." };
   }
   const lines = source

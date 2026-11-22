@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import {
-  AULA_DOCUMENT_MARKDOWN_MAX_LENGTH,
+  isAulaMarkdownTooLong,
   markdownToDocument,
 } from "../../../../../lib/domain/aula-documentos/markdown";
 import {
@@ -45,7 +45,7 @@ function previewMarkdown(
   titleFallback: string,
   sourceName: string | null,
 ): MarkdownPreviewResult {
-  if (source.length > AULA_DOCUMENT_MARKDOWN_MAX_LENGTH) {
+  if (isAulaMarkdownTooLong(source)) {
     return { ok: false, message: "El Markdown supera el tamaño permitido." };
   }
   const converted = markdownToDocument(source, {

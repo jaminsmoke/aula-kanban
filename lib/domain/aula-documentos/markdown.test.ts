@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { AULA_DOCUMENT_SCHEMA_VERSION, parseAulaDocument, type AulaDocument } from "./document";
-import { documentToMarkdown, documentToMarkdownExport, markdownToDocument } from "./markdown";
+import {
+  AULA_DOCUMENT_MARKDOWN_MAX_LENGTH,
+  documentToMarkdown,
+  documentToMarkdownExport,
+  isAulaMarkdownTooLong,
+  markdownToDocument,
+} from "./markdown";
 
 const source: AulaDocument = {
   schemaVersion: AULA_DOCUMENT_SCHEMA_VERSION,
@@ -176,5 +182,12 @@ describe("Markdown de Aula Documentos", () => {
       ],
     });
     expect(blocks[1]).toEqual({ type: "horizontalRule" });
+  });
+});
+
+describe("límite de entrada Markdown", () => {
+  it("acepta el límite exacto y rechaza el carácter siguiente", () => {
+    expect(isAulaMarkdownTooLong("x".repeat(AULA_DOCUMENT_MARKDOWN_MAX_LENGTH))).toBe(false);
+    expect(isAulaMarkdownTooLong("x".repeat(AULA_DOCUMENT_MARKDOWN_MAX_LENGTH + 1))).toBe(true);
   });
 });

@@ -19,6 +19,15 @@ export type MarkdownExportResult = {
 /** Límite de entrada para Markdown. */
 export const AULA_DOCUMENT_MARKDOWN_MAX_LENGTH = 200_000;
 
+/**
+ * Indica si una entrada Markdown supera el límite compartido.
+ * @param value - Texto Markdown que se va a importar.
+ * @returns `true` cuando la longitud supera el límite.
+ */
+export function isAulaMarkdownTooLong(value: string): boolean {
+  return value.length > AULA_DOCUMENT_MARKDOWN_MAX_LENGTH;
+}
+
 /** Opciones de conversión. */
 export type MarkdownDocumentOptions = {
   /** Convierte `---` en saltos de diapositiva en vez de reglas horizontales. */

@@ -19,6 +19,10 @@ describe("importación de TXT y JSON", () => {
 
   it("rechaza texto vacío o demasiado grande", () => {
     expect(importPlainTextDocument(" \n\n ")).toEqual({ ok: false, message: "El texto está vacío." });
+    expect(importPlainTextDocument("\n".repeat(AULA_DOCUMENT_MARKDOWN_MAX_LENGTH))).toEqual({
+      ok: false,
+      message: "El texto está vacío.",
+    });
     expect(importPlainTextDocument("x".repeat(AULA_DOCUMENT_MARKDOWN_MAX_LENGTH + 1))).toEqual({
       ok: false,
       message: "El texto supera el tamaño permitido.",
