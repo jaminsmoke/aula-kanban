@@ -1,6 +1,6 @@
 # Integración entre Hoja de cálculo y Aula Documentos
 
-> **Estado:** ARC-10, Fases 1–4 · **Fecha:** 2026-11-21
+> **Estado:** ARC-10 cerrado · **Fecha:** 2026-11-21
 > **Alcance:** traslado unidireccional de una selección de Hoja de cálculo a una tabla de Aula Documentos.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -152,8 +152,8 @@ El pegado dentro de una tabla existente no forma parte del contrato inicial; la 
 
 - Arquitectura: **461 archivos / 1.154 imports**.
 - Suite: **268 archivos / 1.769 pruebas**.
-- Aula Documentos: **386.260 / 387.000 B**.
-- Hoja de cálculo: **311.063 / 315.000 B**.
+- Aula Documentos: **386.491 / 387.000 B**.
+- Hoja de cálculo: **312.511 / 315.000 B**.
 - Site: `1.1.38`.
 
 ## 10. Aplicado en la Fase 2
@@ -183,3 +183,12 @@ El pegado dentro de una tabla existente no forma parte del contrato inicial; la 
 - La verificación detectó y corrigió un fallo de lectura de la selección: `selectionClipboard()` usa ahora `selectedRange` y `getValueFromCoords`, no `getData(true, true)`.
 - La tabla se revisó en 390, 1024 y 1366 px sin desbordamiento horizontal. La prueba bloqueó los guardados y recargó el documento para no persistir datos de prueba.
 - Pruebas de Aula: **54 archivos / 5.348 líneas → límite 54 / 5.400**; Hoja **6 / 615 → 6 / 650**; suite **268 / 1.769**; arquitectura **461 / 1.154**.
+
+## 13. Cierre
+
+- Hoja de cálculo y Aula Documentos siguen siendo apps independientes; el flujo es unidireccional y no crea una API ni un esquema nuevo.
+- Se copian valores visibles, no fórmulas ni estilos; la primera fila no se interpreta como cabecera.
+- Los límites de Aula se validan antes de copiar y el pegado nativo se verificó en navegador real.
+- No se retira Hoja de cálculo ni se modifica su guardado, su carga o su exportación CSV.
+- `npm run check`, suite, build, `app:budget`, `perf:budget` y `perf:office` quedan correctos; el Site permanece en `1.1.38`.
+- Roadmap archivado en [`historial/roadmap-arc-10.md`](../historial/roadmap-arc-10.md).

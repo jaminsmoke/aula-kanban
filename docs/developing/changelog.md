@@ -1,8 +1,40 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-10 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-21 — Roadmap ARC-10 — Integrar Hoja de cálculo con Aula Documentos
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Hoja de cálculo incorpora **Copiar tabla**: convierte una selección en una tabla HTML y un TSV de respaldo, o en texto si solo hay una celda.
+- La copia conserva valores visibles, celdas vacías, forma rectangular y saltos de línea; descarta fórmulas, referencias A1, estilos, celdas combinadas y vinculación viva.
+- Se validan los límites de Aula antes de copiar: 50 filas, 20 columnas y 400 celdas. El TSV protege fórmulas y normaliza tabuladores y saltos.
+- Si el navegador no permite `ClipboardItem`, la acción copia el texto y lo avisa; los errores de permiso o de selección se muestran en el estado existente.
+- Aula Documentos recibe la tabla con su parser nativo, sin código nuevo de recepción, sin tocar el pegado de imágenes ni el autosave.
+- La verificación detectó y corrigió un fallo de lectura de la selección: `selectionClipboard()` usa `selectedRange` y `getValueFromCoords`.
+- La acción sigue disponible en solo lectura; no se añaden permisos, rutas, esquema, MCP ni cambios de versión.
+- Contrato en [`integracion-hoja-aula.md`](integracion-hoja-aula.md).
+
+### Verificación
+
+- `npm run check`: correcto.
+- Arquitectura: **461 archivos / 1.154 imports / 0 problemas**.
+- Suite completa: **268 archivos / 1.769 pruebas**.
+- Aula Documentos: **54 / 5.348 → 54 / 5.400** pruebas; Hoja de cálculo **6 / 615 → 6 / 650**.
+- Build de Aula Documentos: **386.491 / 387.000 B**; Hoja de cálculo: **312.511 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos; Office **196.481 / 210.000 B**.
+- Copia y pegado reales comprobados en navegador; tabla revisada a **390, 1024 y 1366 px** sin desbordamiento horizontal.
+- El Site sigue en `1.1.38`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-10 archivado en [`historial/roadmap-arc-10.md`](../historial/roadmap-arc-10.md). El backlog queda con **1 entrada** (DEV-01). `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 
