@@ -107,16 +107,48 @@ describe("SettingsView", () => {
     expect(screen.queryByRole("button", { name: /Volver a Clase/ })).toBeNull();
   });
 
-  it("vuelve a Cuenta si una sección restringida se abre sin permiso", async () => {
+  it("conserva la sección y espera la comprobación antes de redirigir", async () => {
     const onSection = vi.fn();
     mockRequests();
     window.history.replaceState({}, "", "/?project=p1&view=ajustes&section=almacenamiento");
+
+    const view = render(<SettingsView {...props} projectsLoaded={false} owner={false} admin={false} section="almacenamiento" onSection={onSection} />);
+
+    expect(screen.getByRole("status").textContent).toContain("Comprobando permisos…");
+    expect(screen.queryByRole("heading", { name: "Almacenamiento de archivos" })).toBeNull();
+    expect(onSection).not.toHaveBeenCalled();
+    expect(window.location.search).toBe("?project=p1&view=ajustes&section=almacenamiento");
+
+    view.rerender(<SettingsView {...props} projectsLoaded owner={false} admin={false} section="almacenamiento" onSection={onSection} />);
+    await waitFor(() => expect(onSection).toHaveBeenCalledWith("cuenta"));
+    expect(window.location.search).toBe("?project=p1&view=ajustes");
+  });
+
+  it("mantiene una sección restringida al terminar la comprobación con acceso", async () => {
+    mockRequests();
+    window.history.replaceState({}, "", "/?project=p1&view=ajustes&section=almacenamiento");
+    const onSection = vi.fn();
+
+    const view = render(<SettingsView {...props} projectsLoaded={false} owner admin={false} section="almacenamiento" onSection={onSection} />);
+    expect(screen.getByRole("status").textContent).toContain("Comprobando permisos…");
+
+    view.rerender(<SettingsView {...props} projectsLoaded owner admin={false} section="almacenamiento" onSection={onSection} />);
+
+    await waitFor(() => expect(screen.getByRole("heading", { name: "Almacenamiento de archivos" })).toBeTruthy());
+    expect(onSection).not.toHaveBeenCalled();
+    expect(window.location.search).toBe("?project=p1&view=ajustes&section=almacenamiento");
+  });
+
+  it("vuelve a Cuenta si una sección restringida se abre sin permiso", async () => {
+    const onSection = vi.fn();
+    mockRequests();
+    window.history.replaceState({}, "", "/?project=p1&view=ajustes&section=almacenamiento&from=correo");
 
     render(<SettingsView {...props} owner={false} admin={false} section="almacenamiento" onSection={onSection} />);
 
     expect(screen.getByRole("heading", { name: "Cuenta" })).toBeTruthy();
     await waitFor(() => expect(onSection).toHaveBeenCalledWith("cuenta"));
-    expect(window.location.search).toBe("?project=p1&view=ajustes");
+    expect(window.location.search).toBe("?project=p1&view=ajustes&from=correo");
   });
 
   it("vuelve a Cuenta si Permisos se abre sin permiso", async () => {

@@ -56,11 +56,12 @@
 
 ### Fase 1 — Contrato de acceso y sección solicitada
 
-- [ ] Definir `accessReady` y la diferencia entre «comprobando» y «sin permiso».
-- [ ] Mantener la sección solicitada durante la comprobación.
-- [ ] Fijar la redirección solo tras acceso confirmado y sin acceso.
-- [ ] Definir la URL canónica al redirigir y conservar parámetros ajenos.
+- [x] Definir `accessChecking`/`accessDenied` y la diferencia entre «comprobando» y «sin permiso».
+- [x] Mantener la sección solicitada durante la comprobación.
+- [x] Fijar la redirección solo tras acceso confirmado y sin acceso.
+- [x] Definir la URL canónica al redirigir y conservar parámetros ajenos.
 - **Criterios:** una recarga autorizada no pierde la sección; una cuenta sin acceso no redirige antes de saberlo.
+- **Cierre Fase 1 (2026-11-22):** `SettingsView` distingue comprobación y denegación; conserva la sección y la URL hasta `projectsLoaded`, muestra un estado de comprobación y no monta el panel restringido. Tests de Ajustes **10**; `npm run check` correcto; arquitectura **463 / 1.166**; Tablero **32 / 2.649** y CSS **12 / 1.555**.
 
 ### Fase 2 — Implementación en SettingsView
 

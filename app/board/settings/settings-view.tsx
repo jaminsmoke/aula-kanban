@@ -43,6 +43,11 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, guest
   const privileged = owner || admin;
   const restricted = section === "administradores" || section === "permisos" || section === "almacenamiento"
     || (guest && section === "tokens");
+  // Mientras la carga de proyectos no ha confirmado el rol, una sección
+  // restringida no es todavía un acceso denegado: se conserva la solicitud y
+  // solo se redirige cuando el acceso ya está resuelto.
+  const accessChecking = restricted && !projectsLoaded;
+  const accessDenied = restricted && projectsLoaded && !privileged;
   const sections: WorkspaceItem<SettingsSection>[] = [
     { id: "cuenta", label: "Cuenta", icon: UserRound },
     { id: "sitio", label: "Tu Site", icon: Globe },
@@ -56,10 +61,10 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, guest
     ] : []),
   ];
   const visibleSections = guest ? sections.filter((item) => item.id !== "tokens") : sections;
-  const active = !privileged && restricted ? "cuenta" : section;
+  const active = accessDenied ? "cuenta" : section;
 
   useEffect(() => {
-    if (privileged || !restricted) return;
+    if (!accessDenied) return;
     // Quita la sección restringida sin añadir una entrada al historial:
     // el setter normal de la URL usa pushState y rompería atrás/adelante.
     const url = new URL(window.location.href);
@@ -67,12 +72,14 @@ export default function SettingsView({ user, projectsLoaded, owner, admin, guest
     url.searchParams.delete("section");
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
     setSection("cuenta");
-  }, [privileged, restricted, setSection]);
+  }, [accessDenied, setSection]);
 
   return (
     <WorkspaceLayout title="Ajustes" label="Secciones de ajustes" items={visibleSections} active={active} onSelect={setSection}>
       <div className="settings-content">
-        {active === "cuenta" ? (
+        {accessChecking ? (
+          <div className="settings-access-loading" role="status">Comprobando permisos…</div>
+        ) : active === "cuenta" ? (
           <SettingsAccount user={user} projectsLoaded={projectsLoaded} owner={owner} admin={admin} activeProject={activeProject} />
         ) : active === "sitio" ? (
           <SettingsSite onRemix={onRemix} />
