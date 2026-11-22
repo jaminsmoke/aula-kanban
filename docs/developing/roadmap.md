@@ -52,11 +52,12 @@
 
 ### Fase 1 — Reproducción y contrato de apertura
 
-- [ ] Reproducir la secuencia: lista vacía, creación inicial en curso y pulsación de «Nuevo».
-- [ ] Fijar el contrato de estados: carga, preparación, vacío real, error y reintento.
-- [ ] Confirmar que el primer documento se conserva automáticamente y que «Nuevo» crea uno solo después.
-- [ ] Registrar los casos de prueba y el baseline sin cambiar producto.
+- [x] Reproducir la secuencia: lista vacía, creación inicial en curso y pulsación de «Nuevo».
+- [x] Fijar el contrato de estados: carga, preparación, vacío real, error y reintento.
+- [x] Confirmar que el primer documento se conserva automáticamente y que «Nuevo» crea uno solo después.
+- [x] Registrar los casos de prueba y el baseline sin cambiar producto.
 - **Criterios:** reproducción determinista, contrato claro y decisiones de estados aprobadas.
+- **Cierre (2026-11-22):** reproducida la carrera con una prueba temporal retirada: GET vacío + POST inicial pendiente + «Nuevo» envía dos POST. Contrato en [`suite-vacia.md`](suite-vacia.md): conservar la creación automática, mostrar preparación, bloquear «Nuevo», priorizar error y reintentar. Sin cambios de producto.
 
 ### Fase 2 — Preparación inicial y precedencia del error
 
@@ -92,5 +93,6 @@
 ## 7. Notas de sesión
 
 - 2026-11-22: **Roadmap abierto.** ADOC-22 entra desde el backlog por el fallo de la suite vacía; quedan UI-12, TASK-01 y DEV-01. Se empieza por reproducir la carrera y fijar los estados. Sin cambios de producto en esta apertura.
+- 2026-11-22: **Fase 1 completada.** Carrera reproducida con una prueba temporal retirada; el GET vacío deja `loading=false` y «Nuevo» habilitado mientras el POST inicial sigue pendiente. Contrato en [`suite-vacia.md`](suite-vacia.md). Sin cambios de producto.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.
