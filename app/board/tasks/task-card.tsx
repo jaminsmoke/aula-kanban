@@ -1,10 +1,11 @@
 /* eslint-disable @next/next/no-img-element -- Las imágenes son URLs externas puestas por el usuario; next/image no puede optimizar dominios arbitrarios */
-import { CalendarDays, Flag, GripVertical } from "lucide-react";
+import { CalendarDays, Flag, GripVertical, TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import type { CSSProperties, HTMLAttributes, Ref } from "react";
 import { priorityNames } from "../../../lib/domain/task";
 import type { Task } from "../../../lib/domain/task";
 import { formatDate } from "../shared/model";
+import { isTaskOverdue } from "./task-due";
 
 /**
  * Tarjeta de una tarea en su columna Kanban.
@@ -23,6 +24,7 @@ export default function TaskCard({ task, dragging, editable, onEdit, style, node
   const [brokenImageUrl, setBrokenImageUrl] = useState<string | null>(null);
   const label = task.assignees.length ? task.assignees.map((person) => `${person.name}${person.removed ? " (eliminado)" : ""}`).join(", ") : task.assignee;
   const initials = (task.assignees[0]?.name ?? task.assignee).trim().split(/\s+/).slice(0, 2).map((part) => Array.from(part)[0]).join("").toUpperCase();
+  const overdue = isTaskOverdue(task);
   return (
     <button type="button" ref={nodeRef} style={style} className={dragging ? "card dragging" : "card"} onClick={onEdit} title={editable ? "Abrir tarea" : "Ver tarea (solo lectura)"}>
       {task.imageUrl && task.imageUrl !== brokenImageUrl && <img className="card-image" src={task.imageUrl} alt="" loading="lazy" onError={() => setBrokenImageUrl(task.imageUrl)} />}
@@ -34,6 +36,7 @@ export default function TaskCard({ task, dragging, editable, onEdit, style, node
         </span>
       </span>
       <strong>{task.title}</strong>
+      {overdue && <span className="overdue-badge"><TriangleAlert size={12} aria-hidden /> Vencida</span>}
       {task.description && <span className="card-description">{task.description}</span>}
       {!task.assignees.length && task.assignee.trim() && task.assignee.trim().toLocaleLowerCase("es") !== "por definir" && <span className="legacy-assignee">Responsable sin vincular</span>}
       {(label || task.dueDate) && (

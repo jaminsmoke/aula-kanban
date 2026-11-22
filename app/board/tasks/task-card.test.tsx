@@ -37,6 +37,17 @@ describe("TaskCard", () => {
     expect(screen.getByText("Investigar placas").closest("button")?.title).toBe("Abrir tarea");
   });
 
+  it("marca solo las tareas pendientes vencidas", () => {
+    const { rerender, handlers } = renderCard({ dueDate: "2020-01-01", status: "pending" });
+    expect(screen.getByText("Vencida")).toBeTruthy();
+
+    rerender(<TaskCard task={{ ...task, dueDate: "2020-01-01", status: "done" }} dragging={false} editable {...handlers} />);
+    expect(screen.queryByText("Vencida")).toBeNull();
+
+    rerender(<TaskCard task={{ ...task, dueDate: "", status: "pending" }} dragging={false} editable {...handlers} />);
+    expect(screen.queryByText("Vencida")).toBeNull();
+  });
+
   it("abre la tarea al pulsar la tarjeta", () => {
     const { handlers } = renderCard();
 

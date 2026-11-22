@@ -61,13 +61,14 @@ function Lane({ status, cards, destination, isGuest, filtered, tasksNull, loadEr
  * @returns La vista completa del tablero.
  */
 export default function KanbanView({
-  tasks, visible, students, search, filter, studentFilter, onSearch, onFilter, onStudentFilter, onClearFilters,
+  tasks, visible, students, ownStudent, search, filter, studentFilter, onSearch, onFilter, onStudentFilter, onClearFilters,
   loadError, onRetry, saving, isGuest, filtered, dragged, destination, canEditTask, canGrabTask, onOpenEditor,
   onDragStart, onDragOver, onDragEnd, onDragCancel, finished, total, progress,
 }: {
   tasks: Task[] | null;
   visible: Task[];
   students: Student[] | null;
+  ownStudent?: Student;
   search: string;
   filter: string;
   studentFilter: string;
@@ -127,6 +128,11 @@ export default function KanbanView({
               <option value="">Todos los alumnos</option>
               {students?.map((student) => <option key={student.section} value={student.section}>{student.displayName || student.name}</option>)}
             </select><ArrowDown size={12} aria-hidden /></label>
+            {ownStudent && (
+              <button type="button" className={`my-tasks${studentFilter === ownStudent.section ? " active" : ""}`} aria-pressed={studentFilter === ownStudent.section} onClick={() => studentFilter === ownStudent.section ? onClearFilters() : onStudentFilter(ownStudent.section)}>
+                {studentFilter === ownStudent.section ? "Todas las tareas" : "Mis tareas"}
+              </button>
+            )}
           </div>
         </div>
         {loadError && <div role="alert" className="alert">{loadError} <button type="button" className="text-button" onClick={onRetry}>Reintentar</button></div>}

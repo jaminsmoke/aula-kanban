@@ -232,6 +232,7 @@ export default function Board({ user, initial, demo = false, demoSignInHref = "/
               tasks: data.tasks,
               visible: board.visible,
               students: data.students,
+              ownStudent: data.ownStudent,
               search: board.search,
               filter: board.filter,
               studentFilter: board.studentFilter,

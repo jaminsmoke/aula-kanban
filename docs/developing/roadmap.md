@@ -67,11 +67,12 @@
 
 ### Fase 2 — Acceso directo e indicador visual
 
-- [ ] Añadir **Mis tareas** a la barra de filtros de Clase > Tareas.
-- [ ] Aplicar y quitar el filtro de la ficha propia en un paso.
-- [ ] Marcar las tareas vencidas con texto e icono y contraste suficiente.
-- [ ] Mantener el aviso accesible y el responsive.
+- [x] Añadir **Mis tareas** a la barra de filtros de Clase > Tareas.
+- [x] Aplicar y quitar el filtro de la ficha propia en un paso.
+- [x] Marcar las tareas vencidas con texto e icono y contraste suficiente.
+- [x] Mantener el aviso accesible y el responsive.
 - **Criterios:** un clic muestra las tareas propias; otro devuelve a todas; las vencidas se reconocen sin depender del color.
+- **Cierre Fase 2 (2026-11-22):** `KanbanView` muestra **Mis tareas** solo con `ownStudent`, alterna a **Todas las tareas** y `TaskCard` añade el aviso **Vencida** con icono. Tests de tarjeta, tablero y contrato **16**; `npm run check` correcto; arquitectura **466 / 1.172**; Tablero **34 / 2.846 ≤ 34 / 2.900** y CSS **12 / 1.561 ≤ 13 / 1.650**.
 
 ### Fase 3 — Pruebas de acceso, permisos y vencimiento
 

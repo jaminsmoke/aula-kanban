@@ -85,6 +85,16 @@ describe("KanbanView", () => {
     expect(props.onOpenEditor).toHaveBeenCalledWith("pending");
   });
 
+  it("abre Mis tareas con la ficha propia y permite volver a todas", () => {
+    const { props } = renderBoard({ ownStudent: student });
+    fireEvent.click(screen.getByRole("button", { name: "Mis tareas" }));
+    expect(props.onStudentFilter).toHaveBeenCalledWith("s1");
+
+    const active = renderBoard({ ownStudent: student, studentFilter: "s1" });
+    fireEvent.click(screen.getByRole("button", { name: "Todas las tareas" }));
+    expect(active.props.onClearFilters).toHaveBeenCalledTimes(1);
+  });
+
   it("propaga la búsqueda y los filtros", () => {
     const { props } = renderBoard();
 
