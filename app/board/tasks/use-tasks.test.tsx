@@ -80,6 +80,33 @@ describe("useTasks", () => {
     expect(result.current.filtered).toBe(true);
   });
 
+  it("busca sin tildes y limpia búsqueda, prioridad y alumno", () => {
+    const data = makeData({
+      tasks: [
+        task({ id: "t1", title: "Geometría", priority: "high" }),
+        task({ id: "t2", title: "Investigación de placas", priority: "low" }),
+      ],
+      students: [student],
+    });
+    const { result } = renderHook(() => useTasks({ data, hasProject: true, canManage: true, isGuest: false, notify: vi.fn() }));
+
+    act(() => result.current.setSearch("geometria"));
+    expect(result.current.visible.map((item) => item.id)).toEqual(["t1"]);
+
+    act(() => result.current.setSearch("INVESTIGACIÓN"));
+    expect(result.current.visible.map((item) => item.id)).toEqual(["t2"]);
+
+    act(() => result.current.setSearch("investigacion"));
+    act(() => result.current.setFilter("low"));
+    act(() => result.current.setStudentFilter("s1"));
+    act(() => result.current.clearFilters());
+
+    expect(result.current.search).toBe("");
+    expect(result.current.filter).toBe("");
+    expect(result.current.studentFilter).toBe("");
+    expect(result.current.filtered).toBe(false);
+  });
+
   it("conserva la búsqueda, prioridad y alumno al abrir la ficha editable", () => {
     const data = makeData({
       tasks: [task({ id: "t1", title: "Investigar placas", priority: "high", assignees: [{ kind: "student", profileId: "s1", name: "Ada" }] })],

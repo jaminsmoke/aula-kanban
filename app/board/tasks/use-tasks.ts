@@ -8,6 +8,7 @@ import { blank, columns } from "../shared/model";
 import { request } from "../shared/api";
 import type { BoardData } from "../shared/use-board-data";
 import { canClaimTask, claimChanges } from "./claim";
+import { matchesSearch } from "../../../lib/domain/search";
 import type { DragEndEvent, DragOverEvent, DragStartEvent, UniqueIdentifier } from "@dnd-kit/core";
 
 /**
@@ -50,6 +51,12 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
     ...(students ?? []).map((student) => ({ kind: "student" as const, profileId: student.section, name: personLabel(student) })),
     ...(teachers ?? []).map((teacher) => ({ kind: "teacher" as const, profileId: teacher.id, name: personLabel(teacher) })),
   ];
+
+  function clearFilters() {
+    setSearch("");
+    setFilter("");
+    setStudentFilter("");
+  }
 
   function storeAssignees(next: TaskAssignee[]) {
     const linked = next.filter((person) => person.profileId);
@@ -195,18 +202,19 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
   const total = all.length;
   const finished = all.filter((task) => task.status === "done").length;
   const progress = total ? Math.round(finished / total * 100) : 0;
-  const query = search.trim().toLocaleLowerCase("es");
+  const query = search.trim();
   const selectedStudent = students?.find((student) => student.section === studentFilter);
   const visible = all.filter((task) => {
-    const haystack = [task.title, task.description, task.assignee].join(" ").toLocaleLowerCase("es");
     const matchesStudent = Boolean(selectedStudent && teachers !== null && taskBelongsTo(task, selectedStudent, allPeople));
-    return (!filter || task.priority === filter) && haystack.includes(query) && (!studentFilter || matchesStudent);
+    return (!filter || task.priority === filter)
+      && matchesSearch(query, task.title, task.description, task.assignee)
+      && (!studentFilter || matchesStudent);
   });
   const filtered = Boolean(query || filter || studentFilter);
   const claiming = canClaimTask({ task: editor?.task, ownStudent, canManage, isGuest });
 
   return {
-    search, setSearch, filter, setFilter, studentFilter, setStudentFilter, clearStudentFilter,
+    search, setSearch, filter, setFilter, studentFilter, setStudentFilter, clearStudentFilter, clearFilters,
     editor, setEditor, form, setForm, deleting, setDeleting, saving, formError,
     dragged, destination, openEditor, mutate, submit, claimTask, canGrabTask, handleDragStart, handleDragOver, handleDragEnd, handleDragCancel,
     addAssignee, removeAssignee, chooseAssignee, assignWholeClass, removeWholeClass,

@@ -56,11 +56,12 @@
 
 ### Fase 1 — Contrato de normalización y limpieza
 
-- [ ] Definir una función compartida para minúsculas, espacios exteriores y diacríticos.
-- [ ] Fijar los campos buscables de tarea y aplicación.
-- [ ] Definir cuándo aparece **Limpiar filtros** y qué restablece.
-- [ ] Fijar el texto accesible y el estado sin resultados.
+- [x] Definir una función compartida para minúsculas, espacios exteriores y diacríticos.
+- [x] Fijar los campos buscables de tarea y aplicación.
+- [x] Definir cuándo aparece **Limpiar filtros** y qué restablece.
+- [x] Fijar el texto accesible y el estado sin resultados.
 - **Criterios:** la misma consulta produce el mismo conjunto con y sin tilde; la limpieza devuelve exactamente la vista sin filtros.
+- **Cierre Fase 1 (2026-11-22):** `lib/domain/search.ts` define `normalizeSearch` y `matchesSearch`; `useTasks` busca por título, descripción y responsable sin tildes y expone `clearFilters` para búsqueda, prioridad y alumno. Tests **16**; `npm run check` correcto; arquitectura **464 / 1.167**; Tablero **32 / 2.733** y CSS **12 / 1.555**.
 
 ### Fase 2 — Implementación en tablero y Aula Store
 
