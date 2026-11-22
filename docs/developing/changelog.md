@@ -1,8 +1,35 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** TASK-03 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-22 — Roadmap TASK-03 — Avisar antes de descartar cambios en una tarea
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- La ficha de tarea guarda una instantánea del formulario al abrir y detecta cambios pendientes sin falsos positivos al deshacer.
+- Esc, el botón X y Cancelar comparten una única guarda de cierre.
+- La confirmación ofrece **Seguir editando**, que conserva el borrador y devuelve el foco al título, y **Descartar cambios**, que cierra.
+- Una ficha intacta, recién guardada o en solo lectura cierra directamente; guardar y eliminar no pasan por la guarda.
+- Sin cambios de modelo, API, permisos, datos, URLs externas ni versión del Site. No hay migración.
+
+### Verificación
+
+- `npm run check`: correcto; arquitectura **462 archivos / 1.162 imports**.
+- Suite completa: **270 archivos / 1.811 pruebas**.
+- Tablero: **31 / 2.491 → 32 / 2.600** pruebas; CSS **12 / 1.553 → 13 / 1.650**.
+- Build de Tablero: **175.920 / 176.500 B**; Aula Documentos **386.805 / 387.000 B**; Hoja **313.030 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos.
+- El Site sigue en `1.1.41`; sin publicación ni migración remota desde este roadmap.
+
+### Seguimiento
+
+- TASK-03 archivado en [`historial/roadmap-task-03.md`](../historial/roadmap-task-03.md). El backlog queda con **10 entradas**; siguiente candidato **TASK-04**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 
