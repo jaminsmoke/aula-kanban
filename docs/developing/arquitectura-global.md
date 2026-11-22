@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01, TASK-02, TASK-03, TASK-04 y PERM-04 completados; UI-15 activo · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01, TASK-02, TASK-03, TASK-04, PERM-04 y UI-15 completados; sin roadmap activo · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -220,7 +220,7 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 ## 8. Estado tras ARC-01, DEV-02 y ARC-02
 
 - `npm run arch:check` y `npm run check` están disponibles; CI ejecuta `arch:check`.
-- Resultado actual: **463 archivos de producto / 1.166 imports / 0 violaciones base / 0 ciclos / 0 problemas nuevos**.
+- Resultado actual: **464 archivos de producto / 1.168 imports / 0 violaciones base / 0 ciclos / 0 problemas nuevos**.
 - No quedan excepciones de tamaño ni dependencias `features → layout`; el layout compartido vive en `app/board/shared/ui/`.
 - El ciclo `auth ↔ demo` se eliminó con `lib/server/auth-user.ts`.
 - La configuración global de CodArch se retiró. DEV-02 quedó cerrado con el guard de MCP por repositorio, el inventario en [`mcp-tooling-audit.md`](mcp-tooling-audit.md) y la plantilla local [`mcp-project.example.json`](mcp-project.example.json).
@@ -246,4 +246,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - TASK-03 quedó cerrado y archivado en [`historial/roadmap-task-03.md`](../historial/roadmap-task-03.md): la ficha de tarea detecta cambios pendientes, comparte la guarda en Esc/X/Cancelar y conserva el borrador al elegir **Seguir editando**.
 - TASK-04 quedó cerrado y archivado en [`historial/roadmap-task-04.md`](../historial/roadmap-task-04.md): una tarea libre muestra **Asignarme** y usa la ficha propia para asignar y guardar en una sola acción, con permisos y conflicto de revisión.
 - PERM-04 quedó cerrado y archivado en [`historial/roadmap-perm-04.md`](../historial/roadmap-perm-04.md): Almacenamiento, Administradores y Permisos sobreviven a la recarga con acceso y la redirección a Cuenta espera a la comprobación cuando falta permiso.
-- UI-15 está activo en [`roadmap.md`](roadmap.md): unificar la búsqueda sin tildes en tablero y Aula Store y ofrecer **Limpiar filtros** cuando no haya coincidencias.
+- UI-15 quedó cerrado y archivado en [`historial/roadmap-ui-15.md`](../historial/roadmap-ui-15.md): tablero y Aula Store buscan sin tildes, mayúsculas ni espacios exteriores, y el tablero ofrece **Limpiar filtros** cuando no hay coincidencias.

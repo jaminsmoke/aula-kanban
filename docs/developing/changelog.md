@@ -1,8 +1,35 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** UI-15 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-22 — Roadmap UI-15 — Buscar sin depender de las tildes y limpiar filtros
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- El tablero y Aula Store comparten `normalizeSearch`/`matchesSearch`: ignoran tildes, mayúsculas y espacios exteriores.
+- La búsqueda de tareas cubre título, descripción y responsable; la de Aula Store cubre nombre, gancho, descripción, categorías y subcategoría.
+- El tablero muestra **Limpiar filtros** solo cuando la combinación actual no encuentra tareas.
+- La acción vacía búsqueda, prioridad y alumno y devuelve el foco al buscador.
+- Sin cambios de modelo, API, permisos, datos, URLs externas ni versión del Site. No hay migración.
+
+### Verificación
+
+- `npm run check`: correcto; arquitectura **464 archivos / 1.168 imports**.
+- Suite completa: **272 archivos / 1.833 pruebas**.
+- Tablero: **32 / 2.743 → 32 / 2.800** pruebas; CSS **12 / 1.556 → 13 / 1.650**.
+- Build de Tablero: **176.481 / 176.500 B**; Aula Documentos **386.818 / 387.000 B**; Hoja **313.037 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos.
+- El Site sigue en `1.1.41`; sin publicación ni migración remota desde este roadmap.
+
+### Seguimiento
+
+- UI-15 archivado en [`historial/roadmap-ui-15.md`](../historial/roadmap-ui-15.md). El backlog queda con **7 entradas**; siguiente candidato **UI-16**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 
