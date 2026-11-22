@@ -1,8 +1,36 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** PERM-04 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-22 — Roadmap PERM-04 — Conservar la sección de Ajustes al recargar
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Ajustes distingue **comprobando acceso** de **sin permiso** y conserva la sección solicitada durante la carga.
+- Almacenamiento, Administradores y Permisos sobreviven a una recarga o enlace directo con propietario o administración.
+- Sin acceso, la redirección a Cuenta ocurre después de la comprobación; la URL se canoniza y conserva parámetros ajenos.
+- El panel restringido no se monta durante la comprobación.
+- Tokens MCP en demo conserva su regla actual.
+- Sin cambios de permisos, modelo, datos, URLs externas ni versión del Site. No hay migración.
+
+### Verificación
+
+- `npm run check`: correcto; arquitectura **463 archivos / 1.166 imports**.
+- Suite completa: **271 archivos / 1.828 pruebas**.
+- Tablero: **32 / 2.711 → 32 / 2.800** pruebas; CSS **12 / 1.555 → 13 / 1.650**.
+- Build de Tablero: **176.219 / 176.500 B**; Aula Documentos **386.821 / 387.000 B**; Hoja **313.041 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos.
+- El Site sigue en `1.1.41`; sin publicación ni migración remota desde este roadmap.
+
+### Seguimiento
+
+- PERM-04 archivado en [`historial/roadmap-perm-04.md`](../historial/roadmap-perm-04.md). El backlog queda con **8 entradas**; siguiente candidato **UI-15**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 
