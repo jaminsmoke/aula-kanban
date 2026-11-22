@@ -6,6 +6,17 @@
 
 ---
 
+## 2026-11-22 — Publicación 1.1.41
+
+**Estado:** Publicada en Sites.
+
+- La apertura de Aula Documentos distingue carga, error y lista vacía. El calendario permite abrir tareas con el teclado y devuelve el foco al evento al cerrar la ficha.
+- Las tareas admiten un documento de entrega del proyecto. La ficha editable guarda el vínculo y el detalle de solo lectura ofrece abrir el documento.
+- Sites aplicó la migración aditiva `0045_thin_joseph.sql`. La portada, la documentación y la consulta de tareas mediante el plugin respondieron en producción.
+- Pasaron 1.794 pruebas, `npm run check`, el build y los presupuestos de rendimiento general y Office.
+
+---
+
 ## 2026-11-22 — Roadmap TASK-01 — Abrir un documento de entrega desde su tarea
 
 **Estado:** Completada - Sin publicación en Sites

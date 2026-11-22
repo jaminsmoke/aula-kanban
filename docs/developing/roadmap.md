@@ -8,11 +8,11 @@
 
 ## 1. Estado
 
-TASK-01 quedó cerrado y archivado en [`historial/roadmap-task-01.md`](../historial/roadmap-task-01.md). Una tarea puede vincular un documento activo del proyecto, mostrar su estado y abrir Aula Documentos con `doc` en un solo paso. La migración local está preparada y no se aplicó en remoto.
+TASK-01 quedó cerrado y archivado en [`historial/roadmap-task-01.md`](../historial/roadmap-task-01.md). Una tarea puede vincular un documento activo del proyecto y el detalle de solo lectura puede abrirlo en Aula Documentos. La migración `0045` se aplicó en local y en Sites con la publicación 1.1.41.
 
 ## 2. Siguiente paso
 
-La única entrada pendiente del backlog es **DEV-01 — Evaluar la migración de npm a pnpm**. Codex/Sites debe confirmar la migración local cuando corresponda publicar.
+La única entrada pendiente del backlog es **DEV-01 — Evaluar la migración de npm a pnpm**.
 
 ## 3. Límites de mantenimiento
 
