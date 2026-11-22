@@ -4,15 +4,26 @@
 import { CalendarDays, Flag } from "lucide-react";
 import { priorityNames } from "../../../../lib/domain/task";
 import type { Task } from "../../../../lib/domain/task";
+import type { TaskDocumentOption } from "../use-task-documents";
 import { columns, formatDate, initials } from "../../shared/model";
+
+const documentStatusLabel = {
+  archived: "Documento archivado",
+  deleted: "Documento en la papelera",
+} as const;
 
 /**
  * Detalle de una tarea en solo lectura.
- * @param props - Tarea a mostrar.
+ * @param props - Tarea a mostrar, documentos y apertura del vínculo.
  * @returns La ficha de detalle.
  */
-export default function TaskDetail({ task }: { task: Task }) {
+export default function TaskDetail({ task, documents = [], onOpenDocument }: {
+  task: Task;
+  documents?: TaskDocumentOption[];
+  onOpenDocument?: (documentId: string) => void;
+}) {
   const StatusIcon = columns[task.status].icon;
+  const document = task.documentId ? documents.find((item) => item.id === task.documentId) : undefined;
   return (
     <div className="task-detail">
       {task.imageUrl && <img className="task-detail-image" src={task.imageUrl} alt={task.title} onError={(event) => { event.currentTarget.style.display = "none"; }} />}
@@ -45,6 +56,18 @@ export default function TaskDetail({ task }: { task: Task }) {
         <div>
           <dt>Fecha de entrega</dt>
           <dd>{task.dueDate ? <time dateTime={task.dueDate}><CalendarDays size={16} /> {formatDate.format(new Date(`${task.dueDate}T12:00:00`))}</time> : "Sin fecha"}</dd>
+        </div>
+        <div>
+          <dt>Documento de entrega</dt>
+          <dd>
+            {!task.documentId ? "Sin documento" : document?.status === "active" ? (
+              onOpenDocument ? (
+                <button type="button" className="text-button" onClick={() => onOpenDocument(document.id)}>
+                  Abrir {document.title || "documento"}
+                </button>
+              ) : (document.title || "Documento vinculado")
+            ) : document ? documentStatusLabel[document.status] : "Documento no disponible"}
+          </dd>
         </div>
         <div>
           <dt>Creada por</dt>

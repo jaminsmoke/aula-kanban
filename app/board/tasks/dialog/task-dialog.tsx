@@ -11,6 +11,7 @@ import AssigneeFields from "./assignee-fields";
 import TaskDetail from "./task-detail";
 import TaskForm from "./task-form";
 import TaskWhiteboard from "./task-whiteboard";
+import type { TaskDocumentOption } from "../use-task-documents";
 import "./task-dialog.css";
 
 /**
@@ -21,6 +22,7 @@ import "./task-dialog.css";
 export default function TaskDialog({
   editor, form, onForm, formError, saving, deleting, onDeleting, canManage, canEditTask, ownStudent,
   students, teachers, claiming, onAddAssignee, onRemoveAssignee, onAssignee, onAssignClass, onRemoveClass, onSubmit, onClose, onDelete,
+  documents = [], documentsLoading = false, documentsError = "", onOpenDocument,
 }: {
   editor: { task?: Task; status: TaskFields["status"] };
   form: TaskFields;
@@ -43,6 +45,10 @@ export default function TaskDialog({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onClose: () => void;
   onDelete: (task: Task) => void;
+  documents?: TaskDocumentOption[];
+  documentsLoading?: boolean;
+  documentsError?: string;
+  onOpenDocument?: (documentId: string) => void;
 }) {
   const readOnly = Boolean(editor.task && !canEditTask(editor.task));
   const [tab, setTab] = useState<"resumen" | "asignaciones" | "pizarra">("resumen");
@@ -97,7 +103,7 @@ export default function TaskDialog({
 
   return (
     <Modal title={readOnly ? "Detalle de la tarea" : editor.task ? "Editar tarea" : "Nueva tarea"} onClose={onClose} closable={!saving} className={boardTab ? "task-dialog-board" : undefined}>
-      {readOnly && editor.task ? <TaskDetail task={editor.task} /> : <form onSubmit={handleSubmit} noValidate className={claiming ? "task-form claiming" : "task-form"}>
+      {readOnly && editor.task ? <TaskDetail task={editor.task} documents={documents} onOpenDocument={onOpenDocument} /> : <form onSubmit={handleSubmit} noValidate className={claiming ? "task-form claiming" : "task-form"}>
         {claiming && <p className="claim-banner">Asígnate esta tarea y guarda para poder editar sus detalles.</p>}
         {editor.task && <p className="intro">Creada por: {editor.task.creator || "No registrado"}</p>}
         <div className="task-tabs" role="tablist" aria-label="Secciones de la tarea">
@@ -115,6 +121,9 @@ export default function TaskDialog({
             onImageError={setImageError}
             uploading={uploading}
             onUpload={(file) => void handleUpload(file)}
+            documents={documents}
+            documentsLoading={documentsLoading}
+            documentsError={documentsError}
           />
         </div>
         <div role="tabpanel" id="panel-asignaciones" aria-labelledby="tab-asignaciones" hidden={tab !== "asignaciones"}>

@@ -1,6 +1,6 @@
 # Documento de entrega vinculado a una tarea
 
-> **Estado:** TASK-01 Fases 1-2 · **Fecha:** 2026-11-22
+> **Estado:** TASK-01 Fases 1-3 · **Fecha:** 2026-11-22
 > **Alcance:** modelo, migración local, API de tareas, permisos y navegación a Aula Documentos.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -113,3 +113,12 @@ La implementación concreta se valida en la Fase 3; no se crea una ruta paralela
 - La decoración de tareas devuelve siempre `documentId` (o `null`).
 - Suite completa **268 archivos / 1.789 pruebas**; `npm run check` correcto.
 - La migración no se ha aplicado en remoto; queda para la verificación de Codex/Sites.
+
+## 11. Aplicado en la Fase 3
+
+- `useTaskDocuments` carga una sola vez los documentos activos, archivados y eliminados del proyecto al abrir la ficha.
+- El formulario ofrece los documentos activos y conserva visible un vínculo archivado, eliminado o ausente.
+- El detalle muestra «Abrir …» para un documento activo y el estado claro para los demás casos.
+- El tablero escribe `doc` antes de abrir Aula Documentos en Tienda; `buildBoardUrl` conserva ese parámetro desconocido.
+- La apertura respeta el proyecto y la sesión; no se añade una ruta de documento paralela.
+- Suite completa **269 archivos / 1.794 pruebas**; arquitectura **462 / 1.159**; `npm run check` y `app:budget` correctos.

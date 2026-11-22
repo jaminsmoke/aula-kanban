@@ -132,6 +132,8 @@ describe("buildBoardUrl", () => {
 
   it("conserva parámetros desconocidos", () => {
     expect(buildBoardUrl("?project=p1&origen=correo", { ...defaults, view: "administracion", administracionSection: "profesores" })).toBe("?project=p1&origen=correo&view=administracion&section=profesores");
+    expect(buildBoardUrl("?project=p1&doc=doc1", { ...defaults, view: "administracion", administracionSection: "tienda", app: "aula-documentos" }))
+      .toBe("?project=p1&doc=doc1&view=administracion&section=tienda&app=aula-documentos");
   });
 
   it("hace roundtrip con parseBoardUrl, incluido el alias de Tienda", () => {

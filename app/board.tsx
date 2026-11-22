@@ -16,6 +16,7 @@ import { useInvitations } from "./board/projects/use-invitations";
 import { useBoardData } from "./board/shared/use-board-data";
 import { useProjectActions } from "./board/projects/use-project-actions";
 import { useTasks } from "./board/tasks/use-tasks";
+import { useTaskDocuments } from "./board/tasks/use-task-documents";
 import { useStudents } from "./board/people/students/use-students";
 import { useBoardUrlState } from "./board/shared/use-board-url";
 import type { BoardUrlState } from "./board/shared/board-url";
@@ -32,7 +33,7 @@ export default function Board({ user, initial, demo = false, demoSignInHref = "/
   const invitations = useInvitations();
   const data = useBoardData(projectState.activeProject);
   const actions = useProjectActions({ projects: projectState.projects, projectId: projectState.projectId });
-  const { view, setView, classSection, setClassSection, settingsSection, setSettingsSection, administracionSection, setAdministracionSection } = useBoardUrlState(initial);
+  const { view, setView, classSection, setClassSection, settingsSection, setSettingsSection, administracionSection, setAdministracionSection, setApp } = useBoardUrlState(initial);
   const [studentName, setStudentName] = useState<string | null>(null);
   const [studentLayout, setStudentLayout] = useState<"grid" | "list">("grid");
   const [notice, setNotice] = useState("");
@@ -42,8 +43,23 @@ export default function Board({ user, initial, demo = false, demoSignInHref = "/
   const canManage = activeProject?.role === "owner" || activeProject?.role === "admin" || activeProject?.role === "teacher";
   const isGuest = activeProject?.role === "guest";
   const board = useTasks({ data, hasProject: Boolean(activeProject), canManage, isGuest, notify: setNotice });
+  const taskDocuments = useTaskDocuments(projectState.projectId, Boolean(board.editor));
   const people = useStudents({ data, openStudent: setStudentName, onStudentRemoved: board.clearStudentFilter, notify: setNotice });
   const preselectedStudent = useRef<string | null>(null);
+
+  /**
+   * Abre Aula Documentos en el documento vinculado desde la ficha de tarea.
+   * @param documentId - Documento de la suite que se quiere seleccionar.
+   */
+  function openTaskDocument(documentId: string) {
+    board.setEditor(null);
+    const url = new URL(window.location.href);
+    url.searchParams.set("doc", documentId);
+    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    setView("administracion");
+    setAdministracionSection("tienda");
+    setApp("aula-documentos");
+  }
 
   // El alumnado entra en Administración > Alumnos con su propia ficha abierta.
   // Se hace una vez por proyecto y ficha: volver a la lista no la reabre.
@@ -234,6 +250,10 @@ export default function Board({ user, initial, demo = false, demoSignInHref = "/
         onSubmit={board.submit}
         onClose={() => { if (!data.writingRef.current) board.setEditor(null); }}
         onDelete={(task) => void board.mutate("DELETE", { id: task.id, revision: task.revision }, "Tarea eliminada.", true)}
+        documents={taskDocuments.documents}
+        documentsLoading={taskDocuments.loading}
+        documentsError={taskDocuments.error}
+        onOpenDocument={openTaskDocument}
       />}
 
       {people.studentForm && <StudentFormDialog

@@ -75,11 +75,12 @@
 
 ### Fase 3 — Ficha, selector y apertura
 
-- [ ] Añadir el selector de documentos activos a la ficha de tarea.
-- [ ] Mostrar el documento vinculado y su estado en el detalle.
-- [ ] Abrir Aula Documentos con `doc` en un solo paso y volver a la tarea.
-- [ ] Cubrir tarea propia, asignada, docente, lectura y documento archivado/eliminado.
+- [x] Añadir el selector de documentos activos a la ficha de tarea.
+- [x] Mostrar el documento vinculado y su estado en el detalle.
+- [x] Abrir Aula Documentos con `doc` en un solo paso y volver a la tarea.
+- [x] Cubrir tarea propia, asignada, docente, lectura y documento archivado/eliminado.
 - **Criterios:** flujo completo desde la tarea sin copiar URLs y estados claros.
+- **Cierre (2026-11-22):** `useTaskDocuments` carga activos, archivados y eliminados; el formulario permite vincular activos y el detalle muestra estado y abre el documento. El tablero conserva `doc` al abrir Aula Documentos en Tienda. Suite **269 / 1.794**; `npm run check` y `app:budget` correctos.
 
 ### Fase 4 — Verificación y cierre
 
@@ -103,5 +104,6 @@
 - 2026-11-22: **Roadmap abierto.** TASK-01 entra desde el backlog; queda DEV-01. Se empieza por el contrato del vínculo, la migración local y la matriz de permisos. Sin cambios de producto en esta apertura.
 - 2026-11-22: **Fase 1 completada.** Contrato en [`tareas-documento.md`](tareas-documento.md): `tasks.document_id` nullable, vínculo único por proyecto, estados de documento y permisos. La migración local queda definida para la Fase 2; sin cambios de producto.
 - 2026-11-22: **Fase 2 completada.** Columna `tasks.document_id`, migración local y journal de 46 entradas. Tipo, API, decoración y persistencia admiten el vínculo; validación por proyecto y documento activo; clientes antiguos conservan el vínculo. Suite **268 / 1.789**.
+- 2026-11-22: **Fase 3 completada.** Selector de documentos activos, estados archivado/eliminado/ausente en la ficha y apertura de Aula Documentos con `doc`. El tablero conserva el documento al navegar a Tienda. Suite **269 / 1.794**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

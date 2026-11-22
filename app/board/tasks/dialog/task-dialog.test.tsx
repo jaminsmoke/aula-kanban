@@ -22,6 +22,11 @@ const task: Task = {
 const { crearMiniatura } = vi.hoisted(() => ({ crearMiniatura: vi.fn() }));
 vi.mock("../../shared/image-thumbnail", () => ({ crearMiniaturaDeArchivo: crearMiniatura }));
 
+const documents = [
+  { id: "doc1", title: "Informe", status: "active" as const },
+  { id: "doc2", title: "Informe antiguo", status: "archived" as const },
+];
+
 function renderDialog(overrides: Partial<Parameters<typeof TaskDialog>[0]> = {}) {
   const props = {
     editor: { status: "pending" as const },
@@ -58,6 +63,38 @@ describe("TaskDialog", () => {
     fireEvent.change(screen.getByPlaceholderText("¿Qué hay que hacer?"), { target: { value: "Sensores" } });
 
     expect(props.onForm).toHaveBeenCalledWith(expect.objectContaining({ title: "Sensores" }));
+  });
+
+  it("vincula un documento activo desde el formulario", () => {
+    const { props } = renderDialog({ documents });
+
+    fireEvent.change(screen.getByLabelText("Documento de entrega"), { target: { value: "doc1" } });
+
+    expect(props.onForm).toHaveBeenCalledWith(expect.objectContaining({ documentId: "doc1" }));
+  });
+
+  it("muestra un documento archivado en la ficha de lectura", () => {
+    renderDialog({
+      editor: { task: { ...task, documentId: "doc2" }, status: "pending" },
+      canEditTask: () => false,
+      documents,
+    });
+
+    expect(screen.getByText("Documento archivado")).toBeTruthy();
+  });
+
+  it("abre un documento activo desde la ficha de lectura", () => {
+    const onOpenDocument = vi.fn();
+    renderDialog({
+      editor: { task: { ...task, documentId: "doc1" }, status: "pending" },
+      canEditTask: () => false,
+      documents,
+      onOpenDocument,
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Abrir Informe" }));
+
+    expect(onOpenDocument).toHaveBeenCalledWith("doc1");
   });
 
   it("envía el formulario y muestra el error de guardado", () => {

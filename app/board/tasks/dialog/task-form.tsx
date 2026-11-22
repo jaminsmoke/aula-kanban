@@ -3,15 +3,22 @@
 
 import { priorities, priorityNames, statuses } from "../../../../lib/domain/task";
 import type { TaskFields } from "../../../../lib/domain/task";
+import type { TaskDocumentOption } from "../use-task-documents";
 import { columns, formatDate } from "../../shared/model";
 import { dateValue } from "./task-dialog-utils";
+
+const documentStatusLabel = {
+  active: "activo",
+  archived: "archivado",
+  deleted: "en la papelera",
+} as const;
 
 /**
  * Pestaña Resumen del formulario de tarea.
  * @param props - Formulario, errores, subida de imagen y cambios.
  * @returns Los campos principales de la tarea.
  */
-export default function TaskForm({ form, onForm, formError, claiming, imageError, onImageError, uploading, onUpload }: {
+export default function TaskForm({ form, onForm, formError, claiming, imageError, onImageError, uploading, onUpload, documents, documentsLoading, documentsError }: {
   form: TaskFields;
   onForm: (form: TaskFields) => void;
   formError: string;
@@ -20,7 +27,11 @@ export default function TaskForm({ form, onForm, formError, claiming, imageError
   onImageError: (message: string) => void;
   uploading: boolean;
   onUpload: (file: File | undefined) => void;
+  documents: TaskDocumentOption[];
+  documentsLoading: boolean;
+  documentsError: string;
 }) {
+  const selectedDocument = documents.find((document) => document.id === form.documentId);
   const titleError = formError === "Escribe un título para la tarea." ? formError : "";
   const duePreview = form.dueDate ? formatDate.format(new Date(`${form.dueDate}T12:00:00`)) : "Sin fecha";
   const pastDue = Boolean(form.dueDate && form.dueDate < dateValue(0));
@@ -60,6 +71,33 @@ export default function TaskForm({ form, onForm, formError, claiming, imageError
           <button type="button" className="secondary" disabled={claiming || uploading} onClick={() => document.getElementById("task-image-upload")?.click()}>{uploading ? "Subiendo…" : "Subir imagen desde el equipo"}</button>
           <span className="field-hint">Si el almacenamiento está activo, se guarda allí y se usa su URL interna.</span>
         </div>
+      </div>
+      <div className="field claim-muted">
+        <div className="field-heading">
+          <label htmlFor="task-document">Documento de entrega</label>
+          {documentsLoading ? <span className="field-count">Cargando…</span> : null}
+        </div>
+        <select
+          id="task-document"
+          disabled={claiming || documentsLoading}
+          value={form.documentId ?? ""}
+          onChange={(event) => onForm({ ...form, documentId: event.target.value || null })}
+        >
+          <option value="">Sin documento</option>
+          {documents.filter((document) => document.status === "active").map((document) => (
+            <option key={document.id} value={document.id}>{document.title || "Documento sin título"}</option>
+          ))}
+          {selectedDocument && selectedDocument.status !== "active" ? (
+            <option value={selectedDocument.id} disabled>
+              {selectedDocument.title || "Documento sin título"} ({documentStatusLabel[selectedDocument.status]})
+            </option>
+          ) : null}
+          {form.documentId && !selectedDocument ? (
+            <option value={form.documentId} disabled>Documento no disponible</option>
+          ) : null}
+        </select>
+        {documentsError ? <p className="field-error" role="alert">{documentsError}</p> : null}
+        <p className="field-hint">Vincula un documento activo del proyecto para abrirlo desde la tarea.</p>
       </div>
       <div className="field claim-muted">
         <div className="field-heading">
