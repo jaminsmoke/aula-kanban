@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19 y ADOC-20 completados; ADOC-22 activo · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; sin roadmap activo · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -239,4 +239,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - ARC-12 quedó cerrado y archivado en [`historial/roadmap-arc-12.md`](../historial/roadmap-arc-12.md): el contexto de Aula Documentos solo reenvía campos con consumidores y el modelo conserva las acciones internas.
 - ARC-13 quedó cerrado y archivado en [`historial/roadmap-arc-13.md`](../historial/roadmap-arc-13.md): las ventanas comparten la base `.app-window` sin perder `container-name`, variables locales, foco ni scroll; Calculadora ya no duplica `.edu-app` y el CSS neto baja **117 líneas**.
 - ARC-14 quedó cerrado y archivado en [`historial/roadmap-arc-14.md`](../historial/roadmap-arc-14.md): Markdown y documento serializado tienen una sola definición y un validador compartido; los valores, mensajes y estados no cambiaron.
-- ADOC-22 está activo en [`roadmap.md`](roadmap.md): aclarar la apertura de una suite vacía, evitar documentos duplicados y mostrar carga, error y reintento de forma coherente.
+- ADOC-22 quedó cerrado y archivado en [`historial/roadmap-adoc-22.md`](../historial/roadmap-adoc-22.md): la apertura de una suite vacía muestra preparación, bloquea «Nuevo», prioriza el error y permite reintentar sin duplicar documentos.

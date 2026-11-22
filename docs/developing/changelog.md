@@ -1,8 +1,35 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ADOC-22 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-22 — Roadmap ADOC-22 — Aclarar la apertura de una suite documental vacía
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- La apertura de Aula Documentos mantiene la creación automática del primer documento, pero muestra un estado de preparación y bloquea «Nuevo» mientras está en curso.
+- El estado vacío solo aparece tras una carga correcta, sin preparación ni error. Un error muestra «Reintentar» y tiene prioridad sobre el vacío.
+- El reintento vuelve a leer la lista y solo crea si sigue vacía; no duplica documentos ni relanza una creación completada.
+- Sin cambios de servidor, esquema, permisos, datos, URLs, MCP ni versión del Site.
+- Contrato en [`suite-vacia.md`](suite-vacia.md).
+
+### Verificación
+
+- `npm run check`: correcto; arquitectura **461 archivos / 1.155 imports**.
+- Suite completa: **268 archivos / 1.784 pruebas**.
+- Aula Documentos: **54 / 5.481 → 54 / 5.500** líneas de prueba; CSS **16 / 3.734 → 16 / 3.800**.
+- Build de Aula Documentos: **386.827 / 387.000 B**; Hoja de cálculo **313.044 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos.
+- El Site sigue en `1.1.40`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ADOC-22 archivado en [`historial/roadmap-adoc-22.md`](../historial/roadmap-adoc-22.md). El backlog queda con **3 entradas** (UI-12, TASK-01 y DEV-01); siguiente candidato **UI-12**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 

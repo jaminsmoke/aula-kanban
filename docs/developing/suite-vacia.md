@@ -1,6 +1,6 @@
 # Apertura de una suite documental vacía
 
-> **Estado:** ADOC-22 Fases 1-3 · **Fecha:** 2026-11-22
+> **Estado:** ADOC-22 cerrado (Fases 1-3) · **Fecha:** 2026-11-22
 > **Alcance:** carga inicial de Aula Documentos, creación automática del primer documento y estados del panel.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -71,9 +71,9 @@ No se cambia el servidor, el esquema, los permisos ni la navegación por `doc`.
 ## 6. Baseline
 
 - Arquitectura: **461 archivos / 1.155 imports / 0 problemas**.
-- Suite: **268 archivos / 1.778 pruebas**.
+- Suite: **268 archivos / 1.784 pruebas**.
 - Site: `1.1.40`.
-- Aula Documentos, build de publicación: **386.677 / 387.000 B**.
+- Aula Documentos, build final: **386.827 / 387.000 B**.
 - Commit de apertura del roadmap: `f3635fd`.
 
 ## 7. Aplicado en la Fase 2
