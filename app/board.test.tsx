@@ -3,8 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Board from "./board";
 import type { BoardUrlState } from "./board/shared/board-url";
 
-const mocks = vi.hoisted(() => ({
-  task: {
+const mocks = vi.hoisted(() => {
+  const taskA = {
     id: "t1",
     title: "Investigar placas",
     description: "",
@@ -16,10 +16,22 @@ const mocks = vi.hoisted(() => ({
     status: "pending",
     createdAt: 1,
     revision: 0,
-  },
-  openEditor: vi.fn(),
-  setEditor: vi.fn(),
-}));
+  };
+  const taskB = {
+    id: "t2",
+    title: "Preparar exposición",
+    description: "",
+    imageUrl: "",
+    assignee: "",
+    assignees: [],
+    dueDate: "",
+    priority: "normal",
+    status: "pending",
+    createdAt: 2,
+    revision: 0,
+  };
+  return { taskA, taskB, currentTask: taskA, tasks: [] as typeof taskA[], openEditor: vi.fn(), setEditor: vi.fn() };
+});
 
 vi.mock("./board/layout/header", () => ({
   default: ({ view }: { view: string }) => <header data-testid="board-header">{view}</header>,
@@ -63,7 +75,7 @@ vi.mock("./board/projects/use-invitations", () => ({
 }));
 vi.mock("./board/shared/use-board-data", () => ({
   useBoardData: () => ({
-    tasks: [],
+    tasks: mocks.tasks,
     setTasks: vi.fn(),
     students: [],
     teachers: [],
@@ -97,9 +109,9 @@ vi.mock("./board/projects/use-project-actions", () => ({
 }));
 vi.mock("./board/tasks/use-tasks", () => ({
   useTasks: () => ({
-    editor: { task: mocks.task, status: "pending" },
+    editor: { task: mocks.currentTask, status: "pending" },
     setEditor: mocks.setEditor,
-    form: mocks.task,
+    form: mocks.currentTask,
     setForm: vi.fn(),
     formError: "",
     saving: false,
@@ -162,6 +174,8 @@ const initial: BoardUrlState = {
 };
 
 beforeEach(() => {
+  mocks.currentTask = mocks.taskA;
+  mocks.tasks = [mocks.taskA];
   window.history.replaceState({}, "", "/?project=p1&section=calendario");
 });
 
@@ -179,17 +193,18 @@ describe("Board TASK-02", () => {
 
     fireEvent.click(await screen.findByRole("button", { name: "Cerrar Aula Documentos" }));
 
-    expect(mocks.openEditor).toHaveBeenCalledWith("pending", mocks.task);
+    expect(mocks.openEditor).toHaveBeenCalledWith("pending", mocks.taskA);
     await waitFor(() => {
       expect(window.location.search).not.toContain("doc=doc1");
       expect(window.location.search).toContain("section=calendario");
     });
   });
 
-  it("no duplica la vuelta a la ficha si se pulsa Abrir documento dos veces", async () => {
+  it("no duplica la vuelta a la ficha si se pulsa Abrir documento tres veces", async () => {
     render(<Board user={{ displayName: "Marta", email: "marta@example.com" }} initial={initial} />);
 
     const open = screen.getByRole("button", { name: "Abrir documento" });
+    fireEvent.click(open);
     fireEvent.click(open);
     fireEvent.click(open);
     await waitFor(() => expect(window.location.search).toContain("doc=doc1"));
@@ -197,6 +212,37 @@ describe("Board TASK-02", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Cerrar Aula Documentos" }));
 
     expect(mocks.openEditor).toHaveBeenCalledTimes(1);
-    expect(mocks.openEditor).toHaveBeenCalledWith("pending", mocks.task);
+    expect(mocks.openEditor).toHaveBeenCalledWith("pending", mocks.taskA);
+  });
+
+  it("vuelve a abrir la ficha y cierra la segunda tarea seleccionada", async () => {
+    const view = render(<Board user={{ displayName: "Marta", email: "marta@example.com" }} initial={initial} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Abrir documento" }));
+    await waitFor(() => expect(window.location.search).toContain("doc=doc1"));
+    fireEvent.click(await screen.findByRole("button", { name: "Cerrar Aula Documentos" }));
+    expect(mocks.openEditor).toHaveBeenLastCalledWith("pending", mocks.taskA);
+
+    mocks.currentTask = mocks.taskB;
+    mocks.tasks = [mocks.taskB];
+    view.rerender(<Board user={{ displayName: "Marta", email: "marta@example.com" }} initial={initial} />);
+    fireEvent.click(await screen.findByRole("button", { name: "Abrir documento" }));
+    await waitFor(() => expect(window.location.search).toContain("doc=doc1"));
+    fireEvent.click(await screen.findByRole("button", { name: "Cerrar Aula Documentos" }));
+
+    expect(mocks.openEditor).toHaveBeenLastCalledWith("pending", mocks.taskB);
+  });
+
+  it("vuelve con la revisión actual si la tarea cambió mientras Aula Documentos estaba abierto", async () => {
+    const view = render(<Board user={{ displayName: "Marta", email: "marta@example.com" }} initial={initial} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Abrir documento" }));
+    await waitFor(() => expect(window.location.search).toContain("doc=doc1"));
+
+    mocks.tasks = [{ ...mocks.taskA, status: "in_progress", revision: 2 }];
+    view.rerender(<Board user={{ displayName: "Marta", email: "marta@example.com" }} initial={initial} />);
+    fireEvent.click(await screen.findByRole("button", { name: "Cerrar Aula Documentos" }));
+
+    expect(mocks.openEditor).toHaveBeenLastCalledWith("in_progress", expect.objectContaining({ id: "t1", revision: 2 }));
   });
 });

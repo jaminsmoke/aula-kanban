@@ -74,10 +74,10 @@
 ### Fase 3 — E2e y permisos
 
 - [x] Validar con pruebas de rol: docente edita, propio y ajeno donde aplica.
-- [ ] Revisar app close, back/re-open, segunda tarea seleccionada y doble activación.
-- [ ] Comprobar protección: cambio al abrir; triple clic; cambio rápido sin duplicar.
+- [x] Revisar app close, back/re-open, segunda tarea seleccionada y doble activación.
+- [x] Comprobar protección: cambio al abrir; triple clic; cambio rápido sin duplicar.
 - **Criterios:** flujo real debe ser probado; no un test de stores mocks.
-- **Avance Fase 3 (2026-11-22):** test de `Board` cubre apertura desde Calendario, retorno por App Close y doble pulsación sin duplicar; `useTasks` cubre docente, tarea propia, tarea ajena y tarea libre. Pendiente back/re-open, segunda tarea y triple clic.
+- **Cierre Fase 3 (2026-11-22):** `Board` integration cubre Calendario, App Close, reapertura, segunda tarea, triple clic y cambio de revisión mientras Aula Documentos está abierto; al volver reabre la versión más reciente de la tarea. `useTasks` cubre docente, propia, ajena y libre. Suite `app/board`: **123 archivos / 654 pruebas**; checks y presupuestos correctos.
 
 ### Fase 4 — Verificación y cierre
 

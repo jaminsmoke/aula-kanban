@@ -90,7 +90,8 @@ export default function Board({ user, initial, demo = false, demoSignInHref = "/
     setClassSection(target.classSection);
     setAdministracionSection(target.administracionSection);
     setApp(null);
-    board.openEditor(target.status, target.task);
+    const latest = data.tasks?.find((task) => task.id === target.task.id);
+    board.openEditor(latest?.status ?? target.status, latest ?? target.task);
   }
 
   // El alumnado entra en Administración > Alumnos con su propia ficha abierta.
