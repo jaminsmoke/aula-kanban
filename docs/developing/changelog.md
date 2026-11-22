@@ -1,8 +1,35 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** TASK-01 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-22 — Roadmap TASK-01 — Abrir un documento de entrega desde su tarea
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Añadida `tasks.document_id` nullable y migración local `0045_thin_joseph.sql`; el journal queda con **46 entradas**.
+- La API y el modelo admiten `documentId` opcional, validan documentos activos del mismo proyecto y conservan el vínculo si se omite o se archiva.
+- La ficha de tarea permite vincular documentos activos y muestra estados de archivado, papelera o documento no disponible.
+- El detalle abre Aula Documentos con `doc` en un solo paso; el tablero conserva ese parámetro al navegar a Tienda.
+- Sin cambios de permisos, datos, URLs externas ni versión del Site. La migración no se aplica en remoto desde el roadmap.
+
+### Verificación
+
+- `npm run check`: correcto; arquitectura **462 archivos / 1.159 imports**.
+- Suite completa: **269 archivos / 1.794 pruebas**.
+- Tablero: **30 / 2.338 → 32 / 2.450** pruebas; CSS **12 / 1.549 → 13 / 1.650**.
+- Build de Aula Documentos: **386.826 / 387.000 B**; Hoja de cálculo **313.046 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos.
+- El Site sigue en `1.1.40`; migración local preparada, sin aplicar en remoto.
+
+### Seguimiento
+
+- TASK-01 archivado en [`historial/roadmap-task-01.md`](../historial/roadmap-task-01.md). El backlog queda con **1 entrada** (DEV-01); siguiente candidato **DEV-01**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 

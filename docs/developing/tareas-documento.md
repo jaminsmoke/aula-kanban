@@ -1,6 +1,6 @@
 # Documento de entrega vinculado a una tarea
 
-> **Estado:** TASK-01 Fases 1-3 · **Fecha:** 2026-11-22
+> **Estado:** TASK-01 cerrado (Fases 1-3) · **Fecha:** 2026-11-22
 > **Alcance:** modelo, migración local, API de tareas, permisos y navegación a Aula Documentos.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -121,4 +121,4 @@ La implementación concreta se valida en la Fase 3; no se crea una ruta paralela
 - El detalle muestra «Abrir …» para un documento activo y el estado claro para los demás casos.
 - El tablero escribe `doc` antes de abrir Aula Documentos en Tienda; `buildBoardUrl` conserva ese parámetro desconocido.
 - La apertura respeta el proyecto y la sesión; no se añade una ruta de documento paralela.
-- Suite completa **269 archivos / 1.794 pruebas**; arquitectura **462 / 1.159**; `npm run check` y `app:budget` correctos.
+- Suite completa **269 archivos / 1.794 pruebas**; arquitectura **462 / 1.159**; build Aula **386.826 B** y Hoja **313.046 B**; `npm run check`, `app:budget`, `perf:budget` y `perf:office` correctos.

@@ -1,0 +1,111 @@
+# Roadmap TASK-01 — Abrir un documento de entrega desde su tarea
+
+> **Estado:** Completado (2026-11-22) · **Origen:** TASK-01 del backlog
+> **Backlog:** 1 entrada · **Changelog:** [`changelog.md`](../developing/changelog.md)
+> **Publicación:** la despliega y verifica Codex de OpenAI; este roadmap no cambia la versión del Site.
+
+---
+
+## 1. Objetivo
+
+- [x] Permitir vincular un documento activo del proyecto desde la ficha de una tarea.
+- [x] Abrir ese documento en Aula Documentos con un solo paso, reutilizando `doc` y la navegación existentes.
+- [x] Mostrar un estado claro si el documento está archivado, eliminado o ya no existe.
+- [x] Criterio de éxito: una cuenta ajena al proyecto no puede abrir el documento, y la persona asignada o docente llega desde la tarea sin copiar URLs.
+
+## 2. Alcance
+
+**Dentro:**
+
+- Modelo de tarea y esquema para una referencia opcional a un documento de `aula_documents`.
+- Migración local del esquema, sin aplicarla en remoto desde este roadmap.
+- Validación y persistencia en la API de tareas, preservando revisiones y permisos.
+- Selector de documento activo en la ficha de tarea y estado del vínculo en el detalle.
+- Apertura de Aula Documentos con el documento seleccionado y retorno coherente a la tarea.
+- Permisos por proyecto, documento archivado/eliminado y referencia inexistente.
+
+**Fuera:**
+
+- Adjuntar archivos binarios a la tarea.
+- Permitir varios documentos por tarea.
+- Cambiar el modelo canónico de Aula Documentos o su historial.
+- Compartir documentos entre proyectos.
+- Aplicar migraciones remotas o publicar en Sites.
+- Rediseñar el editor o el tablero.
+
+## 3. Decisiones de arquitectura
+
+| Decisión | Alternativa descartada | Motivo |
+|---|---|---|
+| `tasks.document_id` opcional | Tabla intermedia de varios documentos | La tarea necesita un único documento de entrega. |
+| Referenciar `aula_documents` por `project_id + id` | Guardar una URL copiada | El identificador permite resolver estado, permisos y navegación. |
+| Resolver el documento contra la API de la suite | Guardar solo un título | El título queda obsoleto y no detecta archivado, eliminación o falta de acceso. |
+| Mantener la referencia si el documento se archiva o elimina | Borrar el vínculo automáticamente | La tarea debe explicar qué ocurrió, no perder la entrega silenciosamente. |
+| Reutilizar `doc` y la navegación de apps | Crear una ruta paralela | Ya existe un contrato de selección de documento. |
+| Migración local en este roadmap | Aplicar la migración en remoto | Codex/Sites confirma la migración y la publicación. |
+
+## 4. Punto de partida
+
+- `lib/domain/task.ts` no tiene ninguna referencia a documentos.
+- `tasks` no tiene columna de documento; el esquema parte de `db/schema.ts`.
+- La API de tareas valida campos con Zod en `app/api/tasks/route.ts` y persiste por `lib/server/tasks`.
+- La suite de Aula Documentos expone documentos activos, archivados y eliminados por proyecto.
+- La URL `doc=<id>` ya selecciona un documento al abrir Aula Documentos.
+- Baseline: arquitectura **461 archivos / 1.155 imports**; suite **268 archivos / 1.788 pruebas**; Aula **386.830 / 387.000 B**; Hoja **313.047 / 315.000 B**; Site `1.1.40`.
+
+## 5. Fases
+
+### Fase 1 — Contrato, modelo y migración
+
+- [x] Definir el campo opcional, su validación y el contrato de respuesta de tareas.
+- [x] Decidir el comportamiento para documento archivado, eliminado o inexistente.
+- [x] Preparar la migración local y confirmar que no se aplica en remoto.
+- [x] Registrar los permisos y la matriz de pruebas sin cambiar producto.
+- **Criterios:** modelo y contrato cerrados; migración local revisada; sin cambios funcionales.
+- **Cierre (2026-11-22):** contrato en [`tareas-documento.md`](../developing/tareas-documento.md). Se decide `tasks.document_id` nullable, vínculo único por tarea, validación por proyecto y conservación del vínculo si el documento se archiva o elimina. La migración local queda preparada para la Fase 2; sin cambios de producto.
+
+### Fase 2 — Persistencia y API de tareas
+
+- [x] Añadir la referencia al tipo de tarea, la escritura, la lectura y la decoración.
+- [x] Validar que el documento pertenece al mismo proyecto y que el rol puede consultarlo.
+- [x] Conservar revisiones, conflictos y compatibilidad con clientes que no envían el campo.
+- [x] Cubrir creación, edición, lectura, proyecto ajeno y documento ausente.
+- **Criterios:** persistencia atómica, sin fugas entre proyectos y tareas antiguas compatibles.
+- **Cierre (2026-11-22):** columna nullable `tasks.document_id`, migración local `0045_thin_joseph.sql` y 46 entradas de journal. La API acepta `documentId` opcional, valida documento activo del mismo proyecto, conserva el vínculo si se omite y permite desvincular con `null`. Suite **268 / 1.789**; `npm run check` correcto.
+
+### Fase 3 — Ficha, selector y apertura
+
+- [x] Añadir el selector de documentos activos a la ficha de tarea.
+- [x] Mostrar el documento vinculado y su estado en el detalle.
+- [x] Abrir Aula Documentos con `doc` en un solo paso y volver a la tarea.
+- [x] Cubrir tarea propia, asignada, docente, lectura y documento archivado/eliminado.
+- **Criterios:** flujo completo desde la tarea sin copiar URLs y estados claros.
+- **Cierre (2026-11-22):** `useTaskDocuments` carga activos, archivados y eliminados; el formulario permite vincular activos y el detalle muestra estado y abre el documento. El tablero conserva `doc` al abrir Aula Documentos en Tienda. Suite **269 / 1.794**; `npm run check` y `app:budget` correctos.
+
+### Fase 4 — Verificación y cierre
+
+- [x] Ejecutar `npm run check`, suite completa, build y presupuestos finales.
+- [x] Verificar permisos, documento archivado/eliminado y compatibilidad de tareas antiguas.
+- [x] Actualizar documentación, changelog y backlog; archivar este roadmap y reiniciar `roadmap.md`.
+- **Criterios:** flujo verificado, migración local preparada y ninguna publicación ni migración remota desde el roadmap.
+- **Cierre (2026-11-22):** `npm run check`, suite **269 / 1.794**, build y presupuestos correctos. Aula **386.826 / 387.000 B**; Hoja **313.046 / 315.000 B**. Changelog, README, arquitectura y backlog actualizados; roadmap archivado y `roadmap.md` reiniciado. Migración local `0045` no aplicada en remoto; push único a GitHub, sin Sites.
+
+## 6. Riesgos y bloqueos
+
+| Riesgo | Impacto | Mitigación |
+|---|---|---|
+| Fuga de un documento entre proyectos | Acceso indebido | Resolver siempre por `project_id` y documento del proyecto. |
+| Borrar el vínculo al archivar | Pérdida de la entrega | Conservar la referencia y mostrar el estado. |
+| Romper tareas antiguas | Fallo al editar | Campo opcional y compatibilidad con clientes sin `documentId`. |
+| Migración remota accidental | Cambio de datos no verificado | Preparar la migración local y dejar la remota a Codex/Sites. |
+| Dependencia de una URL copiada | Enlaces frágiles | Usar el identificador y la navegación `doc`. |
+
+## 7. Notas de sesión
+
+- 2026-11-22: **Roadmap abierto.** TASK-01 entra desde el backlog; queda DEV-01. Se empieza por el contrato del vínculo, la migración local y la matriz de permisos. Sin cambios de producto en esta apertura.
+- 2026-11-22: **Fase 1 completada.** Contrato en [`tareas-documento.md`](../developing/tareas-documento.md): `tasks.document_id` nullable, vínculo único por proyecto, estados de documento y permisos. La migración local queda definida para la Fase 2; sin cambios de producto.
+- 2026-11-22: **Fase 2 completada.** Columna `tasks.document_id`, migración local y journal de 46 entradas. Tipo, API, decoración y persistencia admiten el vínculo; validación por proyecto y documento activo; clientes antiguos conservan el vínculo. Suite **268 / 1.789**.
+- 2026-11-22: **Fase 3 completada.** Selector de documentos activos, estados archivado/eliminado/ausente en la ficha y apertura de Aula Documentos con `doc`. El tablero conserva el documento al navegar a Tienda. Suite **269 / 1.794**.
+- 2026-11-22: **Fase 4 completada y roadmap cerrado.** Checks, suite, build, presupuestos, documentación, changelog, README, arquitectura, backlog y archivo del roadmap. `roadmap.md` se reinicia sin roadmap activo; push único a GitHub. Migración local preparada, no aplicada en remoto ni publicada en Sites.
+- La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
+- No se publica en Sites ni se aplican migraciones remotas desde este roadmap.
