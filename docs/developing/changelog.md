@@ -1,8 +1,35 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** TASK-04 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-22 — Roadmap TASK-04 — Asignarse una tarea en un paso
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Una tarea libre muestra **Asignarme** en el aviso compacto del resumen.
+- La acción usa la ficha de alumno vinculada y guarda con la revisión actual; ya no envía el formulario vacío.
+- El envío por teclado y el botón compacto comparten `claimTask`.
+- Docente, invitado, tarea ajena y cuenta sin ficha conservan su flujo; el conflicto 409 mantiene la ficha y muestra el aviso.
+- Sin cambios de modelo, API, permisos, datos, URLs externas ni versión del Site. No hay migración.
+
+### Verificación
+
+- `npm run check`: correcto; arquitectura **463 archivos / 1.166 imports**.
+- Suite completa: **271 archivos / 1.821 pruebas**.
+- Tablero: **32 / 2.625 → 32 / 2.800** pruebas; CSS **12 / 1.554 → 13 / 1.650**.
+- Build de Tablero: **176.213 / 176.500 B**; Aula Documentos **386.819 / 387.000 B**; Hoja **313.043 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos.
+- El Site sigue en `1.1.41`; sin publicación ni migración remota desde este roadmap.
+
+### Seguimiento
+
+- TASK-04 archivado en [`historial/roadmap-task-04.md`](../historial/roadmap-task-04.md). El backlog queda con **9 entradas**; siguiente candidato **PERM-04**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 
