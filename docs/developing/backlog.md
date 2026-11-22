@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 3 entradas pendientes · siguiente candidato recomendado ARC-13
+> **Roadmap:** ARC-13 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas pendientes · siguiente candidato recomendado ARC-14
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
@@ -20,12 +20,6 @@ Se cuentan líneas físicas de archivos de texto versionados, incluidas las lín
 - El importador antiguo define `LEGACY_MARKDOWN_MAX_LENGTH` con el mismo límite de 200.000 caracteres que usa la importación actual. El historial valida el mismo estado de Aula Documentos con una segunda constante de 190.000 caracteres.
 - Revisar `importers.ts`, `markdown.ts`, `document-types.ts` y `revision.ts` para que cada límite compartido tenga una sola definición. Si dos rutas hacen la misma validación, reutilizar también su validador. Mantener diferenciados el tamaño de la petición, la longitud del Markdown y la del documento serializado.
 - Comprobar entradas justo en el límite y por encima, importaciones antiguas y restauración de versiones existentes. Mantener los límites efectivos y los errores que devuelve cada flujo.
-
-## 2026-11-22 — ARC-13 · Retirar reglas CSS duplicadas en las ventanas de apps
-
-- Calculadora carga `edu-base.css` y vuelve a declarar `.edu-app` en `calculadora.css`. Mapas, Líneas de tiempo, Tarjetas, Moléculas y Hoja de cálculo repiten la disposición inicial de ventana con variaciones locales.
-- Eliminar la regla duplicada y comprobar qué variables tienen consumidores antes de conservarlas. Revisar si las otras ventanas pueden reutilizar una misma clase base con los tokens del tema y mantener sus diferencias de contenido y desplazamiento.
-- Verificar Calculadora y Tabla periódica juntas y por separado. Revisar temas claro y oscuro, ventanas estrechas y maximizadas, foco visible y desplazamiento. Medir el CSS neto y su carga por ruta.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 

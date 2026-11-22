@@ -19,7 +19,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Sin roadmap activo; ARC-12 cerrado y archivado | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | ARC-13 activo: retirar CSS duplicado en las ventanas de apps | Secuencia de ejecución |
 | [`integracion-hoja-aula.md`](developing/integracion-hoja-aula.md) | Contrato del flujo de copia Hoja de cálculo → Aula Documentos | Referencia |
 | [`aula-documentos-modelo.md`](developing/aula-documentos-modelo.md) | Mapa de campos, hooks y consumidores del modelo de Aula Documentos | Referencia |
 | [`aula-documentos-arquitectura.md`](developing/aula-documentos-arquitectura.md) | Mapa de responsabilidades, árbol objetivo y límites de Aula Documentos | Referencia de refactor |

@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-12 completados; ADOC-18, ADOC-19 y ADOC-20 completados · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-12 completados; ADOC-18, ADOC-19 y ADOC-20 completados; ARC-13 activo · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -237,3 +237,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - ARC-10 quedó cerrado y archivado en [`historial/roadmap-arc-10.md`](../historial/roadmap-arc-10.md): copia unidireccional de una selección de Hoja de cálculo a una tabla de Aula Documentos sin retirar ninguna app.
 - ARC-11 quedó cerrado y archivado en [`historial/roadmap-arc-11.md`](../historial/roadmap-arc-11.md): la petición versionada y las transiciones de versión y carga fallida viven en `useAppDocument`, sin cambiar los contratos de las apps.
 - ARC-12 quedó cerrado y archivado en [`historial/roadmap-arc-12.md`](../historial/roadmap-arc-12.md): el contexto de Aula Documentos solo reenvía campos con consumidores y el modelo conserva las acciones internas.
+- ARC-13 está activo en [`roadmap.md`](roadmap.md): retirar reglas CSS duplicadas en las ventanas de apps sin cambiar su comportamiento.
