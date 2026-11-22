@@ -238,10 +238,7 @@ export default function Board({ user, initial, demo = false, demoSignInHref = "/
               onSearch: board.setSearch,
               onFilter: board.setFilter,
               onStudentFilter: board.setStudentFilter,
-              onClearFilters: () => {
-                board.clearFilters();
-                window.setTimeout(() => document.querySelector<HTMLInputElement>('input[aria-label="Buscar tareas"]')?.focus(), 0);
-              },
+              onClearFilters: board.clearFilters,
               loadError: data.loadError,
               onRetry: () => void data.refresh(),
               saving: board.saving,

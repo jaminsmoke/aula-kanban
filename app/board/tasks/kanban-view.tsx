@@ -97,6 +97,11 @@ export default function KanbanView({
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
+
+  function clearFilters() {
+    onClearFilters();
+    window.setTimeout(() => document.querySelector<HTMLInputElement>('input[aria-label="Buscar tareas"]')?.focus(), 0);
+  }
   return (
     <>
       <section className="hero" aria-labelledby="board-title">
@@ -128,7 +133,7 @@ export default function KanbanView({
         {filtered && visible.length === 0 && !loadError && tasks !== null && (
           <div className="filter-empty" role="status">
             <span>Sin coincidencias para los filtros actuales.</span>
-            <button type="button" className="secondary" onClick={onClearFilters}>Limpiar filtros</button>
+            <button type="button" className="secondary" onClick={clearFilters}>Limpiar filtros</button>
           </div>
         )}
         <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDragCancel={onDragCancel}>

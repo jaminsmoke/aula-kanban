@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import KanbanView from "./kanban-view";
 import type { Task } from "../../../lib/domain/task";
@@ -119,11 +119,13 @@ describe("KanbanView", () => {
     expect(screen.getAllByText("Sin coincidencias").length).toBe(4);
   });
 
-  it("limpia los filtros cuando no hay coincidencias", () => {
+  it("limpia los filtros cuando no hay coincidencias y devuelve el foco al buscador", async () => {
     const { props } = renderBoard({ visible: [], filtered: true });
+    const search = screen.getByLabelText("Buscar tareas");
 
     fireEvent.click(screen.getByRole("button", { name: "Limpiar filtros" }));
 
     expect(props.onClearFilters).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(document.activeElement).toBe(search));
   });
 });

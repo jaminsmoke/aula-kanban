@@ -74,11 +74,12 @@
 
 ### Fase 3 — Pruebas de búsqueda y estado vacío
 
-- [ ] Probar cada término con tilde y sin tilde en tablero y Aula Store.
-- [ ] Comprobar mayúsculas y espacios exteriores.
-- [ ] Probar combinaciones de búsqueda, prioridad y alumno sin coincidencias.
-- [ ] Verificar **Limpiar filtros**, foco y accesibilidad.
+- [x] Probar cada término con tilde y sin tilde en tablero y Aula Store.
+- [x] Comprobar mayúsculas y espacios exteriores.
+- [x] Probar combinaciones de búsqueda, prioridad y alumno sin coincidencias.
+- [x] Verificar **Limpiar filtros**, foco y accesibilidad.
 - **Criterios:** resultados equivalentes con y sin tilde y recuperación completa del tablero desde el aviso.
+- **Cierre Fase 3 (2026-11-22):** tests de normalización, tablero y Aula Store **32**; `Geometría`/`geometria`, mayúsculas, espacios exteriores, combinaciones vacías, **Limpiar filtros** y retorno de foco al buscador. `npm run check` correcto; arquitectura **464 / 1.168**; Tablero **32 / 2.743 ≤ 32 / 2.800** y CSS **12 / 1.556 ≤ 13 / 1.650**.
 
 ### Fase 4 — Verificación y cierre
 

@@ -73,6 +73,9 @@ describe("Aula Store", () => {
     fireEvent.change(screen.getByLabelText("Buscar aplicaciones"), { target: { value: "geometria" } });
     expect(screen.getByText("Geometría interactiva")).toBeTruthy();
 
+    fireEvent.change(screen.getByLabelText("Buscar aplicaciones"), { target: { value: "  GEOMETRÍA  " } });
+    expect(screen.getByText("Geometría interactiva")).toBeTruthy();
+
     fireEvent.change(screen.getByLabelText("Buscar aplicaciones"), { target: { value: "pizarra" } });
     fireEvent.click(screen.getByRole("button", { name: /Instaladas/ }));
     expect(screen.getByText("Excalidraw")).toBeTruthy();
