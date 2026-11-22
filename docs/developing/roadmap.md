@@ -54,15 +54,16 @@
 
 ### Fase 1 — Contrato de retorno y navegación
 
-- [ ] Documentar estado completo de retorno: view, classSection, filtros, turno/perfil y tarea.
-- [ ] Confirmar el flujo real al cerrar Aula Documentos con test o búsqueda.
-- [ ] Fijar el estado de formulario: returnTarget, barra y llamada de retorno.
-- [ ] Fijar acciones: editar/archivar deshabilitado mientras app está abierta.
+- [x] Documentar estado completo de retorno: view, classSection, filtros, turno/perfil y tarea.
+- [x] Confirmar el flujo real al cerrar Aula Documentos con test o búsqueda.
+- [x] Fijar el estado de formulario: returnTarget, barra y llamada de retorno.
+- [x] Fijar acciones: editar/archivar deshabilitado mientras app está abierta.
 - **Criterios:** returnTarget al conocerlo; acciones coherentes durante Aula Documentos.
+- **Cierre Fase 1 (2026-11-22):** `openTaskDocument` registra view/classSection/sección/tarea, `StoreDesktop` notifica App Close, `Board` devuelve a la ficha editable. Verificado: arquitectura **462 archivos / 1.160 imports**; suite afectada **26 tests**; `npm run check`, `arch:check`, `dead:check` y presupuestos correctos.
 
 ### Fase 2 — Implementación en la edición
 
-- [ ] Mostrar «Abrir documento» junto al selector si el vínculo existe y está activo.
+- [x] Mostrar «Abrir documento» junto al selector si el vínculo existe y está activo.
 - [ ] Abrir desde la ficha editable, reutilizando el mismo store/navigation.
 - [ ] Cubrir página de tareas y Calendario, profesor y alumno.
 - [ ] Conservar la vista y filtros al volver.

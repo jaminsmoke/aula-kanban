@@ -32,6 +32,7 @@ function renderDialog(overrides: Partial<Parameters<typeof TaskDialog>[0]> = {})
     editor: { status: "pending" as const },
     form: { ...blank, title: "" },
     onForm: vi.fn(),
+    onOpenDocument: vi.fn(),
     formError: "",
     saving: false,
     deleting: false,
@@ -71,6 +72,14 @@ describe("TaskDialog", () => {
     fireEvent.change(screen.getByLabelText("Documento de entrega"), { target: { value: "doc1" } });
 
     expect(props.onForm).toHaveBeenCalledWith(expect.objectContaining({ documentId: "doc1" }));
+  });
+
+  it("abre un documento activo desde la ficha editable", () => {
+    const { props } = renderDialog({ form: { ...blank, documentId: "doc1" }, documents });
+
+    fireEvent.click(screen.getByRole("button", { name: "Abrir Informe" }));
+
+    expect(props.onOpenDocument).toHaveBeenCalledWith("doc1");
   });
 
   it("muestra un documento archivado en la ficha de lectura", () => {

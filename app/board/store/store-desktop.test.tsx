@@ -29,4 +29,23 @@ describe("Tienda", () => {
     expect((await screen.findByRole("alert")).textContent).toContain("No se pudieron consultar las aplicaciones");
     expect(screen.queryByText(/Todavía no hay herramientas instaladas/)).toBeNull();
   });
+
+  it("devuelve App Close para Aula Documentos y no para otros paneles", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ apps: [{ id: "aula-documentos", status: "installed", url: null }] }));
+    vi.stubGlobal("fetch", fetchMock);
+    const onAppClose = vi.fn();
+    const { unmount } = render(<StoreDesktop role="owner" projectId="default" onAppClose={onAppClose} />);
+    fireEvent.click(await screen.findByRole("button", { name: /Aula Documentos/ }));
+    await screen.findByRole("dialog", { name: "Aula Documentos" });
+    fireEvent.click(screen.getByRole("button", { name: "Cerrar Aula Documentos" }));
+    expect(onAppClose).toHaveBeenCalledWith("aula-documentos");
+    unmount();
+    onAppClose.mockClear();
+    const second = render(<StoreDesktop role="owner" projectId="default" onAppClose={onAppClose} />);
+    fireEvent.click(await screen.findByRole("button", { name: /Aula Documentos/ }));
+    await screen.findByRole("dialog", { name: "Aula Documentos" });
+    fireEvent.click(screen.getByRole("button", { name: "Cerrar Aula Documentos" }));
+    expect(onAppClose).toHaveBeenCalledWith("aula-documentos");
+    second.unmount();
+  });
 });

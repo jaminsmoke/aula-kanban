@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01 y TASK-02 activos · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01 y TASK-02 activos; TASK-02 Fase 1 cerrada · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 

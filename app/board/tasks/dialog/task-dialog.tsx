@@ -124,6 +124,7 @@ export default function TaskDialog({
             documents={documents}
             documentsLoading={documentsLoading}
             documentsError={documentsError}
+            onOpenDocument={onOpenDocument}
           />
         </div>
         <div role="tabpanel" id="panel-asignaciones" aria-labelledby="tab-asignaciones" hidden={tab !== "asignaciones"}>

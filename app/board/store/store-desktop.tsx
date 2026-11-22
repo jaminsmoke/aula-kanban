@@ -22,7 +22,7 @@ import "./store-desktop.css";
  * @param props - Rol del usuario y proyecto activo.
  * @returns El escritorio dentro del contenido de Administración.
  */
-export default function StoreDesktop({ role, projectId }: { role: StoreRole; projectId: string }) {
+export default function StoreDesktop({ role, projectId, onAppClose }: { role: StoreRole; projectId: string; onAppClose?: (appId: string) => void }) {
   const tools = visibleTools(role);
   const [managed, setManaged] = useState<{ id: string; status: string; url: string | null; version?: string | null }[]>([]);
   const [storeOpen, setStoreOpen] = useState(false);
@@ -172,7 +172,7 @@ export default function StoreDesktop({ role, projectId }: { role: StoreRole; pro
               onMove={(position) => move(item.tool.id, position)}
               onResize={(size) => resize(item.tool.id, size)}
               onFocus={() => focus(item.tool.id)}
-              onClose={() => close(item.tool.id)}
+              onClose={() => { close(item.tool.id); onAppClose?.(item.tool.id); }}
               onMinimize={() => minimize(item.tool.id)}
               onZoom={() => zoom(item.tool.id)}
             >

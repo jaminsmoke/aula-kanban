@@ -16,10 +16,11 @@ import { useInvitations } from "./board/projects/use-invitations";
 import { useBoardData } from "./board/shared/use-board-data";
 import { useProjectActions } from "./board/projects/use-project-actions";
 import { useTasks } from "./board/tasks/use-tasks";
+import type { Task, TaskFields } from "../lib/domain/task";
 import { useTaskDocuments } from "./board/tasks/use-task-documents";
 import { useStudents } from "./board/people/students/use-students";
 import { useBoardUrlState } from "./board/shared/use-board-url";
-import type { BoardUrlState } from "./board/shared/board-url";
+import type { AdministracionSection, BoardUrlState, BoardView, ClassSection } from "./board/shared/board-url";
 
 const invitationRoleNames = { teacher: "Profesor", student: "Alumno", guest: "Invitado", admin: "Administrador" } as const;
 
@@ -46,12 +47,24 @@ export default function Board({ user, initial, demo = false, demoSignInHref = "/
   const taskDocuments = useTaskDocuments(projectState.projectId, Boolean(board.editor));
   const people = useStudents({ data, openStudent: setStudentName, onStudentRemoved: board.clearStudentFilter, notify: setNotice });
   const preselectedStudent = useRef<string | null>(null);
+  type DocumentReturnTarget = {
+    task: Task;
+    status: TaskFields["status"];
+    view: BoardView;
+    classSection: ClassSection;
+    administracionSection: AdministracionSection;
+  };
+  const returnDocumentTarget = useRef<DocumentReturnTarget | null>(null);
 
   /**
    * Abre Aula Documentos en el documento vinculado desde la ficha de tarea.
    * @param documentId - Documento de la suite que se quiere seleccionar.
    */
   function openTaskDocument(documentId: string) {
+    const editor = board.editor;
+    if (editor?.task) {
+      returnDocumentTarget.current = { task: editor.task, status: editor.status, view, classSection, administracionSection };
+    }
     board.setEditor(null);
     const url = new URL(window.location.href);
     url.searchParams.set("doc", documentId);
@@ -59,6 +72,25 @@ export default function Board({ user, initial, demo = false, demoSignInHref = "/
     setView("administracion");
     setAdministracionSection("tienda");
     setApp("aula-documentos");
+  }
+
+  /**
+   * Al cerrar Aula Documentos desde una ficha registrada, vuelve a la vista
+   * y sección de origen y reabre la ficha editable del usuario.
+   * @param appId - App cerrada (solo `aula-documentos`).
+   */
+  function returnFromDocumentApp(appId: string) {
+    const target = returnDocumentTarget.current;
+    if (appId !== "aula-documentos" || !target) return;
+    returnDocumentTarget.current = null;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("doc");
+    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    setView(target.view);
+    setClassSection(target.classSection);
+    setAdministracionSection(target.administracionSection);
+    setApp(null);
+    board.openEditor(target.status, target.task);
   }
 
   // El alumnado entra en Administración > Alumnos con su propia ficha abierta.
@@ -177,6 +209,7 @@ export default function Board({ user, initial, demo = false, demoSignInHref = "/
                 onDelete: people.openRemoveStudent,
                 onOpenTask: (task) => board.openEditor(task.status, task),
               }}
+              onAppClose={returnFromDocumentApp}
               teachers={{
                 projectId: projectState.projectId,
                 isAdmin: projectState.owner || projectState.admin,

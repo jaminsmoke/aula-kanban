@@ -18,7 +18,7 @@ const documentStatusLabel = {
  * @param props - Formulario, errores, subida de imagen y cambios.
  * @returns Los campos principales de la tarea.
  */
-export default function TaskForm({ form, onForm, formError, claiming, imageError, onImageError, uploading, onUpload, documents, documentsLoading, documentsError }: {
+export default function TaskForm({ form, onForm, formError, claiming, imageError, onImageError, uploading, onUpload, documents, documentsLoading, documentsError, onOpenDocument }: {
   form: TaskFields;
   onForm: (form: TaskFields) => void;
   formError: string;
@@ -30,12 +30,18 @@ export default function TaskForm({ form, onForm, formError, claiming, imageError
   documents: TaskDocumentOption[];
   documentsLoading: boolean;
   documentsError: string;
+  onOpenDocument?: (documentId: string) => void;
 }) {
   const selectedDocument = documents.find((document) => document.id === form.documentId);
   const titleError = formError === "Escribe un título para la tarea." ? formError : "";
   const duePreview = form.dueDate ? formatDate.format(new Date(`${form.dueDate}T12:00:00`)) : "Sin fecha";
   const pastDue = Boolean(form.dueDate && form.dueDate < dateValue(0));
-  const assigneesSummary = form.assignees.length ? form.assignees.map((person) => person.name).join(", ") : (form.assignee || "Sin asignar");
+  const assigneesSummary = form.assignees.length ? form.assignees.map((person) => person.name).join(", ") : (form.assignee || "Sin asignado");
+  const documentAction = selectedDocument && selectedDocument.status === "active"
+    ? <button type="button" className="primary" disabled={claiming || documentsLoading} onClick={() => onOpenDocument?.(selectedDocument.id)}>Abrir {selectedDocument.title || "documento"}</button>
+    : selectedDocument ? <p className="field-error" role="status">{documentStatusLabel[selectedDocument.status]}</p>
+    : form.documentId ? <p className="field-error" role="status">Documento no disponible</p>
+    : null;
 
   return (
     <>
@@ -98,6 +104,7 @@ export default function TaskForm({ form, onForm, formError, claiming, imageError
         </select>
         {documentsError ? <p className="field-error" role="alert">{documentsError}</p> : null}
         <p className="field-hint">Vincula un documento activo del proyecto para abrirlo desde la tarea.</p>
+        {documentAction}
       </div>
       <div className="field claim-muted">
         <div className="field-heading">

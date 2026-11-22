@@ -21,12 +21,13 @@ const sections: WorkspaceItem<AdministracionSection>[] = [
  * @param props - Sección activa, su setter y las props de cada vista.
  * @returns El workspace con la sección elegida.
  */
-export default function AdministrationView({ section, onSection, students, teachers, tienda }: {
+export default function AdministrationView({ section, onSection, students, teachers, tienda, onAppClose }: {
   section: AdministracionSection;
   onSection: (section: AdministracionSection) => void;
   students: ComponentProps<typeof StudentsView>;
   teachers: ComponentProps<typeof TeachersView>;
   tienda: { role: StoreRole; projectId: string };
+  onAppClose?: (appId: string) => void;
 }) {
   return (
     <WorkspaceLayout
@@ -44,7 +45,7 @@ export default function AdministrationView({ section, onSection, students, teach
           <TeachersView {...teachers} />
         ) : (
           <Suspense fallback={<div className="access-loading" role="status">Cargando Tienda…</div>}>
-            <StoreDesktop role={tienda.role} projectId={tienda.projectId} />
+            <StoreDesktop role={tienda.role} projectId={tienda.projectId} onAppClose={onAppClose} />
           </Suspense>
         )}
       </div>
