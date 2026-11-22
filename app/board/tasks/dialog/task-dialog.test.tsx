@@ -25,6 +25,7 @@ vi.mock("../../shared/image-thumbnail", () => ({ crearMiniaturaDeArchivo: crearM
 const documents = [
   { id: "doc1", title: "Informe", status: "active" as const },
   { id: "doc2", title: "Informe antiguo", status: "archived" as const },
+  { id: "doc3", title: "Informe eliminado", status: "deleted" as const },
 ];
 
 function renderDialog(overrides: Partial<Parameters<typeof TaskDialog>[0]> = {}) {
@@ -80,6 +81,17 @@ describe("TaskDialog", () => {
     fireEvent.click(screen.getByRole("button", { name: "Abrir Informe" }));
 
     expect(props.onOpenDocument).toHaveBeenCalledWith("doc1");
+  });
+
+  it("muestra estados archivado y eliminado sin abrir documento desde la ficha editable", () => {
+    const { props } = renderDialog({ form: { ...blank, documentId: "doc2" }, documents });
+    expect(screen.getByText("archivado")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Abrir/ })).toBeNull();
+
+    renderDialog({ form: { ...blank, documentId: "doc3" }, documents });
+    expect(screen.getAllByText("en la papelera").length).toBeGreaterThan(0);
+    expect(screen.queryAllByRole("button", { name: /Abrir/ }).length).toBe(0);
+    expect(props.onOpenDocument).not.toHaveBeenCalled();
   });
 
   it("muestra un documento archivado en la ficha de lectura", () => {

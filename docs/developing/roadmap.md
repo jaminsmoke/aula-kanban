@@ -65,11 +65,11 @@
 
 - [x] Mostrar «Abrir documento» junto al selector si el vínculo existe y está activo.
 - [x] Abrir desde la ficha editable, reutilizando el mismo `openTaskDocument`.
-- [ ] Cubrir página de tareas y Calendario, profesor y alumno.
-- [ ] Conservar la vista y filtros al volver.
-- [ ] Cubrir documento archivado/eliminado y estado claro.
+- [x] Conservar búsqueda, prioridad y alumno al abrir la ficha (`useTasks` no resetea filtros).
+- [x] Cubrir estado archivado/eliminado y estado claro en edición y lectura.
+- [ ] Verificar recorrido propio/ajeno, Calendario y retorno real tras App Close (Fase 3).
 - **Criterios:** recorrido propio, asignado/invitado, edición/lectura y volver sin pérdida.
-- **Avance Fase 2 (2026-11-22):** `TaskForm` muestra el botón por si hay vínculo activo y lo pulsa `openTaskDocument`; `TaskDialog` pasa `onOpenDocument`; suite afectada **63 tests**; `npm run check` correcto. Pendiente recorrido real propio/ajeno, filtros y estados archivado/eliminado en Fase 3.
+- **Cierre Fase 2 (2026-11-22):** `TaskForm` muestra el botón por si hay vínculo activo y lo pulsa `openTaskDocument`; `TaskDialog` pasa `onOpenDocument`; tests cubren vínculo activo/archivado/eliminado, retorno de App Close y filtros conservados.
 
 ### Fase 3 — E2e y permisos
 

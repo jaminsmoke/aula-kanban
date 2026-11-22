@@ -79,6 +79,25 @@ describe("useTasks", () => {
     expect(result.current.filtered).toBe(true);
   });
 
+  it("conserva la búsqueda, prioridad y alumno al abrir la ficha editable", () => {
+    const data = makeData({
+      tasks: [task({ id: "t1", title: "Investigar placas", priority: "high", assignees: [{ kind: "student", profileId: "s1", name: "Ada" }] })],
+      students: [student],
+    });
+    const { result } = renderHook(() => useTasks({ data, hasProject: true, canManage: true, isGuest: false, notify: vi.fn() }));
+
+    act(() => result.current.setSearch("investigar"));
+    act(() => result.current.setFilter("high"));
+    act(() => result.current.setStudentFilter("s1"));
+    act(() => result.current.openEditor("pending", data.tasks?.[0]));
+
+    expect(result.current.search).toBe("investigar");
+    expect(result.current.filter).toBe("high");
+    expect(result.current.studentFilter).toBe("s1");
+    expect(result.current.editor?.task?.id).toBe("t1");
+    expect(result.current.visible.map((item) => item.id)).toEqual(["t1"]);
+  });
+
   it("crea la tarea desde el editor", async () => {
     const created = task({ id: "t9", title: "Nueva tarea" });
     const fetchMock = vi.fn(async () => jsonResponse(created));
