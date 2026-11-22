@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 4 entradas pendientes · siguiente candidato recomendado ARC-12
+> **Roadmap:** ARC-12 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 3 entradas pendientes · siguiente candidato recomendado ARC-13
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
@@ -26,12 +26,6 @@ Se cuentan líneas físicas de archivos de texto versionados, incluidas las lín
 - Calculadora carga `edu-base.css` y vuelve a declarar `.edu-app` en `calculadora.css`. Mapas, Líneas de tiempo, Tarjetas, Moléculas y Hoja de cálculo repiten la disposición inicial de ventana con variaciones locales.
 - Eliminar la regla duplicada y comprobar qué variables tienen consumidores antes de conservarlas. Revisar si las otras ventanas pueden reutilizar una misma clase base con los tokens del tema y mantener sus diferencias de contenido y desplazamiento.
 - Verificar Calculadora y Tabla periódica juntas y por separado. Revisar temas claro y oscuro, ventanas estrechas y maximizadas, foco visible y desplazamiento. Medir el CSS neto y su carga por ruta.
-
-## 2026-11-22 — ARC-12 · Reducir las propiedades reenviadas por Aula Documentos
-
-- `useAulaDocumentosModel` tiene 593 líneas y devuelve 190 propiedades. Repite listas de campos de la sesión, la barra de herramientas y los diálogos de copias, importación y presentación para exponerlas al contexto.
-- Empezar por copias e importación y por la barra de herramientas. Mapear consumidores, incluidos los cargados bajo demanda, y reutilizar las salidas de los hooks existentes donde esto elimine reenvíos. Retirar las propiedades sin consumidores comprobados y conservar en el modelo la coordinación entre capacidades.
-- Comparar el saldo del modelo, el contexto y los consumidores. Verificar los diálogos, el editor, el guardado y el modo de solo lectura. Medir el bundle de apertura de Aula Documentos.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 
