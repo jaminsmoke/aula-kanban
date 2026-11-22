@@ -3,9 +3,24 @@
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 1 entrada pendiente (DEV-01)
+> **Estado:** 4 entradas pendientes
 
 ---
+
+## 2026-11-22 — UI-12 · Abrir tareas del calendario con el teclado
+
+- En la prueba local de 1.1.40, pulsar una tarea en Mes o Agenda abrió su ficha y respetó el modo de edición o de lectura según la asignación. Las tareas de día completo en Mes y Semana no recibieron foco y no se pudieron abrir con el teclado.
+- Permitir recorrer y abrir tareas con Tab y Enter o Espacio en Mes, Semana y Agenda, con foco visible y el título accesible. Al cerrar la ficha, devolver el foco a la tarea. Verificar una tarea propia y otra asignada a otra persona.
+
+## 2026-11-22 — TASK-01 · Abrir un documento de entrega desde su tarea
+
+- La alumna pudo guardar un informe y pasar la tarea a En revisión. El profesor tuvo que copiar la URL escrita en la descripción, abrir el Maletín y lanzar Aula Documentos a mano para llegar al informe. El enlace con `doc` ya selecciona el documento al abrir la aplicación.
+- Permitir vincular un documento existente del proyecto desde la ficha y abrirlo en Aula Documentos con un solo paso. Reutilizar el identificador y la navegación existentes. Comprobar que una cuenta ajena al proyecto no puede abrirlo y que una referencia a un documento archivado o eliminado muestra un estado claro.
+
+## 2026-11-22 — ADOC-22 · Aclarar la apertura de una suite documental vacía
+
+- Al abrir Aula Documentos en el proyecto nuevo, se vio «Todavía no hay documentos» mientras el primer documento se creaba automáticamente. Al pulsar «Nuevo» para preparar la entrega quedaron dos documentos, uno de ellos en blanco. Con la lista en error también aparecía el mensaje de lista vacía.
+- Decidir si el primer documento se crea al pulsar «Nuevo» o se abre automáticamente con un estado de carga coherente. Verificar que una primera apertura seguida de «Nuevo» deja el número esperado de documentos y que un fallo de carga muestra un error con reintento.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 

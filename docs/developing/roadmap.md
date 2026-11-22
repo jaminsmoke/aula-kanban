@@ -12,7 +12,7 @@ ARC-14 quedó cerrado y archivado en [`historial/roadmap-arc-14.md`](../historia
 
 ## 2. Siguiente paso
 
-Elegir la siguiente entrada del backlog. El candidato recomendado es **DEV-01 — Evaluar la migración de npm a pnpm**, según [`arquitectura-global.md`](arquitectura-global.md).
+La prueba local de 1.1.40 recomienda empezar por **UI-12 — Abrir tareas del calendario con el teclado**. **TASK-01 — Abrir un documento de entrega desde su tarea** es la siguiente mejora del recorrido. Ambas quedan en el [backlog](backlog.md).
 
 ## 3. Límites de mantenimiento
 
