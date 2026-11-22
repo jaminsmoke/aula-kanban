@@ -19,7 +19,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Sin roadmap activo; ARC-14 cerrado y siguiente paso | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | ADOC-22 activo: aclarar la apertura de una suite documental vacía | Secuencia de ejecución |
 | [`integracion-hoja-aula.md`](developing/integracion-hoja-aula.md) | Contrato del flujo de copia Hoja de cálculo → Aula Documentos | Referencia |
 | [`aula-documentos-modelo.md`](developing/aula-documentos-modelo.md) | Mapa de campos, hooks y consumidores del modelo de Aula Documentos | Referencia |
 | [`css-ventanas-apps.md`](developing/css-ventanas-apps.md) | Inventario y contrato CSS de las ventanas de apps | Referencia |
