@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01 y TASK-02 completados; sin roadmap activo · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01 y TASK-02 completados; TASK-03 activo · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -243,3 +243,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - UI-12 quedó cerrado y archivado en [`historial/roadmap-ui-12.md`](../historial/roadmap-ui-12.md): las tareas del calendario se abren con Tab, Enter o Espacio y el foco vuelve al evento al cerrar la ficha.
 - TASK-01 quedó cerrado y archivado en [`historial/roadmap-task-01.md`](../historial/roadmap-task-01.md): una tarea vincula un documento del proyecto y lo abre en Aula Documentos con `doc`; la migración local está preparada y no se aplicó en remoto.
 - TASK-02 quedó cerrado y archivado en [`historial/roadmap-task-02.md`](../historial/roadmap-task-02.md): la ficha editable abre el documento y vuelve a la tarea tras cerrar Aula Documentos, conservando vista y filtros; cubre permisos, Calendario y cambios de revisión.
+- TASK-03 está activo en [`roadmap.md`](roadmap.md): detectar cambios pendientes en la ficha de tarea y pedir confirmación antes de cerrar, conservando el borrador al seguir editando.

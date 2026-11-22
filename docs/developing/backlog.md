@@ -2,16 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 11 entradas pendientes
+> **Roadmap:** TASK-03 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 10 entradas pendientes
 
 ---
-
-## 2026-11-22 — TASK-03 · Avisar antes de descartar cambios en una tarea
-
-- En la prueba local de 1.1.41, cambiar el título y pulsar Esc cerró la ficha y se perdió el cambio sin aviso.
-- Pedir confirmación al cerrar una ficha con cambios pendientes. Ofrecer volver a la edición conservando el borrador o descartar los cambios.
-- Verificar Esc, Cancelar y el botón de cierre en tareas nuevas y existentes. Una ficha intacta o recién guardada debe cerrar directamente.
 
 ## 2026-11-22 — TASK-04 · Asignarse una tarea en un paso
 
