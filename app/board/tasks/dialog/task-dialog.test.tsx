@@ -35,6 +35,7 @@ function renderDialog(overrides: Partial<Parameters<typeof TaskDialog>[0]> = {})
     form: { ...blank, title: "" },
     onForm: vi.fn(),
     onOpenDocument: vi.fn(),
+    onClaim: vi.fn(),
     formError: "",
     saving: false,
     deleting: false,
@@ -197,11 +198,21 @@ describe("TaskDialog", () => {
     expect(props.onForm).toHaveBeenCalledWith(expect.objectContaining({ priority: "high" }));
   });
 
-  it("etiqueta el botón de reclamación y detalla la eliminación", () => {
+  it("muestra Asignarme en el resumen y lo conecta con la acción", () => {
+    const { props } = renderDialog({ editor: { task, status: "pending" }, claiming: true });
+
+    expect(screen.getByText("Asígnate esta tarea para poder editar sus detalles.")).toBeTruthy();
+    const actions = screen.getAllByRole("button", { name: "Asignarme" });
+    expect(actions.length).toBeGreaterThanOrEqual(1);
+
+    fireEvent.click(actions[0]);
+    expect(props.onClaim).toHaveBeenCalledTimes(1);
+  });
+
+  it("etiqueta la reclamación y detalla la eliminación", () => {
     const { props, rerender } = renderDialog({ editor: { task, status: "pending" }, claiming: true });
 
-    expect(screen.getByRole("button", { name: /Asignarme y guardar/ })).toBeTruthy();
-    expect(screen.getByText("Asígnate esta tarea y guarda para poder editar sus detalles.")).toBeTruthy();
+    expect(screen.getByText("Asígnate esta tarea para poder editar sus detalles.")).toBeTruthy();
 
     rerender(<TaskDialog {...props} claiming={false} deleting />);
     expect(screen.getByText(/no hay papelera/)).toBeTruthy();

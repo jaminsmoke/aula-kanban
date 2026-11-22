@@ -282,6 +282,7 @@ export default function Board({ user, initial, demo = false, demoSignInHref = "/
         onAssignClass={board.assignWholeClass}
         onRemoveClass={board.removeWholeClass}
         onSubmit={board.submit}
+        onClaim={() => void board.claimTask()}
         onClose={() => { if (!data.writingRef.current) board.setEditor(null); }}
         onDelete={(task) => void board.mutate("DELETE", { id: task.id, revision: task.revision }, "Tarea eliminada.", true)}
         documents={taskDocuments.documents}

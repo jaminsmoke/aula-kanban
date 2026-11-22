@@ -22,7 +22,7 @@ import "./task-dialog.css";
  */
 export default function TaskDialog({
   editor, form, onForm, formError, saving, deleting, onDeleting, canManage, canEditTask, ownStudent,
-  students, teachers, claiming, onAddAssignee, onRemoveAssignee, onAssignee, onAssignClass, onRemoveClass, onSubmit, onClose, onDelete,
+  students, teachers, claiming, onAddAssignee, onRemoveAssignee, onAssignee, onAssignClass, onRemoveClass, onSubmit, onClose, onDelete, onClaim,
   documents = [], documentsLoading = false, documentsError = "", onOpenDocument,
 }: {
   editor: { task?: Task; status: TaskFields["status"] };
@@ -46,6 +46,7 @@ export default function TaskDialog({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onClose: () => void;
   onDelete: (task: Task) => void;
+  onClaim?: () => void;
   documents?: TaskDocumentOption[];
   documentsLoading?: boolean;
   documentsError?: string;
@@ -94,6 +95,11 @@ export default function TaskDialog({
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    if (claiming) {
+      event.preventDefault();
+      onClaim?.();
+      return;
+    }
     if (!form.title.trim()) {
       setTab("resumen");
       onSubmit(event);
@@ -134,7 +140,10 @@ export default function TaskDialog({
   return (
     <Modal title={readOnly ? "Detalle de la tarea" : editor.task ? "Editar tarea" : "Nueva tarea"} onClose={requestClose} closable={!saving} className={boardTab ? "task-dialog-board" : undefined}>
       {readOnly && editor.task ? <TaskDetail task={editor.task} documents={documents} onOpenDocument={onOpenDocument} /> : <form onSubmit={handleSubmit} noValidate className={claiming ? "task-form claiming" : "task-form"} data-unsaved={hasPendingChanges ? "true" : undefined}>
-        {claiming && <p className="claim-banner">Asígnate esta tarea y guarda para poder editar sus detalles.</p>}
+        {claiming && <div className="claim-banner" role="status">
+          <span>Asígnate esta tarea para poder editar sus detalles.</span>
+          {onClaim && <button type="button" className="primary" disabled={saving} onClick={onClaim}>Asignarme</button>}
+        </div>}
         {editor.task && <p className="intro">Creada por: {editor.task.creator || "No registrado"}</p>}
         <div className="task-tabs" role="tablist" aria-label="Secciones de la tarea">
           <button type="button" role="tab" id="tab-resumen" aria-selected={tab === "resumen"} aria-controls="panel-resumen" className={tab === "resumen" ? "task-tab active" : "task-tab"} onClick={() => setTab("resumen")}>Resumen</button>
@@ -199,7 +208,11 @@ export default function TaskDialog({
             ) : (
               <>
                 <button type="button" className="secondary" disabled={saving} onClick={requestClose}>Cancelar</button>
-                <button type="submit" className="primary" disabled={saving}>{saving ? "Guardando…" : claiming ? "Asignarme y guardar" : editor.task ? "Guardar cambios" : "Crear tarea"} <ArrowRight size={16} /></button>
+                {claiming ? (
+                  <button type="button" className="primary" disabled={saving} onClick={onClaim}>Asignarme</button>
+                ) : (
+                  <button type="submit" className="primary" disabled={saving}>{saving ? "Guardando…" : editor.task ? "Guardar cambios" : "Crear tarea"} <ArrowRight size={16} /></button>
+                )}
               </>
             )}
           </div>

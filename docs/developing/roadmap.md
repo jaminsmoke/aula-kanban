@@ -65,12 +65,13 @@
 
 ### Fase 2 — Acción compacta y guardado
 
-- [ ] Añadir **Asignarme** al resumen, junto al aviso de reclamación.
-- [ ] Resolver la ficha propia y guardar en una sola acción.
-- [ ] Deshabilitar o sustituir la acción durante el guardado.
-- [ ] Cerrar la ficha y anunciar el resultado al completar.
-- [ ] Mantener accesibles los mensajes de sin ficha, tarea ya asignada y error de revisión.
+- [x] Añadir **Asignarme** al resumen, junto al aviso de reclamación.
+- [x] Resolver la ficha propia y guardar en una sola acción.
+- [x] Deshabilitar o sustituir la acción durante el guardado.
+- [x] Cerrar la ficha y anunciar el resultado al completar.
+- [x] Mantener accesibles los mensajes de sin ficha, tarea ya asignada y error de revisión.
 - **Criterios:** un clic asigna la tarea; no se envía un formulario vacío ni se piden pasos adicionales.
+- **Cierre Fase 2 (2026-11-22):** `TaskDialog` muestra **Asignarme** en el aviso y sustituye el envío vacío por `onClaim`; `Board` conecta `useTasks.claimTask`. Tests de `TaskDialog`, `useTasks` y contrato **44**; `npm run check` correcto; arquitectura **463 / 1.166**.
 
 ### Fase 3 — Permisos, conflicto y regresión
 

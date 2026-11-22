@@ -9,7 +9,8 @@
 .field-count { color: var(--ui-text-muted); font-size: var(--text-sm); font-weight: var(--weight-medium); white-space: nowrap; }
 .field-hint { color: var(--ui-text-muted); font-size: var(--text-sm); font-weight: var(--weight-regular); margin-top: 6px; }
 .field-error { color:var(--ui-danger-text); font-size: var(--text-sm); font-weight: var(--weight-semibold); margin-top: 6px; }
-.claim-banner { color: var(--ui-warning-deep); border: var(--border-width-hairline) solid var(--ui-border-warning); background: var(--ui-warning-pale); padding: 9px 12px; border-radius: var(--radius-sm); font-size: var(--text-md); }
+.claim-banner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; color: var(--ui-warning-deep); border: var(--border-width-hairline) solid var(--ui-border-warning); background: var(--ui-warning-pale); padding: 9px 12px; border-radius: var(--radius-sm); font-size: var(--text-md); }
+.claim-banner .primary { min-height: 34px; }
 .task-form.claiming .claim-muted { opacity: .55; }
 
 /* Responsables múltiples */
