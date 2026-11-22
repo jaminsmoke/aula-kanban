@@ -127,7 +127,6 @@ export function useAulaSlideStructure({
 
   return {
     canUndoStructure: historyLength > 0,
-    structureHistoryLength: historyLength,
     moveSlide,
     duplicateSlide,
     deleteSlide,

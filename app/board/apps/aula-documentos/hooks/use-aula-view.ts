@@ -74,8 +74,6 @@ export function useAulaView({ editor, searchOpen }: ViewDeps) {
   return {
     focusMode,
     outlineOpen,
-    enterFocus,
-    exitFocus,
     toggleFocus,
     toggleOutline,
   };

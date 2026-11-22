@@ -155,7 +155,6 @@ export function useAulaSearch({ editor, readOnly, setStatus, documentId }: Searc
     setDiacriticsSensitive,
     matches,
     activeIndex,
-    activeMatch: matches[activeIndex] ?? null,
     openSearch,
     closeSearch,
     goNext,

@@ -180,7 +180,6 @@ export function useAulaComments({ projectId, documentId, editor, role, setStatus
     commentsError: error,
     openComments,
     closeComments,
-    refreshComments: refresh,
     createComment,
     updateComment,
     canComment: role !== "guest",

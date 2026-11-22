@@ -74,11 +74,12 @@
 
 ### Fase 3 — Barra de herramientas y resto del modelo
 
-- [ ] Reducir los campos de la barra de herramientas y de la sesión que no necesiten el contexto.
-- [ ] Simplificar las listas de campos repetidas y conservar la coordinación entre capacidades.
-- [ ] Comprobar editor, guardado, conflicto, solo lectura y presentación.
-- [ ] Medir el saldo del modelo, el contexto, los consumidores y el bundle de apertura.
+- [x] Reducir los campos de la barra de herramientas y de la sesión que no necesiten el contexto.
+- [x] Simplificar las listas de campos repetidas y conservar la coordinación entre capacidades.
+- [x] Comprobar editor, guardado, conflicto, solo lectura y presentación.
+- [x] Medir el saldo del modelo, el contexto, los consumidores y el bundle de apertura.
 - **Criterios:** el modelo y el contexto tienen menos reenvíos, sin regresiones funcionales ni de bundle.
+- **Cierre (2026-11-22):** **46 campos fuera del contexto**: 27 del modelo, 14 de toolbar y 5 de spreads; los valores siguen dentro de sus hooks para construir las acciones. Contrato expandido **280 → 234**, candidatos **46 → 0**, **46 líneas netas menos**. Suite **268 / 1.774**; Aula **36 / 181**; build Aula **386.670 B**; Hoja **312.870 B**.
 
 ### Fase 4 — Cierre
 
@@ -100,6 +101,7 @@
 
 - 2026-11-22: **Roadmap abierto.** ARC-12 es la siguiente candidata recomendada del backlog; quedan ARC-13, ARC-14 y DEV-01. Se empieza por el mapa de consumidores y el contrato del modelo. Sin cambios de producto en esta apertura.
 - 2026-11-22: **Fase 1 completada.** Mapa en [`aula-documentos-modelo.md`](aula-documentos-modelo.md): 190 entradas superiores, 285 campos expandidos, 11 consumidores y 51 candidatos sin consumidor directo. Sin cambios de producto.
-- 2026-11-22: **Fase 2 completada.** Cinco propiedades de copias/importación dejan de exponerse en el contexto; el contrato queda en 185 entradas y 280 campos. **9 líneas netas menos**; suite de Aula **36 / 181** y suite completa **268 / 1.774** sin regresiones.
+- 2026-11-22: **Fase 2 completada.** Cinco propiedades de copias/importación dejan de exponerse en el contexto; el contrato expandido queda en 280 campos. **9 líneas netas menos**; suite de Aula **36 / 181** y suite completa **268 / 1.774** sin regresiones.
+- 2026-11-22: **Fase 3 completada.** El contexto deja de reenviar 46 campos; las acciones siguen dentro de sus hooks para menús y barras. Contrato expandido **280 → 234**, candidatos **46 → 0**, **46 líneas netas menos**. Build Aula **386.670 B**; Hoja **312.870 B**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

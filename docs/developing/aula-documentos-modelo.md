@@ -434,5 +434,14 @@ Los consumidores se abrevian con las etiquetas de la sección 3.
 - Se retiraron del valor de contexto cinco propiedades que no tenían consumidor directo: `openCopies`, `openCopyImportPicker`, `openImport`, `importMarkdown` e `importOffice`.
 - Las tres primeras siguen disponibles dentro del modelo para construir las acciones de la toolbar; las dos últimas dejan de exponerse también desde `useAulaImport`.
 - El modelo pasa de **594 a 586 líneas** y `useAulaImport` de **373 a 372**: **9 líneas netas menos**.
-- El contrato pasa de **190 a 185 entradas superiores** y de **285 a 280 campos expandidos**; los candidatos sin consumidor directo bajan de **51 a 46**.
+- El contrato expandido baja de **285 a 280 campos**; el retorno declarado queda en **181 entradas** (173 explícitas + 8 spreads) y los candidatos sin consumidor directo bajan de **51 a 46**.
 - Suite de Aula enfocada: **36 archivos / 181 pruebas**; suite completa: **268 archivos / 1.774 pruebas**. Sin cambios de comportamiento.
+
+## 10. Aplicado en la Fase 3
+
+- Se retiraron del contexto **46 campos**: 27 entradas del modelo, 14 del modelo de toolbar y 5 campos de hooks que entraban por spread (`activeMatch`, `enterFocus`, `exitFocus`, `structureHistoryLength` y `refreshComments`).
+- Las acciones y etiquetas retiradas siguen existiendo dentro de sus hooks para construir menús y grupos; solo dejan de reenviarse por el contexto.
+- El retorno declarado queda en **154 entradas** (146 explícitas + 8 spreads); el contrato expandido baja de **280 a 234 campos** y los candidatos sin consumidor directo pasan de **46 a 0**.
+- Saldo: modelo **587 → 560 líneas**, toolbar **392 → 378** y hooks de spread **-5**: **46 líneas netas menos**.
+- Suite completa **268 / 1.774**; Aula **36 / 181**; build Aula **386.670 / 387.000 B**; Hoja **312.870 / 315.000 B**.
+- Editor, guardado, conflicto, solo lectura y presentación conservan su comportamiento; la carga diferida no cambia.
