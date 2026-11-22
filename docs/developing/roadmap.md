@@ -70,10 +70,11 @@
 
 ### Fase 3 — Reintento y fallo de creación
 
-- [ ] Añadir una acción de reintento para la carga de la lista.
-- [ ] Mostrar error y reintento si falla la creación inicial, sin dejar un estado vacío engañoso.
-- [ ] Verificar que un reintento no duplica documentos ni relanza una creación ya completada.
+- [x] Añadir una acción de reintento para la carga de la lista.
+- [x] Mostrar error y reintento si falla la creación inicial, sin dejar un estado vacío engañoso.
+- [x] Verificar que un reintento no duplica documentos ni relanza una creación ya completada.
 - **Criterios:** la lista se recupera desde el error y la suite queda en el estado esperado.
+- **Cierre (2026-11-22):** `retry()` relee la lista, reintenta la creación inicial solo si sigue vacía y no relanza una creación completada. El panel ofrece «Reintentar» junto al error. Suite **268 / 1.784**; Aula **54 / 5.481 ≤ 54 / 5.500**.
 
 ### Fase 4 — Verificación y cierre
 
@@ -96,5 +97,6 @@
 - 2026-11-22: **Roadmap abierto.** ADOC-22 entra desde el backlog por el fallo de la suite vacía; quedan UI-12, TASK-01 y DEV-01. Se empieza por reproducir la carrera y fijar los estados. Sin cambios de producto en esta apertura.
 - 2026-11-22: **Fase 1 completada.** Carrera reproducida con una prueba temporal retirada; el GET vacío deja `loading=false` y «Nuevo» habilitado mientras el POST inicial sigue pendiente. Contrato en [`suite-vacia.md`](suite-vacia.md). Sin cambios de producto.
 - 2026-11-22: **Fase 2 completada.** Estado `initializing`, guard de creación y mensajes de preparación; el vacío no aparece si hay error o preparación. Pruebas de carrera y panel; suite **268 / 1.781**. Presupuesto de pruebas de Aula ampliado a **5.500** líneas.
+- 2026-11-22: **Fase 3 completada.** Reintento de carga y de creación inicial; no duplica ni relanza una creación completada. Panel con «Reintentar». Suite **268 / 1.784**; Aula **54 / 5.481 ≤ 5.500**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

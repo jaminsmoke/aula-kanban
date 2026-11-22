@@ -95,7 +95,7 @@ export function useAulaDocumentSuite(projectId: string) {
   const [initializing, setInitializing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mounted = useRef(true);
-  const autoCreated = useRef(false);
+  const initialCreationDone = useRef(false);
   const initializingRef = useRef(false);
 
   useEffect(() => {
@@ -159,41 +159,59 @@ export function useAulaDocumentSuite(projectId: string) {
     }
   }, [base, projectId]);
 
-  useEffect(() => {
-    let active = true;
-    void (async () => {
-      const urlId = readUrlDocumentId();
-      const loaded = await refresh(urlId ?? readLastOpened(projectId));
-      if (!active || !mounted.current || loaded === null) return;
-      if (urlId && !loaded.active.some((document) => document.id === urlId)) {
-        setError("El documento del enlace no está disponible en este proyecto.");
-      }
-      if (loaded.active.length === 0 && loaded.archived.length === 0 && loaded.deleted.length === 0 && !autoCreated.current) {
-        autoCreated.current = true;
-        initializingRef.current = true;
-        setInitializing(true);
-        try {
-          const created = await createInitialDocument();
-          if (!active || !mounted.current) return;
-          if (created) {
-            setSuite({ active: [created], archived: [], deleted: [] });
-            setDocumentId(created.id);
-            writeLastOpened(projectId, created.id);
-            writeUrlDocumentId(created.id);
-            setError(null);
-          } else {
-            setError("No se pudo preparar el primer documento.");
-          }
-        } finally {
-          if (mounted.current) {
-            initializingRef.current = false;
-            setInitializing(false);
-          }
+  /**
+   * Carga la suite y prepara el primer documento si sigue vacía.
+   * @param preferredId - Documento que se intenta conservar.
+   * @returns La lista cargada o `null` si falló.
+   */
+  const prepareInitial = useCallback(async (preferredId?: string | null): Promise<AulaDocumentSuite | null> => {
+    const loaded = await refresh(preferredId);
+    if (!mounted.current || loaded === null) return loaded;
+    if (preferredId && !loaded.active.some((document) => document.id === preferredId)) {
+      setError("El documento del enlace no está disponible en este proyecto.");
+    }
+    if (
+      loaded.active.length === 0
+      && loaded.archived.length === 0
+      && loaded.deleted.length === 0
+      && !initializingRef.current
+      && !initialCreationDone.current
+    ) {
+      initializingRef.current = true;
+      setInitializing(true);
+      try {
+        const created = await createInitialDocument();
+        if (!mounted.current) return loaded;
+        if (created) {
+          initialCreationDone.current = true;
+          setSuite({ active: [created], archived: [], deleted: [] });
+          setDocumentId(created.id);
+          writeLastOpened(projectId, created.id);
+          writeUrlDocumentId(created.id);
+          setError(null);
+        } else {
+          setError("No se pudo preparar el primer documento.");
+        }
+      } finally {
+        if (mounted.current) {
+          initializingRef.current = false;
+          setInitializing(false);
         }
       }
-    })();
-    return () => { active = false; };
+    }
+    return loaded;
   }, [createInitialDocument, projectId, refresh]);
+
+  useEffect(() => {
+    void (async () => {
+      await prepareInitial(readUrlDocumentId() ?? readLastOpened(projectId));
+    })();
+  }, [prepareInitial, projectId]);
+
+  const retry = useCallback(async () => {
+    setError(null);
+    await prepareInitial(readUrlDocumentId() ?? documentId ?? readLastOpened(projectId));
+  }, [documentId, prepareInitial, projectId]);
 
   const selectDocument = useCallback((id: string) => {
     setDocumentId(id);
@@ -274,6 +292,7 @@ export function useAulaDocumentSuite(projectId: string) {
     initializing,
     error,
     refresh,
+    retry,
     selectDocument,
     createDocument,
     duplicateDocument,

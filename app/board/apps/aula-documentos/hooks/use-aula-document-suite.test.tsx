@@ -111,4 +111,52 @@ describe("suite de Aula Documentos", () => {
     expect(result.current.suite.active).toHaveLength(1);
     expect(posts).toBe(1);
   });
+
+  it("reintenta la carga y selecciona el documento existente sin crear otro", async () => {
+    const fetchMock = vi.fn()
+      .mockRejectedValueOnce(new Error("sin conexión"))
+      .mockResolvedValueOnce(response({ active: [doc("doc1", "Uno")], archived: [], deleted: [] }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { result } = renderHook(() => useAulaDocumentSuite("p1"));
+    await waitFor(() => expect(result.current.error).toContain("No se pudieron cargar"));
+    await act(async () => { await result.current.retry(); });
+
+    await waitFor(() => expect(result.current.documentId).toBe("doc1"));
+    expect(result.current.error).toBeNull();
+    expect(fetchMock.mock.calls.filter((call) => call[1]?.method === "POST")).toHaveLength(0);
+  });
+
+  it("reintenta la creación inicial fallida sin dejar un estado vacío engañoso", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(response({ active: [], archived: [], deleted: [] }))
+      .mockResolvedValueOnce(new Response(null, { status: 500 }))
+      .mockResolvedValueOnce(response({ active: [], archived: [], deleted: [] }))
+      .mockResolvedValueOnce(response({ document: doc("doc1", "Inicial") }, 201));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { result } = renderHook(() => useAulaDocumentSuite("p1"));
+    await waitFor(() => expect(result.current.error).toContain("No se pudo preparar"));
+    expect(result.current.initializing).toBe(false);
+
+    await act(async () => { await result.current.retry(); });
+    await waitFor(() => expect(result.current.documentId).toBe("doc1"));
+    expect(result.current.error).toBeNull();
+    expect(fetchMock.mock.calls.filter((call) => call[1]?.method === "POST")).toHaveLength(2);
+  });
+
+  it("no relanza la creación inicial si ya se completó", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(response({ active: [], archived: [], deleted: [] }))
+      .mockResolvedValueOnce(response({ document: doc("doc1", "Inicial") }, 201))
+      .mockResolvedValueOnce(response({ active: [doc("doc1", "Inicial")], archived: [], deleted: [] }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { result } = renderHook(() => useAulaDocumentSuite("p1"));
+    await waitFor(() => expect(result.current.documentId).toBe("doc1"));
+    await act(async () => { await result.current.retry(); });
+
+    await waitFor(() => expect(result.current.documentId).toBe("doc1"));
+    expect(fetchMock.mock.calls.filter((call) => call[1]?.method === "POST")).toHaveLength(1);
+  });
 });

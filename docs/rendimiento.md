@@ -62,7 +62,7 @@ Los totales incluyen el framework y la entrada compartida. La comparación útil
 | App | Flujos | Gzip de app | Tests actuales / límite | CSS actual / límite |
 |---|---|---:|---|---|
 | Tablero | 1 | 175.656 B | 29 / 2.226 → 32 / 2.450 | 12 / 1.529 → 13 / 1.650 |
-| Aula Documentos | 2 | 387.000 B | 54 / 5.439 → 54 / 5.500 | 16 / 3.734 → 16 / 3.800 |
+| Aula Documentos | 2 | 387.000 B | 54 / 5.481 → 54 / 5.500 | 16 / 3.734 → 16 / 3.800 |
 | Hoja de cálculo | 1 | 315.000 B | 6 / 625 → 6 / 650 | 1 / 335 → 2 / 380 |
 | Calculadora | 3 | 2.069.960 B | 6 / 295 → 7 / 330 | 1 / 95 → 2 / 140 |
 | Espacio / Tienda | 1 | 174.779 B | 9 / 723 → 10 / 800 | 2 / 245 → 3 / 270 |

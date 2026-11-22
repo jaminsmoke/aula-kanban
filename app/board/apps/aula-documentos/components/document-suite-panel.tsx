@@ -24,6 +24,7 @@ export function DocumentSuitePanel() {
     suiteLoading,
     suiteInitializing,
     suiteError,
+    suiteRetry,
     readOnly,
     openSuiteDocument,
     createSuiteDocument,
@@ -70,7 +71,19 @@ export function DocumentSuitePanel() {
       {!suiteLoading && suiteInitializing ? (
         <p className="aula-documentos-suite-meta" role="status">Preparando el primer documento…</p>
       ) : null}
-      {suiteError ? <p className="aula-documentos-import-error" role="alert">{suiteError}</p> : null}
+      {suiteError ? (
+        <>
+          <p className="aula-documentos-import-error" role="alert">{suiteError}</p>
+          <button
+            type="button"
+            className="aula-documentos-preview-button"
+            onClick={() => { void suiteRetry(); }}
+            disabled={suiteLoading || suiteInitializing}
+          >
+            Reintentar
+          </button>
+        </>
+      ) : null}
       {!suiteLoading && !suiteInitializing && !suiteError && suite.active.length === 0 ? (
         <p className="aula-documentos-suite-meta">Todavía no hay documentos. Crea el primero para empezar.</p>
       ) : null}

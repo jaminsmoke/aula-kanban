@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
     suiteLoading: false,
     suiteInitializing: false,
     suiteError: null as string | null,
+    suiteRetry: vi.fn(),
     readOnly: false,
     openSuiteDocument: vi.fn(),
     createSuiteDocument: vi.fn(),
@@ -93,6 +94,8 @@ describe("panel de la suite documental", () => {
 
     expect(screen.getByRole("alert").textContent).toContain("No se pudieron cargar los documentos");
     expect(screen.queryByText(/Todavía no hay documentos/)).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(mocks.view.suiteRetry).toHaveBeenCalled();
   });
 
   it("renombra y cancela sin tocar el documento", () => {

@@ -1,6 +1,6 @@
 # Apertura de una suite documental vacía
 
-> **Estado:** ADOC-22 Fases 1-2 · **Fecha:** 2026-11-22
+> **Estado:** ADOC-22 Fases 1-3 · **Fecha:** 2026-11-22
 > **Alcance:** carga inicial de Aula Documentos, creación automática del primer documento y estados del panel.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -82,4 +82,12 @@ No se cambia el servidor, el esquema, los permisos ni la navegación por `doc`.
 - `createDocument()` devuelve `null` mientras `initializing` está activo; el panel también deshabilita «Nuevo».
 - El panel muestra «Preparando el primer documento…» y solo pinta el estado vacío cuando no hay carga, preparación ni error.
 - Se añadieron pruebas de la carrera y del panel; suite completa **268 archivos / 1.781 pruebas**.
-- El presupuesto de pruebas de Aula se amplió de **5.400** a **5.500** líneas; el consumo queda en **5.439**. `npm run check` y `app:budget` correctos.
+- El presupuesto de pruebas de Aula se amplió de **5.400** a **5.500** líneas; el consumo queda en **5.481** tras las pruebas de reintento. `npm run check` y `app:budget` correctos.
+
+## 8. Aplicado en la Fase 3
+
+- `useAulaDocumentSuite` expone `retry()`: limpia el error, vuelve a leer la lista y solo prepara el primer documento si sigue vacía.
+- La creación inicial completada queda marcada y no se relanza en un reintento; si el documento ya existe, se selecciona.
+- El panel muestra «Reintentar» junto al error y lo deshabilita durante carga o preparación.
+- Se cubrieron la carga fallida, la creación inicial fallida y el reintento tras una creación completada.
+- Suite completa **268 archivos / 1.784 pruebas**; Aula **54 / 5.481 ≤ 54 / 5.500**; `npm run check` y `app:budget` correctos.
