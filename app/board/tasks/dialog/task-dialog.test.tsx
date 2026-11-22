@@ -209,6 +209,22 @@ describe("TaskDialog", () => {
     expect(props.onClaim).toHaveBeenCalledTimes(1);
   });
 
+  it("usa Asignarme al enviar el formulario de reclamación", () => {
+    const { props } = renderDialog({ editor: { task, status: "pending" }, claiming: true });
+    fireEvent.submit(screen.getByRole("dialog", { name: "Editar tarea" }).querySelector("form")!);
+
+    expect(props.onClaim).toHaveBeenCalledTimes(1);
+    expect(props.onSubmit).not.toHaveBeenCalled();
+  });
+
+  it("deshabilita Asignarme mientras se guarda", () => {
+    renderDialog({ editor: { task, status: "pending" }, claiming: true, saving: true });
+
+    for (const action of screen.getAllByRole("button", { name: "Asignarme" })) {
+      expect((action as HTMLButtonElement).disabled).toBe(true);
+    }
+  });
+
   it("etiqueta la reclamación y detalla la eliminación", () => {
     const { props, rerender } = renderDialog({ editor: { task, status: "pending" }, claiming: true });
 

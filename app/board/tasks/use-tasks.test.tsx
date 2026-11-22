@@ -99,6 +99,33 @@ describe("useTasks", () => {
     expect(result.current.visible.map((item) => item.id)).toEqual(["t1"]);
   });
 
+  it("desactiva la reclamación para docentes, invitados y cuentas sin ficha", () => {
+    const free = task() as Task;
+    const cases = [
+      { label: "docente", props: { canManage: true, isGuest: false }, data: makeData({ ownStudent: student }) },
+      { label: "invitado", props: { canManage: false, isGuest: true }, data: makeData({ ownStudent: student }) },
+      { label: "sin ficha", props: { canManage: false, isGuest: false }, data: makeData() },
+    ];
+
+    for (const item of cases) {
+      const { result } = renderHook(() => useTasks({ data: item.data, hasProject: true, ...item.props, notify: vi.fn() }));
+      act(() => result.current.openEditor("pending", free));
+      expect(result.current.claiming, item.label).toBe(false);
+    }
+  });
+
+  it("no envía una reclamación sin ficha propia", async () => {
+    const free = task() as Task;
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const { result } = renderHook(() => useTasks({ data: makeData(), hasProject: true, canManage: false, isGuest: false, notify: vi.fn() }));
+
+    act(() => result.current.openEditor("pending", free));
+    await act(async () => result.current.claimTask());
+
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("asigna la tarea libre a la ficha propia con la revisión actual", async () => {
     const updated = task({
       assignee: "Ada",

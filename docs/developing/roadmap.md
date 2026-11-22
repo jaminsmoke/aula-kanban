@@ -75,11 +75,12 @@
 
 ### Fase 3 — Permisos, conflicto y regresión
 
-- [ ] Probar tarea libre, tarea ya asignada, tarea ajena y cuenta sin ficha vinculada.
-- [ ] Probar conflicto 409 y conservar la ficha con el aviso.
-- [ ] Comprobar que invitados y docentes conservan su flujo actual.
-- [ ] Verificar nombre accesible, estado de guardado y foco tras el cierre.
+- [x] Probar tarea libre, tarea ya asignada, tarea ajena y cuenta sin ficha vinculada.
+- [x] Probar conflicto 409 y conservar la ficha con el aviso.
+- [x] Comprobar que invitados y docentes conservan su flujo actual.
+- [x] Verificar nombre accesible, estado de guardado y foco tras el cierre.
 - **Criterios:** la acción respeta las mismas reglas que editar la tarea y no permite reasignar una tarea ajena.
+- **Cierre Fase 3 (2026-11-22):** tests de `TaskDialog`, `useTasks` y contrato cubren tarea libre/asignada/ajena, cuenta sin ficha, docente, invitado, conflicto 409, envío por teclado, nombre accesible y botón deshabilitado al guardar. **48 tests**; `npm run check` correcto; arquitectura **463 / 1.166**; Tablero **32 / 2.625 ≤ 32 / 2.800** y CSS **12 / 1.554 ≤ 13 / 1.650**.
 
 ### Fase 4 — Verificación y cierre
 
