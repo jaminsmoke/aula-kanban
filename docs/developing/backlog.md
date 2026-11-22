@@ -3,17 +3,9 @@
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 1 entrada pendiente · siguiente candidato recomendado DEV-01
-> **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
-> **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
+> **Estado:** 1 entrada pendiente (DEV-01)
 
 ---
-
-## Línea base de reducción
-
-El código de producto pasó de **51.311** líneas en 1.1.37 a **65.811** en 1.1.38 y **66.108** en 1.1.39. En el salto a 1.1.38, Aula Documentos y `app/board/shared` sumaron 8.836 líneas, junto con la incorporación de la suite documental. En el salto a 1.1.39 crecieron 297 líneas de producto, 443 de pruebas y 1.157 de documentación. Los archivos generados quedaron estables en ese último salto. ARC-08 reubicó buena parte del código que antes figuraba en `shared`.
-
-Se cuentan líneas físicas de archivos de texto versionados, incluidas las líneas en blanco. Producto comprende código, estilos y SQL de `app`, `lib`, `db` y `worker`, con pruebas y fixtures aparte. La comparación usa `bbd59a8`, `bbb1bf6` y `4d88e00`, que contiene el código de la 1.1.39 antes del cambio de versión. Para cada recorte, medir el saldo de todos los archivos de producto afectados, incluidos los módulos que se creen o se muevan. Registrar las pruebas, la documentación y los archivos generados por separado. Validar con `npm run check`, las pruebas del área y los presupuestos del build.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 
