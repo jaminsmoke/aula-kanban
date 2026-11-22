@@ -55,12 +55,13 @@
 
 ### Fase 1 — Mapa de consumidores y contrato
 
-- [ ] Inventariar los campos devueltos, su hook de origen y sus consumidores reales.
-- [ ] Separar campos de coordinación, estado compartido, acciones y valores puramente reenviados.
-- [ ] Identificar campos sin consumidores y campos que pueden leerse directamente del hook.
-- [ ] Revisar consumidores `lazy` y pruebas que dependan del contexto.
-- [ ] Documentar el contrato en [`aula-documentos-modelo.md`](aula-documentos-modelo.md).
+- [x] Inventariar los campos devueltos, su hook de origen y sus consumidores reales.
+- [x] Separar campos de coordinación, estado compartido, acciones y valores puramente reenviados.
+- [x] Identificar campos sin consumidores y campos que pueden leerse directamente del hook.
+- [x] Revisar consumidores `lazy` y pruebas que dependan del contexto.
+- [x] Documentar el contrato en [`aula-documentos-modelo.md`](aula-documentos-modelo.md).
 - **Criterios:** mapa completo, campos candidatos justificados y ningún cambio de producto.
+- **Cierre (2026-11-22):** inventario en [`aula-documentos-modelo.md`](aula-documentos-modelo.md). **190 entradas superiores** (182 explícitas + 8 spreads), **285 campos únicos** al expandir, **11 consumidores de producto**, **234 campos con consumidor directo** y **51 candidatos sin consumidor directo**. Sin cambios de producto.
 
 ### Fase 2 — Copias e importación
 
@@ -97,5 +98,6 @@
 ## 7. Notas de sesión
 
 - 2026-11-22: **Roadmap abierto.** ARC-12 es la siguiente candidata recomendada del backlog; quedan ARC-13, ARC-14 y DEV-01. Se empieza por el mapa de consumidores y el contrato del modelo. Sin cambios de producto en esta apertura.
+- 2026-11-22: **Fase 1 completada.** Mapa en [`aula-documentos-modelo.md`](aula-documentos-modelo.md): 190 entradas superiores, 285 campos expandidos, 11 consumidores y 51 candidatos sin consumidor directo. Sin cambios de producto.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

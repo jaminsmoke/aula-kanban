@@ -21,6 +21,7 @@
 |---|---|---|
 | [`roadmap.md`](developing/roadmap.md) | ARC-12 activo: reducir las propiedades reenviadas por Aula Documentos | Secuencia de ejecución |
 | [`integracion-hoja-aula.md`](developing/integracion-hoja-aula.md) | Contrato del flujo de copia Hoja de cálculo → Aula Documentos | Referencia |
+| [`aula-documentos-modelo.md`](developing/aula-documentos-modelo.md) | Mapa de campos, hooks y consumidores del modelo de Aula Documentos | Referencia |
 | [`aula-documentos-arquitectura.md`](developing/aula-documentos-arquitectura.md) | Mapa de responsabilidades, árbol objetivo y límites de Aula Documentos | Referencia de refactor |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
