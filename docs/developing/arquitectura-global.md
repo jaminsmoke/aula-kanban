@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; sin roadmap activo · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12 activo · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -240,3 +240,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - ARC-13 quedó cerrado y archivado en [`historial/roadmap-arc-13.md`](../historial/roadmap-arc-13.md): las ventanas comparten la base `.app-window` sin perder `container-name`, variables locales, foco ni scroll; Calculadora ya no duplica `.edu-app` y el CSS neto baja **117 líneas**.
 - ARC-14 quedó cerrado y archivado en [`historial/roadmap-arc-14.md`](../historial/roadmap-arc-14.md): Markdown y documento serializado tienen una sola definición y un validador compartido; los valores, mensajes y estados no cambiaron.
 - ADOC-22 quedó cerrado y archivado en [`historial/roadmap-adoc-22.md`](../historial/roadmap-adoc-22.md): la apertura de una suite vacía muestra preparación, bloquea «Nuevo», prioriza el error y permite reintentar sin duplicar documentos.
+- UI-12 está activo en [`roadmap.md`](roadmap.md): abrir las tareas del calendario con Tab, Enter o Espacio y devolver el foco al cerrar la ficha.

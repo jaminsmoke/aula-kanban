@@ -2,15 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 3 entradas pendientes · siguiente candidato UI-12
+> **Roadmap:** UI-12 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 2 entradas pendientes · siguiente candidato TASK-01
 
 ---
-
-## 2026-11-22 — UI-12 · Abrir tareas del calendario con el teclado
-
-- En la prueba local de 1.1.40, pulsar una tarea en Mes o Agenda abrió su ficha y respetó el modo de edición o de lectura según la asignación. Las tareas de día completo en Mes y Semana no recibieron foco y no se pudieron abrir con el teclado.
-- Permitir recorrer y abrir tareas con Tab y Enter o Espacio en Mes, Semana y Agenda, con foco visible y el título accesible. Al cerrar la ficha, devolver el foco a la tarea. Verificar una tarea propia y otra asignada a otra persona.
 
 ## 2026-11-22 — TASK-01 · Abrir un documento de entrega desde su tarea
 
