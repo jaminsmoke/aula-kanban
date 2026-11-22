@@ -1,8 +1,36 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** UI-16 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-22 — Roadmap UI-16 — Dar prioridad a las tareas en la ficha de alumno
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- La cabecera de la ficha de alumno es más compacta y el puesto deja de repetirse.
+- Los datos de perfil vacíos no generan tarjetas con «Sin especificar».
+- La lista de tareas aparece junto al nombre, antes de los datos de perfil.
+- Las tareas se ordenan por pendientes vencidas, próximas entregas, sin fecha y completadas.
+- Las acciones Editar y Eliminar conservan su nombre accesible; los nombres largos siguen protegidos.
+- Sin cambios de modelo, API, permisos, datos, URLs externas ni versión del Site. No hay migración.
+
+### Verificación
+
+- `npm run check`: correcto; arquitectura **465 archivos / 1.170 imports**.
+- Suite completa: **273 archivos / 1.839 pruebas**.
+- Tablero: **33 / 2.815 → 33 / 2.900** pruebas; CSS **12 / 1.557 → 13 / 1.650**.
+- Build de Tablero: **176.467 / 176.500 B**; Aula Documentos **386.813 / 387.000 B**; Hoja **313.033 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos.
+- El Site sigue en `1.1.41`; sin publicación ni migración remota desde este roadmap.
+
+### Seguimiento
+
+- UI-16 archivado en [`historial/roadmap-ui-16.md`](../historial/roadmap-ui-16.md). El backlog queda con **6 entradas**; siguiente candidato **TASK-05**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 
