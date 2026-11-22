@@ -1,6 +1,6 @@
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { getDb } from "../../../db";
-import { tasks } from "../../../db/schema";
+import { aulaDocuments, tasks } from "../../../db/schema";
 import { purgeDeletedProfiles } from "../access/deleted-profiles";
 import type { ProjectWithAccess } from "../projects/project-access";
 import { createTask, deleteTask, updateTask, type MutationResult } from "./mutations";
@@ -26,6 +26,28 @@ function taskRefs(data: ProjectData, taskId: string): TaskRef[] {
   return data.refs
     .filter((ref) => ref.taskId === taskId && (ref.kind === "student" || ref.kind === "teacher"))
     .map((ref) => ({ kind: ref.kind as TaskRef["kind"], profileId: ref.profileId }));
+}
+
+/**
+ * Comprueba una referencia de documento antes de guardarla.
+ * @param projectId - Proyecto activo.
+ * @param requested - Documento solicitado; `undefined` conserva el actual.
+ * @param current - Documento ya vinculado.
+ * @returns El error legible o `null` si el vínculo es válido.
+ */
+async function documentLinkError(
+  projectId: string,
+  requested: string | null | undefined,
+  current: string | null,
+): Promise<string | null> {
+  if (requested === undefined || requested === null || requested === current) return null;
+  const [document] = await getDb().select({ status: aulaDocuments.status }).from(aulaDocuments).where(and(
+    eq(aulaDocuments.projectId, projectId),
+    eq(aulaDocuments.id, requested),
+  ));
+  if (!document) return "El documento no existe en este proyecto.";
+  if (document.status !== "active") return "Solo puedes vincular documentos activos.";
+  return null;
 }
 
 /**
@@ -57,6 +79,8 @@ export async function createProjectTask(input: {
   if (denied) return { ok: false, ...denied };
 
   const data = await projectData(input.project.id);
+  const documentError = await documentLinkError(input.project.id, input.fields.documentId, null);
+  if (documentError) return { ok: false, status: 400, message: documentError };
   const permissions = createTaskPermissions(input.project.access);
   const refs = input.fields.assignees ?? [];
   if (!validateRefs(refs, data)) return { ok: false, status: 400, message: "Selecciona responsables válidos de este proyecto." };
@@ -98,6 +122,9 @@ export async function updateProjectTask(input: {
   if (!current) {
     return { ok: false, status: 409, message: "Esta tarea cambió en otra sesión. Abre la versión actual para continuar." };
   }
+  const requestedDocumentId = "documentId" in input.changes ? input.changes.documentId : undefined;
+  const documentError = await documentLinkError(input.project.id, requestedDocumentId, current.documentId ?? null);
+  if (documentError) return { ok: false, status: 400, message: documentError };
   const result = await updateTask({
     projectId: input.project.id,
     auth,

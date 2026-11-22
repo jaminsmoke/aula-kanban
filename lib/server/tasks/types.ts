@@ -8,6 +8,7 @@ export type TaskRef = { kind: "student" | "teacher"; profileId: string };
 export type TaskWriteFields = Pick<TaskFields, "title" | "description" | "assignee" | "dueDate" | "priority" | "status"> & {
   imageUrl?: string;
   assignees?: TaskRef[];
+  documentId?: string | null;
 };
 
 /** Cambio rápido de estado sin editar el resto de campos. */
@@ -38,6 +39,7 @@ export type DecoratedTask = {
   imageUrl: string;
   assignee: string;
   assignees: Array<TaskRef & { name: string; removed?: boolean }>;
+  documentId: string | null;
   dueDate: string;
   priority: string;
   status: string;

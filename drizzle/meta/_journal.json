@@ -316,6 +316,13 @@
       "when": 1795272949365,
       "tag": "0044_milky_master_mold",
       "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "6",
+      "when": 1795356683386,
+      "tag": "0045_thin_joseph",
+      "breakpoints": true
     }
   ]
 }

@@ -1,6 +1,6 @@
 # Documento de entrega vinculado a una tarea
 
-> **Estado:** TASK-01 Fase 1 · **Fecha:** 2026-11-22
+> **Estado:** TASK-01 Fases 1-2 · **Fecha:** 2026-11-22
 > **Alcance:** modelo, migración local, API de tareas, permisos y navegación a Aula Documentos.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -102,3 +102,14 @@ La implementación concreta se valida en la Fase 3; no se crea una ruta paralela
 - Hoja de cálculo: **313.047 / 315.000 B**.
 - Site: `1.1.40`.
 - Sin cambios de producto en esta fase.
+
+## 10. Aplicado en la Fase 2
+
+- `db/schema.ts` añade `tasks.document_id` nullable.
+- `drizzle/0045_thin_joseph.sql` contiene `ALTER TABLE tasks ADD document_id text`; el journal queda con **46 entradas**.
+- `TaskFields` y `Task` aceptan `documentId` opcional; la API lo valida como string o `null`.
+- La creación comprueba que el documento sea activo y del mismo proyecto.
+- La edición conserva el vínculo si el campo se omite, permite desvincular con `null` y valida un vínculo nuevo.
+- La decoración de tareas devuelve siempre `documentId` (o `null`).
+- Suite completa **268 archivos / 1.789 pruebas**; `npm run check` correcto.
+- La migración no se ha aplicado en remoto; queda para la verificación de Codex/Sites.

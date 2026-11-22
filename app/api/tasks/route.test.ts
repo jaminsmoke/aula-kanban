@@ -109,6 +109,25 @@ describe("ruta de tareas", () => {
     expect(mocks.create).toHaveBeenCalledOnce();
   });
 
+  it("valida que el documento vinculado exista y esté activo", async () => {
+    mocks.rows = [];
+    let response = await POST(request("POST", { ...validTask, documentId: "doc1" }));
+    expect(response.status).toBe(400);
+    expect(mocks.create).not.toHaveBeenCalled();
+
+    mocks.rows = [{ status: "archived" }];
+    response = await POST(request("POST", { ...validTask, documentId: "doc1" }));
+    expect(response.status).toBe(400);
+    expect(mocks.create).not.toHaveBeenCalled();
+
+    mocks.rows = [{ status: "active" }];
+    response = await POST(request("POST", { ...validTask, documentId: "doc1" }));
+    expect(response.status).toBe(201);
+    expect(mocks.create).toHaveBeenCalledWith(expect.objectContaining({
+      value: expect.objectContaining({ documentId: "doc1" }),
+    }));
+  });
+
   it("devuelve 409 cuando la mutación detecta un conflicto de revisión", async () => {
     mocks.update.mockResolvedValueOnce({ ok: false, status: 409, message: "Esta tarea cambió en otra sesión." });
     const response = await PATCH(request("PATCH", {

@@ -122,6 +122,7 @@ export async function updateTask(input: UpdateTaskInput): Promise<MutationResult
 
   const value = input.changes;
   const imageUrl = value.imageUrl ?? input.current.imageUrl ?? "";
+  const documentId = value.documentId === undefined ? input.current.documentId ?? null : value.documentId;
   // A legacy client that omits assignees preserves existing references; it cannot silently take ownership.
   const nextRefs = value.assignees ?? input.currentRefs;
   if (!validateRefs(nextRefs, input.data, input.currentRefs)) return failure(400, "Selecciona responsables válidos de este proyecto.");
@@ -132,7 +133,7 @@ export async function updateTask(input: UpdateTaskInput): Promise<MutationResult
     const otherCurrent = input.currentRefs.filter((ref) => !(ref.kind === "student" && ref.profileId === input.permissions.selfId));
     const otherNext = nextRefs.filter((ref) => !(ref.kind === "student" && ref.profileId === input.permissions.selfId));
     if (!sameRefs(otherCurrent, otherNext) || (!nextRefs.length && !unassigned(value.assignee))) return failure(403, "No puedes cambiar la asignación de otras personas.");
-    if (claims && (value.title !== input.current.title || value.description !== input.current.description || imageUrl !== (input.current.imageUrl ?? "") || value.dueDate !== input.current.dueDate || value.priority !== input.current.priority || value.status !== input.current.status)) {
+    if (claims && (value.title !== input.current.title || value.description !== input.current.description || imageUrl !== (input.current.imageUrl ?? "") || documentId !== (input.current.documentId ?? null) || value.dueDate !== input.current.dueDate || value.priority !== input.current.priority || value.status !== input.current.status)) {
       return failure(403, "Primero asígnate la tarea y guarda. Después podrás editar sus datos.");
     }
   }
@@ -146,6 +147,7 @@ export async function updateTask(input: UpdateTaskInput): Promise<MutationResult
       revision: input.revision,
       value,
       imageUrl,
+      documentId,
       assigneeText: unlinkedAssigneeText(nextRefs, value.assignee),
       token: crypto.randomUUID(),
       currentRefs: input.currentRefs,

@@ -66,11 +66,12 @@
 
 ### Fase 2 — Persistencia y API de tareas
 
-- [ ] Añadir la referencia al tipo de tarea, la escritura, la lectura y la decoración.
-- [ ] Validar que el documento pertenece al mismo proyecto y que el rol puede consultarlo.
-- [ ] Conservar revisiones, conflictos y compatibilidad con clientes que no envían el campo.
-- [ ] Cubrir creación, edición, lectura, proyecto ajeno y documento ausente.
+- [x] Añadir la referencia al tipo de tarea, la escritura, la lectura y la decoración.
+- [x] Validar que el documento pertenece al mismo proyecto y que el rol puede consultarlo.
+- [x] Conservar revisiones, conflictos y compatibilidad con clientes que no envían el campo.
+- [x] Cubrir creación, edición, lectura, proyecto ajeno y documento ausente.
 - **Criterios:** persistencia atómica, sin fugas entre proyectos y tareas antiguas compatibles.
+- **Cierre (2026-11-22):** columna nullable `tasks.document_id`, migración local `0045_thin_joseph.sql` y 46 entradas de journal. La API acepta `documentId` opcional, valida documento activo del mismo proyecto, conserva el vínculo si se omite y permite desvincular con `null`. Suite **268 / 1.789**; `npm run check` correcto.
 
 ### Fase 3 — Ficha, selector y apertura
 
@@ -101,5 +102,6 @@
 
 - 2026-11-22: **Roadmap abierto.** TASK-01 entra desde el backlog; queda DEV-01. Se empieza por el contrato del vínculo, la migración local y la matriz de permisos. Sin cambios de producto en esta apertura.
 - 2026-11-22: **Fase 1 completada.** Contrato en [`tareas-documento.md`](tareas-documento.md): `tasks.document_id` nullable, vínculo único por proyecto, estados de documento y permisos. La migración local queda definida para la Fase 2; sin cambios de producto.
+- 2026-11-22: **Fase 2 completada.** Columna `tasks.document_id`, migración local y journal de 46 entradas. Tipo, API, decoración y persistencia admiten el vínculo; validación por proyecto y documento activo; clientes antiguos conservan el vínculo. Suite **268 / 1.789**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

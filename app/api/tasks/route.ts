@@ -8,7 +8,7 @@ import type { TaskUpdate } from "../../../lib/server/tasks/types";
 
 export const dynamic = "force-dynamic";
 const person = z.object({ kind: z.enum(["student", "teacher"]), profileId: z.string().min(1).max(80) });
-const fields = z.object({ title: z.string().trim().min(1).max(120), description: z.string().trim().max(2000), imageUrl: z.string().trim().max(2048).refine((value) => value === "" || /^https?:\/\/\S+$/i.test(value) || /^\/api\/files\/[A-Za-z0-9-]+$/.test(value), "URL de imagen no válida").optional(), assignee: z.string().trim().max(5000), assignees: z.array(person).max(50).optional(), dueDate: z.union([z.literal(""), z.string().date()]), priority: z.enum(priorities), status: z.enum(statuses) });
+const fields = z.object({ title: z.string().trim().min(1).max(120), description: z.string().trim().max(2000), imageUrl: z.string().trim().max(2048).refine((value) => value === "" || /^https?:\/\/\S+$/i.test(value) || /^\/api\/files\/[A-Za-z0-9-]+$/.test(value), "URL de imagen no válida").optional(), documentId: z.string().trim().min(1).max(80).nullable().optional(), assignee: z.string().trim().max(5000), assignees: z.array(person).max(50).optional(), dueDate: z.union([z.literal(""), z.string().date()]), priority: z.enum(priorities), status: z.enum(statuses) });
 const reference = z.object({ id: z.string().uuid(), revision: z.number().int().positive(), changes: z.unknown().optional() });
 
 /** Lista las tareas del proyecto con sus responsables y su creador. */

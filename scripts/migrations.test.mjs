@@ -9,7 +9,7 @@ const files = readdirSync(path.join(root, "drizzle")).filter((file) => file.ends
 
 describe("migraciones locales", () => {
   it("mantiene el journal y los archivos alineados y en orden", () => {
-    expect(journal.entries).toHaveLength(45);
+    expect(journal.entries).toHaveLength(46);
     expect(files).toHaveLength(journal.entries.length);
     for (const [index, entry] of journal.entries.entries()) {
       expect(entry.tag.startsWith(`${String(index).padStart(4, "0")}_`)).toBe(true);

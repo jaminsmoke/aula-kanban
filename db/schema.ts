@@ -62,6 +62,7 @@ export const tasks = sqliteTable("tasks", {
   priority: text("priority").notNull(),
   status: text("status").notNull(),
   imageUrl: text("image_url"),
+  documentId: text("document_id"),
   createdAt: integer("created_at").notNull(),
   revision: integer("revision").notNull().default(1),
   creatorUserId: text("creator_user_id"),

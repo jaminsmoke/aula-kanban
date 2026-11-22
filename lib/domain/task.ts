@@ -13,6 +13,13 @@ export type TaskFields = {
   dueDate: string;
   priority: (typeof priorities)[number];
   status: (typeof statuses)[number];
+  documentId?: string | null;
 };
 
-export type Task = TaskFields & { id: string; createdAt: number; revision: number; creator?: string | null };
+export type Task = TaskFields & {
+  id: string;
+  createdAt: number;
+  revision: number;
+  creator?: string | null;
+  documentId?: string | null;
+};

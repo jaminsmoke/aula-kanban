@@ -1,0 +1,1 @@
+ALTER TABLE `tasks` ADD `document_id` text;
