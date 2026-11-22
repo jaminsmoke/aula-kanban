@@ -69,11 +69,12 @@
 
 ### Fase 2 — Adaptador de selección
 
-- [ ] Convertir una selección de celdas en una tabla serializada con valores mostrados y escapado seguro.
-- [ ] Respetar los límites de Aula y devolver un error legible si la selección no cabe.
-- [ ] Cubrir celdas vacías, números, texto, comillas, saltos de línea, fórmulas y rangos fuera de límite.
-- [ ] Mantener el adaptador dentro de Hoja de cálculo; no extraerlo a `shared` sin un segundo consumidor.
+- [x] Convertir una selección de celdas en una tabla serializada con valores mostrados y escapado seguro.
+- [x] Respetar los límites de Aula y devolver un error legible si la selección no cabe.
+- [x] Cubrir celdas vacías, números, texto, comillas, saltos de línea, fórmulas y rangos fuera de límite.
+- [x] Mantener el adaptador dentro de Hoja de cálculo; no extraerlo a `shared` sin un segundo consumidor.
 - **Criterios:** el adaptador es puro, está probado y no modifica el documento ni guarda nada.
+- **Cierre (2026-11-21):** `hoja-calculo-clipboard.ts` serializa una celda como texto y una selección como tabla HTML + TSV. Conserva la forma rectangular, escapa HTML, normaliza el TSV, protege fórmulas y valida 50 filas / 20 columnas / 400 celdas. `useHojaCalculoGrid` expone `selectedRange` y `selectionClipboard()` sin UI todavía. Suite **267 archivos / 1.763 pruebas**; arquitectura **461 archivos / 1.154 imports**; presupuesto de Hoja **6 / 534 → 6 / 550**.
 
 ### Fase 3 — Acción de copia en Hoja de cálculo
 
@@ -113,5 +114,6 @@
 
 - 2026-11-21: **Roadmap abierto.** ARC-10 sale del backlog tras cerrar ARC-09; queda **1 entrada** (DEV-01). Se mantiene Hoja de cálculo como app y se empieza por un flujo de copia unidireccional. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Contrato en [`integracion-hoja-aula.md`](integracion-hoja-aula.md): copia HTML con TSV de respaldo, valores visibles, sin fórmulas ni estilos, límites de Aula y permisos definidos. El pegado nativo de tablas HTML y el rechazo de 51 filas quedan comprobados con Tiptap y `parseAulaDocument`.
+- 2026-11-21: **Fase 2 completada.** Adaptador puro de selección con HTML/TSV, protección de fórmulas y límites de Aula. Suite **267 archivos / 1.763 pruebas** y presupuesto de Hoja ajustado a 6 / 534 → 6 / 550. Sin UI de copia todavía.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

@@ -1,6 +1,6 @@
 # Integración entre Hoja de cálculo y Aula Documentos
 
-> **Estado:** ARC-10, Fase 1 completada · **Fecha:** 2026-11-21
+> **Estado:** ARC-10, Fases 1–2 · **Fecha:** 2026-11-21
 > **Alcance:** traslado unidireccional de una selección de Hoja de cálculo a una tabla de Aula Documentos.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -150,8 +150,18 @@ El pegado dentro de una tabla existente no forma parte del contrato inicial; la 
 
 ## 9. Baseline
 
-- Arquitectura: **460 archivos / 1.151 imports**.
-- Suite: **266 archivos / 1.756 pruebas**.
+- Arquitectura: **461 archivos / 1.154 imports**.
+- Suite: **267 archivos / 1.763 pruebas**.
 - Aula Documentos: **386.260 / 387.000 B**.
 - Hoja de cálculo: **311.063 / 315.000 B**.
 - Site: `1.1.38`.
+
+## 10. Aplicado en la Fase 2
+
+- `hoja-calculo-clipboard.ts` convierte una selección en texto de una celda o en una tabla HTML con TSV de respaldo.
+- La tabla conserva la forma rectangular, rellena filas irregulares con celdas vacías y escapa HTML.
+- El TSV normaliza tabuladores y saltos de línea y protege las celdas que empiezan por `=`, `+`, `-` o `@`.
+- La selección se valida contra los límites de Aula antes de serializar: 50 filas, 20 columnas y 400 celdas.
+- `useHojaCalculoGrid` expone `selectedRange` y `selectionClipboard()` sin añadir todavía la acción de la barra.
+- Pruebas del adaptador: **7 casos**, incluidas celdas vacías, caracteres especiales, fórmulas, saltos de línea, filas irregulares y límites.
+- Presupuesto de pruebas de Hoja de cálculo: **6 archivos / 534 líneas → límite 6 / 550**; arquitectura **461 / 1.154**.

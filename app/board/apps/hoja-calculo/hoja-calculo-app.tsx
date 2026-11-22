@@ -55,7 +55,7 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
 
       <HojaCalculoFormulaBar
         value={grid.formulaDraft}
-        hasSelection={Boolean(grid.selectedCell)}
+        hasSelection={Boolean(grid.selectedRange)}
         ready={grid.ready}
         readOnly={documentState.readOnly}
         onChange={grid.setFormulaDraft}

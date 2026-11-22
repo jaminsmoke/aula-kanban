@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
+import { buildSelectionClipboard, type SelectionClipboardResult } from "./hoja-calculo-clipboard";
 import { downloadSheetCsv } from "./hoja-calculo-export";
 import {
   buildFormulaSheet,
@@ -29,6 +30,8 @@ type CellPosition = {
   row: number;
   column: number;
 };
+
+type CellRange = [number, number, number, number];
 
 type UseHojaCalculoGridOptions = {
   containerRef: RefObject<HTMLDivElement | null>;
@@ -68,6 +71,7 @@ export function useHojaCalculoGrid({
   const [ready, setReady] = useState(false);
   const [calculation, setCalculation] = useState<SheetCalculationSummary>(initialCalculation.summary);
   const [selectedCell, setSelectedCell] = useState<CellPosition | null>(null);
+  const [selectedRange, setSelectedRange] = useState<CellRange | null>(null);
   const [formulaDraft, setFormulaDraft] = useState("");
   const [initError, setInitError] = useState<string | null>(null);
 
@@ -93,6 +97,7 @@ export function useHojaCalculoGrid({
     }
     setCalculation(nextCalculation.summary);
     setSelectedCell(null);
+    setSelectedRange(null);
     setFormulaDraft("");
   }, []);
 
@@ -223,13 +228,14 @@ export function useHojaCalculoGrid({
           setSelectedCell({ row, column });
           recalculate(instance, "Hoja modificada.");
         },
-        onselection: (instance, left, top) => {
+        onselection: (instance, left, top, right, bottom) => {
           if (!active || applyingRef.current) return;
           const row = Number(top);
           const column = Number(left);
           const formula = formulasRef.current.get(formulaCellKey(row, column));
           const value = instance.getValueFromCoords(column, row);
           setSelectedCell({ row, column });
+          setSelectedRange([Number(left), Number(top), Number(right), Number(bottom)]);
           setFormulaDraft(formula ?? (value === null || value === undefined ? "" : String(value)));
         },
         onchangestyle: (instance) => {
@@ -357,11 +363,24 @@ export function useHojaCalculoGrid({
     onStatus("CSV descargado.");
   }
 
+  /**
+   * Prepara el portapapeles con la selección actual de la rejilla.
+   * @returns La tabla HTML y el TSV, el texto de una celda o el error de límite.
+   */
+  function selectionClipboard(): SelectionClipboardResult {
+    const worksheet = worksheetRef.current;
+    if (!worksheet) {
+      return { ok: false, code: "empty", message: "Selecciona al menos una celda." };
+    }
+    return buildSelectionClipboard(worksheet.getData(true, true) as SpreadsheetCell[][]);
+  }
+
   return {
     ready,
     initError,
     calculation,
     selectedCell,
+    selectedRange,
     formulaDraft,
     setFormulaDraft,
     commitFormula,
@@ -372,5 +391,6 @@ export function useHojaCalculoGrid({
     resetSheet,
     saveSheet,
     exportCsv,
+    selectionClipboard,
   };
 }
