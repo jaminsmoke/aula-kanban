@@ -60,18 +60,19 @@
 - [x] Fijar la instantánea del formulario al abrir una tarea nueva o existente.
 - [x] Comparar todos los campos editables y responsables con esa instantánea.
 - [x] Distinguir ficha intacta, cambio real y cambio deshecho.
-- [ ] Mantener el borrador y el foco mientras la confirmación está abierta (se conecta en Fase 2).
+- [x] Mantener el borrador y el foco mientras la confirmación está abierta.
 - **Criterios:** una ficha sin tocar cierra directamente; cualquier cambio real activa la guarda; volver al valor inicial la desactiva.
-- **Avance Fase 1 (2026-11-22):** `TaskDialog` guarda una instantánea por tarea y compara todos los campos con `sameTaskFields`; `data-unsaved` refleja el cambio pendiente. Tests: `TaskDialog` y helper **26**; `npm run check` correcto; arquitectura **462 / 1.162**.
+- **Cierre Fase 1 (2026-11-22):** `TaskDialog` guarda una instantánea por tarea, compara todos los campos con `sameTaskFields` y conserva el formulario montado al confirmar. `data-unsaved` refleja el cambio pendiente.
 
 ### Fase 2 — Confirmación y cierre protegido
 
-- [ ] Añadir la confirmación con **Seguir editando** y **Descartar cambios**.
-- [ ] Interceptar Esc, X y Cancelar con la misma guarda.
-- [ ] **Seguir editando** conserva el borrador y devuelve el foco al formulario.
-- [ ] **Descartar cambios** cierra y limpia el editor como hasta ahora.
-- [ ] No mostrar la guarda en solo lectura, durante el guardado ni tras un guardado correcto.
+- [x] Añadir la confirmación con **Seguir editando** y **Descartar cambios**.
+- [x] Interceptar Esc, X y Cancelar con la misma guarda.
+- [x] **Seguir editando** conserva el borrador y devuelve el foco al formulario.
+- [x] **Descartar cambios** cierra y limpia el editor como hasta ahora.
+- [x] No mostrar la guarda en solo lectura, durante el guardado ni tras un guardado correcto.
 - **Criterios:** los tres caminos de cierre piden decisión solo con cambios; cancelar la decisión no modifica datos ni borrador.
+- **Cierre Fase 2 (2026-11-22):** `Modal`, X y Cancelar comparten `requestClose`; la confirmación usa `role="alert"`, enfoca **Seguir editando** y conserva `form`. Tests de `TaskDialog` y helper **29**; `npm run check` correcto; arquitectura **462 / 1.162**.
 
 ### Fase 3 — Pruebas de regresión y accesibilidad
 

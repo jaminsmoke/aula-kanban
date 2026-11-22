@@ -53,6 +53,10 @@
 .task-detail-people li { display: flex; align-items: center; gap: 7px; min-width: 0; }
 .removed-tag { color: var(--ui-text-muted); font-size: var(--text-sm); }
 .delete-confirm { border: var(--border-width-hairline) solid var(--ui-border-danger); background: var(--ui-danger-soft); border-radius: var(--radius-sm); padding: 10px 12px; }
+.discard-confirm { border: var(--border-width-hairline) solid var(--ui-border-warning); background: var(--ui-warning-pale); border-radius: var(--radius-sm); padding: 12px 14px; }
+.discard-confirm p { color: var(--ui-text-primary); font-size: var(--text-md); font-weight: var(--weight-regular); line-height: var(--leading-normal); }
+.discard-confirm strong { font-weight: var(--weight-extrabold); }
+.discard-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 /* Subida de imagen y pizarra */
 .upload-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
 .upload-row .field-hint { margin-top: 0; }

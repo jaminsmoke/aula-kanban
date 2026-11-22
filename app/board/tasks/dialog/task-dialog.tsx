@@ -58,6 +58,7 @@ export default function TaskDialog({
   // eslint-disable-next-line react-hooks/exhaustive-deps -- la clave delimita la instantánea
   const draft = useMemo(() => ({ key: draftKey, fields: form }), [draftKey]);
   const hasPendingChanges = !readOnly && !sameTaskFields(form, draft.fields);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
   const [tab, setTab] = useState<"resumen" | "asignaciones" | "pizarra">("resumen");
   // En la pestaña Pizarra el diálogo se ensancha para que el lienzo y sus
   // menús quepan; al ampliar, la pizarra se muestra como popup fijo sobre
@@ -108,8 +109,30 @@ export default function TaskDialog({
     onSubmit(event);
   }
 
+  function keepEditing() {
+    setConfirmDiscard(false);
+    window.requestAnimationFrame(() => document.getElementById("task-title")?.focus());
+  }
+
+  /**
+   * Cierra la ficha o pide confirmación si hay cambios pendientes.
+   * Esc, X y Cancelar comparten este único camino.
+   */
+  function requestClose() {
+    if (saving) return;
+    if (confirmDiscard) {
+      keepEditing();
+      return;
+    }
+    if (readOnly || !hasPendingChanges) {
+      onClose();
+      return;
+    }
+    setConfirmDiscard(true);
+  }
+
   return (
-    <Modal title={readOnly ? "Detalle de la tarea" : editor.task ? "Editar tarea" : "Nueva tarea"} onClose={onClose} closable={!saving} className={boardTab ? "task-dialog-board" : undefined}>
+    <Modal title={readOnly ? "Detalle de la tarea" : editor.task ? "Editar tarea" : "Nueva tarea"} onClose={requestClose} closable={!saving} className={boardTab ? "task-dialog-board" : undefined}>
       {readOnly && editor.task ? <TaskDetail task={editor.task} documents={documents} onOpenDocument={onOpenDocument} /> : <form onSubmit={handleSubmit} noValidate className={claiming ? "task-form claiming" : "task-form"} data-unsaved={hasPendingChanges ? "true" : undefined}>
         {claiming && <p className="claim-banner">Asígnate esta tarea y guarda para poder editar sus detalles.</p>}
         {editor.task && <p className="intro">Creada por: {editor.task.creator || "No registrado"}</p>}
@@ -156,21 +179,31 @@ export default function TaskDialog({
         {deleting && editor.task && <div className="delete-confirm" role="group" aria-label="Confirmar eliminación">
           <p className="delete-prompt"><strong>¿Eliminar “{editor.task.title}”?</strong> Se eliminará del tablero de todo el grupo y no hay papelera.</p>
         </div>}
-        <div className="modal-actions">
-          {editor.task && !deleting && !claiming && <button type="button" className="danger-quiet" disabled={saving} onClick={() => onDeleting(true)}><Trash2 size={16} /> Eliminar</button>}
-          <span className="spacer" />
-          {deleting && editor.task ? (
-            <>
-              <button type="button" className="secondary" disabled={saving} onClick={() => onDeleting(false)}>Volver</button>
-              <button type="button" className="danger" disabled={saving} onClick={() => onDelete(editor.task!)}>{saving ? "Eliminando…" : "Confirmar eliminación"}</button>
-            </>
-          ) : (
-            <>
-              <button type="button" className="secondary" disabled={saving} onClick={onClose}>Cancelar</button>
-              <button type="submit" className="primary" disabled={saving}>{saving ? "Guardando…" : claiming ? "Asignarme y guardar" : editor.task ? "Guardar cambios" : "Crear tarea"} <ArrowRight size={16} /></button>
-            </>
-          )}
-        </div>
+        {confirmDiscard ? (
+          <div className="discard-confirm" role="alert" aria-label="Confirmar descarte de cambios">
+            <p><strong>¿Descartar los cambios?</strong> Se perderán los cambios sin guardar de esta tarea.</p>
+            <div className="discard-actions">
+              <button type="button" className="secondary" autoFocus onClick={keepEditing}>Seguir editando</button>
+              <button type="button" className="danger" onClick={onClose}>Descartar cambios</button>
+            </div>
+          </div>
+        ) : (
+          <div className="modal-actions">
+            {editor.task && !deleting && !claiming && <button type="button" className="danger-quiet" disabled={saving} onClick={() => onDeleting(true)}><Trash2 size={16} /> Eliminar</button>}
+            <span className="spacer" />
+            {deleting && editor.task ? (
+              <>
+                <button type="button" className="secondary" disabled={saving} onClick={() => onDeleting(false)}>Volver</button>
+                <button type="button" className="danger" disabled={saving} onClick={() => onDelete(editor.task!)}>{saving ? "Eliminando…" : "Confirmar eliminación"}</button>
+              </>
+            ) : (
+              <>
+                <button type="button" className="secondary" disabled={saving} onClick={requestClose}>Cancelar</button>
+                <button type="submit" className="primary" disabled={saving}>{saving ? "Guardando…" : claiming ? "Asignarme y guardar" : editor.task ? "Guardar cambios" : "Crear tarea"} <ArrowRight size={16} /></button>
+              </>
+            )}
+          </div>
+        )}
       </form>}
     </Modal>
   );

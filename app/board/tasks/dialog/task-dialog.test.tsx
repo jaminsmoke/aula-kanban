@@ -213,6 +213,47 @@ describe("TaskDialog", () => {
     expect((screen.getByRole("button", { name: "Cerrar" }) as HTMLButtonElement).disabled).toBe(true);
   });
 
+  it("pide confirmación antes de descartar y conserva el borrador al seguir editando", () => {
+    const { props, rerender } = renderDialog({ editor: { task, status: "pending" }, form: task });
+    rerender(<TaskDialog {...props} form={{ ...task, title: "Otra tarea" }} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+    expect(props.onClose).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert", { name: "Confirmar descarte de cambios" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Seguir editando" }));
+    expect(props.onClose).not.toHaveBeenCalled();
+    expect(screen.queryByRole("alert", { name: "Confirmar descarte de cambios" })).toBeNull();
+    expect(screen.getByRole("button", { name: /Guardar cambios/ }).closest("form")?.getAttribute("data-unsaved")).toBe("true");
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Descartar cambios" }));
+    expect(props.onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("usa la misma confirmación en Esc y en el botón de cierre", () => {
+    const { props, rerender } = renderDialog({ editor: { task, status: "pending" }, form: task });
+    rerender(<TaskDialog {...props} form={{ ...task, title: "Otra tarea" }} />);
+
+    fireEvent(screen.getByRole("dialog", { name: "Editar tarea" }), new Event("cancel", { bubbles: true, cancelable: true }));
+    expect(props.onClose).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert", { name: "Confirmar descarte de cambios" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Seguir editando" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cerrar" }));
+    expect(props.onClose).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert", { name: "Confirmar descarte de cambios" })).toBeTruthy();
+  });
+
+  it("cierra directamente una ficha intacta", () => {
+    const { props } = renderDialog({ editor: { task, status: "pending" }, form: task });
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+
+    expect(props.onClose).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("alert", { name: "Confirmar descarte de cambios" })).toBeNull();
+  });
+
   it("deja el responsable libre en texto cuando no hay fichas vinculadas", () => {
     renderDialog();
 
