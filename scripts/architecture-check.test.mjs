@@ -91,7 +91,7 @@ describe("architecture check", () => {
   it("rechaza un comando MCP con ruta absoluta externa", () => {
     const root = fixture();
     writeFileSync(path.join(root, "opencode.json"), JSON.stringify({
-      mcp: { local: { type: "local", command: ["node", "C:/otro/repositorio/mcp.mjs"] } },
+      mcp: { local: { type: "local", command: ["node", path.join(root, "..", "otro", "repositorio", "mcp.mjs")] } },
     }, null, 2));
 
     const result = checkArchitecture({ root, workspace: root, baselinePath: "docs/baseline.json" });
