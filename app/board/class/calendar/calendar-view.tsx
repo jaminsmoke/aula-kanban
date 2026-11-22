@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Calendar, dateFnsLocalizer, type Event } from "react-big-calendar";
+import { Calendar, dateFnsLocalizer, type Event, type EventProps } from "react-big-calendar";
 import { format, getDay, parse, startOfWeek } from "date-fns";
 import { es } from "date-fns/locale";
 import { CalendarDays } from "lucide-react";
@@ -12,7 +12,41 @@ import "./calendar-view.css";
 
 const localizer = dateFnsLocalizer({ format, getDay, parse, startOfWeek, locales: { es } });
 
-type CalendarTask = Event & { id: string; status: Task["status"] };
+type CalendarTask = Event & {
+  id: string;
+  status: Task["status"];
+  task: Task;
+  open: () => void;
+};
+
+/**
+ * Evento enfocable del calendario. Mantiene el clic del contenedor y añade
+ * la activación por teclado sin abrir la ficha dos veces.
+ * @param props - Evento de react-big-calendar.
+ * @returns El control accesible de la tarea.
+ */
+function CalendarEvent({ event }: EventProps<CalendarTask>) {
+  const task = event.task;
+  return (
+    <button
+      type="button"
+      className="class-calendar-event-open"
+      aria-label={`Abrir tarea: ${task.title}. Estado: ${columns[task.status].name}.`}
+      onClick={(clickEvent) => {
+        clickEvent.stopPropagation();
+        event.open();
+      }}
+      onKeyDown={(keyEvent) => {
+        if (keyEvent.key !== "Enter" && keyEvent.key !== " ") return;
+        keyEvent.preventDefault();
+        keyEvent.stopPropagation();
+        event.open();
+      }}
+    >
+      {event.title}
+    </button>
+  );
+}
 
 const messages = {
   today: "Hoy",
@@ -46,9 +80,18 @@ export default function CalendarView({ tasks, loadError, onRetry, onOpenTask }: 
       .filter((task) => task.dueDate)
       .map((task) => {
         const start = new Date(`${task.dueDate}T00:00:00`);
-        return { id: task.id, title: task.title, status: task.status, start, end: start, allDay: true };
+        return {
+          id: task.id,
+          title: task.title,
+          status: task.status,
+          task,
+          open: () => onOpenTask(task),
+          start,
+          end: start,
+          allDay: true,
+        };
       }),
-    [tasks],
+    [onOpenTask, tasks],
   );
 
   if (tasks === null) {
@@ -74,6 +117,7 @@ export default function CalendarView({ tasks, loadError, onRetry, onOpenTask }: 
         defaultView="month"
         views={["month", "week", "agenda"]}
         messages={messages}
+        components={{ event: CalendarEvent }}
         eventPropGetter={(event) => ({ className: `status-${event.status}` })}
         tooltipAccessor={(event) => `${event.title} · ${columns[event.status].name}`}
         onSelectEvent={(event) => {

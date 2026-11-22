@@ -1,6 +1,6 @@
 # Teclado y foco en el calendario
 
-> **Estado:** UI-12 Fase 1 · **Fecha:** 2026-11-22
+> **Estado:** UI-12 Fases 1-2 · **Fecha:** 2026-11-22
 > **Alcance:** eventos del calendario de Clase, apertura de la ficha y retorno del foco.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -71,3 +71,12 @@ Agenda renderiza una tabla y coloca el `onClick` en el `td.rbc-agenda-event-cell
 - Hoja de cálculo: **313.044 / 315.000 B**.
 - Site: `1.1.40`.
 - Sin cambios de producto en esta fase.
+
+## 6. Aplicado en la Fase 2
+
+- `CalendarView` renderiza un botón propio dentro de cada evento, con `aria-label` de título y estado.
+- Enter y Espacio abren la ficha; el clic y el toque se mantienen, sin doble activación.
+- `Modal` guarda el control que abrió el diálogo y le devuelve el foco al desmontarse.
+- Se probaron Mes, Semana, Agenda, el nombre accesible, Enter, Espacio y el retorno de foco.
+- Suite completa **268 archivos / 1.788 pruebas**; `npm run check` y `app:budget` correctos.
+- Sin cambios de modelo, permisos, datos ni versión del Site.

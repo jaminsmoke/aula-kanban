@@ -62,11 +62,12 @@
 
 ### Fase 2 — Eventos enfocables y apertura por teclado
 
-- [ ] Renderizar cada tarea como control accesible con foco visible.
-- [ ] Abrir la ficha con Enter y Espacio, sin doble activación.
-- [ ] Devolver el foco al evento que abrió la ficha.
-- [ ] Cubrir Mes, Semana y Agenda, incluida una tarea de día completo.
+- [x] Renderizar cada tarea como control accesible con foco visible.
+- [x] Abrir la ficha con Enter y Espacio, sin doble activación.
+- [x] Devolver el foco al evento que abrió la ficha.
+- [x] Cubrir Mes, Semana y Agenda, incluida una tarea de día completo.
 - **Criterios:** teclado equivalente al ratón y sin regresiones en clic o toque.
+- **Cierre (2026-11-22):** `CalendarEvent` renderiza un botón accesible dentro del evento; Enter y Espacio abren la ficha, el clic conserva el comportamiento y `Modal` devuelve el foco al evento. Pruebas de Mes, Semana, Agenda y cierre de ficha; suite **268 / 1.788**.
 
 ### Fase 3 — Verificación y cierre
 
@@ -88,5 +89,6 @@
 
 - 2026-11-22: **Roadmap abierto.** UI-12 entra desde el backlog por el fallo de foco de las tareas de día completo; quedan TASK-01 y DEV-01. Se empieza por el inventario de teclado y foco. Sin cambios de producto en esta apertura.
 - 2026-11-22: **Fase 1 completada.** Inventario en [`calendario-teclado.md`](calendario-teclado.md): `EventCell` de Mes/Semana sin `role` ni `tabIndex`; Agenda con clic en `td`; el diálogo no puede devolver el foco a un evento no enfocable. Sin cambios de producto.
+- 2026-11-22: **Fase 2 completada.** Evento enfocable con nombre accesible, apertura por Enter/Espacio y clic sin doble activación; `Modal` restaura el foco al control de origen. Pruebas de Mes, Semana, Agenda y retorno de foco; suite **268 / 1.788**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

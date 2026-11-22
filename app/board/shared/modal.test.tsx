@@ -29,4 +29,16 @@ describe("Modal", () => {
 
     expect(onClose).toHaveBeenCalled();
   });
+
+  it("devuelve el foco al control que abrió el diálogo", () => {
+    const trigger = document.createElement("button");
+    document.body.appendChild(trigger);
+    trigger.focus();
+    const { unmount } = render(<Modal title="Ajustes" onClose={vi.fn()}><p>Contenido</p></Modal>);
+
+    unmount();
+
+    expect(document.activeElement).toBe(trigger);
+    trigger.remove();
+  });
 });

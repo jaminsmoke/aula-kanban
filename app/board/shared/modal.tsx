@@ -11,7 +11,15 @@ import { X } from "lucide-react";
  */
 export default function Modal({ title, onClose, children, closable = true, className }: { title: string; onClose: () => void; children: ReactNode; closable?: boolean; className?: string }) {
   const ref = useRef<HTMLDialogElement>(null);
-  useEffect(() => { ref.current?.showModal(); }, []);
+  const returnFocus = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    ref.current?.showModal();
+    return () => {
+      const target = returnFocus.current;
+      if (target?.isConnected) target.focus();
+    };
+  }, []);
   return (
     <dialog ref={ref} className={className} aria-label={title} onCancel={(event) => { event.preventDefault(); if (closable) onClose(); }}>
       <div className="modal-header">
