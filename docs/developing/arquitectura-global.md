@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01 y TASK-02 activos; TASK-02 Fase 1 cerrada · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01 y TASK-02 completados; sin roadmap activo · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -220,7 +220,7 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 ## 8. Estado tras ARC-01, DEV-02 y ARC-02
 
 - `npm run arch:check` y `npm run check` están disponibles; CI ejecuta `arch:check`.
-- Resultado actual: **462 archivos de producto / 1.159 imports / 0 violaciones base / 0 ciclos / 0 problemas nuevos**.
+- Resultado actual: **462 archivos de producto / 1.160 imports / 0 violaciones base / 0 ciclos / 0 problemas nuevos**.
 - No quedan excepciones de tamaño ni dependencias `features → layout`; el layout compartido vive en `app/board/shared/ui/`.
 - El ciclo `auth ↔ demo` se eliminó con `lib/server/auth-user.ts`.
 - La configuración global de CodArch se retiró. DEV-02 quedó cerrado con el guard de MCP por repositorio, el inventario en [`mcp-tooling-audit.md`](mcp-tooling-audit.md) y la plantilla local [`mcp-project.example.json`](mcp-project.example.json).
@@ -242,4 +242,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - ADOC-22 quedó cerrado y archivado en [`historial/roadmap-adoc-22.md`](../historial/roadmap-adoc-22.md): la apertura de una suite vacía muestra preparación, bloquea «Nuevo», prioriza el error y permite reintentar sin duplicar documentos.
 - UI-12 quedó cerrado y archivado en [`historial/roadmap-ui-12.md`](../historial/roadmap-ui-12.md): las tareas del calendario se abren con Tab, Enter o Espacio y el foco vuelve al evento al cerrar la ficha.
 - TASK-01 quedó cerrado y archivado en [`historial/roadmap-task-01.md`](../historial/roadmap-task-01.md): una tarea vincula un documento del proyecto y lo abre en Aula Documentos con `doc`; la migración local está preparada y no se aplicó en remoto.
-- TASK-02 está activo en [`roadmap.md`](roadmap.md): unir la acción en la ficha editable, devolver al usuario a la tarea tras cerrar Aula Documentos y probar turnos y perfiles de apertura.
+- TASK-02 quedó cerrado y archivado en [`historial/roadmap-task-02.md`](../historial/roadmap-task-02.md): la ficha editable abre el documento y vuelve a la tarea tras cerrar Aula Documentos, conservando vista y filtros; cubre permisos, Calendario y cambios de revisión.

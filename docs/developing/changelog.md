@@ -6,6 +6,34 @@
 
 ---
 
+## 2026-11-22 — Roadmap TASK-02 — Abrir la entrega desde la ficha editable y volver a la tarea
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- La ficha editable muestra **Abrir documento** junto al selector cuando el vínculo está activo.
+- La apertura reutiliza `openTaskDocument` y el parámetro `doc`; no se añade una ruta paralela.
+- `StoreDesktop` notifica el cierre de la app y `Board` vuelve a la tarea con la vista, sección y filtros de origen.
+- Al volver se usa la revisión actual de `data.tasks` si la tarea cambió durante la apertura.
+- Archivado, papelera y documento ausente muestran un estado claro sin abrir una entrega inválida.
+- Sin cambios de modelo, permisos, datos, URLs externas ni versión del Site. No hay migración nueva.
+
+### Verificación
+
+- `npm run check`: correcto; arquitectura **462 archivos / 1.160 imports**.
+- Suite completa: **269 archivos / 1.802 pruebas**.
+- Tablero: **30 / 2.382 → 32 / 2.450** pruebas; CSS **12 / 1.549 → 13 / 1.650**.
+- Build de Tablero: **175.488 / 175.656 B**; Aula Documentos **386.830 / 387.000 B**; Hoja **313.046 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos.
+- El Site sigue en `1.1.41`; sin publicación ni migración remota desde este roadmap.
+
+### Seguimiento
+
+- TASK-02 archivado en [`historial/roadmap-task-02.md`](../historial/roadmap-task-02.md). El backlog queda con **11 entradas**; siguiente candidato **TASK-03**. `roadmap.md` se reinicia sin roadmap activo.
+
+---
+
 ## 2026-11-22 — Publicación 1.1.41
 
 **Estado:** Publicada en Sites.

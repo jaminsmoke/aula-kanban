@@ -1,8 +1,8 @@
 # Documento de entrega vinculado a una tarea
 
-> **Estado:** TASK-01 cerrado (Fases 1-3) · **Fecha:** 2026-11-22
-> **Alcance:** modelo, migración local, API de tareas, permisos y navegación a Aula Documentos.
-> **Roadmap:** [`roadmap.md`](roadmap.md)
+> **Estado:** TASK-01 y TASK-02 cerrados · **Fecha:** 2026-11-22
+> **Alcance:** modelo, migración local, API de tareas, permisos, apertura editable y retorno desde Aula Documentos.
+> **Roadmap:** sin roadmap activo
 
 ## 1. Punto de partida
 
@@ -122,3 +122,12 @@ La implementación concreta se valida en la Fase 3; no se crea una ruta paralela
 - El tablero escribe `doc` antes de abrir Aula Documentos en Tienda; `buildBoardUrl` conserva ese parámetro desconocido.
 - La apertura respeta el proyecto y la sesión; no se añade una ruta de documento paralela.
 - Suite completa **269 archivos / 1.794 pruebas**; arquitectura **462 / 1.159**; build Aula **386.826 B** y Hoja **313.046 B**; `npm run check`, `app:budget`, `perf:budget` y `perf:office` correctos.
+
+## 12. Aplicado en TASK-02
+
+- La ficha editable muestra **Abrir documento** cuando el vínculo está activo; archivado, papelera o ausencia muestran su estado sin abrir una entrega inválida.
+- `openTaskDocument` registra view, `classSection`, sección de administración y tarea antes de abrir la app.
+- `StoreDesktop` notifica App Close y `Board` vuelve a la ficha con la vista, sección y filtros de origen.
+- Al volver se resuelve la tarea actual en `data.tasks`; si cambió mientras la app estaba abierta, se reabre su estado y revisión más recientes.
+- La apertura funciona desde Tareas y Calendario; respeta docente, tarea propia, tarea libre y tarea ajena sin permiso.
+- Suite completa **269 archivos / 1.802 pruebas**; arquitectura **462 / 1.160**; build Tablero **175.488 B**, Aula **386.830 B** y Hoja **313.046 B**; `npm run check`, `app:budget`, `perf:budget` y `perf:office` correctos.
