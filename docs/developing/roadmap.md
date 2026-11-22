@@ -64,11 +64,12 @@
 ### Fase 2 — Implementación en la edición
 
 - [x] Mostrar «Abrir documento» junto al selector si el vínculo existe y está activo.
-- [ ] Abrir desde la ficha editable, reutilizando el mismo store/navigation.
+- [x] Abrir desde la ficha editable, reutilizando el mismo `openTaskDocument`.
 - [ ] Cubrir página de tareas y Calendario, profesor y alumno.
 - [ ] Conservar la vista y filtros al volver.
 - [ ] Cubrir documento archivado/eliminado y estado claro.
 - **Criterios:** recorrido propio, asignado/invitado, edición/lectura y volver sin pérdida.
+- **Avance Fase 2 (2026-11-22):** `TaskForm` muestra el botón por si hay vínculo activo y lo pulsa `openTaskDocument`; `TaskDialog` pasa `onOpenDocument`; suite afectada **63 tests**; `npm run check` correcto. Pendiente recorrido real propio/ajeno, filtros y estados archivado/eliminado en Fase 3.
 
 ### Fase 3 — E2e y permisos
 
