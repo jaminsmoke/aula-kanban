@@ -2,16 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 7 entradas pendientes
+> **Roadmap:** UI-16 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 6 entradas pendientes
 
 ---
-
-## 2026-11-22 — UI-16 · Dar prioridad a las tareas en la ficha de alumno
-
-- El puesto se repite en la cabecera y en los datos. Dos bloques «Sin especificar» ocupan la parte alta y una tarea pendiente vencida quedó debajo de una completada.
-- Compactar la cabecera, dar menos peso a los datos vacíos y acercar la lista de tareas al nombre. Mostrar primero las pendientes vencidas, después las próximas entregas y por último las completadas.
-- Verificar fichas completas y parciales, nombres largos y tareas con y sin fecha. Mantener accesibles las acciones de perfil.
 
 ## 2026-11-22 — TASK-05 · Acceso directo a Mis tareas y aviso de vencimiento
 
