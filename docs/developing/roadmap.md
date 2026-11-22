@@ -65,11 +65,12 @@
 
 ### Fase 2 — Implementación en SettingsView
 
-- [ ] Sustituir el forzado inmediato de `active` por un estado de acceso pendiente.
-- [ ] Aplicar la guarda a Administradores, Permisos y Almacenamiento.
-- [ ] Redirigir a Cuenta después de la comprobación cuando corresponda.
-- [ ] No reescribir la URL mientras la sección solicitada siga siendo válida.
+- [x] Sustituir el forzado inmediato de `active` por un estado de acceso pendiente.
+- [x] Aplicar la guarda a Administradores, Permisos y Almacenamiento.
+- [x] Redirigir a Cuenta después de la comprobación cuando corresponda.
+- [x] No reescribir la URL mientras la sección solicitada siga siendo válida.
 - **Criterios:** Almacenamiento, Administradores y Permisos sobreviven a la recarga con cuenta autorizada; sin acceso terminan en Cuenta.
+- **Cierre Fase 2 (2026-11-22):** las tres secciones conservan su enlace directo con propietario o administración, y la URL se mantiene. Sin acceso, las tres redirigen a Cuenta tras la comprobación. Tests de Ajustes **13**; `npm run check` correcto; arquitectura **463 / 1.166**; Tablero **32 / 2.681 ≤ 32 / 2.800** y CSS **12 / 1.555 ≤ 13 / 1.650**.
 
 ### Fase 3 — Pruebas y regresión
 

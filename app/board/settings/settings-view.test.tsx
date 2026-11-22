@@ -107,6 +107,46 @@ describe("SettingsView", () => {
     expect(screen.queryByRole("button", { name: /Volver a Clase/ })).toBeNull();
   });
 
+  it("conserva los enlaces directos a las tres secciones restringidas con acceso", async () => {
+    const sections = [
+      { id: "administradores", label: "Administradores", heading: "Administradores" },
+      { id: "permisos", label: "Permisos", heading: "Permisos" },
+      { id: "almacenamiento", label: "Almacenamiento", heading: "Almacenamiento de archivos" },
+    ] as const;
+
+    for (const item of sections) {
+      mockRequests();
+      window.history.replaceState({}, "", `/?project=p1&view=ajustes&section=${item.id}`);
+      const view = render(<SettingsView {...props} section={item.id} />);
+
+      expect(await screen.findByRole("heading", { name: item.heading })).toBeTruthy();
+      expect(screen.getByRole("button", { name: item.label }).getAttribute("aria-current")).toBe("page");
+      expect(window.location.search).toBe(`?project=p1&view=ajustes&section=${item.id}`);
+      view.unmount();
+    }
+  });
+
+  it("conserva Almacenamiento al recargar con permiso de administración", async () => {
+    mockRequests();
+    window.history.replaceState({}, "", "/?project=p1&view=ajustes&section=almacenamiento");
+    render(<SettingsView {...props} owner={false} admin section="almacenamiento" />);
+
+    expect(await screen.findByRole("heading", { name: "Almacenamiento de archivos" })).toBeTruthy();
+    expect(window.location.search).toBe("?project=p1&view=ajustes&section=almacenamiento");
+  });
+
+  it("redirige Administradores sin acceso", async () => {
+    const onSection = vi.fn();
+    mockRequests();
+    window.history.replaceState({}, "", "/?project=p1&view=ajustes&section=administradores");
+
+    render(<SettingsView {...props} owner={false} admin={false} section="administradores" onSection={onSection} />);
+
+    expect(screen.getByRole("heading", { name: "Cuenta" })).toBeTruthy();
+    await waitFor(() => expect(onSection).toHaveBeenCalledWith("cuenta"));
+    expect(window.location.search).toBe("?project=p1&view=ajustes");
+  });
+
   it("conserva la sección y espera la comprobación antes de redirigir", async () => {
     const onSection = vi.fn();
     mockRequests();
