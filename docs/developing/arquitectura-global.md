@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01, TASK-02, TASK-03, TASK-04, PERM-04, UI-15 y UI-16 completados; TASK-05 activo · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01, TASK-02, TASK-03, TASK-04, PERM-04, UI-15, UI-16 y TASK-05 completados; sin roadmap activo · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -220,7 +220,7 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 ## 8. Estado tras ARC-01, DEV-02 y ARC-02
 
 - `npm run arch:check` y `npm run check` están disponibles; CI ejecuta `arch:check`.
-- Resultado actual: **465 archivos de producto / 1.170 imports / 0 violaciones base / 0 ciclos / 0 problemas nuevos**.
+- Resultado actual: **466 archivos de producto / 1.172 imports / 0 violaciones base / 0 ciclos / 0 problemas nuevos**.
 - No quedan excepciones de tamaño ni dependencias `features → layout`; el layout compartido vive en `app/board/shared/ui/`.
 - El ciclo `auth ↔ demo` se eliminó con `lib/server/auth-user.ts`.
 - La configuración global de CodArch se retiró. DEV-02 quedó cerrado con el guard de MCP por repositorio, el inventario en [`mcp-tooling-audit.md`](mcp-tooling-audit.md) y la plantilla local [`mcp-project.example.json`](mcp-project.example.json).
@@ -248,4 +248,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - PERM-04 quedó cerrado y archivado en [`historial/roadmap-perm-04.md`](../historial/roadmap-perm-04.md): Almacenamiento, Administradores y Permisos sobreviven a la recarga con acceso y la redirección a Cuenta espera a la comprobación cuando falta permiso.
 - UI-15 quedó cerrado y archivado en [`historial/roadmap-ui-15.md`](../historial/roadmap-ui-15.md): tablero y Aula Store buscan sin tildes, mayúsculas ni espacios exteriores, y el tablero ofrece **Limpiar filtros** cuando no hay coincidencias.
 - UI-16 quedó cerrado y archivado en [`historial/roadmap-ui-16.md`](../historial/roadmap-ui-16.md): la ficha de alumno compacta la cabecera, oculta datos vacíos y ordena tareas vencidas, próximas, sin fecha y completadas.
-- TASK-05 está activo en [`roadmap.md`](roadmap.md): añadir **Mis tareas** con la ficha vinculada y marcar las tareas pendientes vencidas.
+- TASK-05 quedó cerrado y archivado en [`historial/roadmap-task-05.md`](../historial/roadmap-task-05.md): **Mis tareas** filtra por la ficha vinculada, las pendientes vencidas muestran un aviso con texto e icono y **Todas las tareas** recupera la vista completa.

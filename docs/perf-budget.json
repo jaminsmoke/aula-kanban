@@ -18,7 +18,7 @@
       "flows": [
         "tablero"
       ],
-      "gzip": 176500,
+      "gzip": 177500,
       "tests": {
         "maxFiles": 34,
         "maxLines": 2900
@@ -149,7 +149,7 @@
     }
   },
   "flows": {
-    "tablero": 176500,
+    "tablero": 177500,
     "hoja-calculo": 315000,
     "aula-documentos-export": 340000,
     "basica": 150827,

@@ -1,8 +1,36 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** TASK-05 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-22 — Roadmap TASK-05 — Acceso directo a Mis tareas y aviso de vencimiento
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- **Mis tareas** aparece en Clase > Tareas solo cuando la cuenta tiene ficha de alumno vinculada.
+- La acción filtra por `ownStudent.section` e incluye tareas propias, compartidas y con responsable textual.
+- Las tareas pendientes con fecha pasada muestran **Vencida** con texto e icono, sin depender solo del color.
+- Las completadas y las tareas sin fecha no se marcan como vencidas.
+- **Todas las tareas** recupera la vista completa.
+- Sin cambios de modelo, API, permisos, datos, URLs externas ni versión del Site. No hay migración.
+
+### Verificación
+
+- `npm run check`: correcto; arquitectura **466 archivos / 1.172 imports**.
+- Suite completa: **274 archivos / 1.845 pruebas**.
+- Tablero: **34 / 2.864 → 34 / 2.900** pruebas; CSS **12 / 1.561 → 13 / 1.650**.
+- Build de Tablero: **176.720 / 177.500 B**; Aula Documentos **386.900 / 387.000 B**; Hoja **313.110 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos.
+- El Site sigue en `1.1.41`; sin publicación ni migración remota desde este roadmap.
+
+### Seguimiento
+
+- TASK-05 archivado en [`historial/roadmap-task-05.md`](../historial/roadmap-task-05.md). El backlog queda con **5 entradas**; siguiente candidato **PER-09**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 
