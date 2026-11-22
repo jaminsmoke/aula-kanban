@@ -6,6 +6,17 @@
 
 ---
 
+## 2026-11-22 — Publicación 1.1.40
+
+**Estado:** Publicada en Sites.
+
+- ARC-11 a ARC-14 comparten el guardado con versión, reducen los campos que expone Aula Documentos, reutilizan la base CSS de las ventanas y unifican los validadores de límites documentales.
+- El producto pasa de 66.108 a 65.958 líneas físicas, incluidas 116 líneas menos de CSS. Las pruebas suman 191 líneas y la documentación de las fases, 1.266.
+- Pasaron 1.778 pruebas, `npm run check`, el build y los presupuestos general y Office. La apertura de Aula Documentos mide 386.677 de 387.000 B gzip.
+- La portada, la documentación y el catálogo mediante el plugin respondieron en producción. La publicación no requirió migraciones.
+
+---
+
 ## 2026-11-22 — Roadmap ARC-14 — Reutilizar los límites de importación y revisión documental
 
 **Estado:** Completada - Sin publicación en Sites
