@@ -21,6 +21,7 @@ const task: Task = {
 
 const { crearMiniatura } = vi.hoisted(() => ({ crearMiniatura: vi.fn() }));
 vi.mock("../../shared/image-thumbnail", () => ({ crearMiniaturaDeArchivo: crearMiniatura }));
+vi.mock("../../shared/whiteboard", () => ({ default: () => <div>Pizarra de prueba</div> }));
 
 const documents = [
   { id: "doc1", title: "Informe", status: "active" as const },
@@ -239,7 +240,10 @@ describe("TaskDialog", () => {
     expect(props.onClose).not.toHaveBeenCalled();
     expect(screen.getByRole("alert", { name: "Confirmar descarte de cambios" })).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("button", { name: "Seguir editando" }));
+    fireEvent(screen.getByRole("dialog", { name: "Editar tarea" }), new Event("cancel", { bubbles: true, cancelable: true }));
+    expect(props.onClose).not.toHaveBeenCalled();
+    expect(screen.queryByRole("alert", { name: "Confirmar descarte de cambios" })).toBeNull();
+
     fireEvent.click(screen.getByRole("button", { name: "Cerrar" }));
     expect(props.onClose).not.toHaveBeenCalled();
     expect(screen.getByRole("alert", { name: "Confirmar descarte de cambios" })).toBeTruthy();
@@ -252,6 +256,39 @@ describe("TaskDialog", () => {
 
     expect(props.onClose).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole("alert", { name: "Confirmar descarte de cambios" })).toBeNull();
+  });
+
+  it("protege una tarea nueva con cambios y conserva su borrador", () => {
+    const { props, rerender } = renderDialog();
+    rerender(<TaskDialog {...props} form={{ ...blank, title: "Nueva tarea" }} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+    expect(props.onClose).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert", { name: "Confirmar descarte de cambios" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Seguir editando" }));
+    expect(screen.getByRole("button", { name: /Crear tarea/ }).closest("form")?.getAttribute("data-unsaved")).toBe("true");
+  });
+
+  it("cierra el detalle de solo lectura sin confirmación", () => {
+    const { props } = renderDialog({ editor: { task, status: "pending" }, form: task, canEditTask: () => false });
+
+    fireEvent.click(screen.getByRole("button", { name: "Cerrar" }));
+
+    expect(props.onClose).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("alert", { name: "Confirmar descarte de cambios" })).toBeNull();
+  });
+
+  it("enfoca Seguir editando y devuelve el foco al título", async () => {
+    const { props, rerender } = renderDialog({ editor: { task, status: "pending" }, form: task });
+    rerender(<TaskDialog {...props} form={{ ...task, title: "Otra tarea" }} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+    const keep = screen.getByRole("button", { name: "Seguir editando" });
+    expect(document.activeElement).toBe(keep);
+
+    fireEvent.click(keep);
+    await waitFor(() => expect(document.activeElement?.id).toBe("task-title"));
   });
 
   it("deja el responsable libre en texto cuando no hay fichas vinculadas", () => {

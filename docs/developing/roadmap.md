@@ -76,11 +76,12 @@
 
 ### Fase 3 — Pruebas de regresión y accesibilidad
 
-- [ ] Cubrir tarea nueva, tarea existente, título, descripción, fecha, prioridad, estado, responsables, imagen y documento.
-- [ ] Probar Esc, X, Cancelar, Seguir editando y Descartar cambios.
-- [ ] Comprobar ficha intacta, cambio deshecho, guardado correcto y detalle de solo lectura.
-- [ ] Verificar anuncio accesible, foco y ausencia de dobles confirmaciones.
+- [x] Cubrir tarea nueva, tarea existente, título, descripción, fecha, prioridad, estado, responsables, imagen y documento.
+- [x] Probar Esc, X, Cancelar, Seguir editando y Descartar cambios.
+- [x] Comprobar ficha intacta, cambio deshecho, guardado correcto y detalle de solo lectura.
+- [x] Verificar anuncio accesible, foco y ausencia de dobles confirmaciones.
 - **Criterios:** cada cierre tiene un resultado observable y no quedan cambios perdidos en los casos cubiertos.
+- **Cierre Fase 3 (2026-11-22):** comparación cubierta para todos los campos; Esc, X, Cancelar, Seguir editando y Descartar; tarea nueva y existente, intacta y solo lectura; foco en el aviso y retorno al título. `TaskDialog` y helper **32 tests**; `app/board` **124 archivos / 663 pruebas**; `npm run check` y presupuesto correctos; límite de tests del Tablero **2.600**.
 
 ### Fase 4 — Verificación y cierre
 

@@ -111,7 +111,7 @@ export default function TaskDialog({
 
   function keepEditing() {
     setConfirmDiscard(false);
-    window.requestAnimationFrame(() => document.getElementById("task-title")?.focus());
+    window.setTimeout(() => document.getElementById("task-title")?.focus(), 0);
   }
 
   /**
