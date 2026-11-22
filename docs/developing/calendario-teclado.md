@@ -1,6 +1,6 @@
 # Teclado y foco en el calendario
 
-> **Estado:** UI-12 Fases 1-2 · **Fecha:** 2026-11-22
+> **Estado:** UI-12 completado (Fases 1-3) · **Fecha:** 2026-11-22
 > **Alcance:** eventos del calendario de Clase, apertura de la ficha y retorno del foco.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -80,3 +80,11 @@ Agenda renderiza una tabla y coloca el `onClick` en el `td.rbc-agenda-event-cell
 - Se probaron Mes, Semana, Agenda, el nombre accesible, Enter, Espacio y el retorno de foco.
 - Suite completa **268 archivos / 1.788 pruebas**; `npm run check` y `app:budget` correctos.
 - Sin cambios de modelo, permisos, datos ni versión del Site.
+
+## 7. Aplicado en la Fase 3
+
+- Verificados el foco visible, Enter/Espacio, el clic sin doble activación y el retorno de foco en Mes, Semana y Agenda.
+- El editor conserva el modo de lectura para las tareas que no se pueden editar.
+- `npm run check` correcto; arquitectura **461 / 1.155**; suite **268 / 1.788**.
+- Build de Aula **386.830 / 387.000 B**; Hoja **313.047 / 315.000 B**; `app:budget`, `perf:budget` y `perf:office` correctos.
+- Site `1.1.40`, sin publicación.

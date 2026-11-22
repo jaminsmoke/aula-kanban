@@ -1,8 +1,36 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** UI-12 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-22 — Roadmap UI-12 — Abrir tareas del calendario con el teclado
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Cada tarea del calendario se renderiza como un botón enfocable con nombre accesible de título y estado.
+- Enter y Espacio abren la ficha; el clic y el toque conservan su comportamiento, sin doble activación.
+- El foco vuelve al evento al cerrar la ficha; `Modal` restaura el control de origen.
+- Mes, Semana y Agenda comparten el mismo control, incluidas las tareas de día completo.
+- Sin cambios de modelo, permisos, datos, URLs, MCP ni versión del Site.
+- Contrato en [`calendario-teclado.md`](calendario-teclado.md).
+
+### Verificación
+
+- `npm run check`: correcto; arquitectura **461 archivos / 1.155 imports**.
+- Suite completa: **268 archivos / 1.788 pruebas**.
+- Tablero: **29 / 2.273 → 32 / 2.450** líneas de prueba; CSS **12 / 1.549 → 13 / 1.650**.
+- Build de Aula Documentos: **386.830 / 387.000 B**; Hoja de cálculo **313.047 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos.
+- El Site sigue en `1.1.40`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- UI-12 archivado en [`historial/roadmap-ui-12.md`](../historial/roadmap-ui-12.md). El backlog queda con **2 entradas** (TASK-01 y DEV-01); siguiente candidato **TASK-01**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 
