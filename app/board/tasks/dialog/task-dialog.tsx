@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { ArrowRight, Trash2 } from "lucide-react";
 import type { Task, TaskFields } from "../../../../lib/domain/task";
@@ -12,6 +12,7 @@ import TaskDetail from "./task-detail";
 import TaskForm from "./task-form";
 import TaskWhiteboard from "./task-whiteboard";
 import type { TaskDocumentOption } from "../use-task-documents";
+import { sameTaskFields } from "./task-dialog-utils";
 import "./task-dialog.css";
 
 /**
@@ -51,6 +52,12 @@ export default function TaskDialog({
   onOpenDocument?: (documentId: string) => void;
 }) {
   const readOnly = Boolean(editor.task && !canEditTask(editor.task));
+  const draftKey = editor.task ? `task:${editor.task.id}` : `new:${editor.status}`;
+  // La instantánea solo cambia al abrir otra ficha; `form` avanza con cada
+  // edición y no debe reiniciar el borrador inicial.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- la clave delimita la instantánea
+  const draft = useMemo(() => ({ key: draftKey, fields: form }), [draftKey]);
+  const hasPendingChanges = !readOnly && !sameTaskFields(form, draft.fields);
   const [tab, setTab] = useState<"resumen" | "asignaciones" | "pizarra">("resumen");
   // En la pestaña Pizarra el diálogo se ensancha para que el lienzo y sus
   // menús quepan; al ampliar, la pizarra se muestra como popup fijo sobre
@@ -103,7 +110,7 @@ export default function TaskDialog({
 
   return (
     <Modal title={readOnly ? "Detalle de la tarea" : editor.task ? "Editar tarea" : "Nueva tarea"} onClose={onClose} closable={!saving} className={boardTab ? "task-dialog-board" : undefined}>
-      {readOnly && editor.task ? <TaskDetail task={editor.task} documents={documents} onOpenDocument={onOpenDocument} /> : <form onSubmit={handleSubmit} noValidate className={claiming ? "task-form claiming" : "task-form"}>
+      {readOnly && editor.task ? <TaskDetail task={editor.task} documents={documents} onOpenDocument={onOpenDocument} /> : <form onSubmit={handleSubmit} noValidate className={claiming ? "task-form claiming" : "task-form"} data-unsaved={hasPendingChanges ? "true" : undefined}>
         {claiming && <p className="claim-banner">Asígnate esta tarea y guarda para poder editar sus detalles.</p>}
         {editor.task && <p className="intro">Creada por: {editor.task.creator || "No registrado"}</p>}
         <div className="task-tabs" role="tablist" aria-label="Secciones de la tarea">

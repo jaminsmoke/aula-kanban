@@ -1,3 +1,5 @@
+import type { TaskFields } from "../../../../lib/domain/task";
+
 /**
  * Serializa una persona en el formato `kind:profileId` del selector.
  * @param kind - `student` o `teacher`.
@@ -6,6 +8,32 @@
  */
 export function personValue(kind: string, profileId: string): string {
   return `${kind}:${profileId}`;
+}
+
+/**
+ * Compara dos formularios de tarea por todos los campos editables.
+ * @param current - Formulario actual.
+ * @param initial - Instantánea tomada al abrir la ficha.
+ * @returns `true` si no hay cambios pendientes.
+ */
+export function sameTaskFields(current: TaskFields, initial: TaskFields): boolean {
+  return current.title === initial.title
+    && current.description === initial.description
+    && current.imageUrl === initial.imageUrl
+    && current.assignee === initial.assignee
+    && current.dueDate === initial.dueDate
+    && current.priority === initial.priority
+    && current.status === initial.status
+    && (current.documentId ?? null) === (initial.documentId ?? null)
+    && current.assignees.length === initial.assignees.length
+    && current.assignees.every((person, index) => {
+      const original = initial.assignees[index];
+      return original !== undefined
+        && person.kind === original.kind
+        && person.profileId === original.profileId
+        && person.name === original.name
+        && Boolean(person.removed) === Boolean(original.removed);
+    });
 }
 
 /**

@@ -57,11 +57,12 @@
 
 ### Fase 1 — Instantánea y detección de cambios
 
-- [ ] Fijar la instantánea del formulario al abrir una tarea nueva o existente.
-- [ ] Comparar todos los campos editables y responsables con esa instantánea.
-- [ ] Distinguir ficha intacta, cambio real y cambio deshecho.
-- [ ] Mantener el borrador y el foco mientras la confirmación está abierta.
+- [x] Fijar la instantánea del formulario al abrir una tarea nueva o existente.
+- [x] Comparar todos los campos editables y responsables con esa instantánea.
+- [x] Distinguir ficha intacta, cambio real y cambio deshecho.
+- [ ] Mantener el borrador y el foco mientras la confirmación está abierta (se conecta en Fase 2).
 - **Criterios:** una ficha sin tocar cierra directamente; cualquier cambio real activa la guarda; volver al valor inicial la desactiva.
+- **Avance Fase 1 (2026-11-22):** `TaskDialog` guarda una instantánea por tarea y compara todos los campos con `sameTaskFields`; `data-unsaved` refleja el cambio pendiente. Tests: `TaskDialog` y helper **26**; `npm run check` correcto; arquitectura **462 / 1.162**.
 
 ### Fase 2 — Confirmación y cierre protegido
 

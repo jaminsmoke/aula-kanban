@@ -67,6 +67,18 @@ describe("TaskDialog", () => {
     expect(props.onForm).toHaveBeenCalledWith(expect.objectContaining({ title: "Sensores" }));
   });
 
+  it("detecta cambios pendientes y vuelve a limpio al deshacerlos", () => {
+    const { props, rerender } = renderDialog({ editor: { task, status: "pending" }, form: task });
+    const form = screen.getByRole("button", { name: /Guardar cambios/ }).closest("form")!;
+    expect(form.getAttribute("data-unsaved")).toBeNull();
+
+    rerender(<TaskDialog {...props} form={{ ...task, title: "Otra tarea" }} />);
+    expect(form.getAttribute("data-unsaved")).toBe("true");
+
+    rerender(<TaskDialog {...props} form={task} />);
+    expect(form.getAttribute("data-unsaved")).toBeNull();
+  });
+
   it("vincula un documento activo desde el formulario", () => {
     const { props } = renderDialog({ documents });
 
