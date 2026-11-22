@@ -126,6 +126,23 @@ describe("useTasks", () => {
     expect(result.current.visible.map((item) => item.id)).toEqual(["t1"]);
   });
 
+  it("incluye las tareas compartidas al filtrar Mis tareas", () => {
+    const data = makeData({
+      tasks: [
+        task({ id: "own", assignees: [{ kind: "student", profileId: "s1", name: "Ada" }] }),
+        task({ id: "shared", assignees: [{ kind: "student", profileId: "s1", name: "Ada" }, { kind: "student", profileId: "s2", name: "Grace" }] }),
+        task({ id: "other", assignees: [{ kind: "student", profileId: "s2", name: "Grace" }] }),
+      ],
+      students: [student, { ...student, section: "s2", name: "Grace", displayName: "Grace" }],
+      ownStudent: student,
+    });
+    const { result } = renderHook(() => useTasks({ data, hasProject: true, canManage: false, isGuest: false, notify: vi.fn() }));
+
+    act(() => result.current.setStudentFilter("s1"));
+
+    expect(result.current.visible.map((item) => item.id)).toEqual(["own", "shared"]);
+  });
+
   it("desactiva la reclamación para docentes, invitados y cuentas sin ficha", () => {
     const free = task() as Task;
     const cases = [

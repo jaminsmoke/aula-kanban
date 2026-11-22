@@ -85,6 +85,12 @@ describe("KanbanView", () => {
     expect(props.onOpenEditor).toHaveBeenCalledWith("pending");
   });
 
+  it("oculta Mis tareas sin ficha vinculada", () => {
+    renderBoard();
+
+    expect(screen.queryByRole("button", { name: "Mis tareas" })).toBeNull();
+  });
+
   it("abre Mis tareas con la ficha propia y permite volver a todas", () => {
     const { props } = renderBoard({ ownStudent: student });
     fireEvent.click(screen.getByRole("button", { name: "Mis tareas" }));

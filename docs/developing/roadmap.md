@@ -76,11 +76,12 @@
 
 ### Fase 3 — Pruebas de acceso, permisos y vencimiento
 
-- [ ] Probar cuenta con ficha vinculada y sin ficha.
-- [ ] Probar tareas propias, compartidas y con responsable textual.
-- [ ] Comprobar completadas y sin fecha fuera del aviso.
-- [ ] Verificar el retorno a todas las tareas, foco y accesibilidad.
+- [x] Probar cuenta con ficha vinculada y sin ficha.
+- [x] Probar tareas propias, compartidas y con responsable textual.
+- [x] Comprobar completadas y sin fecha fuera del aviso.
+- [x] Verificar el retorno a todas las tareas, foco y accesibilidad.
 - **Criterios:** el acceso no aparece para quien no tiene ficha y el aviso de vencimiento es correcto en todos los casos.
+- **Cierre Fase 3 (2026-11-22):** tests de tablero, tarjeta, contrato y filtros **31** cubren ficha propia, compartidas, sin ficha, retorno a todas, vencidas, completadas y sin fecha. `npm run check` correcto; arquitectura **466 / 1.172**; Tablero **34 / 2.864 ≤ 34 / 2.900** y CSS **12 / 1.561 ≤ 13 / 1.650**.
 
 ### Fase 4 — Verificación y cierre
 
