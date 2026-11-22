@@ -74,11 +74,12 @@
 
 ### Fase 3 — Pruebas y regresión
 
-- [ ] Probar recarga y enlace directo a las tres secciones restringidas con propietario/administración.
-- [ ] Probar las mismas rutas con rol sin acceso y comprobar la URL final.
-- [ ] Probar Tokens MCP en demo/invitado sin alterar su regla actual.
-- [ ] Verificar el estado de comprobación, el foco y la ausencia de contenido privilegiado antes de tiempo.
+- [x] Probar recarga y enlace directo a las tres secciones restringidas con propietario/administración.
+- [x] Probar las mismas rutas con rol sin acceso y comprobar la URL final.
+- [x] Probar Tokens MCP en demo/invitado sin alterar su regla actual.
+- [x] Verificar el estado de comprobación, la navegación activa y la ausencia de contenido privilegiado antes de tiempo.
 - **Criterios:** las rutas directas tienen un resultado estable y ninguna cuenta sin acceso ve una sección restringida.
+- **Cierre Fase 3 (2026-11-22):** tests de Ajustes **15** cubren propietario, administración, tres secciones restringidas, carga pendiente, redirect sin acceso con URL canónica y Tokens MCP en demo. `npm run check` correcto; arquitectura **463 / 1.166**; Tablero **32 / 2.711 ≤ 32 / 2.800** y CSS **12 / 1.555 ≤ 13 / 1.650**.
 
 ### Fase 4 — Verificación y cierre
 

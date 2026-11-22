@@ -147,6 +147,42 @@ describe("SettingsView", () => {
     expect(window.location.search).toBe("?project=p1&view=ajustes");
   });
 
+  it("mantiene los enlaces directos de las tres secciones para administración", async () => {
+    const sections = [
+      { id: "administradores", heading: "Administradores" },
+      { id: "permisos", heading: "Permisos" },
+      { id: "almacenamiento", heading: "Almacenamiento de archivos" },
+    ] as const;
+
+    for (const item of sections) {
+      mockRequests();
+      window.history.replaceState({}, "", `/?project=p1&view=ajustes&section=${item.id}`);
+      const view = render(<SettingsView {...props} owner={false} admin section={item.id} />);
+
+      expect(await screen.findByRole("heading", { name: item.heading })).toBeTruthy();
+      expect(window.location.search).toBe(`?project=p1&view=ajustes&section=${item.id}`);
+      view.unmount();
+    }
+  });
+
+  it("no muestra contenido restringido mientras comprueba las tres secciones", () => {
+    const sections = [
+      { id: "administradores", heading: "Administradores" },
+      { id: "permisos", heading: "Permisos" },
+      { id: "almacenamiento", heading: "Almacenamiento de archivos" },
+    ] as const;
+
+    for (const item of sections) {
+      mockRequests();
+      window.history.replaceState({}, "", `/?project=p1&view=ajustes&section=${item.id}`);
+      const view = render(<SettingsView {...props} projectsLoaded={false} owner={false} admin={false} section={item.id} />);
+
+      expect(screen.getByRole("status").textContent).toContain("Comprobando permisos…");
+      expect(screen.queryByRole("heading", { name: item.heading })).toBeNull();
+      view.unmount();
+    }
+  });
+
   it("conserva la sección y espera la comprobación antes de redirigir", async () => {
     const onSection = vi.fn();
     mockRequests();
