@@ -2,16 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 9 entradas pendientes
+> **Roadmap:** PERM-04 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 8 entradas pendientes
 
 ---
-
-## 2026-11-22 — PERM-04 · Conservar la sección de Ajustes al recargar
-
-- El administrador abrió Almacenamiento desde el menú, pero al recargar o abrir el enlace directo volvió a Cuenta.
-- Conservar la sección solicitada mientras se comprueban los permisos. Aplicar la redirección a Cuenta cuando se confirme que el rol carece de acceso.
-- Verificar recarga y enlaces directos a Almacenamiento, Administradores y Permisos con una cuenta autorizada y con una cuenta sin acceso.
 
 ## 2026-11-22 — UI-15 · Buscar sin depender de las tildes y limpiar filtros
 
