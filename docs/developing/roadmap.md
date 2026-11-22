@@ -17,7 +17,7 @@
 
 **Dentro:**
 
-- Inventario de reglas, variables y consumidores de `edu-base.css`, `calculadora.css`, `tabla-periodica.css` y las ventanas de Mapas, Líneas de tiempo, Tarjetas, Moléculas y Hoja de cálculo.
+- Inventario de reglas, variables y consumidores de `edu-base.css`, `calculadora.css`, `tabla-periodica.css` y las ventanas de Mapas, Líneas de tiempo, Tarjetas, Moléculas y Hoja de cálculo; Ajedrez, Física y Geometría reproducen el mismo patrón y se incorporan al alcance.
 - Eliminación de la regla `.edu-app` duplicada en Calculadora.
 - Decisión entre reutilizar `.edu-app` o introducir una clase base neutral para las ventanas.
 - Reutilización de la base solo cuando no altere la disposición, el scroll ni el foco de cada app.
@@ -55,12 +55,13 @@
 
 ### Fase 1 — Inventario y contrato de la ventana
 
-- [ ] Inventariar reglas duplicadas, variables locales y consumidores en las seis apps.
-- [ ] Comparar `.edu-app` con las clases raíz de Mapas, Líneas, Tarjetas, Moléculas y Hoja.
-- [ ] Decidir si la base compartida es `.edu-app` o una clase neutral nueva.
-- [ ] Identificar variables sin consumidores y reglas que deben seguir locales.
-- [ ] Documentar el contrato en [`css-ventanas-apps.md`](css-ventanas-apps.md).
+- [x] Inventariar reglas duplicadas, variables locales y consumidores en las apps afectadas.
+- [x] Comparar `.edu-app` con las clases raíz de Mapas, Líneas, Tarjetas, Moléculas y Hoja.
+- [x] Decidir si la base compartida es `.edu-app` o una clase neutral nueva.
+- [x] Identificar variables sin consumidores y reglas que deben seguir locales.
+- [x] Documentar el contrato en [`css-ventanas-apps.md`](css-ventanas-apps.md).
 - **Criterios:** mapa completo y decisión justificada; sin cambios de producto.
+- **Cierre (2026-11-22):** contrato en [`css-ventanas-apps.md`](css-ventanas-apps.md). `.edu-app` está duplicada en `calculadora.css`; sus 14 variables locales no tienen ningún `var()`; ocho clases raíz más repiten la misma disposición. Se decide una clase neutral `.app-window` que conserve `container-name` y variables locales por app. Sin cambios de producto.
 
 ### Fase 2 — Base compartida y Calculadora
 
@@ -97,5 +98,6 @@
 ## 7. Notas de sesión
 
 - 2026-11-22: **Roadmap abierto.** ARC-13 es la siguiente candidata recomendada del backlog; quedan ARC-14 y DEV-01. Se empieza por el inventario y el contrato de ventana. Sin cambios de producto en esta apertura.
+- 2026-11-22: **Fase 1 completada.** Inventario en [`css-ventanas-apps.md`](css-ventanas-apps.md): `.edu-app` duplicada, 14 variables sin consumidor, ocho clases raíz con la misma disposición y decisión de usar `.app-window`. Sin cambios de producto.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.
