@@ -49,9 +49,27 @@ import HojaCalculoApp from "./hoja-calculo-app";
 
 const props = { projectId: "p1", role: "owner" as const };
 
+class ClipboardItemStub {
+  readonly data: Record<string, Blob>;
+
+  constructor(data: Record<string, Blob>) {
+    this.data = data;
+  }
+}
+
+function installClipboard(write = vi.fn(), writeText = vi.fn()) {
+  Object.defineProperty(window.navigator, "clipboard", {
+    configurable: true,
+    value: { write, writeText },
+  });
+  return { write, writeText };
+}
+
 describe("Hoja de cálculo", () => {
   afterEach(() => {
     vi.clearAllMocks();
+    vi.unstubAllGlobals();
+    Object.defineProperty(window.navigator, "clipboard", { configurable: true, value: undefined });
     spreadsheetMock.worksheet.getStyle.mockReturnValue({});
     documentMock.load.mockResolvedValue({ state: null, updatedAt: null, ok: true });
     documentMock.saveVersioned.mockResolvedValue({ status: "saved", updatedAt: 100 });
@@ -73,6 +91,70 @@ describe("Hoja de cálculo", () => {
     expect(options.worksheets[0].minDimensions).toEqual([6, 20]);
     expect(screen.getByText("Cálculo correcto")).toBeTruthy();
     expect(screen.getByText("4 fórmulas")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Copiar tabla" })).toHaveProperty("disabled", true);
+  });
+
+  it("copia la selección como tabla HTML y TSV", async () => {
+    const { write, writeText } = installClipboard(vi.fn().mockResolvedValue(undefined));
+    vi.stubGlobal("ClipboardItem", ClipboardItemStub);
+    render(<HojaCalculoApp {...props} />);
+    await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
+    const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
+      onselection?: (instance: unknown, left: number, top: number, right: number, bottom: number) => void;
+    };
+
+    options.onselection?.(spreadsheetMock.worksheet, 0, 0, 1, 1);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Copiar tabla" })).toHaveProperty("disabled", false));
+    const copyButton = screen.getByRole("button", { name: "Copiar tabla" });
+    copyButton.focus();
+    expect(document.activeElement).toBe(copyButton);
+    fireEvent.click(copyButton);
+
+    await waitFor(() => expect(write).toHaveBeenCalledTimes(1));
+    const item = write.mock.calls[0][0][0] as ClipboardItemStub;
+    expect(await item.data["text/html"].text()).toContain("<table>");
+    expect(await item.data["text/plain"].text()).toBe("Concepto\tCantidad\r\nMateriales\t2");
+    expect(writeText).not.toHaveBeenCalled();
+    expect(screen.getByRole("status").textContent).toContain("Selección copiada como tabla");
+  });
+
+  it("copia una sola celda como texto", async () => {
+    const { write, writeText } = installClipboard(vi.fn(), vi.fn().mockResolvedValue(undefined));
+    spreadsheetMock.worksheet.getData.mockReturnValueOnce([["Hola"]]);
+    render(<HojaCalculoApp {...props} />);
+    await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
+    const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
+      onselection?: (instance: unknown, left: number, top: number, right: number, bottom: number) => void;
+    };
+
+    options.onselection?.(spreadsheetMock.worksheet, 0, 0, 0, 0);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Copiar tabla" })).toHaveProperty("disabled", false));
+    fireEvent.click(screen.getByRole("button", { name: "Copiar tabla" }));
+
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith("Hola"));
+    expect(write).not.toHaveBeenCalled();
+    expect(screen.getByRole("status").textContent).toContain("Celda copiada");
+  });
+
+  it("avisa si la tabla no se puede copiar y usa el respaldo de texto", async () => {
+    const { write, writeText } = installClipboard(
+      vi.fn().mockRejectedValue(new Error("sin permiso")),
+      vi.fn().mockResolvedValue(undefined),
+    );
+    vi.stubGlobal("ClipboardItem", ClipboardItemStub);
+    render(<HojaCalculoApp {...props} />);
+    await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
+    const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
+      onselection?: (instance: unknown, left: number, top: number, right: number, bottom: number) => void;
+    };
+
+    options.onselection?.(spreadsheetMock.worksheet, 0, 0, 1, 1);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Copiar tabla" })).toHaveProperty("disabled", false));
+    fireEvent.click(screen.getByRole("button", { name: "Copiar tabla" }));
+
+    await waitFor(() => expect(writeText).toHaveBeenCalled());
+    expect(write).toHaveBeenCalled();
+    expect(screen.getByRole("status").textContent).toContain("se copió como texto");
   });
 
   it("añade filas y columnas", async () => {
@@ -310,7 +392,10 @@ describe("Hoja de cálculo", () => {
     expect(screen.getByLabelText("Fórmula de la celda seleccionada")).toHaveProperty("disabled", true);
     const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
       worksheets: Array<{ editable?: boolean }>;
+      onselection?: (instance: unknown, left: number, top: number, right: number, bottom: number) => void;
     };
+    options.onselection?.(spreadsheetMock.worksheet, 0, 0, 1, 1);
+    await waitFor(() => expect(screen.getByRole("button", { name: "Copiar tabla" })).toHaveProperty("disabled", false));
     expect(options.worksheets[0].editable).toBe(false);
   });
 

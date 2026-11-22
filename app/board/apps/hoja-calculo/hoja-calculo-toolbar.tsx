@@ -6,6 +6,7 @@ import {
   AlignRight,
   Bold,
   Columns3,
+  Copy,
   Download,
   Eraser,
   FolderOpen,
@@ -21,10 +22,12 @@ type HojaCalculoToolbarProps = {
   readOnly: boolean;
   saving: boolean;
   loading: boolean;
+  hasSelection: boolean;
   onAddRow: () => void;
   onAddColumn: () => void;
   onApplyStyle: (property: string, value: string, message: string) => void;
   onClearFormat: () => void;
+  onCopySelection: () => void;
   onExportCsv: () => void;
   onReload: () => void;
   onSave: () => void;
@@ -41,10 +44,12 @@ export function HojaCalculoToolbar({
   readOnly,
   saving,
   loading,
+  hasSelection,
   onAddRow,
   onAddColumn,
   onApplyStyle,
   onClearFormat,
+  onCopySelection,
   onExportCsv,
   onReload,
   onSave,
@@ -119,6 +124,15 @@ export function HojaCalculoToolbar({
         <button type="button" onClick={onExportCsv} disabled={!ready} aria-label="Exportar CSV">
           <Download size={15} aria-hidden />
           <span>CSV</span>
+        </button>
+        <button
+          type="button"
+          onClick={onCopySelection}
+          disabled={!ready || !hasSelection}
+          aria-label="Copiar tabla"
+        >
+          <Copy size={15} aria-hidden />
+          <span>Copiar</span>
         </button>
         <button type="button" onClick={onReload} disabled={loading} aria-label="Cargar hoja">
           <FolderOpen size={15} aria-hidden />

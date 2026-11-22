@@ -1,6 +1,6 @@
 # Integración entre Hoja de cálculo y Aula Documentos
 
-> **Estado:** ARC-10, Fases 1–2 · **Fecha:** 2026-11-21
+> **Estado:** ARC-10, Fases 1–3 · **Fecha:** 2026-11-21
 > **Alcance:** traslado unidireccional de una selección de Hoja de cálculo a una tabla de Aula Documentos.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -151,7 +151,7 @@ El pegado dentro de una tabla existente no forma parte del contrato inicial; la 
 ## 9. Baseline
 
 - Arquitectura: **461 archivos / 1.154 imports**.
-- Suite: **267 archivos / 1.763 pruebas**.
+- Suite: **267 archivos / 1.766 pruebas**.
 - Aula Documentos: **386.260 / 387.000 B**.
 - Hoja de cálculo: **311.063 / 315.000 B**.
 - Site: `1.1.38`.
@@ -165,3 +165,12 @@ El pegado dentro de una tabla existente no forma parte del contrato inicial; la 
 - `useHojaCalculoGrid` expone `selectedRange` y `selectionClipboard()` sin añadir todavía la acción de la barra.
 - Pruebas del adaptador: **7 casos**, incluidas celdas vacías, caracteres especiales, fórmulas, saltos de línea, filas irregulares y límites.
 - Presupuesto de pruebas de Hoja de cálculo: **6 archivos / 534 líneas → límite 6 / 550**; arquitectura **461 / 1.154**.
+
+## 11. Aplicado en la Fase 3
+
+- La barra incorpora **Copiar** con nombre accesible «Copiar tabla»; se habilita cuando hay una selección y sigue disponible en modo lectura.
+- La acción usa `navigator.clipboard.write` con HTML y texto. Si el navegador no permite `ClipboardItem`, copia el TSV y lo avisa en el estado.
+- Los estados diferencian tabla copiada, celda copiada, respaldo de texto y fallo del portapapeles.
+- No se modifica la hoja, el guardado, la carga ni las rutas de servidor.
+- Pruebas de copia de tabla, celda única, fallback y disponibilidad en solo lectura.
+- Presupuesto de pruebas de Hoja de cálculo: **6 archivos / 607 líneas → límite 6 / 650**; suite **267 / 1.766**; arquitectura **461 / 1.154**.

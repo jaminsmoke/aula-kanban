@@ -60,7 +60,7 @@
       "gzip": 315000,
       "tests": {
         "maxFiles": 6,
-        "maxLines": 550
+        "maxLines": 650
       },
       "css": {
         "maxFiles": 2,

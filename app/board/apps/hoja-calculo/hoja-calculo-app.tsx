@@ -43,10 +43,12 @@ export default function HojaCalculoApp({ projectId, role }: { projectId: string;
         readOnly={documentState.readOnly}
         saving={documentState.saving}
         loading={documentState.loading}
+        hasSelection={Boolean(grid.selectedRange)}
         onAddRow={grid.addRow}
         onAddColumn={grid.addColumn}
         onApplyStyle={grid.applyStyle}
         onClearFormat={grid.clearFormat}
+        onCopySelection={() => void grid.copySelection()}
         onExportCsv={grid.exportCsv}
         onReload={documentState.reloadDocument}
         onSave={grid.saveSheet}

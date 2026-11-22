@@ -3,7 +3,11 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
-import { buildSelectionClipboard, type SelectionClipboardResult } from "./hoja-calculo-clipboard";
+import {
+  buildSelectionClipboard,
+  writeSelectionClipboard,
+  type SelectionClipboardResult,
+} from "./hoja-calculo-clipboard";
 import { downloadSheetCsv } from "./hoja-calculo-export";
 import {
   buildFormulaSheet,
@@ -375,6 +379,22 @@ export function useHojaCalculoGrid({
     return buildSelectionClipboard(worksheet.getData(true, true) as SpreadsheetCell[][]);
   }
 
+  /**
+   * Copia la selección actual y comunica si se copió como tabla o solo como texto.
+   */
+  async function copySelection() {
+    const result = selectionClipboard();
+    if (!result.ok) {
+      onStatus(result.message);
+      return;
+    }
+    const outcome = await writeSelectionClipboard(result);
+    if (outcome === "table") onStatus("Selección copiada como tabla.");
+    else if (outcome === "text") onStatus("Celda copiada.");
+    else if (outcome === "text-fallback") onStatus("No se pudo copiar la tabla; se copió como texto.");
+    else onStatus("No se pudo copiar la selección. Revisa el permiso del portapapeles.");
+  }
+
   return {
     ready,
     initError,
@@ -392,5 +412,6 @@ export function useHojaCalculoGrid({
     saveSheet,
     exportCsv,
     selectionClipboard,
+    copySelection,
   };
 }

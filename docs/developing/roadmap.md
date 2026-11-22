@@ -78,11 +78,12 @@
 
 ### Fase 3 — Acción de copia en Hoja de cálculo
 
-- [ ] Exponer el rango seleccionado desde la rejilla sin alterar el guardado, la carga ni el cálculo.
-- [ ] Añadir una acción etiquetada para copiar la selección como tabla, disponible también en solo lectura.
-- [ ] Informar del resultado, del límite o del fallo del portapapeles con el estado existente.
-- [ ] Cubrir teclado, foco, textos de ayuda y ausencia de selección.
+- [x] Exponer el rango seleccionado desde la rejilla sin alterar el guardado, la carga ni el cálculo.
+- [x] Añadir una acción etiquetada para copiar la selección como tabla, disponible también en solo lectura.
+- [x] Informar del resultado, del límite o del fallo del portapapeles con el estado existente.
+- [x] Cubrir teclado, foco, textos de ayuda y ausencia de selección.
 - **Criterios:** la acción no muta la hoja, funciona con los permisos actuales y no añade una ruta de servidor.
+- **Cierre (2026-11-21):** botón **Copiar** con nombre accesible “Copiar tabla”, habilitado solo con selección y disponible en solo lectura. Escribe HTML + TSV con `ClipboardItem`; si no está disponible, copia TSV y lo avisa. Estados de tabla, celda, fallback y fallo. Suite **267 archivos / 1.766 pruebas**; arquitectura **461 / 1.154**; presupuesto de Hoja **6 / 607 → 6 / 650**.
 
 ### Fase 4 — Recepción y verificación en Aula Documentos
 
@@ -115,5 +116,6 @@
 - 2026-11-21: **Roadmap abierto.** ARC-10 sale del backlog tras cerrar ARC-09; queda **1 entrada** (DEV-01). Se mantiene Hoja de cálculo como app y se empieza por un flujo de copia unidireccional. Sin cambios de código de producto.
 - 2026-11-21: **Fase 1 completada.** Contrato en [`integracion-hoja-aula.md`](integracion-hoja-aula.md): copia HTML con TSV de respaldo, valores visibles, sin fórmulas ni estilos, límites de Aula y permisos definidos. El pegado nativo de tablas HTML y el rechazo de 51 filas quedan comprobados con Tiptap y `parseAulaDocument`.
 - 2026-11-21: **Fase 2 completada.** Adaptador puro de selección con HTML/TSV, protección de fórmulas y límites de Aula. Suite **267 archivos / 1.763 pruebas** y presupuesto de Hoja ajustado a 6 / 534 → 6 / 550. Sin UI de copia todavía.
+- 2026-11-21: **Fase 3 completada.** Botón **Copiar** con HTML + TSV, fallback de texto, estados de error y disponibilidad en solo lectura. Suite **267 archivos / 1.766 pruebas**; presupuesto de Hoja **6 / 607 → 6 / 650**. Sin cambios en el guardado.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.
