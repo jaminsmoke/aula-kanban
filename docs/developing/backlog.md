@@ -3,9 +3,51 @@
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap:** TASK-02 activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 4 entradas pendientes
+> **Estado:** 11 entradas pendientes
 
 ---
+
+## 2026-11-22 — TASK-03 · Avisar antes de descartar cambios en una tarea
+
+- En la prueba local de 1.1.41, cambiar el título y pulsar Esc cerró la ficha y se perdió el cambio sin aviso.
+- Pedir confirmación al cerrar una ficha con cambios pendientes. Ofrecer volver a la edición conservando el borrador o descartar los cambios.
+- Verificar Esc, Cancelar y el botón de cierre en tareas nuevas y existentes. Una ficha intacta o recién guardada debe cerrar directamente.
+
+## 2026-11-22 — TASK-04 · Asignarse una tarea en un paso
+
+- «Asignarme y guardar» devolvió un error hasta que la alumna se eligió en la pestaña Asignaciones. La acción quedaba fuera de la vista inicial, detrás de varios campos deshabilitados.
+- Mostrar un detalle compacto con la acción **Asignarme** visible junto al resumen. Al pulsarla, usar la ficha vinculada a la cuenta activa.
+- Verificar que basta un paso en una tarea sin asignar, que respeta los permisos y que avisa si otra persona se asignó la tarea antes de guardar.
+
+## 2026-11-22 — PERM-04 · Conservar la sección de Ajustes al recargar
+
+- El administrador abrió Almacenamiento desde el menú, pero al recargar o abrir el enlace directo volvió a Cuenta.
+- Conservar la sección solicitada mientras se comprueban los permisos. Aplicar la redirección a Cuenta cuando se confirme que el rol carece de acceso.
+- Verificar recarga y enlaces directos a Almacenamiento, Administradores y Permisos con una cuenta autorizada y con una cuenta sin acceso.
+
+## 2026-11-22 — UI-15 · Buscar sin depender de las tildes y limpiar filtros
+
+- `geometria` no encontró Geometría en Aula Store e `investigacion` no encontró la tarea del tablero. La búsqueda sin coincidencias dejó las cuatro columnas vacías, cada una con su propio aviso.
+- Buscar con y sin tildes en el tablero y Aula Store. Mostrar una acción **Limpiar filtros** cuando la combinación de búsqueda y filtros no encuentre tareas.
+- Verificar las mismas coincidencias para cada término con y sin tilde y que la acción de limpieza devuelve las tareas a la vista.
+
+## 2026-11-22 — UI-16 · Dar prioridad a las tareas en la ficha de alumno
+
+- El puesto se repite en la cabecera y en los datos. Dos bloques «Sin especificar» ocupan la parte alta y una tarea pendiente vencida quedó debajo de una completada.
+- Compactar la cabecera, dar menos peso a los datos vacíos y acercar la lista de tareas al nombre. Mostrar primero las pendientes vencidas, después las próximas entregas y por último las completadas.
+- Verificar fichas completas y parciales, nombres largos y tareas con y sin fecha. Mantener accesibles las acciones de perfil.
+
+## 2026-11-22 — TASK-05 · Acceso directo a Mis tareas y aviso de vencimiento
+
+- La alumna llegó a sus tareas seleccionando su nombre en «Todos los alumnos». Las tarjetas pendientes con fecha pasada mostraban la fecha como las demás.
+- Añadir **Mis tareas** como acceso directo cuando la cuenta tenga una ficha vinculada. Identificar las tareas pendientes vencidas con texto o icono y contraste suficiente.
+- Verificar que el acceso usa la ficha vinculada, funciona con tareas compartidas y permite volver a todas las tareas. Las completadas y las que carecen de fecha quedan fuera del aviso de vencimiento.
+
+## 2026-11-22 — PER-09 · Organizar y distinguir las herramientas de Mi mochila y Maletín
+
+- Al escribir el nombre de carpeta para cada app se pudieron crear «Ciencias» y «ciencias» como dos carpetas distintas.
+- Permitir elegir una carpeta existente o crear una nueva. Detectar nombres equivalentes al crear y preservar el contenido de las carpetas existentes.
+- Probar un panel translúcido discreto sobre el gradiente actual y acentos por categoría que ayuden a reconocer las herramientas. Verificar legibilidad en claro y oscuro, foco visible y disposición en pantallas estrechas.
 
 ## 2026-11-22 — UI-13 · Arrastrar la tarea desde toda la tarjeta
 
