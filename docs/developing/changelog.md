@@ -1,8 +1,33 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-13 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
+
+---
+
+## 2026-11-22 — Roadmap ARC-13 — Retirar reglas CSS duplicadas en las ventanas de apps
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- `app/board/apps/app-window.css` define la base neutral `.app-window`; las diez entradas de app la importan y las nueve clases raíz la aplican. Cada app conserva su `container-name`, sus variables locales y sus reglas de contenido, foco y scroll.
+- Calculadora elimina el bloque `.edu-app` duplicado y las 14 variables sin consumidor. CSS neto: **-117 líneas** (133 retiradas, 16 añadidas); Calculadora **124 → 95** líneas y Hoja **345 → 335**.
+- Sin cambios de estructura React, datos, URLs, permisos, MCP ni versión del Site. La revisión visual usó una ruta temporal para Mapas, Líneas, Moléculas y Geometría; la ruta se retiró y no forma parte del cambio.
+
+### Verificación
+
+- `npm run check`: correcto; arquitectura **461 archivos / 1.154 imports**.
+- Suite completa: **268 archivos / 1.774 pruebas**.
+- Revisión a **390 y 1366 px**, temas claro y oscuro, apps juntas y separadas: sin desbordamiento de raíz, con foco y scroll operativos.
+- `app:budget`, `perf:budget` y `perf:office`: correctos.
+- Build de Aula Documentos: **386.673 / 387.000 B**; Hoja de cálculo **313.034 / 315.000 B**. La base compartida añade a Hoja un archivo y **172 B**.
+- El Site sigue en `1.1.39`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-13 archivado en [`historial/roadmap-arc-13.md`](../historial/roadmap-arc-13.md). El backlog queda con **2 entradas**; siguiente candidato **ARC-14**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 

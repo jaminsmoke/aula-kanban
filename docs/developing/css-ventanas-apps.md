@@ -113,8 +113,8 @@ La base no incluirá `container-name`: es la única propiedad que debe variar po
 
 - Arquitectura: **461 archivos / 1.154 imports**.
 - Suite: **268 archivos / 1.774 pruebas**.
-- Aula Documentos: **386.661 / 387.000 B**.
-- Hoja de cálculo: **313.027 / 315.000 B**.
+- Aula Documentos: **386.673 / 387.000 B**.
+- Hoja de cálculo: **313.034 / 315.000 B**.
 - Site: `1.1.39`.
 
 ## 9. Aplicado en la Fase 2
@@ -135,5 +135,5 @@ La base no incluirá `container-name`: es la única propiedad que debe variar po
 - Tema claro: fondo `rgb(245, 242, 251)` y texto `rgb(33, 27, 54)`. Tema oscuro: fondo `rgb(50, 43, 65)` y texto `rgb(244, 241, 251)`. Las diez ventanas responden igual a los tokens.
 - Foco de teclado visible con contorno `rgb(118, 86, 221) solid 2px`; el desplazamiento interno de Hoja de cálculo sigue operativo y no se modificaron reglas locales de foco ni de scroll.
 - `npm run check` correcto; suite **268 archivos / 1.774 pruebas**; arquitectura **461 / 1.154**. `app:budget`, `perf:budget` y `perf:office` correctos.
-- Build final: Aula Documentos **386.661 B** y Hoja de cálculo **313.027 B**. La base compartida añade a Hoja un archivo y **165 B** respecto de **312.862 B**, dentro del límite de **315.000 B**.
+- Build final: Aula Documentos **386.673 B** y Hoja de cálculo **313.034 B**. La base compartida añade a Hoja un archivo y **172 B** respecto de **312.862 B**, dentro del límite de **315.000 B**.
 - CSS neto: **-117 líneas**. La revisión no añadió reglas de producto ni cambió datos, URLs, permisos o la versión del Site.
