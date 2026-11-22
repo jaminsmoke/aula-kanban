@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { useTasks } from "./use-tasks";
 import type { BoardData } from "../shared/use-board-data";
+import type { Task } from "../../../lib/domain/task";
 import { jsonResponse } from "../../../vitest.setup";
 
 const student = {
@@ -96,6 +97,48 @@ describe("useTasks", () => {
     expect(result.current.studentFilter).toBe("s1");
     expect(result.current.editor?.task?.id).toBe("t1");
     expect(result.current.visible.map((item) => item.id)).toEqual(["t1"]);
+  });
+
+  it("asigna la tarea libre a la ficha propia con la revisión actual", async () => {
+    const updated = task({
+      assignee: "Ada",
+      assignees: [{ kind: "student", profileId: "s1", name: "Ada" }],
+    });
+    const fetchMock = vi.fn(async (_url: string, _init?: RequestInit) => jsonResponse(updated));
+    vi.stubGlobal("fetch", fetchMock);
+    const notify = vi.fn();
+    const data = makeData({ ownStudent: student });
+    const { result } = renderHook(() => useTasks({ data, hasProject: true, canManage: false, isGuest: false, notify }));
+
+    act(() => result.current.openEditor("pending", task() as Task));
+    expect(result.current.claiming).toBe(true);
+    await act(async () => result.current.claimTask());
+
+    const body = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(body).toMatchObject({
+      id: "t1",
+      revision: 0,
+      changes: {
+        title: "Investigar placas",
+        assignee: "Ada",
+        assignees: [{ kind: "student", profileId: "s1", name: "Ada" }],
+      },
+    });
+    expect(notify).toHaveBeenCalledWith("Tarea asignada.");
+    expect(result.current.editor).toBeNull();
+  });
+
+  it("mantiene la ficha y muestra el aviso si la tarea cambió al reclamarla", async () => {
+    const fetchMock = vi.fn(async () => jsonResponse({ message: "Esta tarea cambió en otra sesión." }, false, 409));
+    vi.stubGlobal("fetch", fetchMock);
+    const data = makeData({ ownStudent: student });
+    const { result } = renderHook(() => useTasks({ data, hasProject: true, canManage: false, isGuest: false, notify: vi.fn() }));
+
+    act(() => result.current.openEditor("pending", task() as Task));
+    await act(async () => result.current.claimTask());
+
+    expect(result.current.editor?.task?.id).toBe("t1");
+    expect(result.current.formError).toBe("Esta tarea cambió en otra sesión.");
   });
 
   it("crea la tarea desde el editor", async () => {

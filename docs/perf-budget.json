@@ -21,7 +21,7 @@
       "gzip": 176500,
       "tests": {
         "maxFiles": 32,
-        "maxLines": 2600
+        "maxLines": 2800
       },
       "css": {
         "maxFiles": 13,

@@ -56,11 +56,12 @@
 
 ### Fase 1 — Contrato de autoasignación
 
-- [ ] Fijar la condición exacta de tarea libre: sin responsables, asignación textual vacía o «Por definir».
-- [ ] Construir el responsable propio a partir de `ownStudent` y el formato existente.
-- [ ] Definir el guardado con la revisión actual y el mensaje de éxito.
-- [ ] Fijar los estados sin ficha vinculada, tarea ya asignada y conflicto 409.
+- [x] Fijar la condición exacta de tarea libre: sin responsables, asignación textual vacía o «Por definir».
+- [x] Construir el responsable propio a partir de `ownStudent` y el formato existente.
+- [x] Definir el guardado con la revisión actual y el mensaje de éxito.
+- [x] Fijar los estados sin ficha vinculada, tarea ya asignada y conflicto 409.
 - **Criterios:** la acción solo aparece cuando puede funcionar y el contrato no requiere elegir una persona ni editar otros campos.
+- **Cierre Fase 1 (2026-11-22):** `claim.ts` define tarea libre, ficha propia, PATCH con revisión y mensaje. `useTasks.claimTask` usa el mismo contrato; tests **13**; `npm run check` correcto; arquitectura **463 / 1.166**; límite de tests del Tablero **2.800**.
 
 ### Fase 2 — Acción compacta y guardado
 

@@ -7,6 +7,7 @@ import type { Task, TaskAssignee, TaskFields } from "../../../lib/domain/task";
 import { blank, columns } from "../shared/model";
 import { request } from "../shared/api";
 import type { BoardData } from "../shared/use-board-data";
+import { canClaimTask, claimChanges } from "./claim";
 import type { DragEndEvent, DragOverEvent, DragStartEvent, UniqueIdentifier } from "@dnd-kit/core";
 
 /**
@@ -172,6 +173,16 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
     }
   }
 
+  /**
+   * Asigna la tarea libre a la ficha propia con la revisión actual.
+   * @returns Nada; el resultado se anuncia y la ficha se cierra al guardar.
+   */
+  async function claimTask() {
+    const task = editor?.task;
+    if (!task || !ownStudent || !canClaimTask({ task, ownStudent, canManage, isGuest })) return;
+    await mutate("PATCH", claimChanges(task, ownStudent), "Tarea asignada.", true);
+  }
+
   function handleDragCancel() {
     setDragged(null);
     setDestination(null);
@@ -192,12 +203,12 @@ export function useTasks({ data, hasProject, canManage, isGuest, notify }: {
     return (!filter || task.priority === filter) && haystack.includes(query) && (!studentFilter || matchesStudent);
   });
   const filtered = Boolean(query || filter || studentFilter);
-  const claiming = Boolean(editor?.task && !canManage && !editor.task.assignees.length && unassigned(editor.task.assignee));
+  const claiming = canClaimTask({ task: editor?.task, ownStudent, canManage, isGuest });
 
   return {
     search, setSearch, filter, setFilter, studentFilter, setStudentFilter, clearStudentFilter,
     editor, setEditor, form, setForm, deleting, setDeleting, saving, formError,
-    dragged, destination, openEditor, mutate, submit, canGrabTask, handleDragStart, handleDragOver, handleDragEnd, handleDragCancel,
+    dragged, destination, openEditor, mutate, submit, claimTask, canGrabTask, handleDragStart, handleDragOver, handleDragEnd, handleDragCancel,
     addAssignee, removeAssignee, chooseAssignee, assignWholeClass, removeWholeClass,
     canEditTask, claiming, visible, filtered, total, finished, progress,
   };
