@@ -58,11 +58,12 @@
 
 ### Fase 1 — Contrato de datos y prioridad
 
-- [ ] Definir los grupos: pendiente vencida, próxima entrega, sin fecha y completada.
-- [ ] Fijar el orden dentro de cada grupo y el criterio de fecha local.
-- [ ] Definir qué datos vacíos se omiten y dónde queda el puesto.
-- [ ] Mantener las acciones y sus nombres accesibles.
+- [x] Definir los grupos: pendiente vencida, próxima entrega, sin fecha y completada.
+- [x] Fijar el orden dentro de cada grupo y el criterio de fecha local.
+- [x] Definir qué datos vacíos se omiten y dónde queda el puesto.
+- [x] Mantener las acciones y sus nombres accesibles.
 - **Criterios:** el orden es determinista y una ficha parcial no repite ni destaca datos vacíos.
+- **Cierre Fase 1 (2026-11-22):** `profile-detail-utils` define `sortProfileTasks` con fecha local y `profileInfoItems` sin campos vacíos. Tests de contrato **3**.
 
 ### Fase 2 — Implementación en ProfileDetail
 
