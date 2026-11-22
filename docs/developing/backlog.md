@@ -2,16 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 8 entradas pendientes
+> **Roadmap:** UI-15 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 7 entradas pendientes
 
 ---
-
-## 2026-11-22 — UI-15 · Buscar sin depender de las tildes y limpiar filtros
-
-- `geometria` no encontró Geometría en Aula Store e `investigacion` no encontró la tarea del tablero. La búsqueda sin coincidencias dejó las cuatro columnas vacías, cada una con su propio aviso.
-- Buscar con y sin tildes en el tablero y Aula Store. Mostrar una acción **Limpiar filtros** cuando la combinación de búsqueda y filtros no encuentre tareas.
-- Verificar las mismas coincidencias para cada término con y sin tilde y que la acción de limpieza devuelve las tareas a la vista.
 
 ## 2026-11-22 — UI-16 · Dar prioridad a las tareas en la ficha de alumno
 
