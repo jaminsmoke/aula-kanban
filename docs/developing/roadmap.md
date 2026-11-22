@@ -57,11 +57,12 @@
 
 ### Fase 1 — Contrato, modelo y migración
 
-- [ ] Definir el campo opcional, su validación y el contrato de respuesta de tareas.
-- [ ] Decidir el comportamiento para documento archivado, eliminado o inexistente.
-- [ ] Preparar la migración local y confirmar que no se aplica en remoto.
-- [ ] Registrar los permisos y la matriz de pruebas sin cambiar producto.
+- [x] Definir el campo opcional, su validación y el contrato de respuesta de tareas.
+- [x] Decidir el comportamiento para documento archivado, eliminado o inexistente.
+- [x] Preparar la migración local y confirmar que no se aplica en remoto.
+- [x] Registrar los permisos y la matriz de pruebas sin cambiar producto.
 - **Criterios:** modelo y contrato cerrados; migración local revisada; sin cambios funcionales.
+- **Cierre (2026-11-22):** contrato en [`tareas-documento.md`](tareas-documento.md). Se decide `tasks.document_id` nullable, vínculo único por tarea, validación por proyecto y conservación del vínculo si el documento se archiva o elimina. La migración local queda preparada para la Fase 2; sin cambios de producto.
 
 ### Fase 2 — Persistencia y API de tareas
 
@@ -99,5 +100,6 @@
 ## 7. Notas de sesión
 
 - 2026-11-22: **Roadmap abierto.** TASK-01 entra desde el backlog; queda DEV-01. Se empieza por el contrato del vínculo, la migración local y la matriz de permisos. Sin cambios de producto en esta apertura.
+- 2026-11-22: **Fase 1 completada.** Contrato en [`tareas-documento.md`](tareas-documento.md): `tasks.document_id` nullable, vínculo único por proyecto, estados de documento y permisos. La migración local queda definida para la Fase 2; sin cambios de producto.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

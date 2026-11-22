@@ -26,6 +26,7 @@
 | [`limites-documentales.md`](developing/limites-documentales.md) | Inventario y contrato de límites de importación y revisión documental | Referencia |
 | [`suite-vacia.md`](developing/suite-vacia.md) | Contrato de apertura y estados de una suite documental vacía | Referencia |
 | [`calendario-teclado.md`](developing/calendario-teclado.md) | Contrato de teclado, foco y nombres accesibles del calendario | Referencia |
+| [`tareas-documento.md`](developing/tareas-documento.md) | Contrato del documento de entrega vinculado a una tarea | Referencia |
 | [`aula-documentos-arquitectura.md`](developing/aula-documentos-arquitectura.md) | Mapa de responsabilidades, árbol objetivo y límites de Aula Documentos | Referencia de refactor |
 | [`backlog.md`](developing/backlog.md) | Única entrada pendiente: evaluar la migración a pnpm (DEV-01) | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |
