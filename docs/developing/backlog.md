@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 5 entradas pendientes
+> **Roadmap:** TASK-02 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 4 entradas pendientes
 
 ---
 
@@ -12,12 +12,6 @@
 - En la prueba local de 1.1.41, el profesor pudo mover la tarea desde el asa. Al arrastrarla desde el título, se quedó en la misma columna.
 - Permitir iniciar el arrastre desde el cuerpo de una tarjeta que la cuenta pueda mover. Reservar el clic o toque breve para abrir la ficha y conservar el arrastre por teclado y el desplazamiento táctil.
 - Verificar que se puede mover una tarea desde el título y el cuerpo, que un clic sigue abriendo la ficha y que el alumno solo puede mover las tareas que tiene permitido editar.
-
-## 2026-11-22 — TASK-02 · Abrir la entrega desde la ficha editable y volver a la tarea
-
-- En la prueba como profesor, la ficha editable mostró el documento vinculado sin una acción para abrirlo. El botón de la ficha de solo lectura abrió el documento correcto, pero al cerrarlo la aplicación quedó en Tienda.
-- Mostrar **Abrir documento** junto al selector de entrega cuando el vínculo esté guardado y el documento esté disponible. Al cerrar Aula Documentos, volver a la misma ficha y conservar la vista y los filtros de origen.
-- Verificar el recorrido desde el tablero y el calendario con los perfiles de alumno y profesor. Comprobar también el regreso desde el detalle de solo lectura y los estados de documento archivado o eliminado.
 
 ## 2026-11-22 — UI-14 · Mejorar la navegación y el calendario en móvil
 
