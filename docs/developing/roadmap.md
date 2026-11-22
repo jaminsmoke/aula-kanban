@@ -58,11 +58,12 @@
 
 ### Fase 1 — Contrato de acceso y vencimiento
 
-- [ ] Definir cuándo aparece **Mis tareas** y qué ficha usa.
-- [ ] Fijar la inclusión de tareas propias, compartidas y con responsable textual.
-- [ ] Definir vencida: no `done`, con fecha local anterior a hoy.
-- [ ] Fijar el retorno a todas las tareas y el texto accesible del indicador.
+- [x] Definir cuándo aparece **Mis tareas** y qué ficha usa.
+- [x] Fijar la inclusión de tareas propias, compartidas y con responsable textual.
+- [x] Definir vencida: no `done`, con fecha local anterior a hoy.
+- [x] Fijar el retorno a todas las tareas y el texto accesible del indicador.
 - **Criterios:** la acción solo existe con ficha vinculada y el filtro incluye exactamente las tareas de esa ficha.
+- **Cierre Fase 1 (2026-11-22):** `isTaskOverdue` excluye completadas y tareas sin fecha; el acceso reutiliza `ownStudent.section` y `studentFilter`. Tests de contrato **2**.
 
 ### Fase 2 — Acceso directo e indicador visual
 
