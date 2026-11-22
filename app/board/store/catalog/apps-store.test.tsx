@@ -65,10 +65,15 @@ describe("Aula Store", () => {
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
-  it("busca por descripción y filtra instaladas", () => {
+  it("busca por descripción, sin tildes y filtra instaladas", () => {
     render(<AppsStore {...props} role="owner" />);
     fireEvent.change(screen.getByLabelText("Buscar aplicaciones"), { target: { value: "pizarra" } });
     expect(screen.getByText("Excalidraw")).toBeTruthy();
+
+    fireEvent.change(screen.getByLabelText("Buscar aplicaciones"), { target: { value: "geometria" } });
+    expect(screen.getByText("Geometría interactiva")).toBeTruthy();
+
+    fireEvent.change(screen.getByLabelText("Buscar aplicaciones"), { target: { value: "pizarra" } });
     fireEvent.click(screen.getByRole("button", { name: /Instaladas/ }));
     expect(screen.getByText("Excalidraw")).toBeTruthy();
   });

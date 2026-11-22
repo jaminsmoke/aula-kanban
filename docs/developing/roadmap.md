@@ -65,11 +65,12 @@
 
 ### Fase 2 — Implementación en tablero y Aula Store
 
-- [ ] Aplicar la normalización a la consulta y al texto de tareas.
-- [ ] Aplicar la misma normalización a Aula Store.
-- [ ] Añadir **Limpiar filtros** al tablero cuando no haya coincidencias.
-- [ ] Restablecer búsqueda, prioridad y alumno desde esa acción.
+- [x] Aplicar la normalización a la consulta y al texto de tareas.
+- [x] Aplicar la misma normalización a Aula Store.
+- [x] Añadir **Limpiar filtros** al tablero cuando no haya coincidencias.
+- [x] Restablecer búsqueda, prioridad y alumno desde esa acción.
 - **Criterios:** `geometria` e `investigacion` encuentran sus resultados; el control limpia el tablero sin recargar.
+- **Cierre Fase 2 (2026-11-22):** el tablero y Aula Store comparten `matchesSearch`; `KanbanView` muestra **Limpiar filtros** solo sin coincidencias y `Board` vacía los tres filtros y devuelve el foco al buscador. Tests afectados **56**; `npm run check` correcto; arquitectura **464 / 1.168**; Tablero **32 / 2.741 ≤ 32 / 2.800** y CSS **12 / 1.556 ≤ 13 / 1.650**.
 
 ### Fase 3 — Pruebas de búsqueda y estado vacío
 

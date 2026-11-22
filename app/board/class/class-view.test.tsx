@@ -14,6 +14,7 @@ const kanban: ComponentProps<typeof KanbanView> = {
   onSearch: vi.fn(),
   onFilter: vi.fn(),
   onStudentFilter: vi.fn(),
+  onClearFilters: vi.fn(),
   loadError: "",
   onRetry: vi.fn(),
   saving: false,

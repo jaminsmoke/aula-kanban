@@ -40,6 +40,7 @@ function renderBoard(overrides: Partial<Parameters<typeof KanbanView>[0]> = {}) 
     onSearch: vi.fn(),
     onFilter: vi.fn(),
     onStudentFilter: vi.fn(),
+    onClearFilters: vi.fn(),
     loadError: "",
     onRetry: vi.fn(),
     saving: false,
@@ -116,5 +117,13 @@ describe("KanbanView", () => {
     renderBoard({ visible: [], filtered: true });
 
     expect(screen.getAllByText("Sin coincidencias").length).toBe(4);
+  });
+
+  it("limpia los filtros cuando no hay coincidencias", () => {
+    const { props } = renderBoard({ visible: [], filtered: true });
+
+    fireEvent.click(screen.getByRole("button", { name: "Limpiar filtros" }));
+
+    expect(props.onClearFilters).toHaveBeenCalledTimes(1);
   });
 });

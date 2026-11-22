@@ -40,6 +40,7 @@ progress::-moz-progress-bar { background: var(--ui-focus-on-dark); border-radius
 
 .toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 14px; margin-bottom: 16px; }
 .controls { display: flex; gap: 9px; flex-wrap: wrap; justify-content: flex-end; }
+.filter-empty { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; padding: 10px 13px; border: var(--border-width-hairline) solid var(--ui-border-warning); border-radius: var(--radius-sm); background: var(--ui-warning-pale); color: var(--ui-warning-deep); font-size: var(--text-base); font-weight: var(--weight-semibold); }
 .search, .filter {
   display: flex;
   align-items: center;

@@ -10,6 +10,7 @@ import StoreGallery from "./store-gallery";
 import StoreDetail from "./store-detail";
 import StoreFilters from "./store-filters";
 import { CATEGORY_ICONS, FEATURED_APP_IDS, type StoreAction, type StoreApp } from "./store-model";
+import { matchesSearch } from "../../../../lib/domain/search";
 import "./store.css";
 
 export type { StoreAction, StoreApp } from "./store-model";
@@ -73,8 +74,7 @@ export default function AppsStore({ role, apps, error, onManage, onOpen, onRefre
   const matches = (tool: StoreTool) => {
     if (category !== "todas" && !tool.categories.includes(category)) return false;
     if (installedOnly && statusOf(tool.id) !== "installed") return false;
-    const text = `${tool.name} ${tool.tagline} ${tool.description} ${tool.categories.join(" ")} ${tool.subcategory}`.toLowerCase();
-    return text.includes(query.trim().toLowerCase());
+    return matchesSearch(query, tool.name, tool.tagline, tool.description, tool.categories.join(" "), tool.subcategory);
   };
 
   const visibleCount = allTools.filter(matches).length;

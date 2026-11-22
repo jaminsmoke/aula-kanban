@@ -61,7 +61,7 @@ function Lane({ status, cards, destination, isGuest, filtered, tasksNull, loadEr
  * @returns La vista completa del tablero.
  */
 export default function KanbanView({
-  tasks, visible, students, search, filter, studentFilter, onSearch, onFilter, onStudentFilter,
+  tasks, visible, students, search, filter, studentFilter, onSearch, onFilter, onStudentFilter, onClearFilters,
   loadError, onRetry, saving, isGuest, filtered, dragged, destination, canEditTask, canGrabTask, onOpenEditor,
   onDragStart, onDragOver, onDragEnd, onDragCancel, finished, total, progress,
 }: {
@@ -74,6 +74,7 @@ export default function KanbanView({
   onSearch: (value: string) => void;
   onFilter: (value: string) => void;
   onStudentFilter: (value: string) => void;
+  onClearFilters: () => void;
   loadError: string;
   onRetry: () => void;
   saving: boolean;
@@ -124,6 +125,12 @@ export default function KanbanView({
           </div>
         </div>
         {loadError && <div role="alert" className="alert">{loadError} <button type="button" className="text-button" onClick={onRetry}>Reintentar</button></div>}
+        {filtered && visible.length === 0 && !loadError && tasks !== null && (
+          <div className="filter-empty" role="status">
+            <span>Sin coincidencias para los filtros actuales.</span>
+            <button type="button" className="secondary" onClick={onClearFilters}>Limpiar filtros</button>
+          </div>
+        )}
         <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDragCancel={onDragCancel}>
           <div className="board" aria-busy={tasks === null && !loadError}>
             {statuses.map((status) => (
