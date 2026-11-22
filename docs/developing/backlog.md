@@ -2,15 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 2 entradas pendientes · siguiente candidato TASK-01
+> **Roadmap:** TASK-01 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 1 entrada pendiente (DEV-01)
 
 ---
-
-## 2026-11-22 — TASK-01 · Abrir un documento de entrega desde su tarea
-
-- La alumna pudo guardar un informe y pasar la tarea a En revisión. El profesor tuvo que copiar la URL escrita en la descripción, abrir el Maletín y lanzar Aula Documentos a mano para llegar al informe. El enlace con `doc` ya selecciona el documento al abrir la aplicación.
-- Permitir vincular un documento existente del proyecto desde la ficha y abrirlo en Aula Documentos con un solo paso. Reutilizar el identificador y la navegación existentes. Comprobar que una cuenta ajena al proyecto no puede abrirlo y que una referencia a un documento archivado o eliminado muestra un estado claro.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 

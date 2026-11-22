@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12 completado · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12 completado; TASK-01 activo · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -241,3 +241,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - ARC-14 quedó cerrado y archivado en [`historial/roadmap-arc-14.md`](../historial/roadmap-arc-14.md): Markdown y documento serializado tienen una sola definición y un validador compartido; los valores, mensajes y estados no cambiaron.
 - ADOC-22 quedó cerrado y archivado en [`historial/roadmap-adoc-22.md`](../historial/roadmap-adoc-22.md): la apertura de una suite vacía muestra preparación, bloquea «Nuevo», prioriza el error y permite reintentar sin duplicar documentos.
 - UI-12 quedó cerrado y archivado en [`historial/roadmap-ui-12.md`](../historial/roadmap-ui-12.md): las tareas del calendario se abren con Tab, Enter o Espacio y el foco vuelve al evento al cerrar la ficha.
+- TASK-01 está activo en [`roadmap.md`](roadmap.md): vincular un documento del proyecto a una tarea y abrirlo en Aula Documentos con `doc`, con permisos y estados claros.
