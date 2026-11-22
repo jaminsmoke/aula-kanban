@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01, TASK-02 y TASK-03 completados; sin roadmap activo · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-14 completados; ADOC-18, ADOC-19, ADOC-20 y ADOC-22 completados; UI-12, TASK-01, TASK-02 y TASK-03 completados; TASK-04 activo · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -244,3 +244,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - TASK-01 quedó cerrado y archivado en [`historial/roadmap-task-01.md`](../historial/roadmap-task-01.md): una tarea vincula un documento del proyecto y lo abre en Aula Documentos con `doc`; la migración local está preparada y no se aplicó en remoto.
 - TASK-02 quedó cerrado y archivado en [`historial/roadmap-task-02.md`](../historial/roadmap-task-02.md): la ficha editable abre el documento y vuelve a la tarea tras cerrar Aula Documentos, conservando vista y filtros; cubre permisos, Calendario y cambios de revisión.
 - TASK-03 quedó cerrado y archivado en [`historial/roadmap-task-03.md`](../historial/roadmap-task-03.md): la ficha de tarea detecta cambios pendientes, comparte la guarda en Esc/X/Cancelar y conserva el borrador al elegir **Seguir editando**.
+- TASK-04 está activo en [`roadmap.md`](roadmap.md): mostrar **Asignarme** en el resumen de una tarea libre y asignar la ficha propia en una sola acción, con permisos y conflicto de revisión.

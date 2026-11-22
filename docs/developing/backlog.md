@@ -2,16 +2,10 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 10 entradas pendientes
+> **Roadmap:** TASK-04 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 9 entradas pendientes
 
 ---
-
-## 2026-11-22 — TASK-04 · Asignarse una tarea en un paso
-
-- «Asignarme y guardar» devolvió un error hasta que la alumna se eligió en la pestaña Asignaciones. La acción quedaba fuera de la vista inicial, detrás de varios campos deshabilitados.
-- Mostrar un detalle compacto con la acción **Asignarme** visible junto al resumen. Al pulsarla, usar la ficha vinculada a la cuenta activa.
-- Verificar que basta un paso en una tarea sin asignar, que respeta los permisos y que avisa si otra persona se asignó la tarea antes de guardar.
 
 ## 2026-11-22 — PERM-04 · Conservar la sección de Ajustes al recargar
 
