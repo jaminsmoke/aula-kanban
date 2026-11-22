@@ -23,6 +23,7 @@
 | [`integracion-hoja-aula.md`](developing/integracion-hoja-aula.md) | Contrato del flujo de copia Hoja de cálculo → Aula Documentos | Referencia |
 | [`aula-documentos-modelo.md`](developing/aula-documentos-modelo.md) | Mapa de campos, hooks y consumidores del modelo de Aula Documentos | Referencia |
 | [`css-ventanas-apps.md`](developing/css-ventanas-apps.md) | Inventario y contrato CSS de las ventanas de apps | Referencia |
+| [`limites-documentales.md`](developing/limites-documentales.md) | Inventario y contrato de límites de importación y revisión documental | Referencia |
 | [`aula-documentos-arquitectura.md`](developing/aula-documentos-arquitectura.md) | Mapa de responsabilidades, árbol objetivo y límites de Aula Documentos | Referencia de refactor |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |
 | [`changelog.md`](developing/changelog.md) | Hitos completados y versiones publicadas | Lo nuevo arriba |

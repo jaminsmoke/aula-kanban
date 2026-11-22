@@ -55,11 +55,12 @@
 
 ### Fase 1 — Inventario y contrato de límites
 
-- [ ] Mapear cada constante, valor efectivo, consumidor, mensaje y estado público.
-- [ ] Clasificar las fronteras de petición, Markdown y documento serializado.
-- [ ] Confirmar qué límites comparten dominio y cuáles deben seguir separados.
-- [ ] Registrar la decisión y el baseline sin cambiar producto.
+- [x] Mapear cada constante, valor efectivo, consumidor, mensaje y estado público.
+- [x] Clasificar las fronteras de petición, Markdown y documento serializado.
+- [x] Confirmar qué límites comparten dominio y cuáles deben seguir separados.
+- [x] Registrar la decisión y el baseline sin cambiar producto.
 - **Criterios:** mapa completo y decisión justificada; sin cambios de producto.
+- **Cierre (2026-11-22):** contrato en [`limites-documentales.md`](limites-documentales.md). Cinco constantes agrupadas en tres fronteras; `LEGACY_MARKDOWN_MAX_LENGTH` y `AULA_VERSION_STATE_MAX_LENGTH` son los dos duplicados. `MAX_APP_DOCUMENT_CHARS` se conserva separado. Sin cambios de producto.
 
 ### Fase 2 — Una sola longitud de Markdown
 
@@ -95,5 +96,6 @@
 ## 7. Notas de sesión
 
 - 2026-11-22: **Roadmap abierto.** ARC-14 es la siguiente candidata recomendada del backlog; queda DEV-01. Se empieza por el inventario de límites y consumidores. Sin cambios de producto en esta apertura.
+- 2026-11-22: **Fase 1 completada.** Inventario en [`limites-documentales.md`](limites-documentales.md): cinco constantes y tres fronteras; dos duplicados (`LEGACY_MARKDOWN_MAX_LENGTH` y `AULA_VERSION_STATE_MAX_LENGTH`). Se conserva separado `MAX_APP_DOCUMENT_CHARS`. Sin cambios de producto.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.
