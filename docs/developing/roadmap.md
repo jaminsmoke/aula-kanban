@@ -76,11 +76,12 @@
 
 ### Fase 3 — Pruebas de perfiles y tareas
 
-- [ ] Probar ficha completa, parcial, nombre largo y sin tareas.
-- [ ] Probar tareas vencidas, próximas, sin fecha y completadas.
-- [ ] Verificar edición y eliminación accesibles.
-- [ ] Revisar responsive y contraste del bloque compacto.
+- [x] Probar ficha completa, parcial, nombre largo y sin tareas.
+- [x] Probar tareas vencidas, próximas, sin fecha y completadas.
+- [x] Verificar edición y eliminación accesibles.
+- [x] Revisar responsive y contraste del bloque compacto.
 - **Criterios:** todos los perfiles conservan información y acciones sin depender de datos opcionales.
+- **Cierre Fase 3 (2026-11-22):** tests de ficha y contrato **15** cubren orden de tareas, perfil parcial sin «Sin especificar», nombre largo, ausencia de tareas y acciones Editar/Eliminar. `npm run check` correcto; arquitectura **465 / 1.170**; Tablero **33 / 2.815 ≤ 33 / 2.900** y CSS **12 / 1.557 ≤ 13 / 1.650**.
 
 ### Fase 4 — Verificación y cierre
 

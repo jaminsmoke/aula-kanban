@@ -78,6 +78,43 @@ describe("StudentsView", () => {
     expect(props.onEdit).toHaveBeenCalledWith(student);
   });
 
+  it("ordena las tareas por vencimiento y estado", () => {
+    const tasks: Task[] = [
+      { ...task, id: "done", title: "Completada", status: "done", dueDate: "2026-11-01", createdAt: 1 },
+      { ...task, id: "soon", title: "Próxima", status: "active", dueDate: "2026-11-25", createdAt: 2 },
+      { ...task, id: "none", title: "Sin fecha", status: "pending", dueDate: "", createdAt: 3 },
+      { ...task, id: "overdue", title: "Vencida", status: "review", dueDate: "2026-11-20", createdAt: 4 },
+    ];
+    const { container } = renderStudents({ studentName: "s1", tasks, all: tasks, allPeople: [student] });
+
+    expect([...container.querySelectorAll(".student-task strong")].map((item) => item.textContent)).toEqual([
+      "Vencida",
+      "Próxima",
+      "Sin fecha",
+      "Completada",
+    ]);
+  });
+
+  it("mantiene un nombre largo y las acciones en una ficha sin tareas", () => {
+    const longName = "Ada Lovelace de la Rosa de los Vientos y del Río";
+    const longStudent = { ...student, name: longName, displayName: longName };
+    renderStudents({ studentName: "s1", students: [longStudent], tasks: [], all: [], allPeople: [longStudent] });
+
+    expect(screen.getByRole("heading", { name: longName })).toBeTruthy();
+    expect(screen.getByText("Todavía no tiene tareas asignadas.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Editar perfil" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Eliminar perfil" })).toBeTruthy();
+  });
+
+  it("omite los datos vacíos y conserva las acciones de perfil", () => {
+    const partial = { ...student, role: "", activities: "", aiHelp: "" };
+    renderStudents({ studentName: "s1", students: [partial], allPeople: [partial] });
+
+    expect(screen.queryByText("Sin especificar")).toBeNull();
+    expect(screen.getByRole("button", { name: "Editar perfil" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Eliminar perfil" })).toBeTruthy();
+  });
+
   it("oculta editar y eliminar cuando no hay permiso", () => {
     renderStudents({ studentName: "s1", canManage: false });
 
