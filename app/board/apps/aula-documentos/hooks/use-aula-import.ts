@@ -367,8 +367,6 @@ export function useAulaImport({ currentDocument, storeRecoveryCopy, applyDocumen
     closeImport,
     closeOfficePreview,
     openOfficeViewer,
-    importMarkdown,
-    importOffice,
     applyImport,
   };
 }

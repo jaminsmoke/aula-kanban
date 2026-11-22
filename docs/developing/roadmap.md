@@ -65,11 +65,12 @@
 
 ### Fase 2 — Copias e importación
 
-- [ ] Reducir los campos reenviados de copias portables e importación.
-- [ ] Reutilizar las salidas de los hooks donde se elimine una lista o un alias.
-- [ ] Retirar solo propiedades sin consumidores comprobados.
-- [ ] Verificar diálogos, recuperación local y errores de importación.
+- [x] Reducir los campos reenviados de copias portables e importación.
+- [x] Reutilizar las salidas de los hooks donde se elimine una lista o un alias.
+- [x] Retirar solo propiedades sin consumidores comprobados.
+- [x] Verificar diálogos, recuperación local y errores de importación.
 - **Criterios:** menos propiedades y líneas, con los mismos flujos y mensajes.
+- **Cierre (2026-11-22):** se retiraron del contexto `openCopies`, `openCopyImportPicker`, `openImport`, `importMarkdown` e `importOffice`; las tres acciones de apertura siguen dentro del modelo para la toolbar. El contrato baja de **190 a 185 entradas** y de **285 a 280 campos**; **9 líneas netas menos**. Diálogos y suite de Aula verificados: **36 / 181**; suite completa **268 / 1.774**.
 
 ### Fase 3 — Barra de herramientas y resto del modelo
 
@@ -99,5 +100,6 @@
 
 - 2026-11-22: **Roadmap abierto.** ARC-12 es la siguiente candidata recomendada del backlog; quedan ARC-13, ARC-14 y DEV-01. Se empieza por el mapa de consumidores y el contrato del modelo. Sin cambios de producto en esta apertura.
 - 2026-11-22: **Fase 1 completada.** Mapa en [`aula-documentos-modelo.md`](aula-documentos-modelo.md): 190 entradas superiores, 285 campos expandidos, 11 consumidores y 51 candidatos sin consumidor directo. Sin cambios de producto.
+- 2026-11-22: **Fase 2 completada.** Cinco propiedades de copias/importación dejan de exponerse en el contexto; el contrato queda en 185 entradas y 280 campos. **9 líneas netas menos**; suite de Aula **36 / 181** y suite completa **268 / 1.774** sin regresiones.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

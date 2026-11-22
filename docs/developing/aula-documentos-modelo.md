@@ -428,3 +428,11 @@ Los consumidores se abrevian con las etiquetas de la sección 3.
 - Aula Documentos: **386.778 / 387.000 B**.
 - Hoja de cálculo: **312.861 / 315.000 B**.
 - Site: `1.1.39`.
+
+## 9. Aplicado en la Fase 2
+
+- Se retiraron del valor de contexto cinco propiedades que no tenían consumidor directo: `openCopies`, `openCopyImportPicker`, `openImport`, `importMarkdown` e `importOffice`.
+- Las tres primeras siguen disponibles dentro del modelo para construir las acciones de la toolbar; las dos últimas dejan de exponerse también desde `useAulaImport`.
+- El modelo pasa de **594 a 586 líneas** y `useAulaImport` de **373 a 372**: **9 líneas netas menos**.
+- El contrato pasa de **190 a 185 entradas superiores** y de **285 a 280 campos expandidos**; los candidatos sin consumidor directo bajan de **51 a 46**.
+- Suite de Aula enfocada: **36 archivos / 181 pruebas**; suite completa: **268 archivos / 1.774 pruebas**. Sin cambios de comportamiento.
