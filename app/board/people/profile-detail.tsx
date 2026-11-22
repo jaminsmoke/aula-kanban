@@ -1,6 +1,7 @@
 import { BriefcaseBusiness, Lightbulb, ListTodo, Pencil, Trash2 } from "lucide-react";
 import type { Task } from "../../../lib/domain/task";
 import { accountLabel, columns, formatDate, initials } from "../shared/model";
+import { profileInfoItems, sortProfileTasks } from "./profile-detail-utils";
 
 export type ProfilePerson = {
   name: string;
@@ -27,6 +28,9 @@ export default function ProfileDetail({ kicker, backLabel, person, canEdit, onBa
   loading: boolean;
   onOpenTask: (task: Task) => void;
 }) {
+  const info = profileInfoItems(person);
+  const orderedTasks = sortProfileTasks(tasks);
+  const InfoIcon = { role: BriefcaseBusiness, activities: ListTodo, ai: Lightbulb } as const;
   return <div className="student-detail">
     <button className="text-button back-link" onClick={onBack}>← {backLabel}</button>
     <div className="student-profile-header">
@@ -34,7 +38,6 @@ export default function ProfileDetail({ kicker, backLabel, person, canEdit, onBa
       <div className="student-identity">
         <span className="student-kicker">{kicker}</span>
         <h2>{person.name}</h2>
-        <p>{person.role || "Puesto sin especificar"}</p>
         <span className={`account-status ${person.accountStatus ?? "unlinked"}`}>{accountLabel(person.accountStatus)}</span>
       </div>
       {canEdit && <>
@@ -49,15 +52,19 @@ export default function ProfileDetail({ kicker, backLabel, person, canEdit, onBa
       </>}
     </div>
     {(person.accountStatus ?? "unlinked") === "unlinked" && <p className="no-email-note">Sin correo, la ficha no da acceso a esta cuenta. Añade un correo en Editar para activarla.</p>}
-    <div className="student-info">
-      <div className="student-info-card"><span className="info-icon role"><BriefcaseBusiness size={18} aria-hidden /></span><div><h3>Puesto de trabajo</h3><p>{person.role || "Sin especificar"}</p></div></div>
-      <div className="student-info-card"><span className="info-icon activities"><ListTodo size={18} aria-hidden /></span><div><h3>Actividades cotidianas</h3><p>{person.activities || "Sin especificar"}</p></div></div>
-      <div className="student-info-card"><span className="info-icon ai"><Lightbulb size={18} aria-hidden /></span><div><h3>Ayuda de la IA</h3><p>{person.aiHelp || "Sin especificar"}</p></div></div>
-    </div>
     <h3 className="student-tasks-title">Sus tareas <span>({tasks.length})</span></h3>
-    {loading ? <p>Cargando tareas…</p> : tasks.length ? tasks.map((task) => <button className="student-task" key={task.id} onClick={() => onOpenTask(task)}>
+    {loading ? <p>Cargando tareas…</p> : orderedTasks.length ? orderedTasks.map((task) => <button className="student-task" key={task.id} onClick={() => onOpenTask(task)}>
       <span><strong>{task.title}</strong>{task.dueDate && <small>Entrega {formatDate.format(new Date(task.dueDate + "T12:00:00"))}</small>}</span>
       <span className={"student-status " + task.status}>{columns[task.status].name}</span>
     </button>) : <p className="intro">Todavía no tiene tareas asignadas.</p>}
+    {info.length > 0 && <div className="student-info">
+      {info.map((item) => {
+        const Icon = InfoIcon[item.key];
+        return <div className="student-info-card" key={item.key}>
+          <span className={`info-icon ${item.key}`}><Icon size={18} aria-hidden /></span>
+          <div><h3>{item.label}</h3><p>{item.value}</p></div>
+        </div>;
+      })}
+    </div>}
   </div>;
 }

@@ -67,11 +67,12 @@
 
 ### Fase 2 — Implementación en ProfileDetail
 
-- [ ] Compactar la cabecera y quitar el puesto duplicado.
-- [ ] Omitir tarjetas de datos vacíos.
-- [ ] Mover la lista de tareas junto al nombre.
-- [ ] Aplicar el orden de prioridad a las tareas.
+- [x] Compactar la cabecera y quitar el puesto duplicado.
+- [x] Omitir tarjetas de datos vacíos.
+- [x] Mover la lista de tareas junto al nombre.
+- [x] Aplicar el orden de prioridad a las tareas.
 - **Criterios:** pendientes vencidas primero, próximas entregas después y completadas al final; los datos vacíos dejan de dominar.
+- **Cierre Fase 2 (2026-11-22):** `ProfileDetail` muestra solo datos informados, coloca las tareas bajo la cabecera y usa `sortProfileTasks`; cabecera y espaciado compactos. Las acciones Editar/Eliminar conservan su nombre accesible.
 
 ### Fase 3 — Pruebas de perfiles y tareas
 
