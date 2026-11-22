@@ -2,15 +2,23 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { VersionedSaveResult } from "../use-app-document";
 
-const documentMock = vi.hoisted(() => ({
-  load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null; ok?: boolean }> => ({ state: null, updatedAt: null })),
-  saveVersioned: vi.fn(async (_state: unknown, _expectedUpdatedAt: number | null): Promise<VersionedSaveResult> => ({ status: "saved", updatedAt: 2 })),
-}));
+const documentMock = vi.hoisted(() => {
+  const state = {
+    load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null; ok?: boolean }> => ({ state: null, updatedAt: null })),
+    saveCurrentVersioned: vi.fn(async (_state: unknown): Promise<VersionedSaveResult> => ({ status: "saved", updatedAt: 2 })),
+    loadFailed: false,
+    markLoadFailed: vi.fn(),
+  };
+  state.markLoadFailed.mockImplementation(() => { state.loadFailed = true; });
+  return state;
+});
 
 vi.mock("../use-app-document", () => ({
   useAppDocument: () => ({
     load: documentMock.load,
-    saveVersioned: documentMock.saveVersioned,
+    saveCurrentVersioned: documentMock.saveCurrentVersioned,
+    loadFailed: documentMock.loadFailed,
+    markLoadFailed: documentMock.markLoadFailed,
     loading: false,
     error: null,
   }),
@@ -66,8 +74,9 @@ const props = { projectId: "p1", role: "owner" as const };
 describe("Mapas conceptuales", () => {
   afterEach(() => {
     vi.clearAllMocks();
+    documentMock.loadFailed = false;
     documentMock.load.mockResolvedValue({ state: null, updatedAt: null });
-    documentMock.saveVersioned.mockResolvedValue({ status: "saved", updatedAt: 2 });
+    documentMock.saveCurrentVersioned.mockResolvedValue({ status: "saved", updatedAt: 2 });
   });
 
   it("añade un nodo, permite editarlo y eliminarlo", () => {
@@ -117,16 +126,15 @@ describe("Mapas conceptuales", () => {
     render(<MapasApp {...props} />);
     fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
 
-    await waitFor(() => expect(documentMock.saveVersioned).toHaveBeenCalledTimes(1));
-    const saved = documentMock.saveVersioned.mock.calls[0][0] as { nodes: unknown[]; edges: unknown[] };
+    await waitFor(() => expect(documentMock.saveCurrentVersioned).toHaveBeenCalledTimes(1));
+    const saved = documentMock.saveCurrentVersioned.mock.calls[0][0] as { nodes: unknown[]; edges: unknown[] };
     expect(saved.nodes).toHaveLength(3);
     expect(saved.edges).toHaveLength(2);
-    expect(documentMock.saveVersioned.mock.calls[0][1]).toBeNull();
     expect(screen.getByRole("status").textContent).toContain("Mapa guardado en el proyecto");
   });
 
   it("conserva el mapa y avisa si otra sesión guardó antes", async () => {
-    documentMock.saveVersioned.mockResolvedValueOnce({ status: "conflict", updatedAt: 7 });
+    documentMock.saveCurrentVersioned.mockResolvedValueOnce({ status: "conflict", updatedAt: 7 });
     render(<MapasApp {...props} />);
     fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
 
@@ -136,12 +144,13 @@ describe("Mapas conceptuales", () => {
   });
 
   it("bloquea el guardado si la carga falla", async () => {
+    documentMock.loadFailed = true;
     documentMock.load.mockResolvedValueOnce({ state: null, updatedAt: null, ok: false });
     render(<MapasApp {...props} />);
 
     expect(await screen.findByText(/No se pudo cargar el mapa/)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
-    expect(documentMock.saveVersioned).not.toHaveBeenCalled();
+    expect(documentMock.saveCurrentVersioned).not.toHaveBeenCalled();
     expect(screen.getByRole("status").textContent).toContain("No se puede guardar");
   });
 

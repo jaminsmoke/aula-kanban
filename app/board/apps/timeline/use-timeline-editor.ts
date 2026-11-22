@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import type { StoreRole } from "../types";
 import { useAppDocument } from "../use-app-document";
 import {
@@ -78,9 +78,8 @@ export function useTimelineEditor(projectId: string, role: StoreRole) {
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [pendingRange, setPendingRange] = useState<TimelineRange | null>(null);
-  const [loadFailed, setLoadFailed] = useState(false);
-  const versionRef = useRef<number | null>(null);
-  const { load, saveVersioned, loading, error } = useAppDocument<TimelineDocument>(projectId, "timeline");
+  const { load, saveCurrentVersioned, loadFailed, markLoadFailed, loading, error } =
+    useAppDocument<TimelineDocument>(projectId, "timeline");
   const readOnly = role === "guest";
   const timelineDocument = useMemo<TimelineDocument>(() => ({ events, epochs }), [events, epochs]);
   const currentTemplate = TIMELINE_TEMPLATES.find((template) => template.id === templateId) ?? TIMELINE_TEMPLATES[0];
@@ -101,27 +100,24 @@ export function useTimelineEditor(projectId: string, role: StoreRole) {
 
   useEffect(() => {
     let active = true;
-    void load().then(({ state, updatedAt, ok }) => {
+    void load().then(({ state, ok }) => {
       if (!active) return;
       if (ok === false) {
-        setLoadFailed(true);
         setStatus("No se pudo cargar la línea temporal. Se conserva la actual.");
         return;
       }
-      versionRef.current = updatedAt;
-      setLoadFailed(false);
       const parsed = parseTimelineDocument(state);
       if (parsed) {
         applyDocument(parsed, "Línea temporal guardada cargada.");
       } else if (state === null) {
         setStatus("Línea temporal de ejemplo lista. Guarda para conservarla.");
       } else {
-        setLoadFailed(true);
+        markLoadFailed();
         setStatus("La línea temporal guardada no es válida. Se conserva la actual.");
       }
     });
     return () => { active = false; };
-  }, [applyDocument, load]);
+  }, [applyDocument, load, markLoadFailed]);
 
   /**
    * Carga un evento en el formulario para editarlo.
@@ -279,10 +275,9 @@ export function useTimelineEditor(projectId: string, role: StoreRole) {
     }
     setSaving(true);
     const range = viewRange ?? timelineRange({ events, epochs });
-    const result = await saveVersioned({ events, epochs, range }, versionRef.current);
+    const result = await saveCurrentVersioned({ events, epochs, range });
     setSaving(false);
     if (result.status === "saved") {
-      versionRef.current = result.updatedAt;
       setDirty(false);
       setStatus("Línea temporal guardada en el proyecto.");
     } else if (result.status === "conflict") {
@@ -302,23 +297,18 @@ export function useTimelineEditor(projectId: string, role: StoreRole) {
     )) {
       return;
     }
-    const { state, updatedAt, ok } = await load();
+    const { state, ok } = await load();
     if (ok === false) {
-      setLoadFailed(true);
       setStatus("No se pudo cargar la línea temporal. Se conserva la actual.");
       return;
     }
     const parsed = parseTimelineDocument(state);
     if (parsed) {
-      versionRef.current = updatedAt;
-      setLoadFailed(false);
       applyDocument(parsed, "Línea temporal guardada cargada.");
     } else if (state === null) {
-      versionRef.current = null;
-      setLoadFailed(false);
       setStatus("No hay una línea temporal guardada; se mantiene la actual.");
     } else {
-      setLoadFailed(true);
+      markLoadFailed();
       setStatus("La línea temporal guardada no es válida; se mantiene la actual.");
     }
   }

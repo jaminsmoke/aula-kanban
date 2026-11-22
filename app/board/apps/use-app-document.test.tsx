@@ -63,4 +63,28 @@ describe("documento de app", () => {
     expect(result.current.updatedAt).toBe(300);
     expect(result.current.error).toMatch(/ha cambiado en otra sesión/);
   });
+
+  it("guarda con la versión cargada y bloquea después de una carga fallida", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse({ state: { code: "graph LR" }, updatedAt: 5 }))
+      .mockResolvedValueOnce(jsonResponse({ accepted: true, updatedAt: 6 }))
+      .mockResolvedValueOnce(jsonResponse({ message: "sin conexión" }, false, 502));
+    vi.stubGlobal("fetch", fetchMock);
+    const { result } = renderHook(() => useAppDocument<{ code: string }>("p1", "mapas"));
+
+    await act(async () => { await result.current.load(); });
+    let saved: VersionedSaveResult | undefined;
+    await act(async () => { saved = await result.current.saveCurrentVersioned({ code: "graph LR" }); });
+    expect(saved).toEqual({ status: "saved", updatedAt: 6 });
+    expect(fetchMock.mock.calls[1][1]).toEqual(expect.objectContaining({
+      body: JSON.stringify({ state: { code: "graph LR" }, expectedUpdatedAt: 5 }),
+    }));
+
+    await act(async () => { await result.current.load(); });
+    expect(result.current.loadFailed).toBe(true);
+    const callsAfterFailure = fetchMock.mock.calls.length;
+    await act(async () => { saved = await result.current.saveCurrentVersioned({ code: "graph LR" }); });
+    expect(saved).toEqual({ status: "failed" });
+    expect(fetchMock).toHaveBeenCalledTimes(callsAfterFailure);
+  });
 });

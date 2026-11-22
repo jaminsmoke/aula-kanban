@@ -61,11 +61,12 @@
 
 ### Fase 2 — Transiciones comunes de los editores
 
-- [ ] Comparar las cuatro implementaciones de carga fallida, versión y guardado.
-- [ ] Extraer solo las transiciones que reduzcan líneas y mantengan visibles los mensajes y la recarga de cada app.
-- [ ] Conservar el comportamiento de documento nuevo, conflicto y cambio de proyecto.
-- [ ] Probar Hoja, Mapas, Líneas de tiempo y Tarjetas, además de Aula Documentos.
+- [x] Comparar las cuatro implementaciones de carga fallida, versión y guardado.
+- [x] Extraer solo las transiciones que reduzcan líneas y mantengan visibles los mensajes y la recarga de cada app.
+- [x] Conservar el comportamiento de documento nuevo, conflicto y cambio de proyecto.
+- [x] Probar Hoja, Mapas, Líneas de tiempo y Tarjetas, además de Aula Documentos.
 - **Criterios:** menos duplicación medida; ninguna app pierde su mensaje, su bloqueo tras fallo de carga o su recuperación.
+- **Cierre (2026-11-22):** `useAppDocument` concentra la versión cargada, `loadFailed`, `markLoadFailed` y `saveCurrentVersioned`; los cuatro editores usan esas salidas. El saldo de los cuatro editores es **37 líneas menos** y `use-app-document` suma 27: **10 líneas netas menos**, sin nuevo módulo. Suite **268 / 1.774**; Hoja **6 / 625 → 6 / 650**; arquitectura **461 / 1.154**.
 
 ### Fase 3 — Cierre
 
@@ -87,5 +88,6 @@
 
 - 2026-11-22: **Roadmap abierto.** ARC-11 es la primera candidata del backlog y la recomendada en [`arquitectura-global.md`](arquitectura-global.md). Se empieza por la operación HTTP compartida; quedan ARC-12, ARC-13, ARC-14 y DEV-01. Sin cambios de producto en esta apertura.
 - 2026-11-22: **Fase 1 completada.** `saveVersionedDocument()` comparte la petición y el 409 entre `useAppDocument` y Aula Documentos; la carga sigue separada y los mensajes no cambian. Suite **268 archivos / 1.773 pruebas**; arquitectura **461 / 1.154**.
+- 2026-11-22: **Fase 2 completada.** `useAppDocument` gestiona versión, carga fallida y `saveCurrentVersioned`; Hoja, Mapas, Líneas y Tarjetas eliminan sus copias. Saldo neto **-10 líneas**; suite **268 / 1.774**; Hoja **6 / 625 → 6 / 650**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

@@ -34,10 +34,16 @@ const timelineMock = vi.hoisted(() => {
   return { instance, Timeline };
 });
 
-const documentMock = vi.hoisted(() => ({
-  load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null; ok?: boolean }> => ({ state: null, updatedAt: null })),
-  saveVersioned: vi.fn(async (_state: unknown, _expectedUpdatedAt: number | null): Promise<VersionedSaveResult> => ({ status: "saved", updatedAt: 2 })),
-}));
+const documentMock = vi.hoisted(() => {
+  const state = {
+    load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null; ok?: boolean }> => ({ state: null, updatedAt: null })),
+    saveCurrentVersioned: vi.fn(async (_state: unknown): Promise<VersionedSaveResult> => ({ status: "saved", updatedAt: 2 })),
+    loadFailed: false,
+    markLoadFailed: vi.fn(),
+  };
+  state.markLoadFailed.mockImplementation(() => { state.loadFailed = true; });
+  return state;
+});
 
 vi.mock("vis-timeline/standalone", () => ({
   Timeline: timelineMock.Timeline,
@@ -46,7 +52,9 @@ vi.mock("vis-timeline/standalone", () => ({
 vi.mock("../use-app-document", () => ({
   useAppDocument: () => ({
     load: documentMock.load,
-    saveVersioned: documentMock.saveVersioned,
+    saveCurrentVersioned: documentMock.saveCurrentVersioned,
+    loadFailed: documentMock.loadFailed,
+    markLoadFailed: documentMock.markLoadFailed,
     loading: false,
     error: null,
   }),
@@ -98,8 +106,9 @@ describe("Líneas de tiempo", () => {
     timelineMock.Timeline.mockImplementation(function timelineFactory() {
       return timelineMock.instance;
     });
+    documentMock.loadFailed = false;
     documentMock.load.mockResolvedValue({ state: null, updatedAt: null });
-    documentMock.saveVersioned.mockResolvedValue({ status: "saved", updatedAt: 2 });
+    documentMock.saveCurrentVersioned.mockResolvedValue({ status: "saved", updatedAt: 2 });
   });
 
   it("muestra el ejemplo y monta el lienzo temporal", async () => {
@@ -191,17 +200,16 @@ describe("Líneas de tiempo", () => {
     await waitFor(() => expect(timelineMock.Timeline).toHaveBeenCalled());
 
     fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
-    await waitFor(() => expect(documentMock.saveVersioned).toHaveBeenCalledTimes(1));
-    const saved = documentMock.saveVersioned.mock.calls[0][0] as { events: unknown[]; epochs: unknown[]; range?: unknown };
+    await waitFor(() => expect(documentMock.saveCurrentVersioned).toHaveBeenCalledTimes(1));
+    const saved = documentMock.saveCurrentVersioned.mock.calls[0][0] as { events: unknown[]; epochs: unknown[]; range?: unknown };
     expect(saved.events).toHaveLength(5);
     expect(saved.epochs).toHaveLength(2);
     expect(saved.range).toBeDefined();
-    expect(documentMock.saveVersioned.mock.calls[0][1]).toBeNull();
     await waitFor(() => expect(screen.getByRole("status").textContent).toContain("guardada en el proyecto"));
   });
 
   it("conserva la línea temporal y avisa si otra sesión guardó antes", async () => {
-    documentMock.saveVersioned.mockResolvedValueOnce({ status: "conflict", updatedAt: 7 });
+    documentMock.saveCurrentVersioned.mockResolvedValueOnce({ status: "conflict", updatedAt: 7 });
     render(<TimelineApp {...props} />);
     await waitFor(() => expect(timelineMock.Timeline).toHaveBeenCalled());
 
@@ -211,12 +219,13 @@ describe("Líneas de tiempo", () => {
   });
 
   it("bloquea el guardado si la carga falla", async () => {
+    documentMock.loadFailed = true;
     documentMock.load.mockResolvedValueOnce({ state: null, updatedAt: null, ok: false });
     render(<TimelineApp {...props} />);
 
     expect(await screen.findByText(/No se pudo cargar la línea temporal/)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Guardar" }));
-    expect(documentMock.saveVersioned).not.toHaveBeenCalled();
+    expect(documentMock.saveCurrentVersioned).not.toHaveBeenCalled();
     expect(screen.getByRole("status").textContent).toContain("No se puede guardar");
   });
 

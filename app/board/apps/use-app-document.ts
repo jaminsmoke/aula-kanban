@@ -16,8 +16,10 @@ export type { LoadedDocument, VersionedSaveResult } from "../shared/versioned-do
 export function useAppDocument<T>(projectId: string, appId: string) {
   const endpoint = `/api/app-documents?project=${encodeURIComponent(projectId)}&app=${encodeURIComponent(appId)}`;
   const mounted = useRef(true);
+  const versionRef = useRef<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [updatedAt, setUpdatedAt] = useState<number | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -32,10 +34,11 @@ export function useAppDocument<T>(projectId: string, appId: string) {
       if (!response.ok) throw new Error();
       const data = await response.json() as { state?: T | null; updatedAt?: number | null };
       const next = { state: data.state ?? null, updatedAt: data.updatedAt ?? null, ok: true };
-      if (mounted.current) { setUpdatedAt(next.updatedAt); setError(null); }
+      versionRef.current = next.updatedAt;
+      if (mounted.current) { setUpdatedAt(next.updatedAt); setLoadFailed(false); setError(null); }
       return next;
     } catch {
-      if (mounted.current) setError("No se pudo cargar el documento guardado.");
+      if (mounted.current) { setLoadFailed(true); setError("No se pudo cargar el documento guardado."); }
       return { state: null, updatedAt: null, ok: false };
     } finally {
       if (mounted.current) setLoading(false);
@@ -80,5 +83,29 @@ export function useAppDocument<T>(projectId: string, appId: string) {
     return result;
   }, [endpoint]);
 
-  return { load, save, saveVersioned, loading, updatedAt, error };
+  const markLoadFailed = useCallback(() => setLoadFailed(true), []);
+
+  /**
+   * Guarda con la última versión cargada y bloquea si la carga falló.
+   * @param state - Estado completo que se quiere persistir.
+   * @returns El resultado del guardado, el conflicto o el fallo.
+   */
+  const saveCurrentVersioned = useCallback(async (state: T): Promise<VersionedSaveResult> => {
+    if (loadFailed) return { status: "failed" };
+    const result = await saveVersioned(state, versionRef.current);
+    if (result.status === "saved") versionRef.current = result.updatedAt;
+    return result;
+  }, [loadFailed, saveVersioned]);
+
+  return {
+    load,
+    save,
+    saveVersioned,
+    saveCurrentVersioned,
+    loading,
+    updatedAt,
+    loadFailed,
+    markLoadFailed,
+    error,
+  };
 }

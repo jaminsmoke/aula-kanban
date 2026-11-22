@@ -27,10 +27,16 @@ const spreadsheetMock = vi.hoisted(() => {
   return { instance, worksheet, jspreadsheet };
 });
 
-const documentMock = vi.hoisted(() => ({
-  load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null; ok?: boolean }> => ({ state: null, updatedAt: null, ok: true })),
-  saveVersioned: vi.fn(async (_state: unknown, _updatedAt: number | null): Promise<VersionedSaveResult> => ({ status: "saved", updatedAt: 100 })),
-}));
+const documentMock = vi.hoisted(() => {
+  const state = {
+    load: vi.fn(async (): Promise<{ state: unknown; updatedAt: number | null; ok?: boolean }> => ({ state: null, updatedAt: null, ok: true })),
+    saveCurrentVersioned: vi.fn(async (_state: unknown): Promise<VersionedSaveResult> => ({ status: "saved", updatedAt: 100 })),
+    loadFailed: false,
+    markLoadFailed: vi.fn(),
+  };
+  state.markLoadFailed.mockImplementation(() => { state.loadFailed = true; });
+  return state;
+});
 
 vi.mock("jspreadsheet-ce", () => ({
   default: spreadsheetMock.jspreadsheet,
@@ -39,7 +45,9 @@ vi.mock("jspreadsheet-ce", () => ({
 vi.mock("../use-app-document", () => ({
   useAppDocument: () => ({
     load: documentMock.load,
-    saveVersioned: documentMock.saveVersioned,
+    saveCurrentVersioned: documentMock.saveCurrentVersioned,
+    loadFailed: documentMock.loadFailed,
+    markLoadFailed: documentMock.markLoadFailed,
     loading: false,
     error: null,
   }),
@@ -73,8 +81,9 @@ describe("Hoja de cálculo", () => {
     spreadsheetMock.worksheet.getStyle.mockReturnValue({});
     spreadsheetMock.worksheet.getSelection.mockReturnValue([0, 0, 1, 1]);
     spreadsheetMock.worksheet.getValueFromCoords.mockReturnValue("");
+    documentMock.loadFailed = false;
     documentMock.load.mockResolvedValue({ state: null, updatedAt: null, ok: true });
-    documentMock.saveVersioned.mockResolvedValue({ status: "saved", updatedAt: 100 });
+    documentMock.saveCurrentVersioned.mockResolvedValue({ status: "saved", updatedAt: 100 });
   });
 
   it("monta la rejilla con la hoja de ejemplo", async () => {
@@ -226,8 +235,8 @@ describe("Hoja de cálculo", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Guardar hoja" }));
 
-    await waitFor(() => expect(documentMock.saveVersioned).toHaveBeenCalledTimes(1));
-    const saved = documentMock.saveVersioned.mock.calls[0][0] as { data: unknown[][]; styles: Record<string, string> };
+    await waitFor(() => expect(documentMock.saveCurrentVersioned).toHaveBeenCalledTimes(1));
+    const saved = documentMock.saveCurrentVersioned.mock.calls[0][0] as { data: unknown[][]; styles: Record<string, string> };
     expect(saved.data).toHaveLength(20);
     expect(saved.styles).toEqual({});
     expect(screen.getByRole("status").textContent).toContain("guardada en el proyecto");
@@ -240,8 +249,8 @@ describe("Hoja de cálculo", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Guardar hoja" }));
 
-    await waitFor(() => expect(documentMock.saveVersioned).toHaveBeenCalledTimes(1));
-    const saved = documentMock.saveVersioned.mock.calls[0][0] as { data: string[][] };
+    await waitFor(() => expect(documentMock.saveCurrentVersioned).toHaveBeenCalledTimes(1));
+    const saved = documentMock.saveCurrentVersioned.mock.calls[0][0] as { data: string[][] };
     expect(saved.data[2][3]).toBe("=B3*C3");
     expect(saved.data[5][3]).toBe("=SUM(D3:D5)");
   });
@@ -252,25 +261,26 @@ describe("Hoja de cálculo", () => {
       updatedAt: 7,
       ok: true,
     });
-    documentMock.saveVersioned.mockResolvedValueOnce({ status: "conflict", updatedAt: 9 });
+    documentMock.saveCurrentVersioned.mockResolvedValueOnce({ status: "conflict", updatedAt: 9 });
     render(<HojaCalculoApp {...props} />);
     await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
 
     fireEvent.click(screen.getByRole("button", { name: "Guardar hoja" }));
 
-    await waitFor(() => expect(documentMock.saveVersioned).toHaveBeenCalledWith(expect.anything(), 7));
+    await waitFor(() => expect(documentMock.saveCurrentVersioned).toHaveBeenCalledTimes(1));
     expect(screen.getByRole("status").textContent).toContain("otra sesión");
     expect(screen.getByRole("status").textContent).toContain("Cambios sin guardar");
   });
 
   it("no guarda una hoja nueva si falla la carga inicial", async () => {
+    documentMock.loadFailed = true;
     documentMock.load.mockResolvedValueOnce({ state: null, updatedAt: null, ok: false });
     render(<HojaCalculoApp {...props} />);
     await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
 
     fireEvent.click(screen.getByRole("button", { name: "Guardar hoja" }));
 
-    expect(documentMock.saveVersioned).not.toHaveBeenCalled();
+    expect(documentMock.saveCurrentVersioned).not.toHaveBeenCalled();
     expect(screen.getByRole("status").textContent).toContain("No se puede guardar");
   });
 

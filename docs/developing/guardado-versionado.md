@@ -132,3 +132,11 @@
 - `save` sin versión, la carga separada y el guardado de Blockly no cambian.
 - Pruebas del helper: guardado correcto, conflicto con `updatedAt`, 409 sin JSON válido, respuesta no correcta y fallo de red.
 - Suite **268 archivos / 1.773 pruebas**; arquitectura **461 / 1.154**.
+
+### Fase 2 de ARC-11
+
+- `useAppDocument` registra la versión cargada, expone `loadFailed`/`markLoadFailed` y añade `saveCurrentVersioned`.
+- Hoja de cálculo, Mapas, Líneas de tiempo y Tarjetas dejan de mantener su propia versión y su comprobación de carga.
+- Cada app conserva su mensaje, su recarga, su validación y su decisión de bloquear el guardado.
+- Aula Documentos y Blockly no cambian.
+- Saldo: **37 líneas menos** en los cuatro editores y 27 más en `use-app-document`; **10 líneas netas menos**. Suite **268 / 1.774**; Hoja **6 / 625 → 6 / 650**.

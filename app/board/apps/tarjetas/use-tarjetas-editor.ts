@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import type { StoreRole } from "../types";
 import { useAppDocument } from "../use-app-document";
 import {
@@ -31,23 +31,19 @@ export function useTarjetasEditor(projectId: string, role: StoreRole) {
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
-  const [loadFailed, setLoadFailed] = useState(false);
-  const versionRef = useRef<number | null>(null);
-  const { load, saveVersioned, loading, error } = useAppDocument<TarjetasDocument>(projectId, "tarjetas");
+  const { load, saveCurrentVersioned, loadFailed, loading, error } =
+    useAppDocument<TarjetasDocument>(projectId, "tarjetas");
   const readOnly = role === "guest";
   const selectedDeck = doc.decks.find((deck) => deck.id === selectedId) ?? null;
 
   useEffect(() => {
     let active = true;
-    void load().then(({ state, updatedAt, ok }) => {
+    void load().then(({ state, ok }) => {
       if (!active) return;
       if (ok === false) {
-        setLoadFailed(true);
         setStatus("No se pudo cargar el documento. Se conserva el estado actual.");
         return;
       }
-      versionRef.current = updatedAt;
-      setLoadFailed(false);
       const next = parseDocument(state);
       setDoc(next);
       setSelectedId(next.decks[0]?.id ?? null);
@@ -140,10 +136,9 @@ export function useTarjetasEditor(projectId: string, role: StoreRole) {
       return;
     }
     setSaving(true);
-    const result = await saveVersioned(doc, versionRef.current);
+    const result = await saveCurrentVersioned(doc);
     setSaving(false);
     if (result.status === "saved") {
-      versionRef.current = result.updatedAt;
       setDirty(false);
       setStatus("Guardado en el proyecto.");
     } else if (result.status === "conflict") {

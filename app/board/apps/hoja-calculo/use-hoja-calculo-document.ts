@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { StoreRole } from "../types";
 import { useAppDocument } from "../use-app-document";
 import {
@@ -22,9 +22,8 @@ export function useHojaCalculoDocument(projectId: string, role: StoreRole) {
   const [status, setStatus] = useState("Hoja de ejemplo lista.");
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [loadFailed, setLoadFailed] = useState(false);
-  const versionRef = useRef<number | null>(null);
-  const { load, saveVersioned, loading, error } = useAppDocument<SpreadsheetDocument>(projectId, "hoja-calculo");
+  const { load, saveCurrentVersioned, loadFailed, markLoadFailed, loading, error } =
+    useAppDocument<SpreadsheetDocument>(projectId, "hoja-calculo");
   const readOnly = role === "guest";
 
   const applyDocument = useCallback((nextDocument: SpreadsheetDocument, message: string) => {
@@ -36,29 +35,24 @@ export function useHojaCalculoDocument(projectId: string, role: StoreRole) {
 
   useEffect(() => {
     let active = true;
-    void load().then(({ state, updatedAt, ok }) => {
+    void load().then(({ state, ok }) => {
       if (!active) return;
       if (ok === false) {
-        setLoadFailed(true);
         setStatus("No se pudo cargar la hoja guardada. Se conserva la hoja actual.");
         return;
       }
       const parsed = parseSpreadsheetDocument(state);
       if (parsed) {
-        versionRef.current = updatedAt;
-        setLoadFailed(false);
         applyDocument(parsed, "Hoja guardada cargada.");
       } else if (state === null) {
-        versionRef.current = null;
-        setLoadFailed(false);
         setStatus("Hoja de ejemplo lista. Guarda para conservarla.");
       } else {
-        setLoadFailed(true);
+        markLoadFailed();
         setStatus("La hoja guardada no es válida. Se conserva la hoja actual.");
       }
     });
     return () => { active = false; };
-  }, [applyDocument, load]);
+  }, [applyDocument, load, markLoadFailed]);
 
   const markDirty = useCallback(() => setDirty(true), []);
   const clearPendingDocument = useCallback(() => setPendingDocument(null), []);
@@ -70,10 +64,9 @@ export function useHojaCalculoDocument(projectId: string, role: StoreRole) {
       return false;
     }
     setSaving(true);
-    const result = await saveVersioned(nextDocument, versionRef.current);
+    const result = await saveCurrentVersioned(nextDocument);
     setSaving(false);
     if (result.status === "saved") {
-      versionRef.current = result.updatedAt;
       setDirty(false);
       setStatus("Hoja guardada en el proyecto.");
       return true;
@@ -85,7 +78,7 @@ export function useHojaCalculoDocument(projectId: string, role: StoreRole) {
     }
     setStatus("No se pudo guardar la hoja. Revisa la conexión.");
     return false;
-  }, [loadFailed, readOnly, saveVersioned]);
+  }, [loadFailed, readOnly, saveCurrentVersioned]);
 
   const reloadDocument = useCallback(async () => {
     if (dirty && typeof window !== "undefined" && !window.confirm(
@@ -93,28 +86,23 @@ export function useHojaCalculoDocument(projectId: string, role: StoreRole) {
     )) {
       return;
     }
-    const { state, updatedAt, ok } = await load();
+    const { state, ok } = await load();
     if (ok === false) {
-      setLoadFailed(true);
       setStatus("No se pudo cargar la hoja guardada. Se conserva la hoja actual.");
       return;
     }
     const parsed = parseSpreadsheetDocument(state);
     if (parsed) {
-      versionRef.current = updatedAt;
-      setLoadFailed(false);
       applyDocument(parsed, "Hoja guardada cargada.");
       return;
     }
     if (state === null) {
-      versionRef.current = null;
-      setLoadFailed(false);
       setStatus("No hay una hoja guardada; se mantiene la hoja actual.");
       return;
     }
-    setLoadFailed(true);
+    markLoadFailed();
     setStatus("La hoja guardada no es válida; se mantiene la hoja actual.");
-  }, [applyDocument, dirty, load]);
+  }, [applyDocument, dirty, load, markLoadFailed]);
 
   return {
     documentValue,

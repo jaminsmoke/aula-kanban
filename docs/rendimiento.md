@@ -63,7 +63,7 @@ Los totales incluyen el framework y la entrada compartida. La comparación útil
 |---|---|---:|---|---|
 | Tablero | 1 | 175.656 B | 29 / 2.226 → 32 / 2.450 | 12 / 1.529 → 13 / 1.650 |
 | Aula Documentos | 2 | 387.000 B | 54 / 5.348 → 54 / 5.400 | 16 / 3.734 → 16 / 3.800 |
-| Hoja de cálculo | 1 | 315.000 B | 6 / 615 → 6 / 650 | 1 / 345 → 2 / 380 |
+| Hoja de cálculo | 1 | 315.000 B | 6 / 625 → 6 / 650 | 1 / 345 → 2 / 380 |
 | Calculadora | 3 | 2.069.960 B | 6 / 295 → 7 / 330 | 1 / 124 → 2 / 140 |
 | Espacio / Tienda | 1 | 174.779 B | 9 / 723 → 10 / 800 | 2 / 245 → 3 / 270 |
 | Pizarra | 2 | 1.560.999 B | 7 / 439 → 8 / 490 | 1 / 9 → 2 / 12 |
