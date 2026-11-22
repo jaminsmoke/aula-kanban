@@ -1,7 +1,7 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-12 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
@@ -12,6 +12,35 @@
 
 - Las apps comparten utilidades con consumidores comunes. Hoja de cálculo, Mapas, Líneas de tiempo y Tarjetas guardan con comprobación de versión para conservar el borrador ante conflictos. Hoja de cálculo permite copiar una selección como tabla para pegarla en Aula Documentos.
 - Pasaron 1.769 pruebas, `npm run check`, el build y los presupuestos de rendimiento general y Office. Se verificaron la portada, la documentación y el catálogo mediante el plugin en producción. La publicación no requirió migraciones.
+
+---
+
+## 2026-11-22 — Roadmap ARC-12 — Reducir las propiedades reenviadas por Aula Documentos
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- Se retiraron del contexto **46 campos**: 27 del modelo, 14 del modelo de toolbar y 5 de hooks que entraban por spread.
+- Las acciones y etiquetas retiradas siguen existiendo dentro de sus hooks para construir menús, grupos y barras.
+- El retorno declarado queda en **154 entradas** (146 explícitas + 8 spreads); el contrato expandido baja de **280 a 234 campos**.
+- Los candidatos sin consumidor directo pasan de **46 a 0**.
+- Se conservan el editor, el guardado, el conflicto, el modo de solo lectura, la presentación y la carga diferida.
+- Contrato y mapa de consumidores en [`aula-documentos-modelo.md`](aula-documentos-modelo.md).
+
+### Verificación
+
+- `npm run check`: correcto.
+- Arquitectura: **461 archivos / 1.154 imports / 0 problemas**.
+- Suite completa: **268 archivos / 1.774 pruebas**.
+- Aula Documentos: **54 / 5.348 → 54 / 5.400** pruebas; Hoja de cálculo **6 / 625 → 6 / 650**.
+- Build de Aula Documentos: **386.658 / 387.000 B**; Hoja de cálculo **312.862 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos; Office **196.481 / 210.000 B**.
+- El Site sigue en `1.1.39`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-12 archivado en [`historial/roadmap-arc-12.md`](../historial/roadmap-arc-12.md). El backlog queda con **3 entradas**; siguiente candidato **ARC-13**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 

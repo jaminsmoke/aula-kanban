@@ -1,6 +1,6 @@
 # Modelo de vista de Aula Documentos
 
-> **Estado:** ARC-12, Fase 1 completada · **Fecha:** 2026-11-22
+> **Estado:** ARC-12 cerrado · **Fecha:** 2026-11-22
 > **Alcance:** `useAulaDocumentosModel`, el contexto de Aula Documentos y sus consumidores.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -445,3 +445,10 @@ Los consumidores se abrevian con las etiquetas de la sección 3.
 - Saldo: modelo **587 → 560 líneas**, toolbar **392 → 378** y hooks de spread **-5**: **46 líneas netas menos**.
 - Suite completa **268 / 1.774**; Aula **36 / 181**; build Aula **386.670 / 387.000 B**; Hoja **312.870 / 315.000 B**.
 - Editor, guardado, conflicto, solo lectura y presentación conservan su comportamiento; la carga diferida no cambia.
+
+## 11. Cierre
+
+- El contexto de Aula Documentos conserva solo campos con consumidor directo; las acciones internas siguen en sus hooks.
+- No se cambió el comportamiento, el guardado, los permisos, las URLs ni el esquema.
+- Suite **268 archivos / 1.774 pruebas**; Aula **36 / 181**; build Aula **386.658 / 387.000 B**; Hoja **312.862 / 315.000 B**.
+- El Site permanece en `1.1.39`; roadmap archivado en [`historial/roadmap-arc-12.md`](../historial/roadmap-arc-12.md).
