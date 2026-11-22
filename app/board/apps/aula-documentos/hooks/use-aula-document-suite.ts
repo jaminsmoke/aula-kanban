@@ -92,9 +92,11 @@ export function useAulaDocumentSuite(projectId: string) {
   const [suite, setSuite] = useState<AulaDocumentSuite>(EMPTY_SUITE);
   const [documentId, setDocumentId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initializing, setInitializing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mounted = useRef(true);
   const autoCreated = useRef(false);
+  const initializingRef = useRef(false);
 
   useEffect(() => {
     mounted.current = true;
@@ -168,12 +170,25 @@ export function useAulaDocumentSuite(projectId: string) {
       }
       if (loaded.active.length === 0 && loaded.archived.length === 0 && loaded.deleted.length === 0 && !autoCreated.current) {
         autoCreated.current = true;
-        const created = await createInitialDocument();
-        if (created) {
-          setSuite({ active: [created], archived: [], deleted: [] });
-          setDocumentId(created.id);
-          writeLastOpened(projectId, created.id);
-          writeUrlDocumentId(created.id);
+        initializingRef.current = true;
+        setInitializing(true);
+        try {
+          const created = await createInitialDocument();
+          if (!active || !mounted.current) return;
+          if (created) {
+            setSuite({ active: [created], archived: [], deleted: [] });
+            setDocumentId(created.id);
+            writeLastOpened(projectId, created.id);
+            writeUrlDocumentId(created.id);
+            setError(null);
+          } else {
+            setError("No se pudo preparar el primer documento.");
+          }
+        } finally {
+          if (mounted.current) {
+            initializingRef.current = false;
+            setInitializing(false);
+          }
         }
       }
     })();
@@ -187,6 +202,7 @@ export function useAulaDocumentSuite(projectId: string) {
   }, [projectId]);
 
   const createDocument = useCallback(async (state?: unknown, title?: string): Promise<AulaDocumentSummary | null> => {
+    if (initializingRef.current) return null;
     try {
       const response = await fetch(base, {
         method: "POST",
@@ -255,6 +271,7 @@ export function useAulaDocumentSuite(projectId: string) {
     suite,
     documentId,
     loading,
+    initializing,
     error,
     refresh,
     selectDocument,

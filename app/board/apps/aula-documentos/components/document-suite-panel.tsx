@@ -22,6 +22,7 @@ export function DocumentSuitePanel() {
     suite,
     suiteDocumentId,
     suiteLoading,
+    suiteInitializing,
     suiteError,
     readOnly,
     openSuiteDocument,
@@ -59,15 +60,18 @@ export function DocumentSuitePanel() {
           type="button"
           className="aula-documentos-preview-button"
           onClick={() => { void createSuiteDocument(); }}
-          disabled={readOnly || suiteLoading}
+          disabled={readOnly || suiteLoading || suiteInitializing}
         >
           <Plus size={14} aria-hidden />
           Nuevo
         </button>
       </div>
-      {suiteLoading ? <p className="aula-documentos-suite-meta">Cargando documentos.</p> : null}
+      {suiteLoading ? <p className="aula-documentos-suite-meta" role="status">Cargando documentos.</p> : null}
+      {!suiteLoading && suiteInitializing ? (
+        <p className="aula-documentos-suite-meta" role="status">Preparando el primer documento…</p>
+      ) : null}
       {suiteError ? <p className="aula-documentos-import-error" role="alert">{suiteError}</p> : null}
-      {!suiteLoading && suite.active.length === 0 ? (
+      {!suiteLoading && !suiteInitializing && !suiteError && suite.active.length === 0 ? (
         <p className="aula-documentos-suite-meta">Todavía no hay documentos. Crea el primero para empezar.</p>
       ) : null}
       <ul className="aula-documentos-suite-list">

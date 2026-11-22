@@ -79,4 +79,36 @@ describe("suite de Aula Documentos", () => {
     await waitFor(() => expect(result.current.documentId).toBe("doc1"));
     expect(result.current.suite.active).toHaveLength(1);
   });
+
+  it("bloquea una segunda creación mientras prepara el primer documento", async () => {
+    let resolveInitial!: (value: Response) => void;
+    const initialPost = new Promise<Response>((resolve) => { resolveInitial = resolve; });
+    let posts = 0;
+    const fetchMock = vi.fn(async (_input: string | URL | Request, init?: RequestInit) => {
+      if ((init?.method ?? "GET") === "GET") {
+        return response({ active: [], archived: [], deleted: [] });
+      }
+      posts += 1;
+      return initialPost;
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { result } = renderHook(() => useAulaDocumentSuite("p1"));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.initializing).toBe(true);
+
+    await act(async () => {
+      expect(await result.current.createDocument()).toBeNull();
+    });
+    expect(posts).toBe(1);
+
+    await act(async () => {
+      resolveInitial(response({ document: doc("doc1", "Inicial") }, 201));
+      await initialPost;
+    });
+    await waitFor(() => expect(result.current.documentId).toBe("doc1"));
+    expect(result.current.initializing).toBe(false);
+    expect(result.current.suite.active).toHaveLength(1);
+    expect(posts).toBe(1);
+  });
 });

@@ -1,6 +1,6 @@
 # Apertura de una suite documental vacía
 
-> **Estado:** ADOC-22 Fase 1 · **Fecha:** 2026-11-22
+> **Estado:** ADOC-22 Fases 1-2 · **Fecha:** 2026-11-22
 > **Alcance:** carga inicial de Aula Documentos, creación automática del primer documento y estados del panel.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -75,4 +75,11 @@ No se cambia el servidor, el esquema, los permisos ni la navegación por `doc`.
 - Site: `1.1.40`.
 - Aula Documentos, build de publicación: **386.677 / 387.000 B**.
 - Commit de apertura del roadmap: `f3635fd`.
-- Sin cambios de producto en esta fase.
+
+## 7. Aplicado en la Fase 2
+
+- `useAulaDocumentSuite` expone `initializing`, mantiene el estado durante la creación automática y publica «No se pudo preparar el primer documento.» si falla.
+- `createDocument()` devuelve `null` mientras `initializing` está activo; el panel también deshabilita «Nuevo».
+- El panel muestra «Preparando el primer documento…» y solo pinta el estado vacío cuando no hay carga, preparación ni error.
+- Se añadieron pruebas de la carrera y del panel; suite completa **268 archivos / 1.781 pruebas**.
+- El presupuesto de pruebas de Aula se amplió de **5.400** a **5.500** líneas; el consumo queda en **5.439**. `npm run check` y `app:budget` correctos.

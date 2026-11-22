@@ -13,7 +13,8 @@ const mocks = vi.hoisted(() => ({
     },
     suiteDocumentId: "doc1",
     suiteLoading: false,
-    suiteError: null,
+    suiteInitializing: false,
+    suiteError: null as string | null,
     readOnly: false,
     openSuiteDocument: vi.fn(),
     createSuiteDocument: vi.fn(),
@@ -31,12 +32,18 @@ vi.mock("../aula-documentos-context", () => ({
 
 import { DocumentSuitePanel } from "./document-suite-panel";
 
+const initialSuite = mocks.view.suite;
+
 describe("panel de la suite documental", () => {
   beforeEach(() => {
     for (const value of Object.values(mocks.view)) {
       if (typeof value === "function" && "mockReset" in value) value.mockReset();
     }
+    mocks.view.suite = initialSuite;
     mocks.view.suiteDocumentId = "doc1";
+    mocks.view.suiteLoading = false;
+    mocks.view.suiteInitializing = false;
+    mocks.view.suiteError = null;
     mocks.view.readOnly = false;
     vi.spyOn(window, "confirm").mockReturnValue(true);
   });
@@ -65,6 +72,27 @@ describe("panel de la suite documental", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Restaurar Antiguo" }));
     expect(mocks.view.restoreSuiteDocument).toHaveBeenCalledWith("old");
+  });
+
+  it("muestra la preparación inicial y bloquea Nuevo", () => {
+    mocks.view.suite = { active: [], archived: [], deleted: [] };
+    mocks.view.suiteInitializing = true;
+
+    render(<DocumentSuitePanel />);
+
+    expect(screen.getByRole("status").textContent).toContain("Preparando el primer documento");
+    expect(screen.getByRole("button", { name: "Nuevo" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.queryByText(/Todavía no hay documentos/)).toBeNull();
+  });
+
+  it("prioriza el error y no muestra el estado vacío", () => {
+    mocks.view.suite = { active: [], archived: [], deleted: [] };
+    mocks.view.suiteError = "No se pudieron cargar los documentos del proyecto.";
+
+    render(<DocumentSuitePanel />);
+
+    expect(screen.getByRole("alert").textContent).toContain("No se pudieron cargar los documentos");
+    expect(screen.queryByText(/Todavía no hay documentos/)).toBeNull();
   });
 
   it("renombra y cancela sin tocar el documento", () => {

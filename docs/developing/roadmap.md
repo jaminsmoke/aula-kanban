@@ -61,11 +61,12 @@
 
 ### Fase 2 — Preparación inicial y precedencia del error
 
-- [ ] Exponer un estado de preparación inicial y deshabilitar «Nuevo» mientras esté activo.
-- [ ] Mostrar un solo mensaje coherente durante la creación automática.
-- [ ] Suprimir el estado vacío cuando haya un error de carga.
-- [ ] Cubrir con pruebas una sola creación inicial y la ausencia de mensajes contradictorios.
+- [x] Exponer un estado de preparación inicial y deshabilitar «Nuevo» mientras esté activo.
+- [x] Mostrar un solo mensaje coherente durante la creación automática.
+- [x] Suprimir el estado vacío cuando haya un error de carga.
+- [x] Cubrir con pruebas una sola creación inicial y la ausencia de mensajes contradictorios.
 - **Criterios:** sin documentos duplicados, estados coherentes y pruebas de la carrera.
+- **Cierre (2026-11-22):** `useAulaDocumentSuite` expone `initializing`, bloquea una segunda creación y publica el error de preparación. El panel muestra «Preparando el primer documento…», deshabilita «Nuevo» y solo pinta el vacío sin error ni preparación. Suite **268 / 1.781**; Aula **54 / 5.439 ≤ 54 / 5.500**.
 
 ### Fase 3 — Reintento y fallo de creación
 
@@ -94,5 +95,6 @@
 
 - 2026-11-22: **Roadmap abierto.** ADOC-22 entra desde el backlog por el fallo de la suite vacía; quedan UI-12, TASK-01 y DEV-01. Se empieza por reproducir la carrera y fijar los estados. Sin cambios de producto en esta apertura.
 - 2026-11-22: **Fase 1 completada.** Carrera reproducida con una prueba temporal retirada; el GET vacío deja `loading=false` y «Nuevo» habilitado mientras el POST inicial sigue pendiente. Contrato en [`suite-vacia.md`](suite-vacia.md). Sin cambios de producto.
+- 2026-11-22: **Fase 2 completada.** Estado `initializing`, guard de creación y mensajes de preparación; el vacío no aparece si hay error o preparación. Pruebas de carrera y panel; suite **268 / 1.781**. Presupuesto de pruebas de Aula ampliado a **5.500** líneas.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

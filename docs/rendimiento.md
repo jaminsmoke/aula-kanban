@@ -62,14 +62,14 @@ Los totales incluyen el framework y la entrada compartida. La comparación útil
 | App | Flujos | Gzip de app | Tests actuales / límite | CSS actual / límite |
 |---|---|---:|---|---|
 | Tablero | 1 | 175.656 B | 29 / 2.226 → 32 / 2.450 | 12 / 1.529 → 13 / 1.650 |
-| Aula Documentos | 2 | 387.000 B | 54 / 5.390 → 54 / 5.400 | 16 / 3.734 → 16 / 3.800 |
+| Aula Documentos | 2 | 387.000 B | 54 / 5.439 → 54 / 5.500 | 16 / 3.734 → 16 / 3.800 |
 | Hoja de cálculo | 1 | 315.000 B | 6 / 625 → 6 / 650 | 1 / 335 → 2 / 380 |
 | Calculadora | 3 | 2.069.960 B | 6 / 295 → 7 / 330 | 1 / 95 → 2 / 140 |
 | Espacio / Tienda | 1 | 174.779 B | 9 / 723 → 10 / 800 | 2 / 245 → 3 / 270 |
 | Pizarra | 2 | 1.560.999 B | 7 / 439 → 8 / 490 | 1 / 9 → 2 / 12 |
 | Blockly | 2 | 383.275 B | 5 / 169 → 5 / 180 | 1 / 39 → 2 / 50 |
 
-Los límites de test y CSS tienen un margen deliberado para evitar que una prueba pequeña rompa CI; el límite de gzip de la app nunca puede ser menor que el de su flujo más pesado. Los flujos `aula-documentos-export`, `basica`, `basica-evalua`, `pizarra-mermaid` y `blockly-codigo` siguen teniendo su propio presupuesto aunque compartan app. El presupuesto de `aula-documentos` se ajustó a **387.000 B** con la barra de estado accesible de UI-11; el build de referencia queda en **386.662 B**. Los límites de pruebas y CSS se ajustan a **53 / 5.297 → 54 / 5.400** y **16 / 3.734 → 16 / 3.800** al incorporar a la app las pruebas y el CSS del visor Office en ARC-08 Fase 4. Hoja de cálculo conserva **315.000 B** y queda en **313.045 B** con el adaptador de portapapeles de ARC-10, la base compartida de ARC-13 y los validadores de ARC-14; respecto a **312.862 B**, suma **183 B** y un archivo. ARC-10 amplía su presupuesto de pruebas de **500** a **650** líneas y añade un archivo de pruebas; el límite de archivos sigue en **6**.
+Los límites de test y CSS tienen un margen deliberado para evitar que una prueba pequeña rompa CI; el límite de gzip de la app nunca puede ser menor que el de su flujo más pesado. Los flujos `aula-documentos-export`, `basica`, `basica-evalua`, `pizarra-mermaid` y `blockly-codigo` siguen teniendo su propio presupuesto aunque compartan app. El presupuesto de `aula-documentos` se ajustó a **387.000 B** con la barra de estado accesible de UI-11; el build de referencia queda en **386.662 B**. Los límites de pruebas y CSS se ajustan a **53 / 5.297 → 54 / 5.400** y **16 / 3.734 → 16 / 3.800** al incorporar a la app las pruebas y el CSS del visor Office en ARC-08 Fase 4. Hoja de cálculo conserva **315.000 B** y queda en **313.045 B** con el adaptador de portapapeles de ARC-10, la base compartida de ARC-13 y los validadores de ARC-14; respecto a **312.862 B**, suma **183 B** y un archivo. ARC-10 amplía su presupuesto de pruebas de **500** a **650** líneas y añade un archivo de pruebas; el límite de archivos sigue en **6**. ADOC-22 amplía el presupuesto de pruebas de Aula Documentos de **5.400** a **5.500** líneas para cubrir la preparación inicial y la precedencia del error.
 
 ### Latencia e imágenes
 

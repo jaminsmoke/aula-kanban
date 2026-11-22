@@ -546,6 +546,7 @@ export function useAulaDocumentosModel({ projectId, role }: { projectId: string;
     suite: suite.suite,
     suiteDocumentId: suite.documentId,
     suiteLoading: suite.loading,
+    suiteInitializing: suite.initializing,
     suiteError: suite.error,
     ...suiteActions,
     ...search,
