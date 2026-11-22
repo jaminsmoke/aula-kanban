@@ -9,6 +9,15 @@ export const AULA_DOCUMENT_TITLE_MAX_LENGTH = 120;
 /** Límite local, por debajo del límite de 200.000 del endpoint. */
 export const AULA_DOCUMENT_JSON_MAX_LENGTH = 190_000;
 
+/**
+ * Indica si un documento serializado supera el límite compartido.
+ * @param value - JSON serializado del documento.
+ * @returns `true` cuando la longitud supera el límite.
+ */
+export function isAulaDocumentJsonTooLong(value: string): boolean {
+  return value.length > AULA_DOCUMENT_JSON_MAX_LENGTH;
+}
+
 /** Límites defensivos del árbol Tiptap. */
 export const AULA_DOCUMENT_MAX_NODES = 4_000;
 export const AULA_DOCUMENT_MAX_DEPTH = 24;

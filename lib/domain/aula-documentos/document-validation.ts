@@ -1,7 +1,6 @@
 import type { JSONContent } from "@tiptap/core";
 import { normalizeAulaImageAttrs } from "./image";
 import {
-  AULA_DOCUMENT_JSON_MAX_LENGTH,
   AULA_DOCUMENT_MAX_CHILDREN,
   AULA_DOCUMENT_MAX_DEPTH,
   AULA_DOCUMENT_MAX_IMAGE_TEXT_TOTAL,
@@ -26,6 +25,7 @@ import {
   DEFAULT_AULA_PRESENTATION,
   DEFAULT_AULA_PRINT_PAGE,
   DocumentValidationError,
+  isAulaDocumentJsonTooLong,
   type AulaDocument,
   type AulaDocumentParseResult,
   type AulaDocumentPresentation,
@@ -507,7 +507,7 @@ export function parseAulaDocument(value: unknown): AulaDocumentParseResult {
   } catch {
     return { ok: false, code: "invalid-json", message: "El documento guardado no se puede leer." };
   }
-  if (serialized.length > AULA_DOCUMENT_JSON_MAX_LENGTH) {
+  if (isAulaDocumentJsonTooLong(serialized)) {
     return { ok: false, code: "too-large", message: "El documento supera el tamaño permitido." };
   }
 

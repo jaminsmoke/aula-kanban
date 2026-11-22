@@ -1,6 +1,6 @@
 # Límites de importación y revisión documental
 
-> **Estado:** ARC-14 Fase 1 y Fase 2 · **Fecha:** 2026-11-22
+> **Estado:** ARC-14 Fases 1, 2 y 3 · **Fecha:** 2026-11-22
 > **Alcance:** límites de Markdown, documento serializado, historial de versiones y peticiones de Aula Documentos.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -8,7 +8,7 @@
 
 - Hay **cinco constantes** relacionadas, pero describen **tres fronteras distintas**: petición/almacenamiento, Markdown y documento serializado.
 - `LEGACY_MARKDOWN_MAX_LENGTH` repetía el valor de `AULA_DOCUMENT_MARKDOWN_MAX_LENGTH`: **200.000**.
-- `AULA_VERSION_STATE_MAX_LENGTH` repite el valor de `AULA_DOCUMENT_JSON_MAX_LENGTH`: **190.000**.
+- `AULA_VERSION_STATE_MAX_LENGTH` repetía el valor de `AULA_DOCUMENT_JSON_MAX_LENGTH`: **190.000**.
 - `MAX_APP_DOCUMENT_CHARS` también vale **200.000**, pero no es el mismo concepto: limita el cuerpo HTTP y el estado serializado de cualquier app nativa.
 - La validación del documento ya aplica el límite de 190.000 antes de crear una versión; el chequeo del historial es una segunda comprobación del mismo estado.
 - No se cambia producto en esta fase. La decisión es reutilizar las constantes de dominio existentes y mantener separada la frontera de petición/almacenamiento.
@@ -66,7 +66,7 @@ El límite es de **caracteres**, no de bytes. Un texto con caracteres multibyte 
 
 ### 4.4 Historial: 190.000
 
-`AULA_VERSION_STATE_MAX_LENGTH` se comprueba al crear una versión después de `parseAulaDocument()`. El documento ya ha sido validado con el límite de 190.000, por lo que la segunda comprobación no aporta un límite distinto; solo añade una constante paralela.
+El historial usa `isAulaDocumentJsonTooLong()` al crear una versión después de `parseAulaDocument()`. El documento ya ha sido validado con el límite de 190.000, por lo que la segunda comprobación no aporta un límite distinto; conserva el estado `invalid` y comparte la definición.
 
 La restauración vuelve a validar el estado de la versión con `parseAulaDocument()`. El límite efectivo de una versión restaurada es, por tanto, el mismo límite del documento serializado.
 
@@ -81,7 +81,7 @@ La restauración vuelve a validar el estado de la versión con `parseAulaDocumen
 | JSON importado | `AULA_DOCUMENT_JSON_MAX_LENGTH` | `{ ok: false, message: "El JSON supera el tamaño permitido." }` |
 | Documento validado | `AULA_DOCUMENT_JSON_MAX_LENGTH` | `{ ok: false, code: "too-large", message: "El documento supera el tamaño permitido." }` |
 | Copia local | `AULA_DOCUMENT_JSON_MAX_LENGTH` | `{ ok: false, reason: "too-large" }` |
-| Versión manual | `AULA_VERSION_STATE_MAX_LENGTH` | `{ status: "invalid" }` sin mensaje de límite |
+| Versión manual | `AULA_DOCUMENT_JSON_MAX_LENGTH` | `{ status: "invalid" }` sin mensaje de límite |
 | Guardado o creación de Aula | `MAX_APP_DOCUMENT_CHARS` | `{ status: "too-large" }`; la API responde 413 con `"El documento es demasiado grande."` |
 | Cuerpo de la petición | `MAX_APP_DOCUMENT_CHARS` | 413 con `"Documento no válido o demasiado grande."` en las rutas que lo usan |
 | Acción de Aula Documentos | `MAX_APP_DOCUMENT_CHARS` | 400 con `"Acción no válida."` |
@@ -98,7 +98,7 @@ Los flujos de Markdown usan `>`: el valor exacto del límite se acepta en esa co
 
 No se creará un módulo genérico de límites: las constantes existentes ya tienen un dominio claro y el cambio se limita a dos duplicados. Tampoco se unificarán los mensajes: la interfaz y las pruebas dependen de los textos actuales.
 
-## 7. Cobertura de pruebas actual
+## 7. Cobertura de pruebas en la Fase 1
 
 | Flujo | Cobertura existente | Hueco para las fases 2 y 3 |
 |---|---|---|
@@ -120,8 +120,8 @@ No se creará un módulo genérico de límites: las constantes existentes ya tie
 
 ## 9. Baseline
 
-- Arquitectura: **461 archivos / 1.154 imports / 0 problemas**.
-- Suite: **268 archivos / 1.774 pruebas**.
+- Arquitectura: **461 archivos / 1.155 imports / 0 problemas**.
+- Suite: **268 archivos / 1.778 pruebas**.
 - Aula Documentos: **386.673 / 387.000 B**.
 - Hoja de cálculo: **313.034 / 315.000 B**.
 - Site: `1.1.39`.
@@ -133,3 +133,11 @@ No se creará un módulo genérico de límites: las constantes existentes ya tie
 - `importers.ts`, `import-formats.ts`, `office-import.ts` y `use-aula-import.ts` usan el mismo validador; se retiró `LEGACY_MARKDOWN_MAX_LENGTH`.
 - Se añadieron pruebas de límite exacto y siguiente carácter en el validador, en Presentaciones antiguas, en TXT y en Office. La comprobación de Markdown del diálogo queda cubierta por el validador compartido y el tipado de sus consumidores.
 - Los mensajes de error y los límites efectivos no cambian. Suite completa: **268 archivos / 1.776 pruebas**; `npm run check` y `app:budget` correctos.
+
+## 11. Aplicado en la Fase 3
+
+- `document-types.ts` exporta `isAulaDocumentJsonTooLong()` y conserva `AULA_DOCUMENT_JSON_MAX_LENGTH` como única definición de 190.000.
+- La validación del documento, la importación JSON, las copias locales y el historial usan el mismo validador. Se retiró `AULA_VERSION_STATE_MAX_LENGTH`.
+- `MAX_APP_DOCUMENT_CHARS` sigue separada para los bytes de la petición y el almacenamiento de apps; no se modificó el guardado.
+- Se añadieron pruebas del límite exacto y del siguiente carácter, de creación de versión y de restauración con un estado fuera de límite.
+- Los estados `too-large` e `invalid`, los mensajes y los límites efectivos no cambian. Arquitectura **461 / 1.155**; suite **268 / 1.778**; `npm run check` y `app:budget` correctos.

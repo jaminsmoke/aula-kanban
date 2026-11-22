@@ -26,6 +26,7 @@ vi.mock("./versions-repository", () => ({
   selectAulaVersionSummaries: mocks.selectSummaries,
 }));
 
+import { AULA_DOCUMENT_JSON_MAX_LENGTH } from "../../domain/aula-documentos/document";
 import { createAulaVersion, listAulaVersions, restoreAulaVersion } from "./versions";
 
 const document = {
@@ -137,5 +138,49 @@ describe("servicio de versiones", () => {
       actor: teacher,
     })).resolves.toEqual({ status: "not-found" });
     expect(mocks.updateState).not.toHaveBeenCalled();
+  });
+
+  it("rechaza estados fuera del límite compartido al crear y restaurar", async () => {
+    const oversizedState = {
+      ...document,
+      content: {
+        type: "doc",
+        content: [{
+          type: "paragraph",
+          content: [{ type: "text", text: "x".repeat(AULA_DOCUMENT_JSON_MAX_LENGTH + 1) }],
+        }],
+      },
+    };
+
+    mocks.selectRow.mockResolvedValue(row({ state: JSON.stringify(oversizedState) }));
+    await expect(restoreAulaVersion({
+      projectId: "p1",
+      documentId: "d1",
+      versionId: "v1",
+      expectedUpdatedAt: 5,
+      actor: teacher,
+    })).resolves.toEqual({ status: "invalid" });
+    expect(mocks.updateState).not.toHaveBeenCalled();
+
+    mocks.readDocument.mockResolvedValue({
+      id: "d1",
+      projectId: "p1",
+      title: "Clase",
+      excerpt: "Hola",
+      status: "active",
+      createdAt: 1,
+      updatedAt: 5,
+      archivedAt: null,
+      createdBy: "u1",
+      updatedBy: "u1",
+      state: oversizedState,
+    });
+    await expect(createAulaVersion({
+      projectId: "p1",
+      documentId: "d1",
+      name: "Entrega",
+      actor: teacher,
+    })).resolves.toEqual({ status: "invalid" });
+    expect(mocks.insert).not.toHaveBeenCalled();
   });
 });

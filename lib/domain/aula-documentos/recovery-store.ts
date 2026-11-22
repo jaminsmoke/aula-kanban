@@ -1,5 +1,5 @@
 import { createLocalState, type ClientStorage } from "../../client-storage";
-import { AULA_DOCUMENT_JSON_MAX_LENGTH, type AulaDocument } from "./document";
+import { isAulaDocumentJsonTooLong, type AulaDocument } from "./document";
 import {
   AULA_RECOVERY_MAX_COPIES,
   AULA_RECOVERY_MAX_TOTAL_BYTES,
@@ -126,7 +126,7 @@ export function saveRecoveryCopy(
   input: SaveRecoveryInput,
 ): SaveAulaRecoveryResult {
   const serialized = JSON.stringify(input.document);
-  if (serialized.length > AULA_DOCUMENT_JSON_MAX_LENGTH) {
+  if (isAulaDocumentJsonTooLong(serialized)) {
     return { ok: false, reason: "too-large" };
   }
 

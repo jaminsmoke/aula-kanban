@@ -14,6 +14,7 @@ import {
   AULA_DOCUMENT_SCHEMA_VERSION,
   AULA_TABLE_MAX_SPAN,
   createEmptyAulaDocument,
+  isAulaDocumentJsonTooLong,
   normalizeAulaLink,
   parseAulaDocument,
 } from "./document";
@@ -226,6 +227,11 @@ describe("modelo de Aula Documentos", () => {
     }));
     expect(JSON.stringify(candidate(huge)).length).toBeGreaterThan(AULA_DOCUMENT_JSON_MAX_LENGTH);
     expect(parseAulaDocument(candidate(huge))).toMatchObject({ ok: false, code: "too-large" });
+  });
+
+  it("acepta el límite exacto del documento serializado y rechaza el siguiente carácter", () => {
+    expect(isAulaDocumentJsonTooLong("x".repeat(AULA_DOCUMENT_JSON_MAX_LENGTH))).toBe(false);
+    expect(isAulaDocumentJsonTooLong("x".repeat(AULA_DOCUMENT_JSON_MAX_LENGTH + 1))).toBe(true);
   });
 
   it("limita la cantidad y el tamaño de los diagramas Mermaid", () => {

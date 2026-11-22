@@ -1,6 +1,6 @@
 import {
-  AULA_DOCUMENT_JSON_MAX_LENGTH,
   AULA_DOCUMENT_SCHEMA_VERSION,
+  isAulaDocumentJsonTooLong,
   parseAulaDocument,
   type AulaDocument,
 } from "./document";
@@ -58,7 +58,7 @@ export function importPlainTextDocument(source: string, titleFallback = "Texto i
  */
 export function importJsonDocument(source: string): AulaDocumentImportResult {
   if (!source.trim()) return { ok: false, message: "El JSON está vacío." };
-  if (source.length > AULA_DOCUMENT_JSON_MAX_LENGTH) {
+  if (isAulaDocumentJsonTooLong(source)) {
     return { ok: false, message: "El JSON supera el tamaño permitido." };
   }
 

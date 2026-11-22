@@ -1,11 +1,11 @@
 import {
   AULA_REVISION_RETENTION_DAYS,
   AULA_VERSION_MAX_PER_DOCUMENT,
-  AULA_VERSION_STATE_MAX_LENGTH,
   normalizeAulaVersionName,
   type AulaDocumentVersion,
   type AulaDocumentVersionDetail,
 } from "../../domain/aula-documentos/revision";
+import { isAulaDocumentJsonTooLong } from "../../domain/aula-documentos/document";
 import { parseAulaDocument } from "../../domain/aula-documentos/document-validation";
 import { contentText } from "../../domain/aula-documentos/text";
 import { readAulaDocument } from "./documents";
@@ -143,7 +143,7 @@ export async function createAulaVersion(input: {
   }
   const now = Date.now();
   const serialized = JSON.stringify(parsed.document);
-  if (serialized.length > AULA_VERSION_STATE_MAX_LENGTH) return { status: "invalid" };
+  if (isAulaDocumentJsonTooLong(serialized)) return { status: "invalid" };
   const row = await insertAulaVersionRow({
     id: crypto.randomUUID(),
     projectId: input.projectId,

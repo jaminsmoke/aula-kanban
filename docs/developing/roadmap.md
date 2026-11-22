@@ -49,7 +49,7 @@
 - `lib/domain/aula-documentos/revision.ts` define `AULA_VERSION_STATE_MAX_LENGTH = 190_000` y `lib/server/aula-documentos/versions.ts` lo usa al crear versiones.
 - `lib/server/apps/app-documents.ts` define `MAX_APP_DOCUMENT_CHARS = 200_000` para el cuerpo y el estado serializado de las apps nativas; es una frontera distinta.
 - `import-formats.ts`, `office-import.ts`, `use-aula-import.ts`, `document-validation.ts` y `recovery-store.ts` ya consumen las constantes de dominio correctas.
-- Baseline: arquitectura **461 archivos / 1.154 imports**; suite **268 archivos / 1.774 pruebas**; Aula **386.673 / 387.000 B**; Hoja **313.034 / 315.000 B**; Site `1.1.39`.
+- Baseline: arquitectura **461 archivos / 1.155 imports**; suite **268 archivos / 1.778 pruebas**; Aula **386.673 / 387.000 B**; Hoja **313.034 / 315.000 B**; Site `1.1.39`.
 
 ## 5. Fases
 
@@ -73,11 +73,12 @@
 
 ### Fase 3 — Un solo tamaño de documento serializado
 
-- [ ] Hacer que el historial use `AULA_DOCUMENT_JSON_MAX_LENGTH` y retirar la segunda constante de 190.000.
-- [ ] Mantener `MAX_APP_DOCUMENT_CHARS` separado para la petición y el almacenamiento de apps.
-- [ ] Cubrir documento actual, guardado, creación de versión y restauración de una versión existente.
-- [ ] Conservar los estados `too-large`, `invalid`, los mensajes y los límites efectivos.
+- [x] Hacer que el historial use `AULA_DOCUMENT_JSON_MAX_LENGTH` y retirar la segunda constante de 190.000.
+- [x] Mantener `MAX_APP_DOCUMENT_CHARS` separado para la petición y el almacenamiento de apps.
+- [x] Cubrir documento actual, guardado, creación de versión y restauración de una versión existente.
+- [x] Conservar los estados `too-large`, `invalid`, los mensajes y los límites efectivos.
 - **Criterios:** una sola definición para el documento serializado; historial y restauración equivalentes.
+- **Cierre (2026-11-22):** `isAulaDocumentJsonTooLong()` centraliza la validación; la usan documento, JSON importado, copia local e historial. Retirada `AULA_VERSION_STATE_MAX_LENGTH`; `MAX_APP_DOCUMENT_CHARS` sigue separada. Pruebas de límite exacto, documento actual, creación y restauración; estados `too-large`/`invalid` conservados. Arquitectura **461 / 1.155**; suite **268 / 1.778**.
 
 ### Fase 4 — Verificación y cierre
 
@@ -99,5 +100,6 @@
 - 2026-11-22: **Roadmap abierto.** ARC-14 es la siguiente candidata recomendada del backlog; queda DEV-01. Se empieza por el inventario de límites y consumidores. Sin cambios de producto en esta apertura.
 - 2026-11-22: **Fase 1 completada.** Inventario en [`limites-documentales.md`](limites-documentales.md): cinco constantes y tres fronteras; dos duplicados (`LEGACY_MARKDOWN_MAX_LENGTH` y `AULA_VERSION_STATE_MAX_LENGTH`). Se conserva separado `MAX_APP_DOCUMENT_CHARS`. Sin cambios de producto.
 - 2026-11-22: **Fase 2 completada.** `isAulaMarkdownTooLong()` centraliza la comprobación; retirada `LEGACY_MARKDOWN_MAX_LENGTH`. Pruebas de borde en Markdown, Presentaciones, TXT y Office; mensajes sin cambios. Suite **268 / 1.776**.
+- 2026-11-22: **Fase 3 completada.** `isAulaDocumentJsonTooLong()` centraliza el documento serializado; retirada `AULA_VERSION_STATE_MAX_LENGTH`. Historial y restauración conservan `invalid`; `MAX_APP_DOCUMENT_CHARS` sigue separada. Suite **268 / 1.778**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

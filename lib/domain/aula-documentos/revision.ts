@@ -16,9 +16,6 @@ export const AULA_VERSION_MAX_PER_DOCUMENT = 50;
 /** Longitud máxima del nombre de una versión. */
 export const AULA_VERSION_NAME_MAX_LENGTH = 120;
 
-/** Tamaño máximo serializado de una versión. */
-export const AULA_VERSION_STATE_MAX_LENGTH = 190_000;
-
 /** Tamaño de página del historial. */
 export const AULA_VERSION_PAGE_SIZE = 20;
 
