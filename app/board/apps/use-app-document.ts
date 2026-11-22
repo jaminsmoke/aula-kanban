@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { LoadedDocument, VersionedSaveResult } from "../shared/versioned-document";
+import { saveVersionedDocument } from "../shared/versioned-document";
 
 export type { LoadedDocument, VersionedSaveResult } from "../shared/versioned-document";
 
@@ -65,32 +66,18 @@ export function useAppDocument<T>(projectId: string, appId: string) {
    * @returns El resultado del guardado, el conflicto o el fallo de red.
    */
   const saveVersioned = useCallback(async (state: T, expectedUpdatedAt: number | null): Promise<VersionedSaveResult> => {
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ state, expectedUpdatedAt }),
-      });
-      if (response.status === 409) {
-        let current: number | null = null;
-        try {
-          const data = await response.json() as { updatedAt?: number | null };
-          if (typeof data.updatedAt === "number") current = data.updatedAt;
-        } catch {
-          current = null;
-        }
-        if (mounted.current) setError("El documento ha cambiado en otra sesión.");
-        return { status: "conflict", updatedAt: current };
+    const result = await saveVersionedDocument(endpoint, state, expectedUpdatedAt);
+    if (mounted.current) {
+      if (result.status === "saved") {
+        setUpdatedAt(result.updatedAt);
+        setError(null);
+      } else if (result.status === "conflict") {
+        setError("El documento ha cambiado en otra sesión.");
+      } else {
+        setError("No se pudo guardar el documento.");
       }
-      if (!response.ok) throw new Error();
-      const data = await response.json() as { updatedAt?: number };
-      const next = typeof data.updatedAt === "number" ? data.updatedAt : Date.now();
-      if (mounted.current) { setUpdatedAt(next); setError(null); }
-      return { status: "saved", updatedAt: next };
-    } catch {
-      if (mounted.current) setError("No se pudo guardar el documento.");
-      return { status: "failed" };
     }
+    return result;
   }, [endpoint]);
 
   return { load, save, saveVersioned, loading, updatedAt, error };

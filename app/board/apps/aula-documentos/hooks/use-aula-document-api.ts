@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { LoadedDocument, VersionedSaveResult } from "../../../shared/versioned-document";
+import { saveVersionedDocument } from "../../../shared/versioned-document";
 
 export type { VersionedSaveResult } from "../../../shared/versioned-document";
 
@@ -54,32 +55,13 @@ export function useAulaDocumentApi(projectId: string, documentId: string | null)
 
   const saveVersioned = useCallback(async (state: unknown, expectedUpdatedAt: number | null): Promise<AulaDocumentSaveResult> => {
     if (!endpoint) return { status: "failed" };
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ state, expectedUpdatedAt }),
-      });
-      if (response.status === 409) {
-        let current: number | null = null;
-        try {
-          const data = await response.json() as { updatedAt?: number | null };
-          if (typeof data.updatedAt === "number") current = data.updatedAt;
-        } catch {
-          current = null;
-        }
-        if (mounted.current) setError("El documento ha cambiado en otra sesión.");
-        return { status: "conflict", updatedAt: current };
-      }
-      if (!response.ok) throw new Error();
-      const data = await response.json() as { updatedAt?: number };
-      const next = typeof data.updatedAt === "number" ? data.updatedAt : Date.now();
-      if (mounted.current) setError(null);
-      return { status: "saved", updatedAt: next };
-    } catch {
-      if (mounted.current) setError("No se pudo guardar el documento.");
-      return { status: "failed" };
+    const result = await saveVersionedDocument(endpoint, state, expectedUpdatedAt);
+    if (mounted.current) {
+      if (result.status === "saved") setError(null);
+      else if (result.status === "conflict") setError("El documento ha cambiado en otra sesión.");
+      else setError("No se pudo guardar el documento.");
     }
+    return result;
   }, [endpoint]);
 
   return { load, saveVersioned, loading, error };

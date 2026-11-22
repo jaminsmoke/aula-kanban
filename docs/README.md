@@ -19,7 +19,7 @@
 
 | Documento | Para qué | Orden |
 |---|---|---|
-| [`roadmap.md`](developing/roadmap.md) | Sin roadmap activo; ARC-10 cerrado y archivado | Secuencia de ejecución |
+| [`roadmap.md`](developing/roadmap.md) | ARC-11 activo: eliminar la duplicación del guardado con versión | Secuencia de ejecución |
 | [`integracion-hoja-aula.md`](developing/integracion-hoja-aula.md) | Contrato del flujo de copia Hoja de cálculo → Aula Documentos | Referencia |
 | [`aula-documentos-arquitectura.md`](developing/aula-documentos-arquitectura.md) | Mapa de responsabilidades, árbol objetivo y límites de Aula Documentos | Referencia de refactor |
 | [`backlog.md`](developing/backlog.md) | Trabajo aparcado o pendiente de priorizar | Lo nuevo arriba |

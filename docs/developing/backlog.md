@@ -2,8 +2,8 @@
 
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
-> **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 5 entradas pendientes · siguiente candidato recomendado ARC-11
+> **Roadmap:** ARC-11 activo · **Changelog:** [`changelog.md`](changelog.md)
+> **Estado:** 4 entradas pendientes · siguiente candidato recomendado ARC-12
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
@@ -32,12 +32,6 @@ Se cuentan líneas físicas de archivos de texto versionados, incluidas las lín
 - `useAulaDocumentosModel` tiene 593 líneas y devuelve 190 propiedades. Repite listas de campos de la sesión, la barra de herramientas y los diálogos de copias, importación y presentación para exponerlas al contexto.
 - Empezar por copias e importación y por la barra de herramientas. Mapear consumidores, incluidos los cargados bajo demanda, y reutilizar las salidas de los hooks existentes donde esto elimine reenvíos. Retirar las propiedades sin consumidores comprobados y conservar en el modelo la coordinación entre capacidades.
 - Comparar el saldo del modelo, el contexto y los consumidores. Verificar los diálogos, el editor, el guardado y el modo de solo lectura. Medir el bundle de apertura de Aula Documentos.
-
-## 2026-11-22 — ARC-11 · Eliminar la duplicación en el guardado con versión
-
-- ARC-09 compartió los tipos. `useAppDocument` y `useAulaDocumentApi` siguen repitiendo la petición, la lectura del conflicto 409 y el resultado de guardado. Hoja de cálculo, Mapas, Líneas de tiempo y Tarjetas repiten la comprobación de carga y la actualización de la versión tras guardar.
-- Reutilizar primero la operación HTTP en los dos clientes. Consolidar después las transiciones comunes de los cuatro editores si el cambio reduce líneas y deja visibles las decisiones de cada aplicación. Mantener los contratos de lectura, el aviso y la recuperación propios de cada editor y el guardado de Blockly.
-- Verificar carga fallida, documento nuevo, guardado correcto, conflicto con borrador local y cambio de proyecto o documento durante una operación. Incluir las pruebas de los cuatro editores y de Aula Documentos.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 
