@@ -67,16 +67,17 @@
 - [x] Abrir desde la ficha editable, reutilizando el mismo `openTaskDocument`.
 - [x] Conservar búsqueda, prioridad y alumno al abrir la ficha (`useTasks` no resetea filtros).
 - [x] Cubrir estado archivado/eliminado y estado claro en edición y lectura.
-- [ ] Verificar recorrido propio/ajeno, Calendario y retorno real tras App Close (Fase 3).
+- [x] Verificar recorrido propio/ajeno, Calendario y retorno real tras App Close.
 - **Criterios:** recorrido propio, asignado/invitado, edición/lectura y volver sin pérdida.
-- **Cierre Fase 2 (2026-11-22):** `TaskForm` muestra el botón por si hay vínculo activo y lo pulsa `openTaskDocument`; `TaskDialog` pasa `onOpenDocument`; tests cubren vínculo activo/archivado/eliminado, retorno de App Close y filtros conservados.
+- **Cierre Fase 2 (2026-11-22):** `TaskForm` muestra el botón por si hay vínculo activo y lo pulsa `openTaskDocument`; `TaskDialog` pasa `onOpenDocument`; tests cubren vínculo activo/archivado/eliminado, retorno de App Close, vista Calendario, filtros conservados y permisos docente/alumno. Board integration **2 tests**; suite afectada **10 tests**; `npm run check` correcto.
 
 ### Fase 3 — E2e y permisos
 
-- [ ] Validar con pruebas de rol: docente edita, propio y ajeno donde aplica.
+- [x] Validar con pruebas de rol: docente edita, propio y ajeno donde aplica.
 - [ ] Revisar app close, back/re-open, segunda tarea seleccionada y doble activación.
 - [ ] Comprobar protección: cambio al abrir; triple clic; cambio rápido sin duplicar.
 - **Criterios:** flujo real debe ser probado; no un test de stores mocks.
+- **Avance Fase 3 (2026-11-22):** test de `Board` cubre apertura desde Calendario, retorno por App Close y doble pulsación sin duplicar; `useTasks` cubre docente, tarea propia, tarea ajena y tarea libre. Pendiente back/re-open, segunda tarea y triple clic.
 
 ### Fase 4 — Verificación y cierre
 

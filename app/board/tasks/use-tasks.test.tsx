@@ -176,4 +176,19 @@ describe("useTasks", () => {
 
     expect(result.current.editor).toBeNull();
   });
+
+  it("deja editar al docente y limita al alumno a sus tareas o a las libres", () => {
+    const own = task({ id: "own", assignees: [{ kind: "student", profileId: "s1", name: "Ada" }] });
+    const other = task({ id: "other", assignees: [{ kind: "student", profileId: "s2", name: "Grace" }] });
+    const free = task({ id: "free", assignee: "", assignees: [] });
+
+    const teacher = renderHook(() => useTasks({ data: makeData(), hasProject: true, canManage: true, isGuest: false, notify: vi.fn() }));
+    expect(teacher.result.current.canEditTask(own)).toBe(true);
+    expect(teacher.result.current.canEditTask(other)).toBe(true);
+
+    const studentView = renderHook(() => useTasks({ data: makeData({ ownStudent: student }), hasProject: true, canManage: false, isGuest: false, notify: vi.fn() }));
+    expect(studentView.result.current.canEditTask(own)).toBe(true);
+    expect(studentView.result.current.canEditTask(other)).toBe(false);
+    expect(studentView.result.current.canEditTask(free)).toBe(true);
+  });
 });
