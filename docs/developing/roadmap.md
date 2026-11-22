@@ -74,11 +74,12 @@
 
 ### Fase 3 — Verificación visual y de carga
 
-- [ ] Revisar Calculadora y Tabla periódica juntas y por separado.
-- [ ] Revisar Mapas, Líneas, Tarjetas, Moléculas y Hoja de cálculo.
-- [ ] Comprobar temas claro y oscuro, ventanas estrechas y maximizadas, foco y desplazamiento.
-- [ ] Medir CSS neto, carga por ruta, `app:budget` y `perf:budget`.
+- [x] Revisar Calculadora y Tabla periódica juntas y por separado.
+- [x] Revisar Mapas, Líneas, Tarjetas, Moléculas y Hoja de cálculo.
+- [x] Comprobar temas claro y oscuro, ventanas estrechas y maximizadas, foco y desplazamiento.
+- [x] Medir CSS neto, carga por ruta, `app:budget` y `perf:budget`.
 - **Criterios:** sin desbordamientos ni regresiones visuales; presupuestos correctos.
+- **Cierre (2026-11-22):** revisión a **390 y 1366 px** de las apps instaladas y de Mapas, Líneas, Moléculas y Geometría con una ruta temporal retirada. Todas las raíces conservan `.app-window` y `container-name`, con `scrollWidth === clientWidth`; temas claro/oscuro y foco/scroll correctos. `npm run check`, suite **268 / 1.774**, `app:budget`, `perf:budget` y `perf:office` correctos. Build **386.661 B** (Aula) y **313.027 B** (Hoja); CSS neto **-117 líneas**.
 
 ### Fase 4 — Cierre
 
@@ -101,5 +102,6 @@
 - 2026-11-22: **Roadmap abierto.** ARC-13 es la siguiente candidata recomendada del backlog; quedan ARC-14 y DEV-01. Se empieza por el inventario y el contrato de ventana. Sin cambios de producto en esta apertura.
 - 2026-11-22: **Fase 1 completada.** Inventario en [`css-ventanas-apps.md`](css-ventanas-apps.md): `.edu-app` duplicada, 14 variables sin consumidor, ocho clases raíz con la misma disposición y decisión de usar `.app-window`. Sin cambios de producto.
 - 2026-11-22: **Fase 2 completada.** `.app-window` y sus imports aplicados a las diez entradas; duplicado y variables retirados. **CSS -117 líneas netas**; Calculadora **95** y Hoja **335** líneas CSS. Revisión visual y bundle en la Fase 3.
+- 2026-11-22: **Fase 3 completada.** Revisión visual a **390/1366 px** y temas claro/oscuro; apps no instaladas verificadas con una ruta temporal retirada. Sin desbordamiento de raíz, foco y scroll operativos. Suite **268 / 1.774**; build **386.661 B** y **313.027 B**; presupuestos correctos.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.

@@ -1,6 +1,6 @@
 # Rendimiento del cliente
 
-> **Estado:** línea base de PERF-01 · presupuestos por app de ARC-05 · build `1.1.37` · 2026-11-20
+> **Estado:** línea base de PERF-01 · presupuestos por app de ARC-05 · build `1.1.39` · 2026-11-22
 > **Informe:** `npm run perf:report` · **Presupuesto de flujo:** `npm run perf:budget` · **Presupuesto de app:** `npm run app:budget` · **Datos:** [`perf-baseline.json`](perf-baseline.json) · **Latencia:** [`perf-latency.json`](perf-latency.json) · **Imágenes:** [`image-baseline.json`](image-baseline.json)
 
 ---
@@ -38,20 +38,20 @@ El gzip se calcula con `zlib` nivel 9. No incluye fuentes, imágenes ni otros as
 
 | Flujo | Bruto | Gzip | Presupuesto vigente | Archivos |
 |---|---:|---:|---:|---:|
-| Tablero | 572,6 KiB | 170,0 KiB (174.044 B) | 175.656 B | 32 |
-| Hoja de cálculo · abrir | 1.062,0 KiB | 305,5 KiB (312.862 B) | 315.000 B | 28 |
-| Aula Documentos · exportar Office | 1.045,3 KiB | 322,0 KiB (329.701 B) | 340.000 B | 14 |
-| Calculadora · abrir Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
-| Calculadora · primer `=` en Básica | 439,9 KiB | 130,5 KiB (133.650 B) | 150.827 B | 17 |
-| Calculadora · Científica/Ecuaciones | 6.606,2 KiB | 1.915,4 KiB (1.961.393 B) | 2.069.960 B | 19 |
-| Aula Documentos · abrir | 1.262,5 KiB | 377,6 KiB (386.658 B) | 387.000 B | 51 |
-| Tienda · abrir | 544,7 KiB | 169,1 KiB (173.195 B) | 174.779 B | 20 |
-| Pizarra · abrir | 3.441,7 KiB | 1.214,2 KiB (1.243.296 B) | 1.348.890 B | 23 |
-| Pizarra · conversión Mermaid | 4.206,4 KiB | 1.412,2 KiB (1.446.106 B) | 1.560.999 B | 51 |
-| Blockly · abrir | 1.157,2 KiB | 323,2 KiB (330.964 B) | 345.631 B | 18 |
-| Blockly · panel de código | 1.291,4 KiB | 358,2 KiB (366.817 B) | 383.275 B | 21 |
+| Tablero | 578,5 KiB | 170,4 KiB (174.526 B) | 175.656 B | 33 |
+| Hoja de cálculo · abrir | 1.062,2 KiB | 305,7 KiB (313.027 B) | 315.000 B | 29 |
+| Aula Documentos · exportar Office | 1.051,2 KiB | 322,3 KiB (330.080 B) | 340.000 B | 14 |
+| Calculadora · abrir Básica | 444,5 KiB | 130,8 KiB (133.895 B) | 150.827 B | 18 |
+| Calculadora · primer `=` en Básica | 444,5 KiB | 130,8 KiB (133.895 B) | 150.827 B | 18 |
+| Calculadora · Científica/Ecuaciones | 6.610,9 KiB | 1.915,7 KiB (1.961.641 B) | 2.069.960 B | 20 |
+| Aula Documentos · abrir | 1.262,6 KiB | 377,6 KiB (386.661 B) | 387.000 B | 51 |
+| Tienda · abrir | 550,9 KiB | 169,6 KiB (173.691 B) | 174.779 B | 20 |
+| Pizarra · abrir | 3.447,6 KiB | 1.214,5 KiB (1.243.689 B) | 1.348.890 B | 23 |
+| Pizarra · conversión Mermaid | 4.212,3 KiB | 1.412,6 KiB (1.446.507 B) | 1.560.999 B | 51 |
+| Blockly · abrir | 1.163,8 KiB | 324,1 KiB (331.925 B) | 345.631 B | 20 |
+| Blockly · panel de código | 1.298,0 KiB | 359,2 KiB (367.779 B) | 383.275 B | 23 |
 
-Línea base regenerada el 2026-11-20 con la build `1.1.37`. La raíz de los flujos de la calculadora es `app/board/apps/calculadora/calculadora-app.tsx`; la Tienda sigue midiendo desde `app/board/store/store-desktop.tsx` y las secciones «Cambio de fase 2», «Cambio de fase 3» y «Cambio PROMO-06» conservan las cifras históricas de sus mediciones.
+Línea base regenerada el 2026-11-22 con la build `1.1.39`. La raíz de los flujos de la calculadora es `app/board/apps/calculadora/calculadora-app.tsx`; la Tienda sigue midiendo desde `app/board/store/store-desktop.tsx` y las secciones «Cambio de fase 2», «Cambio de fase 3» y «Cambio PROMO-06» conservan las cifras históricas de sus mediciones.
 
 Los totales incluyen el framework y la entrada compartida. La comparación útil es entre flujos del mismo informe, no contra una medición externa con otra build.
 
@@ -69,7 +69,7 @@ Los totales incluyen el framework y la entrada compartida. La comparación útil
 | Pizarra | 2 | 1.560.999 B | 7 / 439 → 8 / 490 | 1 / 9 → 2 / 12 |
 | Blockly | 2 | 383.275 B | 5 / 169 → 5 / 180 | 1 / 39 → 2 / 50 |
 
-Los límites de test y CSS tienen un margen deliberado para evitar que una prueba pequeña rompa CI; el límite de gzip de la app nunca puede ser menor que el de su flujo más pesado. Los flujos `aula-documentos-export`, `basica`, `basica-evalua`, `pizarra-mermaid` y `blockly-codigo` siguen teniendo su propio presupuesto aunque compartan app. El presupuesto de `aula-documentos` se ajustó a **387.000 B** con la barra de estado accesible de UI-11; el build de referencia queda en **386.658 B**. Los límites de pruebas y CSS se ajustan a **53 / 5.297 → 54 / 5.400** y **16 / 3.734 → 16 / 3.800** al incorporar a la app las pruebas y el CSS del visor Office en ARC-08 Fase 4. Hoja de cálculo conserva **315.000 B** y queda en **312.862 B** con el adaptador de portapapeles de ARC-10. ARC-10 amplía su presupuesto de pruebas de **500** a **650** líneas y añade un archivo de pruebas; el límite de archivos sigue en **6**.
+Los límites de test y CSS tienen un margen deliberado para evitar que una prueba pequeña rompa CI; el límite de gzip de la app nunca puede ser menor que el de su flujo más pesado. Los flujos `aula-documentos-export`, `basica`, `basica-evalua`, `pizarra-mermaid` y `blockly-codigo` siguen teniendo su propio presupuesto aunque compartan app. El presupuesto de `aula-documentos` se ajustó a **387.000 B** con la barra de estado accesible de UI-11; el build de referencia queda en **386.661 B**. Los límites de pruebas y CSS se ajustan a **53 / 5.297 → 54 / 5.400** y **16 / 3.734 → 16 / 3.800** al incorporar a la app las pruebas y el CSS del visor Office en ARC-08 Fase 4. Hoja de cálculo conserva **315.000 B** y queda en **313.027 B** con el adaptador de portapapeles de ARC-10 y la base compartida de ARC-13; la base añade un archivo y **165 B**. ARC-10 amplía su presupuesto de pruebas de **500** a **650** líneas y añade un archivo de pruebas; el límite de archivos sigue en **6**.
 
 ### Latencia e imágenes
 
@@ -153,4 +153,4 @@ La apertura es prácticamente la misma en ambos modos (unos 3,4 s). La diferenci
 - La conversión se mide con un flowchart de Mermaid 11, que es el caso más habitual; otros tipos de diagrama pueden añadir chunks propios.
 - La latencia se midió en un servidor local con Fast 3G y Chrome headless; no representa la red ni el CDN de producción y no se ejecuta en CI.
 - No se ejecuta un rebuild solo para medir: se reutiliza el `dist/client` actual.
-- Sin cambios de versión; `package.json` sigue en `1.1.37`.
+- Sin cambios de versión; `package.json` sigue en `1.1.39`.

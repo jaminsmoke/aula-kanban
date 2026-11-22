@@ -113,8 +113,8 @@ La base no incluirá `container-name`: es la única propiedad que debe variar po
 
 - Arquitectura: **461 archivos / 1.154 imports**.
 - Suite: **268 archivos / 1.774 pruebas**.
-- Aula Documentos: **386.658 / 387.000 B**.
-- Hoja de cálculo: **312.862 / 315.000 B**.
+- Aula Documentos: **386.661 / 387.000 B**.
+- Hoja de cálculo: **313.027 / 315.000 B**.
 - Site: `1.1.39`.
 
 ## 9. Aplicado en la Fase 2
@@ -126,3 +126,14 @@ La base no incluirá `container-name`: es la única propiedad que debe variar po
 - CSS: **133 líneas retiradas**, **16 añadidas**: **117 líneas netas menos**. TSX: **10 líneas más** por el import y la clase.
 - Presupuesto CSS: Calculadora **124 → 95**, Hoja **345 → 335**.
 - Suite enfocada: **26 archivos / 174 pruebas**; `npm run check` correcto. La revisión visual y el bundle quedan para la Fase 3.
+
+## 10. Aplicado en la Fase 3
+
+- Revisadas Calculadora y Tabla periódica juntas y por separado, y las apps instaladas Ajedrez, Tarjetas, Física y Hoja de cálculo a **390 px** y **1366 px**.
+- Las apps no instaladas en la instancia local (Mapas, Líneas, Moléculas y Geometría) se revisaron con sus componentes reales en una ruta temporal a **390 px**; la ruta se retiró y no forma parte del cambio.
+- Todas las raíces conservan `.app-window`, su clase propia y su `container-name`; en todos los casos `scrollWidth === clientWidth`, sin desbordamiento horizontal de la ventana.
+- Tema claro: fondo `rgb(245, 242, 251)` y texto `rgb(33, 27, 54)`. Tema oscuro: fondo `rgb(50, 43, 65)` y texto `rgb(244, 241, 251)`. Las diez ventanas responden igual a los tokens.
+- Foco de teclado visible con contorno `rgb(118, 86, 221) solid 2px`; el desplazamiento interno de Hoja de cálculo sigue operativo y no se modificaron reglas locales de foco ni de scroll.
+- `npm run check` correcto; suite **268 archivos / 1.774 pruebas**; arquitectura **461 / 1.154**. `app:budget`, `perf:budget` y `perf:office` correctos.
+- Build final: Aula Documentos **386.661 B** y Hoja de cálculo **313.027 B**. La base compartida añade a Hoja un archivo y **165 B** respecto de **312.862 B**, dentro del límite de **315.000 B**.
+- CSS neto: **-117 líneas**. La revisión no añadió reglas de producto ni cambió datos, URLs, permisos o la versión del Site.
