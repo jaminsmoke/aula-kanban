@@ -3,9 +3,33 @@
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 1 entrada pendiente (DEV-01)
+> **Estado:** 5 entradas pendientes
 
 ---
+
+## 2026-11-22 — UI-13 · Arrastrar la tarea desde toda la tarjeta
+
+- En la prueba local de 1.1.41, el profesor pudo mover la tarea desde el asa. Al arrastrarla desde el título, se quedó en la misma columna.
+- Permitir iniciar el arrastre desde el cuerpo de una tarjeta que la cuenta pueda mover. Reservar el clic o toque breve para abrir la ficha y conservar el arrastre por teclado y el desplazamiento táctil.
+- Verificar que se puede mover una tarea desde el título y el cuerpo, que un clic sigue abriendo la ficha y que el alumno solo puede mover las tareas que tiene permitido editar.
+
+## 2026-11-22 — TASK-02 · Abrir la entrega desde la ficha editable y volver a la tarea
+
+- En la prueba como profesor, la ficha editable mostró el documento vinculado sin una acción para abrirlo. El botón de la ficha de solo lectura abrió el documento correcto, pero al cerrarlo la aplicación quedó en Tienda.
+- Mostrar **Abrir documento** junto al selector de entrega cuando el vínculo esté guardado y el documento esté disponible. Al cerrar Aula Documentos, volver a la misma ficha y conservar la vista y los filtros de origen.
+- Verificar el recorrido desde el tablero y el calendario con los perfiles de alumno y profesor. Comprobar también el regreso desde el detalle de solo lectura y los estados de documento archivado o eliminado.
+
+## 2026-11-22 — UI-14 · Mejorar la navegación y el calendario en móvil
+
+- A 390 px, «Mi mochila» quedó recortada. En Mes, dos tareas con fecha el mismo día se mostraron con títulos truncados difíciles de distinguir. Agenda mostró los títulos completos y la etiqueta «All Day».
+- Mantener las secciones de Clase visibles en pantallas estrechas, abrir Agenda por defecto en móvil y traducir «All Day» como «Todo el día».
+- Verificar a 390 px que se puede cambiar de sección sin desplazamiento horizontal y distinguir y abrir dos tareas del mismo día. Comprobar que las vistas Mes y Semana siguen disponibles.
+
+## 2026-11-22 — PERM-03 · Conservar el proyecto al aceptar una invitación de administrador
+
+- En la prueba local, el administrador invitado abrió un enlace de proyecto y, tras aceptar la invitación de instancia, aterrizó en otro proyecto.
+- Conservar el proyecto del enlace y mostrarlo si la cuenta tiene acceso después de aceptar. Usar la navegación habitual cuando el destino falte, ya no exista o siga sin estar disponible para la cuenta.
+- Verificar la aceptación desde un enlace de proyecto válido, sin destino y con un destino no disponible. Comprobar que la redirección conserva las comprobaciones de acceso existentes.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 

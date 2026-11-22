@@ -12,7 +12,7 @@ TASK-01 quedó cerrado y archivado en [`historial/roadmap-task-01.md`](../histor
 
 ## 2. Siguiente paso
 
-La única entrada pendiente del backlog es **DEV-01 — Evaluar la migración de npm a pnpm**.
+La revisión de 1.1.41 dejó cuatro propuestas en el [backlog](backlog.md). Los primeros candidatos son **UI-13 — Arrastrar la tarea desde toda la tarjeta** y **TASK-02 — Abrir la entrega desde la ficha editable y volver a la tarea**.
 
 ## 3. Límites de mantenimiento
 
