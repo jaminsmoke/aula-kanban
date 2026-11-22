@@ -1,6 +1,6 @@
 # Integración entre Hoja de cálculo y Aula Documentos
 
-> **Estado:** ARC-10, Fases 1–3 · **Fecha:** 2026-11-21
+> **Estado:** ARC-10, Fases 1–4 · **Fecha:** 2026-11-21
 > **Alcance:** traslado unidireccional de una selección de Hoja de cálculo a una tabla de Aula Documentos.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -56,7 +56,7 @@ La validación del documento rechaza una tabla que supere estos límites, aunque
 
 ### Pegado nativo comprobado
 
-Se probó con una instancia temporal de `Editor` y las extensiones reales de Aula Documentos:
+Se probó con una instancia real de `Editor`, las extensiones de Aula y una prueba permanente:
 
 1. Una tabla HTML 2×2 se pega como `table` → `tableRow` → `tableHeader`/`tableCell`, con los textos correctos.
 2. Un TSV pegado como texto plano se convierte en párrafos, **no** en tabla.
@@ -151,7 +151,7 @@ El pegado dentro de una tabla existente no forma parte del contrato inicial; la 
 ## 9. Baseline
 
 - Arquitectura: **461 archivos / 1.154 imports**.
-- Suite: **267 archivos / 1.766 pruebas**.
+- Suite: **268 archivos / 1.769 pruebas**.
 - Aula Documentos: **386.260 / 387.000 B**.
 - Hoja de cálculo: **311.063 / 315.000 B**.
 - Site: `1.1.38`.
@@ -174,3 +174,12 @@ El pegado dentro de una tabla existente no forma parte del contrato inicial; la 
 - No se modifica la hoja, el guardado, la carga ni las rutas de servidor.
 - Pruebas de copia de tabla, celda única, fallback y disponibilidad en solo lectura.
 - Presupuesto de pruebas de Hoja de cálculo: **6 archivos / 607 líneas → límite 6 / 650**; suite **267 / 1.766**; arquitectura **461 / 1.154**.
+
+## 12. Aplicado en la Fase 4
+
+- Aula Documentos recibe el HTML con su parser nativo: no ha hecho falta añadir código de recepción ni tocar el pegado de imágenes o el autosave.
+- Prueba permanente `table-paste.test.ts`: crea una tabla editable, conserva celdas vacías y saltos de línea, y confirma que `parseAulaDocument` rechaza una tabla de 51 filas con `table-too-large`.
+- Verificación real en el navegador: se copió una selección desde Hoja de cálculo, se pegó en Aula Documentos con el portapapeles nativo y la tabla apareció con los valores esperados.
+- La verificación detectó y corrigió un fallo de lectura de la selección: `selectionClipboard()` usa ahora `selectedRange` y `getValueFromCoords`, no `getData(true, true)`.
+- La tabla se revisó en 390, 1024 y 1366 px sin desbordamiento horizontal. La prueba bloqueó los guardados y recargó el documento para no persistir datos de prueba.
+- Pruebas de Aula: **54 archivos / 5.348 líneas → límite 54 / 5.400**; Hoja **6 / 615 → 6 / 650**; suite **268 / 1.769**; arquitectura **461 / 1.154**.

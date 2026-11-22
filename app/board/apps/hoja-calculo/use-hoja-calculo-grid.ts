@@ -373,10 +373,23 @@ export function useHojaCalculoGrid({
    */
   function selectionClipboard(): SelectionClipboardResult {
     const worksheet = worksheetRef.current;
-    if (!worksheet) {
+    if (!worksheet || !selectedRange) {
       return { ok: false, code: "empty", message: "Selecciona al menos una celda." };
     }
-    return buildSelectionClipboard(worksheet.getData(true, true) as SpreadsheetCell[][]);
+    const [left, top, right, bottom] = selectedRange;
+    const startColumn = Math.min(left, right);
+    const endColumn = Math.max(left, right);
+    const startRow = Math.min(top, bottom);
+    const endRow = Math.max(top, bottom);
+    const rows: SpreadsheetCell[][] = [];
+    for (let row = startRow; row <= endRow; row += 1) {
+      const values: SpreadsheetCell[] = [];
+      for (let column = startColumn; column <= endColumn; column += 1) {
+        values.push((worksheet.getValueFromCoords(column, row, true) ?? "") as SpreadsheetCell);
+      }
+      rows.push(values);
+    }
+    return buildSelectionClipboard(rows);
   }
 
   /**

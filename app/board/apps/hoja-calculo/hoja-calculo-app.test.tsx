@@ -13,7 +13,7 @@ const spreadsheetMock = vi.hoisted(() => {
     insertColumn: vi.fn(),
     resetStyle: vi.fn(),
     getData: vi.fn((): (string | number | boolean)[][] => [["Concepto", "Cantidad"], ["Materiales", 2]]),
-    getValueFromCoords: vi.fn((): string | number | boolean | null => ""),
+    getValueFromCoords: vi.fn((_column: number, _row: number, _processed?: boolean): string | number | boolean | null => ""),
     setData: vi.fn(),
     setValueFromCoords: vi.fn(),
   };
@@ -71,6 +71,8 @@ describe("Hoja de cálculo", () => {
     vi.unstubAllGlobals();
     Object.defineProperty(window.navigator, "clipboard", { configurable: true, value: undefined });
     spreadsheetMock.worksheet.getStyle.mockReturnValue({});
+    spreadsheetMock.worksheet.getSelection.mockReturnValue([0, 0, 1, 1]);
+    spreadsheetMock.worksheet.getValueFromCoords.mockReturnValue("");
     documentMock.load.mockResolvedValue({ state: null, updatedAt: null, ok: true });
     documentMock.saveVersioned.mockResolvedValue({ status: "saved", updatedAt: 100 });
   });
@@ -97,6 +99,9 @@ describe("Hoja de cálculo", () => {
   it("copia la selección como tabla HTML y TSV", async () => {
     const { write, writeText } = installClipboard(vi.fn().mockResolvedValue(undefined));
     vi.stubGlobal("ClipboardItem", ClipboardItemStub);
+    spreadsheetMock.worksheet.getValueFromCoords.mockImplementation((column, row) => (
+      [["Concepto", "Cantidad"], ["Materiales", 2]][row]?.[column] ?? ""
+    ));
     render(<HojaCalculoApp {...props} />);
     await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
     const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
@@ -120,7 +125,7 @@ describe("Hoja de cálculo", () => {
 
   it("copia una sola celda como texto", async () => {
     const { write, writeText } = installClipboard(vi.fn(), vi.fn().mockResolvedValue(undefined));
-    spreadsheetMock.worksheet.getData.mockReturnValueOnce([["Hola"]]);
+    spreadsheetMock.worksheet.getValueFromCoords.mockReturnValue("Hola");
     render(<HojaCalculoApp {...props} />);
     await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
     const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {
@@ -142,6 +147,9 @@ describe("Hoja de cálculo", () => {
       vi.fn().mockResolvedValue(undefined),
     );
     vi.stubGlobal("ClipboardItem", ClipboardItemStub);
+    spreadsheetMock.worksheet.getValueFromCoords.mockImplementation((column, row) => (
+      [["Concepto", "Cantidad"], ["Materiales", 2]][row]?.[column] ?? ""
+    ));
     render(<HojaCalculoApp {...props} />);
     await waitFor(() => expect(spreadsheetMock.jspreadsheet).toHaveBeenCalled());
     const options = spreadsheetMock.jspreadsheet.mock.calls[0][1] as {

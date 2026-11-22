@@ -87,12 +87,13 @@
 
 ### Fase 4 — Recepción y verificación en Aula Documentos
 
-- [ ] Verificar que el pegado crea una tabla válida y editable en el documento.
-- [ ] Si el pegado nativo no basta, añadir solo la mínima adaptación en Aula, sin tocar el guardado ni las imágenes.
-- [ ] Comprobar los límites de filas, columnas y celdas, y el comportamiento en solo lectura.
-- [ ] Revisar la tabla resultante en 390, 1024 y 1366 px, con teclado y sin desbordamiento.
-- [ ] Documentar el flujo definitivo y sus descartes.
+- [x] Verificar que el pegado crea una tabla válida y editable en el documento.
+- [x] Si el pegado nativo no basta, añadir solo la mínima adaptación en Aula, sin tocar el guardado ni las imágenes.
+- [x] Comprobar los límites de filas, columnas y celdas, y el comportamiento en solo lectura.
+- [x] Revisar la tabla resultante en 390, 1024 y 1366 px, con teclado y sin desbordamiento.
+- [x] Documentar el flujo definitivo y sus descartes.
 - **Criterios:** la tabla resultante conserva los valores acordados; los límites y permisos se respetan; no se rompe el pegado de imágenes ni el autosave.
+- **Cierre (2026-11-21):** Aula crea la tabla con su parser nativo, sin código nuevo de recepción. Prueba permanente de 3 casos; el pegado real desde Hoja se verificó con el portapapeles nativo y la tabla se revisó en 390, 1024 y 1366 px. La prueba detectó y corrigió la lectura de selección; los guardados se bloquearon y el documento se recargó sin persistir datos. Suite **268 archivos / 1.769 pruebas**; Aula **54 / 5.348 → 54 / 5.400**.
 
 ### Fase 5 — Cierre
 
@@ -117,5 +118,6 @@
 - 2026-11-21: **Fase 1 completada.** Contrato en [`integracion-hoja-aula.md`](integracion-hoja-aula.md): copia HTML con TSV de respaldo, valores visibles, sin fórmulas ni estilos, límites de Aula y permisos definidos. El pegado nativo de tablas HTML y el rechazo de 51 filas quedan comprobados con Tiptap y `parseAulaDocument`.
 - 2026-11-21: **Fase 2 completada.** Adaptador puro de selección con HTML/TSV, protección de fórmulas y límites de Aula. Suite **267 archivos / 1.763 pruebas** y presupuesto de Hoja ajustado a 6 / 534 → 6 / 550. Sin UI de copia todavía.
 - 2026-11-21: **Fase 3 completada.** Botón **Copiar** con HTML + TSV, fallback de texto, estados de error y disponibilidad en solo lectura. Suite **267 archivos / 1.766 pruebas**; presupuesto de Hoja **6 / 607 → 6 / 650**. Sin cambios en el guardado.
+- 2026-11-21: **Fase 4 completada.** Pegado nativo de tabla en Aula verificado en navegador real y con 3 pruebas permanentes; tabla revisada a 390, 1024 y 1366 px. Se corrigió la lectura de la selección con `selectedRange`/`getValueFromCoords`. Suite **268 archivos / 1.769 pruebas**; Aula **54 / 5.348 → 54 / 5.400**.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.
