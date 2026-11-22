@@ -6,6 +6,15 @@
 
 ---
 
+## 2026-11-22 — Publicación 1.1.39
+
+**Estado:** Publicada en Sites.
+
+- Las apps comparten utilidades con consumidores comunes. Hoja de cálculo, Mapas, Líneas de tiempo y Tarjetas guardan con comprobación de versión para conservar el borrador ante conflictos. Hoja de cálculo permite copiar una selección como tabla para pegarla en Aula Documentos.
+- Pasaron 1.769 pruebas, `npm run check`, el build y los presupuestos de rendimiento general y Office. Se verificaron la portada, la documentación y el catálogo mediante el plugin en producción. La publicación no requirió migraciones.
+
+---
+
 ## 2026-11-21 — Roadmap ARC-10 — Integrar Hoja de cálculo con Aula Documentos
 
 **Estado:** Completada - Sin publicación en Sites

@@ -16,10 +16,11 @@ El catálogo visible en la tienda y los ids que acepta la API están en
 `lib/native-apps.ts`, que es data pura y también se importa desde el servidor.
 La API no debe tener su propia lista de ids: usa `NATIVE_APP_IDS`.
 
-Si una app comparte una experiencia con otra, el componente reutilizable vive
-en `app/board/shared/` o en `lib`; `apps/<id>/` conserva la cáscara, el registro
-y sus pruebas. Por ejemplo, `visor-office` usa `shared/office/office-viewer` y
-Aula Documentos podrá consumir el mismo visor.
+La interfaz que reutilizan consumidores independientes vive en
+`app/board/shared/`, agrupada por capacidad. Las reglas puras van en
+`lib/domain` y los servicios de persistencia en `lib/server`. Por ejemplo,
+Excalidraw y las pizarras de tareas usan `shared/whiteboard`. Cada app conserva
+su entrada, su experiencia de edición y sus pruebas.
 
 ## Añadir una app
 
@@ -30,12 +31,11 @@ Aula Documentos podrá consumir el mismo visor.
    características y tamaño de ventana).
 3. Regístrala en `apps/registry.tsx`: icono en `ICONS` y componente lazy en
    `APPS`. El test `registry.test.ts` falla si falta alguno.
-4. Si guarda un documento editable, usa `useVersionedDraft(projectId, appId)` y
-   `/api/app-documents`: aporta `getValue`/`applyLoaded` y obtén autosave,
-   conflicto y guarda de cierre sobre `saveVersioned`. No uses guardado
-   incondicional. Para lecturas o importaciones puntuales, `useAppDocument`
-   sigue siendo válido. No crees una tabla ni una ruta nuevas salvo que el dato
-   no encaje en ese modelo.
+4. Para el estado de una app por proyecto, usa `useAppDocument(projectId, appId)`
+   y `/api/app-documents`. Para ediciones nuevas, usa `saveVersioned` con la
+   versión devuelta por `load` y gestiona el conflicto en la app. Si el dato
+   tiene otro modelo, como varios documentos por proyecto en Aula Documentos,
+   documenta su contrato y conserva su API específica.
 5. Declara su superficie MCP en `lib/server/mcp/apps/registro.ts`. No pongas
    herramientas MCP en `app/board/apps/<id>/`: `lib` no puede importar desde
    `app` y la frontera está bloqueada por ESLint.
@@ -75,6 +75,6 @@ La versión de Aula Store vive en `AULA_STORE_VERSION` y se muestra en la cabece
   todos los roles.
 - La tienda solo pinta el catálogo; instalar o desinstalar llama a
   `/api/space-apps`.
-- `useVersionedDraft` guarda con versión, autosave, conflicto y guarda de cierre.
-  `useAppDocument` queda para lecturas e importaciones puntuales. Cada
-  aplicación decide si necesita además un respaldo local por proyecto.
+- `useAppDocument` ofrece lectura, guardado y guardado con versión. Cada
+  aplicación decide cuándo guardar, cómo mostrar conflictos y si necesita
+  recuperación local.
