@@ -53,11 +53,12 @@
 
 ### Fase 1 — Inventario y contrato de teclado
 
-- [ ] Revisar el DOM y el orden de Tab de los eventos en Mes, Semana y Agenda.
-- [ ] Confirmar cómo se abre la ficha y cómo vuelve el foco al cerrarla.
-- [ ] Fijar el nombre accesible, las teclas admitidas y el comportamiento en día completo.
-- [ ] Registrar la matriz de pruebas y el baseline sin cambiar producto.
+- [x] Revisar el DOM y el orden de Tab de los eventos en Mes, Semana y Agenda.
+- [x] Confirmar cómo se abre la ficha y cómo vuelve el foco al cerrarla.
+- [x] Fijar el nombre accesible, las teclas admitidas y el comportamiento en día completo.
+- [x] Registrar la matriz de pruebas y el baseline sin cambiar producto.
 - **Criterios:** comportamiento actual documentado, contrato claro y casos propios/asignados definidos.
+- **Cierre (2026-11-22):** contrato en [`calendario-teclado.md`](calendario-teclado.md). En Mes/Semana el `EventCell` de día completo no tiene `role` ni `tabIndex`; Agenda usa un `td` con clic, y `useDialogFocus` no puede devolver el foco a un evento no enfocable. Sin cambios de producto.
 
 ### Fase 2 — Eventos enfocables y apertura por teclado
 
@@ -86,5 +87,6 @@
 ## 7. Notas de sesión
 
 - 2026-11-22: **Roadmap abierto.** UI-12 entra desde el backlog por el fallo de foco de las tareas de día completo; quedan TASK-01 y DEV-01. Se empieza por el inventario de teclado y foco. Sin cambios de producto en esta apertura.
+- 2026-11-22: **Fase 1 completada.** Inventario en [`calendario-teclado.md`](calendario-teclado.md): `EventCell` de Mes/Semana sin `role` ni `tabIndex`; Agenda con clic en `td`; el diálogo no puede devolver el foco a un evento no enfocable. Sin cambios de producto.
 - La instancia local sigue disponible en `http://127.0.0.1:5173/` para revisar los cambios mientras se prepara este roadmap.
 - No se publica en Sites ni se aplican migraciones remotas desde este roadmap.
