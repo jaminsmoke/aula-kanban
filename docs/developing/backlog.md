@@ -3,11 +3,41 @@
 > **Regla:** Las entradas nuevas van siempre arriba; lo más antiguo queda al final. El orden indica recencia, no prioridad.
 > **Flujo:** Lo que entra en el roadmap activo sale de aquí. Lo que se aparca del roadmap entra aquí.
 > **Roadmap:** Sin roadmap activo · **Changelog:** [`changelog.md`](changelog.md)
-> **Estado:** 1 entrada pendiente · siguiente candidato recomendado DEV-01
+> **Estado:** 5 entradas pendientes · siguiente candidato recomendado ARC-11
 > **Nota:** ADOC-xx identifica mejoras de Aula Documentos; UI-xx mejoras de interfaz; ARC-xx arquitectura y mantenimiento global; DEV-xx infraestructura de desarrollo; DOC-01 a DOC-12 ya están usados por el bloque documental histórico.
 > **Revisión:** [`arquitectura-global.md`](arquitectura-global.md) contiene el diagnóstico, el árbol objetivo y el orden recomendado.
 
 ---
+
+## Línea base de reducción
+
+El código de producto pasó de **51.311** líneas en 1.1.37 a **65.811** en 1.1.38 y **66.108** en 1.1.39. En el salto a 1.1.38, Aula Documentos y `app/board/shared` sumaron 8.836 líneas, junto con la incorporación de la suite documental. En el salto a 1.1.39 crecieron 297 líneas de producto, 443 de pruebas y 1.157 de documentación. Los archivos generados quedaron estables en ese último salto. ARC-08 reubicó buena parte del código que antes figuraba en `shared`.
+
+Se cuentan líneas físicas de archivos de texto versionados, incluidas las líneas en blanco. Producto comprende código, estilos y SQL de `app`, `lib`, `db` y `worker`, con pruebas y fixtures aparte. La comparación usa `bbd59a8`, `bbb1bf6` y `4d88e00`, que contiene el código de la 1.1.39 antes del cambio de versión. Para cada recorte, medir el saldo de todos los archivos de producto afectados, incluidos los módulos que se creen o se muevan. Registrar las pruebas, la documentación y los archivos generados por separado. Validar con `npm run check`, las pruebas del área y los presupuestos del build.
+
+## 2026-11-22 — ARC-14 · Reutilizar los límites de importación y revisión documental
+
+- El importador antiguo define `LEGACY_MARKDOWN_MAX_LENGTH` con el mismo límite de 200.000 caracteres que usa la importación actual. El historial valida el mismo estado de Aula Documentos con una segunda constante de 190.000 caracteres.
+- Revisar `importers.ts`, `markdown.ts`, `document-types.ts` y `revision.ts` para que cada límite compartido tenga una sola definición. Si dos rutas hacen la misma validación, reutilizar también su validador. Mantener diferenciados el tamaño de la petición, la longitud del Markdown y la del documento serializado.
+- Comprobar entradas justo en el límite y por encima, importaciones antiguas y restauración de versiones existentes. Mantener los límites efectivos y los errores que devuelve cada flujo.
+
+## 2026-11-22 — ARC-13 · Retirar reglas CSS duplicadas en las ventanas de apps
+
+- Calculadora carga `edu-base.css` y vuelve a declarar `.edu-app` en `calculadora.css`. Mapas, Líneas de tiempo, Tarjetas, Moléculas y Hoja de cálculo repiten la disposición inicial de ventana con variaciones locales.
+- Eliminar la regla duplicada y comprobar qué variables tienen consumidores antes de conservarlas. Revisar si las otras ventanas pueden reutilizar una misma clase base con los tokens del tema y mantener sus diferencias de contenido y desplazamiento.
+- Verificar Calculadora y Tabla periódica juntas y por separado. Revisar temas claro y oscuro, ventanas estrechas y maximizadas, foco visible y desplazamiento. Medir el CSS neto y su carga por ruta.
+
+## 2026-11-22 — ARC-12 · Reducir las propiedades reenviadas por Aula Documentos
+
+- `useAulaDocumentosModel` tiene 593 líneas y devuelve 190 propiedades. Repite listas de campos de la sesión, la barra de herramientas y los diálogos de copias, importación y presentación para exponerlas al contexto.
+- Empezar por copias e importación y por la barra de herramientas. Mapear consumidores, incluidos los cargados bajo demanda, y reutilizar las salidas de los hooks existentes donde esto elimine reenvíos. Retirar las propiedades sin consumidores comprobados y conservar en el modelo la coordinación entre capacidades.
+- Comparar el saldo del modelo, el contexto y los consumidores. Verificar los diálogos, el editor, el guardado y el modo de solo lectura. Medir el bundle de apertura de Aula Documentos.
+
+## 2026-11-22 — ARC-11 · Eliminar la duplicación en el guardado con versión
+
+- ARC-09 compartió los tipos. `useAppDocument` y `useAulaDocumentApi` siguen repitiendo la petición, la lectura del conflicto 409 y el resultado de guardado. Hoja de cálculo, Mapas, Líneas de tiempo y Tarjetas repiten la comprobación de carga y la actualización de la versión tras guardar.
+- Reutilizar primero la operación HTTP en los dos clientes. Consolidar después las transiciones comunes de los cuatro editores si el cambio reduce líneas y deja visibles las decisiones de cada aplicación. Mantener los contratos de lectura, el aviso y la recuperación propios de cada editor y el guardado de Blockly.
+- Verificar carga fallida, documento nuevo, guardado correcto, conflicto con borrador local y cambio de proyecto o documento durante una operación. Incluir las pruebas de los cuatro editores y de Aula Documentos.
 
 ## 2026-11-17 — DEV-01 · Evaluar la migración de npm a pnpm
 

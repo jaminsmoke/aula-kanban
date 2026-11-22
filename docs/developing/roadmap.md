@@ -12,7 +12,7 @@ ARC-10 quedó cerrado y archivado en [`historial/roadmap-arc-10.md`](../historia
 
 ## 2. Siguiente paso
 
-Elegir la siguiente entrada del backlog. El candidato recomendado es **DEV-01 — Evaluar la migración de npm a pnpm**, según [`arquitectura-global.md`](arquitectura-global.md).
+La siguiente candidata del [backlog](backlog.md) es **ARC-11 — Eliminar la duplicación en el guardado con versión**. Después quedan la reducción del modelo de Aula Documentos, la del CSS de ventanas y la de los límites documentales duplicados.
 
 ## 3. Límites de mantenimiento
 
