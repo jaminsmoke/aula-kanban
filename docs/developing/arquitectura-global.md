@@ -1,6 +1,6 @@
 # Arquitectura global del tablero
 
-> **Estado:** ARC-01 a ARC-10 completados; ADOC-18, ADOC-19 y ADOC-20 completados; ARC-11 activo · **Fecha:** 2026-11-22
+> **Estado:** ARC-01 a ARC-11 completados; ADOC-18, ADOC-19 y ADOC-20 completados · **Fecha:** 2026-11-22
 > **Alcance:** `app/board`, `app/api`, `lib/domain`, `lib/server`, estilos y pruebas.
 > **Referencia:** la descomposición de Aula Documentos en ADOC-15 se toma como piloto, no como plantilla rígida.
 
@@ -235,4 +235,4 @@ Orden recomendado: **ARC-01 → ARC-03 → ARC-02 → ARC-04 → ARC-05 → ARC-
 - ADOC-19 quedó cerrado y archivado en [`historial/roadmap-adoc-19.md`](../historial/roadmap-adoc-19.md): estructura editable de diapositivas, presentador, ajustes de página y PDF de calidad.
 - ADOC-20 quedó cerrado y archivado en [`historial/roadmap-adoc-20.md`](../historial/roadmap-adoc-20.md): comentarios anclados, hilos, historial de versiones, permisos, exportación opcional y retención.
 - ARC-10 quedó cerrado y archivado en [`historial/roadmap-arc-10.md`](../historial/roadmap-arc-10.md): copia unidireccional de una selección de Hoja de cálculo a una tabla de Aula Documentos sin retirar ninguna app.
-- ARC-11 está activo en [`roadmap.md`](roadmap.md): eliminar la duplicación del `POST` versionado y de las transiciones comunes de los editores sin cambiar sus contratos.
+- ARC-11 quedó cerrado y archivado en [`historial/roadmap-arc-11.md`](../historial/roadmap-arc-11.md): la petición versionada y las transiciones de versión y carga fallida viven en `useAppDocument`, sin cambiar los contratos de las apps.

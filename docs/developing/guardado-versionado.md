@@ -1,6 +1,6 @@
 # Guardado con versión entre editores
 
-> **Estado:** ARC-09 cerrado · reutilización HTTP en ARC-11 · **Fecha:** 2026-11-22
+> **Estado:** ARC-09 cerrado · ARC-11 completado · **Fecha:** 2026-11-22
 > **Alcance:** `useAppDocument`, `useAulaDocumentApi`, persistencia de las apps y recuperación local.
 > **Roadmap:** [`roadmap.md`](roadmap.md)
 
@@ -140,3 +140,9 @@
 - Cada app conserva su mensaje, su recarga, su validación y su decisión de bloquear el guardado.
 - Aula Documentos y Blockly no cambian.
 - Saldo: **37 líneas menos** en los cuatro editores y 27 más en `use-app-document`; **10 líneas netas menos**. Suite **268 / 1.774**; Hoja **6 / 625 → 6 / 650**.
+
+### Cierre de ARC-11
+
+- `saveVersionedDocument` y las transiciones centralizadas se validaron con la suite y con los cuatro editores.
+- Build Aula **386.778 / 387.000 B**; Hoja **312.861 / 315.000 B**; presupuestos correctos.
+- Sin cambios de API, permisos, MCP ni versión del Site; roadmap archivado en [`historial/roadmap-arc-11.md`](../historial/roadmap-arc-11.md).

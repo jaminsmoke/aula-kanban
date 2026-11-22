@@ -1,7 +1,7 @@
 # Changelog
 
 > **Regla:** Las entradas nuevas van arriba. Lo más antiguo queda al final.
-> **Roadmap:** ARC-11 activo · **Backlog:** [`backlog.md`](backlog.md)
+> **Roadmap:** Sin roadmap activo · **Backlog:** [`backlog.md`](backlog.md)
 > Las versiones anteriores a `1.1.16` se conservan como hitos funcionales sin número de versión asociado.
 
 ---
@@ -12,6 +12,35 @@
 
 - Las apps comparten utilidades con consumidores comunes. Hoja de cálculo, Mapas, Líneas de tiempo y Tarjetas guardan con comprobación de versión para conservar el borrador ante conflictos. Hoja de cálculo permite copiar una selección como tabla para pegarla en Aula Documentos.
 - Pasaron 1.769 pruebas, `npm run check`, el build y los presupuestos de rendimiento general y Office. Se verificaron la portada, la documentación y el catálogo mediante el plugin en producción. La publicación no requirió migraciones.
+
+---
+
+## 2026-11-22 — Roadmap ARC-11 — Eliminar la duplicación en el guardado con versión
+
+**Estado:** Completada - Sin publicación en Sites
+
+### Cambios
+
+- `app/board/shared/versioned-document.ts` expone `saveVersionedDocument()`: una sola petición `POST` con `expectedUpdatedAt` y una sola lectura del conflicto 409.
+- `useAppDocument` y `useAulaDocumentApi` reutilizan la operación y conservan sus respuestas de carga, mensajes y estados de error.
+- `useAppDocument` centraliza la versión cargada, `loadFailed`, `markLoadFailed` y `saveCurrentVersioned`; Hoja de cálculo, Mapas, Líneas de tiempo y Tarjetas eliminan sus copias.
+- Cada editor conserva su validación, sus mensajes, su recarga, su decisión de bloqueo y su experiencia de conflicto. Aula Documentos y Blockly no cambian.
+- Saldo de producto: **37 líneas menos** en los cuatro editores y **27 más** en `use-app-document`; **10 líneas netas menos**, sin un módulo nuevo.
+- Contrato documentado en [`guardado-versionado.md`](guardado-versionado.md).
+
+### Verificación
+
+- `npm run check`: correcto.
+- Arquitectura: **461 archivos / 1.154 imports / 0 problemas**.
+- Suite completa: **268 archivos / 1.774 pruebas**.
+- Aula Documentos: **54 / 5.348 → 54 / 5.400** pruebas; Hoja de cálculo **6 / 625 → 6 / 650**.
+- Build de Aula Documentos: **386.778 / 387.000 B**; Hoja de cálculo **312.861 / 315.000 B**.
+- `app:budget`, `perf:budget` y `perf:office`: correctos; Office **196.481 / 210.000 B**.
+- El Site sigue en `1.1.39`; no se publica desde este roadmap.
+
+### Seguimiento
+
+- ARC-11 archivado en [`historial/roadmap-arc-11.md`](../historial/roadmap-arc-11.md). El backlog queda con **4 entradas**; siguiente candidato **ARC-12**. `roadmap.md` se reinicia sin roadmap activo.
 
 ---
 
